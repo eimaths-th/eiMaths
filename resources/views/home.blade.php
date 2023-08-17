@@ -20,7 +20,7 @@
             signaturePad.penColor = 'black'; // Change the pen color
             signaturePad.backgroundColor = 'rgba(0, 0, 0, 0)'; // Set the background color
 
-            // Handle save button click event
+            /// Handle save button click event
             $('#save-signature').on('click', function() {
                 if (signaturePad.isEmpty()) {
                     alert('Please provide your signature.');
