@@ -45,7 +45,7 @@ class PositionController extends Controller
             )
             ->join("departments", "departments.id", "=", "positions.department_id")
             ->orderBy("positions.id", "desc")->get();
-            $state_text = array('ไม่เปิดใช้งาน', 'เปิดใช้งาน');
+            $state_text = array('Disable', 'Enable');
             return datatables()->of($datas)
                 ->editColumn('checkbox', function ($row) {
                     return '<input type="checkbox" id="' . $row->id . '" class="flat" name="table_records[]" value="' . $row->id . '" >';
@@ -56,14 +56,14 @@ class PositionController extends Controller
                 })
                 ->addColumn('action', function ($row) {
                     if (Gate::allows('master-data-edit')) {
-                        $html = '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> แก้ไข</button> ';
+                        $html = '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit</button> ';
                     } else {
-                        $html = '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="คุณไม่มีสิทธิ์ในส่วนนี้"><i class="fa fa-edit"></i> แก้ไข</button> ';
+                        $html = '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> Edit</button> ';
                     }
                     if (Gate::allows('master-data-delete')) {
-                        $html .= '<button type="button" data-rowid="' . $row->id . '" class="btn btn-sm btn-danger btn-delete"><i class="fa fa-trash"></i> ลบ</button>';
+                        $html .= '<button type="button" data-rowid="' . $row->id . '" class="btn btn-sm btn-danger btn-delete"><i class="fa fa-trash"></i> Delete</button>';
                     } else {
-                        $html .= '<button type="button" class="btn btn-sm btn-danger disabled" data-toggle="tooltip" data-placement="bottom" title="คุณไม่มีสิทธิ์ในส่วนนี้"><i class="fa fa-trash"></i> ลบ</button> ';
+                        $html .= '<button type="button" class="btn btn-sm btn-danger disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-trash"></i> Delete</button> ';
                     }
                     return $html;
                 })->rawColumns(['checkbox', 'action'])->toJson();
@@ -97,12 +97,11 @@ class PositionController extends Controller
             'postcode' => 'required|string|max:10',
             'telephone' => 'required|string|max:20',*/
         ],[
-            'name.required' => 'ชื่อส่วนงานต้องไม่เป็นค่าว่าง!',
-            'name.unique' => 'ชื่อส่วนงานนี้มีอยู่แล้วในฐานข้อมูล!',
-            'department_id.required' => 'กรุณาเลือกส่วนราชการ!',
-            'status.required' => 'กรุณาเลือกสถานะ!',
+            'name.required' => 'The department name must not be blank!',
+            'name.unique' => 'This department name already exists in the database!',
+            'department_id.required' => 'Please select a government department!',
+            'status.required' => 'Please select a status!',
         ]);
-
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()->all()]);
@@ -110,7 +109,7 @@ class PositionController extends Controller
 
         $input = $request->all();
         Position::create($input);
-        return response()->json(['success' => 'เพิ่ม ส่วนงาน เรียบร้อยแล้ว']);
+        return response()->json(['success' => 'The department has been successfully added.']);
     }
 
     /**
@@ -138,11 +137,11 @@ class PositionController extends Controller
             'status' => 'required|max:10',
         ];
 
-        $validator = Validator::make($request->all(), $rules,[
-            'name.required' => 'ชื่อส่วนงานต้องไม่เป็นค่าว่าง!',
-            'name.unique' => 'ชื่อส่วนงานนี้มีอยู่แล้วในฐานข้อมูล!',
-            'department.required' => 'กรุณาเลือกส่วนราชการ!',
-            'status.required' => 'กรุณาเลือกสถานะ!',
+        $validator = Validator::make($request->all(), $rules, [
+            'name.required' => 'The department name must not be blank!',
+            'name.unique' => 'This department name already exists in the database!',
+            'department.required' => 'Please select a government department!',
+            'status.required' => 'Please select a status!',
         ]);
 
         if ($validator->fails()) {
@@ -158,7 +157,7 @@ class PositionController extends Controller
         $update = Position::find($id);
         $update->update($contactd);
 
-        return response()->json(['success' => 'แก้ไข ส่วนงาน เรียบร้อยแล้ว']);
+        return response()->json(['success' => 'The department has been successfully edited.']);
     }
 
     /**
@@ -168,7 +167,7 @@ class PositionController extends Controller
     {
         $id = $request->get('id');
         Position::find($id)->delete();
-        return ['success' => true, 'message' => 'ลบ ส่วนงาน เรียบร้อยแล้ว'];
+        return ['success' => true, 'message' => 'The department has been successfully deleted.'];
     }
 
     public function destroy_all(Request $request)
@@ -180,6 +179,6 @@ class PositionController extends Controller
             Position::find($arr_del[$xx])->delete();
         }
 
-        return redirect('/priorities')->with('success', 'ลบ ส่วนงาน เรียบร้อยแล้ว');
+        return redirect('/priorities')->with('success', 'The department has been successfully deleted.');
     }
 }

@@ -19,23 +19,22 @@
 
                         @can('contact-create')
                             <button type="button" class="btn btn-success" id="CreateButton">
-                                <i class="fas fa-graduation-cap"></i> เพิ่ม รายชื่อนักเรียน </button>
+                                <i class="fas fa-graduation-cap"></i> Add Student </button>
                         @else
                             <span class="d-inline-block" tabindex="0" data-toggle="tooltip" data-placement="bottom"
-                                title="คุณไม่มีสิทธิ์ในส่วนนี้">
+                                title="You Not Have Permission">
                                 <button type="button" class="btn btn-success disabled">
-                                    <i class="fas fa-graduation-cap"></i> เพิ่ม รายชื่อนักเรียน </button>
+                                    <i class="fas fa-graduation-cap"></i> Add Student </button>
                             </span>
                         @endcan &nbsp;
 
                         @can('contact-delete')
-                            <button type="button" class="btn btn-danger delete_all_button"><i class="fa fa-trash"></i> ลบ
-                                ทั้งหมด</button>
+                            <button type="button" class="btn btn-danger delete_all_button"><i class="fa fa-trash"></i> Delete All</button>
                         @else
                             <span class="d-inline-block" tabindex="0" data-toggle="tooltip" data-placement="bottom"
-                                title="คุณไม่มีสิทธิ์ในส่วนนี้">
+                                title="You Not Have Permission">
                                 <button type="button" class="btn btn-danger disabled"><i class="fa fa-trash"></i>
-                                    ลบทั้งหมด</button>
+                                    Delete All</button>
                             </span>
                         @endcan
                     </ol>
@@ -51,7 +50,7 @@
                 <div class="col-12">
                     <div class="card card-primary">
                         <div class="card-header">
-                            <h3 class="card-title"><i class="fas fa-graduation-cap"></i> รายชื่อนักเรียน</h3>
+                            <h3 class="card-title"><i class="fas fa-graduation-cap"></i> Student</h3>
                             <div class="card-tools">
                                 <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
                                     <i class="fas fa-minus"></i>
@@ -81,10 +80,10 @@
                                     <thead>
                                         <tr>
                                             <th><input type="checkbox" id="check-all" class="flat"></th>
-                                            <th>ชื่อนักเรียน</th>
-                                            <th>อีเมล์</th>
-                                            <th>เบอร์โทรศัพท์</th>
-                                            <th width="280px"></th>
+                                            <th>Student Name</th>
+                                            <th>Email</th>
+                                            <th>Telephone</th>
+                                            <th width="180px"></th>
                                         </tr>
                                     </thead>
                                     <tbody>

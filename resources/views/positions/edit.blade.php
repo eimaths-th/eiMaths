@@ -5,7 +5,7 @@ id="EditModal">
     <form id="editdata" class="form" action="" method="POST">
         <div class="modal-content">
             <div class="modal-header bg-primary">
-                <h4 class="modal-title" id="exampleModalLongTitle"><i class="fas fa-list-ol"></i> แก้ไข ส่วนงาน</h4>
+                <h4 class="modal-title" id="exampleModalLongTitle"><i class="fas fa-list-ol"></i> Edit Department</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -30,7 +30,7 @@ id="EditModal">
                     <div class="row">
                         <div class="col-xs-6 col-sm-6 col-md-6">
                             <div class="form-group">
-                                <strong><i class="fas fa-list-ol"></i> ชื่่อส่วนงาน:</strong>
+                                <strong><i class="fas fa-list-ol"></i> Department Name:</strong>
                                 {!! Form::text('name', null, ['id' => 'EditName', 'placeholder' => 'Name', 'class' => 'form-control']) !!}
                             </div>
                         </div>
@@ -38,7 +38,7 @@ id="EditModal">
                     <div class="row">
                         <div class="col-xs-6 col-sm-6 col-md-6">
                             <div class="form-group">
-                                <strong><i class="fas fa-eye"></i> สาขา:</strong>
+                                <strong><i class="fas fa-eye"></i> Centre:</strong>
                                 <select style="width: 100%;" class="select2 select2_single form-control"
                                     id="EditDepartment" name="edepartment" multiple="multiple">
                                     <!-- <option value="" selected>Select Student</option>
@@ -55,12 +55,12 @@ id="EditModal">
                     <div class="row">
                         <div class="col-xs-6 col-sm-6 col-md-6">
                             <div class="form-group">
-                                <strong>สถานะ:</strong>
+                                <strong>Status:</strong>
                                 <br />
                                 <div class="custom-control custom-switch">
                                     {{ Form::checkbox('status', '1', false, ['id' => 'ecustomCheckbox1', 'class' => 'custom-control-input name']) }}
                                     <label for="ecustomCheckbox1" class="custom-control-label">
-                                        เปิดใช้งาน</label>
+                                        Enable</label>
                                 </div>
 
                             </div>
@@ -73,8 +73,8 @@ id="EditModal">
             </div>
             <!-- Modal footer -->
             <div class="modal-footer">
-                <button type="button" class="btn btn-success" id="SubmitEditForm"><i class="fas fa-download"></i> บันทึกข้อมูล</button>
-                <button type="button" class="btn btn-danger modelClose" data-dismiss="modal"><i class="fas fa-door-closed"></i> ปิดหน้าต่าง</button>
+                <button type="button" class="btn btn-success" id="SubmitEditForm"><i class="fas fa-download"></i> Save</button>
+                <button type="button" class="btn btn-danger modelClose" data-dismiss="modal"><i class="fas fa-door-closed"></i> Close</button>
             </div>
         </div>
     </form>

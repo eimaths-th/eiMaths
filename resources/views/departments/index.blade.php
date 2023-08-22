@@ -20,7 +20,7 @@
                                 <i class="fas fa-list-ol"></i> Add Centre</a> </button>
                         @else
                             <span class="d-inline-block" tabindex="0" data-toggle="tooltip" data-placement="bottom"
-                                title="คุณไม่มีสิทธิ์ในส่วนนี้">
+                                title="You Not Have Permission">
                                 <button type="button" class="btn btn-success disabled">
                                     <i class="fas fa-list-ol"></i> Add Centre </a></button>
                             </span>
@@ -30,7 +30,7 @@
                             <button type="button" class="btn btn-danger delete_all_button"><i class="fa fa-trash"></i> Delete All</button>
                         @else
                             <span class="d-inline-block" tabindex="0" data-toggle="tooltip" data-placement="bottom"
-                                title="คุณไม่มีสิทธิ์ในส่วนนี้">
+                                title="You Not Have Permission">
                                 <button type="button" class="btn btn-danger disabled"><i class="fa fa-trash"></i>
                                     Delete All</button>
                             </span>

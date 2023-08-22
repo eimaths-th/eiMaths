@@ -1,0 +1,35 @@
+name: Deploy
+
+# Trigger the workflow on push and
+# pull request events on the production branch
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+# Authenticate to the the server via ssh
+# and run our deployment script
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    #steps:
+      #- uses: actions/checkout@v3
+      #- name: Deploy to server
+      #  uses: appleboy/ssh-action@master
+      #  with:
+      #    host: ${{ secrets.HOST }}
+      #    username: ${{ secrets.USERNAME }}
+      #    port: ${{ secrets.PORT }}
+      #    key: ${{ secrets.SSHKEY }}
+          #key: /root/.ssh2/id_rsa
+      #    script: "cd /var/www/html/crm && ./.scripts/deploy.sh"
+      #- uses: snow-actions/line-notify@v1.0.0
+      #  with:
+      #    access_token: ${{ secrets.LINE_ACCESS_TOKEN }}
+      #    message: |
+      #     Push Complete
+      #     Commit Message: ${{ github.event.head_commit.message }}
+      #     Repo:${{ github.event.head_commit.url }} By ${{ github.event.head_commit.author.name }}

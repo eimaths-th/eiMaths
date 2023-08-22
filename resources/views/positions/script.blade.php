@@ -3,30 +3,26 @@
         $(".delete_all_button").click(function() {
             var len = $('input[name="table_records[]"]:checked').length;
             if (len > 0) {
-
-                if (confirm("ยืนยันการลบข้อมูล ?")) {
+                if (confirm("Confirm data deletion?")) {
                     $('form#delete_all').submit();
                 }
             } else {
-                alert("กรุณาเลือกรายการที่จะลบ");
+                alert("Please select items to delete.");
             }
-
         });
 
         $('#check-all').click(function() {
             $(':checkbox.flat').prop('checked', this.checked);
         });
 
-
         $(".select2_single").select2({
             maximumSelectionLength: 1,
             allowClear: false,
             //theme: 'bootstrap4'
-            placeholder: 'กรุณาเลือก'
+            placeholder: 'Please select'
         });
 
         $(".select2_single").on("select2:unselect", function(e) {
-            //log("select2:unselect", e);
             //$('.products').html('');
         });
 
@@ -34,16 +30,14 @@
             maximumSelectionLength: 1,
             allowClear: false,
             //theme: 'bootstrap4'
-            placeholder: 'กรุณาเลือก'
+            placeholder: 'Please select'
         });
-
 
         $(".select2_multiple").select2({
             maximumSelectionLength: 2,
-            //placeholder: "With Max Selection limit 4",
             allowClear: false,
             //theme: 'bootstrap4'
-            placeholder: 'กรุณาเลือก'
+            placeholder: 'Please select'
         });
 
         //$.noConflict();
@@ -75,20 +69,20 @@
             language: {
                 loadingRecords: '&nbsp;',
                 processing: `<div class="spinner-border text-primary"></div>`,
-                "sProcessing": "กำลังดำเนินการ...",
-                "sLengthMenu": "แสดง_MENU_ แถว",
-                "sZeroRecords": "ไม่พบข้อมูล",
-                "sInfo": "แสดง _START_ ถึง _END_ จาก _TOTAL_ รายการ",
-                "sInfoEmpty": "แสดง 0 ถึง 0 จาก 0 รายการ",
-                "sInfoFiltered": "(กรองข้อมูล _MAX_ ทุกแถว)",
+                "sProcessing": "Processcing...",
+                "sLengthMenu": "Display_MENU_ Row",
+                "sZeroRecords": "No Data Fount",
+                "sInfo": "Display _START_ To _END_ From _TOTAL_ Records",
+                "sInfoEmpty": "Display 0 To 0 From 0 Records",
+                "sInfoFiltered": "(Filters _MAX_ Row)",
                 "sInfoPostFix": "",
-                "sSearch": "ค้นหา:",
+                "sSearch": "Search:",
                 "sUrl": "",
                 "oPaginate": {
-                    "sFirst": "เริ่มต้น",
-                    "sPrevious": "ก่อนหน้า",
-                    "sNext": "ถัดไป",
-                    "sLast": "สุดท้าย"
+                    "sFirst": "First",
+                    "sPrevious": "Previous",
+                    "sNext": "Next",
+                    "sLast": "Last"
                 }
             },
             aaSorting: [
@@ -235,7 +229,7 @@
         })
 
         $('#SubmitEditForm').click(function(e) {
-            if (!confirm("ยืนยันการทำรายการ ?")) return;
+            if (!confirm("Confirm the action?")) return;
             e.preventDefault();
 
             $('.alert-danger').html('');
@@ -289,7 +283,7 @@
         });
 
         $(document).on('click', '.btn-delete', function() {
-            if (!confirm("ยืนยันการทำรายการ ?")) return;
+            if (!confirm("Confirm the action?")) return;
 
             var rowid = $(this).data('rowid')
             var el = $(this)

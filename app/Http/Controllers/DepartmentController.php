@@ -40,7 +40,7 @@ class DepartmentController extends Controller
             //sleep(2);
 
             $datas = Department::orderBy("id", "desc")->get();
-            $state_text = array('ไม่เปิดใช้งาน', 'เปิดใช้งาน');
+            $state_text = array('Enable', 'Disable');
             return datatables()->of($datas)
                 ->editColumn('checkbox', function ($row) {
                     return '<input type="checkbox" id="' . $row->id . '" class="flat" name="table_records[]" value="' . $row->id . '" >';
@@ -51,14 +51,14 @@ class DepartmentController extends Controller
                 })
                 ->addColumn('action', function ($row) {
                     if (Gate::allows('master-data-edit')) {
-                        $html = '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> แก้ไข</button> ';
+                        $html = '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit</button> ';
                     } else {
-                        $html = '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="คุณไม่มีสิทธิ์ในส่วนนี้"><i class="fa fa-edit"></i> แก้ไข</button> ';
+                        $html = '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> Edit</button> ';
                     }
                     if (Gate::allows('master-data-delete')) {
-                        $html .= '<button type="button" data-rowid="' . $row->id . '" class="btn btn-sm btn-danger btn-delete"><i class="fa fa-trash"></i> ลบ</button>';
+                        $html .= '<button type="button" data-rowid="' . $row->id . '" class="btn btn-sm btn-danger btn-delete"><i class="fa fa-trash"></i> Delete</button>';
                     } else {
-                        $html .= '<button type="button" class="btn btn-sm btn-danger disabled" data-toggle="tooltip" data-placement="bottom" title="คุณไม่มีสิทธิ์ในส่วนนี้"><i class="fa fa-trash"></i> ลบ</button> ';
+                        $html .= '<button type="button" class="btn btn-sm btn-danger disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-trash"></i> Delete</button> ';
                     }
                     return $html;
                 })->rawColumns(['checkbox', 'action'])->toJson();
@@ -115,11 +115,11 @@ class DepartmentController extends Controller
             'postcode' => 'required|string|max:10',
             'telephone' => 'required|string|max:20',*/
         ], [
-            'name.required' => 'ชื่อสาขาต้องไม่เป็นค่าว่าง!',
-            'name.unique' => 'ชื่อสาขานี้มีอยู่แล้วในฐานข้อมูล!',
-            'code.required' => 'รหัสสาขาต้องไม่เป็นค่าว่าง!',
-            'code.max' => 'รหัสสาขาต้องห้ามเกิน10ตัวอักษร!',
-            'status.required' => 'กรุณาเลือกสถานะ!',
+            'name.required' => 'The branch name must not be blank!',
+            'name.unique' => 'This branch name already exists in the database!',
+            'code.required' => 'The branch code must not be blank!',
+            'code.max' => 'The branch code must not exceed 10 characters',
+            'status.required' => 'Please select a status!',
         ]);
 
 
@@ -129,7 +129,7 @@ class DepartmentController extends Controller
 
         $input = $request->all();
         Department::create($input);
-        return response()->json(['success' => 'เพิ่ม สาขา เรียบร้อยแล้ว']);
+        return response()->json(['success' => 'The branch has been successfully added.']);
     }
 
     /**
@@ -159,12 +159,12 @@ class DepartmentController extends Controller
         ];
 
 
-        $validator =  Validator::make($request->all(), $rules, [
-            'name.required' => 'ชื่อสาขาต้องไม่เป็นค่าว่าง!',
-            'name.unique' => 'ชื่อสาขานี้มีอยู่แล้วในฐานข้อมูล!',
-            'code.required' => 'รหัสสาขาต้องไม่เป็นค่าว่าง!',
-            'code.max' => 'รหัสสาขาต้องห้ามเกิน10ตัวอักษร!',
-            'status.required' => 'กรุณาเลือกสถานะ!',
+        $validator = Validator::make($request->all(), $rules, [
+            'name.required' => 'The branch name must not be blank!',
+            'name.unique' => 'This branch name already exists in the database!',
+            'code.required' => 'The branch code must not be blank!',
+            'code.max' => 'The branch code must not exceed 10 characters!',
+            'status.required' => 'Please select a status!',
         ]);
 
         if ($validator->fails()) {
@@ -180,7 +180,7 @@ class DepartmentController extends Controller
         $update = Department::find($id);
         $update->update($contactd);
 
-        return response()->json(['success' => 'แก้ไข สาขา เรียบร้อยแล้ว']);
+        return response()->json(['success' => 'The branch has been successfully edited.']);
     }
 
     /**
@@ -190,7 +190,7 @@ class DepartmentController extends Controller
     {
         $id = $request->get('id');
         Department::find($id)->delete();
-        return ['success' => true, 'message' => 'ลบ สาขา เรียบร้อยแล้ว'];
+        return ['success' => true, 'message' => 'The branch has been successfully deleted.'];
     }
 
     public function destroy_all(Request $request)
@@ -202,6 +202,6 @@ class DepartmentController extends Controller
             Department::find($arr_del[$xx])->delete();
         }
 
-        return redirect('/departments')->with('success', 'ลบ สาขา เรียบร้อยแล้ว');
+        return redirect('/departments')->with('success', 'The branch has been successfully deleted.');
     }
 }

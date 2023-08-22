@@ -199,7 +199,7 @@
                 const weatherIconUrl = `http://openweathermap.org/img/w/${weatherIconCode}.png`;
                 const weatherDescription = data.weather[0].description;
 
-                const weatherHTML = `Weather":
+                const weatherHTML = `Weather :
           <img src="${weatherIconUrl}" alt="${weatherDescription}" width="35px">
           ${temperature.toFixed(1)}°C
         `;

@@ -17,23 +17,22 @@
 
                         @can('master-data-create')
                             <button type="button" class="btn btn-success" id="CreateButton">
-                                <i class="fas fa-list-ol"></i> เพิ่ม ส่วนงาน </a> </button>
+                                <i class="fas fa-list-ol"></i> Add Department </a> </button>
                         @else
                             <span class="d-inline-block" tabindex="0" data-toggle="tooltip" data-placement="bottom"
-                                title="คุณไม่มีสิทธิ์ในส่วนนี้">
+                                title="You Not Have Permission">
                                 <button type="button" class="btn btn-success disabled">
-                                    <i class="fas fa-list-ol"></i> เพิ่ม ส่วนงาน </a></button>
+                                    <i class="fas fa-list-ol"></i> Add Department </a></button>
                             </span>
                         @endcan &nbsp;
 
                         @can('master-data-delete')
-                            <button type="button" class="btn btn-danger delete_all_button"><i class="fa fa-trash"></i> ลบ
-                                ทั้งหมด</button>
+                            <button type="button" class="btn btn-danger delete_all_button"><i class="fa fa-trash"></i> Delete All</button>
                         @else
                             <span class="d-inline-block" tabindex="0" data-toggle="tooltip" data-placement="bottom"
-                                title="คุณไม่มีสิทธิ์ในส่วนนี้">
+                                title="You Not Have Permission">
                                 <button type="button" class="btn btn-danger disabled"><i class="fa fa-trash"></i>
-                                    ลบทั้งหมด</button>
+                                    Delete All</button>
                             </span>
                         @endcan
                     </ol>
@@ -49,7 +48,7 @@
                 <div class="col-12">
                     <div class="card card-primary">
                         <div class="card-header">
-                            <h3 class="card-title"><i class="fas fa-list-ol"></i> ส่วนงาน</h3>
+                            <h3 class="card-title"><i class="fas fa-list-ol"></i> Department</h3>
                             <div class="card-tools">
                                 <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
                                     <i class="fas fa-minus"></i>
@@ -79,9 +78,9 @@
                                     <thead>
                                         <tr>
                                             <th><input type="checkbox" id="check-all" class="flat"></th>
-                                            <th>ส่วนงาน</th>
-                                            <th>สาขา</th>
-                                            <th>สถานะ</th>
+                                            <th>Department</th>
+                                            <th>Centre</th>
+                                            <th>Status</th>
                                             <th width="120px"></th>
                                         </tr>
                                     </thead>
