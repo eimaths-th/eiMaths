@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\bookuse;
 use App\Models\Contact;
 use App\Models\Department;
+use App\Models\level;
 use App\Models\studentRunningNumber;
 use App\Models\term;
 use Spatie\Permission\Models\Role;
@@ -67,9 +69,15 @@ class ContactController extends Controller
             ->orderBy("name", "asc")->get();
         $term = term::where([['status', '1']])
             ->orderBy("name", "asc")->get();
-            //dd($term);
+        $bookuse = bookuse::where([['status', '1']])
+            ->orderBy("name", "asc")->get();
+        $level = level::where([['status', '1']])
+            ->orderBy("name", "asc")->get();
+        //dd($term);
 
         return view('contacts.index')->with(['centre' => $centre])
+            ->with(['bookuse' => $bookuse])
+            ->with(['level' => $level])
             ->with(['term' => $term]);
     }
 

@@ -1,5 +1,5 @@
 <div class="modal fade" id="CreateModal">
-    <div class="modal-dialog modal-xl">
+    <div class="modal-dialog modal-xxl">
         <div class="modal-content">
             <div class="modal-header bg-primary">
                 <h4 class="modal-title"><i class="fas fa-graduation-cap"></i> Add Student</h4>
@@ -45,8 +45,7 @@
                             <li class="nav-item">
                                 <a class="nav-link" id="custom-tabs-one-profile-tab" data-toggle="pill"
                                     href="#custom-tabs-one-profile" role="tab"
-                                    aria-controls="custom-tabs-one-profile"
-                                    aria-selected="false">Parent Detail</a>
+                                    aria-controls="custom-tabs-one-profile" aria-selected="false">Parent Detail</a>
                             </li>
 
                         </ul>
@@ -131,9 +130,9 @@
                                                     <select style="width: 100%;"
                                                         class="select2 select2_single form-control" id="AddLevel"
                                                         name="level" multiple="multiple">
-                                                        @foreach ($term as $keyt)
-                                                            <option value="{{ $keyt->id }}">
-                                                                {{ $keyt->name }}
+                                                        @foreach ($level as $keyl)
+                                                            <option value="{{ $keyl->id }}">
+                                                                {{ $keyl->name }}
                                                             </option>
                                                         @endforeach
 
@@ -170,9 +169,9 @@
                                                     <select style="width: 100%;"
                                                         class="select2 select2_single form-control" id="AddBook"
                                                         name="book" multiple="multiple">
-                                                        @foreach ($term as $keyt)
-                                                            <option value="{{ $keyt->id }}">
-                                                                {{ $keyt->name }}
+                                                        @foreach ($bookuse as $keyb)
+                                                            <option value="{{ $keyb->id }}">
+                                                                {{ $keyb->name }}
                                                             </option>
                                                         @endforeach
 
