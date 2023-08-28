@@ -43,6 +43,11 @@
                                     aria-selected="true">Student Detail</a>
                             </li>
                             <li class="nav-item">
+                                <a class="nav-link" id="custom-tabs-one-address-tab" data-toggle="pill"
+                                    href="#custom-tabs-one-address" role="tab"
+                                    aria-controls="custom-tabs-one-address" aria-selected="true">Address Detail</a>
+                            </li>
+                            <li class="nav-item">
                                 <a class="nav-link" id="custom-tabs-one-profile-tab" data-toggle="pill"
                                     href="#custom-tabs-one-profile" role="tab"
                                     aria-controls="custom-tabs-one-profile" aria-selected="false">Parent Detail</a>
@@ -62,7 +67,7 @@
                                                     <strong><i class="fas fa-code"></i> Centre Code:</strong>
                                                     <select style="width: 100%;"
                                                         class="productl select2 select2_single form-control"
-                                                        id="AddProduct" name="product" multiple="multiple"
+                                                        id="AddCentre" name="centre" multiple="multiple"
                                                         @cannot('all-centre') disabled @endcannot>
                                                         <!-- <option value="" selected>Select Student</option>
                                                                                                                                                                                                                                                                                                                                                                                                     <option value="" selected>Select Parent</option>-->
@@ -222,6 +227,9 @@
 
                                     </div>
                                 </div>
+                            </div>
+                            <div class="tab-pane fade" id="custom-tabs-one-address" role="tabpanel"
+                                aria-labelledby="custom-tabs-one-address-tab">
                                 <div class="card">
                                     <div class="card-body">
                                         <div class="row">
@@ -262,8 +270,6 @@
 
                                     </div>
                                 </div>
-
-
                             </div>
                             <div class="tab-pane fade" id="custom-tabs-one-profile" role="tabpanel"
                                 aria-labelledby="custom-tabs-one-profile-tab">
@@ -273,13 +279,13 @@
                                             <div class="col-xs-6 col-sm-6 col-md-6">
                                                 <div class="form-group">
                                                     <strong><i class="fas fa-graduation-cap"></i>Father Name:</strong>
-                                                    {!! Form::text('name', null, ['id' => 'AddName', 'placeholder' => 'Name', 'class' => 'form-control']) !!}
+                                                    {!! Form::text('fname', null, ['id' => 'AddfName', 'placeholder' => 'Father Name', 'class' => 'form-control']) !!}
                                                 </div>
                                             </div>
                                             <div class="col-xs-6 col-sm-6 col-md-6">
                                                 <div class="form-group">
                                                     <strong><i class="fas fa-at"></i> Email:</strong>
-                                                    {!! Form::text('email', null, ['id' => 'AddEmail', 'placeholder' => 'Email', 'class' => 'form-control']) !!}
+                                                    {!! Form::email('femail', null, ['id' => 'AddfEmail', 'placeholder' => 'Father Email', 'class' => 'form-control']) !!}
                                                 </div>
                                             </div>
 
@@ -288,9 +294,9 @@
                                             <div class="col-xs-6 col-sm-6 col-md-6">
                                                 <div class="form-group">
                                                     <strong><i class="fas fa-phone"></i> Mobile:</strong>
-                                                    {!! Form::text('telephone', null, [
-                                                        'id' => 'AddTelephone',
-                                                        'placeholder' => 'Telephone',
+                                                    {!! Form::text('ftelephone', null, [
+                                                        'id' => 'AddfTelephone',
+                                                        'placeholder' => 'Father Telephone',
                                                         'class' => 'form-control',
                                                     ]) !!}
                                                 </div>
@@ -304,13 +310,13 @@
                                             <div class="col-xs-6 col-sm-6 col-md-6">
                                                 <div class="form-group">
                                                     <strong><i class="fas fa-graduation-cap"></i>Mother Name:</strong>
-                                                    {!! Form::text('name', null, ['id' => 'AddName', 'placeholder' => 'Name', 'class' => 'form-control']) !!}
+                                                    {!! Form::text('mname', null, ['id' => 'AddmName', 'placeholder' => 'Mother Name', 'class' => 'form-control']) !!}
                                                 </div>
                                             </div>
                                             <div class="col-xs-6 col-sm-6 col-md-6">
                                                 <div class="form-group">
                                                     <strong><i class="fas fa-at"></i> Email:</strong>
-                                                    {!! Form::text('email', null, ['id' => 'AddEmail', 'placeholder' => 'Email', 'class' => 'form-control']) !!}
+                                                    {!! Form::email('memail', null, ['id' => 'AddmEmail', 'placeholder' => 'Mother Email', 'class' => 'form-control']) !!}
                                                 </div>
                                             </div>
 
@@ -319,9 +325,9 @@
                                             <div class="col-xs-6 col-sm-6 col-md-6">
                                                 <div class="form-group">
                                                     <strong><i class="fas fa-phone"></i> Mobile:</strong>
-                                                    {!! Form::text('telephone', null, [
-                                                        'id' => 'AddTelephone',
-                                                        'placeholder' => 'Telephone',
+                                                    {!! Form::text('mtelephone', null, [
+                                                        'id' => 'AddmTelephone',
+                                                        'placeholder' => 'Mother Telephone',
                                                         'class' => 'form-control',
                                                     ]) !!}
                                                 </div>

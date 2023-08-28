@@ -29,7 +29,8 @@
                         @endcan &nbsp;
 
                         @can('contact-delete')
-                            <button type="button" class="btn btn-danger delete_all_button"><i class="fa fa-trash"></i> Delete All</button>
+                            <button type="button" class="btn btn-danger delete_all_button"><i class="fa fa-trash"></i> Delete
+                                All</button>
                         @else
                             <span class="d-inline-block" tabindex="0" data-toggle="tooltip" data-placement="bottom"
                                 title="You Not Have Permission">
@@ -87,20 +88,13 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-
                                     </tbody>
                                 </table>
                             </form>
                         </div>
-
                     </div>
-
-
-
                 </div>
-
             </div>
-
         </div>
 
     </section>

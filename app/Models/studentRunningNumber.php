@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Department;
 
 class studentRunningNumber extends Model
 {
@@ -15,7 +16,7 @@ class studentRunningNumber extends Model
 
         $number = 0;
         $year = date('Y');
-        $type = strtoupper($department);
+        $type = strtoupper(Department::getDepartmentCodeById($department));
 
 
         if (!studentRunningNumber::where('year', $year)->where('department', $type)->exists()) {
@@ -42,7 +43,7 @@ class studentRunningNumber extends Model
 
     public static function generate(string $department)
     {
-        $type = strtoupper($department);
+        $type = strtoupper(Department::getDepartmentCodeById($department));
        /*  if (! in_array($type, self::TYPES)) {
             throw new \Exception('Undefined running number type.');
         } */

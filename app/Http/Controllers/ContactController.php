@@ -44,8 +44,7 @@ class ContactController extends Controller
         if ($request->ajax()) {
             //sleep(2);
 
-            $datas = Contact::where('ctype', 0)
-                ->orderBy("id", "desc")->get();
+            $datas = Contact::orderBy("id", "desc")->get();
             return datatables()->of($datas)
                 ->editColumn('checkbox', function ($row) {
                     return '<input type="checkbox" id="' . $row->id . '" class="flat" name="table_records[]" value="' . $row->id . '" >';
@@ -86,7 +85,7 @@ class ContactController extends Controller
      */
     public function create()
     {
-        $rnumber = studentRunningNumber::pre_generate(Auth::user()->department->code);
+        $rnumber = studentRunningNumber::pre_generate(Auth::user()->department->id);
         //dd($rnumber);
         return response()->json([
             'running' =>  $rnumber
@@ -99,17 +98,37 @@ class ContactController extends Controller
     public function store(Request $request)
     {
         //
-        $validator =  Validator::make($request->all(), [
+        $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255|unique:contacts',
+            'start_date' => 'required|string|max:10',
+            'start_term' => 'required',
+            'school' => 'required|string|max:255',
+            'level' => 'required',
+            'term' => 'required',
+            'bookuse' => 'required',
             //'postcode' => 'int|max:10',
             /* 'email' => 'required|string|email|max:255',
             'address' => 'required|string|max:255',
             'postcode' => 'required|string|max:10',
             'telephone' => 'required|string|max:20',*/
         ], [
-            'name.required' => 'ชื่อนักเรียนต้องไม่เป็นค่าว่าง!',
-            'name.unique' => 'ชื่อนักเรียนนี้มีอยู่แล้วในฐานข้อมูล!',
-            /*  'status.required' => 'กรุณาเลือกสถานะ!', */
+            'name.required' => 'Student name must not be empty.',
+            'name.unique' => 'This student name already exists in the database.',
+            'start_date.required' => 'Please provide a start date.',
+            'start_term.required' => 'Please select a start term.',
+            'school.required' => 'Please provide the school name.',
+            'level.required' => 'Please select a level.',
+            'term.required' => 'Please select a term.',
+            'bookuse.required' => 'Please specify book usage.',
+            //'postcode.int' => 'The postcode must be a valid integer.',
+            //'postcode.max' => 'The postcode must not exceed :max characters.',
+            /* 'email.required' => 'Email address must not be empty.',
+            'email.email' => 'Please enter a valid email address.',
+            'address.required' => 'Address must not be empty.',
+            'postcode.required' => 'Postcode must not be empty.',
+            'postcode.max' => 'The postcode must not exceed :max characters.',
+            'telephone.required' => 'Telephone number must not be empty.',
+            'telephone.max' => 'The telephone number must not exceed :max characters.', */
         ]);
 
 
@@ -118,9 +137,11 @@ class ContactController extends Controller
         }
 
         $input = $request->all();
+        $input['code'] = studentRunningNumber::generate($request->get('centre'));
+
         $contact = Contact::create($input);
         $select_list_contact = '<option value="' . $contact->id . '" > ' . $contact->name . '</option>';
-        return response()->json(['success' => 'เพิ่ม รายชื่อนักเรียน เรียบร้อยแล้ว', 'contact' => $select_list_contact, 'cid' => $contact->id]);
+        return response()->json(['success' => 'Added student information successfully.', 'contact' => $select_list_contact, 'cid' => $contact->id]);
     }
 
     /**
@@ -157,10 +178,10 @@ class ContactController extends Controller
         ];
 
 
-        $validator =  Validator::make($request->all(), $rules, [
-            'name.required' => 'ชื่อนักเรียนต้องไม่เป็นค่าว่าง!',
-            'name.unique' => 'ชื่อนักเรียนนี้มีอยู่แล้วในฐานข้อมูล!',
-            'status.required' => 'กรุณาเลือกสถานะ!',
+        $validator = Validator::make($request->all(), $rules, [
+            'name.required' => 'Student name must not be empty!',
+            'name.unique' => 'This student name already exists in the database!',
+            'status.required' => 'Please select a status!',
         ]);
 
         if ($validator->fails()) {
@@ -178,7 +199,7 @@ class ContactController extends Controller
         $contact = Contact::find($id);
         $contact->update($contactd);
 
-        return response()->json(['success' => 'แก้ไข นักเรียน เรียบร้อยแล้ว']);
+        return response()->json(['success' => 'Student information updated successfully']);
     }
 
     /**
@@ -188,7 +209,7 @@ class ContactController extends Controller
     {
         $id = $request->get('id');
         Contact::find($id)->delete();
-        return ['success' => true, 'message' => 'ลบ นักเรียน เรียบร้อยแล้ว'];
+        return ['success' => true, 'message' => 'Deleted student successfully'];
     }
 
     public function destroy_all(Request $request)
@@ -200,6 +221,6 @@ class ContactController extends Controller
             Contact::find($arr_del[$xx])->delete();
         }
 
-        return redirect('/contacts')->with('success', 'ลบ นักเรียน เรียบร้อยแล้ว');
+        return redirect('/contacts')->with('success', 'Deleted student successfully');
     }
 }

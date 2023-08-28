@@ -13,4 +13,21 @@ class Department extends Model
         'code',
         'status',
     ];
+
+     /**
+     * Get department code by department ID.
+     *
+     * @param int $departmentId
+     * @return string|null
+     */
+    public static function getDepartmentCodeById($departmentId)
+    {
+        $department = self::find($departmentId);
+
+        if ($department) {
+            return $department->code;
+        }
+
+        return null;
+    }
 }
