@@ -70,7 +70,7 @@
         <div class="card" style="box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);">
             <div class="card" style="">
             <div class="card-body login-card-body">
-                <p class="login-box-msg">กรุณาเข้าสู่ระบบเพื่อเริ่มใช้งาน</p>
+                <p class="login-box-msg">Please log in to start using the system.</p>
 
                 <form method="post" action="{{ url('/login') }}">
                     @csrf
@@ -109,7 +109,7 @@
                             </div> --}}
 
                         <div class="col-6">
-                            <button type="submit" class="btn btn-primary btn-block">เข้าสู่ระบบ</button>
+                            <button type="submit" class="btn btn-primary btn-block">Login</button>
                         </div>
 
                     </div>

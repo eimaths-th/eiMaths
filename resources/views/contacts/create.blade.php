@@ -278,7 +278,7 @@
                                         <div class="row">
                                             <div class="col-xs-6 col-sm-6 col-md-6">
                                                 <div class="form-group">
-                                                    <strong><i class="fas fa-graduation-cap"></i>Father Name:</strong>
+                                                    <strong><i class="fa-solid fa-user-tie"></i> Father Name:</strong>
                                                     {!! Form::text('fname', null, ['id' => 'AddfName', 'placeholder' => 'Father Name', 'class' => 'form-control']) !!}
                                                 </div>
                                             </div>
@@ -309,7 +309,7 @@
                                         <div class="row">
                                             <div class="col-xs-6 col-sm-6 col-md-6">
                                                 <div class="form-group">
-                                                    <strong><i class="fas fa-graduation-cap"></i>Mother Name:</strong>
+                                                    <strong><i class="fa-solid fa-user-tie"></i> Mother Name:</strong>
                                                     {!! Form::text('mname', null, ['id' => 'AddmName', 'placeholder' => 'Mother Name', 'class' => 'form-control']) !!}
                                                 </div>
                                             </div>

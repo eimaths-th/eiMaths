@@ -15,6 +15,35 @@
             $(':checkbox.flat').prop('checked', this.checked);
         });
 
+        const discontinuedCheckbox = $('#ecustomCheckbox1');
+        const editDDateInput = $('#EditDDate');
+        const editReasonInput = $('#EditReason');
+        const sreasonSection = $('#sreason');
+
+        // Add an event listener to the checkbox using jQuery
+        discontinuedCheckbox.on('change', function() {
+            // Enable/disable the inputs based on the checkbox state
+            editDDateInput.prop('disabled', !this.checked);
+            editReasonInput.prop('disabled', !this.checked);
+            if (this.checked) {
+                sreasonSection.removeClass('d-none');
+                if (editDDateInput.val() === "" || editDDateInput.val() ===
+                    null) {
+                    const currentDate = new Date().toISOString().split('T')[0];
+                    $('#EditDDate').val(currentDate);
+                }
+            } else {
+                sreasonSection.addClass('d-none');
+                $('#EditDDate').val('');
+                $('#EditReason').val('');
+            }
+        });
+
+        $('#ddl_discontinueReason').on('change', function() {
+            const selectedReason = $(this).val();
+            $('#EditReason').val(selectedReason);
+        });
+
         $(".select2_single").select2({
             maximumSelectionLength: 1,
             allowClear: false,
@@ -105,7 +134,18 @@
             lengthMenu: [10, 25, 50, 75, 100],
             stateSave: true,
             autoWidth: false,
-            responsive: true,
+            fixedHeader: true,
+            responsive: {
+                details: {
+                    type: 'column',
+                    target: 'tr'
+                }
+            },
+            columnDefs: [{
+                className: 'control',
+                orderable: false,
+                targets: -1
+            }],
             sPaginationType: "full_numbers",
             dom: 'T<"clear">lfrtip',
             columns: [{
@@ -150,6 +190,10 @@
                     data: 'action',
                     name: 'action'
                 },
+                {
+                    data: 'more',
+                    name: 'more'
+                }
             ]
         });
 
@@ -272,16 +316,51 @@
             $('.alert-success').html('');
             $('.alert-success').hide();
 
+            $('#custom-tabs-one-homee-tab').tab('show');
+
             id = $(this).data('id');
             $.ajax({
                 url: "contacts/edit/" + id,
                 method: 'GET',
                 success: function(res) {
+                    $('#EditCentre').val(res.data.centre).change();
                     $('#EditName').val(res.data.name);
-                    $('#EditEmail').val(res.data.email);
+                    $('#EditCode').val(res.data.code);
+                    $('#EditDate').val(res.data.start_date);
+                    $('#EditSTerm').val(res.data.start_term).change();
+                    $('#EditLevel').val(res.data.level).change();
+                    $('#EditSchool').val(res.data.school);
+                    $('#EditTerm').val(res.data.term).change();
+                    $('#EditBook').val(res.data.bookuse).change();
+
+                    if (res.data.discontinued == 1) {
+                        $('#ecustomCheckbox1').prop('checked', true);
+                        $('#EditDDate').prop('disabled', false);
+                        $('#EditReason').prop('disabled', false);
+                        $('#sreason').removeClass('d-none');
+                        $('#EditDDate').val(res.data.discontinued_date);
+                    } else {
+                        $('#ecustomCheckbox1').prop('checked', false);
+                        $('#EditDDate').prop('disabled', true);
+                        $('#EditReason').prop('disabled', true);
+                        $('#sreason').addClass('d-none');
+                        $('#EditDDate').val('');
+                    }
+
+
+
+                    $('#EditReason').val(res.data.discontinued_reason);
+
                     $('#EditPostcode').val(res.data.postcode);
                     $('#EditAddress').val(res.data.address);
                     $('#EditTelephone').val(res.data.telephone);
+
+                    $('#EditfName').val(res.data.father_name);
+                    $('#EditfEmail').val(res.data.father_email);
+                    $('#EditfTelephone').val(res.data.father_mobile);
+                    $('#EditmName').val(res.data.mother_name);
+                    $('#EditmEmail').val(res.data.mother_email);
+                    $('#EditmTelephone').val(res.data.mother_mobile);
 
                     $('#EditModalBody').html(res.html);
                     $('#EditModal').modal('show');
@@ -304,11 +383,27 @@
                 url: "contacts/save/" + id,
                 method: 'PUT',
                 data: {
+                    centre: $('#EditCentre').val()[0],
+                    code: $('#EditCode').val(),
                     name: $('#EditName').val(),
-                    email: $('#EditEmail').val(),
+                    start_date: $('#EditDate').val(),
+                    start_term: $('#EditSTerm').val()[0],
+                    school: $('#EditSchool').val(),
+                    level: $('#EditLevel').val()[0],
+                    term: $('#EditTerm').val()[0],
+                    bookuse: $('#EditBook').val()[0],
+                    discontinued: $('#ecustomCheckbox1').is(':checked') ? 1 : 0,
+                    discontinued_date: $('#EditDDate').val(),
+                    discontinued_reason: $('#EditReason').val(),
                     postcode: $('#EditPostcode').val(),
                     address: $('#EditAddress').val(),
                     telephone: $('#EditTelephone').val(),
+                    father_name: $('#EditfName').val(),
+                    father_email: $('#EditfEmail').val(),
+                    father_mobile: $('#EditfTelephone').val(),
+                    mother_name: $('#EditmName').val(),
+                    mother_email: $('#EditmEmail').val(),
+                    mother_mobile: $('#EditmTelephone').val(),
                 },
 
                 success: function(result) {

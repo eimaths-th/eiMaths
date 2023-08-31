@@ -77,10 +77,10 @@
                                 id="delete_all">
                                 @csrf
                                 @method('POST')
-                                <table id="Listview" class="table table-bordered table-striped table-hover">
+                                <table id="Listview" class="display nowrap table table-bordered table-striped table-hover">
                                     <thead>
                                         <tr>
-                                            <th><input type="checkbox" id="check-all" class="flat"></th>
+                                            <th width="5%"><input type="checkbox" id="check-all" class="flat"></th>
                                             <th>Centre</th>
                                             <th>Code</th>
                                             <th>Start Date</th>
@@ -90,6 +90,7 @@
                                             <th>Student Name</th>
                                             <th>Telephone</th>
                                             <th width="180px"></th>
+                                            <th>More</th>
                                         </tr>
                                     </thead>
                                     <tbody>

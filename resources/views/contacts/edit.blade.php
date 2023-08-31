@@ -4,7 +4,8 @@
         <form id="editdata" class="form" action="" method="POST">
             <div class="modal-content">
                 <div class="modal-header bg-primary">
-                    <h4 class="modal-title" id="exampleModalLongTitle"><i class="fas fa-graduation-cap"></i> Edit Student</h4>
+                    <h4 class="modal-title" id="exampleModalLongTitle"><i class="fas fa-graduation-cap"></i> Edit
+                        Student</h4>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -29,29 +30,30 @@
                             <div class="card-header p-0 pt-1">
                                 <ul class="nav nav-tabs" id="custom-tabs-one-tab" role="tablist">
                                     <li class="nav-item">
-                                        <a class="nav-link active" id="custom-tabs-one-home-tab" data-toggle="pill"
-                                            href="#custom-tabs-one-home" role="tab"
-                                            aria-controls="custom-tabs-one-home" aria-selected="true">Student Detail</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" id="custom-tabs-one-address-tab" data-toggle="pill"
-                                            href="#custom-tabs-one-address" role="tab"
-                                            aria-controls="custom-tabs-one-address" aria-selected="true">Address
+                                        <a class="nav-link active" id="custom-tabs-one-homee-tab" data-toggle="pill"
+                                            href="#custom-tabs-one-homee" role="tab"
+                                            aria-controls="custom-tabs-one-homee" aria-selected="true">Student
                                             Detail</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" id="custom-tabs-one-profile-tab" data-toggle="pill"
-                                            href="#custom-tabs-one-profile" role="tab"
-                                            aria-controls="custom-tabs-one-profile" aria-selected="false">Parent
+                                        <a class="nav-link" id="custom-tabs-one-addresse-tab" data-toggle="pill"
+                                            href="#custom-tabs-one-addresse" role="tab"
+                                            aria-controls="custom-tabs-one-addresse" aria-selected="true">Address
+                                            Detail</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" id="custom-tabs-one-profilee-tab" data-toggle="pill"
+                                            href="#custom-tabs-one-profilee" role="tab"
+                                            aria-controls="custom-tabs-one-profilee" aria-selected="false">Parent
                                             Detail</a>
                                     </li>
 
                                 </ul>
                             </div>
                             <div class="card-body">
-                                <div class="tab-content" id="custom-tabs-one-tabContent">
-                                    <div class="tab-pane fade show active" id="custom-tabs-one-home" role="tabpanel"
-                                        aria-labelledby="custom-tabs-one-home-tab">
+                                <div class="tab-content" id="custom-tabs-one-tabContente">
+                                    <div class="tab-pane fade show active" id="custom-tabs-one-homee" role="tabpanel"
+                                        aria-labelledby="custom-tabs-one-homee-tab">
                                         <div class="card">
                                             <div class="card-body">
                                                 <div class="row">
@@ -60,7 +62,7 @@
                                                             <strong><i class="fas fa-code"></i> Centre Code:</strong>
                                                             <select style="width: 100%;"
                                                                 class="productl select2 select2_single form-control"
-                                                                id="AddCentre" name="centre" multiple="multiple"
+                                                                id="EditCentre" name="centre" multiple="multiple"
                                                                 @cannot('all-centre') disabled @endcannot>
                                                                 <!-- <option value="" selected>Select Student</option>
                                                                                                                                                                                                                                                                                                                                                                                                         <option value="" selected>Select Parent</option>-->
@@ -79,7 +81,7 @@
                                                         <div class="form-group">
                                                             <strong><i class="fas fa-code"></i> Student No.</strong>
                                                             {!! Form::text('code', null, [
-                                                                'id' => 'AddCode',
+                                                                'id' => 'EditCode',
                                                                 'placeholder' => 'Code',
                                                                 'class' => 'form-control',
                                                                 'readonly' => true,
@@ -92,7 +94,7 @@
                                                         <div class="form-group">
                                                             <strong><i class="fas fa-calendar"></i> Start Date:</strong>
                                                             {!! Form::text('start_date', null, [
-                                                                'id' => 'AddDate',
+                                                                'id' => 'EditDate',
                                                                 'placeholder' => '',
                                                                 'class' => 'AddDate form-control',
                                                                 'data-target' => '#reservationdate',
@@ -105,7 +107,7 @@
                                                                 Term:</strong>
                                                             <select style="width: 100%;"
                                                                 class="select2 select2_single form-control"
-                                                                id="AddSTerm" name="sterm" multiple="multiple">
+                                                                id="EditSTerm" name="sterm" multiple="multiple">
                                                                 @foreach ($term as $keyt)
                                                                     <option value="{{ $keyt->id }}">
                                                                         {{ $keyt->name }}
@@ -121,7 +123,7 @@
                                                         <div class="form-group">
                                                             <strong><i class="fas fa-graduation-cap"></i>
                                                                 Name:</strong>
-                                                            {!! Form::text('name', null, ['id' => 'AddName', 'placeholder' => 'Name', 'class' => 'form-control']) !!}
+                                                            {!! Form::text('name', null, ['id' => 'EditName', 'placeholder' => 'Name', 'class' => 'form-control']) !!}
                                                         </div>
                                                     </div>
                                                     <div class="col-xs-6 col-sm-6 col-md-6">
@@ -129,7 +131,7 @@
                                                             <strong><i class="fas fa-layer-group"></i> Level:</strong>
                                                             <select style="width: 100%;"
                                                                 class="select2 select2_single form-control"
-                                                                id="AddLevel" name="level" multiple="multiple">
+                                                                id="EditLevel" name="level" multiple="multiple">
                                                                 @foreach ($level as $keyl)
                                                                     <option value="{{ $keyl->id }}">
                                                                         {{ $keyl->name }}
@@ -145,7 +147,7 @@
                                                     <div class="col-xs-6 col-sm-6 col-md-6">
                                                         <div class="form-group">
                                                             <strong><i class="fas fa-school"></i> School:</strong>
-                                                            {!! Form::text('school', null, ['id' => 'AddSchool', 'placeholder' => 'School', 'class' => 'form-control']) !!}
+                                                            {!! Form::text('school', null, ['id' => 'EditSchool', 'placeholder' => 'School', 'class' => 'form-control']) !!}
                                                         </div>
                                                     </div>
                                                     <div class="col-xs-3 col-sm-3 col-md-3">
@@ -153,7 +155,7 @@
                                                             <strong><i class="fas fa-book-open"></i> Term:</strong>
                                                             <select style="width: 100%;"
                                                                 class="select2 select2_single form-control"
-                                                                id="AddTerm" name="term" multiple="multiple">
+                                                                id="EditTerm" name="term" multiple="multiple">
                                                                 @foreach ($term as $keyt)
                                                                     <option value="{{ $keyt->id }}">
                                                                         {{ $keyt->name }}
@@ -169,7 +171,7 @@
                                                                 BookUse:</strong>
                                                             <select style="width: 100%;"
                                                                 class="select2 select2_single form-control"
-                                                                id="AddBook" name="book" multiple="multiple">
+                                                                id="EditBook" name="book" multiple="multiple">
                                                                 @foreach ($bookuse as $keyb)
                                                                     <option value="{{ $keyb->id }}">
                                                                         {{ $keyb->name }}
@@ -191,8 +193,8 @@
                                                             <strong><i class="fas fa-handshake-slash"></i>
                                                                 Discontinued:</strong>
                                                             <div class="custom-control custom-switch">
-                                                                {{ Form::checkbox('discontinued', '1', false, ['id' => 'customCheckbox1', 'class' => 'custom-control-input name', 'disabled' => true]) }}
-                                                                <label for="customCheckbox1"
+                                                                {{ Form::checkbox('ediscontinued', '1', false, ['id' => 'ecustomCheckbox1', 'class' => 'custom-control-input name']) }}
+                                                                <label for="ecustomCheckbox1"
                                                                     class="custom-control-label">
                                                                     Discontinued</label>
                                                             </div>
@@ -202,9 +204,9 @@
                                                         <div class="form-group">
                                                             <strong><i class="fas fa-calendar"></i> Date</strong>
                                                             {!! Form::text('ddate', null, [
-                                                                'id' => 'AddDDate',
+                                                                'id' => 'EditDDate',
                                                                 'placeholder' => '',
-                                                                'class' => 'form-control',
+                                                                'class' => 'AddDate form-control',
                                                                 'disabled' => true,
                                                             ]) !!}
                                                         </div>
@@ -213,7 +215,7 @@
                                                         <div class="form-group">
                                                             <strong><i class="fas fa-list"></i> Reason</strong>
                                                             {!! Form::text('reason', null, [
-                                                                'id' => 'AddReason',
+                                                                'id' => 'EditReason',
                                                                 'placeholder' => '',
                                                                 'class' => 'form-control',
                                                                 'disabled' => true,
@@ -221,12 +223,45 @@
                                                         </div>
                                                     </div>
                                                 </div>
+                                                <div class="row d-none" id="sreason">
+                                                    <div class="col-xs-6 col-sm-6 col-md-6">
+                                                    </div>
+                                                    <div class="col-xs-6 col-sm-6 col-md-6 float-right">
+                                                        <div class="form-group">
+                                                            <strong><i class="fas fa-list"></i> Select Reason</strong>
+                                                            <select name="ddl_discontinueReason"
+                                                                id="ddl_discontinueReason" class="form-control">
+                                                                <option selected="selected" value="">--Select
+                                                                    Reason--</option>
+                                                                <option value="Bored">Bored</option>
+                                                                <option value="Dislike Homework">Dislike Homework
+                                                                </option>
+                                                                <option value="Dislike Teaching Mode">Dislike Teaching
+                                                                    Mode</option>
+                                                                <option value="Dislike Class Environment">Dislike Class
+                                                                    Environment</option>
+                                                                <option value="Home Tution">Home Tution</option>
+                                                                <option value="Missing in Action">Missing in Action
+                                                                </option>
+                                                                <option value="No Time">No Time</option>
+                                                                <option value="No Result">No Result</option>
+                                                                <option value="Relocation">Relocation</option>
+                                                                <option value="Special Needs Child">Special Needs Child
+                                                                </option>
+                                                                <option value="Too Expensive">Too Expensive</option>
+                                                                <option value="Too Difficult">Too Difficult</option>
+                                                                <option value="">Others</option>
+
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
 
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="tab-pane fade" id="custom-tabs-one-address" role="tabpanel"
-                                        aria-labelledby="custom-tabs-one-address-tab">
+                                    <div class="tab-pane fade" id="custom-tabs-one-addresse" role="tabpanel"
+                                        aria-labelledby="custom-tabs-one-addresse-tab">
                                         <div class="card">
                                             <div class="card-body">
                                                 <div class="row">
@@ -237,7 +272,7 @@
                                                                 Address:</strong>
                                                             {!! Form::textarea('address', null, [
                                                                 'rows' => 4,
-                                                                'id' => 'AddAddress',
+                                                                'id' => 'EditAddress',
                                                                 'class' => 'form-control',
                                                             ]) !!}
                                                         </div>
@@ -248,7 +283,7 @@
                                                         <div class="form-group">
                                                             <strong><i class="fas fa-code"></i> Postcode:</strong>
                                                             {!! Form::text('postcode', null, [
-                                                                'id' => 'AddPostcode',
+                                                                'id' => 'EditPostcode',
                                                                 'placeholder' => 'Postcode',
                                                                 'class' => 'form-control',
                                                             ]) !!}
@@ -258,7 +293,7 @@
                                                         <div class="form-group">
                                                             <strong><i class="fas fa-phone"></i> Telephone:</strong>
                                                             {!! Form::text('telephone', null, [
-                                                                'id' => 'AddTelephone',
+                                                                'id' => 'EditTelephone',
                                                                 'placeholder' => 'Telephone',
                                                                 'class' => 'form-control',
                                                             ]) !!}
@@ -269,23 +304,23 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="tab-pane fade" id="custom-tabs-one-profile" role="tabpanel"
-                                        aria-labelledby="custom-tabs-one-profile-tab">
+                                    <div class="tab-pane fade" id="custom-tabs-one-profilee" role="tabpanel"
+                                        aria-labelledby="custom-tabs-one-profilee-tab">
                                         <div class="card">
                                             <div class="card-body">
                                                 <div class="row">
                                                     <div class="col-xs-6 col-sm-6 col-md-6">
                                                         <div class="form-group">
-                                                            <strong><i class="fas fa-graduation-cap"></i>Father
+                                                            <strong><i class="fa-solid fa-user-tie"></i> Father
                                                                 Name:</strong>
-                                                            {!! Form::text('fname', null, ['id' => 'AddfName', 'placeholder' => 'Father Name', 'class' => 'form-control']) !!}
+                                                            {!! Form::text('fname', null, ['id' => 'EditfName', 'placeholder' => 'Father Name', 'class' => 'form-control']) !!}
                                                         </div>
                                                     </div>
                                                     <div class="col-xs-6 col-sm-6 col-md-6">
                                                         <div class="form-group">
                                                             <strong><i class="fas fa-at"></i> Email:</strong>
                                                             {!! Form::email('femail', null, [
-                                                                'id' => 'AddfEmail',
+                                                                'id' => 'EditfEmail',
                                                                 'placeholder' => 'Father Email',
                                                                 'class' => 'form-control',
                                                             ]) !!}
@@ -298,7 +333,7 @@
                                                         <div class="form-group">
                                                             <strong><i class="fas fa-phone"></i> Mobile:</strong>
                                                             {!! Form::text('ftelephone', null, [
-                                                                'id' => 'AddfTelephone',
+                                                                'id' => 'EditfTelephone',
                                                                 'placeholder' => 'Father Telephone',
                                                                 'class' => 'form-control',
                                                             ]) !!}
@@ -312,16 +347,16 @@
                                                 <div class="row">
                                                     <div class="col-xs-6 col-sm-6 col-md-6">
                                                         <div class="form-group">
-                                                            <strong><i class="fas fa-graduation-cap"></i>Mother
+                                                            <strong><i class="fa-solid fa-user-tie"></i> Mother
                                                                 Name:</strong>
-                                                            {!! Form::text('mname', null, ['id' => 'AddmName', 'placeholder' => 'Mother Name', 'class' => 'form-control']) !!}
+                                                            {!! Form::text('mname', null, ['id' => 'EditmName', 'placeholder' => 'Mother Name', 'class' => 'form-control']) !!}
                                                         </div>
                                                     </div>
                                                     <div class="col-xs-6 col-sm-6 col-md-6">
                                                         <div class="form-group">
                                                             <strong><i class="fas fa-at"></i> Email:</strong>
                                                             {!! Form::email('memail', null, [
-                                                                'id' => 'AddmEmail',
+                                                                'id' => 'EditmEmail',
                                                                 'placeholder' => 'Mother Email',
                                                                 'class' => 'form-control',
                                                             ]) !!}
@@ -334,7 +369,7 @@
                                                         <div class="form-group">
                                                             <strong><i class="fas fa-phone"></i> Mobile:</strong>
                                                             {!! Form::text('mtelephone', null, [
-                                                                'id' => 'AddmTelephone',
+                                                                'id' => 'EditmTelephone',
                                                                 'placeholder' => 'Mother Telephone',
                                                                 'class' => 'form-control',
                                                             ]) !!}
@@ -353,9 +388,9 @@
                 <!-- Modal footer -->
                 <div class="modal-footer">
                     <button type="button" class="btn btn-success" id="SubmitEditForm"><i
-                            class="fas fa-download"></i> บันทึกข้อมูล</button>
+                            class="fas fa-download"></i> Save</button>
                     <button type="button" class="btn btn-danger modelClose" data-dismiss="modal"><i
-                            class="fas fa-door-closed"></i> ปิดหน้าต่าง</button>
+                            class="fas fa-door-closed"></i> Close</button>
                 </div>
             </div>
         </form>

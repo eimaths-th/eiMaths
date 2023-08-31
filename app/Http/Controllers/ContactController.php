@@ -61,16 +61,19 @@ class ContactController extends Controller
                 ->editColumn('checkbox', function ($row) {
                     return '<input type="checkbox" id="' . $row->id . '" class="flat" name="table_records[]" value="' . $row->id . '" >';
                 })
+                ->addColumn('more', function ($row) {
+                    return '';
+                })
                 ->addColumn('action', function ($row) {
                     if (Gate::allows('contact-edit')) {
-                        $html = '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> แก้ไข</button> ';
+                        $html = '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit</button> ';
                     } else {
-                        $html = '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="คุณไม่มีสิทธิ์ในส่วนนี้"><i class="fa fa-edit"></i> แก้ไข</button> ';
+                        $html = '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> Edit</button> ';
                     }
                     if (Gate::allows('contact-delete')) {
-                        $html .= '<button type="button" data-rowid="' . $row->id . '" class="btn btn-sm btn-danger btn-delete"><i class="fa fa-trash"></i> ลบ</button>';
+                        $html .= '<button type="button" data-rowid="' . $row->id . '" class="btn btn-sm btn-danger btn-delete"><i class="fa fa-trash"></i> Delete</button>';
                     } else {
-                        $html .= '<button type="button" class="btn btn-sm btn-danger disabled" data-toggle="tooltip" data-placement="bottom" title="คุณไม่มีสิทธิ์ในส่วนนี้"><i class="fa fa-trash"></i> ลบ</button> ';
+                        $html .= '<button type="button" class="btn btn-sm btn-danger disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-trash"></i> Delete</button> ';
                     }
                     return $html;
                 })->rawColumns(['checkbox', 'action'])->toJson();
@@ -185,15 +188,26 @@ class ContactController extends Controller
     {
         $rules = [
             'name' => 'required|string|max:255|unique:contacts,name,' . $id,
+            'start_date' => 'required|string|max:10',
+            'start_term' => 'required',
+            'school' => 'required|string|max:255',
+            'level' => 'required',
+            'term' => 'required',
+            'bookuse' => 'required',
             //'postcode' => 'integer|max:10',
 
         ];
 
 
         $validator = Validator::make($request->all(), $rules, [
-            'name.required' => 'Student name must not be empty!',
-            'name.unique' => 'This student name already exists in the database!',
-            'status.required' => 'Please select a status!',
+            'name.required' => 'Student name must not be empty.',
+            'name.unique' => 'This student name already exists in the database.',
+            'start_date.required' => 'Please provide a start date.',
+            'start_term.required' => 'Please select a start term.',
+            'school.required' => 'Please provide the school name.',
+            'level.required' => 'Please select a level.',
+            'term.required' => 'Please select a term.',
+            'bookuse.required' => 'Please specify book usage.',
         ]);
 
         if ($validator->fails()) {
@@ -202,10 +216,27 @@ class ContactController extends Controller
 
         $contactd = [
             'name' => $request->get('name'),
-            'email' => $request->get('email'),
             'address' => $request->get('address'),
             'postcode' => $request->get('postcode'),
             'telephone' => $request->get('telephone'),
+            'centre' => $request->get('centre'),
+            'code' => $request->get('code'),
+            'start_date' => $request->get('start_date'),
+            'start_term' => $request->get('start_term'),
+            'school' => $request->get('school'),
+            'birth_date' => $request->get('birth_date'),
+            'father_name' => $request->get('father_name'),
+            'father_email' => $request->get('father_email'),
+            'father_mobile' => $request->get('father_mobile'),
+            'mother_name' => $request->get('mother_name'),
+            'mother_email' => $request->get('mother_email'),
+            'mother_mobile' => $request->get('mother_mobile'),
+            'level' => $request->get('level'),
+            'term' => $request->get('term'),
+            'bookuse' => $request->get('bookuse'),
+            'discontinued' => $request->get('discontinued'),
+            'discontinued_date' => $request->get('discontinued_date'),
+            'discontinued_reason' => $request->get('discontinued_reason'),
         ];
 
         $contact = Contact::find($id);
