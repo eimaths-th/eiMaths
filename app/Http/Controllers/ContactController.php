@@ -44,7 +44,19 @@ class ContactController extends Controller
         if ($request->ajax()) {
             //sleep(2);
 
-            $datas = Contact::orderBy("id", "desc")->get();
+            $datas = Contact::select(
+                "contacts.*",
+                "departments.name as centre_name",
+                "levels.name as level_name",
+                "start_terms.name as start_term_name",
+                "pterms.name as term_name"
+            )
+                ->join("departments", "contacts.centre", "=", "departments.id")
+                ->join("levels", "contacts.level", "=", "levels.id")
+                ->join("terms as start_terms", "contacts.start_term", "=", "start_terms.id")
+                ->join("terms as pterms", "contacts.term", "=", "pterms.id")
+                ->orderBy("contacts.id", "desc")
+                ->get();
             return datatables()->of($datas)
                 ->editColumn('checkbox', function ($row) {
                     return '<input type="checkbox" id="' . $row->id . '" class="flat" name="table_records[]" value="' . $row->id . '" >';

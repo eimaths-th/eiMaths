@@ -115,12 +115,32 @@
                     searchable: false
                 },
                 {
-                    data: 'name',
-                    name: 'name'
+                    data: 'centre_name',
+                    name: 'centre_name'
                 },
                 {
-                    data: 'email',
-                    name: 'email'
+                    data: 'code',
+                    name: 'code'
+                },
+                {
+                    data: 'start_date',
+                    name: 'start_date'
+                },
+                {
+                    data: 'level_name',
+                    name: 'level_name'
+                },
+                {
+                    data: 'start_term_name',
+                    name: 'start_term_name'
+                },
+                {
+                    data: 'term_name',
+                    name: 'term_name'
+                },
+                {
+                    data: 'name',
+                    name: 'name'
                 },
                 {
                     data: 'telephone',
@@ -158,6 +178,13 @@
             $('.alert-danger').hide();
             $('.alert-success').html('');
             $('.alert-success').hide();
+
+            $('#custom-tabs-one-home-tab').tab('show');
+            $('#AddSTerm').val(null).trigger("change");
+            $('#AddBook').val(null).trigger("change");
+            $('#AddLevel').val(null).trigger("change")
+            $('#AddTerm').val(null).trigger("change")
+
             $.ajax({
                 method: "GET",
                 url: "{{ route('contacts.running') }}",
@@ -224,6 +251,10 @@
                             timeOut: 5000
                         });
                         $('#Listview').DataTable().ajax.reload();
+                        $('#AddSTerm').val(null).trigger("change");
+                        $('#AddBook').val(null).trigger("change");
+                        $('#AddLevel').val(null).trigger("change")
+                        $('#AddTerm').val(null).trigger("change")
                         $('.form').trigger('reset');
                         $('#CreateModal').modal('hide');
                     }
