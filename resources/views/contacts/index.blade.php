@@ -83,11 +83,12 @@
                                             <th width="5%"><input type="checkbox" id="check-all" class="flat"></th>
                                             <th>Centre</th>
                                             <th>Code</th>
+                                            <th>Student Name</th>
                                             <th>Start Date</th>
                                             <th>Level</th>
                                             <th>Start Term</th>
                                             <th>Term</th>
-                                            <th>Student Name</th>
+
                                             <th>Telephone</th>
                                             <th width="180px"></th>
                                             <th>More</th>
