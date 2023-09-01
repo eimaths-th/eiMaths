@@ -163,11 +163,19 @@
                     name: 'code'
                 },
                 {
+                    data: 'name',
+                    name: 'name'
+                },
+                {
                     data: 'start_date',
                     name: 'start_date'
                 },
                 {
                     data: 'level_name',
+                    name: 'level_name'
+                },
+                {
+                    data: 'book_name',
                     name: 'level_name'
                 },
                 {
@@ -177,10 +185,6 @@
                 {
                     data: 'term_name',
                     name: 'term_name'
-                },
-                {
-                    data: 'name',
-                    name: 'name'
                 },
                 {
                     data: 'telephone',
