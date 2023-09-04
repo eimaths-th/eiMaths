@@ -77,6 +77,7 @@
             placeholder: 'Please select'
         });
 
+        $.datepicker.setDefaults($.datepicker.regional['en']);
         $(".AddDate").datepicker({
             dateFormat: "yy-mm-dd"
         });
