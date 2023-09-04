@@ -74,7 +74,7 @@
                                                         @foreach ($centre as $key2)
                                                             <option value="{{ $key2->id }}"
                                                                 @if (Auth::user()->department->id == (int) $key2->id) selected @endif>
-                                                                {{ $key2->code }}
+                                                                {{-- {{ $key2->code }} --}}
                                                                 {{ $key2->name }}
                                                             </option>
                                                         @endforeach
@@ -112,9 +112,9 @@
                                                     <select style="width: 100%;"
                                                         class="select2 select2_single form-control" id="AddSTerm"
                                                         name="sterm" multiple="multiple">
-                                                        @foreach ($term as $keyt)
-                                                            <option value="{{ $keyt->id }}">
-                                                                {{ $keyt->name }}
+                                                        @foreach ($sterm as $skeyt)
+                                                            <option value="{{ $skeyt->id }}">
+                                                                {{ $skeyt->name }}
                                                             </option>
                                                         @endforeach
 
@@ -133,7 +133,7 @@
                                                 <div class="form-group">
                                                     <strong><i class="fas fa-layer-group"></i> Level:</strong>
                                                     <select style="width: 100%;"
-                                                        class="select2 select2_single form-control" id="AddLevel"
+                                                        class="select2 select2_single form-control levels" id="AddLevel"
                                                         name="level" multiple="multiple">
                                                         @foreach ($level as $keyl)
                                                             <option value="{{ $keyl->id }}">
@@ -157,8 +157,8 @@
                                                 <div class="form-group">
                                                     <strong><i class="fas fa-book-open"></i> Term:</strong>
                                                     <select style="width: 100%;"
-                                                        class="select2 select2_single form-control" id="AddTerm"
-                                                        name="term" multiple="multiple">
+                                                        class="select2 select2_single form-control terms" id="AddTerm"
+                                                        name="term" multiple="multiple" readonly>
                                                         @foreach ($term as $keyt)
                                                             <option value="{{ $keyt->id }}">
                                                                 {{ $keyt->name }}
@@ -172,7 +172,7 @@
                                                 <div class="form-group">
                                                     <strong><i class="fas fa-book-medical"></i> BookUse:</strong>
                                                     <select style="width: 100%;"
-                                                        class="select2 select2_single form-control" id="AddBook"
+                                                        class="select2 select2_single form-control books" id="AddBook"
                                                         name="book" multiple="multiple">
                                                         @foreach ($bookuse as $keyb)
                                                             <option value="{{ $keyb->id }}">

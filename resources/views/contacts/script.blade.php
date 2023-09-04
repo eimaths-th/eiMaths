@@ -92,6 +92,44 @@
         });
 
 
+        $(".levels").change(function() {
+            let level = $('#AddLevel').val();
+            //console.log(product);
+            //alert(product);
+            $('#AddTerm').html('');
+            $('#AddBook').html('');
+            if (level.length !== 0) {
+                $.ajax({
+                    method: "GET",
+                    url: "level/find/add/" + level,
+                    success: function(res) {
+                        $('.terms').html(res.html);
+                        //$('.terms').removeAttr('readonly');
+                        $('.terms').prop('disabled', false);
+                    }
+                });
+            }
+        })
+
+        $(".terms").change(function() {
+            let level = $('#AddLevel').val();
+            let term = $('#AddTerm').val();
+            $('#AddBook').html('');
+            if (level.length !== 0 && term.length !== 0) {
+                $.ajax({
+                    method: "GET",
+                    url: "term/find/add/" + level + "/" + term,
+                    async: false,
+                    success: function(res) {
+                        //console.log(res)
+                        $('.books').html(res.html);
+                        $('.books').prop('disabled', false);
+                    }
+                });
+            }
+        })
+
+
         var table = $('#Listview').DataTable({
             /*"aoColumnDefs": [
             {
@@ -177,7 +215,7 @@
                 },
                 {
                     data: 'book_name',
-                    name: 'level_name'
+                    name: 'book_name'
                 },
                 {
                     data: 'start_term_name',
@@ -190,6 +228,30 @@
                 {
                     data: 'telephone',
                     name: 'telephone'
+                },
+                {
+                    data: 'father_mobile',
+                    name: 'father_mobile'
+                },
+                {
+                    data: 'mother_mobile',
+                    name: 'mother_mobile'
+                },
+                {
+                    data: 'father_email',
+                    name: 'father_email'
+                },
+                {
+                    data: 'mother_email',
+                    name: 'mother_email'
+                },
+                {
+                    data: 'father_name',
+                    name: 'father_name'
+                },
+                {
+                    data: 'mother_name',
+                    name: 'mother_name'
                 },
                 {
                     data: 'action',
@@ -221,7 +283,7 @@
 
 
 
-        $(document).on('click', '#CreateButton', function(e) {
+        $(document).on('click', '#CreateButton', async function(e) {
             e.preventDefault();
             $('.alert-danger').html('');
             $('.alert-danger').hide();
@@ -234,12 +296,15 @@
             $('#AddLevel').val(null).trigger("change")
             $('#AddTerm').val(null).trigger("change")
 
-            $.ajax({
+
+            await $.ajax({
                 method: "GET",
                 url: "{{ route('contacts.running') }}",
                 success: function(res) {
-                    console.log(res)
+                    //console.log(res)
                     $('#AddCode').val(res.running);
+                    $('#AddTerm').prop('disabled', true);
+                    $('#AddBook').prop('disabled', true);
                 }
             });
             $('#CreateModal').modal('show');
@@ -269,7 +334,7 @@
                     level: $('#AddLevel').val()[0],
                     term: $('#AddTerm').val()[0],
                     bookuse: $('#AddBook').val()[0],
-                    //discontinued: $('#customCheckbox1').is(':checked') ? 1 : 0,
+                    discontinued: 0,
                     //ddate: $('#AddDDate').val(),
                     //reason: $('#AddReason').val(),
                     postcode: $('#AddPostcode').val(),

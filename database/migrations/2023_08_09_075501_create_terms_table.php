@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('terms', function (Blueprint $table) {
             $table->id();
+            $table->integer('level_id')->default(0);
             $table->string('name')->nullable();
             $table->integer('status')->default(0);
             $table->timestamps();

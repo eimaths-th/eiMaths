@@ -51,7 +51,7 @@
                 <div class="col-12">
                     <div class="card card-primary">
                         <div class="card-header">
-                            <h3 class="card-title"><i class="fas fa-graduation-cap"></i> Student</h3>
+                            <h3 class="card-title"><i class="fas fa-graduation-cap"></i> Student List</h3>
                             <div class="card-tools">
                                 <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
                                     <i class="fas fa-minus"></i>
@@ -80,16 +80,22 @@
                                 <table id="Listview" class="display nowrap table table-bordered table-striped table-hover">
                                     <thead>
                                         <tr>
-                                            <th width="5%"><input type="checkbox" id="check-all" class="flat"></th>
+                                            <th width="150px"><input type="checkbox" id="check-all" class="flat"></th>
                                             <th>Centre</th>
                                             <th>Code</th>
                                             <th>Student Name</th>
                                             <th>Start Date</th>
                                             <th>Level</th>
+                                            <th>BookUse	</th>
                                             <th>Start Term</th>
                                             <th>Term</th>
-
                                             <th>Telephone</th>
+                                            <th>Father Mobile</th>
+                                            <th>Mother Mobile</th>
+                                            <th>Father Email</th>
+                                            <th>Mother Email</th>
+                                            <th>Father Name</th>
+                                            <th>Mother Name</th>
                                             <th width="180px"></th>
                                             <th>More</th>
                                         </tr>

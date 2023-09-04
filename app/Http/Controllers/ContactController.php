@@ -10,6 +10,7 @@ use App\Models\Department;
 use App\Models\level;
 use App\Models\studentRunningNumber;
 use App\Models\term;
+use App\Models\Sterm;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\DB;
@@ -17,6 +18,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+use App\Rules\CustomValidationRules;
 
 class ContactController extends Controller
 {
@@ -48,13 +50,16 @@ class ContactController extends Controller
                 "contacts.*",
                 "departments.name as centre_name",
                 "levels.name as level_name",
+                "bookuses.name as book_name",
                 "start_terms.name as start_term_name",
                 "pterms.name as term_name"
             )
                 ->join("departments", "contacts.centre", "=", "departments.id")
                 ->join("levels", "contacts.level", "=", "levels.id")
+                ->join("bookuses", "contacts.bookuse", "=", "bookuses.id")
                 ->join("terms as start_terms", "contacts.start_term", "=", "start_terms.id")
                 ->join("terms as pterms", "contacts.term", "=", "pterms.id")
+                ->where('discontinued', '0')
                 ->orderBy("contacts.id", "desc")
                 ->get();
             return datatables()->of($datas)
@@ -76,12 +81,14 @@ class ContactController extends Controller
                         $html .= '<button type="button" class="btn btn-sm btn-danger disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-trash"></i> Delete</button> ';
                     }
                     return $html;
-                })->rawColumns(['checkbox', 'action'])->toJson();
+                })->rawColumns(['checkbox', 'action', 'more'])->toJson();
         }
 
         $centre = Department::where([['status', '1']])
             ->orderBy("name", "asc")->get();
         $term = term::where([['status', '1']])
+            ->orderBy("name", "asc")->get();
+        $sterm = Sterm::where([['status', '1']])
             ->orderBy("name", "asc")->get();
         $bookuse = bookuse::where([['status', '1']])
             ->orderBy("name", "asc")->get();
@@ -92,7 +99,8 @@ class ContactController extends Controller
         return view('contacts.index')->with(['centre' => $centre])
             ->with(['bookuse' => $bookuse])
             ->with(['level' => $level])
-            ->with(['term' => $term]);
+            ->with(['term' => $term])
+            ->with(['sterm' => $sterm]);
     }
 
     /**
@@ -112,6 +120,7 @@ class ContactController extends Controller
      */
     public function store(Request $request)
     {
+
         //
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255|unique:contacts',
@@ -121,11 +130,12 @@ class ContactController extends Controller
             'level' => 'required',
             'term' => 'required',
             'bookuse' => 'required',
-            //'postcode' => 'int|max:10',
-            /* 'email' => 'required|string|email|max:255',
-            'address' => 'required|string|max:255',
-            'postcode' => 'required|string|max:10',
-            'telephone' => 'required|string|max:20',*/
+            'father_name' => 'nullable|string|max:255|required_without:mother_name',
+            'father_email' => 'nullable|string|max:255|required_with:father_name,father_mobile',
+            'father_mobile' => 'nullable|string|max:20|required_with:father_name,father_email',
+            'mother_name' => 'nullable|string|max:255|required_without:father_name',
+            'mother_email' => 'nullable|string|max:255|required_with:mother_name,mother_mobile',
+            'mother_mobile' => 'nullable|string|max:20|required_with:mother_name,mother_email',
         ], [
             'name.required' => 'Student name must not be empty.',
             'name.unique' => 'This student name already exists in the database.',
@@ -135,15 +145,12 @@ class ContactController extends Controller
             'level.required' => 'Please select a level.',
             'term.required' => 'Please select a term.',
             'bookuse.required' => 'Please specify book usage.',
-            //'postcode.int' => 'The postcode must be a valid integer.',
-            //'postcode.max' => 'The postcode must not exceed :max characters.',
-            /* 'email.required' => 'Email address must not be empty.',
-            'email.email' => 'Please enter a valid email address.',
-            'address.required' => 'Address must not be empty.',
-            'postcode.required' => 'Postcode must not be empty.',
-            'postcode.max' => 'The postcode must not exceed :max characters.',
-            'telephone.required' => 'Telephone number must not be empty.',
-            'telephone.max' => 'The telephone number must not exceed :max characters.', */
+            'father_name.required_without' => 'Either Father name or Mother name must be provided.',
+            'father_email.required_with' => 'Father email is required when Father name is provided.',
+            'father_mobile.required_with' => 'Father mobile is required when Father name is provided.',
+            'mother_name.required_without' => 'Either Mother name or Father name must be provided.',
+            'mother_email.required_with' => 'Mother email is required when Mother name is provided.',
+            'mother_mobile.required_with' => 'Mother mobile is required when Mother name is provided.',
         ]);
 
 
@@ -265,5 +272,57 @@ class ContactController extends Controller
         }
 
         return redirect('/contacts')->with('success', 'Deleted student successfully');
+    }
+
+    public function lfind($type, $level)
+    {
+        //$select_list = "<option value=''>please select</option>";
+        $select_list = "";
+        if ($type == 'add') {
+            $data = term::select(
+                "terms.id as id",
+                "terms.name as name",
+            )
+
+                ->where('level_id', $level)
+                ->where('status', 1)
+                ->orderBy("terms.name", "asc")
+                ->get();
+
+            foreach ($data as $key) {
+                $select_list .= '<option value="' . $key->name . '" >' . $key->name . '</option>';
+            }
+
+            return response()->json([
+                'html' =>  $select_list
+            ]);
+        }
+    }
+
+
+    public function tfind($type, $level, $term)
+    {
+        //$select_list = "<option value=''>please select</option>";
+        $select_list = "";
+        if ($type == 'add') {
+            $data = bookuse::select(
+                "bookuses.id as id",
+                "bookuses.name as name",
+            )
+
+                ->where('level_id', $level)
+                ->where('term_id', $term)
+                ->where('status', 1)
+                ->orderBy("bookuses.name", "asc")
+                ->get();
+
+            foreach ($data as $key) {
+                $select_list .= '<option value="' . $key->id . '" >' . $key->name . '</option>';
+            }
+
+            return response()->json([
+                'html' =>  $select_list
+            ]);
+        }
     }
 }

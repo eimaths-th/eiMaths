@@ -10,6 +10,7 @@ class term extends Model
     use HasFactory;
     protected $fillable = [
         'name',
+        'level_id',
         'status',
     ];
 }

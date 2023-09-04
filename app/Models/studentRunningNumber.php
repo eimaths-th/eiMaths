@@ -35,7 +35,8 @@ class studentRunningNumber extends Model
         $number = str_pad($number, 5, '0', STR_PAD_LEFT);
 
 
-        return $type.''.$number;
+        //return $type.''.$number;
+        return $number;
 
 
     }
@@ -64,6 +65,7 @@ class studentRunningNumber extends Model
         $number = str_pad($number, 5, '0', STR_PAD_LEFT);
 
         // A-21-00001
-        return $type.''.$number;
+        //return $type.''.$number;
+        return $number;
     }
 }

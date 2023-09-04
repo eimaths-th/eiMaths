@@ -56,6 +56,9 @@ Route::group(['middleware' => ['auth']], function () {
     Route::delete('/positions/destroy', [App\Http\Controllers\PositionController::class, 'destroy'])->name('positions.destroy');
     Route::post('/positions/destroy_all', [App\Http\Controllers\PositionController::class, 'destroy_all'])->name('positions.destroy_all');
 
+    Route::get('/level/find/{type}/{level}', [App\Http\Controllers\ContactController::class, 'lfind'])->name('level.find');
+    Route::get('/term/find/{type}/{level}/{term}', [App\Http\Controllers\ContactController::class, 'tfind'])->name('term.find');
+
 
 
     //file
