@@ -14,6 +14,7 @@
         $('#check-all').click(function() {
             $(':checkbox.flat').prop('checked', this.checked);
         });
+        //
 
         const discontinuedCheckbox = $('#ecustomCheckbox1');
         const editDDateInput = $('#EditDDate');
