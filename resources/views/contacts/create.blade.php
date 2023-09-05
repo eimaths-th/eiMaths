@@ -52,7 +52,11 @@
                                     href="#custom-tabs-one-profile" role="tab"
                                     aria-controls="custom-tabs-one-profile" aria-selected="false">Parent Detail</a>
                             </li>
-
+                            <li class="nav-item">
+                                <a class="nav-link" id="custom-tabs-one-dis-tab" data-toggle="pill"
+                                    href="#custom-tabs-one-dis" role="tab" aria-controls="custom-tabs-one-dis"
+                                    aria-selected="false">Discontinued</a>
+                            </li>
                         </ul>
                     </div>
                     <div class="card-body">
@@ -133,8 +137,8 @@
                                                 <div class="form-group">
                                                     <strong><i class="fas fa-layer-group"></i> Level:</strong>
                                                     <select style="width: 100%;"
-                                                        class="select2 select2_single form-control levels" id="AddLevel"
-                                                        name="level" multiple="multiple">
+                                                        class="select2 select2_single form-control levels"
+                                                        id="AddLevel" name="level" multiple="multiple">
                                                         @foreach ($level as $keyl)
                                                             <option value="{{ $keyl->id }}">
                                                                 {{ $keyl->name }}
@@ -157,8 +161,8 @@
                                                 <div class="form-group">
                                                     <strong><i class="fas fa-book-open"></i> Term:</strong>
                                                     <select style="width: 100%;"
-                                                        class="select2 select2_single form-control terms" id="AddTerm"
-                                                        name="term" multiple="multiple" readonly>
+                                                        class="select2 select2_single form-control terms"
+                                                        id="AddTerm" name="term" multiple="multiple" readonly>
                                                         @foreach ($term as $keyt)
                                                             <option value="{{ $keyt->id }}">
                                                                 {{ $keyt->name }}
@@ -172,8 +176,8 @@
                                                 <div class="form-group">
                                                     <strong><i class="fas fa-book-medical"></i> BookUse:</strong>
                                                     <select style="width: 100%;"
-                                                        class="select2 select2_single form-control books" id="AddBook"
-                                                        name="book" multiple="multiple">
+                                                        class="select2 select2_single form-control books"
+                                                        id="AddBook" name="book" multiple="multiple">
                                                         @foreach ($bookuse as $keyb)
                                                             <option value="{{ $keyb->id }}">
                                                                 {{ $keyb->name }}
@@ -184,49 +188,41 @@
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </div>
-
-                                <div class="card">
-                                    <div class="card-body">
                                         <div class="row">
-                                            <div class="col-xs-2 col-sm-2 col-md-2">
+                                            <div class="col-xs-6 col-sm-6 col-md-6">
                                                 <div class="form-group">
-                                                    <strong><i class="fas fa-handshake-slash"></i>
-                                                        Discontinued:</strong>
-                                                    <div class="custom-control custom-switch">
-                                                        {{ Form::checkbox('discontinued', '1', false, ['id' => 'customCheckbox1', 'class' => 'custom-control-input name', 'disabled' => true]) }}
-                                                        <label for="customCheckbox1" class="custom-control-label">
-                                                            Discontinued</label>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-xs-4 col-sm-4 col-md-4">
-                                                <div class="form-group">
-                                                    <strong><i class="fas fa-calendar"></i> Date</strong>
-                                                    {!! Form::text('ddate', null, [
-                                                        'id' => 'AddDDate',
+                                                    <strong><i class="fas fa-calendar"></i> Birth Date:</strong>
+                                                    {!! Form::text('birth_date', null, [
+                                                        'id' => 'AddBirthDate',
                                                         'placeholder' => '',
-                                                        'class' => 'form-control',
-                                                        'disabled' => true,
+                                                        'class' => 'AddDate form-control',
+                                                        'data-target' => '#reservationdate',
                                                     ]) !!}
                                                 </div>
                                             </div>
                                             <div class="col-xs-6 col-sm-6 col-md-6">
                                                 <div class="form-group">
-                                                    <strong><i class="fas fa-list"></i> Reason</strong>
-                                                    {!! Form::text('reason', null, [
-                                                        'id' => 'AddReason',
-                                                        'placeholder' => '',
-                                                        'class' => 'form-control',
-                                                        'disabled' => true,
-                                                    ]) !!}
+                                                    <strong><i class="fa-solid fa-venus-mars"></i> Gender:</strong>
+                                                    <div class="form-group clearfix">
+                                                        <div class="icheck-success d-inline">
+                                                            <input type="radio" name="gender" value="1" checked
+                                                                id="radioSuccess1">
+                                                            <label for="radioSuccess1">Male
+                                                            </label>
+                                                        </div>
+                                                        <div class="icheck-success d-inline">
+                                                            <input type="radio" name="gender" value="2" id="radioSuccess2">
+                                                            <label for="radioSuccess2">Female
+                                                            </label>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-
                                     </div>
                                 </div>
+
+
                             </div>
                             <div class="tab-pane fade" id="custom-tabs-one-address" role="tabpanel"
                                 aria-labelledby="custom-tabs-one-address-tab">
@@ -278,14 +274,19 @@
                                         <div class="row">
                                             <div class="col-xs-6 col-sm-6 col-md-6">
                                                 <div class="form-group">
-                                                    <strong><i class="fa-solid fa-user-tie"></i> Father Name:</strong>
+                                                    <strong><i class="fa-solid fa-user-tie"></i> Father
+                                                        Name:</strong>
                                                     {!! Form::text('fname', null, ['id' => 'AddfName', 'placeholder' => 'Father Name', 'class' => 'form-control']) !!}
                                                 </div>
                                             </div>
                                             <div class="col-xs-6 col-sm-6 col-md-6">
                                                 <div class="form-group">
                                                     <strong><i class="fas fa-at"></i> Email:</strong>
-                                                    {!! Form::email('femail', null, ['id' => 'AddfEmail', 'placeholder' => 'Father Email', 'class' => 'form-control']) !!}
+                                                    {!! Form::email('femail', null, [
+                                                        'id' => 'AddfEmail',
+                                                        'placeholder' => 'Father Email',
+                                                        'class' => 'form-control',
+                                                    ]) !!}
                                                 </div>
                                             </div>
 
@@ -309,14 +310,19 @@
                                         <div class="row">
                                             <div class="col-xs-6 col-sm-6 col-md-6">
                                                 <div class="form-group">
-                                                    <strong><i class="fa-solid fa-user-tie"></i> Mother Name:</strong>
+                                                    <strong><i class="fa-solid fa-user-tie"></i> Mother
+                                                        Name:</strong>
                                                     {!! Form::text('mname', null, ['id' => 'AddmName', 'placeholder' => 'Mother Name', 'class' => 'form-control']) !!}
                                                 </div>
                                             </div>
                                             <div class="col-xs-6 col-sm-6 col-md-6">
                                                 <div class="form-group">
                                                     <strong><i class="fas fa-at"></i> Email:</strong>
-                                                    {!! Form::email('memail', null, ['id' => 'AddmEmail', 'placeholder' => 'Mother Email', 'class' => 'form-control']) !!}
+                                                    {!! Form::email('memail', null, [
+                                                        'id' => 'AddmEmail',
+                                                        'placeholder' => 'Mother Email',
+                                                        'class' => 'form-control',
+                                                    ]) !!}
                                                 </div>
                                             </div>
 
@@ -336,6 +342,51 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <div class="tab-pane fade" id="custom-tabs-one-dis" role="tabpanel"
+                                aria-labelledby="custom-tabs-one-dis-tab">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-xs-2 col-sm-2 col-md-2">
+                                                <div class="form-group">
+                                                    <strong><i class="fas fa-handshake-slash"></i>
+                                                        Discontinued:</strong>
+                                                    <div class="custom-control custom-switch">
+                                                        {{ Form::checkbox('discontinued', '1', false, ['id' => 'customCheckbox1', 'class' => 'custom-control-input name', 'disabled' => true]) }}
+                                                        <label for="customCheckbox1" class="custom-control-label">
+                                                            Discontinued</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-4 col-sm-4 col-md-4">
+                                                <div class="form-group">
+                                                    <strong><i class="fas fa-calendar"></i> Date</strong>
+                                                    {!! Form::text('ddate', null, [
+                                                        'id' => 'AddDDate',
+                                                        'placeholder' => '',
+                                                        'class' => 'form-control',
+                                                        'disabled' => true,
+                                                    ]) !!}
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-6 col-sm-6 col-md-6">
+                                                <div class="form-group">
+                                                    <strong><i class="fas fa-list"></i> Reason</strong>
+                                                    {!! Form::text('reason', null, [
+                                                        'id' => 'AddReason',
+                                                        'placeholder' => '',
+                                                        'class' => 'form-control',
+                                                        'disabled' => true,
+                                                    ]) !!}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </div>

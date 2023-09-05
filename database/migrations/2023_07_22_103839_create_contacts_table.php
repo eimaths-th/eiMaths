@@ -31,9 +31,13 @@ return new class extends Migration
             $table->string('mother_name')->nullable();
             $table->string('mother_email')->nullable();
             $table->string('mother_mobile')->nullable();
+            $table->integer('order')->default(0);
             $table->integer('level')->default(0);
             $table->integer('term')->default(0);
             $table->integer('bookuse')->default(0);
+            $table->string('level_name')->nullable();
+            $table->string('term_name')->nullable();
+            $table->string('bookuse_name')->nullable();
             $table->integer('discontinued')->default(0);
             $table->string('discontinued_date')->nullable();
             $table->string('discontinued_reason')->nullable();

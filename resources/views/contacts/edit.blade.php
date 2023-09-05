@@ -47,7 +47,11 @@
                                             aria-controls="custom-tabs-one-profilee" aria-selected="false">Parent
                                             Detail</a>
                                     </li>
-
+                                    <li class="nav-item">
+                                        <a class="nav-link" id="custom-tabs-one-dise-tab" data-toggle="pill"
+                                            href="#custom-tabs-one-dise" role="tab"
+                                            aria-controls="custom-tabs-one-dise" aria-selected="false">Discontinued</a>
+                                    </li>
                                 </ul>
                             </div>
                             <div class="card-body">
@@ -92,7 +96,8 @@
                                                 <div class="row">
                                                     <div class="col-xs-6 col-sm-6 col-md-6">
                                                         <div class="form-group">
-                                                            <strong><i class="fas fa-calendar"></i> Start Date:</strong>
+                                                            <strong><i class="fas fa-calendar"></i> Start
+                                                                Date:</strong>
                                                             {!! Form::text('start_date', null, [
                                                                 'id' => 'EditDate',
                                                                 'placeholder' => '',
@@ -130,7 +135,7 @@
                                                         <div class="form-group">
                                                             <strong><i class="fas fa-layer-group"></i> Level:</strong>
                                                             <select style="width: 100%;"
-                                                                class="select2 select2_single form-control"
+                                                                class="select2 select2_single form-control elevels"
                                                                 id="EditLevel" name="level" multiple="multiple">
                                                                 @foreach ($level as $keyl)
                                                                     <option value="{{ $keyl->id }}">
@@ -154,7 +159,7 @@
                                                         <div class="form-group">
                                                             <strong><i class="fas fa-book-open"></i> Term:</strong>
                                                             <select style="width: 100%;"
-                                                                class="select2 select2_single form-control"
+                                                                class="select2 select2_single form-control eterms"
                                                                 id="EditTerm" name="term" multiple="multiple">
                                                                 @foreach ($term as $keyt)
                                                                     <option value="{{ $keyt->id }}">
@@ -170,7 +175,7 @@
                                                             <strong><i class="fas fa-book-medical"></i>
                                                                 BookUse:</strong>
                                                             <select style="width: 100%;"
-                                                                class="select2 select2_single form-control"
+                                                                class="select2 select2_single form-control ebooks"
                                                                 id="EditBook" name="book" multiple="multiple">
                                                                 @foreach ($bookuse as $keyb)
                                                                     <option value="{{ $keyb->id }}">
@@ -182,81 +187,40 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="card">
-                                            <div class="card-body">
                                                 <div class="row">
-                                                    <div class="col-xs-2 col-sm-2 col-md-2">
+                                                    <div class="col-xs-6 col-sm-6 col-md-6">
                                                         <div class="form-group">
-                                                            <strong><i class="fas fa-handshake-slash"></i>
-                                                                Discontinued:</strong>
-                                                            <div class="custom-control custom-switch">
-                                                                {{ Form::checkbox('ediscontinued', '1', false, ['id' => 'ecustomCheckbox1', 'class' => 'custom-control-input name']) }}
-                                                                <label for="ecustomCheckbox1"
-                                                                    class="custom-control-label">
-                                                                    Discontinued</label>
+                                                            <strong><i class="fas fa-calendar"></i> Birth
+                                                                Date:</strong>
+                                                            {!! Form::text('ebirth_date', null, [
+                                                                'id' => 'EditBirthDate',
+                                                                'placeholder' => '',
+                                                                'class' => 'AddDate form-control',
+                                                                'data-target' => '#reservationdate',
+                                                            ]) !!}
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xs-6 col-sm-6 col-md-6">
+                                                        <div class="form-group">
+                                                            <strong><i class="fa-solid fa-venus-mars"></i>
+                                                                Gender:</strong>
+                                                            <div class="form-group clearfix">
+                                                                <div class="icheck-success d-inline">
+                                                                    <input type="radio" name="egender"
+                                                                        value="1" checked id="eradioSuccess1">
+                                                                    <label for="eradioSuccess1">Male
+                                                                    </label>
+                                                                </div>
+                                                                <div class="icheck-success d-inline">
+                                                                    <input type="radio" name="egender"
+                                                                        value="2" id="eradioSuccess2">
+                                                                    <label for="eradioSuccess2">Female
+                                                                    </label>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div class="col-xs-4 col-sm-4 col-md-4">
-                                                        <div class="form-group">
-                                                            <strong><i class="fas fa-calendar"></i> Date</strong>
-                                                            {!! Form::text('ddate', null, [
-                                                                'id' => 'EditDDate',
-                                                                'placeholder' => '',
-                                                                'class' => 'AddDate form-control',
-                                                                'disabled' => true,
-                                                            ]) !!}
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-xs-6 col-sm-6 col-md-6">
-                                                        <div class="form-group">
-                                                            <strong><i class="fas fa-list"></i> Reason</strong>
-                                                            {!! Form::text('reason', null, [
-                                                                'id' => 'EditReason',
-                                                                'placeholder' => '',
-                                                                'class' => 'form-control',
-                                                                'disabled' => true,
-                                                            ]) !!}
-                                                        </div>
-                                                    </div>
                                                 </div>
-                                                <div class="row d-none" id="sreason">
-                                                    <div class="col-xs-6 col-sm-6 col-md-6">
-                                                    </div>
-                                                    <div class="col-xs-6 col-sm-6 col-md-6 float-right">
-                                                        <div class="form-group">
-                                                            <strong><i class="fas fa-list"></i> Select Reason</strong>
-                                                            <select name="ddl_discontinueReason"
-                                                                id="ddl_discontinueReason" class="form-control">
-                                                                <option selected="selected" value="">--Select
-                                                                    Reason--</option>
-                                                                <option value="Bored">Bored</option>
-                                                                <option value="Dislike Homework">Dislike Homework
-                                                                </option>
-                                                                <option value="Dislike Teaching Mode">Dislike Teaching
-                                                                    Mode</option>
-                                                                <option value="Dislike Class Environment">Dislike Class
-                                                                    Environment</option>
-                                                                <option value="Home Tution">Home Tution</option>
-                                                                <option value="Missing in Action">Missing in Action
-                                                                </option>
-                                                                <option value="No Time">No Time</option>
-                                                                <option value="No Result">No Result</option>
-                                                                <option value="Relocation">Relocation</option>
-                                                                <option value="Special Needs Child">Special Needs Child
-                                                                </option>
-                                                                <option value="Too Expensive">Too Expensive</option>
-                                                                <option value="Too Difficult">Too Difficult</option>
-                                                                <option value="">Others</option>
-
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
                                             </div>
                                         </div>
                                     </div>
@@ -376,6 +340,83 @@
                                                         </div>
                                                     </div>
                                                 </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane fade" id="custom-tabs-one-dise" role="tabpanel"
+                                        aria-labelledby="custom-tabs-one-dise-tab">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-xs-2 col-sm-2 col-md-2">
+                                                        <div class="form-group">
+                                                            <strong><i class="fas fa-handshake-slash"></i>
+                                                                Discontinued:</strong>
+                                                            <div class="custom-control custom-switch">
+                                                                {{ Form::checkbox('ediscontinued', '1', false, ['id' => 'ecustomCheckbox1', 'class' => 'custom-control-input name']) }}
+                                                                <label for="ecustomCheckbox1"
+                                                                    class="custom-control-label">
+                                                                    Discontinued</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xs-4 col-sm-4 col-md-4">
+                                                        <div class="form-group">
+                                                            <strong><i class="fas fa-calendar"></i> Date</strong>
+                                                            {!! Form::text('ddate', null, [
+                                                                'id' => 'EditDDate',
+                                                                'placeholder' => '',
+                                                                'class' => 'AddDate form-control',
+                                                                'disabled' => true,
+                                                            ]) !!}
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xs-6 col-sm-6 col-md-6">
+                                                        <div class="form-group">
+                                                            <strong><i class="fas fa-list"></i> Reason</strong>
+                                                            {!! Form::text('reason', null, [
+                                                                'id' => 'EditReason',
+                                                                'placeholder' => '',
+                                                                'class' => 'form-control',
+                                                                'disabled' => true,
+                                                            ]) !!}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row d-none" id="sreason">
+                                                    <div class="col-xs-6 col-sm-6 col-md-6">
+                                                    </div>
+                                                    <div class="col-xs-6 col-sm-6 col-md-6 float-right">
+                                                        <div class="form-group">
+                                                            <strong><i class="fas fa-list"></i> Select Reason</strong>
+                                                            <select name="ddl_discontinueReason"
+                                                                id="ddl_discontinueReason" class="form-control">
+                                                                <option selected="selected" value="">--Select
+                                                                    Reason--</option>
+                                                                <option value="Bored">Bored</option>
+                                                                <option value="Dislike Homework">Dislike Homework
+                                                                </option>
+                                                                <option value="Dislike Teaching Mode">Dislike Teaching
+                                                                    Mode</option>
+                                                                <option value="Dislike Class Environment">Dislike Class
+                                                                    Environment</option>
+                                                                <option value="Home Tution">Home Tution</option>
+                                                                <option value="Missing in Action">Missing in Action
+                                                                </option>
+                                                                <option value="No Time">No Time</option>
+                                                                <option value="No Result">No Result</option>
+                                                                <option value="Relocation">Relocation</option>
+                                                                <option value="Special Needs Child">Special Needs Child
+                                                                </option>
+                                                                <option value="Too Expensive">Too Expensive</option>
+                                                                <option value="Too Difficult">Too Difficult</option>
+                                                                <option value="">Others</option>
+
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
                                             </div>
                                         </div>
                                     </div>

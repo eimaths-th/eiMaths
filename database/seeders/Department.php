@@ -15,7 +15,7 @@ class Department extends Seeder
     {
         Dept::create([
             'name' => 'Ratchaphruek',
-            'code' => 'Ratchaphruek',
+            'code' => 'RJ',
             'status' => 1
         ]);
 

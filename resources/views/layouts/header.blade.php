@@ -10,14 +10,14 @@
             </a></li> --}}
         <li class="nav-item d-none d-sm-inline-block">
 
-            <a href="#" class="nav-link">[ <i class="fas fa-building nav-icon"></i> <b
+            <a href="#" class="nav-link">[ <i class="fas fa-lg fa-building nav-icon"></i> <b
                     class="text-primary">Centre : @if (Auth::check() && Auth::user()->department && Auth::user()->department->name)
                         {{ Auth::user()->department->name }}
                     @endif
                 </b> ]</a>
         </li>
         <li class="nav-item d-none d-sm-inline-block">
-            <a href="#" class="nav-link">[ <i class="fas fa-users nav-icon"></i> <b class="text-primary">Department :
+            <a href="#" class="nav-link">[ <i class="fas fa-users fa-lg nav-icon"></i> <b class="text-primary">Department :
                     @if (Auth::check() && Auth::user()->position && Auth::user()->position->name)
                         {{ Auth::user()->position->name }}
                     @endif

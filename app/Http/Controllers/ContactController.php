@@ -162,18 +162,39 @@ class ContactController extends Controller
             return response()->json(['errors' => $validator->errors()->all()]);
         }
 
+        $priceq = Product::find($request->get('bookuse'));
+        $levelq = Level::find($request->get('level'));
+        $termq = Term::find($request->get('term'));
+
         $input = $request->all();
         $input['code'] = studentRunningNumber::generate($request->get('centre'));
+        $input['level_name'] = $levelq->name;
+        $input['term_name'] = $termq->name;
+        $input['bookuse_name'] = $priceq->name;
 
         $contact = Contact::create($input);
 
-        $priceq = Product::find($request->get('bookuse'))->first();
+        //dd($priceq);
 
         $input_order['centre'] = $request->get('centre');
         $input_order['cid'] = $contact->id;
         $input_order['order_number'] = OrderRunningNumber::generate($request->get('centre'));
         $input_order['total_price'] = $priceq->price;
         $order = Order::create($input_order);
+
+        /* $contact->update([
+            'order' => $order->id,
+        ]); */
+        $contact->order = $order->id;
+        $contact->save();
+
+        $input_order_detail['order_id'] = $order->id;
+        $input_order_detail['product_id'] = $priceq->id;
+        $input_order_detail['pname'] = $priceq->name;
+        $input_order_detail['punit'] = $priceq->unit;
+        $input_order_detail['quantity'] = 1;
+        $input_order_detail['price'] = $priceq->price;
+        $order = OrderDetail::create($input_order_detail);
 
         $select_list_contact = '<option value="' . $contact->id . '" > ' . $contact->name . '</option>';
         return response()->json([
@@ -237,6 +258,10 @@ class ContactController extends Controller
             return response()->json(['errors' => $validator->errors()->all()]);
         }
 
+        $levelq = Level::find($request->get('level'));
+        $termq = Term::find($request->get('term'));
+        $priceq = Product::find($request->get('bookuse'));
+
         $contactd = [
             'name' => $request->get('name'),
             'address' => $request->get('address'),
@@ -248,6 +273,7 @@ class ContactController extends Controller
             'start_term' => $request->get('start_term'),
             'school' => $request->get('school'),
             'birth_date' => $request->get('birth_date'),
+            'gender' => $request->get('gender'),
             'father_name' => $request->get('father_name'),
             'father_email' => $request->get('father_email'),
             'father_mobile' => $request->get('father_mobile'),
@@ -257,6 +283,9 @@ class ContactController extends Controller
             'level' => $request->get('level'),
             'term' => $request->get('term'),
             'bookuse' => $request->get('bookuse'),
+            'level_name' => $levelq->name,
+            'term_name' => $termq->name,
+            'bookuse_name' => $priceq->name,
             'discontinued' => $request->get('discontinued'),
             'discontinued_date' => $request->get('discontinued_date'),
             'discontinued_reason' => $request->get('discontinued_reason'),
@@ -264,6 +293,27 @@ class ContactController extends Controller
 
         $contact = Contact::find($id);
         $contact->update($contactd);
+
+        $input_order['centre'] = $request->get('centre');
+        $input_order['cid'] = $contact->id;
+        $input_order['total_price'] = $priceq->price;
+        $order = Order::find($contact->order);
+
+        if ($order) {
+            $order->update($input_order);
+        }
+
+        $input_order_detail['order_id'] = $order->id ?? null; // Set to null if $order is not found
+        $input_order_detail['product_id'] = $priceq->id;
+        $input_order_detail['pname'] = $priceq->name;
+        $input_order_detail['punit'] = $priceq->unit;
+        $input_order_detail['quantity'] = 1;
+        $input_order_detail['price'] = $priceq->price;
+        $order_detail = OrderDetail::find($input_order_detail['order_id']);
+
+        if ($order_detail) {
+            $order_detail->update($input_order_detail);
+        }
 
         return response()->json(['success' => 'Student information updated successfully']);
     }
@@ -275,6 +325,8 @@ class ContactController extends Controller
     {
         $id = $request->get('id');
         Contact::find($id)->delete();
+        $this->order_clear($id);
+
         return ['success' => true, 'message' => 'Deleted student successfully'];
     }
 
@@ -285,9 +337,35 @@ class ContactController extends Controller
 
         for ($xx = 0; $xx < count($arr_del); $xx++) {
             Contact::find($arr_del[$xx])->delete();
+            $this->order_clear($arr_del[$xx]);
         }
 
         return redirect('/contacts')->with('success', 'Deleted student successfully');
+    }
+
+    public function order_clear($id)
+    {
+        try {
+            DB::beginTransaction();
+
+            // Find and delete orders where 'status' is '1'
+            $deletedOrderIds = Order::where('cid', $id)->pluck('id')->toArray();
+            Order::where('cid', $id)->delete();
+
+            // Delete related records from the 'order_detail' table
+            if (!empty($deletedOrderIds)) {
+                DB::table('order_details')->whereIn('order_id', $deletedOrderIds)->delete();
+            }
+
+            DB::commit();
+
+            // Commit the transaction if everything was successful
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            // Handle the exception or show an error message
+            // For example: Log the error, return an error response, etc.
+        }
     }
 
     public function lfind($type, $level)

@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('order_details', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('order_id');
-            $table->unsignedBigInteger('product_id');
+            $table->unsignedBigInteger('order_id')->default(0);
+            $table->unsignedBigInteger('product_id')->default(0);
             $table->string('pname')->nullable();
             $table->string('punit')->nullable();
             $table->decimal('quantity', 12, 2);

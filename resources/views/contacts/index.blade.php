@@ -83,7 +83,7 @@
                                 <table id="Listview" class="display nowrap table table-bordered table-striped table-hover">
                                     <thead>
                                         <tr>
-                                            <th width="150px"><input type="checkbox" id="check-all" class="flat"></th>
+                                            <th width="100px"><input type="checkbox" id="check-all" class="flat"></th>
                                             <th>Centre</th>
                                             <th>Code</th>
                                             <th>Student Name</th>

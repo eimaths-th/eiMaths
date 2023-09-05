@@ -130,6 +130,43 @@
             }
         })
 
+        $(".elevels").change(function() {
+            let level = $('#EditLevel').val();
+            //console.log(product);
+            //alert(product);
+            //$('#EditTerm').html('');
+            //$('#EditBook').html('');
+            if (level.length !== 0) {
+                $.ajax({
+                    method: "GET",
+                    url: "level/find/add/" + level,
+                    success: function(res) {
+                        $('.eterms').html(res.html);
+                        //$('.terms').removeAttr('readonly');
+                        $('.eterms').prop('disabled', false);
+                    }
+                });
+            }
+        })
+
+        $(".eterms").change(function() {
+            let level = $('#EditLevel').val();
+            let term = $('#EditTerm').val();
+            //$('#EditBook').html('');
+            if (level.length !== 0 && term.length !== 0) {
+                $.ajax({
+                    method: "GET",
+                    url: "term/find/add/" + level + "/" + term,
+                    async: false,
+                    success: function(res) {
+                        //console.log(res)
+                        $('.ebooks').html(res.html);
+                        $('.ebooks').prop('disabled', false);
+                    }
+                });
+            }
+        })
+
 
         var table = $('#Listview').DataTable({
             /*"aoColumnDefs": [
@@ -329,6 +366,8 @@
                     centre: $('#AddCentre').val()[0],
                     code: $('#AddCode').val(),
                     name: $('#AddName').val(),
+                    gender: $("input[name='gender']:checked").val(),
+                    birth_date: $('#AddBirthDate').val(),
                     start_date: $('#AddDate').val(),
                     start_term: $('#AddSTerm').val()[0],
                     school: $('#AddSchool').val(),
@@ -398,6 +437,7 @@
                     $('#EditName').val(res.data.name);
                     $('#EditCode').val(res.data.code);
                     $('#EditDate').val(res.data.start_date);
+                    $('#EditBirthDate').val(res.data.birth_date);
                     $('#EditSTerm').val(res.data.start_term).change();
                     $('#EditLevel').val(res.data.level).change();
                     $('#EditSchool').val(res.data.school);
@@ -416,6 +456,12 @@
                         $('#EditReason').prop('disabled', true);
                         $('#sreason').addClass('d-none');
                         $('#EditDDate').val('');
+                    }
+
+                    if (res.data.gender == 1) {
+                        $("#eradioSuccess1").prop("checked", true);
+                    } else if (res.data.gender == 2) {
+                        $("#eradioSuccess2").prop("checked", true);
                     }
 
 
@@ -457,6 +503,8 @@
                     centre: $('#EditCentre').val()[0],
                     code: $('#EditCode').val(),
                     name: $('#EditName').val(),
+                    gender: $("input[name='egender']:checked").val(),
+                    birth_date: $('#EditBirthDate').val(),
                     start_date: $('#EditDate').val(),
                     start_term: $('#EditSTerm').val()[0],
                     school: $('#EditSchool').val(),

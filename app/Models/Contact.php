@@ -28,11 +28,20 @@ class Contact extends Model
         'mother_name',
         'mother_email',
         'mother_mobile',
+        'order',
         'level',
         'term',
         'bookuse',
+        'level_name',
+        'term_name',
+        'bookuse_name',
         'discontinued',
         'discontinued_date',
         'discontinued_reason',
     ];
+
+    public function order()
+    {
+        return $this->hasOne(Order::class, 'cid', 'id');
+    }
 }
