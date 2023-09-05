@@ -49,6 +49,11 @@
     </ul>
 
     <ul class="navbar-nav ml-auto">
+        <li class="nav-item d-none d-sm-inline-block">
+            <a class="nav-link" data-widget="fullscreen" href="#" role="button">
+                <i class="fas fa-xl fa-expand-arrows-alt"></i> <b class="text-primary">Zoom in/out screen</b>
+            </a>
+        </li>
         <li class="nav-item dropdown user-menu">
             <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/2048px-User_icon_2.svg.png"

@@ -82,7 +82,7 @@
                                             <th>Centre</th>
                                             <th>Department</th>
                                             <th>Role</th>
-                                            <th width="280px"></th>
+                                            <th width="120px"></th>
                                         </tr>
                                     </thead>
                                     <tbody>

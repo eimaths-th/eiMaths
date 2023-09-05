@@ -4,21 +4,25 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Models\bookuse;
 use App\Models\Contact;
 use App\Models\Department;
 use App\Models\level;
+use App\Models\Product;
 use App\Models\studentRunningNumber;
 use App\Models\term;
 use App\Models\Sterm;
-use Spatie\Permission\Models\Role;
+use App\Models\Order;
+use App\Models\OrderDetail;
+use App\Models\OrderRunningNumber;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
+
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+
+use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
-use App\Rules\CustomValidationRules;
 
 class ContactController extends Controller
 {
@@ -50,13 +54,13 @@ class ContactController extends Controller
                 "contacts.*",
                 "departments.name as centre_name",
                 "levels.name as level_name",
-                "bookuses.name as book_name",
+                "products.name as book_name",
                 "start_terms.name as start_term_name",
                 "pterms.name as term_name"
             )
                 ->join("departments", "contacts.centre", "=", "departments.id")
                 ->join("levels", "contacts.level", "=", "levels.id")
-                ->join("bookuses", "contacts.bookuse", "=", "bookuses.id")
+                ->join("products", "contacts.bookuse", "=", "products.id")
                 ->join("terms as start_terms", "contacts.start_term", "=", "start_terms.id")
                 ->join("terms as pterms", "contacts.term", "=", "pterms.id")
                 ->where('discontinued', '0')
@@ -90,7 +94,7 @@ class ContactController extends Controller
             ->orderBy("name", "asc")->get();
         $sterm = Sterm::where([['status', '1']])
             ->orderBy("name", "asc")->get();
-        $bookuse = bookuse::where([['status', '1']])
+        $bookuse = Product::where([['status', '1'], ['type', '1']])
             ->orderBy("name", "asc")->get();
         $level = level::where([['status', '1']])
             ->orderBy("name", "asc")->get();
@@ -162,8 +166,20 @@ class ContactController extends Controller
         $input['code'] = studentRunningNumber::generate($request->get('centre'));
 
         $contact = Contact::create($input);
+
+        $priceq = Product::find($request->get('bookuse'))->first();
+
+        $input_order['centre'] = $request->get('centre');
+        $input_order['cid'] = $contact->id;
+        $input_order['order_number'] = OrderRunningNumber::generate($request->get('centre'));
+        $input_order['total_price'] = $priceq->price;
+        $order = Order::create($input_order);
+
         $select_list_contact = '<option value="' . $contact->id . '" > ' . $contact->name . '</option>';
-        return response()->json(['success' => 'Added student information successfully.', 'contact' => $select_list_contact, 'cid' => $contact->id]);
+        return response()->json([
+            'success' => 'Added student information successfully.',
+            'contact' => $select_list_contact, 'cid' => $contact->id
+        ]);
     }
 
     /**
@@ -305,15 +321,16 @@ class ContactController extends Controller
         //$select_list = "<option value=''>please select</option>";
         $select_list = "";
         if ($type == 'add') {
-            $data = bookuse::select(
-                "bookuses.id as id",
-                "bookuses.name as name",
+            $data = Product::select(
+                "products.id as id",
+                "products.name as name",
             )
 
                 ->where('level_id', $level)
                 ->where('term_id', $term)
+                ->where('type', 1)
                 ->where('status', 1)
-                ->orderBy("bookuses.name", "asc")
+                ->orderBy("products.name", "asc")
                 ->get();
 
             foreach ($data as $key) {
