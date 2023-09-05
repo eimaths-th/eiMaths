@@ -134,8 +134,8 @@
             let level = $('#EditLevel').val();
             //console.log(product);
             //alert(product);
-            //$('#EditTerm').html('');
-            //$('#EditBook').html('');
+            $('#EditTerm').html('');
+            $('#EditBook').html('');
             if (level.length !== 0) {
                 $.ajax({
                     method: "GET",
@@ -152,7 +152,7 @@
         $(".eterms").change(function() {
             let level = $('#EditLevel').val();
             let term = $('#EditTerm').val();
-            //$('#EditBook').html('');
+            $('#EditBook').html('');
             if (level.length !== 0 && term.length !== 0) {
                 $.ajax({
                     method: "GET",
@@ -438,10 +438,13 @@
                     $('#EditCode').val(res.data.code);
                     $('#EditDate').val(res.data.start_date);
                     $('#EditBirthDate').val(res.data.birth_date);
-                    $('#EditSTerm').val(res.data.start_term).change();
-                    $('#EditLevel').val(res.data.level).change();
+                    //$('#EditSTerm').val(res.data.start_term).change();
+                    $('#EditSTerm').val(res.data.start_term).trigger('change.select2');
+                    //$('#EditLevel').val(res.data.level).change();
+                    $('#EditLevel').val(res.data.level).trigger('change.select2');
                     $('#EditSchool').val(res.data.school);
-                    $('#EditTerm').val(res.data.term).change();
+                    //$('#EditTerm').val(res.data.term).change();
+                    $('#EditTerm').val(res.data.term).trigger('change.select2');
                     $('#EditBook').val(res.data.bookuse).change();
 
                     if (res.data.discontinued == 1) {
@@ -478,6 +481,9 @@
                     $('#EditmName').val(res.data.mother_name);
                     $('#EditmEmail').val(res.data.mother_email);
                     $('#EditmTelephone').val(res.data.mother_mobile);
+
+                    $('#EditTerm').prop('disabled', true);
+                    $('#EditBook').prop('disabled', true);
 
                     $('#EditModalBody').html(res.html);
                     $('#EditModal').modal('show');

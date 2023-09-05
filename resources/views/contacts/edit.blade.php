@@ -113,9 +113,9 @@
                                                             <select style="width: 100%;"
                                                                 class="select2 select2_single form-control"
                                                                 id="EditSTerm" name="sterm" multiple="multiple">
-                                                                @foreach ($term as $keyt)
-                                                                    <option value="{{ $keyt->id }}">
-                                                                        {{ $keyt->name }}
+                                                                @foreach ($sterm as $skeyt)
+                                                                    <option value="{{ $skeyt->id }}">
+                                                                        {{ $skeyt->name }}
                                                                     </option>
                                                                 @endforeach
 
