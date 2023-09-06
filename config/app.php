@@ -17,7 +17,7 @@ return [
     */
 
     'name' => env('APP_NAME', 'Laravel'),
-    'subtitle' => env('APP_SUBTITLE', 'ระบบ'),
+    'subtitle' => env('APP_SUBTITLE', 'System'),
     'version' => env('APP_VERSION', '1.0'),
 
     /*
@@ -72,7 +72,7 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+    'timezone' => 'Asia/Bangkok',
 
     /*
     |--------------------------------------------------------------------------

@@ -16,6 +16,7 @@
         "laravel/tinker": "^2.8",
         "laravel/ui": "^4.2",
         "laravelcollective/html": "^6.4",
+        "mobiledetect/mobiledetectlib": "^3.74",
         "setasign/fpdi": "^2.4",
         "setasign/fpdi-protection": "^2.0",
         "setasign/fpdi-tcpdf": "^2.3",

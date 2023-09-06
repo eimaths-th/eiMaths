@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use App\Services\FileUploadService;
+use App\Services\MoneyConvertService;
+use App\Interfaces\MoneyConvertServiceInterface;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -15,6 +17,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind('file-upload-service', function () {
             return new FileUploadService();
         });
+        $this->app->bind(MoneyConvertServiceInterface::class, MoneyConvertService::class);
     }
 
     /**

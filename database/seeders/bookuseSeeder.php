@@ -19,7 +19,7 @@ class bookuseSeeder extends Seeder
             'type' => '1',
             'level_id' => '1',
             'term_id' => '1',
-            'price' => '0.00',
+            'price' => '15000.00',
             'status' => 1
         ]);
         bookuse::create([
@@ -27,7 +27,7 @@ class bookuseSeeder extends Seeder
             'type' => '1',
             'level_id' => '1',
             'term_id' => '1',
-            'price' => '0.00',
+            'price' => '15000.00',
             'status' => 1
         ]);
 
@@ -36,7 +36,7 @@ class bookuseSeeder extends Seeder
             'type' => '1',
             'level_id' => '1',
             'term_id' => '2',
-            'price' => '0.00',
+            'price' => '15000.00',
             'status' => 1
         ]);
         bookuse::create([
@@ -44,7 +44,7 @@ class bookuseSeeder extends Seeder
             'type' => '1',
             'level_id' => '1',
             'term_id' => '2',
-            'price' => '0.00',
+            'price' => '15000.00',
             'status' => 1
         ]);
 
@@ -53,7 +53,7 @@ class bookuseSeeder extends Seeder
             'type' => '1',
             'level_id' => '1',
             'term_id' => '3',
-            'price' => '0.00',
+            'price' => '15000.00',
             'status' => 1
         ]);
         bookuse::create([
@@ -61,7 +61,7 @@ class bookuseSeeder extends Seeder
             'type' => '1',
             'level_id' => '1',
             'term_id' => '3',
-            'price' => '0.00',
+            'price' => '15000.00',
             'status' => 1
         ]);
 
@@ -70,7 +70,7 @@ class bookuseSeeder extends Seeder
             'type' => '1',
             'level_id' => '1',
             'term_id' => '4',
-            'price' => '0.00',
+            'price' => '15000.00',
             'status' => 1
         ]);
         bookuse::create([
@@ -78,7 +78,7 @@ class bookuseSeeder extends Seeder
             'type' => '1',
             'level_id' => '1',
             'term_id' => '4',
-            'price' => '0.00',
+            'price' => '15000.00',
             'status' => 1
         ]);
 
@@ -88,7 +88,7 @@ class bookuseSeeder extends Seeder
             'type' => '1',
             'level_id' => '2',
             'term_id' => '1',
-            'price' => '0.00',
+            'price' => '15000.00',
             'status' => 1
         ]);
         bookuse::create([
@@ -96,7 +96,7 @@ class bookuseSeeder extends Seeder
             'type' => '1',
             'level_id' => '2',
             'term_id' => '1',
-            'price' => '0.00',
+            'price' => '15000.00',
             'status' => 1
         ]);
 
@@ -105,7 +105,7 @@ class bookuseSeeder extends Seeder
             'type' => '1',
             'level_id' => '2',
             'term_id' => '2',
-            'price' => '0.00',
+            'price' => '15000.00',
             'status' => 1
         ]);
         bookuse::create([
@@ -113,7 +113,7 @@ class bookuseSeeder extends Seeder
             'type' => '1',
             'level_id' => '2',
             'term_id' => '2',
-            'price' => '0.00',
+            'price' => '15000.00',
             'status' => 1
         ]);
 
@@ -122,7 +122,7 @@ class bookuseSeeder extends Seeder
             'type' => '1',
             'level_id' => '2',
             'term_id' => '3',
-            'price' => '0.00',
+            'price' => '15000.00',
             'status' => 1
         ]);
         bookuse::create([
@@ -130,7 +130,7 @@ class bookuseSeeder extends Seeder
             'type' => '1',
             'level_id' => '2',
             'term_id' => '3',
-            'price' => '0.00',
+            'price' => '15000.00',
             'status' => 1
         ]);
 
@@ -139,7 +139,7 @@ class bookuseSeeder extends Seeder
             'type' => '1',
             'level_id' => '2',
             'term_id' => '4',
-            'price' => '0.00',
+            'price' => '15000.00',
             'status' => 1
         ]);
         bookuse::create([
@@ -147,7 +147,7 @@ class bookuseSeeder extends Seeder
             'type' => '1',
             'level_id' => '2',
             'term_id' => '4',
-            'price' => '0.00',
+            'price' => '15000.00',
             'status' => 1
         ]);
 
@@ -157,7 +157,7 @@ class bookuseSeeder extends Seeder
             'type' => '1',
             'level_id' => '3',
             'term_id' => '1',
-            'price' => '0.00',
+            'price' => '15000.00',
             'status' => 1
         ]);
         bookuse::create([
@@ -165,7 +165,7 @@ class bookuseSeeder extends Seeder
             'type' => '1',
             'level_id' => '3',
             'term_id' => '1',
-            'price' => '0.00',
+            'price' => '15000.00',
             'status' => 1
         ]);
 
@@ -174,7 +174,7 @@ class bookuseSeeder extends Seeder
             'type' => '1',
             'level_id' => '3',
             'term_id' => '2',
-            'price' => '0.00',
+            'price' => '15000.00',
             'status' => 1
         ]);
         bookuse::create([
@@ -182,7 +182,7 @@ class bookuseSeeder extends Seeder
             'type' => '1',
             'level_id' => '3',
             'term_id' => '2',
-            'price' => '0.00',
+            'price' => '15000.00',
             'status' => 1
         ]);
 
@@ -191,7 +191,7 @@ class bookuseSeeder extends Seeder
             'type' => '1',
             'level_id' => '3',
             'term_id' => '3',
-            'price' => '0.00',
+            'price' => '15000.00',
             'status' => 1
         ]);
         bookuse::create([
@@ -199,7 +199,7 @@ class bookuseSeeder extends Seeder
             'type' => '1',
             'level_id' => '3',
             'term_id' => '3',
-            'price' => '0.00',
+            'price' => '15000.00',
             'status' => 1
         ]);
 
@@ -208,7 +208,7 @@ class bookuseSeeder extends Seeder
             'type' => '1',
             'level_id' => '3',
             'term_id' => '4',
-            'price' => '0.00',
+            'price' => '15000.00',
             'status' => 1
         ]);
         bookuse::create([
@@ -216,7 +216,7 @@ class bookuseSeeder extends Seeder
             'type' => '1',
             'level_id' => '3',
             'term_id' => '4',
-            'price' => '0.00',
+            'price' => '15000.00',
             'status' => 1
         ]);
 
@@ -226,7 +226,7 @@ class bookuseSeeder extends Seeder
             'type' => '1',
             'level_id' => '4',
             'term_id' => '1',
-            'price' => '0.00',
+            'price' => '15000.00',
             'status' => 1
         ]);
         bookuse::create([
@@ -234,7 +234,7 @@ class bookuseSeeder extends Seeder
             'type' => '1',
             'level_id' => '4',
             'term_id' => '1',
-            'price' => '0.00',
+            'price' => '15000.00',
             'status' => 1
         ]);
 
@@ -244,7 +244,7 @@ class bookuseSeeder extends Seeder
             'type' => '1',
             'level_id' => '4',
             'term_id' => '2',
-            'price' => '0.00',
+            'price' => '15000.00',
             'status' => 1
         ]);
         bookuse::create([
@@ -252,7 +252,7 @@ class bookuseSeeder extends Seeder
             'type' => '1',
             'level_id' => '4',
             'term_id' => '2',
-            'price' => '0.00',
+            'price' => '15000.00',
             'status' => 1
         ]);
 
@@ -261,7 +261,7 @@ class bookuseSeeder extends Seeder
             'type' => '1',
             'level_id' => '4',
             'term_id' => '3',
-            'price' => '0.00',
+            'price' => '15000.00',
             'status' => 1
         ]);
         bookuse::create([
@@ -269,7 +269,7 @@ class bookuseSeeder extends Seeder
             'type' => '1',
             'level_id' => '4',
             'term_id' => '3',
-            'price' => '0.00',
+            'price' => '15000.00',
             'status' => 1
         ]);
 
@@ -278,7 +278,7 @@ class bookuseSeeder extends Seeder
             'type' => '1',
             'level_id' => '4',
             'term_id' => '4',
-            'price' => '0.00',
+            'price' => '15000.00',
             'status' => 1
         ]);
         bookuse::create([
@@ -286,7 +286,7 @@ class bookuseSeeder extends Seeder
             'type' => '1',
             'level_id' => '4',
             'term_id' => '4',
-            'price' => '0.00',
+            'price' => '15000.00',
             'status' => 1
         ]);
 
@@ -297,7 +297,7 @@ class bookuseSeeder extends Seeder
             'type' => '1',
             'level_id' => '5',
             'term_id' => '1',
-            'price' => '0.00',
+            'price' => '15000.00',
             'status' => 1
         ]);
         bookuse::create([
@@ -305,7 +305,7 @@ class bookuseSeeder extends Seeder
             'type' => '1',
             'level_id' => '5',
             'term_id' => '1',
-            'price' => '0.00',
+            'price' => '15000.00',
             'status' => 1
         ]);
 
@@ -315,7 +315,7 @@ class bookuseSeeder extends Seeder
             'type' => '1',
             'level_id' => '5',
             'term_id' => '2',
-            'price' => '0.00',
+            'price' => '15000.00',
             'status' => 1
         ]);
         bookuse::create([
@@ -323,7 +323,7 @@ class bookuseSeeder extends Seeder
             'type' => '1',
             'level_id' => '5',
             'term_id' => '2',
-            'price' => '0.00',
+            'price' => '15000.00',
             'status' => 1
         ]);
 
@@ -332,7 +332,7 @@ class bookuseSeeder extends Seeder
             'type' => '1',
             'level_id' => '5',
             'term_id' => '3',
-            'price' => '0.00',
+            'price' => '15000.00',
             'status' => 1
         ]);
         bookuse::create([
@@ -340,7 +340,7 @@ class bookuseSeeder extends Seeder
             'type' => '1',
             'level_id' => '5',
             'term_id' => '3',
-            'price' => '0.00',
+            'price' => '15000.00',
             'status' => 1
         ]);
 
@@ -349,7 +349,7 @@ class bookuseSeeder extends Seeder
             'type' => '1',
             'level_id' => '5',
             'term_id' => '4',
-            'price' => '0.00',
+            'price' => '15000.00',
             'status' => 1
         ]);
         bookuse::create([
@@ -357,7 +357,7 @@ class bookuseSeeder extends Seeder
             'type' => '1',
             'level_id' => '5',
             'term_id' => '4',
-            'price' => '0.00',
+            'price' => '15000.00',
             'status' => 1
         ]);
 
@@ -368,7 +368,7 @@ class bookuseSeeder extends Seeder
             'type' => '1',
             'level_id' => '6',
             'term_id' => '1',
-            'price' => '0.00',
+            'price' => '15000.00',
             'status' => 1
         ]);
         bookuse::create([
@@ -376,7 +376,7 @@ class bookuseSeeder extends Seeder
             'type' => '1',
             'level_id' => '6',
             'term_id' => '1',
-            'price' => '0.00',
+            'price' => '15000.00',
             'status' => 1
         ]);
 
@@ -386,7 +386,7 @@ class bookuseSeeder extends Seeder
             'type' => '1',
             'level_id' => '6',
             'term_id' => '2',
-            'price' => '0.00',
+            'price' => '15000.00',
             'status' => 1
         ]);
         bookuse::create([
@@ -394,7 +394,7 @@ class bookuseSeeder extends Seeder
             'type' => '1',
             'level_id' => '6',
             'term_id' => '2',
-            'price' => '0.00',
+            'price' => '15000.00',
             'status' => 1
         ]);
 
@@ -403,7 +403,7 @@ class bookuseSeeder extends Seeder
             'type' => '1',
             'level_id' => '6',
             'term_id' => '3',
-            'price' => '0.00',
+            'price' => '15000.00',
             'status' => 1
         ]);
         bookuse::create([
@@ -411,7 +411,7 @@ class bookuseSeeder extends Seeder
             'type' => '1',
             'level_id' => '6',
             'term_id' => '3',
-            'price' => '0.00',
+            'price' => '15000.00',
             'status' => 1
         ]);
 
@@ -420,7 +420,7 @@ class bookuseSeeder extends Seeder
             'type' => '1',
             'level_id' => '6',
             'term_id' => '4',
-            'price' => '0.00',
+            'price' => '15000.00',
             'status' => 1
         ]);
         bookuse::create([
@@ -428,7 +428,7 @@ class bookuseSeeder extends Seeder
             'type' => '1',
             'level_id' => '6',
             'term_id' => '4',
-            'price' => '0.00',
+            'price' => '15000.00',
             'status' => 1
         ]);
 
@@ -439,7 +439,7 @@ class bookuseSeeder extends Seeder
             'type' => '1',
             'level_id' => '7',
             'term_id' => '1',
-            'price' => '0.00',
+            'price' => '15000.00',
             'status' => 1
         ]);
         bookuse::create([
@@ -447,7 +447,7 @@ class bookuseSeeder extends Seeder
             'type' => '1',
             'level_id' => '7',
             'term_id' => '1',
-            'price' => '0.00',
+            'price' => '15000.00',
             'status' => 1
         ]);
 
@@ -457,7 +457,7 @@ class bookuseSeeder extends Seeder
             'type' => '1',
             'level_id' => '7',
             'term_id' => '2',
-            'price' => '0.00',
+            'price' => '15000.00',
             'status' => 1
         ]);
         bookuse::create([
@@ -465,7 +465,7 @@ class bookuseSeeder extends Seeder
             'type' => '1',
             'level_id' => '7',
             'term_id' => '2',
-            'price' => '0.00',
+            'price' => '15000.00',
             'status' => 1
         ]);
 
@@ -474,7 +474,7 @@ class bookuseSeeder extends Seeder
             'type' => '1',
             'level_id' => '7',
             'term_id' => '3',
-            'price' => '0.00',
+            'price' => '15000.00',
             'status' => 1
         ]);
         bookuse::create([
@@ -482,7 +482,7 @@ class bookuseSeeder extends Seeder
             'type' => '1',
             'level_id' => '7',
             'term_id' => '3',
-            'price' => '0.00',
+            'price' => '15000.00',
             'status' => 1
         ]);
 
@@ -491,7 +491,7 @@ class bookuseSeeder extends Seeder
             'type' => '1',
             'level_id' => '7',
             'term_id' => '4',
-            'price' => '0.00',
+            'price' => '15000.00',
             'status' => 1
         ]);
         bookuse::create([
@@ -499,7 +499,7 @@ class bookuseSeeder extends Seeder
             'type' => '1',
             'level_id' => '7',
             'term_id' => '4',
-            'price' => '0.00',
+            'price' => '15000.00',
             'status' => 1
         ]);
 
@@ -510,7 +510,7 @@ class bookuseSeeder extends Seeder
             'type' => '1',
             'level_id' => '8',
             'term_id' => '1',
-            'price' => '0.00',
+            'price' => '15000.00',
             'status' => 1
         ]);
         bookuse::create([
@@ -518,7 +518,7 @@ class bookuseSeeder extends Seeder
             'type' => '1',
             'level_id' => '8',
             'term_id' => '1',
-            'price' => '0.00',
+            'price' => '15000.00',
             'status' => 1
         ]);
 
@@ -528,7 +528,7 @@ class bookuseSeeder extends Seeder
             'type' => '1',
             'level_id' => '8',
             'term_id' => '2',
-            'price' => '0.00',
+            'price' => '15000.00',
             'status' => 1
         ]);
         bookuse::create([
@@ -536,7 +536,7 @@ class bookuseSeeder extends Seeder
             'type' => '1',
             'level_id' => '8',
             'term_id' => '2',
-            'price' => '0.00',
+            'price' => '15000.00',
             'status' => 1
         ]);
 
@@ -545,7 +545,7 @@ class bookuseSeeder extends Seeder
             'type' => '1',
             'level_id' => '8',
             'term_id' => '3',
-            'price' => '0.00',
+            'price' => '15000.00',
             'status' => 1
         ]);
         bookuse::create([
@@ -553,7 +553,7 @@ class bookuseSeeder extends Seeder
             'type' => '1',
             'level_id' => '8',
             'term_id' => '3',
-            'price' => '0.00',
+            'price' => '15000.00',
             'status' => 1
         ]);
 

@@ -309,7 +309,7 @@ class ContactController extends Controller
         $input_order_detail['punit'] = $priceq->unit;
         $input_order_detail['quantity'] = 1;
         $input_order_detail['price'] = $priceq->price;
-        $order_detail = OrderDetail::find($input_order_detail['order_id']);
+        $order_detail = OrderDetail::where('order_id', $input_order_detail['order_id'])->first();
 
         if ($order_detail) {
             $order_detail->update($input_order_detail);

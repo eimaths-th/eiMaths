@@ -19,7 +19,7 @@
 
                         @can('contact-create')
                             <button type="button" class="btn btn-success" id="CreateButton">
-                                <i class="fas fa-graduation-cap"></i> Add Student </button>
+                                <i class="fas fa-graduation-cap"></i> New Student </button>
                         @else
                             <span class="d-inline-block" tabindex="0" data-toggle="tooltip" data-placement="bottom"
                                 title="You Not Have Permission">
@@ -83,7 +83,7 @@
                                 <table id="Listview" class="display nowrap table table-bordered table-striped table-hover">
                                     <thead>
                                         <tr>
-                                            <th width="100px"><input type="checkbox" id="check-all" class="flat"></th>
+                                            <th width="90px"><input type="checkbox" id="check-all" class="flat"></th>
                                             <th>Centre</th>
                                             <th>Code</th>
                                             <th>Student Name</th>
@@ -92,14 +92,14 @@
                                             <th>BookUse	</th>
                                             <th>Start Term</th>
                                             <th>Term</th>
-                                            <th>Telephone</th>
+                                            <th class="none">Telephone</th>
                                             <th>Father Mobile</th>
                                             <th>Mother Mobile</th>
-                                            <th>Father Email</th>
-                                            <th>Mother Email</th>
-                                            <th>Father Name</th>
-                                            <th>Mother Name</th>
-                                            <th width="180px"></th>
+                                            <th class="none">Father Email</th>
+                                            <th class="none">Mother Email</th>
+                                            <th class="none">Father Name</th>
+                                            <th class="none">Mother Name</th>
+                                            <th class="none" width="180px"></th>
                                             <th>More</th>
                                         </tr>
                                     </thead>
