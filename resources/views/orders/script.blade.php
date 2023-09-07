@@ -94,14 +94,12 @@
         $(".delete_all_button").click(function() {
             var len = $('input[name="table_records[]"]:checked').length;
             if (len > 0) {
-
-                if (confirm("ยืนยันการลบข้อมูล?")) {
+                if (confirm("Confirm data deletion?")) {
                     $('form#delete_all').submit();
                 }
             } else {
-                alert("กรุณาเลือกรายการที่จะลบ");
+                alert("Please select items to delete.");
             }
-
         });
 
         $('#check-all').click(function() {
@@ -131,7 +129,7 @@
             maximumSelectionLength: 1,
             allowClear: false,
             //theme: 'bootstrap4'
-            placeholder: 'กรุณาเลือกบริษัท'
+            placeholder: 'please select student'
         });
 
 
@@ -239,25 +237,25 @@
         });
 
 
-        $("#EditCost,#EditAmount").on("keyup", function() {
-            let cost = $("#EditCost").val();
-            let amount = $("#EditAmount").val();
+        /*  $("#EditCost,#EditAmount").on("keyup", function() {
+             let cost = $("#EditCost").val();
+             let amount = $("#EditAmount").val();
 
-            let total_cost = amount * cost;
-            $("#EditTotalCost").val(total_cost);
+             let total_cost = amount * cost;
+             $("#EditTotalCost").val(total_cost);
 
-        });
+         }); */
 
-        $("#EditRegisterFee,#EditRefund,#EditPromotion").on("keyup", function() {
+        $("#EditRegisterFee,#EditRefund,#EditPromotion").on("keyup input", function() {
             let fee = $("#EditRegisterFee").val() || 0;
             let refund = $("#EditRefund").val() || 0;
             let promotion = $("#EditPromotion").val() || 0;
             let price = $("#EditTotalCosth").val() || 0;
-            alert();
             let total_cost = parseFloat(price) + (parseFloat(fee) + parseFloat(refund)) - parseFloat(
                 promotion);
-                console.log(total_cost)
-            $("#EditTotalCost").val(parseFloat(total_cost));
+            let ftotal = parseFloat(total_cost);
+            let formattedc = ftotal.toFixed(2);
+            $("#EditTotalCost").val(formattedc);
         });
 
 
@@ -369,12 +367,16 @@
                     name: 'order_number'
                 },
                 {
-                    data: 'product_name',
-                    name: 'product_name'
+                    data: 'contact_code',
+                    name: 'contact_code'
                 },
                 {
                     data: 'contact_name',
                     name: 'contact_name'
+                },
+                {
+                    data: 'product_name',
+                    name: 'product_name'
                 },
                 {
                     data: 'amount',
@@ -397,25 +399,24 @@
                     data: 'more',
                     name: 'more'
                 }
-            ]
+            ],
+            "footerCallback": function(row, data, start, end, display) {
+                var api = this.api();
+
+                // Calculate the sum of values in column 8 for all pages
+                var sum = api
+                    .column(8)
+                    .data()
+                    .reduce(function(acc, value) {
+                        return parseFloat(acc) + parseFloat(value);
+                    }, 0);
+
+                // Update the footer cell with the sum
+                $(api.column(8).footer()).html(sum.toFixed(
+                2)); // Adjust the decimal places as needed
+            }
         });
 
-
-        $("#example1").DataTable({
-            "responsive": true,
-            "lengthChange": false,
-            "autoWidth": false,
-            "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
-        }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
-        $('#example2').DataTable({
-            "paging": true,
-            "lengthChange": false,
-            "searching": false,
-            "ordering": true,
-            "info": true,
-            "autoWidth": false,
-            "responsive": true,
-        });
 
 
         let lid;
@@ -650,6 +651,9 @@
                     $('#EditTotalCost').val(res.data.total_price);
                     $('#EditTotalCosth').val(res.data.total_price);
                     $('#EditDetail').val(res.data.detail);
+                    $('#EditRefund').val(res.data.refund);
+                    $('#EditRegisterFee').val(res.data.register_fee);
+                    $('#EditPromotion').val(res.data.promotion);
                     $('#EditModalBodyTable').html(res.table_html);
                     $('.imgs').html(res.imgs);
                     $('#EditModal').modal('show');
@@ -775,15 +779,18 @@
             if ($('#EditCompany').val()[0] !== undefined) {
                 var formData = {
                     order_number: $('#EditLot').val(),
-                    sid: stockValues, // Only consider the first selected stock value
-                    cid: $('#EditCompany').val()[0],
-                    pid: $('#EditProduct').val()[0],
+                    sid: stockValues,
                     amount: amountValues,
                     price: priceValues,
-                    tamount: $('#EditAmount').val(),
+                    //tamount: $('#EditAmount').val(),
                     //cost: $('#AddCost').val(),
+                    cid: $('#EditCompany').val()[0],
+                    pid: $('#EditProduct').val()[0],
                     total_cost: $('#EditTotalCost').val(),
                     detail: $('#EditDetail').val(),
+                    refund: $('#EditRefund').val(),
+                    register_fee: $('#EditRegisterFee').val(),
+                    promotion: $('#EditPromotion').val(),
                     img: values,
                     _token: token
                 };

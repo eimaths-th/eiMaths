@@ -3,7 +3,7 @@
         <b> {{ config('app.name') }} {{ config('app.subtitle') }}</b> {{ config('app.version') }}
     </div> --}}
     <div class="float-right d-none d-sm-block">
-        <div class="row"><span id="weather" style="display: block;  margin-top:-5px; margin-left:10px"></span> </div>
+        <div class="row"><span id="location"></span><span id="weather" style="display: block;  margin-top:-5px; margin-left:10px"></span> </div>
 
     </div>
     {{-- <strong>Copyright &copy; 2023 All rightss

@@ -17,7 +17,12 @@ return new class extends Migration
             $table->integer('cid')->nullable();
             $table->string('order_number')->nullable();
             $table->text('detail')->nullable();
+            $table->decimal('refund', 12, 2)->nullable();
+            $table->decimal('register_fee', 12, 2)->nullable();
+            $table->decimal('promotion', 12, 2)->nullable();
             $table->decimal('total_price', 12, 2)->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
         });
     }

@@ -41,6 +41,8 @@ return new class extends Migration
             $table->integer('discontinued')->default(0);
             $table->string('discontinued_date')->nullable();
             $table->string('discontinued_reason')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
         });
     }

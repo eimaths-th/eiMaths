@@ -58,6 +58,7 @@ class OrderController extends Controller
                 "orders.total_price as total_price",
                 "orders.created_at as created_at",
                 "contacts.name as contact_name",
+                "contacts.code as contact_code",
                 "departments.name as centre",
                 "products.name as product_name",
                 "products.unit as product_unit",
@@ -101,21 +102,21 @@ class OrderController extends Controller
                         $brt = '';
                     }
                     if (Gate::allows('order-show')) {
-                        $html = '<button type="button" class="btn btn-sm btn-info btn-print" id="getPrintData" data-id="' . $row->id . '"><i class="fa fa-print"></i> Print</button> ';
+                        $html = '<button type="button" class="btn btn-sm btn-success btn-print" id="getPrintData" data-id="' . $row->id . '"><i class="fa fa-print"></i> Print</button> ';
                     } else {
-                        $html = '<button type="button" class="btn btn-sm btn-info btn-print disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-print"></i> Print</button> ';
+                        $html = '<button type="button" class="btn btn-sm btn-success btn-print disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-print"></i> Print</button> ';
                     }
                     if (Gate::allows('order-edit')) {
                         $html .= '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit</button> ';
                     } else {
                         $html .= '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> Edit</button> ';
                     }
-                    if (Gate::allows('order-delete')) {
+                    /*if (Gate::allows('order-delete')) {
                         $html .= '<button type="button" data-rowid="' . $row->id . '" class="btn btn-sm btn-danger btn-delete"><i class="fa fa-trash"></i> Delete</button> ';
                     } else {
                         $html .= '<button type="button" class="btn btn-sm btn-danger disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-trash"></i> Delete</button> ';
                     }
-                    /*  if (Gate::allows('log-list')) {
+                      if (Gate::allows('log-list')) {
                         $html .= $brt.'<button type="button" class="btn btn-sm btn-success btn-log" id="getLogData" data-id="' . $row->id . '"><i class="fas fa-clipboard"></i> Log</a> ';
                     } else {
                         $html .= $brt.'<button type="button" class="btn btn-sm btn-success disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fas fa-clipboard"></i> Log</a> ';
@@ -128,18 +129,10 @@ class OrderController extends Controller
         $customData = [
             [
                 'id' => 1,
-                'name' => 'Application fee',
-            ],
-            [
-                'id' => 2,
-                'name' => 'Application fee',
+                'name' => 'Application Fee',
             ],
         ];
-
-        // Create a collection from the custom data
         $customCollection = collect($customData);
-
-
         $product = Product::orderBy("id", "asc")->get();
         $contact = Contact::where([['discontinued', '0']])
             ->where([['centre', Auth::user()->department->id]])
@@ -286,14 +279,12 @@ class OrderController extends Controller
             'ctype' => $ctype,
             'price_text' => $price_text,
             'price_texten' => $price_texten,
-            'etype' => "ค่าสมัครเรียน / Application fee",
+            'etype' => "ค่าสมัครเรียน / Application Fee",
             'date' => $formattedDate,
             'data' => $datas->first(),
             'items' => $datasd,
             'file_att' => $datasf,
         ];
-
-
 
 
         // Render the view with the data and get the HTML content
@@ -407,7 +398,7 @@ class OrderController extends Controller
             $data_html .= '<tr class="firstTr">
             <td width="30%">
                 <div class="col-md-12 col-sm-12 col-xs-12">
-                    <select style="width: 100%;" class="products form-control" id="eproduct" name="eproduct[]" required disabled>
+                    <select style="width: 100%;" class="products form-control" id="estock" name="estock[]" required disabled>
                         ' . $select_list . '
                     </select>
                     <div id="elot_price" class="text-success"></div>
@@ -475,8 +466,7 @@ class OrderController extends Controller
         if (!$filestore->isEmpty()) {
             foreach ($filestore as $pics) {
                 $imgf = url('/') . '/file_store/' . $pics->filename;
-                $img .= "<div id='img_" . $pics->id . "' class='col-md-5 text-center mb-3'><img src=\"" . $imgf . "\" height=\"150\">
-                </div>&nbsp;&nbsp;";
+                $img .= "<img src=\"" . $imgf . "\" height=\"200\">&nbsp;&nbsp;&nbsp;";
             }
         } else {
             $img = "";
@@ -492,12 +482,9 @@ class OrderController extends Controller
     {
         //
         $rules = [
-            'order_number' => 'required|string|max:10',
+            'order_number' => 'required|string|max:20',
             'pid' => 'required|integer|max:255',
             'cid' => 'required|integer|max:255',
-            //'amount' => 'required|integer|between:0,10000000',
-            //'cost' => 'required|integer|between:0,10000000',
-            //'postcode' => 'integer|max:10',
         ];
 
 
@@ -509,12 +496,14 @@ class OrderController extends Controller
 
         $data = [
             'order_number' => $request->get('order_number'),
-            //'sid' => $request->get('sid'),
             'cid' => $request->get('cid'),
-            'amount' => $request->get('tamount'),
-            'cost' => $request->get('cost'),
-            'total_cost' => $request->get('total_cost'),
+            //'amount' => $request->get('tamount'),
+            //'cost' => $request->get('cost'),
+            'total_price' => $request->get('total_cost'),
             'detail' => $request->get('detail'),
+            'refund' => $request->get('refund'),
+            'register_fee' => $request->get('register_fee'),
+            'promotion' => $request->get('promotion'),
             'updated_by' => Auth::id()
         ];
 
@@ -529,23 +518,15 @@ class OrderController extends Controller
         if (is_array($amounts) && is_array($prices) && count($amounts) === count($prices)) {
             foreach ($amounts as $index => $amount) {
                 if (isset($sids[$index])) { // Check if the index exists in $sids array
+                    $priceq = Product::find($sids[$index]);
                     $orderDetail = new OrderDetail();
                     $orderDetail->order_id = $id;
                     $orderDetail->product_id = $sids[$index];
-                    $orderDetail->quantity = $amount;
+                    $orderDetail->pname = $priceq->name;
+                    $orderDetail->punit = $priceq->unit;
+                    $orderDetail->quantity = $amount[$index];
                     $orderDetail->price = $prices[$index];
                     $orderDetail->save();
-
-                    $product = product::find($sids[$index]);
-                    if ($product) {
-                        $remain = $product->remaining - $amount;
-                        if ($remain <= 0) {
-                            //set status sold out
-                            $product->status_id = 4;
-                        }
-                        $product->remaining = $remain;
-                        $product->save();
-                    }
                 }
             }
         }
@@ -569,9 +550,7 @@ class OrderController extends Controller
             }
         }
 
-
-
-        return response()->json(['success' => 'แก้ไข รายการขาย เรียบร้อยแล้ว']);
+        return response()->json(['success' => 'Edit Order completed']);
     }
 
     public function deleteImg($id, $id2)

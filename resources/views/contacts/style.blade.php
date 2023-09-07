@@ -12,4 +12,8 @@
         background-color: #ddd;
         border-color: #a8a8a8;
     }
+
+    .dataTables_filter {
+        display: none;
+    }
 </style>

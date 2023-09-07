@@ -88,18 +88,34 @@
                                             <th>Centre</th>
                                             <th>Order Date</th>
                                             <th>Order Number</th>
+                                            <th>Student Code</th>
+                                            <th>Student Name</th>
                                             <th>Item</th>
-                                            <th>Student</th>
                                             <th>Amount</th>
                                             {{-- <th>ราคาต่อหน่วย</th> --}}
                                             <th>Price</th>
-                                            <th width="250px"></th>
+                                            <th width="120px"></th>
                                             <th>More</th>
                                         </tr>
                                     </thead>
                                     <tbody>
 
                                     </tbody>
+                                    <tfoot >
+                                        <tr>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th align="right"></th>
+                                            <th align="right">Total</th>
+                                            <th align="right"></th>
+                                            <th></th>
+                                            <th></th>
+                                        </tr>
+                                    </tfoot>
                                 </table>
                             </form>
                         </div>

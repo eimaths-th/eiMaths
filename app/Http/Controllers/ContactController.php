@@ -50,7 +50,7 @@ class ContactController extends Controller
         if ($request->ajax()) {
             //sleep(2);
 
-            $datas = Contact::select(
+            $query = Contact::select(
                 "contacts.*",
                 "departments.name as centre_name",
                 "levels.name as level_name",
@@ -63,9 +63,20 @@ class ContactController extends Controller
                 ->join("products", "contacts.bookuse", "=", "products.id")
                 ->join("terms as start_terms", "contacts.start_term", "=", "start_terms.id")
                 ->join("terms as pterms", "contacts.term", "=", "pterms.id")
-                ->where('discontinued', '0')
-                ->orderBy("contacts.id", "desc")
-                ->get();
+                ->where('discontinued', '0');
+
+
+            // Handle date range filtering
+            $startDate = $request->input('start_date');
+            $endDate = $request->input('end_date');
+            dd($request->input('dateRange'));
+            //if ($startDate && $endDate) {
+            if ($request->input('filter')) {
+                $query->whereBetween('contacts.start_date', [$request->input('filter'), $request->input('filter')]);
+            }
+            $query->orderBy("contacts.id", "desc");
+            $datas = $query->get();
+
             return datatables()->of($datas)
                 ->editColumn('checkbox', function ($row) {
                     return '<input type="checkbox" id="' . $row->id . '" class="flat" name="table_records[]" value="' . $row->id . '" >';

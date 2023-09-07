@@ -76,37 +76,91 @@
                                     });
                                 </script>
                             @endif
-                            <form method="post" action="{{ route('contacts.destroy_all') }}" name="delete_all"
-                                id="delete_all">
-                                @csrf
-                                @method('POST')
-                                <table id="Listview" class="display nowrap table table-bordered table-striped table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th width="90px"><input type="checkbox" id="check-all" class="flat"></th>
-                                            <th>Centre</th>
-                                            <th>Code</th>
-                                            <th>Student Name</th>
-                                            <th>Start Date</th>
-                                            <th>Level</th>
-                                            <th>BookUse	</th>
-                                            <th>Start Term</th>
-                                            <th>Term</th>
-                                            <th class="none">Telephone</th>
-                                            <th>Father Mobile</th>
-                                            <th>Mother Mobile</th>
-                                            <th class="none">Father Email</th>
-                                            <th class="none">Mother Email</th>
-                                            <th class="none">Father Name</th>
-                                            <th class="none">Mother Name</th>
-                                            <th class="none" width="180px"></th>
-                                            <th>More</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                    </tbody>
-                                </table>
-                            </form>
+                            <div class="row ">
+                                <div class="col-xs-12 col-sm-12 col-md-12">
+                                    <div class="row float-lg-right">
+
+                                        <div class="col-xs-3 col-sm-3 col-md-3">
+                                            <div class="form-group">
+                                                <strong><i class="fa-solid fa-clipboard-question"></i>
+                                                    Search Type:</strong>
+                                                <select style="width: 100%;" class="form-control" id="search_type"
+                                                    name="search_type">
+                                                    <option value="1" selected>Student Code</option>
+                                                    <option value="2">Student Name</option>
+                                                    <option value="3">Date Start</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-5 col-sm-5 col-md-5">
+                                            <div class="form-group">
+                                                <strong><i class="far fa-calendar-alt"></i>
+                                                    Date:</strong>
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text">
+                                                            <i class="far fa-calendar-alt"></i>
+                                                        </span>
+                                                    </div>
+                                                    <input type="text" class="form-control float-right" id="reservation">
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-3 col-sm-3 col-md-3">
+                                            <div class="form-group">
+                                                <strong><i class="fa-regular fa-keyboard"></i> Keyword:</strong>
+                                                {!! Form::text('keyword', null, ['id' => 'keyword', 'placeholder' => 'keyword', 'class' => 'form-control']) !!}
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-1 col-sm-1 col-md-1" style="align-items: flex-end;">
+                                            <div class="form-group">
+                                                <strong>&nbsp;</strong>
+                                                <button type="button" class="form-control btn btn-success"
+                                                    id="SearchButtons">
+                                                    <i class="fas fa-search"></i> </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row ">
+                                <div class="col-xs-12 col-sm-12 col-md-12">
+                                    <form method="post" action="{{ route('contacts.destroy_all') }}" name="delete_all"
+                                        id="delete_all">
+                                        @csrf
+                                        @method('POST')
+                                        <table id="Listview"
+                                            class="display nowrap table table-bordered table-striped table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th width="90px"><input type="checkbox" id="check-all" class="flat">
+                                                    </th>
+                                                    <th>Centre</th>
+                                                    <th>Code</th>
+                                                    <th>Student Name</th>
+                                                    <th>Start Date</th>
+                                                    <th>Level</th>
+                                                    <th>BookUse </th>
+                                                    <th>Start Term</th>
+                                                    <th>Term</th>
+                                                    <th class="none">Telephone</th>
+                                                    <th>Father Mobile</th>
+                                                    <th>Mother Mobile</th>
+                                                    <th class="none">Father Email</th>
+                                                    <th class="none">Mother Email</th>
+                                                    <th class="none">Father Name</th>
+                                                    <th class="none">Mother Name</th>
+                                                    <th class="none" width="180px"></th>
+                                                    <th>More</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            </tbody>
+                                        </table>
+                                    </form>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

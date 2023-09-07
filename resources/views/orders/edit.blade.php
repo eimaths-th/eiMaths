@@ -211,25 +211,25 @@
                                                      {!! Form::number('register_fee', null, [
                                                          'id' => 'EditRegisterFee',
                                                          'step' => '0.50',
-                                                         'placeholder' => ' Registration Fees',
+                                                         'placeholder' => 'Registration Fees',
                                                          'class' => 'auto_decimal form-control',
                                                          'readonly' => false,
                                                      ]) !!}
                                                  </div>
                                              </div>
                                              <div class="col-xs-6 col-sm-6 col-md-6">
-                                                <div class="form-group">
-                                                    <strong><i class="fa-solid fa-percent"></i> Promotion
-                                                        :</strong>
-                                                    {!! Form::number('promotion', null, [
-                                                        'id' => 'EditPromotion',
-                                                        'step' => '0.50',
-                                                        'placeholder' => 'Promotion',
-                                                        'class' => 'auto_decimal form-control',
-                                                        'readonly' => false,
-                                                    ]) !!}
-                                                </div>
-                                            </div>
+                                                 <div class="form-group">
+                                                     <strong><i class="fa-solid fa-percent"></i> Promotion
+                                                         :</strong>
+                                                     {!! Form::number('promotion', null, [
+                                                         'id' => 'EditPromotion',
+                                                         'step' => '0.50',
+                                                         'placeholder' => 'Promotion',
+                                                         'class' => 'auto_decimal form-control',
+                                                         'readonly' => false,
+                                                     ]) !!}
+                                                 </div>
+                                             </div>
 
                                          </div>
                                          <div class="row">
@@ -244,10 +244,10 @@
                                                          'readonly' => 'true',
                                                      ]) !!}
                                                      {!! Form::number('total_costh', null, [
-                                                        'id' => 'EditTotalCosth',
-                                                        'type' => 'hidden', // Set the input type to 'hidden'
-                                                        'hidden' => true,  // Add the 'hidden' attribute
-                                                    ]) !!}
+                                                         'id' => 'EditTotalCosth',
+                                                         'type' => 'hidden', // Set the input type to 'hidden'
+                                                         'hidden' => true, // Add the 'hidden' attribute
+                                                     ]) !!}
                                                  </div>
                                              </div>
                                          </div>
@@ -264,9 +264,7 @@
                                                  </div>
                                              </div>
                                          </div>
-
                                      </div>
-
                                  </div>
                                  <div class="tab-pane fade" id="custom-tabs-one-profile2" role="tabpanel"
                                      aria-labelledby="custom-tabs-one-profile2-tab">
@@ -314,10 +312,7 @@
                              </div>
                          </div>
                      </div>
-
-
                      {!! Form::close() !!}
-
                  </div>
                  <!-- Modal footer -->
                  <div class="modal-footer">

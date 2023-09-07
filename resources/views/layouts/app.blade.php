@@ -34,6 +34,7 @@
     <link rel="stylesheet" href="plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
     <link rel="stylesheet" href="plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
     <link rel="stylesheet" href="plugins/toastr/toastr.min.css">
+    <link rel="stylesheet" href="plugins/daterangepicker/daterangepicker.css">
     <!-- Include Bootstrap DateTimePicker CDN -->
     <link
         href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css"
@@ -58,7 +59,7 @@
                     font-size: 20px;
         } */
         body {
-            font-family: 'Roboto' ,'Sarabun';
+            font-family: 'Roboto', 'Sarabun';
             font-size: 16px;
         }
 
@@ -143,6 +144,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.37.1/apexcharts.min.js"
     integrity="sha512-hl0UXLK2ElpaU9SHbuVNsvFv2BaYszlhxB2EntUy5FTGdfg9wFJrJG2JDcT4iyKmWeuDLmK+Nr2hLoq2sKk6MQ=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="plugins/moment/moment.min.js"></script>
+<script src="plugins/daterangepicker/daterangepicker.js"></script>
 <script src="plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
 <script src="plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
 <script src="plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
@@ -210,6 +213,74 @@
             });
     }
 
+    function getLocationAndWeather() {
+        const locationElement = document.getElementById('location');
+        const weatherElement = document.getElementById('weather');
+        const apiKey = 'fbe9ed2bd4d3caedef17a2f42e43dc7d'; // Replace with your OpenWeatherMap API key.
+        const geocodingApiKey =
+            'AIzaSyC8v6o6VKtOzrbvcTP-BEnuEvZGeW7rSPk'; // Replace with your Google Geocoding API key.
+
+        let lat, lon; // Define lat and lon variables at a higher scope.
+
+        // Step 1: Use the Google Geolocation API to get the user's location
+        fetch('https://www.googleapis.com/geolocation/v1/geolocate?key=' + geocodingApiKey, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({}),
+            })
+            .then(response => response.json())
+            .then(locationData => {
+                const {
+                    location
+                } = locationData;
+                lat = location.lat; // Assign values to lat and lon here.
+                lon = location.lng;
+
+                // Step 2: Use the obtained location (lat, lon) to fetch location data from Google Geocoding API
+                const geocodingApiUrl =
+                    `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lon}&key=${geocodingApiKey}`;
+
+                return fetch(geocodingApiUrl);
+            })
+            .then(response => response.json())
+            .then(geocodingData => {
+                if (geocodingData.status === 'OK') {
+                    const results = geocodingData.results;
+                    const locationName = results[0].formatted_address;
+
+                    // Display location information
+                    locationElement.innerHTML = `Location: ${locationName}`;
+                }
+
+                // Step 3: Use the obtained location (lat, lon) to fetch weather data from OpenWeatherMap
+                const weatherApiUrl =
+                    `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`;
+
+                return fetch(weatherApiUrl);
+            })
+            .then(response => response.json())
+            .then(weatherData => {
+                const temperature = weatherData.main.temp;
+                const weatherIconCode = weatherData.weather[0].icon;
+                const weatherIconUrl = `http://openweathermap.org/img/w/${weatherIconCode}.png`;
+                const weatherDescription = weatherData.weather[0].description;
+
+                const weatherHTML = `Weather:
+            <img src="${weatherIconUrl}" alt="${weatherDescription}" width="35px">
+            ${temperature.toFixed(1)}°C
+        `;
+
+                // Display weather information
+                weatherElement.innerHTML = weatherHTML;
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+            });
+    }
+
+
     // Get user's location and update weather
     /* if ('geolocation' in navigator) {
         navigator.geolocation.getCurrentPosition(position => {
@@ -223,6 +294,7 @@
         console.error('Geolocation is not available.');
     } */
     updateWeather('14.683409', '100.706897');
+    //getLocationAndWeather();
 
     function updateClock() {
         const datetimeElement = document.getElementById('real-time-clock');

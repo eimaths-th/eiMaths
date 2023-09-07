@@ -34,31 +34,6 @@ class FileUploadService
 
                 $fileType = $image->getClientMimeType();
 
-                // Check if the file is a PDF
-                if ($fileType === 'application/pdf') {
-
-                    $output = [];
-                    $returnValue = 0;
-
-                    $new_new = "pdf_" . $newname;
-                    $convert = public_path() . '/file_upload/' . $new_new;
-                    $orifile = public_path() . '/file_upload/' . $newname;
-
-                    $command = 'gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dNOPAUSE -dQUIET -dBATCH -sOutputFile="' .  $convert . '" "' . $orifile . '"';
-
-                    // Execute the command and capture the output and return value
-                    exec($command, $output, $returnValue);
-
-                    // Check if the command was executed successfully
-                    if ($returnValue === 0) {
-                    } else {
-                        //dd($output);
-                    }
-
-                    unlink($orifile);
-                    $newname = $new_new;
-                }
-
                 $imageUpload = new FileUpload();
                 $imageUpload->filename = $newname;
                 $imageUpload->oldname = $imageName;
