@@ -1,5 +1,34 @@
 <script>
+    var minDate, maxDate;
+
+    // Custom filtering function which will search data in column four between two values
+    $.fn.dataTable.ext.search.push(
+        function(settings, data, dataIndex) {
+            var min = minDate.val();
+            var max = maxDate.val();
+            var date = new Date(data[4]);
+
+            if (
+                (min === null && max === null) ||
+                (min === null && date <= max) ||
+                (min <= date && max === null) ||
+                (min <= date && date <= max)
+            ) {
+                return true;
+            }
+            return false;
+        }
+    );
+
     $(document).ready(function() {
+        minDate = new DateTime($('#min'), {
+            format: 'MMMM Do YYYY'
+        });
+        maxDate = new DateTime($('#max'), {
+            format: 'MMMM Do YYYY'
+        });
+
+        console.log(minDate)
         $(".delete_all_button").click(function() {
             var len = $('input[name="table_records[]"]:checked').length;
             if (len > 0) {
@@ -85,7 +114,10 @@
 
         $.datepicker.setDefaults($.datepicker.regional['en']);
         $(".AddDate").datepicker({
-            dateFormat: "yy-mm-dd"
+            dateFormat: 'yy-mm-dd',
+            changeMonth: true,
+            changeYear: true,
+            yearRange: '1980:2050'
         });
 
 
@@ -173,9 +205,15 @@
             }
         })
 
+        var table = $('#example').DataTable();
 
-        var table = $('#Listview').DataTable({
-            ajax: '',
+        var table6 = $('#Listview').DataTable({
+            ajax: {
+                data: function(d) {
+                    d.approved = $('#keyword').val(),
+                    d.search = $('input[type="search"]').val()
+                }
+            },
             serverSide: true,
             processing: true,
             language: {
@@ -203,7 +241,7 @@
             //searching: false,
             iDisplayLength: 10,
             lengthMenu: [10, 25, 50, 75, 100],
-            stateSave: true,
+            stateSave: false,
             autoWidth: false,
             fixedHeader: true,
             responsive: {
@@ -344,35 +382,51 @@
         });
 
 
-        // Add a custom filter for date range
-        $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
-            alert();
-            var dateRange = $('#reservation').val().split(' - ');
-            var startDate = dateRange[0].trim();
-            var endDate = dateRange[1].trim();
-            var rowData = data[4]; // Assuming the date is in the second column
 
-            if (startDate === '' && endDate === '') {
-                return true; // No date range specified, show all rows
-            }
 
-            var date = new Date(rowData);
-
-            if (startDate !== '' && endDate !== '') {
-                return date >= new Date(startDate) && date <= new Date(endDate);
-            } else if (startDate !== '') {
-                return date >= new Date(startDate);
-            } else if (endDate !== '') {
-                return date <= new Date(endDate);
-            }
-
-            return false;
+        jQuery("#min").datepicker({
+            onSelect: function() {
+                table.draw();
+            },
+            dateFormat: 'yy-mm-dd',
+            changeMonth: true,
+            changeYear: true
         });
+        jQuery("#max").datepicker({
+            onSelect: function() {
+                table.draw();
+            },
+            dateFormat: 'yy-mm-dd',
+            changeMonth: true,
+            changeYear: true
+        });
+
+        jQuery('#min, #max').change(function() {
+            table.draw();
+        });
+
+        $('#keyword').change(function(){
+        table6.draw();
+    });
+
 
         function applyFilters() {
             var dateRange = $('#reservation').val();
-            console.log(dateRange);
-            table.column(4).search(dateRange, true, false).draw();
+
+            if (dateRange !== null) {
+                console.log(dateRange);
+                var dateRanger = $('#reservation').val().split(' - ');
+                var startDate = dateRanger[0].trim();
+                var endDate = dateRange[1].trim();
+                //table.column(4).search(startDate + '|' + endDate, true, false).draw();
+                table.column(4).search(function(value, _, node) {
+                    // Assuming your column contains date values like "2023-09-07"
+                    var columnDate = new Date(value.trim()); // Make sure to trim any extra spaces
+                    console.log(columnDate);
+                    return (columnDate >= startDate && columnDate <= endDate);
+                }).draw();
+
+            }
         }
 
         // Apply the custom date range filter on input change

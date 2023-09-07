@@ -23,6 +23,7 @@ use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
+use DataTables;
 
 class ContactController extends Controller
 {
@@ -49,7 +50,7 @@ class ContactController extends Controller
 
         if ($request->ajax()) {
             //sleep(2);
-
+            //dd($request->get('approved'));
             $query = Contact::select(
                 "contacts.*",
                 "departments.name as centre_name",
@@ -65,15 +66,24 @@ class ContactController extends Controller
                 ->join("terms as pterms", "contacts.term", "=", "pterms.id")
                 ->where('discontinued', '0');
 
-
-            // Handle date range filtering
-            $startDate = $request->input('start_date');
-            $endDate = $request->input('end_date');
-            dd($request->input('dateRange'));
-            //if ($startDate && $endDate) {
-            if ($request->input('filter')) {
-                $query->whereBetween('contacts.start_date', [$request->input('filter'), $request->input('filter')]);
+            if (!empty($request->get('approved'))) {
+                $query->where('contacts.code', $request->get('approved'));
             }
+
+
+            $dateRange = $request->input('dateRange');
+
+            // Check if the dateRange parameter is provided
+            if ($dateRange) {
+                $dateRangeArray = explode(' - ', $dateRange);
+
+                if (!empty($dateRangeArray) && count($dateRangeArray) == 2) {
+                    $startDate = $dateRangeArray[0];
+                    $endDate = $dateRangeArray[1];
+                    $query->whereBetween('contacts.start_date', [$startDate, $endDate]);
+                }
+            }
+
             $query->orderBy("contacts.id", "desc");
             $datas = $query->get();
 
@@ -96,7 +106,19 @@ class ContactController extends Controller
                         $html .= '<button type="button" class="btn btn-sm btn-danger disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-trash"></i> Delete</button> ';
                     }
                     return $html;
-                })->rawColumns(['checkbox', 'action', 'more'])->toJson();
+                })
+                /* ->filter(function ($instance) use ($request) {
+                    if ($request->get('approved') == '0' || $request->get('approved') == '1') {
+                        $instance->where('contacts.code', $request->get('approved'));
+                    }
+                    if (!empty($request->get('search'))) {
+                        $instance->where(function ($w) use ($request) {
+                            $search = $request->get('search');
+                            $w->orWhere('name', 'LIKE', "%$search%")
+                                ->orWhere('email', 'LIKE', "%$search%");
+                        });
+                    }
+                }) */->rawColumns(['checkbox', 'action', 'more'])->toJson();
         }
 
         $centre = Department::where([['status', '1']])
