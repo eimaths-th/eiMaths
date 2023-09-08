@@ -21,13 +21,13 @@
             src: url(https://fonts.gstatic.com/s/sarabun/v13/DtVjJx26TKEr37c9aAFJn2QN.woff2) format('woff2');
         }
 
-        /*  @font-face {
+        @font-face {
             font-family: 'THSarabunNew';
             font-size: 16px;
             font-style: normal;
             font-weight: bold;
             src: url(https://fonts.gstatic.com/s/sarabun/v13/DtVjJx26TKEr37c9aAFJn2QN.woff2) format('woff2');
-        } */
+        }
 
         body {
             font-family: 'Sarabun', serif;
