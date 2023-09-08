@@ -1,34 +1,5 @@
 <script>
-    var minDate, maxDate;
-
-    // Custom filtering function which will search data in column four between two values
-    $.fn.dataTable.ext.search.push(
-        function(settings, data, dataIndex) {
-            var min = minDate.val();
-            var max = maxDate.val();
-            var date = new Date(data[4]);
-
-            if (
-                (min === null && max === null) ||
-                (min === null && date <= max) ||
-                (min <= date && max === null) ||
-                (min <= date && date <= max)
-            ) {
-                return true;
-            }
-            return false;
-        }
-    );
-
     $(document).ready(function() {
-        minDate = new DateTime($('#min'), {
-            format: 'MMMM Do YYYY'
-        });
-        maxDate = new DateTime($('#max'), {
-            format: 'MMMM Do YYYY'
-        });
-
-        console.log(minDate)
         $(".delete_all_button").click(function() {
             var len = $('input[name="table_records[]"]:checked').length;
             if (len > 0) {
@@ -74,11 +45,6 @@
             $('#EditReason').val(selectedReason);
         });
 
-        $('#reservation').daterangepicker({
-            locale: {
-                format: 'YYYY-MM-DD'
-            }
-        });
 
         $(".select2_single").select2({
             maximumSelectionLength: 1,
@@ -112,8 +78,54 @@
             placeholder: 'Please select'
         });
 
+        var startDate;
+        var endDate;
+
+        function datesearch() {
+            var currentDate = moment();
+            // Set the start date to 7 days before today
+            startDate = moment(currentDate).subtract(7, 'days').format('YYYY-MM-DD');
+            // Set the end date to the end of the current month
+            endDate = moment(currentDate).endOf('month').format('YYYY-MM-DD');
+        }
+
+        function retrieveFieldValues() {
+            var saveddateStart = localStorage.getItem('dateStart');
+            var savedSearchType = localStorage.getItem('searchType');
+            var savedKeyword = localStorage.getItem('keyword');
+
+            // Set field values from local storage
+            if (saveddateStart) {
+                var dateParts = saveddateStart.split(' - ');
+                startDate = dateParts[0];
+                endDate = dateParts[1];
+            } else {
+                datesearch();
+            }
+            if (savedSearchType) {
+                $('#search_type').val(savedSearchType);
+            }
+            if (savedKeyword) {
+                $('#keyword').val(savedKeyword);
+            }
+        }
+
+        // Call the function to set initial field values on page load
+        retrieveFieldValues();
+
+        $('#reservation').daterangepicker({
+            startDate: startDate,
+            endDate: endDate,
+            locale: {
+                format: 'YYYY-MM-DD'
+            }
+        });
+
         $.datepicker.setDefaults($.datepicker.regional['en']);
         $(".AddDate").datepicker({
+            /*  onSelect: function() {
+                 table.draw();
+             }, */
             dateFormat: 'yy-mm-dd',
             changeMonth: true,
             changeYear: true,
@@ -205,13 +217,12 @@
             }
         })
 
-        var table = $('#example').DataTable();
 
-        var table6 = $('#Listview').DataTable({
+        const table_option = {
             ajax: {
                 data: function(d) {
-                    d.approved = $('#keyword').val(),
-                    d.search = $('input[type="search"]').val()
+                    d.sdate = $('#reservation').val();
+                    //d.search = $('input[type="search"]').val();
                 }
             },
             serverSide: true,
@@ -219,8 +230,8 @@
             language: {
                 loadingRecords: '&nbsp;',
                 processing: `<div class="spinner-border text-primary"></div>`,
-                "sProcessing": "Processcing...",
-                "sLengthMenu": "Display_MENU_ Row",
+                "sProcessing": "Processing...",
+                "sLengthMenu": "Display _MENU_ Row",
                 "sZeroRecords": "No Data Found",
                 "sInfo": "Display _START_ To _END_ From _TOTAL_ Records",
                 "sInfoEmpty": "Display 0 To 0 From 0 Records",
@@ -241,7 +252,7 @@
             //searching: false,
             iDisplayLength: 10,
             lengthMenu: [10, 25, 50, 75, 100],
-            stateSave: false,
+            stateSave: true,
             autoWidth: false,
             fixedHeader: true,
             responsive: {
@@ -332,113 +343,84 @@
                     name: 'more'
                 }
             ]
-        });
+        };
+
+        var table = $('#Listview').DataTable(table_option);
 
         $('#SearchButtons').on('click', function() {
             var searchType = $('#search_type').val();
             var keyword = $('#keyword').val();
-            var dateRange = $('#reservation').val().split(' - ');
-            var startDate = dateRange[0].trim();
-            var endDate = dateRange[1].trim();
 
-            // Clear the previous search and any custom filters
-            table.search('').draw();
-            $.fn.dataTable.ext.search.pop(); // Remove the custom date range filter
+            if (searchType !== '' && keyword !== '') {
+                // Clear the previous search and any custom filters
+                table.search('').draw();
+                $.fn.dataTable.ext.search.pop(); // Remove the custom date range filter
 
-            // Debugging: Output values to console
-            console.log('Search Type:', searchType);
-            console.log('Keyword:', keyword);
-            console.log('Start Date:', startDate);
-            console.log('End Date:', endDate);
-
-            // Apply the new search based on searchType and keyword
-            if (searchType === '1') {
-                table.column(2).search(keyword).draw();
-            } else if (searchType === '2') {
-                table.column(3).search(keyword).draw();
-            } else if (searchType === '3') {
-                // Debugging: Output date values to console
-                console.log('Date values:', startDate, endDate);
-
-                // Apply the date range filter if both startDate and endDate are provided
-                if (startDate !== '' && endDate !== '') {
-                    $.fn.dataTable.ext.search.push(
-                        function(settings, data, dataIndex) {
-                            var dateValue = data[
-                                4]; // Replace with the appropriate column index for your date data
-                            var date = new Date(dateValue);
-
-                            // Debugging: Output date comparison result to console
-                            console.log('Comparing date:', date);
-                            console.log('Is within range?', date >= new Date(startDate) && date <=
-                                new Date(endDate));
-
-                            return (date >= new Date(startDate) && date <= new Date(endDate));
-                        }
-                    );
-                    table.draw();
+                // Apply the new search based on searchType and keyword
+                if (searchType === '1') {
+                    table.column(2).search(keyword).draw();
+                } else if (searchType === '2') {
+                    table.column(3).search(keyword).draw();
+                } else if (searchType === '3') {
+                    table.column(14).search(keyword).draw();
+                } else if (searchType === '4') {
+                    table.column(15).search(keyword).draw();
+                } else if (searchType === '5') {
+                    table.column(10).search(keyword).draw();
+                } else if (searchType === '6') {
+                    table.column(11).search(keyword).draw();
                 }
+            } else {
+                // Handle the case where searchType or keyword is empty
+                toastr.error('Please input Search Type and Keyword', {
+                    timeOut: 5000
+                });
             }
         });
 
 
+        // Attach event handler to a button or element to trigger the reset
+        $('#resetSearchButton').on('click', async function() {
+            localStorage.removeItem('dateStart');
+            localStorage.removeItem('searchType');
+            localStorage.removeItem('keyword');
 
+            // Set field values to empty
+            $('#search_type').val('');
+            $('#keyword').val('');
 
-        jQuery("#min").datepicker({
-            onSelect: function() {
+            $('#Listview').html('');
+
+            // Clear DataTable state
+            if (table) {
+                table.state.clear();
+                await table.destroy();
+
+                table = $('#Listview').DataTable(table_option);
                 table.draw();
-            },
-            dateFormat: 'yy-mm-dd',
-            changeMonth: true,
-            changeYear: true
-        });
-        jQuery("#max").datepicker({
-            onSelect: function() {
-                table.draw();
-            },
-            dateFormat: 'yy-mm-dd',
-            changeMonth: true,
-            changeYear: true
-        });
-
-        jQuery('#min, #max').change(function() {
-            table.draw();
-        });
-
-        $('#keyword').change(function(){
-        table6.draw();
-    });
-
-
-        function applyFilters() {
-            var dateRange = $('#reservation').val();
-
-            if (dateRange !== null) {
-                console.log(dateRange);
-                var dateRanger = $('#reservation').val().split(' - ');
-                var startDate = dateRanger[0].trim();
-                var endDate = dateRange[1].trim();
-                //table.column(4).search(startDate + '|' + endDate, true, false).draw();
-                table.column(4).search(function(value, _, node) {
-                    // Assuming your column contains date values like "2023-09-07"
-                    var columnDate = new Date(value.trim()); // Make sure to trim any extra spaces
-                    console.log(columnDate);
-                    return (columnDate >= startDate && columnDate <= endDate);
-                }).draw();
-
             }
-        }
+
+            // Set the date range back to its default
+            var currentDate = moment();
+            var startDate = moment(currentDate).subtract(7, 'days').format('YYYY-MM-DD');
+            var endDate = moment(currentDate).endOf('month').format('YYYY-MM-DD');
+            $('#reservation').val(startDate + ' - ' + endDate);
+        });
+
 
         // Apply the custom date range filter on input change
         $('#reservation').on('apply.daterangepicker', function() {
-            applyFilters();
+            table.draw();
+            storeFieldValues();
         });
 
         function storeFieldValues() {
+            var dateStart = $('#reservation').val();
             var searchType = $('#search_type').val();
             var keyword = $('#keyword').val();
 
             // Store values in local storage
+            localStorage.setItem('dateStart', dateStart);
             localStorage.setItem('searchType', searchType);
             localStorage.setItem('keyword', keyword);
         }
@@ -446,24 +428,6 @@
         // Attach event handlers to the fields to store values when they change
         $('#search_type').on('change', storeFieldValues);
         $('#keyword').on('input', storeFieldValues);
-
-        // Function to retrieve field values from local storage
-        function retrieveFieldValues() {
-            var savedSearchType = localStorage.getItem('searchType');
-            var savedKeyword = localStorage.getItem('keyword');
-
-            // Set field values from local storage
-            if (savedSearchType) {
-                $('#search_type').val(savedSearchType);
-            }
-            if (savedKeyword) {
-                $('#keyword').val(savedKeyword);
-            }
-        }
-
-        // Call the function to set initial field values on page load
-        retrieveFieldValues();
-
 
 
         $(document).on('click', '#CreateButton', async function(e) {
@@ -736,7 +700,6 @@
                 }
             }); //end ajax
         })
-
 
     });
 </script>

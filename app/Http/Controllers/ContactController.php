@@ -66,21 +66,20 @@ class ContactController extends Controller
                 ->join("terms as pterms", "contacts.term", "=", "pterms.id")
                 ->where('discontinued', '0');
 
-            if (!empty($request->get('approved'))) {
-                $query->where('contacts.code', $request->get('approved'));
-            }
+            if (!empty($request->get('sdate'))) {
+                //dd($request->get('sdate'));
+                //$query->where('contacts.code', $request->get('approved'));
+                $dateRange = $request->input('sdate');
 
+                // Check if the dateRange parameter is provided
+                if ($dateRange) {
+                    $dateRangeArray = explode(' - ', $dateRange);
 
-            $dateRange = $request->input('dateRange');
-
-            // Check if the dateRange parameter is provided
-            if ($dateRange) {
-                $dateRangeArray = explode(' - ', $dateRange);
-
-                if (!empty($dateRangeArray) && count($dateRangeArray) == 2) {
-                    $startDate = $dateRangeArray[0];
-                    $endDate = $dateRangeArray[1];
-                    $query->whereBetween('contacts.start_date', [$startDate, $endDate]);
+                    if (!empty($dateRangeArray) && count($dateRangeArray) == 2) {
+                        $startDate = $dateRangeArray[0];
+                        $endDate = $dateRangeArray[1];
+                        $query->whereBetween('contacts.start_date', [$startDate, $endDate]);
+                    }
                 }
             }
 
@@ -106,8 +105,8 @@ class ContactController extends Controller
                         $html .= '<button type="button" class="btn btn-sm btn-danger disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-trash"></i> Delete</button> ';
                     }
                     return $html;
-                })
-                /* ->filter(function ($instance) use ($request) {
+                })->rawColumns(['checkbox', 'action', 'more'])->toJson();
+            /* ->filter(function ($instance) use ($request) {
                     if ($request->get('approved') == '0' || $request->get('approved') == '1') {
                         $instance->where('contacts.code', $request->get('approved'));
                     }
@@ -118,7 +117,7 @@ class ContactController extends Controller
                                 ->orWhere('email', 'LIKE', "%$search%");
                         });
                     }
-                }) */->rawColumns(['checkbox', 'action', 'more'])->toJson();
+                }) */
         }
 
         $centre = Department::where([['status', '1']])

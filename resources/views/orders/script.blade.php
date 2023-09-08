@@ -291,6 +291,49 @@
 
         }) */
 
+        var startDate;
+        var endDate;
+
+        function datesearch() {
+            var currentDate = moment();
+            // Set the start date to 7 days before today
+            startDate = moment(currentDate).subtract(7, 'days').format('YYYY-MM-DD');
+            // Set the end date to the end of the current month
+            endDate = moment(currentDate).endOf('month').format('YYYY-MM-DD');
+        }
+
+        function retrieveFieldValues() {
+            var saveddateStart = localStorage.getItem('dateStart');
+            var savedSearchType = localStorage.getItem('searchType');
+            var savedKeyword = localStorage.getItem('keyword');
+
+            // Set field values from local storage
+            if (saveddateStart) {
+                var dateParts = saveddateStart.split(' - ');
+                startDate = dateParts[0];
+                endDate = dateParts[1];
+            } else {
+                datesearch();
+            }
+            if (savedSearchType) {
+                $('#search_type').val(savedSearchType);
+            }
+            if (savedKeyword) {
+                $('#keyword').val(savedKeyword);
+            }
+        }
+
+        // Call the function to set initial field values on page load
+        retrieveFieldValues();
+
+        $('#reservation').daterangepicker({
+            startDate: startDate,
+            endDate: endDate,
+            locale: {
+                format: 'YYYY-MM-DD'
+            }
+        });
+
         //$.noConflict();
         var token = ''
         $.ajaxSetup({
@@ -299,9 +342,13 @@
             }
         });
 
-
-        var table = $('#Listview').DataTable({
-            ajax: '',
+        var table_option = {
+            ajax: {
+                data: function(d) {
+                    d.sdate = $('#reservation').val();
+                    //d.search = $('input[type="search"]').val();
+                }
+            },
             serverSide: true,
             processing: true,
             language: {
@@ -413,11 +460,93 @@
 
                 // Update the footer cell with the sum
                 $(api.column(8).footer()).html(sum.toFixed(
-                2)); // Adjust the decimal places as needed
+                    2)); // Adjust the decimal places as needed
+            }
+        };
+        var table = $('#Listview').DataTable(table_option);
+
+        $('#SearchButtons').on('click', function() {
+            var searchType = $('#search_type').val();
+            var keyword = $('#keyword').val();
+
+            if (searchType !== '' && keyword !== '') {
+                // Clear the previous search and any custom filters
+                table.search('').draw();
+                $.fn.dataTable.ext.search.pop(); // Remove the custom date range filter
+
+                // Apply the new search based on searchType and keyword
+                if (searchType === '1') {
+                    table.column(3).search(keyword).draw();
+                } else if (searchType === '2') {
+                    table.column(4).search(keyword).draw();
+                } else if (searchType === '3') {
+                    table.column(5).search(keyword).draw();
+                }
+            } else {
+                // Handle the case where searchType or keyword is empty
+                toastr.error('Please input Search Type and Keyword', {
+                    timeOut: 5000
+                });
             }
         });
 
 
+        // Attach event handler to a button or element to trigger the reset
+        $('#resetSearchButton').on('click', async function() {
+            localStorage.removeItem('dateStart');
+            localStorage.removeItem('searchType');
+            localStorage.removeItem('keyword');
+
+            // Set field values to empty
+            $('#search_type').val('');
+            $('#keyword').val('');
+
+            $('#Listview').html('');
+
+            // Clear DataTable state
+            if (table) {
+                table.state.clear();
+                await table.destroy();
+
+                table = $('#Listview').DataTable(table_option);
+                table.draw();
+            }
+
+            // Set the date range back to its default
+            var currentDate = moment();
+            var startDate = moment(currentDate).subtract(7, 'days').format('YYYY-MM-DD');
+            var endDate = moment(currentDate).endOf('month').format('YYYY-MM-DD');
+            $('#reservation').val(startDate + ' - ' + endDate);
+        });
+
+
+        // Apply the custom date range filter on input change
+        $('#reservation').on('apply.daterangepicker', function() {
+            table.draw();
+            storeFieldValues();
+        });
+
+        function storeFieldValues() {
+            var dateStart = $('#reservation').val();
+            var searchType = $('#search_type').val();
+            var keyword = $('#keyword').val();
+
+            // Store values in local storage
+            localStorage.setItem('dateStart', dateStart);
+            localStorage.setItem('searchType', searchType);
+            localStorage.setItem('keyword', keyword);
+        }
+
+        // Attach event handlers to the fields to store values when they change
+        $('#search_type').on('change', storeFieldValues);
+        $('#keyword').on('input', storeFieldValues);
+
+        let pdid;
+        $(document).on('click', '#getShareData', function(e) {
+            e.preventDefault();
+            pdid = $(this).data('id');
+            window.location.href = "/orders/show/" + pdid + "/1";
+        });
 
         let lid;
         $(document).on('click', '#getLogData', function(e) {
@@ -849,7 +978,7 @@
 
             pid = $(this).data('id');
             $.ajax({
-                url: "orders/show/" + pid,
+                url: "orders/show/" + pid + '/0',
                 method: 'GET',
                 success: function(res) {
                     $('#print_data').html(res.html);

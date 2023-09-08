@@ -3,6 +3,10 @@
         margin-left: 10px; /* Adjust the value to your desired space */
     }
 
+    .dataTables_filter {
+        display: none;
+    }
+
     .disabled-select {
         background-color: #d5d5d5;
         opacity: 0.5;

@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\File;
 use Detection\MobileDetect;
+use PDF;
 
 
 class OrderController extends Controller
@@ -52,7 +53,7 @@ class OrderController extends Controller
         if ($request->ajax()) {
             //sleep(2);
             $detect = new MobileDetect();
-            $datas = Order::select(
+            $query = Order::select(
                 "orders.id as id",
                 "orders.order_number as order_number",
                 "orders.total_price as total_price",
@@ -70,9 +71,21 @@ class OrderController extends Controller
                     $join->on("first_detail.order_id", "=", "orders.id")
                         ->whereRaw("first_detail.id = (SELECT MIN(id) FROM order_details WHERE order_id = orders.id)");
                 })
-                ->join("products", "products.id", "=", "first_detail.product_id")
-                ->orderBy("orders.id", "desc")
-                ->get();
+                ->join("products", "products.id", "=", "first_detail.product_id");
+            if (!empty($request->get('sdate'))) {
+                //dd($request->get('sdate'));
+                $dateRange = $request->input('sdate');
+                if ($dateRange) {
+                    $dateRangeArray = explode(' - ', $dateRange);
+
+                    if (!empty($dateRangeArray) && count($dateRangeArray) == 2) {
+                        $startDate = $dateRangeArray[0];
+                        $endDate = $dateRangeArray[1];
+                        $query->whereBetween('orders.created_at', [$startDate . ' 00:00:00', $endDate . ' 23:59:59']);
+                    }
+                }
+            }
+            $datas = $query->orderBy("orders.id", "desc")->get();
             return datatables()->of($datas)
                 ->editColumn('checkbox', function ($row) {
                     return '<input type="checkbox" id="' . $row->id . '" class="flat" name="table_records[]" value="' . $row->id . '" >';
@@ -105,6 +118,11 @@ class OrderController extends Controller
                         $html = '<button type="button" class="btn btn-sm btn-success btn-print" id="getPrintData" data-id="' . $row->id . '"><i class="fa fa-print"></i> Print</button> ';
                     } else {
                         $html = '<button type="button" class="btn btn-sm btn-success btn-print disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-print"></i> Print</button> ';
+                    }
+                    if (Gate::allows('order-show')) {
+                        $html .= '<button type="button" class="btn btn-sm btn-pink btn-share" id="getShareData" data-id="' . $row->id . '"><i class="fas fa-share"></i> Share</button>';
+                    } else {
+                        $html .= '<button type="button" class="btn btn-sm btn-pink btn-share disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fas fa-share"></i> Share</button> ';
                     }
                     if (Gate::allows('order-edit')) {
                         $html .= '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit</button> ';
@@ -233,7 +251,7 @@ class OrderController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show($id)
+    public function show($id, $social = 0)
     {
         // Get the data from the database query
         $datas = Order::select(
@@ -268,6 +286,7 @@ class OrderController extends Controller
 
         // Load the template file from the 'templates' subdirectory
         $template = 'templates.print_order';
+        $templates = 'templates.print_social';
 
         $ctype = "";
         $price_text = $this->MoneyConvertService->baht_text($datas[0]->total_price);
@@ -287,12 +306,34 @@ class OrderController extends Controller
         ];
 
 
-        // Render the view with the data and get the HTML content
-        $htmlContent = View::make($template, $data)->render();
-        //return new Response($htmlContent, 200, ['Content-Type' => 'text/html']);
-        return response()->json([
-            'html' =>  $htmlContent
-        ]);
+        if ($social == 1) {
+            // Render the view with the data and get the HTML content
+            $htmlContents = View::make($templates, $data)->render();
+
+            // Generate the PDF
+            $pdf = PDF::loadHTML($htmlContents);
+
+            // Save the PDF to a temporary file path
+            //$pdfPath = public_path('file_store/' . $datas[0]->order_number . '.pdf');
+            //dd($pdfPath);
+            $pdf->save(public_path('file_store/' . $datas[0]->order_number . '.pdf'));
+
+            // Define the file name for the downloaded PDF
+            //$pdfFileName = $datas[0]->order_number . '.pdf';
+
+            // Download the PDF file
+            //return response()->download($pdfPath, $pdfFileName, ['Content-Type' => 'application/pdf']);
+        } else {
+            // Render the view with the data and get the HTML content
+            $htmlContent = View::make($template, $data)->render();
+            //return new Response($htmlContent, 200, ['Content-Type' => 'text/html']);
+            return response()->json([
+                'html' =>  $htmlContent
+            ]);
+
+        }
+
+
     }
 
     /**

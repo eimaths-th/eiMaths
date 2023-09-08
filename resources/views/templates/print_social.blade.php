@@ -21,7 +21,7 @@
             src: url(https://fonts.gstatic.com/s/sarabun/v13/DtVjJx26TKEr37c9aAFJn2QN.woff2) format('woff2');
         }
 
-       /*  @font-face {
+        /*  @font-face {
             font-family: 'THSarabunNew';
             font-size: 16px;
             font-style: normal;
@@ -35,7 +35,7 @@
         }
 
 
-       /*  body {
+        /*  body {
             font-family: 'THSarabunNew';
             font-size: 16px;
         } */
@@ -126,67 +126,72 @@
 </head>
 
 <body>
-    {!! $app_html !!}
     <div class="row" id="reportPrinting" style="width: 90%;margin: 0 auto;">
 
-        {{--  <table align="center" width="99%" cellpadding="0" cellspacing="0">
-                    <thead>
-                        <tr>
-                            <td width="25%" rowspan="6" align="center"><img
-                                    src="{{ asset('images/infinite.jpg') }}" alt="..." height="150"
-                                    style="padding-bottom: 5px"></td>
+        <table align="center" width="99%" cellpadding="0" cellspacing="0">
 
-                        </tr>
+            <tr>
+                <td width="25%" rowspan="6" align="center"><img src="{{ asset('images/logo.png') }}"
+                        alt="..." height="120" style="padding-bottom: 5px"></td>
+                <td align="right">
+                    <table align="right">
                         <tr>
-                            <td style="vertical-align: top;" height="5px">บริษัท อินฟินิท เบรน จำกัด (สำนักงานใหญ่)
+                            <td align="right" style="vertical-align: top;" height="5px">eiMaths Ratchaphruek
                             </td>
                         </tr>
                         <tr>
-                            <td style="vertical-align: top;"height="5px">555/9 ม.1 ต.บางขนุน อ.บางกรวย จ.นนทบุรี 11130
+                            <td align="right" style="vertical-align: top;"height="5px">The Crystal SB Ratchaphruek,
+                                3rd floor<br>
+                                555/9 Bang Kruai District, Nonthaburi 11130
                             </td>
                         </tr>
                         <tr>
-                            <td style="vertical-align: top;"height="5px">เลขประจำตัวผู้เสียภาษี: 0125563031038</td>
+                            <td align="right" style="vertical-align: top;"height="5px">Tax: 0125563031038</td>
                         </tr>
                         <tr>
-                            <td style="vertical-align: top;" height="5px">โทร 098 509 8554</td>
+                            <td align="right" style="vertical-align: top;" height="5px">Phone: 0 616-208-666</td>
                         </tr>
                         <tr>
-                            <td style="vertical-align: top;" height="50px"></td>
+                            <td align="right" style="vertical-align: top;" height="50px"></td>
                         </tr>
-                    </thead>
-                </table> --}}
+                    </table>
+                </td>
+
+            </tr>
+
+
+        </table>
 
 
         <table align="center" width="100%" cellpadding="0" cellspacing="0">
-            {{-- <tr>
-                        <td colspan="4" align="center"><b>
-                                {{ $mes }}<br>
-                                {{ $text }}
-                            </b></td>
-
-                        <td align="center" class="aaa"><b>ต้นฉบับ <br> Original <br>สำหรับลูกค้า</b></td>
-
-                    </tr> --}}
             <tr>
-                <td width="25%" class="grey">นามลูกค้า,เบอร์โทร/Client,Telephone</td>
-                <td width="25%" style="padding-left:20px;" align="right" class="grey">
+                <td colspan="4" align="center"><b>
+                        {{--  {{ $mes }}<br>
+                        {{ $text }} --}}
+                    </b></td>
+
+                <td align="center" class="aaa"><b>ต้นฉบับ <br> Original <br>สำหรับลูกค้า</b></td>
+
+            </tr>
+            <tr>
+                <td width="28%" class="grey">นามลูกค้า,เบอร์โทร/Client,Telephone</td>
+                <td width="28%" style="padding-left:10px;" align="right" class="grey">
                     รหัสลูกค้า/Customer's Code</td>
-                <td width="20%" style="padding-left:15px;"> {{ $data->ccode }}
+                <td width="28%" style="padding-left:12px;"> <b> {{ $data->ccode }} </b>
                 </td>
-                <td width="20%" align="right" class="grey">เลขที่ / Document No.</td>
-                <td width="10%" style="padding-left:10px;">  {{ $data->expense_number }} </td>
+                <td width="20%" align="right" class="grey">Order No.</td>
+                <td width="10%" style="padding-left:5px;"> <b> {{ $data->order_number }} </b></td>
             </tr>
             <tr>
                 <td>
-                    <font class="grey">{!! $ctype !!}</font>  {!! $data->cname !!} / {{ $data->ctelephone }}
-
+                    <font class="grey">{{ $ctype }}</font> <b> {{ $data->cname }} / {{ $data->ctelephone }}
+                    </b>
                 </td>
-                <td align="right" style="padding-left:20px;" class="grey">ประเภทค่าใช้จ่าย</td>
-                <td align="left" style="padding-left:15px;">
-                        {!! $data->exname !!}</td>
+                <td align="right" style="padding-left:15px;" class="grey">ประเภทค่าใช้จ่าย</td>
+                <td align="left" style="padding-left:12px;"> <b>
+                        {{ $etype }}</b></td>
                 <td align="right" class="grey">วันที่ / Date</td>
-                <td style="padding-left:10px;"> {{ $date }}</td>
+                <td style="padding-left:5px;"> <b>{{ $date }}</b></td>
             </tr>
             {{--   <tr>
                         <!-- <td colspan="3"><font class="grey">ที่อยู่</font> <b>{{ $data->street_address }} {{ $data->street_address2 }}
@@ -224,12 +229,12 @@
                 @foreach ($items as $x => $receipt_detail)
                     <tr>
                         <td align="center" style="vertical-align: top;">{{ $x + 1 }}</td>
-                        <td align="left">{!! $receipt_detail['expense_cat_name'] !!}</td>
+                        <td align="left"> Class Level {!! $receipt_detail['pname'] !!}</td>
                         <td align="center">{{ $receipt_detail['quantity'] }}</td>
                         {{-- <td align="center">{{ $receipt_detail['unit'] }}</td> --}}
-                        <td align="center">{{ $receipt_detail['price'] }}</td>
+                        <td align="right" style="padding-right:20px;">{{ $receipt_detail['price'] }}</td>
                         {{-- <td align="center">{{ $receipt_detail['discount'] }}</td> --}}
-                        <td align="center" style="vertical-align: top;">
+                        <td align="right" style="vertical-align: top; padding-right:20px;">
                             {{ number_format($receipt_detail['quantity'] * $receipt_detail['price'], 2, '.') }}</td>
                     </tr>
                     @php
@@ -251,14 +256,51 @@
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
-                    {{--   <td>&nbsp;</td>
-                        <td>&nbsp;</td> --}}
-
                 </tr>
+                @if ($data->refund !== '')
+                    <tr>
+                        <td align="center" style="vertical-align: top;"></td>
+                        <td align="left"> Refundable Deposit</td>
+                        <td align="center"> 1.00</td>
+                        <td align="right" style="padding-right:20px;">{{ $data->refund }}</td>
+                        <td align="right" style="vertical-align: top; padding-right:20px;">
+                            {{ number_format($data->refund, 2, '.') }}</td>
+                    </tr>
+                @endif
+                @if ($data->register_fee !== '')
+                    <tr>
+                        <td align="center" style="vertical-align: top;"></td>
+                        <td align="left"> Registration Fee</td>
+                        <td align="center"> 1.00</td>
+                        <td align="right" style="padding-right:20px;">{{ $data->register_fee }}</td>
+                        <td align="right" style="vertical-align: top; padding-right:20px;">
+                            {{ number_format($data->register_fee, 2, '.') }}</td>
+                    </tr>
+                @endif
+                @if ($data->promotion !== '')
+                    <tr>
+                        <td align="center" style="vertical-align: top;"></td>
+                        <td align="left"> Promotion</td>
+                        <td align="center"> 1.00</td>
+                        <td align="right" style="padding-right:20px;"> - {{ $data->promotion }}</td>
+                        <td align="right" style="vertical-align: top; padding-right:20px;"> -
+                            {{ number_format($data->promotion, 2, '.') }}</td>
+                    </tr>
+                @endif
+                <tr>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                </tr>
+                @php
+                    $total = $total + ($data->refund + $data->register_fee - $data->promotion);
+                @endphp
                 <tr class="active">
                     <td align="center" class="grey">รวมทั้งสิ้น<br>Grand Total</td>
                     <td align="left"></td>
-                    <td align="center">{!! $price_text !!}<br><b>{{ $price_texten }}</b></td>
+                    <td align="center"><b>{{ $price_text }}</b><br><b>{{ $price_texten }}</b></td>
                     <td align="center"><b>{{ number_format($total, 2, '.') }}</b></td>
 
                     <td align="right" class="grey">บาท<br>Baht</td>
@@ -361,23 +403,21 @@
 
             <table align="center" width="100%" cellpadding="0" cellspacing="0" style="margin-top:30px;">
                 <tr>
-                    <td width="35%"></td>
-                    <td width="30%"></td>
-                    <td width="35%"></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
                 </tr>
                 <tr>
                     <td></td>
                     <td></td>
-                    <td align="center" valign="bottom">{!! $signature !!}</td>
+                    <td></td>
                 </tr>
                 <tr>
                     <td align="center">.........................</td>
-                    <td></td>
                     <td align="center">.........................</td>
                 </tr>
                 <tr>
                     <td align="center" class="grey">ผู้รับ</td>
-                    <td></td>
                     <td align="center" class="grey">ผู้จัดการ</td>
                 </tr>
                 <tr>
@@ -392,7 +432,6 @@
                 </tr>
                 <tr>
                     <td align="center">Received by</td>
-                    <td></td>
                     <td align="center">Manager</td>
                 </tr>
 
@@ -402,8 +441,13 @@
         <div class="row tbr">
 
         </div>
-        <div class="row tbr">
-            {!! $file_att !!}
-        </div>
+        <table align="center" width="100%" cellpadding="0" cellspacing="0" style="margin-top:30px;">
+            <tr>
+                <td align="center">{!! $file_att !!}</td>
+
+            </tr>
+
+        </table>
+
 
 </body>

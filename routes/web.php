@@ -68,7 +68,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::delete('/orders/destroy', [App\Http\Controllers\OrderController::class, 'destroy'])->name('orders.destroy');
     Route::post('/orders/destroy_all', [App\Http\Controllers\OrderController::class, 'destroy_all'])->name('orders.destroy_all');
     Route::put('/orders/delete/img/{rid}/{rid2}', [App\Http\Controllers\OrderController::class, 'deleteImg'])->name('orders.deleteimg');
-    Route::get('/orders/show/{id}', [App\Http\Controllers\OrderController::class, 'show'])->name('orders.show');
+    Route::get('/orders/show/{id}/{param}', [App\Http\Controllers\OrderController::class, 'show'])->name('orders.show');
 
 
 
