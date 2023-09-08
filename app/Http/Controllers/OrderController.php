@@ -312,6 +312,7 @@ class OrderController extends Controller
 
             // Generate the PDF
             $pdf = PDF::loadHTML($htmlContents);
+            //$pdf->getDomPDF()->getFontMetrics()->setFont('YourThaiFont.ttf', 'YourThaiFont');
 
             // Save the PDF to a temporary file path
             $pdfPath = public_path('file_store/' . $datas[0]->order_number . '.pdf');
