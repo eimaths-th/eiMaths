@@ -17,8 +17,8 @@
             font-size: 16px;
             font-style: normal;
             font-weight: normal;
-            /* src: url("{{ asset('fonts/THSarabunNew.ttf') }}") format("truetype"); */
-            src: url(https://fonts.gstatic.com/s/sarabun/v13/DtVjJx26TKEr37c9aAFJn2QN.woff2) format('woff2');
+            src: url("{{ asset('fonts/THSarabunNew.ttf') }}") format("truetype");
+
         }
 
         @font-face {
@@ -26,7 +26,7 @@
             font-size: 16px;
             font-style: normal;
             font-weight: bold;
-            src: url(https://fonts.gstatic.com/s/sarabun/v13/DtVjJx26TKEr37c9aAFJn2QN.woff2) format('woff2');
+            src: url("{{ asset('fonts/THSarabunNew Bold') }}") format("truetype");
         }
 
         body {
