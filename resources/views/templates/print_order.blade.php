@@ -17,7 +17,7 @@
         } */
         body {
             font-family: 'sarabun', 'Roboto';
-            font-size: 14px;
+            font-size: 16px;
         }
 
         table td.grey {
