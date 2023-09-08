@@ -22,7 +22,7 @@
         }
 
         @font-face {
-            font-family: 'THSarabunNew';
+            font-family: 'THSarabunNew Bold';
             font-size: 16px;
             font-style: normal;
             font-weight: bold;
@@ -30,7 +30,7 @@
         }
 
         body {
-            font-family: 'Sarabun', serif;
+            font-family: 'THSarabunNew', serif;
             font-size: 10px;
         }
 
