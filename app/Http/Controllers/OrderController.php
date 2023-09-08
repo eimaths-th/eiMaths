@@ -314,15 +314,15 @@ class OrderController extends Controller
             $pdf = PDF::loadHTML($htmlContents);
 
             // Save the PDF to a temporary file path
-            //$pdfPath = public_path('file_store/' . $datas[0]->order_number . '.pdf');
+            $pdfPath = public_path('file_store/' . $datas[0]->order_number . '.pdf');
             //dd($pdfPath);
-            $pdf->save(public_path('file_store/' . $datas[0]->order_number . '.pdf'));
+            $pdf->save($pdfPath);
 
             // Define the file name for the downloaded PDF
-            //$pdfFileName = $datas[0]->order_number . '.pdf';
+            $pdfFileName = $datas[0]->order_number . '.pdf';
 
             // Download the PDF file
-            //return response()->download($pdfPath, $pdfFileName, ['Content-Type' => 'application/pdf']);
+            return response()->download($pdfPath, $pdfFileName, ['Content-Type' => 'application/pdf']);
         } else {
             // Render the view with the data and get the HTML content
             $htmlContent = View::make($template, $data)->render();
@@ -330,10 +330,7 @@ class OrderController extends Controller
             return response()->json([
                 'html' =>  $htmlContent
             ]);
-
         }
-
-
     }
 
     /**
