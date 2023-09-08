@@ -10,6 +10,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap"
         rel="stylesheet">
+    <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet'>
     <style>
         /*  table {
             font-size: 0.7rem;
@@ -134,7 +135,7 @@
 
             <tr>
                 <td width="25%" rowspan="6" align="center"><img src="{{ asset('images/logo.png') }}"
-                        alt="..." height="120"  style="padding-bottom: 5px; display: block; margin: 0 auto;"></td>
+                        alt="..." height="120" style="padding-bottom: 5px; display: block; margin: 0 auto;"></td>
                 <td align="right">
                     <table align="right">
                         <tr>
@@ -269,7 +270,7 @@
                             {{ number_format($data->refund, 2, '.') }}</td>
                     </tr>
                 @endif
-                @if ($data->register_fee !== '')
+                @if ($data->register_fee !== '' and !is_null($data->register_fee))
                     <tr>
                         <td align="center" style="vertical-align: top;"></td>
                         <td align="left"> Registration Fee</td>
@@ -279,7 +280,7 @@
                             {{ number_format($data->register_fee, 2, '.') }}</td>
                     </tr>
                 @endif
-                @if ($data->promotion !== '')
+                @if ($data->promotion !== '' and !is_null($data->promotion))
                     <tr>
                         <td align="center" style="vertical-align: top;"></td>
                         <td align="left"> Promotion</td>

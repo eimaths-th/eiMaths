@@ -7,15 +7,17 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="dist/css/print.css">
-    <link rel="stylesheet" href="dist/css/adminlte.css?v=3.2.0">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap"
+        rel="stylesheet">
+    <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet'>
     <style>
         /*  table {
             font-size: 0.7rem;
         } */
         body {
-            font-family: 'Roboto', 'Sarabun';
-            font-size: 14px;
+            font-family: 'sarabun', 'Roboto';
+            font-size: 10px;
         }
 
         table td.grey {
@@ -87,7 +89,7 @@
 
             <tr>
                 <td width="25%" rowspan="6" align="center"><img src="{{ asset('images/logo.png') }}"
-                        alt="..." height="120" style="padding-bottom: 5px"></td>
+                        alt="..." height="120" style="padding-bottom: 5px; display: block; margin: 0 auto;"></td>
                 <td align="right">
                     <table align="right">
                         <tr>
@@ -212,7 +214,7 @@
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
                 </tr>
-                @if ($data->refund !== '')
+                @if ($data->refund !== '' and !is_null($data->refund))
                     <tr>
                         <td align="center" style="vertical-align: top;"></td>
                         <td align="left"> Refundable Deposit</td>
@@ -222,7 +224,7 @@
                             {{ number_format($data->refund, 2, '.') }}</td>
                     </tr>
                 @endif
-                @if ($data->register_fee !== '')
+                @if ($data->register_fee !== '' and !is_null($data->register_fee))
                     <tr>
                         <td align="center" style="vertical-align: top;"></td>
                         <td align="left"> Registration Fee</td>
@@ -232,7 +234,7 @@
                             {{ number_format($data->register_fee, 2, '.') }}</td>
                     </tr>
                 @endif
-                @if ($data->promotion !== '')
+                @if ($data->promotion !== '' and !is_null($data->promotion))
                     <tr>
                         <td align="center" style="vertical-align: top;"></td>
                         <td align="left"> Promotion</td>
