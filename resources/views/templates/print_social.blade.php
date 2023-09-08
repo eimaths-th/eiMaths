@@ -134,8 +134,8 @@
         <table align="center" width="99%" cellpadding="0" cellspacing="0">
 
             <tr>
-                <td width="25%" rowspan="6" align="center"><img src="{{ asset('images/logo.png') }}"
-                        alt="..." height="120" style="padding-bottom: 5px; display: block; margin: 0 auto;"></td>
+                <td width="25%" rowspan="6" align="center" style="vertical-align: top;"><img src="{{ asset('images/logo.png') }}"
+                        alt="..." height="120" style="padding-bottom: 5px; "></td>
                 <td align="right">
                     <table align="right">
                         <tr>
