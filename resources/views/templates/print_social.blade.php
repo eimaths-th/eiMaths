@@ -33,7 +33,7 @@
 
         body {
             font-family: 'sarabun', serif;
-            font-size: 12px;
+            font-size: 10px;
         }
 
 
@@ -134,7 +134,7 @@
 
             <tr>
                 <td width="25%" rowspan="6" align="center"><img src="{{ asset('images/logo.png') }}"
-                        alt="..." height="120" style="padding-bottom: 5px"></td>
+                        alt="..." height="120"  style="padding-bottom: 5px; display: block; margin: 0 auto;"></td>
                 <td align="right">
                     <table align="right">
                         <tr>
@@ -259,7 +259,7 @@
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
                 </tr>
-                @if ($data->refund !== '')
+                @if ($data->refund !== '' and !is_null($data->refund))
                     <tr>
                         <td align="center" style="vertical-align: top;"></td>
                         <td align="left"> Refundable Deposit</td>
