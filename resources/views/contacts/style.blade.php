@@ -16,4 +16,20 @@
     .dataTables_filter {
         display: none;
     }
+
+    .overlay {
+        position: fixed;
+        display: none;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        /* Semi-transparent black background */
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        /* Set a high z-index to make sure it's on top of everything */
+    }
+
 </style>

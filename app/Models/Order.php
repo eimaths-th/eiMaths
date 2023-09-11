@@ -17,6 +17,7 @@ class Order extends Model
         'refund',
         'register_fee',
         'promotion',
+        'status'
     ];
 
     public function contact()

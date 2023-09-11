@@ -1,5 +1,18 @@
 <script>
     $(document).ready(function() {
+
+        function showOverlay() {
+            $('#overlay').css({
+                'display': 'flex',
+                'justify-content': 'center', // Center horizontally
+                'align-items': 'center' // Center vertically
+            });
+        }
+
+        function hideOverlay() {
+            $('#overlay').css('display', 'none');
+        }
+
         $(".delete_all_button").click(function() {
             var len = $('input[name="table_records[]"]:checked').length;
             if (len > 0) {
@@ -113,13 +126,23 @@
         // Call the function to set initial field values on page load
         retrieveFieldValues();
 
-        $('#reservation').daterangepicker({
-            startDate: startDate,
-            endDate: endDate,
-            locale: {
-                format: 'YYYY-MM-DD'
-            }
-        });
+        let daterange = () => {
+            $('#reservation').daterangepicker({
+                startDate: startDate,
+                endDate: endDate,
+                locale: {
+                    format: 'YYYY-MM-DD'
+                }
+            });
+
+            // Apply the custom date range filter on input change
+            $('#reservation').on('apply.daterangepicker', function() {
+                table.draw();
+                storeFieldValues();
+            });
+        }
+
+        daterange();
 
         $.datepicker.setDefaults($.datepicker.regional['en']);
         $(".AddDate").datepicker({
@@ -395,24 +418,20 @@
             if (table) {
                 table.state.clear();
                 await table.destroy();
-
-                table = $('#Listview').DataTable(table_option);
-                table.draw();
             }
 
             // Set the date range back to its default
             var currentDate = moment();
             var startDate = moment(currentDate).subtract(7, 'days').format('YYYY-MM-DD');
             var endDate = moment(currentDate).endOf('month').format('YYYY-MM-DD');
-            $('#reservation').val(startDate + ' - ' + endDate);
-        });
 
+            daterange();
 
-        // Apply the custom date range filter on input change
-        $('#reservation').on('apply.daterangepicker', function() {
+            table = $('#Listview').DataTable(table_option);
             table.draw();
-            storeFieldValues();
         });
+
+
 
         function storeFieldValues() {
             var dateStart = $('#reservation').val();
@@ -520,6 +539,13 @@
                         $('#AddTerm').val(null).trigger("change")
                         $('.form').trigger('reset');
                         $('#CreateModal').modal('hide');
+
+                        showOverlay();
+
+                        var oid = result.oid;
+                        var url = "{{ route('orders', ['status' => '0']) }}&new=" +
+                            encodeURIComponent(oid);
+                        window.location.href = url;
                     }
                 }
             });

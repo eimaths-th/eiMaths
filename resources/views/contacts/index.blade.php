@@ -47,6 +47,9 @@
 
     <section class="content">
         <div class="container-fluid">
+            <div class="overlay" id="overlay">
+                {{-- <i class="fas fa-2x fa-sync-alt fa-spin"></i> --}}
+            </div>
             <div class="row">
                 <div class="col-12">
                     <div class="card card-primary">

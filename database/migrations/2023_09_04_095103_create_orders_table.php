@@ -17,6 +17,7 @@ return new class extends Migration
             $table->integer('cid')->nullable();
             $table->string('order_number')->nullable();
             $table->text('detail')->nullable();
+            $table->integer('status')->default(0);
             $table->decimal('refund', 12, 2)->nullable();
             $table->decimal('register_fee', 12, 2)->nullable();
             $table->decimal('promotion', 12, 2)->nullable();

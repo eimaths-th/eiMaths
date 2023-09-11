@@ -80,6 +80,26 @@
     }
 
     $(document).ready(function() {
+        let id;
+        var urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('new')) {
+            // 'new' parameter exists, call your function here and pass the URL parameters
+            showOverlay();
+            getDataFunction(urlParams);
+        }
+
+        function showOverlay() {
+            $('#overlay').css({
+                'display': 'flex',
+                'justify-content': 'center', // Center horizontally
+                'align-items': 'center' // Center vertically
+            });
+        }
+
+        function hideOverlay() {
+            $('#overlay').css('display', 'none');
+        }
+
         $(document).on('change', '.auto_decimal', function() {
             // Parse the input value to a number
             const inputValue = parseFloat(this.value);
@@ -326,13 +346,23 @@
         // Call the function to set initial field values on page load
         retrieveFieldValues();
 
-        $('#reservation').daterangepicker({
-            startDate: startDate,
-            endDate: endDate,
-            locale: {
-                format: 'YYYY-MM-DD'
-            }
-        });
+        let daterange = () => {
+            $('#reservation').daterangepicker({
+                startDate: startDate,
+                endDate: endDate,
+                locale: {
+                    format: 'YYYY-MM-DD'
+                }
+            });
+
+            // Apply the custom date range filter on input change
+            $('#reservation').on('apply.daterangepicker', function() {
+                table.draw();
+                storeFieldValues();
+            });
+        }
+
+        daterange();
 
         //$.noConflict();
         var token = ''
@@ -506,25 +536,22 @@
             // Clear DataTable state
             if (table) {
                 table.state.clear();
-                await table.destroy();
-
-                table = $('#Listview').DataTable(table_option);
-                table.draw();
+                table.destroy();
             }
 
             // Set the date range back to its default
             var currentDate = moment();
             var startDate = moment(currentDate).subtract(7, 'days').format('YYYY-MM-DD');
             var endDate = moment(currentDate).endOf('month').format('YYYY-MM-DD');
-            $('#reservation').val(startDate + ' - ' + endDate);
-        });
+            //$('#reservation').val(startDate + ' - ' + endDate);
+            daterange();
 
-
-        // Apply the custom date range filter on input change
-        $('#reservation').on('apply.daterangepicker', function() {
+            table = $('#Listview').DataTable(table_option);
             table.draw();
-            storeFieldValues();
         });
+
+
+
 
         function storeFieldValues() {
             var dateStart = $('#reservation').val();
@@ -750,7 +777,8 @@
         });
 
 
-        let id;
+
+
         $(document).on('click', '#getEditData', function(e) {
             e.preventDefault();
 
@@ -768,7 +796,12 @@
                 url: "orders/edit/" + id,
                 method: 'GET',
                 success: function(res) {
-                    console.log(res);
+                    $('#EditCentre').val(res.data.centre).change();
+                    $('#EditCentre').prop('disabled', true);
+                    $('#EditLevel').val(res.datas[0].level_id).change();
+                    $('#EditLevel').prop('disabled', true);
+                    $('#EditTerm').val(res.datas[0].term_id).change();
+                    $('#EditTerm').prop('disabled', true);
                     $('#EditLot').val(res.data.order_number);
                     $('#EditProduct').val(1).change();
                     $("select[name=eproduct]").attr("readonly", "readonly");
@@ -785,13 +818,67 @@
                     $('#EditPromotion').val(res.data.promotion);
                     $('#EditModalBodyTable').html(res.table_html);
                     $('.imgs').html(res.imgs);
+                    console.log(res.data.status);
+                    if (res.data.status == 1) {
+                        $('#SubmitEditFormp').css('display', 'none');
+                    }
                     $('#EditModal').modal('show');
+
                 }
             });
 
         })
 
-        $('#SubmitEditForm').click(function(e) {
+        function getDataFunction(urlParams) {
+
+
+            $('.alert-danger').html('');
+            $('.alert-danger').hide();
+            $('.alert-success').html('');
+            $('.alert-success').hide();
+            clearDropzonePreviews2();
+
+            id = urlParams.get('new');
+            $.ajax({
+                url: "orders/edit/" + id,
+                method: 'GET',
+                success: function(res) {
+                    console.log(res);
+                    $('#EditCentre').val(res.data.centre).change();
+                    $('#EditCentre').prop('disabled', true);
+                    $('#EditLevel').val(res.datas[0].level_id).change();
+                    $('#EditLevel').prop('disabled', true);
+                    $('#EditTerm').val(res.datas[0].term_id).change();
+                    $('#EditTerm').prop('disabled', true);
+                    $('#EditLot').val(res.data.order_number);
+                    $('#EditProduct').val(1).change();
+                    $("select[name=eproduct]").attr("readonly", "readonly");
+                    $('#EditStock').val(res.data.sid).change();
+                    $("select[name=estock]").attr("readonly", "readonly");
+                    $('#EditCompany').val(res.data.cid).change();
+                    //$('#EditAmount').val(res.data.amount);
+                    //$('#EditCost').val(res.data.cost);
+                    $('#EditTotalCost').val(res.data.total_price);
+                    $('#EditTotalCosth').val(res.data.total_price);
+                    $('#EditDetail').val(res.data.detail);
+                    $('#EditRefund').val(res.data.refund);
+                    $('#EditRegisterFee').val(res.data.register_fee);
+                    $('#EditPromotion').val(res.data.promotion);
+                    $('#EditModalBodyTable').html(res.table_html);
+                    $('.imgs').html(res.imgs);
+                    if (res.data.status == 1) {
+                        $('#SubmitEditFormp').css('display', 'none');
+                    }
+                    $('#EditModal').modal('show');
+                    hideOverlay();
+                }
+            });
+        }
+
+        let status = 0;
+
+        $('#SubmitEditForm, #SubmitEditFormp').click(function(e) {
+
             if (!confirm("ยืนยันการทำรายการ ?")) return;
             e.preventDefault();
 
@@ -799,6 +886,13 @@
             $('.alert-danger').hide();
             $('.alert-success').html('');
             $('.alert-success').hide();
+
+            // Check which button was clicked and update the 'status' variable
+            if (this.id === 'SubmitEditForm') {
+                status = 1; // Set status to 1 if Confirm button is clicked
+            } else if (this.id === 'SubmitEditFormp') {
+                status = 0; // Set status to 0 if Pending button is clicked
+            }
 
             var stockValues = [];
             var amountValues = [];
@@ -920,6 +1014,7 @@
                     refund: $('#EditRefund').val(),
                     register_fee: $('#EditRegisterFee').val(),
                     promotion: $('#EditPromotion').val(),
+                    status: status,
                     img: values,
                     _token: token
                 };

@@ -206,7 +206,6 @@ class ContactController extends Controller
 
         $contact = Contact::create($input);
 
-        //dd($priceq);
 
         $input_order['centre'] = $request->get('centre');
         $input_order['cid'] = $contact->id;
@@ -214,9 +213,6 @@ class ContactController extends Controller
         $input_order['total_price'] = $priceq->price;
         $order = Order::create($input_order);
 
-        /* $contact->update([
-            'order' => $order->id,
-        ]); */
         $contact->order = $order->id;
         $contact->save();
 
@@ -226,12 +222,12 @@ class ContactController extends Controller
         $input_order_detail['punit'] = $priceq->unit;
         $input_order_detail['quantity'] = 1;
         $input_order_detail['price'] = $priceq->price;
-        $order = OrderDetail::create($input_order_detail);
+        $order_detail = OrderDetail::create($input_order_detail);
 
         $select_list_contact = '<option value="' . $contact->id . '" > ' . $contact->name . '</option>';
         return response()->json([
             'success' => 'Added student information successfully.',
-            'contact' => $select_list_contact, 'cid' => $contact->id
+            'contact' => $select_list_contact, 'cid' => $contact->id, 'oid' => $order->id
         ]);
     }
 

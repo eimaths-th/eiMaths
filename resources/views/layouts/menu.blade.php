@@ -6,8 +6,9 @@
     </a>
 </li> --}}
 @can('contact-list')
-    <li class="nav-item {{ in_array(Request::route()->getName(), ['contacts']) ? 'menu-open' : '' }}">
-        <a href="#" class="nav-link {{ in_array(Request::route()->getName(), ['contacts']) ? 'active' : '' }}">
+    <li class="nav-item {{ in_array(Request::route()->getName(), ['contacts', 'discontinued']) ? 'menu-open' : '' }}">
+        <a href="#"
+            class="nav-link {{ in_array(Request::route()->getName(), ['contacts', 'discontinued']) ? 'active' : '' }}">
             <i class="nav-icon fas fa-graduation-cap"></i>
             <p>Students</p>
             <i class="fas fa-angle-left right"></i>
@@ -20,7 +21,7 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a href="{{ route('positions') }}" class="nav-link {{ Request::is('positions') ? 'active' : '' }}">
+                <a href="{{ route('discontinued') }}" class="nav-link {{ Request::is('discontinued') ? 'active' : '' }}">
                     <i class="fa-solid fa-list-ul nav-icon"></i>
                     <p>Discontinued Student</p>
                 </a>
@@ -37,11 +38,53 @@
         </a>
         <ul class="nav nav-treeview">
             <li class="nav-item">
+                <a href="{{ route('orders', ['status' => '0']) }}"
+                    class="nav-link {{ Request::is('orders') ? 'active' : '' }}">
+                    <i class="fa-solid fa-list-ul nav-icon"></i>
+                    <p>Pending Orders</p>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{{ route('orders', ['status' => '1']) }}"
+                    class="nav-link {{ Request::is('orders') ? 'active' : '' }}">
+                    <i class="fa-solid fa-list-ul nav-icon"></i>
+                    <p>Confirmed Orders</p>
+                </a>
+            </li>
+        </ul>
+    </li>
+@endcan
+@can('order-list')
+    <li class="nav-item {{ in_array(Request::route()->getName(), ['orders']) ? 'menu-open' : '' }}">
+        <a href="#" class="nav-link {{ in_array(Request::route()->getName(), ['orders']) ? 'active' : '' }}">
+            <i class="nav-icon fa-solid fa-file-invoice-dollar"></i>
+            <p>Invoice</p>
+            <i class="fas fa-angle-left right"></i>
+        </a>
+        <ul class="nav nav-treeview">
+            {{--  <li class="nav-item">
                 <a href="{{ route('orders') }}" class="nav-link {{ Request::is('orders') ? 'active' : '' }}">
                     <i class="fa-solid fa-list-ul nav-icon"></i>
                     <p>New Student Orders</p>
                 </a>
-            </li>
+            </li> --}}
+        </ul>
+    </li>
+@endcan
+@can('order-list')
+    <li class="nav-item {{ in_array(Request::route()->getName(), ['orders']) ? 'menu-open' : '' }}">
+        <a href="#" class="nav-link {{ in_array(Request::route()->getName(), ['orders']) ? 'active' : '' }}">
+            <i class="nav-icon fa-solid fa-sack-dollar"></i>
+            <p>Receipt</p>
+            <i class="fas fa-angle-left right"></i>
+        </a>
+        <ul class="nav nav-treeview">
+            {{--  <li class="nav-item">
+                <a href="{{ route('orders', ['status' => '0']) }}" class="nav-link {{ Request::is('orders') ? 'active' : '' }}">
+                    <i class="fa-solid fa-list-ul nav-icon"></i>
+                    <p>New Student Orders</p>
+                </a>
+            </li> --}}
         </ul>
     </li>
 @endcan

@@ -9,6 +9,10 @@ use App\Models\Product;
 use App\Models\Contact;
 use App\Models\FileUpload;
 use App\Models\FileStore;
+use App\Models\Department;
+use App\Models\level;
+use App\Models\term;
+use App\Models\Sterm;
 //use App\Models\LogActivity;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -50,6 +54,9 @@ class OrderController extends Controller
      */
     public function index(Request $request)
     {
+        $status = $request->query('status');
+        $new = $request->query('new');
+
         if ($request->ajax()) {
             //sleep(2);
             $detect = new MobileDetect();
@@ -58,6 +65,7 @@ class OrderController extends Controller
                 "orders.order_number as order_number",
                 "orders.total_price as total_price",
                 "orders.created_at as created_at",
+                "orders.status as order_status",
                 "contacts.name as contact_name",
                 "contacts.code as contact_code",
                 "departments.name as centre",
@@ -71,7 +79,9 @@ class OrderController extends Controller
                     $join->on("first_detail.order_id", "=", "orders.id")
                         ->whereRaw("first_detail.id = (SELECT MIN(id) FROM order_details WHERE order_id = orders.id)");
                 })
-                ->join("products", "products.id", "=", "first_detail.product_id");
+                ->join("products", "products.id", "=", "first_detail.product_id")
+                ->where('orders.status', $status);
+
             if (!empty($request->get('sdate'))) {
                 //dd($request->get('sdate'));
                 $dateRange = $request->input('sdate');
@@ -86,6 +96,7 @@ class OrderController extends Controller
                 }
             }
             $datas = $query->orderBy("orders.id", "desc")->get();
+
             return datatables()->of($datas)
                 ->editColumn('checkbox', function ($row) {
                     return '<input type="checkbox" id="' . $row->id . '" class="flat" name="table_records[]" value="' . $row->id . '" >';
@@ -114,20 +125,26 @@ class OrderController extends Controller
                     } else {
                         $brt = '';
                     }
-                    if (Gate::allows('order-show')) {
-                        $html = '<button type="button" class="btn btn-sm btn-success btn-print" id="getPrintData" data-id="' . $row->id . '"><i class="fa fa-print"></i> Print</button> ';
-                    } else {
-                        $html = '<button type="button" class="btn btn-sm btn-success btn-print disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-print"></i> Print</button> ';
-                    }
-                    if (Gate::allows('order-show')) {
-                        $html .= '<button type="button" class="btn btn-sm btn-danger btn-share" id="getShareData" data-id="' . $row->id . '"><i class="fa-solid fa-file-pdf"></i> PDF</button> ';
-                    } else {
-                        $html .= '<button type="button" class="btn btn-sm btn-danger btn-share disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa-solid fa-file-pdf"></i> PDF</button> ';
+                    $html = '';
+
+                    if ($row->order_status) {
+                        if (Gate::allows('order-show')) {
+                            $html = '<button type="button" class="btn btn-sm btn-success btn-print" id="getPrintData" data-id="' . $row->id . '"><i class="fa fa-print"></i> Print</button> ';
+                        } else {
+                            $html = '<button type="button" class="btn btn-sm btn-success btn-print disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-print"></i> Print</button> ';
+                        }
+                        if (Gate::allows('order-show')) {
+                            $html .= '<button type="button" class="btn btn-sm btn-danger btn-share" id="getShareData" data-id="' . $row->id . '"><i class="fa-solid fa-file-pdf"></i> PDF</button> ';
+                        } else {
+                            $html .= '<button type="button" class="btn btn-sm btn-danger btn-share disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa-solid fa-file-pdf"></i> PDF</button> ';
+                        }
                     }
                     if (Gate::allows('order-edit')) {
-                        $html .= '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit</button> ';
+                        $html .= '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Confirm
+                        Order</button> ';
                     } else {
-                        $html .= '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> Edit</button> ';
+                        $html .= '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> Confirm
+                        Order</button> ';
                     }
                     /*if (Gate::allows('order-delete')) {
                         $html .= '<button type="button" data-rowid="' . $row->id . '" class="btn btn-sm btn-danger btn-delete"><i class="fa fa-trash"></i> Delete</button> ';
@@ -155,9 +172,24 @@ class OrderController extends Controller
         $contact = Contact::where([['discontinued', '0']])
             ->where([['centre', Auth::user()->department->id]])
             ->orderBy("id", "asc")->get();
+
+        $centre = Department::where([['status', '1']])
+            ->orderBy("name", "asc")->get();
+        $term = term::where([['status', '1']])
+            ->orderBy("name", "asc")->get();
+        $sterm = Sterm::where([['status', '1']])
+            ->orderBy("name", "asc")->get();
+        $level = level::where([['status', '1']])
+            ->orderBy("name", "asc")->get();
+
         return view('orders.index')->with(['product' => $product])
             ->with(['contact' => $contact])
-            ->with(['order_type' => $customCollection]);
+            ->with(['order_type' => $customCollection])
+            ->with(['centre' => $centre])
+            ->with(['level' => $level])
+            ->with(['term' => $term])
+            ->with(['sterm' => $sterm])
+            ->with(['new' => $new]);
     }
 
     /**
@@ -543,6 +575,7 @@ class OrderController extends Controller
             'refund' => $request->get('refund'),
             'register_fee' => $request->get('register_fee'),
             'promotion' => $request->get('promotion'),
+            'status' => $request->get('status'),
             'updated_by' => Auth::id()
         ];
 

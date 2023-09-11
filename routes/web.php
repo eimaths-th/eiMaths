@@ -40,6 +40,10 @@ Route::group(['middleware' => ['auth']], function () {
     Route::delete('/contacts/destroy', [App\Http\Controllers\ContactController::class, 'destroy'])->name('contacts.destroy');
     Route::post('/contacts/destroy_all', [App\Http\Controllers\ContactController::class, 'destroy_all'])->name('contacts.destroy_all');
 
+    Route::get('/discontinued', [App\Http\Controllers\DiscontinueController::class, 'index'])->name('discontinued');
+    Route::put('/discontinued/restart', [App\Http\Controllers\DiscontinueController::class, 'restart'])->name('discontinued.restart');
+    Route::post('/discontinued/destroy_all', [App\Http\Controllers\DiscontinueController::class, 'restart_all'])->name('discontinued.restart_all');
+
 
     Route::get('/departments', [App\Http\Controllers\DepartmentController::class, 'index'])->name('departments');
     Route::post('/departments/store', [App\Http\Controllers\DepartmentController::class, 'store'])->name('departments.store');

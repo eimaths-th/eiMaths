@@ -4,7 +4,7 @@
          <form id="editdata" class="form" action="" method="POST">
              <div class="modal-content">
                  <div class="modal-header bg-primary">
-                     <h4 class="modal-title" id="exampleModalLongTitle"><i class="fa-solid fa-cart-shopping"></i> Edit
+                     <h4 class="modal-title" id="exampleModalLongTitle"><i class="fa-solid fa-cart-shopping"></i> Confirm
                          Order
                      </h4>
                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -50,6 +50,58 @@
                                      aria-labelledby="custom-tabs-one-home2-tab">
 
                                      <div id="EditModalBody">
+                                        <div class="row">
+                                            <div class="col-xs-6 col-sm-6 col-md-6">
+                                                <div class="form-group">
+                                                    <strong><i class="fas fa-code"></i> Centre Code:</strong>
+                                                    <select style="width: 100%;"
+                                                        class="productl select2 select2_single form-control"
+                                                        id="EditCentre" name="centre" multiple="multiple"
+                                                        @cannot('all-centre') disabled @endcannot>
+                                                        <!-- <option value="" selected>Select Student</option>
+                                                                                                                                                                                                                                                                                                                                                                                                <option value="" selected>Select Parent</option>-->
+                                                        @foreach ($centre as $key2)
+                                                            <option value="{{ $key2->id }}"
+                                                                @if (Auth::user()->department->id == (int) $key2->id) selected @endif>
+                                                                {{ $key2->code }}
+                                                                {{ $key2->name }}
+                                                            </option>
+                                                        @endforeach
+
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-3 col-sm-3 col-md-3">
+                                                <div class="form-group">
+                                                    <strong><i class="fas fa-layer-group"></i> Level:</strong>
+                                                    <select style="width: 100%;"
+                                                        class="select2 select2_single form-control elevels"
+                                                        id="EditLevel" name="level" multiple="multiple">
+                                                        @foreach ($level as $keyl)
+                                                            <option value="{{ $keyl->id }}">
+                                                                {{ $keyl->name }}
+                                                            </option>
+                                                        @endforeach
+
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-3 col-sm-3 col-md-3">
+                                                <div class="form-group">
+                                                    <strong><i class="fas fa-book-open"></i> Term:</strong>
+                                                    <select style="width: 100%;"
+                                                        class="select2 select2_single form-control eterms"
+                                                        id="EditTerm" name="term" multiple="multiple">
+                                                        @foreach ($term as $keyt)
+                                                            <option value="{{ $keyt->id }}">
+                                                                {{ $keyt->name }}
+                                                            </option>
+                                                        @endforeach
+
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
 
                                          <div class="row">
                                              <div class="col-xs-6 col-sm-6 col-md-6">
@@ -250,20 +302,19 @@
                                                      ]) !!}
                                                  </div>
                                              </div>
+                                             <div class="col-xs-6 col-sm-6 col-md-6">
+                                                <div class="form-group">
+                                                    <strong>{{-- <i class="fas fa-comment"></i> --}} Detail:</strong>
+                                                    {!! Form::textarea('detail', null, [
+                                                        'rows' => 1,
+                                                        'id' => 'EditDetail',
+                                                        'class' => 'form-control',
+                                                    ]) !!}
+                                                </div>
+                                            </div>
                                          </div>
 
-                                         <div class="row">
-                                             <div class="col-xs-12 col-sm-12 col-md-12">
-                                                 <div class="form-group">
-                                                     <strong>{{-- <i class="fas fa-comment"></i> --}} Detail:</strong>
-                                                     {!! Form::textarea('detail', null, [
-                                                         'rows' => 4,
-                                                         'id' => 'EditDetail',
-                                                         'class' => 'form-control',
-                                                     ]) !!}
-                                                 </div>
-                                             </div>
-                                         </div>
+
                                      </div>
                                  </div>
                                  <div class="tab-pane fade" id="custom-tabs-one-profile2" role="tabpanel"
@@ -316,8 +367,11 @@
                  </div>
                  <!-- Modal footer -->
                  <div class="modal-footer">
+                     <button type="button" class="btn btn-info" id="SubmitEditFormp"><i
+                             class="fa-solid fa-hand-holding-dollar"></i>
+                         Pending</button>
                      <button type="button" class="btn btn-success" id="SubmitEditForm"><i
-                             class="fas fa-download"></i> Save</button>
+                             class="fa-solid fa-sack-dollar"></i> Confirm</button>
                      <button type="button" class="btn btn-danger modelClose" data-dismiss="modal"><i
                              class="fas fa-door-closed"></i> Close</button>
                  </div>

@@ -47,12 +47,26 @@
 
     <section class="content">
         <div class="container-fluid">
-
+            <div class="overlay" id="overlay">
+                {{-- <i class="fas fa-2x fa-sync-alt fa-spin"></i> --}}
+            </div>
             <div class="row">
                 <div class="col-12">
                     <div class="card card-primary">
                         <div class="card-header">
-                            <h3 class="card-title"> <i class="fa-solid fa-cart-shopping"></i> New Student Orders</h3>
+                            <h3 class="card-title"> <i class="fa-solid fa-cart-shopping"></i>
+                                @switch(request()->input('status'))
+                                    @case(0)
+                                        Pending
+                                    @break
+
+                                    @case(1)
+                                        Confirmed
+                                    @break
+
+                                    @default
+                                        Pending
+                                @endswitch Orders</h3>
                             <div class="card-tools">
                                 <button type="button" class="btn btn-tool" data-card-widget="maximize">
                                     <i class="fas fa-expand"></i>
@@ -150,16 +164,16 @@
                                                 <tr>
                                                     <th width="5%"><input type="checkbox" id="check-all" class="flat">
                                                     </th>
-                                                    <th>Centre</th>
-                                                    <th>Order Date</th>
-                                                    <th>Order Number</th>
-                                                    <th>Student Code</th>
-                                                    <th>Student Name</th>
+                                                    <th {{-- data-priority="6" --}}>Centre</th>
+                                                    <th {{-- data-priority="2" --}}>Order Date</th>
+                                                    <th {{-- data-priority="1" --}}>Order Number</th>
+                                                    <th {{-- data-priority="4" --}}>Student Code</th>
+                                                    <th {{-- data-priority="5" --}}>Student Name</th>
                                                     <th>Item</th>
                                                     <th>Amount</th>
                                                     {{-- <th>ราคาต่อหน่วย</th> --}}
                                                     <th>Price</th>
-                                                    <th width="120px"></th>
+                                                    <th width="120px" {{-- data-priority="3" --}}></th>
                                                     <th>More</th>
                                                 </tr>
                                             </thead>
