@@ -127,7 +127,7 @@ class OrderController extends Controller
                     }
                     $html = '';
 
-                    if ($row->order_status) {
+                    if ($row->order_status == 1) {
                         if (Gate::allows('order-show')) {
                             $html = '<button type="button" class="btn btn-sm btn-success btn-print" id="getPrintData" data-id="' . $row->id . '"><i class="fa fa-print"></i> Print</button> ';
                         } else {
@@ -140,8 +140,12 @@ class OrderController extends Controller
                         }
                     }
                     if (Gate::allows('order-edit')) {
-                        $html .= '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Confirm
+                        if ($row->order_status == 1) {
+                            $html .= '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit </button> ';
+                        } else {
+                            $html .= '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Confirm
                         Order</button> ';
+                        }
                     } else {
                         $html .= '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> Confirm
                         Order</button> ';
@@ -169,8 +173,8 @@ class OrderController extends Controller
         ];
         $customCollection = collect($customData);
         $product = Product::orderBy("id", "asc")->get();
-        $contact = Contact::where([['discontinued', '0']])
-            ->where([['centre', Auth::user()->department->id]])
+        /* where([['discontinued', '0']]) */
+        $contact = Contact::where([['centre', Auth::user()->department->id]])
             ->orderBy("id", "asc")->get();
 
         $centre = Department::where([['status', '1']])
@@ -622,7 +626,7 @@ class OrderController extends Controller
             }
         }
 
-        return response()->json(['success' => 'Edit Order completed']);
+        return response()->json(['success' => 'Edit Order completed','status' => $order->status]);
     }
 
     public function deleteImg($id, $id2)

@@ -676,19 +676,21 @@
                                 '</li></strong>');
                         });
                     } else {
-                        $('.alert-danger').hide();
-                        $('.alert-success').show();
-                        $('.alert-success').append('<strong><li>' + result.success +
-                            '</li></strong>');
-                        $('#EditModal').modal('hide');
-                        toastr.success(result.success, {
-                            timeOut: 5000
-                        });
-                        $('#Listview').DataTable().ajax.reload();
-                        //setTimeout(function() {
-                        //$('.alert-success').hide();
-
-                        //}, 10000);
+                        var ostatus = result.discontinued;
+                        if (ostatus == 1) {
+                            var url = "{{ route('discontinued') }}";
+                            window.location.href = url;
+                        } else {
+                            $('.alert-danger').hide();
+                            $('.alert-success').show();
+                            $('.alert-success').append('<strong><li>' + result.success +
+                                '</li></strong>');
+                            $('#EditModal').modal('hide');
+                            toastr.success(result.success, {
+                                timeOut: 5000
+                            });
+                            $('#Listview').DataTable().ajax.reload();
+                        }
 
                     }
                 }

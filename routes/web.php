@@ -74,7 +74,8 @@ Route::group(['middleware' => ['auth']], function () {
     Route::put('/orders/delete/img/{rid}/{rid2}', [App\Http\Controllers\OrderController::class, 'deleteImg'])->name('orders.deleteimg');
     Route::get('/orders/show/{id}/{param}', [App\Http\Controllers\OrderController::class, 'show'])->name('orders.show');
 
-
+    Route::get('/invoices', [App\Http\Controllers\OrderController::class, 'index'])->name('invoices');
+    Route::get('/receipts', [App\Http\Controllers\OrderController::class, 'index'])->name('receipts');
 
     //file
     Route::post('/file/upload', function (Request $request) {

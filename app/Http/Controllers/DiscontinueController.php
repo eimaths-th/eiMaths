@@ -112,6 +112,6 @@ class DiscontinueController extends Controller
             Contact::find($arr_del[$xx])->update($newData);
         }
 
-        return redirect('/discontinued')->with('success', 'Restart student successfully');
+        return redirect('/contacts')->with('success', 'Restart student successfully');
     }
 }

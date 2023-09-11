@@ -170,7 +170,7 @@
                                                     <th {{-- data-priority="4" --}}>Student Code</th>
                                                     <th {{-- data-priority="5" --}}>Student Name</th>
                                                     <th>Item</th>
-                                                    <th>Amount</th>
+                                                    {{-- <th>Amount</th> --}}
                                                     {{-- <th>ราคาต่อหน่วย</th> --}}
                                                     <th>Price</th>
                                                     <th width="120px" {{-- data-priority="3" --}}></th>
@@ -187,7 +187,7 @@
                                                     <th></th>
                                                     <th></th>
                                                     <th></th>
-                                                    <th></th>
+                                                    {{-- <th></th> --}}
                                                     <th align="right"></th>
                                                     <th align="right">Total</th>
                                                     <th align="right"></th>

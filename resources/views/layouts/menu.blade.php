@@ -16,14 +16,20 @@
         <ul class="nav nav-treeview">
             <li class="nav-item">
                 <a href="{{ route('contacts') }}" class="nav-link {{ Request::is('contacts') ? 'active' : '' }}">
-                    <i class="fa-solid fa-list-ul nav-icon"></i>
+                    <i class="nav-icon fa-solid fa-graduation-cap"></i>
                     <p>Students List</p>
                 </a>
             </li>
             <li class="nav-item">
                 <a href="{{ route('discontinued') }}" class="nav-link {{ Request::is('discontinued') ? 'active' : '' }}">
-                    <i class="fa-solid fa-list-ul nav-icon"></i>
+                    <i class="nav-icon fa-solid fa-handshake-slash"></i>
                     <p>Discontinued Student</p>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{{ route('contacts') }}" class="nav-link {{ Request::is('contacts') ? 'active' : '' }}">
+                    <i class="nav-icon fa-solid fa-user-graduate"></i>
+                    <p>Graduated Student</p>
                 </a>
             </li>
         </ul>
@@ -39,15 +45,15 @@
         <ul class="nav nav-treeview">
             <li class="nav-item">
                 <a href="{{ route('orders', ['status' => '0']) }}"
-                    class="nav-link {{ Request::is('orders') ? 'active' : '' }}">
-                    <i class="fa-solid fa-list-ul nav-icon"></i>
+                    class="nav-link {{ Request::is('orders') && Request::input('status') === '0' ? 'active' : '' }}">
+                    <i class="nav-icon fa-solid fa-circle-pause"></i>
                     <p>Pending Orders</p>
                 </a>
             </li>
             <li class="nav-item">
                 <a href="{{ route('orders', ['status' => '1']) }}"
-                    class="nav-link {{ Request::is('orders') ? 'active' : '' }}">
-                    <i class="fa-solid fa-list-ul nav-icon"></i>
+                    class="nav-link {{ Request::is('orders') && Request::input('status') === '1' ? 'active' : '' }}">
+                    <i class="nav-icon fa-solid fa-circle-check"></i>
                     <p>Confirmed Orders</p>
                 </a>
             </li>
@@ -55,8 +61,8 @@
     </li>
 @endcan
 @can('order-list')
-    <li class="nav-item {{ in_array(Request::route()->getName(), ['orders']) ? 'menu-open' : '' }}">
-        <a href="#" class="nav-link {{ in_array(Request::route()->getName(), ['orders']) ? 'active' : '' }}">
+    <li class="nav-item {{ in_array(Request::route()->getName(), ['invoices']) ? 'menu-open' : '' }}">
+        <a href="#" class="nav-link {{ in_array(Request::route()->getName(), ['invoices']) ? 'active' : '' }}">
             <i class="nav-icon fa-solid fa-file-invoice-dollar"></i>
             <p>Invoice</p>
             <i class="fas fa-angle-left right"></i>
@@ -72,8 +78,8 @@
     </li>
 @endcan
 @can('order-list')
-    <li class="nav-item {{ in_array(Request::route()->getName(), ['orders']) ? 'menu-open' : '' }}">
-        <a href="#" class="nav-link {{ in_array(Request::route()->getName(), ['orders']) ? 'active' : '' }}">
+    <li class="nav-item {{ in_array(Request::route()->getName(), ['receipts']) ? 'menu-open' : '' }}">
+        <a href="#" class="nav-link {{ in_array(Request::route()->getName(), ['receipts']) ? 'active' : '' }}">
             <i class="nav-icon fa-solid fa-sack-dollar"></i>
             <p>Receipt</p>
             <i class="fas fa-angle-left right"></i>
@@ -98,13 +104,13 @@
         <ul class="nav nav-treeview">
             <li class="nav-item">
                 <a href="{{ route('departments') }}" class="nav-link {{ Request::is('departments') ? 'active' : '' }}">
-                    <i class="fa-solid fa-list-ul nav-icon"></i>
+                    <i class="nav-icon fa-regular fa-comment-dots"></i>
                     <p>Centre</p>
                 </a>
             </li>
             <li class="nav-item">
                 <a href="{{ route('positions') }}" class="nav-link {{ Request::is('positions') ? 'active' : '' }}">
-                    <i class="fa-solid fa-list-ul nav-icon"></i>
+                    <i class="nav-icon fa-regular fa-comment-dots"></i>
                     <p>Department</p>
                 </a>
             </li>

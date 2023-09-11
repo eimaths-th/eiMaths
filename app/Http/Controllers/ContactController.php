@@ -343,7 +343,7 @@ class ContactController extends Controller
             $order_detail->update($input_order_detail);
         }
 
-        return response()->json(['success' => 'Student information updated successfully']);
+        return response()->json(['success' => 'Student information updated successfully', 'discontinued' => $contact->discontinued]);
     }
 
     /**

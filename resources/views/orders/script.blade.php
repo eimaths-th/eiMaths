@@ -455,11 +455,11 @@
                     data: 'product_name',
                     name: 'product_name'
                 },
-                {
+                /*{
                     data: 'amount',
                     name: 'amount'
                 },
-                /*  {
+                  {
                      data: 'cost',
                      name: 'cost'
                  }, */
@@ -482,14 +482,14 @@
 
                 // Calculate the sum of values in column 8 for all pages
                 var sum = api
-                    .column(8)
+                    .column(7)
                     .data()
                     .reduce(function(acc, value) {
                         return parseFloat(acc) + parseFloat(value);
                     }, 0);
 
                 // Update the footer cell with the sum
-                $(api.column(8).footer()).html(sum.toFixed(
+                $(api.column(7).footer()).html(sum.toFixed(
                     2)); // Adjust the decimal places as needed
             }
         };
@@ -821,6 +821,7 @@
                     console.log(res.data.status);
                     if (res.data.status == 1) {
                         $('#SubmitEditFormp').css('display', 'none');
+                        $('#SubmitEditForm').html('<i class="fas fa-download"></i> Save');
                     }
                     $('#EditModal').modal('show');
 
@@ -1034,20 +1035,25 @@
                                     '</li></strong>');
                             });
                         } else {
-                            $('.alert-danger').hide();
-                            $('.alert-success').show();
-                            $('.alert-success').append('<strong><li>' + result.success +
-                                '</li></strong>');
-                            $('#EditModal').modal('hide');
-                            toastr.success(result.success, {
-                                timeOut: 5000
-                            });
-                            clearDropzonePreviews2();
-                            $('#Listview').DataTable().ajax.reload();
-                            //setTimeout(function() {
-                            //$('.alert-success').hide();
 
-                            //}, 10000);
+                            var ostatus = result.status;
+                            if (ostatus == 1) {
+                                var url = "{{ route('orders') }}?status=" +
+                                    encodeURIComponent(ostatus);
+                                window.location.href = url;
+                            } else {
+                                $('.alert-danger').hide();
+                                $('.alert-success').show();
+                                $('.alert-success').append('<strong><li>' + result.success +
+                                    '</li></strong>');
+                                $('#EditModal').modal('hide');
+                                toastr.success(result.success, {
+                                    timeOut: 5000
+                                });
+                                clearDropzonePreviews2();
+                                $('#Listview').DataTable().ajax.reload();
+                            }
+
 
                         }
                     }

@@ -288,14 +288,17 @@
                 },
                 success: function(data) {
                     console.log(data);
-                    if (data.success) {
+
+                    /* if (data.success) {
                         toastr.success(data.message, {
                             timeOut: 5000
                         });
                         table.row(el.parents('tr'))
                             .remove()
                             .draw();
-                    }
+                    } */
+                    var url = "{{ route('contacts') }}";
+                    window.location.href = url;
                 }
             }); //end ajax
         })
