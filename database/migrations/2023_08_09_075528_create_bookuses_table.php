@@ -17,6 +17,7 @@ return new class extends Migration
             $table->integer('term_id')->default(0);
             $table->string('name')->nullable();
             $table->decimal('cost', 12, 2)->nullable();
+            $table->decimal('book_cost', 12, 2)->nullable();
             $table->integer('status')->default(0);
             $table->timestamps();
         });

@@ -240,10 +240,15 @@ class ReceiptController extends Controller
             "orders.refund as refund",
             "orders.register_fee as register_fee",
             "orders.promotion as promotion",
+            "first_detail.price as price"
 
         )
             ->join("contacts", "contacts.id", "=", "receipts.cid")
             ->join("orders", "orders.id", "=", "receipts.oid")
+            ->leftJoin("order_details as first_detail", function ($join) {
+                $join->on("first_detail.order_id", "=", "orders.id")
+                    ->whereRaw("first_detail.id = (SELECT MIN(id) FROM order_details WHERE order_id = orders.id)");
+            })
             ->join("departments", "contacts.centre", "=", "departments.id")
             ->where("receipts.id", $id)
             ->get();
@@ -259,7 +264,7 @@ class ReceiptController extends Controller
         }
 
         // Load the template file from the 'templates' subdirectory
-        $template = 'templates.print_order';
+        $template = 'templates.print_receipt';
         $templates = 'templates.print_social';
 
         $ctype = "";
@@ -273,7 +278,7 @@ class ReceiptController extends Controller
         $customItem = [
             'pname' => $datas[0]->book,
             'quantity' => 1,
-            'price' => $datas[0]->totalp,
+            'price' => $datas[0]->price,
             // Add other properties as needed
         ];
 

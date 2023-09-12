@@ -45,8 +45,9 @@
         <ul class="nav nav-treeview">
 
             <li class="nav-item">
-                <a href="{{ route('orders', ['status' => '1']) }}"
-                    class="nav-link {{ Request::is('orders') && Request::input('status') === '1' ? 'active' : '' }}">
+                {{-- <a href="{{ route('orders', ['status' => '1']) }}" --}}
+                <a href="{{ route('orders') }}" {{-- class="nav-link {{ Request::is('orders') && Request::input('status') === '1' ? 'active' : '' }}"> --}}
+                    class="nav-link {{ Request::is('orders') ? 'active' : '' }}">
                     <i class="nav-icon fa-solid fa-circle-check"></i>
                     <p>New Student Orders</p>
                 </a>
@@ -72,8 +73,9 @@
     </li>
 @endcan
 @can('order-list')
-    <li class="nav-item {{ in_array(Request::route()->getName(), ['receipts','receipts_pending']) ? 'menu-open' : '' }}">
-        <a href="#" class="nav-link {{ in_array(Request::route()->getName(), ['receipts','receipts_pending']) ? 'active' : '' }}">
+    <li class="nav-item {{ in_array(Request::route()->getName(), ['receipts', 'receipts_pending']) ? 'menu-open' : '' }}">
+        <a href="#"
+            class="nav-link {{ in_array(Request::route()->getName(), ['receipts', 'receipts_pending']) ? 'active' : '' }}">
             <i class="nav-icon fa-solid fa-sack-dollar"></i>
             <p>Receipt</p>
             <i class="fas fa-angle-left right"></i>
@@ -87,8 +89,7 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a href="{{ route('receipts') }}"
-                    class="nav-link {{ Request::is('receipts') ? 'active' : '' }}">
+                <a href="{{ route('receipts') }}" class="nav-link {{ Request::is('receipts') ? 'active' : '' }}">
                     <i class="nav-icon fa-solid fa-children"></i>
                     <p>New Student By Term</p>
                 </a>

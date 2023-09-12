@@ -55,18 +55,8 @@
                     <div class="card card-primary">
                         <div class="card-header">
                             <h3 class="card-title">
-                                @switch(request()->input('status'))
-                                    @case(0)
-                                    <i class=" fa-solid fa-circle-pause"></i> New Student Pending
-                                    @break
-
-                                    @case(1)
-                                        Confirmed
-                                    @break
-
-                                    @default
-                                    <i class=" fa-solid fa-circle-pause"></i> New Student Pending
-                                @endswitch </h3>
+                                    <i class=" fa-solid fa-circle-check"></i> New Student Order
+                                   </h3>
                             <div class="card-tools">
                                 <button type="button" class="btn btn-tool" data-card-widget="maximize">
                                     <i class="fas fa-expand"></i>
@@ -210,9 +200,6 @@
         </div>
 
     </section>
-
-
-    @include('orders.create')
 
     @include('orders.edit')
 

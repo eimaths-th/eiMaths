@@ -55,8 +55,6 @@ class OrderController extends Controller
      */
     public function index(Request $request)
     {
-        $status = $request->query('status');
-        $new = $request->query('new');
 
         if ($request->ajax()) {
             //sleep(2);
@@ -81,7 +79,7 @@ class OrderController extends Controller
                         ->whereRaw("first_detail.id = (SELECT MIN(id) FROM order_details WHERE order_id = orders.id)");
                 })
                 ->join("products", "products.id", "=", "first_detail.product_id")
-                ->where('orders.status', $status);
+                ->where('orders.status', 1);
 
             if (!empty($request->get('sdate'))) {
                 //dd($request->get('sdate'));
@@ -102,20 +100,8 @@ class OrderController extends Controller
                 ->editColumn('checkbox', function ($row) {
                     return '<input type="checkbox" id="' . $row->id . '" class="flat" name="table_records[]" value="' . $row->id . '" >';
                 })
-                ->editColumn('amount', function (Order $datas) {
-
-                    $amount_text = number_format($datas->amount, 2, '.', ',') . ' ' . $datas->unit;
-                    return $amount_text;
-                })
-                ->editColumn('cost', function (Order $datas) {
-                    return number_format($datas->cost, 2, '.', ',') . " บาท";
-                })
                 ->editColumn('created_at', function (Order $datas) {
                     return date('Y-m-d H:i:s', strtotime($datas->created_at));
-                })
-                ->editColumn('total_cost', function (Order $datas) {
-                    //$total_cost = $datas->amount * $datas->cost;
-                    return '<font class="text-success">' . number_format($datas->total_cost, 2, '.', ',') . " บาท </font>";
                 })
                 ->addColumn('more', function ($row) {
                     return '';
@@ -162,7 +148,7 @@ class OrderController extends Controller
                         $html .= $brt.'<button type="button" class="btn btn-sm btn-success disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fas fa-clipboard"></i> Log</a> ';
                     } */
                     return "<div class='col-sm-2 col-md-2 col-xl-2'>" . $html . "</div>";
-                })->rawColumns(['checkbox', 'action', 'total_cost'])->toJson();
+                })->rawColumns(['checkbox', 'action'])->toJson();
         }
 
 
@@ -193,97 +179,10 @@ class OrderController extends Controller
             ->with(['centre' => $centre])
             ->with(['level' => $level])
             ->with(['term' => $term])
-            ->with(['sterm' => $sterm])
-            ->with(['new' => $new]);
+            ->with(['sterm' => $sterm]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        $rnumber = OrderRunningNumber::pre_generate();
-        return response()->json([
-            'running' =>  $rnumber
-        ]);
-    }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'order_number' => 'required',
-            'cid' => 'required',
-            'pid' => 'required',
-            'tamount' => 'required',
-            'total_cost' => 'required',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 200);
-        }
-
-        $order = new Order();
-        $order->created_by = Auth::id();
-        $order->updated_by = Auth::id();
-        $order->order_number  = OrderRunningNumber::generate();
-        $order->cid = $request->input('cid');
-        $order->pid = $request->input('pid');
-        $order->amount = $request->input('tamount');
-        $order->total_cost = $request->input('total_cost');
-        $order->detail = $request->input('detail');
-        $order->save();
-
-        $amounts = $request->input('amount');
-        $prices = $request->input('price');
-        $sids = $request->input('sid');
-
-        if (is_array($amounts) && is_array($prices) && count($amounts) === count($prices)) {
-            foreach ($amounts as $index => $amount) {
-                if (isset($sids[$index])) {
-                    $orderDetail = new OrderDetail();
-                    $orderDetail->order_id = $order->id;
-                    $orderDetail->product_id = $sids[$index];
-                    $orderDetail->quantity = $amount;
-                    $orderDetail->price = $prices[$index];
-                    $orderDetail->save();
-
-                    $product = product::find($sids[$index]);
-                    if ($product) {
-                        $remain = $product->remaining - $amount;
-                        if ($remain <= 0) {
-                            //set status sold out
-                            $product->status_id = 4;
-                        }
-                        $product->remaining = $remain;
-                        $product->save();
-                    }
-                }
-            }
-        }
-
-        //file att
-
-        $filesa = $request->get('img');
-        if (!empty($filesa)) {
-            foreach ($filesa as $filea) {
-                //echo $filea;
-                $oldfile = FileUpload::where('oldname', $filea)->get();
-                $filestore = new FileStore();
-                $filestore->module = 'orders';
-                $filestore->module_id = $order->id;
-                $filestore->filename = $oldfile[0]->filename;
-                $filestore->save();
-
-                File::move(public_path() . '/file_upload/' . $oldfile[0]->filename, public_path() . '/file_store/' . $oldfile[0]->filename);
-                FileUpload::where('filename', $oldfile[0]->filename)->delete();
-            }
-        }
-
-        return response()->json(['success' => 'เพิ่ม รายการขาย เรียบร้อยแล้ว']);
-    }
 
     /**
      * Display the specified resource.
@@ -293,6 +192,7 @@ class OrderController extends Controller
         // Get the data from the database query
         $datas = Order::select(
             "orders.*",
+            "orders.order_number as doc_number",
             "contacts.name as cname",
             "contacts.telephone as ctelephone",
             "contacts.code as ccode",
@@ -575,7 +475,7 @@ class OrderController extends Controller
         $status = $request->get('status');
 
         $data = [
-            'order_number' => $request->get('order_number'),
+            //'order_number' => $request->get('order_number'),
             'cid' => $request->get('cid'),
             //'amount' => $request->get('tamount'),
             //'cost' => $request->get('cost'),
@@ -648,76 +548,5 @@ class OrderController extends Controller
         }
 
         return response()->json(['success' => 'Save Data completed', 'status' => $order->status]);
-    }
-
-    public function deleteImg($id, $id2)
-    {
-        $dataimg = FileStore::find($id2)->delete();;
-
-        $html = $this->getfileatt($id);
-
-        return response()->json(['imgs' => $html]);
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Request $request)
-    {
-        $id = $request->get('id');
-        Order::find($id)->delete();
-        $dataimg = FileStore::where([
-            'module_id' => $id,
-            'module' => 'orders',
-        ])->get();
-
-        // Delete the found records
-        if (!$dataimg->isEmpty()) {
-            $dataimg->each(function ($item) {
-                $filename = $item->filename;
-
-                // Build the full path to the file within the 'public/file_store' directory
-                $filePath = public_path('file_store/' . $filename);
-
-                // Delete the file if it exists
-                if (file_exists($filePath)) {
-                    unlink($filePath);
-                }
-                $item->delete();
-            });
-        }
-        return ['success' => true, 'message' => 'ลบ รายการขาย เรียบร้อยแล้ว'];
-    }
-
-    public function destroy_all(Request $request)
-    {
-
-        $arr_del  = $request->get('table_records'); //$arr_ans is Array MacAddress
-
-        for ($xx = 0; $xx < count($arr_del); $xx++) {
-            Order::find($arr_del[$xx])->delete();
-            $dataimg = FileStore::where([
-                'module_id' => $arr_del[$xx],
-                'module' => 'orders',
-            ])->get();
-
-            // Delete the found records
-            if (!$dataimg->isEmpty()) {
-                $dataimg->each(function ($item) {
-                    $filename = $item->filename;
-
-                    // Build the full path to the file within the 'public/file_store' directory
-                    $filePath = public_path('file_store/' . $filename);
-
-                    // Delete the file if it exists
-                    if (file_exists($filePath)) {
-                        unlink($filePath);
-                    }
-                    $item->delete();
-                });
-            }
-        }
-
-        return redirect('/orders')->with('success', 'ลบ รายการขาย เรียบร้อยแล้ว');
     }
 }

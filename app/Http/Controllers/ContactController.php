@@ -12,6 +12,7 @@ use App\Models\studentRunningNumber;
 use App\Models\term;
 use App\Models\Sterm;
 use App\Models\Order;
+use App\Models\Receipt;
 use App\Models\OrderDetail;
 use App\Models\OrderRunningNumber;
 use Illuminate\Support\Facades\Gate;
@@ -230,13 +231,6 @@ class ContactController extends Controller
         ]);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
 
     /**
      * Show the form for editing the specified resource.
@@ -353,6 +347,7 @@ class ContactController extends Controller
         $id = $request->get('id');
         Contact::find($id)->delete();
         $this->order_clear($id);
+        $this->receive_clear($id);
 
         return ['success' => true, 'message' => 'Deleted student successfully'];
     }
@@ -365,6 +360,7 @@ class ContactController extends Controller
         for ($xx = 0; $xx < count($arr_del); $xx++) {
             Contact::find($arr_del[$xx])->delete();
             $this->order_clear($arr_del[$xx]);
+            $this->receive_clear($arr_del[$xx]);
         }
 
         return redirect('/contacts')->with('success', 'Deleted student successfully');
@@ -394,6 +390,21 @@ class ContactController extends Controller
             // For example: Log the error, return an error response, etc.
         }
     }
+
+    public function receive_clear($id)
+    {
+        try {
+            DB::beginTransaction();
+            Receipt::where('cid', $id)->delete();
+
+            DB::commit();
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+        }
+    }
+
 
     public function lfind($type, $level)
     {

@@ -13,8 +13,26 @@
     <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet'>
     <style>
         /*  table {
-            font-size: 0.7rem;
-        } */
+        font-size: 0.7rem;
+    } */
+        @font-face {
+            font-family: 'THSarabunNew';
+            font-size: 18px;
+            font-style: normal;
+            font-weight: normal;
+            src: url("{{ asset('fonts/THSarabunNew.ttf') }}") format("truetype");
+
+        }
+
+        @font-face {
+            font-family: 'THSarabunNew Bold';
+            font-size: 18px;
+            font-style: normal;
+            font-weight: bold;
+            src: url("{{ asset('fonts/THSarabunNew Bold') }}") format("truetype");
+        }
+
+
         body {
             font-family: 'sarabun', 'Roboto';
             font-size: 16px;
@@ -131,13 +149,13 @@
 
             </tr>
             <tr>
-                <td width="28%" class="grey">นามลูกค้า,เบอร์โทร/Client,Telephone</td>
-                <td width="28%" style="padding-left:10px;" align="right" class="grey">
+                <td width="25%" class="grey">นามลูกค้า,เบอร์โทร/Client,Telephone</td>
+                <td width="25%" style="padding-left:10px;" align="right" class="grey">
                     รหัสลูกค้า/Customer's Code</td>
-                <td width="28%" style="padding-left:12px;"> <b> {{ $data->ccode }} </b>
+                <td width="25%" style="padding-left:12px;"> <b> {{ $data->ccode }} </b>
                 </td>
-                <td width="20%" align="right" class="grey">Order No.</td>
-                <td width="10%" style="padding-left:5px;"> <b> {{ $data->doc_number }} </b></td>
+                <td width="10%" align="right" class="grey">Order No.</td>
+                <td width="15%" style="padding-left:5px;"> <b> {{ $data->doc_number }} </b></td>
             </tr>
             <tr>
                 <td>
@@ -185,7 +203,7 @@
                 @endphp
                 @foreach ($items as $x => $receipt_detail)
                     <tr>
-                        <td align="center" style="vertical-align: top;">{{ (int)$x + 1 }}</td>
+                        <td align="center" style="vertical-align: top;">{{ (int) $x + 1 }}</td>
                         <td align="left"> Class Level {!! $receipt_detail['pname'] !!}</td>
                         <td align="center">{{ $receipt_detail['quantity'] }}</td>
                         {{-- <td align="center">{{ $receipt_detail['unit'] }}</td> --}}

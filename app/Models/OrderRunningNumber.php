@@ -36,7 +36,7 @@ class OrderRunningNumber extends Model
         $number = str_pad($number, 4, '0', STR_PAD_LEFT);
 
 
-        return $type . '' . date('y') . date('m') . $number;
+        return 'Or-'.$type . '' . date('y') . date('m') . $number;
     }
 
 
@@ -65,6 +65,6 @@ class OrderRunningNumber extends Model
         $number = str_pad($number, 4, '0', STR_PAD_LEFT);
 
         // A-21-00001
-        return $type . '' . date('y') . date('m') . $number;
+        return 'Or-'.$type . '' . date('y') . date('m') . $number;
     }
 }
