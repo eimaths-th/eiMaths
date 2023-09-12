@@ -5,15 +5,85 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Validator;
 
 class ProductController extends Controller
 {
     /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        //$this->middleware('auth');
+        $this->middleware('permission:master-data-list|master-data-create|master-data-edit|master-data-delete', ['only' => ['index', 'show']]);
+        $this->middleware('permission:master-data-create', ['only' => ['create', 'store']]);
+        $this->middleware('permission:master-data-edit', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:master-data-delete', ['only' => ['destroy']]);
+    }
+
+    /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+
+        if ($request->ajax()) {
+            //sleep(2);
+
+            $datas = Product::orderBy("id", "asc")->get();
+            $state_text = array('Enable', 'Disable');
+            return datatables()->of($datas)
+                ->editColumn('checkbox', function ($row) {
+                    return '<input type="checkbox" id="' . $row->id . '" class="flat" name="table_records[]" value="' . $row->id . '" >';
+                })
+                ->editColumn('status', function ($row) use ($state_text) {
+                    $state = $state_text[$row->status];
+                    return $state;
+                })
+                ->addColumn('action', function ($row) {
+                    if (Gate::allows('master-data-edit')) {
+                        $html = '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit</button> ';
+                    } else {
+                        $html = '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> Edit</button> ';
+                    }
+                    if (Gate::allows('master-data-delete')) {
+                        $html .= '<button type="button" data-rowid="' . $row->id . '" class="btn btn-sm btn-danger btn-delete"><i class="fa fa-trash"></i> Delete</button>';
+                    } else {
+                        $html .= '<button type="button" class="btn btn-sm btn-danger disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-trash"></i> Delete</button> ';
+                    }
+                    return $html;
+                })->rawColumns(['checkbox', 'action'])->toJson();
+        }
+
+        return view('products.index');
+    }
+
+
+    public function find($type, $department)
+    {
+        $select_list = "<option value=''>please select</option>";
+        if ($type == 'add') {
+            $data = Position::select(
+                "positions.id as id",
+                "positions.name as name",
+            )
+
+                ->where('department_id', $department)
+                ->where('status', 1)
+                ->orderBy("positions.name", "asc")
+                ->get();
+
+            foreach ($data as $key) {
+                $select_list .= '<option value="' . $key->id . '" >' . $key->name . '</option>';
+            }
+
+            return response()->json([
+                'html' =>  $select_list
+            ]);
+        }
     }
 
     /**
@@ -30,37 +100,102 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         //
-    }
+        $validator =  Validator::make($request->all(), [
+            'name' => 'required|string|max:255|unique:departments',
+            'code' => 'required|string|max:10',
+            'status' => 'required',
+            /* 'email' => 'required|string|email|max:255',
+            'address' => 'required|string|max:255',
+            'postcode' => 'required|string|max:10',
+            'telephone' => 'required|string|max:20',*/
+        ], [
+            'name.required' => 'The branch name must not be blank!',
+            'name.unique' => 'This branch name already exists in the database!',
+            'code.required' => 'The branch code must not be blank!',
+            'code.max' => 'The branch code must not exceed 10 characters',
+            'status.required' => 'Please select a status!',
+        ]);
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Product $product)
-    {
-        //
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()->all()]);
+        }
+
+        $input = $request->all();
+        Department::create($input);
+        return response()->json(['success' => 'The branch has been successfully added.']);
     }
 
     /**
      * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
      */
-    public function edit(Product $product)
+    public function edit($id)
     {
-        //
+
+        $data =  Department::find($id);
+        return response()->json(['data' => $data]);
     }
+
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Product $product)
+    public function update(Request $request, $id)
     {
-        //
+        $rules = [
+            'name' => 'required|string|max:255|unique:departments,name,' . $id,
+            'code' => 'required|max:10',
+            'status' => 'required|max:10',
+
+        ];
+
+
+        $validator = Validator::make($request->all(), $rules, [
+            'name.required' => 'The branch name must not be blank!',
+            'name.unique' => 'This branch name already exists in the database!',
+            'code.required' => 'The branch code must not be blank!',
+            'code.max' => 'The branch code must not exceed 10 characters!',
+            'status.required' => 'Please select a status!',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()->all()]);
+        }
+
+        $contactd = [
+            'name' => $request->get('name'),
+            'code' => $request->get('code'),
+            'status' => $request->get('status'),
+        ];
+
+        $update = Department::find($id);
+        $update->update($contactd);
+
+        return response()->json(['success' => 'The branch has been successfully edited.']);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Product $product)
+    public function destroy(Request $request)
     {
-        //
+        $id = $request->get('id');
+        Department::find($id)->delete();
+        return ['success' => true, 'message' => 'The branch has been successfully deleted.'];
+    }
+
+    public function destroy_all(Request $request)
+    {
+
+        $arr_del  = $request->get('table_records'); //$arr_ans is Array MacAddress
+
+        for ($xx = 0; $xx < count($arr_del); $xx++) {
+            Department::find($arr_del[$xx])->delete();
+        }
+
+        return redirect('/departments')->with('success', 'The branch has been successfully deleted.');
     }
 }

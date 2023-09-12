@@ -38,7 +38,7 @@
 @can('order-list')
     <li class="nav-item {{ in_array(Request::route()->getName(), ['orders']) ? 'menu-open' : '' }}">
         <a href="#" class="nav-link {{ in_array(Request::route()->getName(), ['orders']) ? 'active' : '' }}">
-            <i class="nav-icon fa-solid fa-cart-shopping"></i>
+            <i class="nav-icon fas fa-cart-shopping"></i>
             <p>Orders</p>
             <i class="fas fa-angle-left right"></i>
         </a>
@@ -58,7 +58,7 @@
 @can('order-list')
     <li class="nav-item {{ in_array(Request::route()->getName(), ['invoices']) ? 'menu-open' : '' }}">
         <a href="#" class="nav-link {{ in_array(Request::route()->getName(), ['invoices']) ? 'active' : '' }}">
-            <i class="nav-icon fa-solid fa-file-invoice-dollar"></i>
+            <i class="nav-icon fas fa-file-invoice-dollar"></i>
             <p>Invoice</p>
             <i class="fas fa-angle-left right"></i>
         </a>
@@ -76,7 +76,7 @@
     <li class="nav-item {{ in_array(Request::route()->getName(), ['receipts', 'receipts_pending']) ? 'menu-open' : '' }}">
         <a href="#"
             class="nav-link {{ in_array(Request::route()->getName(), ['receipts', 'receipts_pending']) ? 'active' : '' }}">
-            <i class="nav-icon fa-solid fa-sack-dollar"></i>
+            <i class="nav-icon fas fa-sack-dollar"></i>
             <p>Receipt</p>
             <i class="fas fa-angle-left right"></i>
         </a>
@@ -98,8 +98,9 @@
     </li>
 @endcan
 @can('master-data-list')
-    <li class="nav-item">
-        <a href="#" class="nav-link">
+<li class="nav-item {{ in_array(Request::route()->getName(), ['departments', 'receipts_positions','products']) ? 'menu-open' : '' }}">
+    <a href="#"
+        class="nav-link {{ in_array(Request::route()->getName(), ['departments', 'receipts_positions','products']) ? 'active' : '' }}">
             <i class="nav-icon fas fa-database"></i>
             <p>Databases</p>
             <i class="fas fa-angle-left right"></i>
@@ -115,6 +116,12 @@
                 <a href="{{ route('positions') }}" class="nav-link {{ Request::is('positions') ? 'active' : '' }}">
                     <i class="nav-icon fa-regular fa-comment-dots"></i>
                     <p>Department</p>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{{ route('products') }}" class="nav-link {{ Request::is('products') ? 'active' : '' }}">
+                    <i class="nav-icon fa-regular fa-comment-dots"></i>
+                    <p>Class Fee & Book Price</p>
                 </a>
             </li>
             {{-- <li class="nav-item" >
