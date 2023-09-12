@@ -54,10 +54,10 @@
                 <div class="col-12">
                     <div class="card card-primary">
                         <div class="card-header">
-                            <h3 class="card-title"> <i class="fa-solid fa-cart-shopping"></i>
+                            <h3 class="card-title">
                                 @switch(request()->input('status'))
                                     @case(0)
-                                        Pending
+                                    <i class=" fa-solid fa-circle-pause"></i> New Student Pending
                                     @break
 
                                     @case(1)
@@ -65,8 +65,8 @@
                                     @break
 
                                     @default
-                                        Pending
-                                @endswitch Orders</h3>
+                                    <i class=" fa-solid fa-circle-pause"></i> New Student Pending
+                                @endswitch </h3>
                             <div class="card-tools">
                                 <button type="button" class="btn btn-tool" data-card-widget="maximize">
                                     <i class="fas fa-expand"></i>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\OrderRunningNumber;
+use App\Models\ReceiptRunningNumber;
 use App\Models\OrderDetail;
 use App\Models\Product;
 use App\Models\Contact;
@@ -17,7 +18,7 @@ use App\Models\Sterm;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Interfaces\MoneyConvertServiceInterface;
-use App\OrderDetail as AppOrderDetail;
+use App\Models\Receipt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
@@ -168,7 +169,7 @@ class OrderController extends Controller
         $customData = [
             [
                 'id' => 1,
-                'name' => 'Application Fee',
+                'name' => 'TermFee',
             ],
         ];
         $customCollection = collect($customData);
@@ -446,7 +447,7 @@ class OrderController extends Controller
         $data_html = '';
         $etotal = 0;
 
-
+        $receipt_number = ReceiptRunningNumber::pre_generate($data->centre);
         //all product
         $datasp = Product::select(
             "products.id as id",
@@ -504,7 +505,9 @@ class OrderController extends Controller
 
         $img = $this->getfileatt($id);
 
-        return response()->json(['data' => $data, 'datas' => $datas, 'table_html' => $data_html, 'imgs' => $img]);
+        return response()->json([
+            'data' => $data, 'datas' => $datas, 'table_html' => $data_html, 'imgs' => $img, 'receipt_number' => $receipt_number
+        ]);
     }
 
 
@@ -569,6 +572,8 @@ class OrderController extends Controller
             return response()->json(['errors' => $validator->errors()->all()]);
         }
 
+        $status = $request->get('status');
+
         $data = [
             'order_number' => $request->get('order_number'),
             'cid' => $request->get('cid'),
@@ -579,7 +584,7 @@ class OrderController extends Controller
             'refund' => $request->get('refund'),
             'register_fee' => $request->get('register_fee'),
             'promotion' => $request->get('promotion'),
-            'status' => $request->get('status'),
+            'status' => $status,
             'updated_by' => Auth::id()
         ];
 
@@ -626,7 +631,23 @@ class OrderController extends Controller
             }
         }
 
-        return response()->json(['success' => 'Edit Order completed','status' => $order->status]);
+        //receipt
+        if ($status == 1) {
+            $receipt = new Receipt();
+            $receipt->centre = $order->centre;
+            $receipt->cid = $order->cid;
+            $receipt->student_no = $order->contact->code;
+            $receipt->student_name = $order->contact->name;
+            $receipt->receipt_number = ReceiptRunningNumber::generate($order->centre);
+            $receipt->payment_date = date("Y-m-d");
+            $receipt->oid = $order->id;
+            $receipt->level = $order->contact->level_name;
+            $receipt->total_fee = $order->total_price;
+            $receipt->start_term = $order->contact->start_term;
+            $receipt->save();
+        }
+
+        return response()->json(['success' => 'Save Data completed', 'status' => $order->status]);
     }
 
     public function deleteImg($id, $id2)

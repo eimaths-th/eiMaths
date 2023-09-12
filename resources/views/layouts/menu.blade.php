@@ -43,18 +43,12 @@
             <i class="fas fa-angle-left right"></i>
         </a>
         <ul class="nav nav-treeview">
-            <li class="nav-item">
-                <a href="{{ route('orders', ['status' => '0']) }}"
-                    class="nav-link {{ Request::is('orders') && Request::input('status') === '0' ? 'active' : '' }}">
-                    <i class="nav-icon fa-solid fa-circle-pause"></i>
-                    <p>Pending Orders</p>
-                </a>
-            </li>
+
             <li class="nav-item">
                 <a href="{{ route('orders', ['status' => '1']) }}"
                     class="nav-link {{ Request::is('orders') && Request::input('status') === '1' ? 'active' : '' }}">
                     <i class="nav-icon fa-solid fa-circle-check"></i>
-                    <p>Confirmed Orders</p>
+                    <p>New Student Orders</p>
                 </a>
             </li>
         </ul>
@@ -78,19 +72,27 @@
     </li>
 @endcan
 @can('order-list')
-    <li class="nav-item {{ in_array(Request::route()->getName(), ['receipts']) ? 'menu-open' : '' }}">
-        <a href="#" class="nav-link {{ in_array(Request::route()->getName(), ['receipts']) ? 'active' : '' }}">
+    <li class="nav-item {{ in_array(Request::route()->getName(), ['receipts','receipts_pending']) ? 'menu-open' : '' }}">
+        <a href="#" class="nav-link {{ in_array(Request::route()->getName(), ['receipts','receipts_pending']) ? 'active' : '' }}">
             <i class="nav-icon fa-solid fa-sack-dollar"></i>
             <p>Receipt</p>
             <i class="fas fa-angle-left right"></i>
         </a>
         <ul class="nav nav-treeview">
-            {{--  <li class="nav-item">
-                <a href="{{ route('orders', ['status' => '0']) }}" class="nav-link {{ Request::is('orders') ? 'active' : '' }}">
-                    <i class="fa-solid fa-list-ul nav-icon"></i>
-                    <p>New Student Orders</p>
+            <li class="nav-item">
+                <a href="{{ route('receipts_pending') }}"
+                    class="nav-link {{ Request::is('receipts_pending') ? 'active' : '' }}">
+                    <i class="nav-icon fa-solid fa-circle-pause"></i>
+                    <p>New Student Pending</p>
                 </a>
-            </li> --}}
+            </li>
+            <li class="nav-item">
+                <a href="{{ route('receipts') }}"
+                    class="nav-link {{ Request::is('receipts') ? 'active' : '' }}">
+                    <i class="nav-icon fa-solid fa-children"></i>
+                    <p>New Student By Term</p>
+                </a>
+            </li>
         </ul>
     </li>
 @endcan

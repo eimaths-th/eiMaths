@@ -4,8 +4,7 @@
          <form id="editdata" class="form" action="" method="POST">
              <div class="modal-content">
                  <div class="modal-header bg-primary">
-                     <h4 class="modal-title" id="exampleModalLongTitle"><i class="fa-solid fa-cart-shopping"></i> Confirm
-                         Order
+                     <h4 class="modal-title" id="exampleModalLongTitle"><i class="fa-solid fa-cart-shopping"></i> Create Receipt
                      </h4>
                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                          <span aria-hidden="true">&times;</span>
@@ -33,7 +32,7 @@
                                  <li class="nav-item">
                                      <a class="nav-link active" id="custom-tabs-one-home2-tab" data-toggle="pill"
                                          href="#custom-tabs-one-home2" role="tab"
-                                         aria-controls="custom-tabs-one-home2" aria-selected="true">Order Detail</a>
+                                         aria-controls="custom-tabs-one-home2" aria-selected="true">New Student Detail</a>
                                  </li>
                                  <li class="nav-item">
                                      <a class="nav-link" id="custom-tabs-one-profile2-tab" data-toggle="pill"
@@ -106,7 +105,7 @@
                                          <div class="row">
                                              <div class="col-xs-6 col-sm-6 col-md-6">
                                                  <div class="form-group">
-                                                     <strong><i class="fa-solid fa-hashtag"></i> Order Number:</strong>
+                                                     <strong><i class="fa-solid fa-hashtag"></i> Receipt Number:</strong>
                                                      {!! Form::text('lot', null, [
                                                          'id' => 'EditLot',
                                                          'placeholder' => 'Order Number',
@@ -117,7 +116,7 @@
                                              </div>
                                              <div class="col-xs-6 col-sm-6 col-md-6">
                                                  <div class="form-group">
-                                                     <strong><i class="fa-solid fa-list"></i> Order Type:</strong>
+                                                     <strong><i class="fa-solid fa-list"></i> Type:</strong>
                                                      <select style="width: 100%;"
                                                          class="producte select2 select2_single form-control"
                                                          id="EditProduct" name="eproduct" multiple="multiple">

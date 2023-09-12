@@ -1,0 +1,32 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Receipt extends Model
+{
+    use HasFactory;
+    // Fields that are allowed for mass assignment
+    protected $fillable = [
+        'centre',
+        'cid',
+        'student_no',
+        'student_name',
+        'receipt_number',
+        'payment_date',
+        'oid',
+        'level',
+        'total_fee',
+        'start_term',
+        'status',
+    ];
+
+    // Fields that are not allowed for mass assignment
+    protected $guarded = [
+        'id', // Assuming 'id' is your primary key
+        'created_by',
+        'updated_by',
+    ];
+}

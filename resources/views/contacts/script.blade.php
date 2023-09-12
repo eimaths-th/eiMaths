@@ -543,7 +543,7 @@
                         showOverlay();
 
                         var oid = result.oid;
-                        var url = "{{ route('orders', ['status' => '0']) }}&new=" +
+                        var url = "{{ route('receipts_pending') }}?new=" +
                             encodeURIComponent(oid);
                         window.location.href = url;
                     }

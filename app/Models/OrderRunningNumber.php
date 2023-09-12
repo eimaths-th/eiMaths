@@ -33,7 +33,7 @@ class OrderRunningNumber extends Model
         $running_number->number++;
         //$running_number->save();
         $number = $running_number->number;
-        $number = str_pad($number, 5, '0', STR_PAD_LEFT);
+        $number = str_pad($number, 4, '0', STR_PAD_LEFT);
 
 
         return $type . '' . date('y') . date('m') . $number;
@@ -62,7 +62,7 @@ class OrderRunningNumber extends Model
         $running_number->number++;
         $running_number->save();
         $number = $running_number->number;
-        $number = str_pad($number, 5, '0', STR_PAD_LEFT);
+        $number = str_pad($number, 4, '0', STR_PAD_LEFT);
 
         // A-21-00001
         return $type . '' . date('y') . date('m') . $number;

@@ -75,7 +75,9 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/orders/show/{id}/{param}', [App\Http\Controllers\OrderController::class, 'show'])->name('orders.show');
 
     Route::get('/invoices', [App\Http\Controllers\OrderController::class, 'index'])->name('invoices');
-    Route::get('/receipts', [App\Http\Controllers\OrderController::class, 'index'])->name('receipts');
+    Route::get('/receipts', [App\Http\Controllers\ReceiptController::class, 'index'])->name('receipts');
+    Route::get('/receipts/show/{id}/{param}', [App\Http\Controllers\ReceiptController::class, 'show'])->name('receipts.show');
+    Route::get('/receipts_pending', [App\Http\Controllers\ReceiptController::class, 'pending'])->name('receipts_pending');
 
     //file
     Route::post('/file/upload', function (Request $request) {

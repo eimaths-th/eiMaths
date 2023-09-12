@@ -137,7 +137,7 @@
                 <td width="28%" style="padding-left:12px;"> <b> {{ $data->ccode }} </b>
                 </td>
                 <td width="20%" align="right" class="grey">Order No.</td>
-                <td width="10%" style="padding-left:5px;"> <b> {{ $data->order_number }} </b></td>
+                <td width="10%" style="padding-left:5px;"> <b> {{ $data->doc_number }} </b></td>
             </tr>
             <tr>
                 <td>
@@ -185,7 +185,7 @@
                 @endphp
                 @foreach ($items as $x => $receipt_detail)
                     <tr>
-                        <td align="center" style="vertical-align: top;">{{ $x + 1 }}</td>
+                        <td align="center" style="vertical-align: top;">{{ (int)$x + 1 }}</td>
                         <td align="left"> Class Level {!! $receipt_detail['pname'] !!}</td>
                         <td align="center">{{ $receipt_detail['quantity'] }}</td>
                         {{-- <td align="center">{{ $receipt_detail['unit'] }}</td> --}}
