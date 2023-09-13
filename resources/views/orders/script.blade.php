@@ -288,6 +288,9 @@
                     className: 'control',
                     orderable: false,
                     targets: -1
+                }, {
+                    targets: [6, 8],
+                    className: 'text-center'
                 }],
             @endif
             sPaginationType: "full_numbers",
@@ -306,10 +309,10 @@
                     data: 'created_at',
                     name: 'created_at'
                 },
-                {
-                    data: 'order_number',
-                    name: 'order_number'
-                },
+                /*  {
+                     data: 'order_number',
+                     name: 'order_number'
+                 }, */
                 {
                     data: 'contact_code',
                     name: 'contact_code'
@@ -322,19 +325,22 @@
                     data: 'product_name',
                     name: 'product_name'
                 },
-                /*{
-                    data: 'amount',
-                    name: 'amount'
+                {
+                    data: 'book_qty',
+                    name: 'book_qty'
                 },
-                  {
-                     data: 'cost',
-                     name: 'cost'
-                 }, */
                 {
                     data: 'total_price',
                     name: 'total_price'
                 },
-
+                {
+                    data: 'bag_qty',
+                    name: 'bag_qty'
+                },
+                {
+                    data: 'bag_price',
+                    name: 'bag_price'
+                },
                 {
                     data: 'action',
                     name: 'action'
@@ -355,9 +361,34 @@
                         return parseFloat(acc) + parseFloat(value);
                     }, 0);
 
+                var qty = api
+                    .column(6)
+                    .data()
+                    .reduce(function(acc, value) {
+                        return parseInt(acc) + parseInt(value);
+                    }, 0);
+
+                var bag = api
+                    .column(8)
+                    .data()
+                    .reduce(function(acc, value) {
+                        return parseInt(acc) + parseInt(value);
+                    }, 0);
+
+                var bag_price = api
+                    .column(9)
+                    .data()
+                    .reduce(function(acc, value) {
+                        return parseInt(acc) + parseInt(value);
+                    }, 0);
+
                 // Update the footer cell with the sum
+                $(api.column(6).footer()).html(qty);
+                $(api.column(8).footer()).html(bag);
                 $(api.column(7).footer()).html(sum.toFixed(
                     2)); // Adjust the decimal places as needed
+                $(api.column(9).footer()).html(bag_price.toFixed(
+                    2));
             }
         };
         var table = $('#Listview').DataTable(table_option);

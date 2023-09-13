@@ -15,7 +15,7 @@
                         {{-- <li class="breadcrumb-item"><a href="#">Home</a></li>
                         <li class="breadcrumb-item active">Users Management</li> --}}
 
-                        @can('master-data-create')
+                       {{--  @can('master-data-create')
                             <button type="button" class="btn btn-success" id="CreateButton">
                                 <i class="fas fa-list-ol"></i> Add Centre</a> </button>
                         @else
@@ -34,7 +34,7 @@
                                 <button type="button" class="btn btn-danger disabled"><i class="fa fa-trash"></i>
                                     Delete All</button>
                             </span>
-                        @endcan
+                        @endcan --}}
                     </ol>
 
                 </div>
@@ -48,7 +48,7 @@
                 <div class="col-12">
                     <div class="card card-primary">
                         <div class="card-header">
-                            <h3 class="card-title"><i class="fas fa-list-ol"></i> Centre</h3>
+                            <h3 class="card-title"><i class="fas fa-list-ol"></i> Parameter Setting</h3>
                             <div class="card-tools">
                                 <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
                                     <i class="fas fa-minus"></i>
@@ -70,18 +70,17 @@
                                     });
                                 </script>
                             @endif
-                            <form method="post" action="{{ route('departments.destroy_all') }}" name="delete_all"
+                            <form method="post" action="" name="delete_all"
                                 id="delete_all">
                                 @csrf
                                 @method('POST')
                                 <table id="Listview" class="table table-bordered table-striped table-hover">
                                     <thead>
                                         <tr>
-                                            <th><input type="checkbox" id="check-all" class="flat"></th>
-                                            <th>Centre Name</th>
-                                            <th>Centre Code</th>
-                                            <th>Status</th>
-                                            <th width="120px"></th>
+                                            <th width="50"><input type="checkbox" id="check-all" class="flat"></th>
+                                            <th>Name </th>
+                                            <th>Price</th>
+                                            <th width="80px"></th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -104,13 +103,13 @@
     </section>
 
 
-    @include('departments.create')
+    @include('parameter.create')
 
-    @include('departments.edit')
+    @include('parameter.edit')
 
     {{--  {!! $data->render() !!} --}}
 @endsection
 
 @section('script')
-    @include('departments.script')
+    @include('parameter.script')
 @endsection

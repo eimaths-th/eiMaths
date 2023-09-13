@@ -13,6 +13,9 @@ return new class extends Migration
     {
         Schema::create('levels', function (Blueprint $table) {
             $table->id();
+            $table->decimal('price', 12, 2)->nullable();
+            $table->decimal('half_price', 12, 2)->nullable();
+            $table->decimal('book_price', 12, 2)->nullable();
             $table->string('name')->nullable();
             $table->integer('status')->default(0);
             $table->timestamps();

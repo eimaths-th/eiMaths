@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\bookuse;
 use App\Models\Contact;
 use App\Models\Department;
 use App\Models\level;
@@ -55,13 +56,13 @@ class ContactController extends Controller
                 "contacts.*",
                 "departments.name as centre_name",
                 "levels.name as level_name",
-                "products.name as book_name",
+                "bookuses.name as book_name",
                 "start_terms.name as start_term_name",
                 "pterms.name as term_name"
             )
                 ->join("departments", "contacts.centre", "=", "departments.id")
                 ->join("levels", "contacts.level", "=", "levels.id")
-                ->join("products", "contacts.bookuse", "=", "products.id")
+                ->join("bookuses", "contacts.bookuse", "=", "bookuses.id")
                 ->join("terms as start_terms", "contacts.start_term", "=", "start_terms.id")
                 ->join("terms as pterms", "contacts.term", "=", "pterms.id")
                 ->where('discontinued', '0');
@@ -126,7 +127,7 @@ class ContactController extends Controller
             ->orderBy("name", "asc")->get();
         $sterm = Sterm::where([['status', '1']])
             ->orderBy("name", "asc")->get();
-        $bookuse = Product::where([['status', '1'], ['type', '1']])
+        $bookuse = bookuse::where([['status', '1']/* , ['type', '1'] */])
             ->orderBy("name", "asc")->get();
         $level = level::where([['status', '1']])
             ->orderBy("name", "asc")->get();
@@ -194,15 +195,21 @@ class ContactController extends Controller
             return response()->json(['errors' => $validator->errors()->all()]);
         }
 
-        $priceq = Product::find($request->get('bookuse'));
+        $bookq = bookuse::find($request->get('bookuse'));
         $levelq = Level::find($request->get('level'));
         $termq = Term::find($request->get('term'));
+
+        if ($bookq->type==1) {
+            $fprice = $levelq->price;
+        } elseif ($bookq->type==2) {
+            $fprice = $levelq->half_price;
+        }
 
         $input = $request->all();
         $input['code'] = studentRunningNumber::generate($request->get('centre'));
         $input['level_name'] = $levelq->name;
         $input['term_name'] = $termq->name;
-        $input['bookuse_name'] = $priceq->name;
+        $input['bookuse_name'] = $bookq->name;
 
         $contact = Contact::create($input);
 
@@ -210,18 +217,18 @@ class ContactController extends Controller
         $input_order['centre'] = $request->get('centre');
         $input_order['cid'] = $contact->id;
         $input_order['order_number'] = OrderRunningNumber::generate($request->get('centre'));
-        $input_order['total_price'] = $priceq->price;
+        $input_order['total_price'] = $fprice;
         $order = Order::create($input_order);
 
         $contact->order = $order->id;
         $contact->save();
 
         $input_order_detail['order_id'] = $order->id;
-        $input_order_detail['product_id'] = $priceq->id;
-        $input_order_detail['pname'] = $priceq->name;
-        $input_order_detail['punit'] = $priceq->unit;
+        $input_order_detail['product_id'] = $bookq->id;
+        $input_order_detail['pname'] = $bookq->name;
+        $input_order_detail['punit'] = $bookq->unit;
         $input_order_detail['quantity'] = 1;
-        $input_order_detail['price'] = $priceq->price;
+        $input_order_detail['price'] = $fprice;
         $order_detail = OrderDetail::create($input_order_detail);
 
         $select_list_contact = '<option value="' . $contact->id . '" > ' . $contact->name . '</option>';
@@ -279,9 +286,16 @@ class ContactController extends Controller
             return response()->json(['errors' => $validator->errors()->all()]);
         }
 
+        $bookq = bookuse::find($request->get('bookuse'));
         $levelq = Level::find($request->get('level'));
         $termq = Term::find($request->get('term'));
-        $priceq = Product::find($request->get('bookuse'));
+
+        if ($bookq->type==1) {
+            $fprice = $levelq->price;
+        } elseif ($bookq->type==2) {
+            $fprice = $levelq->half_price;
+        }
+
 
         $contactd = [
             'name' => $request->get('name'),
@@ -306,7 +320,7 @@ class ContactController extends Controller
             'bookuse' => $request->get('bookuse'),
             'level_name' => $levelq->name,
             'term_name' => $termq->name,
-            'bookuse_name' => $priceq->name,
+            'bookuse_name' => $bookq->name,
             'discontinued' => $request->get('discontinued'),
             'discontinued_date' => $request->get('discontinued_date'),
             'discontinued_reason' => $request->get('discontinued_reason'),
@@ -317,7 +331,7 @@ class ContactController extends Controller
 
         $input_order['centre'] = $request->get('centre');
         $input_order['cid'] = $contact->id;
-        $input_order['total_price'] = $priceq->price;
+        $input_order['total_price'] = $fprice;
         $order = Order::find($contact->order);
 
         if ($order) {
@@ -325,11 +339,11 @@ class ContactController extends Controller
         }
 
         $input_order_detail['order_id'] = $order->id ?? null; // Set to null if $order is not found
-        $input_order_detail['product_id'] = $priceq->id;
-        $input_order_detail['pname'] = $priceq->name;
-        $input_order_detail['punit'] = $priceq->unit;
+        $input_order_detail['product_id'] = $bookq->id;
+        $input_order_detail['pname'] = $bookq->name;
+        $input_order_detail['punit'] = $bookq->unit;
         $input_order_detail['quantity'] = 1;
-        $input_order_detail['price'] = $priceq->price;
+        $input_order_detail['price'] = $fprice;
         $order_detail = OrderDetail::where('order_id', $input_order_detail['order_id'])->first();
 
         if ($order_detail) {
@@ -437,16 +451,16 @@ class ContactController extends Controller
         //$select_list = "<option value=''>please select</option>";
         $select_list = "";
         if ($type == 'add') {
-            $data = Product::select(
-                "products.id as id",
-                "products.name as name",
+            $data = bookuse::select(
+                "bookuses.id as id",
+                "bookuses.name as name",
             )
 
                 ->where('level_id', $level)
                 ->where('term_id', $term)
-                ->where('type', 1)
+                //->where('type', 1)
                 ->where('status', 1)
-                ->orderBy("products.name", "asc")
+                ->orderBy("bookuses.name", "asc")
                 ->get();
 
             foreach ($data as $key) {

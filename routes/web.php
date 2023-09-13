@@ -44,6 +44,14 @@ Route::group(['middleware' => ['auth']], function () {
     Route::put('/discontinued/restart', [App\Http\Controllers\DiscontinueController::class, 'restart'])->name('discontinued.restart');
     Route::post('/discontinued/destroy_all', [App\Http\Controllers\DiscontinueController::class, 'restart_all'])->name('discontinued.restart_all');
 
+    Route::get('/termfee', [App\Http\Controllers\TermfeeController::class, 'index'])->name('termfee');
+    Route::get('/termfee/edit/{id}', [App\Http\Controllers\TermfeeController::class, 'edit'])->name('termfee.edit');
+    Route::put('/termfee/save/{id}', [App\Http\Controllers\TermfeeController::class, 'update'])->name('termfee.save');
+
+    Route::get('/parameter', [App\Http\Controllers\ParameterController::class, 'index'])->name('parameter');
+    Route::get('/parameter/edit/{id}', [App\Http\Controllers\ParameterController::class, 'edit'])->name('parameter.edit');
+    Route::put('/parameter/save/{id}', [App\Http\Controllers\ParameterController::class, 'update'])->name('parameter.save');
+
 
     Route::get('/departments', [App\Http\Controllers\DepartmentController::class, 'index'])->name('departments');
     Route::post('/departments/store', [App\Http\Controllers\DepartmentController::class, 'store'])->name('departments.store');

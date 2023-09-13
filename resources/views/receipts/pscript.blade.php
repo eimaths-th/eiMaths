@@ -585,10 +585,18 @@
                     //$('#EditAmount').val(res.data.amount);
                     //$('#EditCost').val(res.data.cost);
                     $('#EditTotalCost').val(res.data.total_price);
-                    $('#EditTotalCosth').val(res.data.total_price);
+                    $('#EditTotalCosth').val(res.datas[0].price);
                     $('#EditDetail').val(res.data.detail);
-                    $('#EditRefund').val(res.data.refund);
-                    $('#EditRegisterFee').val(res.data.register_fee);
+                    if (res.data.refund !== "" && res.data.refund !== null) {
+                        $('#EditRefund').val(res.data.refund);
+                    } else {
+                        $('#EditRefund').val(res.para[0].price);
+                    }
+                    if (res.data.register_fee !== "" && res.data.register_fee !== null) {
+                        $('#EditRegisterFee').val(res.data.register_fee);
+                    } else {
+                        $('#EditRegisterFee').val(res.para[1].price);
+                    }
                     $('#EditPromotion').val(res.data.promotion);
                     $('#EditModalBodyTable').html(res.table_html);
                     $('.imgs').html(res.imgs);
@@ -631,11 +639,20 @@
                     $('#EditCompany').val(res.data.cid).change();
                     //$('#EditAmount').val(res.data.amount);
                     //$('#EditCost').val(res.data.cost);
-                    $('#EditTotalCost').val(res.data.total_price);
-                    $('#EditTotalCosth').val(res.data.total_price);
+                    $('#EditTotalCost').val(res.total_price);
+                    $('#EditTotalCosth').val(res.datas[0].price);
                     $('#EditDetail').val(res.data.detail);
-                    $('#EditRefund').val(res.data.refund);
-                    $('#EditRegisterFee').val(res.data.register_fee);
+                    if (res.data.refund !== "" && res.data.refund !== null) {
+                        $('#EditRefund').val(res.data.refund);
+                    } else {
+                        $('#EditRefund').val(res.para[0].price);
+                    }
+                    if (res.data.register_fee !== "" && res.data.register_fee !== null) {
+                        $('#EditRegisterFee').val(res.data.register_fee);
+                    } else {
+                        $('#EditRegisterFee').val(res.para[1].price);
+                    }
+
                     $('#EditPromotion').val(res.data.promotion);
                     $('#EditModalBodyTable').html(res.table_html);
                     $('.imgs').html(res.imgs);
@@ -863,7 +880,6 @@
 
 
     });
-
 </script>
 <script type="text/javascript">
     function printReport() {

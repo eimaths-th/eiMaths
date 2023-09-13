@@ -40,7 +40,7 @@ class DepartmentController extends Controller
             //sleep(2);
 
             $datas = Department::orderBy("id", "desc")->get();
-            $state_text = array('Enable', 'Disable');
+            $state_text = array('Discontinued', 'Active');
             return datatables()->of($datas)
                 ->editColumn('checkbox', function ($row) {
                     return '<input type="checkbox" id="' . $row->id . '" class="flat" name="table_records[]" value="' . $row->id . '" >';

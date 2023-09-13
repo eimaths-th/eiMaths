@@ -11,6 +11,7 @@ use App\Models\Contact;
 use App\Models\FileUpload;
 use App\Models\FileStore;
 use App\Models\Department;
+use App\Models\Parameter;
 use App\Models\level;
 use App\Models\term;
 use App\Models\Sterm;
@@ -18,11 +19,11 @@ use App\Models\Sterm;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Interfaces\MoneyConvertServiceInterface;
+use App\Models\bookuse;
 use App\Models\Receipt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\File;
@@ -58,6 +59,7 @@ class OrderController extends Controller
 
         if ($request->ajax()) {
             //sleep(2);
+            $para = Parameter::orderBy("id", "asc")->get();
             $detect = new MobileDetect();
             $query = Order::select(
                 "orders.id as id",
@@ -68,8 +70,8 @@ class OrderController extends Controller
                 "contacts.name as contact_name",
                 "contacts.code as contact_code",
                 "departments.name as centre",
-                "products.name as product_name",
-                "products.unit as product_unit",
+                "bookuses.name as product_name",
+                "bookuses.unit as product_unit",
                 "first_detail.quantity as amount"
             )
                 ->join("contacts", "contacts.id", "=", "orders.cid")
@@ -78,7 +80,7 @@ class OrderController extends Controller
                     $join->on("first_detail.order_id", "=", "orders.id")
                         ->whereRaw("first_detail.id = (SELECT MIN(id) FROM order_details WHERE order_id = orders.id)");
                 })
-                ->join("products", "products.id", "=", "first_detail.product_id")
+                ->join("bookuses", "bookuses.id", "=", "first_detail.product_id")
                 ->where('orders.status', 1);
 
             if (!empty($request->get('sdate'))) {
@@ -103,7 +105,16 @@ class OrderController extends Controller
                 ->editColumn('created_at', function (Order $datas) {
                     return date('Y-m-d H:i:s', strtotime($datas->created_at));
                 })
-                ->addColumn('more', function ($row) {
+                ->addColumn('book_qty', function () {
+                    return 1;
+                })
+                ->addColumn('bag_qty', function () {
+                    return 1;
+                })
+                ->addColumn('bag_price', function () use ($para) {
+                    return $para[3]->price;
+                })
+                ->addColumn('more', function () {
                     return '';
                 })
                 ->addColumn('action', function ($row) use ($detect) {
@@ -114,7 +125,7 @@ class OrderController extends Controller
                     }
                     $html = '';
 
-                    if ($row->order_status == 1) {
+                    /*  if ($row->order_status == 1) {
                         if (Gate::allows('order-show')) {
                             $html = '<button type="button" class="btn btn-sm btn-success btn-print" id="getPrintData" data-id="' . $row->id . '"><i class="fa fa-print"></i> Print</button> ';
                         } else {
@@ -125,14 +136,11 @@ class OrderController extends Controller
                         } else {
                             $html .= '<button type="button" class="btn btn-sm btn-danger btn-share disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa-solid fa-file-pdf"></i> PDF</button> ';
                         }
-                    }
+                    } */
                     if (Gate::allows('order-edit')) {
-                        if ($row->order_status == 1) {
-                            $html .= '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit </button> ';
-                        } else {
-                            $html .= '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Confirm
+
+                        $html .= '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Confirm
                         Order</button> ';
-                        }
                     } else {
                         $html .= '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> Confirm
                         Order</button> ';
@@ -159,7 +167,7 @@ class OrderController extends Controller
             ],
         ];
         $customCollection = collect($customData);
-        $product = Product::orderBy("id", "asc")->get();
+        $product = bookuse::orderBy("id", "asc")->get();
         /* where([['discontinued', '0']]) */
         $contact = Contact::where([['centre', Auth::user()->department->id]])
             ->orderBy("id", "asc")->get();
@@ -339,8 +347,10 @@ class OrderController extends Controller
         $data = Order::find($id);
         $datas = OrderDetail::where('order_id', $id)
             ->orderBy("order_details.id", "asc")
-            ->join('products', 'products.id', '=', 'order_details.product_id')
+            ->join('bookuses', 'bookuses.id', '=', 'order_details.product_id')
             ->get();
+
+        $para = Parameter::orderBy("id", "asc")->get();
 
         $select_list = "";
         $x = 1;
@@ -349,13 +359,13 @@ class OrderController extends Controller
 
         $receipt_number = ReceiptRunningNumber::pre_generate($data->centre);
         //all product
-        $datasp = Product::select(
-            "products.id as id",
-            "products.price as cost",
-            "products.name as name",
-            "products.unit as unit",
+        $datasp = bookuse::select(
+            "bookuses.id as id",
+            //"bookuses.price as cost",
+            "bookuses.name as name",
+            //"levels.unit as unit",
         )
-            ->where('type', 1)
+            //->where('type', 1)
             ->orderBy("id", "asc")
             ->get();
 
@@ -374,7 +384,7 @@ class OrderController extends Controller
             $data_html .= '<tr class="firstTr">
             <td width="30%">
                 <div class="col-md-12 col-sm-12 col-xs-12">
-                    <select style="width: 100%;" class="products form-control" id="estock" name="estock[]" required disabled>
+                    <select style="width: 100%;" class="bookuses form-control" id="estock" name="estock[]" required disabled>
                         ' . $select_list . '
                     </select>
                     <div id="elot_price" class="text-success"></div>
@@ -406,7 +416,14 @@ class OrderController extends Controller
         $img = $this->getfileatt($id);
 
         return response()->json([
-            'data' => $data, 'datas' => $datas, 'table_html' => $data_html, 'imgs' => $img, 'receipt_number' => $receipt_number
+            'data' => $data,
+            'datas' => $datas,
+            'table_html' => $data_html,
+            'imgs' => $img,
+            'receipt_number' => $receipt_number,
+            'para' => $para,
+            'old_price' => $datas[0]->price,
+            'total_price' => number_format(($datas[0]->price + $para[0]->price) + $para[1]->price, 2, '.')
         ]);
     }
 
@@ -499,7 +516,7 @@ class OrderController extends Controller
         if (is_array($amounts) && is_array($prices) && count($amounts) === count($prices)) {
             foreach ($amounts as $index => $amount) {
                 if (isset($sids[$index])) { // Check if the index exists in $sids array
-                    $priceq = Product::find($sids[$index]);
+                    $priceq = bookuse::find($sids[$index]);
                     $orderDetail = new OrderDetail();
                     $orderDetail->order_id = $id;
                     $orderDetail->product_id = $sids[$index];

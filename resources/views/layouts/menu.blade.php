@@ -10,7 +10,7 @@
         <a href="#"
             class="nav-link {{ in_array(Request::route()->getName(), ['contacts', 'discontinued']) ? 'active' : '' }}">
             <i class="nav-icon fas fa-graduation-cap"></i>
-            <p>Students</p>
+            <p>Centre Students</p>
             <i class="fas fa-angle-left right"></i>
         </a>
         <ul class="nav nav-treeview">
@@ -63,12 +63,19 @@
             <i class="fas fa-angle-left right"></i>
         </a>
         <ul class="nav nav-treeview">
-            {{--  <li class="nav-item">
-                <a href="{{ route('orders') }}" class="nav-link {{ Request::is('orders') ? 'active' : '' }}">
-                    <i class="fa-solid fa-list-ul nav-icon"></i>
-                    <p>New Student Orders</p>
+            <li class="nav-item">
+                <a href="{{ route('receipts_pending') }}"
+                    class="nav-link {{ Request::is('receipts_pending') ? 'active' : '' }}">
+                    <i class="nav-icon fa-solid fa-circle-pause"></i>
+                    <p>Generate Invoice</p>
                 </a>
-            </li> --}}
+            </li>
+            <li class="nav-item">
+                <a href="{{ route('receipts') }}" class="nav-link {{ Request::is('receipts') ? 'active' : '' }}">
+                    <i class="nav-icon fa-solid fa-children"></i>
+                    <p>View Invoice</p>
+                </a>
+            </li>
         </ul>
     </li>
 @endcan
@@ -98,11 +105,12 @@
     </li>
 @endcan
 @can('master-data-list')
-<li class="nav-item {{ in_array(Request::route()->getName(), ['departments', 'receipts_positions','products']) ? 'menu-open' : '' }}">
-    <a href="#"
-        class="nav-link {{ in_array(Request::route()->getName(), ['departments', 'receipts_positions','products']) ? 'active' : '' }}">
-            <i class="nav-icon fas fa-database"></i>
-            <p>Databases</p>
+    <li
+        class="nav-item {{ in_array(Request::route()->getName(), ['departments', 'receipts_positions', 'termfee']) ? 'menu-open' : '' }}">
+        <a href="#"
+            class="nav-link {{ in_array(Request::route()->getName(), ['departments', 'receipts_positions', 'termfee']) ? 'active' : '' }}">
+            <i class="nav-icon fa-solid fa-gear"></i>
+            <p>Centre Management</p>
             <i class="fas fa-angle-left right"></i>
         </a>
         <ul class="nav nav-treeview">
@@ -119,9 +127,15 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a href="{{ route('products') }}" class="nav-link {{ Request::is('products') ? 'active' : '' }}">
+                <a href="{{ route('termfee') }}" class="nav-link {{ Request::is('termfee') ? 'active' : '' }}">
                     <i class="nav-icon fa-regular fa-comment-dots"></i>
-                    <p>Class Fee & Book Price</p>
+                    <p>Term Fee & Book Price </p>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{{ route('parameter') }}" class="nav-link {{ Request::is('parameter') ? 'active' : '' }}">
+                    <i class="nav-icon fa-regular fa-comment-dots"></i>
+                    <p>Parameter Setting </p>
                 </a>
             </li>
             {{-- <li class="nav-item" >

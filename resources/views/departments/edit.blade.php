@@ -51,7 +51,7 @@ id="EditModal">
                                 <div class="custom-control custom-switch">
                                     {{ Form::checkbox('status', '1', false, ['id' => 'ecustomCheckbox1', 'class' => 'custom-control-input name']) }}
                                     <label for="ecustomCheckbox1" class="custom-control-label">
-                                        Enable</label>
+                                        Active</label>
                                 </div>
 
                             </div>

@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Receipt;
 use Illuminate\Http\Request;
 use App\Models\Order;
-use App\Models\Product;
+use App\Models\bookuse;
 use App\Models\Contact;
 use App\Models\Department;
 use App\Models\level;
@@ -121,8 +121,8 @@ class ReceiptController extends Controller
                 "contacts.code as contact_code",
                 "contacts.start_term as start_term",
                 "departments.name as centre",
-                "products.name as product_name",
-                "products.unit as product_unit",
+                "bookuses.name as product_name",
+                "bookuses.unit as product_unit",
                 "first_detail.quantity as amount"
             )
                 ->join("contacts", "contacts.id", "=", "orders.cid")
@@ -131,7 +131,7 @@ class ReceiptController extends Controller
                     $join->on("first_detail.order_id", "=", "orders.id")
                         ->whereRaw("first_detail.id = (SELECT MIN(id) FROM order_details WHERE order_id = orders.id)");
                 })
-                ->join("products", "products.id", "=", "first_detail.product_id")
+                ->join("bookuses", "bookuses.id", "=", "first_detail.product_id")
                 ->where('orders.status', 0);
 
             if (!empty($request->get('sdate'))) {
@@ -197,7 +197,7 @@ class ReceiptController extends Controller
         ];
 
         $customCollection = collect($customData);
-        $product = Product::orderBy("id", "asc")->get();
+        $product = bookuse::orderBy("id", "asc")->get();
         /* where([['discontinued', '0']]) */
         $contact = Contact::where([['centre', Auth::user()->department->id]])
             ->orderBy("id", "asc")->get();

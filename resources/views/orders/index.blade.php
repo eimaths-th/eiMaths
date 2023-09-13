@@ -156,13 +156,16 @@
                                                     </th>
                                                     <th {{-- data-priority="6" --}}>Centre</th>
                                                     <th {{-- data-priority="2" --}}>Order Date</th>
-                                                    <th {{-- data-priority="1" --}}>Order Number</th>
+                                                    {{-- <th data-priority="1" >Order Number</th>--}}
                                                     <th {{-- data-priority="4" --}}>Student Code</th>
                                                     <th {{-- data-priority="5" --}}>Student Name</th>
-                                                    <th>Item</th>
+                                                    <th>BookToBuy</th>
+                                                    <th align="center">BookQty</th>
                                                     {{-- <th>Amount</th> --}}
                                                     {{-- <th>ราคาต่อหน่วย</th> --}}
                                                     <th>Price</th>
+                                                    <th align="center">BagQty</th>
+                                                    <th>BagPrice</th>
                                                     <th width="120px" {{-- data-priority="3" --}}></th>
                                                     <th>More</th>
                                                 </tr>
@@ -178,8 +181,10 @@
                                                     <th></th>
                                                     <th></th>
                                                     {{-- <th></th> --}}
+                                                    <th align="right">SubTotal</th>
                                                     <th align="right"></th>
-                                                    <th align="right">Total</th>
+                                                    <th align="right"></th>
+                                                    <th align="right"></th>
                                                     <th align="right"></th>
                                                     <th></th>
                                                     <th></th>

@@ -58,7 +58,7 @@
                             <div class="custom-control custom-switch">
                                 {{ Form::checkbox('status', '1', false, ['id' => 'customCheckbox1', 'class' => 'custom-control-input name']) }}
                                 <label for="customCheckbox1" class="custom-control-label">
-                                    Enable</label>
+                                    Active</label>
                             </div>
                         </div>
                     </div>

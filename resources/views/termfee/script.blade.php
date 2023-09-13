@@ -1,5 +1,17 @@
 <script>
     $(document).ready(function() {
+
+        $(document).on('change', '.auto_decimal', function() {
+            // Parse the input value to a number
+            const inputValue = parseFloat(this.value);
+
+            // Format the number with 2 decimal places
+            const formattedValue = inputValue.toFixed(2);
+
+            // Update the input value with the formatted number
+            this.value = formattedValue;
+        });
+
         $(".delete_all_button").click(function() {
             var len = $('input[name="table_records[]"]:checked').length;
             if (len > 0) {
@@ -81,35 +93,22 @@
                     name: 'name'
                 },
                 {
-                    data: 'code',
-                    name: 'code'
+                    data: 'price',
+                    name: 'price'
                 },
                 {
-                    data: 'status',
-                    name: 'status'
+                    data: 'half_price',
+                    name: 'half_price'
+                },
+                {
+                    data: 'book_price',
+                    name: 'book_price'
                 },
                 {
                     data: 'action',
                     name: 'action'
                 },
             ]
-        });
-
-
-        $("#example1").DataTable({
-            "responsive": true,
-            "lengthChange": false,
-            "autoWidth": false,
-            "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
-        }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
-        $('#example2').DataTable({
-            "paging": true,
-            "lengthChange": false,
-            "searching": false,
-            "ordering": true,
-            "info": true,
-            "autoWidth": false,
-            "responsive": true,
         });
 
 
@@ -184,16 +183,18 @@
 
             id = $(this).data('id');
             $.ajax({
-                url: "departments/edit/" + id,
+                url: "termfee/edit/" + id,
                 method: 'GET',
                 success: function(res) {
                     $('#EditName').val(res.data.name);
-                    $('#EditCode').val(res.data.code);
-                    if (res.data.status == 1) {
+                    $('#EditFee').val(res.data.price);
+                    $('#EditHalf').val(res.data.half_price);
+                    $('#EditBook').val(res.data.book_price);
+                    /* if (res.data.status == 1) {
                         $('#ecustomCheckbox1').prop('checked', true);
                     } else {
                         $('#ecustomCheckbox1').prop('checked', false);
-                    }
+                    } */
 
                     $('#EditModalBody').html(res.html);
                     $('#EditModal').modal('show');
@@ -212,19 +213,21 @@
             $('.alert-success').hide();
 
 
-            if ($('#ecustomCheckbox1').is(":checked")) {
+           /*  if ($('#ecustomCheckbox1').is(":checked")) {
                 esstatus = 1;
             } else {
                 esstatus = 0;
-            }
+            } */
 
             $.ajax({
-                url: "departments/save/" + id,
+                url: "termfee/save/" + id,
                 method: 'PUT',
                 data: {
                     name: $('#EditName').val(),
-                    code: $('#EditCode').val(),
-                    status: esstatus,
+                    price: $('#EditFee').val(),
+                    half_price: $('#EditHalf').val(),
+                    book_price: $('#EditBook').val(),
+                    //status: esstatus,
                 },
 
                 success: function(result) {
