@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\ReceiptRunningNumber;
-use App\Models\InvoiceRunningNumber;
 use App\Models\OrderDetail;
 use App\Models\Contact;
 use App\Models\FileUpload;
@@ -576,7 +575,7 @@ class OrderController extends Controller
     {
         $id = $request->get('id');
         $order = Order::find($id);
-        OrderDetail::where('order_id', $id)->delete();
+        OrderDetail::where('order_id', $id)->get();
 
         //invoice
         $invoice = new Invoice();

@@ -411,8 +411,8 @@
                     name: 'contact_name'
                 },
                 {
-                    data: 'product_name',
-                    name: 'product_name'
+                    data: 'book_name',
+                    name: 'book_name'
                 },
                 /*{
                     data: 'amount',
@@ -423,12 +423,12 @@
                      name: 'cost'
                  }, */
                 {
-                    data: 'total_price',
-                    name: 'total_price'
+                    data: 'book_level',
+                    name: 'book_level'
                 },
                 {
-                    data: 'start_term',
-                    name: 'start_term'
+                    data: 'next_price',
+                    name: 'next_price'
                 },
                 {
                     data: 'action',

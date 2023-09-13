@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('style')
-    @include('receipts.style')
+    @include('invoices.style')
 @endsection
 
 @section('content')
@@ -120,16 +120,14 @@
                                                 <tr>
                                                     <th width="5%"><input type="checkbox" id="check-all" class="flat">
                                                     </th>
-                                                    <th {{-- data-priority="6" --}}>Centre</th>
-                                                    <th {{-- data-priority="2" --}}>Date</th>
-                                                    <th {{-- data-priority="4" --}}>Student Code</th>
-                                                    <th {{-- data-priority="5" --}}>Student Name</th>
-                                                    <th>Level</th>
-                                                    {{-- <th>Amount</th> --}}
-                                                    {{-- <th>ราคาต่อหน่วย</th> --}}
+                                                    <th>Centre</th>
+                                                    <th>Date</th>
+                                                    <th>Student Code</th>
+                                                    <th>Student Name</th>
+                                                    <th>BookUse</th>
+                                                    <th>BookNewBuy</th>
                                                     <th>TermFee</th>
-                                                    <th>StartTerm</th>
-                                                    <th width="120px" {{-- data-priority="3" --}}></th>
+                                                    <th width="120px"></th>
                                                     <th>More</th>
                                                 </tr>
                                             </thead>
@@ -168,14 +166,14 @@
 
     </section>
 
-    @include('receipts.edit')
+    @include('invoices.edit')
 
-    @include('receipts.log')
+    @include('invoices.log')
 
     {{--  {!! $data->render() !!} --}}
 @endsection
 
 @section('script')
-    @include('receipts.pscript')
-    @include('receipts.dropzone')
+    @include('invoices.pscript')
+    @include('invoices.dropzone')
 @endsection

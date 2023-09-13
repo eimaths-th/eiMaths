@@ -31,6 +31,7 @@ class InvoiceController extends Controller
         if ($request->ajax()) {
             $query = Invoice::select(
                 "invoices.id as id",
+                "invoices.created_at as created_at",
                 "invoices.total_fee as total_fee",
                 "invoices.invoice_date as invoice_date",
                 "invoices.level as level",
@@ -39,10 +40,19 @@ class InvoiceController extends Controller
                 "contacts.code as contact_code",
                 "contacts.start_term as start_term",
                 "departments.name as centre",
+                "bookuses.name as book_name",
+                "bookuses.level_id as book_level",
+                "bookuses.term_id as book_term",
             )
 
                 ->join("contacts", "contacts.id", "=", "invoices.cid")
                 ->join("departments", "contacts.centre", "=", "departments.id")
+                ->join("orders", "orders.id", "=", "invoices.id")
+                ->leftJoin("order_details as first_detail", function ($join) {
+                    $join->on("first_detail.order_id", "=", "orders.id")
+                        ->whereRaw("first_detail.id = (SELECT MIN(id) FROM order_details WHERE order_id = orders.id)");
+                })
+                ->join("bookuses", "bookuses.id", "=", "first_detail.product_id")
                 ->where('invoices.status', 0);
 
 
@@ -65,6 +75,35 @@ class InvoiceController extends Controller
                 ->editColumn('checkbox', function ($row) {
                     return '<input type="checkbox" id="' . $row->id . '" class="flat" name="table_records[]" value="' . $row->id . '" >';
                 })
+                ->editColumn('book_level', function ($row) use (&$nextBookPrice) {
+                    if ($row->book_term == 4) {
+                        $nextbook = bookuse::select("bookuses.*", "levels.price as nprice")
+                            ->join("levels", "levels.id", "=", "bookuses.level_id")
+                            ->where('level_id', '>', $row->book_level)->orderBy('level_id')->first();
+                    } else {
+                        $nextbook = bookuse::select("bookuses.*", "levels.price as nprice")
+                            ->join("levels", "levels.id", "=", "bookuses.level_id")
+                            ->where('level_id', '=', $row->book_level)
+                            ->where('term_id', '>', $row->book_term)->orderBy('id')->first();
+                    }
+
+                    //$nextBookPrice = "";
+
+                    if ($nextbook) {
+                        $nextBookPrice = $nextbook->nprice;
+                        return $nextbook->name;
+                    } else {
+                        // Handle the case when there is no next book
+                        return 'No next book';
+                    }
+                })
+                ->addColumn('next_price', function () use (&$nextBookPrice) {
+                    // Now you can access $nextBookPrice here
+                    return $nextBookPrice;
+                })
+                ->editColumn('created_at', function (Invoice $datas) {
+                    return date('Y-m-d', strtotime($datas->created_at));
+                })
                 ->addColumn('more', function ($row) {
                     return '';
                 })
@@ -81,7 +120,7 @@ class InvoiceController extends Controller
                         $html .= '<button type="button" class="btn btn-sm btn-danger btn-share disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa-solid fa-file-pdf"></i> PDF</button> ';
                     }
                     return "<div class='col-sm-2 col-md-2 col-xl-2'>" . $html . "</div>";
-                })->rawColumns(['checkbox', 'action', 'total_fee'])->toJson();
+                })->rawColumns(['checkbox', 'action', 'next_price'])->toJson();
         }
 
         $customData = [
@@ -105,7 +144,7 @@ class InvoiceController extends Controller
         $level = level::where([['status', '1']])
             ->orderBy("name", "asc")->get();
 
-        return view('receipts.pending')->with(['product' => $product])
+        return view('invoices.pending')->with(['product' => $product])
             ->with(['contact' => $contact])
             ->with(['order_type' => $customCollection])
             ->with(['centre' => $centre])
