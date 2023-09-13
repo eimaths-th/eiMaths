@@ -288,10 +288,10 @@
                     className: 'control',
                     orderable: false,
                     targets: -1
-                }, {
+                }/* , {
                     targets: [6, 8],
                     className: 'text-center'
-                }],
+                } */],
             @endif
             sPaginationType: "full_numbers",
             dom: 'T<"clear">lfrtip',
@@ -564,6 +564,32 @@
                 }
             });
 
+        })
+
+        $(document).on('click', '.btn-confirm', function() {
+            if (!confirm("Confirm the action?")) return;
+
+            var rowid = $(this).data('id')
+            var el = $(this)
+            if (!rowid) return;
+
+            $.ajax({
+                url: "orders/confirm/",
+                dataType: 'JSON',
+                method: 'PUT',
+                data: {
+                    id: rowid,
+                    _token: token
+                },
+                success: function(data) {
+                    if (data.success) {
+                        toastr.success(data.message, {
+                            timeOut: 5000
+                        });
+                        $('#Listview').DataTable().ajax.reload();
+                    }
+                }
+            });
         })
 
 

@@ -56,23 +56,23 @@
     </li>
 @endcan
 @can('order-list')
-    <li class="nav-item {{ in_array(Request::route()->getName(), ['invoices']) ? 'menu-open' : '' }}">
-        <a href="#" class="nav-link {{ in_array(Request::route()->getName(), ['invoices']) ? 'active' : '' }}">
+    <li class="nav-item {{ in_array(Request::route()->getName(), ['invoices', 'invoices_pending']) ? 'menu-open' : '' }}">
+        <a href="#" class="nav-link {{ in_array(Request::route()->getName(), ['invoices', 'invoices_pending']) ? 'active' : '' }}">
             <i class="nav-icon fas fa-file-invoice-dollar"></i>
             <p>Invoice</p>
             <i class="fas fa-angle-left right"></i>
         </a>
         <ul class="nav nav-treeview">
             <li class="nav-item">
-                <a href="{{ route('receipts_pending') }}"
-                    class="nav-link {{ Request::is('receipts_pending') ? 'active' : '' }}">
-                    <i class="nav-icon fa-solid fa-circle-pause"></i>
+                <a href="{{ route('invoices_pending') }}"
+                    class="nav-link {{ Request::is('invoices_pending') ? 'active' : '' }}">
+                    <i class="nav-icon fa-solid fa-comment-dollar"></i>
                     <p>Generate Invoice</p>
                 </a>
             </li>
             <li class="nav-item">
                 <a href="{{ route('receipts') }}" class="nav-link {{ Request::is('receipts') ? 'active' : '' }}">
-                    <i class="nav-icon fa-solid fa-children"></i>
+                    <i class="nav-icon fa-solid fa-magnifying-glass-dollar"></i>
                     <p>View Invoice</p>
                 </a>
             </li>

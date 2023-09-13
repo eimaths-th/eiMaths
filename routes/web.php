@@ -83,16 +83,17 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/orders/store', [App\Http\Controllers\OrderController::class, 'store'])->name('orders.store');
     Route::get('/orders/log/{id}', [App\Http\Controllers\OrderController::class, 'log'])->name('orders.log');
     Route::get('orders/edit/{id}', [App\Http\Controllers\OrderController::class, 'edit'])->name('orders.edit');
+    Route::put('orders/confirm', [App\Http\Controllers\OrderController::class, 'confirm'])->name('orders.confirm');
     Route::put('/orders/save/{id}', [App\Http\Controllers\OrderController::class, 'update'])->name('orders.save');
     Route::delete('/orders/destroy', [App\Http\Controllers\OrderController::class, 'destroy'])->name('orders.destroy');
     Route::post('/orders/destroy_all', [App\Http\Controllers\OrderController::class, 'destroy_all'])->name('orders.destroy_all');
     Route::put('/orders/delete/img/{rid}/{rid2}', [App\Http\Controllers\OrderController::class, 'deleteImg'])->name('orders.deleteimg');
     Route::get('/orders/show/{id}/{param}', [App\Http\Controllers\OrderController::class, 'show'])->name('orders.show');
 
-    Route::get('/invoices', [App\Http\Controllers\OrderController::class, 'index'])->name('invoices');
     Route::get('/receipts', [App\Http\Controllers\ReceiptController::class, 'index'])->name('receipts');
     Route::get('/receipts/show/{id}/{param}', [App\Http\Controllers\ReceiptController::class, 'show'])->name('receipts.show');
     Route::get('/receipts_pending', [App\Http\Controllers\ReceiptController::class, 'pending'])->name('receipts_pending');
+    Route::get('/invoices_pending', [App\Http\Controllers\InvoiceController::class, 'pending'])->name('invoices_pending');
 
     //file
     Route::post('/file/upload', function (Request $request) {

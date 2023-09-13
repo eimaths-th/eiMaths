@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Receipt;
 use Illuminate\Http\Request;
+use App\Models\Receipt;
 use App\Models\Order;
 use App\Models\bookuse;
 use App\Models\Contact;
@@ -57,9 +57,10 @@ class ReceiptController extends Controller
                 "contacts.start_term as start_term",
                 "departments.name as centre",
             )
+
                 ->join("contacts", "contacts.id", "=", "receipts.cid")
-                ->join("departments", "contacts.centre", "=", "departments.id");
-            //->where('orders.status', 0);
+                ->join("departments", "contacts.centre", "=", "departments.id")
+                ->where('receipts.type', 0);
 
             if (!empty($request->get('sdate'))) {
                 //dd($request->get('sdate'));

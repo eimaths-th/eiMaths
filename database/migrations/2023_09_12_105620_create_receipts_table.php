@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('receipts', function (Blueprint $table) {
             $table->id();
+            $table->integer('type')->default(0);
             $table->integer('centre')->default(0);
             $table->integer('cid')->nullable();
             $table->string('student_no')->nullable();

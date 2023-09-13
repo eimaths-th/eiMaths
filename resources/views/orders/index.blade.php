@@ -160,11 +160,11 @@
                                                     <th {{-- data-priority="4" --}}>Student Code</th>
                                                     <th {{-- data-priority="5" --}}>Student Name</th>
                                                     <th>BookToBuy</th>
-                                                    <th align="center">BookQty</th>
+                                                    <th>BookQty</th>
                                                     {{-- <th>Amount</th> --}}
                                                     {{-- <th>ราคาต่อหน่วย</th> --}}
                                                     <th>Price</th>
-                                                    <th align="center">BagQty</th>
+                                                    <th>BagQty</th>
                                                     <th>BagPrice</th>
                                                     <th width="120px" {{-- data-priority="3" --}}></th>
                                                     <th>More</th>

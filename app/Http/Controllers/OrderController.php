@@ -3,10 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
-use App\Models\OrderRunningNumber;
 use App\Models\ReceiptRunningNumber;
+use App\Models\InvoiceRunningNumber;
 use App\Models\OrderDetail;
-use App\Models\Product;
 use App\Models\Contact;
 use App\Models\FileUpload;
 use App\Models\FileStore;
@@ -15,12 +14,15 @@ use App\Models\Parameter;
 use App\Models\level;
 use App\Models\term;
 use App\Models\Sterm;
+use App\Models\bookuse;
+use App\Models\Receipt;
+use App\Models\Invoice;
+
 //use App\Models\LogActivity;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Interfaces\MoneyConvertServiceInterface;
-use App\Models\bookuse;
-use App\Models\Receipt;
+
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
@@ -139,7 +141,7 @@ class OrderController extends Controller
                     } */
                     if (Gate::allows('order-edit')) {
 
-                        $html .= '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Confirm
+                        $html .= '<button type="button" class="btn btn-sm btn-warning btn-confirm" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Confirm
                         Order</button> ';
                     } else {
                         $html .= '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> Confirm
@@ -357,7 +359,7 @@ class OrderController extends Controller
         $data_html = '';
         $etotal = 0;
 
-        $receipt_number = ReceiptRunningNumber::pre_generate($data->centre);
+        $invoice_number = ReceiptRunningNumber::pre_generate($data->centre);
         //all product
         $datasp = bookuse::select(
             "bookuses.id as id",
@@ -420,7 +422,7 @@ class OrderController extends Controller
             'datas' => $datas,
             'table_html' => $data_html,
             'imgs' => $img,
-            'receipt_number' => $receipt_number,
+            'receipt_number' => $invoice_number,
             'para' => $para,
             'old_price' => $datas[0]->price,
             'total_price' => number_format(($datas[0]->price + $para[0]->price) + $para[1]->price, 2, '.')
@@ -565,5 +567,49 @@ class OrderController extends Controller
         }
 
         return response()->json(['success' => 'Save Data completed', 'status' => $order->status]);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function confirm(Request $request)
+    {
+        $id = $request->get('id');
+        $order = Order::find($id);
+        OrderDetail::where('order_id', $id)->delete();
+
+        //invoice
+        $invoice = new Invoice();
+        $invoice->centre = $order->centre;
+        $invoice->cid = $order->cid;
+        $invoice->student_no = $order->contact->code;
+        $invoice->student_name = $order->contact->name;
+        //$invoice->invoice_number = ReceiptRunningNumber::generate($order->centre);
+        //$invoice->invoice_date = date("Y-m-d");
+        $invoice->oid = $order->id;
+        $invoice->level = $order->contact->level_name;
+        $invoice->total_fee = $order->total_price;
+        $invoice->order_term = 4;
+        $invoice->status = 0;
+        $invoice->save();
+
+        //receipt
+        $receipt = new Receipt();
+        $receipt->type = 1;
+        $receipt->centre = $order->centre;
+        $receipt->cid = $order->cid;
+        $receipt->student_no = $order->contact->code;
+        $receipt->student_name = $order->contact->name;
+        //$receipt->receipt_number = ReceiptRunningNumber::generate($order->centre);
+        //$receipt->payment_date = date("Y-m-d");
+        $receipt->oid = $order->id;
+        $receipt->level = $order->contact->level_name;
+        $receipt->total_fee = $order->total_price;
+        $receipt->start_term = $order->contact->start_term;
+        $invoice->status = 0;
+        $receipt->save();
+
+
+        return response()->json(['success' => true, 'message' => 'Confirm Order successfully']);
     }
 }
