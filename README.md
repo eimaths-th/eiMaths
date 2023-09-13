@@ -15,11 +15,11 @@
 - php artisan db:seed --class=Position
 - php artisan db:seed --class=PermissionTableSeeder
 - php artisan db:seed --class=CreateAdminUserSeeder
-- php artisan db:seed --class=CreateAdminUserSeeder
 - php artisan db:seed --class=termSeeder
-- php artisan db:seed --levelSeeder
-- php artisan db:seed --discontinuedSeeder
-- php artisan db:seed --bookuseSeeder
+- php artisan db:seed --class=stermSeeder
+- php artisan db:seed --class=levelSeeder
+- php artisan db:seed --class=discontinuedSeeder
+- php artisan db:seed --class=bookuseSeeder
 - php artisan serve
 
 ## Using
