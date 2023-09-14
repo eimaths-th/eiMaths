@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Receipt;
+use App\Models\ReceiptRunningNumber;
 use App\Models\Order;
 use App\Models\bookuse;
 use App\Models\Contact;
@@ -15,6 +16,7 @@ use App\Models\FileStore;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\DB;
 use App\Interfaces\MoneyConvertServiceInterface;
 use PDF;
 
@@ -101,6 +103,124 @@ class ReceiptController extends Controller
         }
 
         return view('receipts.index');
+    }
+
+
+    public function pending_term(Request $request)
+    {
+        if ($request->ajax()) {
+            $query = Receipt::select(
+                "receipts.id as id",
+                "receipts.created_at as created_at",
+                "receipts.total_fee as total_fee",
+                "receipts.payment_date as payment_date",
+                "receipts.level as level",
+                "receipts.status as receipts_status",
+                "contacts.name as contact_name",
+                "contacts.code as contact_code",
+                "contacts.start_term as start_term",
+                "departments.name as centre",
+                "bookuses.name as book_name",
+                "bookuses.level_id as book_level",
+                "bookuses.term_id as book_term",
+                DB::raw('(CASE WHEN bookuses.term_id = 4 THEN (
+                    SELECT bookuses.name
+                    FROM bookuses
+                    INNER JOIN levels ON levels.id = bookuses.level_id
+                    WHERE bookuses.level_id > book_level
+                    ORDER BY bookuses.level_id
+                    LIMIT 1
+                ) ELSE (
+                    SELECT bookuses.name
+                    FROM bookuses
+                    INNER JOIN levels ON levels.id = bookuses.level_id
+                    WHERE bookuses.level_id = book_level
+                    AND bookuses.term_id > book_term
+                    ORDER BY bookuses.id
+                    LIMIT 1
+                ) END) AS next_book_name'),
+                DB::raw('(CASE WHEN bookuses.term_id = 4 THEN (
+                    SELECT levels.price
+                    FROM bookuses
+                    INNER JOIN levels ON levels.id = bookuses.level_id
+                    WHERE bookuses.level_id > book_level
+                    ORDER BY bookuses.level_id
+                    LIMIT 1
+                ) ELSE (
+                    SELECT levels.price
+                    FROM bookuses
+                    INNER JOIN levels ON levels.id = bookuses.level_id
+                    WHERE bookuses.level_id = book_level
+                    AND bookuses.term_id > book_term
+                    ORDER BY bookuses.id
+                    LIMIT 1
+                ) END) AS next_book_price')
+
+            )
+
+                ->join("contacts", "contacts.id", "=", "receipts.cid")
+                ->join("departments", "contacts.centre", "=", "departments.id")
+                ->join("orders", "orders.id", "=", "receipts.oid")
+                ->leftJoin("order_details as first_detail", function ($join) {
+                    $join->on("first_detail.order_id", "=", "orders.id")
+                        ->whereRaw("first_detail.id = (SELECT MIN(id) FROM order_details WHERE order_id = orders.id)");
+                })
+                ->join("bookuses", "bookuses.id", "=", "first_detail.product_id")
+                ->where('receipts.type', 1)
+                ->where('receipts.status', 0);
+
+
+            if (!empty($request->get('sdate'))) {
+                //dd($request->get('sdate'));
+                $dateRange = $request->input('sdate');
+                if ($dateRange) {
+                    $dateRangeArray = explode(' - ', $dateRange);
+
+                    if (!empty($dateRangeArray) && count($dateRangeArray) == 2) {
+                        $startDate = $dateRangeArray[0];
+                        $endDate = $dateRangeArray[1];
+                        $query->whereBetween('receipts.created_at', [$startDate, $endDate]);
+                    }
+                }
+            }
+            $datas = $query->orderBy("receipts.id", "desc")->get();
+
+            return datatables()->of($datas)
+                ->editColumn('checkbox', function ($row) {
+                    return '<input type="checkbox" id="' . $row->id . '" class="flat" name="table_records[]" value="' . $row->id . '" >';
+                })
+                ->editColumn('created_at', function (Receipt $datas) {
+                    return date('Y-m-d', strtotime($datas->created_at));
+                })
+                ->addColumn('more', function ($row) {
+                    return '';
+                })
+                ->addColumn('action', function ($row) {
+                    $html = '';
+                    if (Gate::allows('order-edit')) {
+
+                        $html .= '<button type="button" class="btn btn-sm btn-warning btn-generate" data-book="' . $row->next_book_name . '" data-price="' . $row->next_book_price . '" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Generate Invoice</button> ';
+                    } else {
+                        $html .= '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> Confirm
+                        Order</button> ';
+                    }
+                    /* if (Gate::allows('order-show')) {
+                        $html = '<button type="button" class="btn btn-sm btn-success btn-print" id="getPrintData" data-id="' . $row->id . '"><i class="fa fa-print"></i> Print</button> ';
+                    } else {
+                        $html = '<button type="button" class="btn btn-sm btn-success btn-print disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-print"></i> Print</button> ';
+                    }
+                    if (Gate::allows('order-show')) {
+                        $html .= '<button type="button" class="btn btn-sm btn-danger btn-share" id="getShareData" data-id="' . $row->id . '"><i class="fa-solid fa-file-pdf"></i> PDF</button> ';
+                    } else {
+                        $html .= '<button type="button" class="btn btn-sm btn-danger btn-share disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa-solid fa-file-pdf"></i> PDF</button> ';
+                    } */
+                    return "<div class='col-sm-2 col-md-2 col-xl-2'>" . $html . "</div>";
+                })->rawColumns(['checkbox', 'action', 'next_price'])->toJson();
+        }
+
+
+
+        return view('receipts.pending_term');
     }
 
     /**
@@ -340,5 +460,37 @@ class ReceiptController extends Controller
         }
 
         return $img;
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function generate(Request $request)
+    {
+        $id = $request->get('id');
+        $receipt = Receipt::find($id);
+
+        /* if ($row->book_term == 4) {
+            $nextbook = bookuse::select("bookuses.*", "levels.price as nprice")
+                ->join("levels", "levels.id", "=", "bookuses.level_id")
+                ->where('level_id', '>', $row->book_level)->orderBy('level_id')->first();
+        } else {
+            $nextbook = bookuse::select("bookuses.*", "levels.price as nprice")
+                ->join("levels", "levels.id", "=", "bookuses.level_id")
+                ->where('level_id', '=', $row->book_level)
+                ->where('term_id', '>', $row->book_term)->orderBy('id')->first();
+        }
+       */
+
+        //invoice
+        $receipt->receipt_number = ReceiptRunningNumber::generate($receipt->centre);
+        $receipt->level = $request->get('book');
+        $receipt->total_fee = $request->get('price');
+        $receipt->payment_date = date("Y-m-d");
+        $receipt->status = 1;
+        $receipt->save();
+
+
+        return response()->json(['success' => true, 'message' => 'Generate Receipt successfully']);
     }
 }
