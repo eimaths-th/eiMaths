@@ -61,7 +61,7 @@
         } */
         body {
             font-family: 'Roboto', 'Sarabun';
-            font-size: 16px;
+            font-size: 15px;
         }
 
         .main-header.navbar {

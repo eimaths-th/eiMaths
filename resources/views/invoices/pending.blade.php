@@ -29,7 +29,7 @@
                 <div class="col-12">
                     <div class="card card-primary">
                         <div class="card-header">
-                            <h3 class="card-title"><i class=" fa-solid fa-circle-pause"></i> New Student Pending
+                            <h3 class="card-title"><i class="fa-solid fa-comment-dollar"></i> Generate Invoice
                             </h3>
                             <div class="card-tools">
                                 <button type="button" class="btn btn-tool" data-card-widget="maximize">
@@ -138,13 +138,11 @@
                                                 <tr>
                                                     <th></th>
                                                     <th></th>
-                                                    {{-- <th></th> --}}
                                                     <th></th>
                                                     <th></th>
-                                                    {{-- <th></th> --}}
                                                     <th align="right"></th>
-                                                    <th align="right">Total</th>
-                                                    <th align="center"></th>
+                                                    <th align="right"></th>
+                                                    <th align="center">Total</th>
                                                     <th align="right"></th>
                                                     <th></th>
                                                     <th></th>

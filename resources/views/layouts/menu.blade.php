@@ -10,7 +10,7 @@
         <a href="#"
             class="nav-link {{ in_array(Request::route()->getName(), ['contacts', 'discontinued']) ? 'active' : '' }}">
             <i class="nav-icon fas fa-graduation-cap"></i>
-            <p>Centre Students</p>
+            <p>Students Management</p>
             <i class="fas fa-angle-left right"></i>
         </a>
         <ul class="nav nav-treeview">
@@ -39,7 +39,7 @@
     <li class="nav-item {{ in_array(Request::route()->getName(), ['orders']) ? 'menu-open' : '' }}">
         <a href="#" class="nav-link {{ in_array(Request::route()->getName(), ['orders']) ? 'active' : '' }}">
             <i class="nav-icon fas fa-cart-shopping"></i>
-            <p>Orders</p>
+            <p>Orders Management</p>
             <i class="fas fa-angle-left right"></i>
         </a>
         <ul class="nav nav-treeview">
@@ -59,7 +59,7 @@
     <li class="nav-item {{ in_array(Request::route()->getName(), ['invoices', 'invoices_pending']) ? 'menu-open' : '' }}">
         <a href="#" class="nav-link {{ in_array(Request::route()->getName(), ['invoices', 'invoices_pending']) ? 'active' : '' }}">
             <i class="nav-icon fas fa-file-invoice-dollar"></i>
-            <p>Invoice</p>
+            <p>Invoice Management</p>
             <i class="fas fa-angle-left right"></i>
         </a>
         <ul class="nav nav-treeview">
@@ -84,7 +84,7 @@
         <a href="#"
             class="nav-link {{ in_array(Request::route()->getName(), ['receipts', 'receipts_pending']) ? 'active' : '' }}">
             <i class="nav-icon fas fa-sack-dollar"></i>
-            <p>Receipt</p>
+            <p>Receipt Management</p>
             <i class="fas fa-angle-left right"></i>
         </a>
         <ul class="nav nav-treeview">

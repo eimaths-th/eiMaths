@@ -608,6 +608,8 @@ class OrderController extends Controller
         $invoice->status = 0;
         $receipt->save();
 
+        $order->status = 2;
+        $order->save();
 
         return response()->json(['success' => true, 'message' => 'Confirm Order successfully']);
     }

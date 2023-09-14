@@ -12,6 +12,7 @@ use App\Models\level;
 use App\Models\term;
 use App\Models\Sterm;
 use App\Models\FileStore;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\View;
@@ -43,11 +44,44 @@ class InvoiceController extends Controller
                 "bookuses.name as book_name",
                 "bookuses.level_id as book_level",
                 "bookuses.term_id as book_term",
+                DB::raw('(CASE WHEN bookuses.term_id = 4 THEN (
+                    SELECT bookuses.name
+                    FROM bookuses
+                    INNER JOIN levels ON levels.id = bookuses.level_id
+                    WHERE bookuses.level_id > book_level
+                    ORDER BY bookuses.level_id
+                    LIMIT 1
+                ) ELSE (
+                    SELECT bookuses.name
+                    FROM bookuses
+                    INNER JOIN levels ON levels.id = bookuses.level_id
+                    WHERE bookuses.level_id = book_level
+                    AND bookuses.term_id > book_term
+                    ORDER BY bookuses.id
+                    LIMIT 1
+                ) END) AS next_book_name'),
+                DB::raw('(CASE WHEN bookuses.term_id = 4 THEN (
+                    SELECT levels.price
+                    FROM bookuses
+                    INNER JOIN levels ON levels.id = bookuses.level_id
+                    WHERE bookuses.level_id > book_level
+                    ORDER BY bookuses.level_id
+                    LIMIT 1
+                ) ELSE (
+                    SELECT levels.price
+                    FROM bookuses
+                    INNER JOIN levels ON levels.id = bookuses.level_id
+                    WHERE bookuses.level_id = book_level
+                    AND bookuses.term_id > book_term
+                    ORDER BY bookuses.id
+                    LIMIT 1
+                ) END) AS next_book_price')
+
             )
 
                 ->join("contacts", "contacts.id", "=", "invoices.cid")
                 ->join("departments", "contacts.centre", "=", "departments.id")
-                ->join("orders", "orders.id", "=", "invoices.id")
+                ->join("orders", "orders.id", "=", "invoices.oid")
                 ->leftJoin("order_details as first_detail", function ($join) {
                     $join->on("first_detail.order_id", "=", "orders.id")
                         ->whereRaw("first_detail.id = (SELECT MIN(id) FROM order_details WHERE order_id = orders.id)");
@@ -75,7 +109,7 @@ class InvoiceController extends Controller
                 ->editColumn('checkbox', function ($row) {
                     return '<input type="checkbox" id="' . $row->id . '" class="flat" name="table_records[]" value="' . $row->id . '" >';
                 })
-                ->editColumn('book_level', function ($row) use (&$nextBookPrice) {
+                /* ->editColumn('book_level', function ($row) use (&$nextBookPrice) {
                     if ($row->book_term == 4) {
                         $nextbook = bookuse::select("bookuses.*", "levels.price as nprice")
                             ->join("levels", "levels.id", "=", "bookuses.level_id")
@@ -100,7 +134,7 @@ class InvoiceController extends Controller
                 ->addColumn('next_price', function () use (&$nextBookPrice) {
                     // Now you can access $nextBookPrice here
                     return $nextBookPrice;
-                })
+                }) */
                 ->editColumn('created_at', function (Invoice $datas) {
                     return date('Y-m-d', strtotime($datas->created_at));
                 })
@@ -109,7 +143,14 @@ class InvoiceController extends Controller
                 })
                 ->addColumn('action', function ($row) {
                     $html = '';
-                    if (Gate::allows('order-show')) {
+                    if (Gate::allows('order-edit')) {
+
+                        $html .= '<button type="button" class="btn btn-sm btn-warning btn-generate" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Generate Invoice</button> ';
+                    } else {
+                        $html .= '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> Confirm
+                        Order</button> ';
+                    }
+                    /* if (Gate::allows('order-show')) {
                         $html = '<button type="button" class="btn btn-sm btn-success btn-print" id="getPrintData" data-id="' . $row->id . '"><i class="fa fa-print"></i> Print</button> ';
                     } else {
                         $html = '<button type="button" class="btn btn-sm btn-success btn-print disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-print"></i> Print</button> ';
@@ -118,7 +159,7 @@ class InvoiceController extends Controller
                         $html .= '<button type="button" class="btn btn-sm btn-danger btn-share" id="getShareData" data-id="' . $row->id . '"><i class="fa-solid fa-file-pdf"></i> PDF</button> ';
                     } else {
                         $html .= '<button type="button" class="btn btn-sm btn-danger btn-share disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa-solid fa-file-pdf"></i> PDF</button> ';
-                    }
+                    } */
                     return "<div class='col-sm-2 col-md-2 col-xl-2'>" . $html . "</div>";
                 })->rawColumns(['checkbox', 'action', 'next_price'])->toJson();
         }
