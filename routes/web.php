@@ -93,7 +93,11 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/receipts', [App\Http\Controllers\ReceiptController::class, 'index'])->name('receipts');
     Route::get('/receipts/show/{id}/{param}', [App\Http\Controllers\ReceiptController::class, 'show'])->name('receipts.show');
     Route::get('/receipts_pending', [App\Http\Controllers\ReceiptController::class, 'pending'])->name('receipts_pending');
+
+    Route::get('/invoices', [App\Http\Controllers\InvoiceController::class, 'index'])->name('invoices');
+    Route::get('/invoices/show/{id}/{param}', [App\Http\Controllers\InvoiceController::class, 'show'])->name('invoices.show');
     Route::get('/invoices_pending', [App\Http\Controllers\InvoiceController::class, 'pending'])->name('invoices_pending');
+    Route::put('/invoices/generate', [App\Http\Controllers\InvoiceController::class, 'generate'])->name('invoices.generate');
 
     //file
     Route::post('/file/upload', function (Request $request) {

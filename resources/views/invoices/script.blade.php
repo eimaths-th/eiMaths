@@ -163,12 +163,12 @@
                     name: 'contact_name'
                 },
                 {
-                    data: 'receipt_number',
-                    name: 'receipt_number'
+                    data: 'invoice_number',
+                    name: 'invoice_number'
                 },
                 {
-                    data: 'payment_date',
-                    name: 'payment_date'
+                    data: 'invoice_date',
+                    name: 'invoice_date'
                 },
                 {
                     data: 'level',
@@ -179,8 +179,8 @@
                     name: 'total_fee'
                 },
                 {
-                    data: 'start_term',
-                    name: 'start_term'
+                    data: 'order_term',
+                    name: 'order_term'
                 },
                 {
                     data: 'action',
@@ -282,7 +282,7 @@
         $(document).on('click', '#getShareData', function(e) {
             e.preventDefault();
             pdid = $(this).data('id');
-            window.location.href = "/receipts/show/" + pdid + "/1";
+            window.location.href = "/invoices/show/" + pdid + "/1";
         });
 
 
@@ -299,7 +299,7 @@
 
             pid = $(this).data('id');
             $.ajax({
-                url: "receipts/show/" + pid + '/0',
+                url: "invoices/show/" + pid + '/0',
                 method: 'GET',
                 success: function(res) {
                     $('#print_data').html(res.html);

@@ -164,8 +164,6 @@
 
     </section>
 
-    @include('invoices.edit')
-
     @include('invoices.log')
 
     {{--  {!! $data->render() !!} --}}
@@ -173,5 +171,4 @@
 
 @section('script')
     @include('invoices.pscript')
-    @include('invoices.dropzone')
 @endsection

@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('style')
-    @include('receipts.style')
+    @include('invoices.style')
 @endsection
 
 @section('content')
@@ -29,7 +29,7 @@
                 <div class="col-12">
                     <div class="card card-primary">
                         <div class="card-header">
-                            <h3 class="card-title"><i class="fa-solid fa-children"></i> New Student By Term
+                            <h3 class="card-title"><i class="fa-solid fa-magnifying-glass-dollar"></i> View Invoices
                             </h3>
                             <div class="card-tools">
                                 <button type="button" class="btn btn-tool" data-card-widget="maximize">
@@ -123,11 +123,11 @@
                                                     <th>Centre</th>
                                                     <th>Student Code</th>
                                                     <th>Student Name</th>
-                                                    <th>ReceiptNumber</th>
-                                                    <th>PaymentDate</th>
+                                                    <th>InvoiceNumber</th>
+                                                    <th>InvoiceDate</th>
                                                     <th>Level</th>
-                                                    <th>TotalFee</th>
-                                                    <th>StartTerm</th>
+                                                    <th>TermFee</th>
+                                                    <th>OrderTerm</th>
                                                     <th width="120px"></th>
                                                     <th>More</th>
                                                 </tr>
@@ -165,9 +165,9 @@
         </div>
 
     </section>
-    @include('receipts.print')
+    @include('invoices.print')
 @endsection
 
 @section('script')
-    @include('receipts.script')
+    @include('invoices.script')
 @endsection

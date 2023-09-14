@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Invoice;
+use App\Models\InvoiceRunningNumber;
 use App\Models\Order;
 use App\Models\bookuse;
 use App\Models\Contact;
@@ -16,15 +17,92 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\View;
+use App\Interfaces\MoneyConvertServiceInterface;
+use PDF;
 
 class InvoiceController extends Controller
 {
+    protected $MoneyConvertService;
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    function __construct(MoneyConvertServiceInterface $MoneyConvertService)
+    {
+        $this->middleware('permission:order-list|order-show|order-create|order-edit|order-delete', ['only' => ['index', 'show']]);
+        $this->middleware('permission:order-show', ['only' => ['show']]);
+        $this->middleware('permission:order-create', ['only' => ['create', 'store']]);
+        $this->middleware('permission:order-edit', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:order-delete', ['only' => ['destroy']]);
+
+        $this->MoneyConvertService = $MoneyConvertService;
+    }
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        if ($request->ajax()) {
+            //sleep(2);
+            $query = Invoice::select(
+                "invoices.id as id",
+                "invoices.invoice_number as invoice_number",
+                "invoices.total_fee as total_fee",
+                "invoices.invoice_date as invoice_date",
+                "invoices.level as level",
+                "invoices.status as invoice_status",
+                "invoices.order_term as order_term",
+                "contacts.name as contact_name",
+                "contacts.code as contact_code",
+                "contacts.start_term as start_term",
+                "departments.name as centre",
+            )
+
+                ->join("contacts", "contacts.id", "=", "invoices.cid")
+                ->join("departments", "contacts.centre", "=", "departments.id")
+                ->where('invoices.status', 1);
+
+            if (!empty($request->get('sdate'))) {
+                //dd($request->get('sdate'));
+                $dateRange = $request->input('sdate');
+                if ($dateRange) {
+                    $dateRangeArray = explode(' - ', $dateRange);
+
+                    if (!empty($dateRangeArray) && count($dateRangeArray) == 2) {
+                        $startDate = $dateRangeArray[0];
+                        $endDate = $dateRangeArray[1];
+                        $query->whereBetween('invoices.invoice_date', [$startDate . ' 00:00:00', $endDate . ' 23:59:59']);
+                    }
+                }
+            }
+            $datas = $query->orderBy("invoices.id", "desc")->get();
+
+            return datatables()->of($datas)
+                ->editColumn('checkbox', function ($row) {
+                    return '<input type="checkbox" id="' . $row->id . '" class="flat" name="table_records[]" value="' . $row->id . '" >';
+                })
+                ->addColumn('more', function ($row) {
+                    return '';
+                })
+                ->addColumn('action', function ($row) {
+                    $html = '';
+                    if (Gate::allows('order-show')) {
+                        $html = '<button type="button" class="btn btn-sm btn-success btn-print" id="getPrintData" data-id="' . $row->id . '"><i class="fa fa-print"></i> Print</button> ';
+                    } else {
+                        $html = '<button type="button" class="btn btn-sm btn-success btn-print disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-print"></i> Print</button> ';
+                    }
+                    if (Gate::allows('order-show')) {
+                        $html .= '<button type="button" class="btn btn-sm btn-danger btn-share" id="getShareData" data-id="' . $row->id . '"><i class="fa-solid fa-file-pdf"></i> PDF</button> ';
+                    } else {
+                        $html .= '<button type="button" class="btn btn-sm btn-danger btn-share disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa-solid fa-file-pdf"></i> PDF</button> ';
+                    }
+                    return "<div class='col-sm-2 col-md-2 col-xl-2'>" . $html . "</div>";
+                })->rawColumns(['checkbox', 'action', 'total_fee'])->toJson();
+        }
+
+        return view('invoices.index');
     }
 
     public function pending(Request $request)
@@ -109,32 +187,6 @@ class InvoiceController extends Controller
                 ->editColumn('checkbox', function ($row) {
                     return '<input type="checkbox" id="' . $row->id . '" class="flat" name="table_records[]" value="' . $row->id . '" >';
                 })
-                /* ->editColumn('book_level', function ($row) use (&$nextBookPrice) {
-                    if ($row->book_term == 4) {
-                        $nextbook = bookuse::select("bookuses.*", "levels.price as nprice")
-                            ->join("levels", "levels.id", "=", "bookuses.level_id")
-                            ->where('level_id', '>', $row->book_level)->orderBy('level_id')->first();
-                    } else {
-                        $nextbook = bookuse::select("bookuses.*", "levels.price as nprice")
-                            ->join("levels", "levels.id", "=", "bookuses.level_id")
-                            ->where('level_id', '=', $row->book_level)
-                            ->where('term_id', '>', $row->book_term)->orderBy('id')->first();
-                    }
-
-                    //$nextBookPrice = "";
-
-                    if ($nextbook) {
-                        $nextBookPrice = $nextbook->nprice;
-                        return $nextbook->name;
-                    } else {
-                        // Handle the case when there is no next book
-                        return 'No next book';
-                    }
-                })
-                ->addColumn('next_price', function () use (&$nextBookPrice) {
-                    // Now you can access $nextBookPrice here
-                    return $nextBookPrice;
-                }) */
                 ->editColumn('created_at', function (Invoice $datas) {
                     return date('Y-m-d', strtotime($datas->created_at));
                 })
@@ -145,7 +197,7 @@ class InvoiceController extends Controller
                     $html = '';
                     if (Gate::allows('order-edit')) {
 
-                        $html .= '<button type="button" class="btn btn-sm btn-warning btn-generate" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Generate Invoice</button> ';
+                        $html .= '<button type="button" class="btn btn-sm btn-warning btn-generate" data-book="' . $row->next_book_name . '" data-price="' . $row->next_book_price . '" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Generate Invoice</button> ';
                     } else {
                         $html .= '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> Confirm
                         Order</button> ';
@@ -164,34 +216,9 @@ class InvoiceController extends Controller
                 })->rawColumns(['checkbox', 'action', 'next_price'])->toJson();
         }
 
-        $customData = [
-            [
-                'id' => 1,
-                'name' => 'Invoice',
-            ],
-        ];
-        $customCollection = collect($customData);
-        $product = bookuse::orderBy("id", "asc")->get();
-        /* where([['discontinued', '0']]) */
-        $contact = Contact::where([['centre', Auth::user()->department->id]])
-            ->orderBy("id", "asc")->get();
 
-        $centre = Department::where([['status', '1']])
-            ->orderBy("name", "asc")->get();
-        $term = term::where([['status', '1']])
-            ->orderBy("name", "asc")->get();
-        $sterm = Sterm::where([['status', '1']])
-            ->orderBy("name", "asc")->get();
-        $level = level::where([['status', '1']])
-            ->orderBy("name", "asc")->get();
 
-        return view('invoices.pending')->with(['product' => $product])
-            ->with(['contact' => $contact])
-            ->with(['order_type' => $customCollection])
-            ->with(['centre' => $centre])
-            ->with(['level' => $level])
-            ->with(['term' => $term])
-            ->with(['sterm' => $sterm]);
+        return view('invoices.pending');
     }
 
     /**
@@ -213,9 +240,87 @@ class InvoiceController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Invoice $invoice)
+    public function show($id, $social = 0)
     {
-        //
+        // Get the data from the database query
+        $datas = Invoice::select(
+            "invoices.*",
+            "invoices.invoice_number as doc_number",
+            "contacts.name as cname",
+            "contacts.telephone as ctelephone",
+            "contacts.code as ccode",
+            "invoices.level as book",
+            "departments.name as centre_name",
+            "invoices.total_fee as totalp",
+            "invoices.total_fee as price"
+
+        )
+            ->join("contacts", "contacts.id", "=", "invoices.cid")
+            ->join("departments", "contacts.centre", "=", "departments.id")
+            ->where("invoices.id", $id)
+            ->get();
+
+
+        if ($datas->isEmpty()) {
+            return redirect()->back()->with('error', 'Receipt data not found.');
+        }
+
+        // Load the template file from the 'templates' subdirectory
+        $template = 'templates.print_invoice';
+        $templates = 'templates.print_social';
+
+        $ctype = "";
+        $price_text = $this->MoneyConvertService->baht_text($datas[0]->total_fee);
+        $price_texten = $this->MoneyConvertService->convertNumber($datas[0]->total_fee);
+
+        $formattedDate = $datas[0]->created_at->format('Y-m-d');
+
+        // Data to pass to the view
+
+        $customItem = [
+            'pname' => $datas[0]->book,
+            'quantity' => 1,
+            'price' => $datas[0]->price,
+            // Add other properties as needed
+        ];
+
+        $data = [
+            'ctype' => $ctype,
+            'price_text' => $price_text,
+            'price_texten' => $price_texten,
+            'etype' => "ค่าคอร์ส / Term Fee",
+            'date' => $formattedDate,
+            'data' => $datas->first(),
+            'items' => compact('customItem'),
+        ];
+
+
+        if ($social == 1) {
+            // Render the view with the data and get the HTML content
+            $htmlContents = View::make($templates, $data)->render();
+
+            // Generate the PDF
+            $pdf = PDF::loadHTML($htmlContents);
+            //$pdf->getDomPDF()->getFontMetrics()->setFont('YourThaiFont.ttf', 'YourThaiFont');
+
+            // Save the PDF to a temporary file path
+            $pdfPath = public_path('file_store/' . $datas[0]->order_number . '.pdf');
+            //dd($pdfPath);
+            $pdf->save($pdfPath);
+
+            // Define the file name for the downloaded PDF
+            $pdfFileName = $datas[0]->order_number . '.pdf';
+
+            // Download the PDF file
+            return response()->download($pdfPath, $pdfFileName, ['Content-Type' => 'application/pdf']);
+        } else {
+            // Render the view with the data and get the HTML content
+            $htmlContent = View::make($template, $data)->render();
+            //return new Response($htmlContent, 200, ['Content-Type' => 'text/html']);
+            return response()->json([
+                'html' =>  $htmlContent
+            ]);
+        }
     }
 
     /**
@@ -240,5 +345,37 @@ class InvoiceController extends Controller
     public function destroy(Invoice $invoice)
     {
         //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function generate(Request $request)
+    {
+        $id = $request->get('id');
+        $invoice = Invoice::find($id);
+
+        /* if ($row->book_term == 4) {
+            $nextbook = bookuse::select("bookuses.*", "levels.price as nprice")
+                ->join("levels", "levels.id", "=", "bookuses.level_id")
+                ->where('level_id', '>', $row->book_level)->orderBy('level_id')->first();
+        } else {
+            $nextbook = bookuse::select("bookuses.*", "levels.price as nprice")
+                ->join("levels", "levels.id", "=", "bookuses.level_id")
+                ->where('level_id', '=', $row->book_level)
+                ->where('term_id', '>', $row->book_term)->orderBy('id')->first();
+        }
+       */
+
+        //invoice
+        $invoice->invoice_number = InvoiceRunningNumber::generate($invoice->centre);
+        $invoice->level = $request->get('book');
+        $invoice->total_fee = $request->get('price');
+        $invoice->invoice_date = date("Y-m-d");
+        $invoice->status = 1;
+        $invoice->save();
+
+
+        return response()->json(['success' => true, 'message' => 'Generate Invoice successfully']);
     }
 }

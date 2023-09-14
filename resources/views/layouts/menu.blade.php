@@ -16,19 +16,19 @@
         <ul class="nav nav-treeview">
             <li class="nav-item">
                 <a href="{{ route('contacts') }}" class="nav-link {{ Request::is('contacts') ? 'active' : '' }}">
-                    <i class="nav-icon fa-solid fa-graduation-cap"></i>
+                    <i class="nav-icon fa-solid fa-comment-dots"></i>
                     <p>Students List</p>
                 </a>
             </li>
             <li class="nav-item">
                 <a href="{{ route('discontinued') }}" class="nav-link {{ Request::is('discontinued') ? 'active' : '' }}">
-                    <i class="nav-icon fa-solid fa-handshake-slash"></i>
+                    <i class="nav-icon fa-solid fa-comment-dots"></i>
                     <p>Discontinued Student</p>
                 </a>
             </li>
             <li class="nav-item">
                 <a href="{{ route('contacts') }}" class="nav-link {{ Request::is('contacts') ? 'active' : '' }}">
-                    <i class="nav-icon fa-solid fa-user-graduate"></i>
+                    <i class="nav-icon fa-solid fa-comment-dots"></i>
                     <p>Graduated Student</p>
                 </a>
             </li>
@@ -48,7 +48,7 @@
                 {{-- <a href="{{ route('orders', ['status' => '1']) }}" --}}
                 <a href="{{ route('orders') }}" {{-- class="nav-link {{ Request::is('orders') && Request::input('status') === '1' ? 'active' : '' }}"> --}}
                     class="nav-link {{ Request::is('orders') ? 'active' : '' }}">
-                    <i class="nav-icon fa-solid fa-circle-check"></i>
+                    <i class="nav-icon fa-solid fa-comment-dots"></i>
                     <p>New Student Orders</p>
                 </a>
             </li>
@@ -57,7 +57,8 @@
 @endcan
 @can('order-list')
     <li class="nav-item {{ in_array(Request::route()->getName(), ['invoices', 'invoices_pending']) ? 'menu-open' : '' }}">
-        <a href="#" class="nav-link {{ in_array(Request::route()->getName(), ['invoices', 'invoices_pending']) ? 'active' : '' }}">
+        <a href="#"
+            class="nav-link {{ in_array(Request::route()->getName(), ['invoices', 'invoices_pending']) ? 'active' : '' }}">
             <i class="nav-icon fas fa-file-invoice-dollar"></i>
             <p>Invoice Management</p>
             <i class="fas fa-angle-left right"></i>
@@ -66,13 +67,13 @@
             <li class="nav-item">
                 <a href="{{ route('invoices_pending') }}"
                     class="nav-link {{ Request::is('invoices_pending') ? 'active' : '' }}">
-                    <i class="nav-icon fa-solid fa-comment-dollar"></i>
+                    <i class="nav-icon fa-solid fa-comment-dots"></i>
                     <p>Generate Invoice</p>
                 </a>
             </li>
             <li class="nav-item">
-                <a href="{{ route('receipts') }}" class="nav-link {{ Request::is('receipts') ? 'active' : '' }}">
-                    <i class="nav-icon fa-solid fa-magnifying-glass-dollar"></i>
+                <a href="{{ route('invoices') }}" class="nav-link {{ Request::is('invoices') ? 'active' : '' }}">
+                    <i class="nav-icon fa-solid fa-comment-dots"></i>
                     <p>View Invoice</p>
                 </a>
             </li>
@@ -91,14 +92,27 @@
             <li class="nav-item">
                 <a href="{{ route('receipts_pending') }}"
                     class="nav-link {{ Request::is('receipts_pending') ? 'active' : '' }}">
-                    <i class="nav-icon fa-solid fa-circle-pause"></i>
+                    <i class="nav-icon fa-solid fa-comment-dots"></i>
                     <p>New Student Pending</p>
                 </a>
             </li>
             <li class="nav-item">
+                <a href="{{ route('receipts_pending') }}"
+                    class="nav-link {{ Request::is('receipts_pending') ? 'active' : '' }}">
+                    <i class="nav-icon fa-solid fa-comment-dots"></i>
+                    <p>Term Payment Update</p>
+                </a>
+            </li>
+            <li class="nav-item">
                 <a href="{{ route('receipts') }}" class="nav-link {{ Request::is('receipts') ? 'active' : '' }}">
-                    <i class="nav-icon fa-solid fa-children"></i>
-                    <p>New Student By Term</p>
+                    <i class="nav-icon fa-solid fa-comment-dots"></i>
+                    <p>New Student Receipt</p>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{{ route('receipts') }}" class="nav-link {{ Request::is('receipts') ? 'active' : '' }}">
+                    <i class="nav-icon fa-solid fa-comment-dots"></i>
+                    <p>Term Student Receipt</p>
                 </a>
             </li>
         </ul>
@@ -106,35 +120,35 @@
 @endcan
 @can('master-data-list')
     <li
-        class="nav-item {{ in_array(Request::route()->getName(), ['departments', 'receipts_positions', 'termfee']) ? 'menu-open' : '' }}">
+        class="nav-item {{ in_array(Request::route()->getName(), ['departments', 'positions', 'termfee','parameter']) ? 'menu-open' : '' }}">
         <a href="#"
-            class="nav-link {{ in_array(Request::route()->getName(), ['departments', 'receipts_positions', 'termfee']) ? 'active' : '' }}">
-            <i class="nav-icon fa-solid fa-gear"></i>
+            class="nav-link {{ in_array(Request::route()->getName(), ['departments', 'positions', 'termfee','parameter']) ? 'active' : '' }}">
+            <i class="nav-icon fas fa-gear"></i>
             <p>Centre Management</p>
             <i class="fas fa-angle-left right"></i>
         </a>
         <ul class="nav nav-treeview">
             <li class="nav-item">
                 <a href="{{ route('departments') }}" class="nav-link {{ Request::is('departments') ? 'active' : '' }}">
-                    <i class="nav-icon fa-regular fa-comment-dots"></i>
+                    <i class="nav-icon fa-solid fa-comment-dots"></i>
                     <p>Centre</p>
                 </a>
             </li>
             <li class="nav-item">
                 <a href="{{ route('positions') }}" class="nav-link {{ Request::is('positions') ? 'active' : '' }}">
-                    <i class="nav-icon fa-regular fa-comment-dots"></i>
+                    <i class="nav-icon fa-solid fa-comment-dots"></i>
                     <p>Department</p>
                 </a>
             </li>
             <li class="nav-item">
                 <a href="{{ route('termfee') }}" class="nav-link {{ Request::is('termfee') ? 'active' : '' }}">
-                    <i class="nav-icon fa-regular fa-comment-dots"></i>
+                    <i class="nav-icon fa-solid fa-comment-dots"></i>
                     <p>Term Fee & Book Price </p>
                 </a>
             </li>
             <li class="nav-item">
                 <a href="{{ route('parameter') }}" class="nav-link {{ Request::is('parameter') ? 'active' : '' }}">
-                    <i class="nav-icon fa-regular fa-comment-dots"></i>
+                    <i class="nav-icon fa-solid fa-comment-dots"></i>
                     <p>Parameter Setting </p>
                 </a>
             </li>
@@ -148,18 +162,27 @@
     </li>
 @endcan
 @can('user-list')
-    <li class="nav-item">
-        <a href="{{ route('users.index') }}" class="nav-link {{ Request::is('users') ? 'active' : '' }}">
-            <i class="nav-icon fas fa-user"></i>
-            <p>Users</p>
+    <li class="nav-item {{ in_array(Request::route()->getName(), ['users.index', 'roles.index']) ? 'menu-open' : '' }}">
+        <a href="#" class="nav-link {{ in_array(Request::route()->getName(), ['users.index', 'roles.index']) ? 'active' : '' }}">
+            <i class="nav-icon fas fa-user-gear"></i>
+            <p>User Management</p>
+            <i class="fas fa-angle-left right"></i>
         </a>
-    </li>
-@endcan
-@can('role-list')
-    <li class="nav-item">
-        <a href="{{ route('roles.index') }}" class="nav-link {{ Request::is('roles') ? 'active' : '' }}">
-            <i class="nav-icon fas fa-user-lock"></i>
-            <p>Roles</p>
-        </a>
+        <ul class="nav nav-treeview">
+            <li class="nav-item">
+                <a href="{{ route('users.index') }}" class="nav-link {{ Request::is('users.index') ? 'active' : '' }}">
+                    <i class="nav-icon fa-solid fa-comment-dots"></i>
+                    <p>Users</p>
+                </a>
+            </li>
+            @can('role-list')
+                <li class="nav-item">
+                    <a href="{{ route('roles.index') }}" class="nav-link {{ Request::is('roles.index') ? 'active' : '' }}">
+                        <i class="nav-icon fa-solid fa-comment-dots"></i>
+                        <p>Roles</p>
+                    </a>
+                </li>
+            @endcan
+        </ul>
     </li>
 @endcan

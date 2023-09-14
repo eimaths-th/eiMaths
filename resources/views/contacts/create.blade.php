@@ -53,10 +53,15 @@
                                     aria-controls="custom-tabs-one-profile" aria-selected="false">Parent Detail</a>
                             </li>
                             <li class="nav-item">
+                                <a class="nav-link" id="custom-tabs-one-course-tab" data-toggle="pill"
+                                    href="#custom-tabs-one-course" role="tab" aria-controls="custom-tabs-one-course"
+                                    aria-selected="false">Course & Book</a>
+                            </li>
+                            {{--  <li class="nav-item">
                                 <a class="nav-link" id="custom-tabs-one-dis-tab" data-toggle="pill"
                                     href="#custom-tabs-one-dis" role="tab" aria-controls="custom-tabs-one-dis"
                                     aria-selected="false">Discontinued</a>
-                            </li>
+                            </li> --}}
                         </ul>
                     </div>
                     <div class="card-body">
@@ -205,13 +210,14 @@
                                                     <strong><i class="fa-solid fa-venus-mars"></i> Gender:</strong>
                                                     <div class="form-group clearfix">
                                                         <div class="icheck-success d-inline">
-                                                            <input type="radio" name="gender" value="1" checked
-                                                                id="radioSuccess1">
+                                                            <input type="radio" name="gender" value="1"
+                                                                checked id="radioSuccess1">
                                                             <label for="radioSuccess1">Male
                                                             </label>
                                                         </div>
                                                         <div class="icheck-success d-inline">
-                                                            <input type="radio" name="gender" value="2" id="radioSuccess2">
+                                                            <input type="radio" name="gender" value="2"
+                                                                id="radioSuccess2">
                                                             <label for="radioSuccess2">Female
                                                             </label>
                                                         </div>
@@ -343,7 +349,7 @@
                                 </div>
                             </div>
 
-                            <div class="tab-pane fade" id="custom-tabs-one-dis" role="tabpanel"
+                            {{-- <div class="tab-pane fade" id="custom-tabs-one-dis" role="tabpanel"
                                 aria-labelledby="custom-tabs-one-dis-tab">
                                 <div class="card">
                                     <div class="card-body">
@@ -383,6 +389,83 @@
                                             </div>
                                         </div>
 
+                                    </div>
+                                </div>
+                            </div> --}}
+                            <div class="tab-pane fade" id="custom-tabs-one-course" role="tabpanel"
+                                aria-labelledby="custom-tabs-one-course-tab">
+                                <div class="row">
+                                    <div class="col-xs-12 col-sm-12 col-md-12">
+                                        <table id="myTbl"
+                                            class="table table-striped table-bordered responsive-utilities jambo_table "
+                                            width="400">
+                                            <thead>
+                                                <tr class="headings">
+                                                    {{-- <th class="column-title"> สินค้า</th> --}}
+                                                    <th class="column-title">
+                                                        Class Level</th>
+                                                    <th class="column-title"> Amount
+                                                    </th>
+                                                    <th class="column-title"> Fee
+                                                    </th>
+                                                    <th class="column-title"> Total
+                                                    </th>
+                                                    {{-- <th class="column-title"> </th> --}}
+                                                </tr>
+                                            </thead>
+                                            <tbody id="EditModalBodyTable">
+                                                <tr class="firstTr">
+
+                                                    <td width="30%">
+                                                        <div class="col-md-12 col-sm-12 col-xs-12">
+                                                            <select style="width: 100%;" class="products form-control"
+                                                                id="estock" name="estock[]" required>
+
+
+                                                            </select>
+                                                            <div id="lot_price" class="text-success"></div>
+                                                            <div id="lot_error" class="text-danger"></div>
+                                                        </div>
+                                                    </td>
+
+                                                    <td width="10%">
+                                                        <div class="col-md-12 col-sm-12 col-xs-12">
+                                                            <input type="number" step="0.50" id="eamount"
+                                                                name="eamount[]"
+                                                                class="form-control has-feedback-left" value=""
+                                                                required="required">
+                                                        </div>
+                                                    </td>
+                                                    <td width="10%">
+                                                        <div class="col-md-12 col-sm-12 col-xs-12">
+                                                            <input type="number" step="0.50" id="eprice"
+                                                                name="eprice[]" class="form-control has-feedback-left"
+                                                                value="" required="required">
+                                                        </div>
+                                                    </td>
+
+                                                    <td width="10%">
+                                                        <div class="col-md-12 col-sm-12 col-xs-12">
+                                                            <input type="number" step="0.50" id="etotal"
+                                                                name="etotal[]" class="form-control has-feedback-left"
+                                                                value="" readonly>
+                                                        </div>
+                                                    </td>
+
+                                                    <td width="10%"><button type="button" id="removeRowg"
+                                                            class="btn btn-sm btn-danger btnRemoveg"><i
+                                                                class="fa fa-minus"></i></button></td>
+
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="col-md-12" align="right">
+
+                                        <button type="button" id="addRow" class="btn btn-sm btn-primary"><i
+                                                class="fa fa-plus"></i></button>
+                                        <button type="button" id="removeRow" class="btn btn-sm btn-danger"><i
+                                                class="fa fa-minus"></i></button>
                                     </div>
                                 </div>
                             </div>

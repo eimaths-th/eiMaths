@@ -298,19 +298,23 @@
         $('#search_type').on('change', storeFieldValues);
         $('#keyword').on('input', storeFieldValues);
 
-        $(document).on('click', '.btn-confirm', function() {
+        $(document).on('click', '.btn-generate', function() {
             if (!confirm("Confirm the action?")) return;
 
             var rowid = $(this).data('id')
+            var book = $(this).data('book')
+            var price = $(this).data('price')
             var el = $(this)
             if (!rowid) return;
 
             $.ajax({
-                url: "orders/confirm/",
+                url: "invoices/generate/",
                 dataType: 'JSON',
                 method: 'PUT',
                 data: {
                     id: rowid,
+                    book: book,
+                    price: price,
                     _token: token
                 },
                 success: function(data) {
