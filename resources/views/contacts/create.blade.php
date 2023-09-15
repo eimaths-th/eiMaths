@@ -52,16 +52,16 @@
                                     href="#custom-tabs-one-profile" role="tab"
                                     aria-controls="custom-tabs-one-profile" aria-selected="false">Parent Detail</a>
                             </li>
-                            <li class="nav-item">
+                           {{--  <li class="nav-item">
                                 <a class="nav-link" id="custom-tabs-one-course-tab" data-toggle="pill"
                                     href="#custom-tabs-one-course" role="tab" aria-controls="custom-tabs-one-course"
                                     aria-selected="false">Course & Book</a>
-                            </li>
-                            {{--  <li class="nav-item">
+                            </li> --}}
+                             <li class="nav-item">
                                 <a class="nav-link" id="custom-tabs-one-dis-tab" data-toggle="pill"
                                     href="#custom-tabs-one-dis" role="tab" aria-controls="custom-tabs-one-dis"
                                     aria-selected="false">Discontinued</a>
-                            </li> --}}
+                            </li>
                         </ul>
                     </div>
                     <div class="card-body">
@@ -349,7 +349,7 @@
                                 </div>
                             </div>
 
-                            {{-- <div class="tab-pane fade" id="custom-tabs-one-dis" role="tabpanel"
+                            <div class="tab-pane fade" id="custom-tabs-one-dis" role="tabpanel"
                                 aria-labelledby="custom-tabs-one-dis-tab">
                                 <div class="card">
                                     <div class="card-body">
@@ -391,8 +391,8 @@
 
                                     </div>
                                 </div>
-                            </div> --}}
-                            <div class="tab-pane fade" id="custom-tabs-one-course" role="tabpanel"
+                            </div>
+                           {{--  <div class="tab-pane fade" id="custom-tabs-one-course" role="tabpanel"
                                 aria-labelledby="custom-tabs-one-course-tab">
                                 <div class="row">
                                     <div class="col-xs-12 col-sm-12 col-md-12">
@@ -401,7 +401,7 @@
                                             width="400">
                                             <thead>
                                                 <tr class="headings">
-                                                    {{-- <th class="column-title"> สินค้า</th> --}}
+
                                                     <th class="column-title">
                                                         Class Level</th>
                                                     <th class="column-title"> Amount
@@ -410,7 +410,7 @@
                                                     </th>
                                                     <th class="column-title"> Total
                                                     </th>
-                                                    {{-- <th class="column-title"> </th> --}}
+
                                                 </tr>
                                             </thead>
                                             <tbody id="EditModalBodyTable">
@@ -468,7 +468,7 @@
                                                 class="fa fa-minus"></i></button>
                                     </div>
                                 </div>
-                            </div>
+                            </div> --}}
 
                         </div>
                     </div>
