@@ -63,6 +63,9 @@ class ReceiptController extends Controller
                 ->join("contacts", "contacts.id", "=", "receipts.cid")
                 ->join("departments", "contacts.centre", "=", "departments.id")
                 ->where('receipts.type', 0);
+            if (!Gate::allows('all-centre')) {
+                $query->where('receipts.centre', Auth::user()->department->id);
+            }
 
             if (!empty($request->get('sdate'))) {
                 //dd($request->get('sdate'));
@@ -168,6 +171,9 @@ class ReceiptController extends Controller
                 ->join("bookuses", "bookuses.id", "=", "first_detail.product_id")
                 ->where('receipts.type', 1)
                 ->where('receipts.status', 0);
+            if (!Gate::allows('all-centre')) {
+                $query->where('receipts.centre', Auth::user()->department->id);
+            }
 
 
             if (!empty($request->get('sdate'))) {
@@ -254,6 +260,9 @@ class ReceiptController extends Controller
                 })
                 ->join("bookuses", "bookuses.id", "=", "first_detail.product_id")
                 ->where('orders.status', 0);
+            if (!Gate::allows('all-centre')) {
+                $query->where('orders.centre', Auth::user()->department->id);
+            }
 
             if (!empty($request->get('sdate'))) {
                 //dd($request->get('sdate'));

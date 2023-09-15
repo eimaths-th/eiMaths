@@ -5,7 +5,7 @@
         <p>Dashboard</p>
     </a>
 </li> --}}
-@can('contact-list')
+@can('student-list')
     <li class="nav-item {{ in_array(Request::route()->getName(), ['contacts', 'discontinued']) ? 'menu-open' : '' }}">
         <a href="#"
             class="nav-link {{ in_array(Request::route()->getName(), ['contacts', 'discontinued']) ? 'active' : '' }}">
@@ -55,7 +55,7 @@
         </ul>
     </li>
 @endcan
-@can('order-list')
+@can('invoice-list')
     <li class="nav-item {{ in_array(Request::route()->getName(), ['invoices', 'invoices_pending']) ? 'menu-open' : '' }}">
         <a href="#"
             class="nav-link {{ in_array(Request::route()->getName(), ['invoices', 'invoices_pending']) ? 'active' : '' }}">
@@ -80,7 +80,7 @@
         </ul>
     </li>
 @endcan
-@can('order-list')
+@can('receipt-list')
     <li class="nav-item {{ in_array(Request::route()->getName(), ['receipts', 'receipts_pending']) ? 'menu-open' : '' }}">
         <a href="#"
             class="nav-link {{ in_array(Request::route()->getName(), ['receipts', 'receipts_pending']) ? 'active' : '' }}">
@@ -118,7 +118,7 @@
         </ul>
     </li>
 @endcan
-@can('master-data-list')
+@can('centre-manage')
     <li
         class="nav-item {{ in_array(Request::route()->getName(), ['departments', 'positions', 'termfee','parameter']) ? 'menu-open' : '' }}">
         <a href="#"
@@ -169,12 +169,14 @@
             <i class="fas fa-angle-left right"></i>
         </a>
         <ul class="nav nav-treeview">
+            @can('user-list')
             <li class="nav-item">
                 <a href="{{ route('users.index') }}" class="nav-link {{ Request::is('users.index') ? 'active' : '' }}">
                     <i class="nav-icon fa-solid fa-comment-dots"></i>
                     <p>Users</p>
                 </a>
             </li>
+            @endcan
             @can('role-list')
                 <li class="nav-item">
                     <a href="{{ route('roles.index') }}" class="nav-link {{ Request::is('roles.index') ? 'active' : '' }}">

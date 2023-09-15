@@ -17,10 +17,10 @@ class ParameterController extends Controller
     public function __construct()
     {
         //$this->middleware('auth');
-        $this->middleware('permission:master-data-list|master-data-create|master-data-edit|master-data-delete', ['only' => ['index', 'show']]);
-        $this->middleware('permission:master-data-create', ['only' => ['create', 'store']]);
-        $this->middleware('permission:master-data-edit', ['only' => ['edit', 'update']]);
-        $this->middleware('permission:master-data-delete', ['only' => ['destroy']]);
+        $this->middleware('permission:centre-list|centre-create|centre-edit|centre-delete', ['only' => ['index', 'show']]);
+        $this->middleware('permission:centre-create', ['only' => ['create', 'store']]);
+        $this->middleware('permission:centre-edit', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:centre-delete', ['only' => ['destroy']]);
     }
 
     /**
@@ -39,12 +39,12 @@ class ParameterController extends Controller
                 })
 
                 ->addColumn('action', function ($row) {
-                    if (Gate::allows('master-data-edit')) {
+                    if (Gate::allows('centre-edit')) {
                         $html = '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit</button> ';
                     } else {
                         $html = '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> Edit</button> ';
                     }
-                    /*  if (Gate::allows('master-data-delete')) {
+                    /*  if (Gate::allows('centre-delete')) {
                        $html .= '<button type="button" data-rowid="' . $row->id . '" class="btn btn-sm btn-danger btn-delete"><i class="fa fa-trash"></i> Delete</button>';
                    } else {
                        $html .= '<button type="button" class="btn btn-sm btn-danger disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-trash"></i> Delete</button> ';

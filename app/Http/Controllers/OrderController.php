@@ -83,6 +83,9 @@ class OrderController extends Controller
                 })
                 ->join("bookuses", "bookuses.id", "=", "first_detail.product_id")
                 ->where('orders.status', 1);
+            if (!Gate::allows('all-centre')) {
+                $query->where('orders.centre', Auth::user()->department->id);
+            }
 
             if (!empty($request->get('sdate'))) {
                 //dd($request->get('sdate'));

@@ -31,11 +31,11 @@ class InvoiceController extends Controller
      */
     function __construct(MoneyConvertServiceInterface $MoneyConvertService)
     {
-        $this->middleware('permission:order-list|order-show|order-create|order-edit|order-delete', ['only' => ['index', 'show']]);
-        $this->middleware('permission:order-show', ['only' => ['show']]);
-        $this->middleware('permission:order-create', ['only' => ['create', 'store']]);
-        $this->middleware('permission:order-edit', ['only' => ['edit', 'update']]);
-        $this->middleware('permission:order-delete', ['only' => ['destroy']]);
+        $this->middleware('permission:invoices-list|invoices-show|invoices-create|invoices-edit|invoices-delete', ['only' => ['index', 'show']]);
+        $this->middleware('permission:invoices-show', ['only' => ['show']]);
+        $this->middleware('permission:invoices-create', ['only' => ['create', 'store']]);
+        $this->middleware('permission:invoices-edit', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:invoices-delete', ['only' => ['destroy']]);
 
         $this->MoneyConvertService = $MoneyConvertService;
     }
@@ -63,6 +63,9 @@ class InvoiceController extends Controller
                 ->join("contacts", "contacts.id", "=", "invoices.cid")
                 ->join("departments", "contacts.centre", "=", "departments.id")
                 ->where('invoices.status', 1);
+            if (!Gate::allows('all-centre')) {
+                $query->where('invoices.centre', Auth::user()->department->id);
+            }
 
             if (!empty($request->get('sdate'))) {
                 //dd($request->get('sdate'));
@@ -88,12 +91,12 @@ class InvoiceController extends Controller
                 })
                 ->addColumn('action', function ($row) {
                     $html = '';
-                    if (Gate::allows('order-show')) {
+                    if (Gate::allows('invoices-show')) {
                         $html = '<button type="button" class="btn btn-sm btn-success btn-print" id="getPrintData" data-id="' . $row->id . '"><i class="fa fa-print"></i> Print</button> ';
                     } else {
                         $html = '<button type="button" class="btn btn-sm btn-success btn-print disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-print"></i> Print</button> ';
                     }
-                    if (Gate::allows('order-show')) {
+                    if (Gate::allows('invoices-show')) {
                         $html .= '<button type="button" class="btn btn-sm btn-danger btn-share" id="getShareData" data-id="' . $row->id . '"><i class="fa-solid fa-file-pdf"></i> PDF</button> ';
                     } else {
                         $html .= '<button type="button" class="btn btn-sm btn-danger btn-share disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa-solid fa-file-pdf"></i> PDF</button> ';
@@ -166,6 +169,9 @@ class InvoiceController extends Controller
                 })
                 ->join("bookuses", "bookuses.id", "=", "first_detail.product_id")
                 ->where('invoices.status', 0);
+            if (!Gate::allows('all-centre')) {
+                $query->where('invoices.centre', Auth::user()->department->id);
+            }
 
 
             if (!empty($request->get('sdate'))) {

@@ -20,10 +20,10 @@ class DiscontinueController extends Controller
     public function __construct()
     {
         //$this->middleware('auth');
-        $this->middleware('permission:contact-list|contact-create|contact-edit|contact-delete', ['only' => ['index', 'show']]);
-        $this->middleware('permission:contact-create', ['only' => ['create', 'store']]);
-        $this->middleware('permission:contact-edit', ['only' => ['edit', 'update']]);
-        $this->middleware('permission:contact-delete', ['only' => ['destroy']]);
+        $this->middleware('permission:student-list|student-create|student-edit|student-delete', ['only' => ['index', 'show']]);
+        $this->middleware('permission:student-create', ['only' => ['create', 'store']]);
+        $this->middleware('permission:student-edit', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:student-delete', ['only' => ['destroy']]);
     }
 
     /**
@@ -37,6 +37,10 @@ class DiscontinueController extends Controller
                 "departments.name as centre_name",
             )->join("departments", "contacts.centre", "=", "departments.id")
                 ->where('discontinued', '1');
+
+            if (!Gate::allows('all-centre')) {
+                $query->where('centre', Auth::user()->department->id);
+            }
 
             if (!empty($request->get('sdate'))) {
                 //dd($request->get('sdate'));

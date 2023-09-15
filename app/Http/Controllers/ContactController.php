@@ -37,10 +37,10 @@ class ContactController extends Controller
     public function __construct()
     {
         //$this->middleware('auth');
-        $this->middleware('permission:contact-list|contact-create|contact-edit|contact-delete', ['only' => ['index', 'show']]);
-        $this->middleware('permission:contact-create', ['only' => ['create', 'store']]);
-        $this->middleware('permission:contact-edit', ['only' => ['edit', 'update']]);
-        $this->middleware('permission:contact-delete', ['only' => ['destroy']]);
+        $this->middleware('permission:student-list|student-create|student-edit|student-delete', ['only' => ['index', 'show']]);
+        $this->middleware('permission:student-create', ['only' => ['create', 'store']]);
+        $this->middleware('permission:student-edit', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:student-delete', ['only' => ['destroy']]);
     }
 
     /**
@@ -66,6 +66,10 @@ class ContactController extends Controller
                 ->join("terms as start_terms", "contacts.start_term", "=", "start_terms.id")
                 ->join("terms as pterms", "contacts.term", "=", "pterms.id")
                 ->where('discontinued', '0');
+
+            if (!Gate::allows('all-centre')) {
+                $query->where('centre', Auth::user()->department->id);
+            }
 
             if (!empty($request->get('sdate'))) {
                 //dd($request->get('sdate'));
@@ -95,12 +99,12 @@ class ContactController extends Controller
                     return '';
                 })
                 ->addColumn('action', function ($row) {
-                    if (Gate::allows('contact-edit')) {
+                    if (Gate::allows('student-edit')) {
                         $html = '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit</button> ';
                     } else {
                         $html = '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> Edit</button> ';
                     }
-                    if (Gate::allows('contact-delete')) {
+                    if (Gate::allows('student-delete')) {
                         $html .= '<button type="button" data-rowid="' . $row->id . '" class="btn btn-sm btn-danger btn-delete"><i class="fa fa-trash"></i> Delete</button>';
                     } else {
                         $html .= '<button type="button" class="btn btn-sm btn-danger disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-trash"></i> Delete</button> ';
@@ -199,9 +203,9 @@ class ContactController extends Controller
         $levelq = Level::find($request->get('level'));
         $termq = Term::find($request->get('term'));
 
-        if ($bookq->type==1) {
+        if ($bookq->type == 1) {
             $fprice = $levelq->price;
-        } elseif ($bookq->type==2) {
+        } elseif ($bookq->type == 2) {
             $fprice = $levelq->half_price;
         }
 
@@ -290,9 +294,9 @@ class ContactController extends Controller
         $levelq = Level::find($request->get('level'));
         $termq = Term::find($request->get('term'));
 
-        if ($bookq->type==1) {
+        if ($bookq->type == 1) {
             $fprice = $levelq->price;
-        } elseif ($bookq->type==2) {
+        } elseif ($bookq->type == 2) {
             $fprice = $levelq->half_price;
         }
 
@@ -412,10 +416,8 @@ class ContactController extends Controller
             Receipt::where('cid', $id)->delete();
 
             DB::commit();
-
         } catch (\Exception $e) {
             DB::rollBack();
-
         }
     }
 

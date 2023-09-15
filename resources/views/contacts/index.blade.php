@@ -17,7 +17,7 @@
                         <li class="breadcrumb-item active">Users Management</li> --}}
 
 
-                        @can('contact-create')
+                        @can('student-create')
                             <button type="button" class="btn btn-success" id="CreateButton">
                                 <i class="fas fa-graduation-cap"></i> New Student </button>
                         @else
@@ -28,7 +28,7 @@
                             </span>
                         @endcan &nbsp;
 
-                        @can('contact-delete')
+                        @can('student-delete')
                             <button type="button" class="btn btn-danger delete_all_button"><i class="fa fa-trash"></i> Delete
                                 All</button>
                         @else

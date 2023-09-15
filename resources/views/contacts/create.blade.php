@@ -52,11 +52,11 @@
                                     href="#custom-tabs-one-profile" role="tab"
                                     aria-controls="custom-tabs-one-profile" aria-selected="false">Parent Detail</a>
                             </li>
-                            <li class="nav-item">
+                           {{--  <li class="nav-item">
                                 <a class="nav-link" id="custom-tabs-one-course-tab" data-toggle="pill"
                                     href="#custom-tabs-one-course" role="tab" aria-controls="custom-tabs-one-course"
                                     aria-selected="false">Course & Book</a>
-                            </li> --}}
+                            </li>  --}}
                              <li class="nav-item">
                                 <a class="nav-link" id="custom-tabs-one-dis-tab" data-toggle="pill"
                                     href="#custom-tabs-one-dis" role="tab" aria-controls="custom-tabs-one-dis"
@@ -391,8 +391,8 @@
 
                                     </div>
                                 </div>
-                            </div> --}}
-                            <div class="tab-pane fade" id="custom-tabs-one-course" role="tabpanel"
+                            </div>
+                            {{-- <div class="tab-pane fade" id="custom-tabs-one-course" role="tabpanel"
                                 aria-labelledby="custom-tabs-one-course-tab">
                                 <div class="row">
                                     <div class="col-xs-12 col-sm-12 col-md-12">
