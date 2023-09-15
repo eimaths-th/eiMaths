@@ -97,8 +97,8 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a href="{{ route('receipts_pending') }}"
-                    class="nav-link {{ Request::is('receipts_pending') ? 'active' : '' }}">
+                <a href="{{ route('receipts_pending_term') }}"
+                    class="nav-link {{ Request::is('receipts_pending_term') ? 'active' : '' }}">
                     <i class="nav-icon fa-solid fa-comment-dots"></i>
                     <p>Term Payment Update</p>
                 </a>
