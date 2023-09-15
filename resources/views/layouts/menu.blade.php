@@ -104,13 +104,15 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a href="{{ route('receipts') }}" class="nav-link {{ Request::is('receipts') ? 'active' : '' }}">
+                <a href="{{ route('receipts', ['type' => 0]) }}"
+                    class="nav-link {{ Route::currentRouteName() == 'receipts' && request('type') == 0 ? 'active' : '' }}">
                     <i class="nav-icon fa-solid fa-comment-dots"></i>
                     <p>New Student Receipt</p>
                 </a>
             </li>
             <li class="nav-item">
-                <a href="{{ route('receipts') }}" class="nav-link {{ Request::is('receipts') ? 'active' : '' }}">
+                <a href="{{ route('receipts', ['type' => 1]) }}"
+                    class="nav-link {{ Route::currentRouteName() == 'receipts' && request('type') == 1 ? 'active' : '' }}">
                     <i class="nav-icon fa-solid fa-comment-dots"></i>
                     <p>Term Student Receipt</p>
                 </a>
@@ -120,9 +122,9 @@
 @endcan
 @can('centre-manage')
     <li
-        class="nav-item {{ in_array(Request::route()->getName(), ['departments', 'positions', 'termfee','parameter']) ? 'menu-open' : '' }}">
+        class="nav-item {{ in_array(Request::route()->getName(), ['departments', 'positions', 'termfee', 'parameter']) ? 'menu-open' : '' }}">
         <a href="#"
-            class="nav-link {{ in_array(Request::route()->getName(), ['departments', 'positions', 'termfee','parameter']) ? 'active' : '' }}">
+            class="nav-link {{ in_array(Request::route()->getName(), ['departments', 'positions', 'termfee', 'parameter']) ? 'active' : '' }}">
             <i class="nav-icon fas fa-gear"></i>
             <p>Centre Management</p>
             <i class="fas fa-angle-left right"></i>
@@ -163,19 +165,20 @@
 @endcan
 @can('user-list')
     <li class="nav-item {{ in_array(Request::route()->getName(), ['users.index', 'roles.index']) ? 'menu-open' : '' }}">
-        <a href="#" class="nav-link {{ in_array(Request::route()->getName(), ['users.index', 'roles.index']) ? 'active' : '' }}">
+        <a href="#"
+            class="nav-link {{ in_array(Request::route()->getName(), ['users.index', 'roles.index']) ? 'active' : '' }}">
             <i class="nav-icon fas fa-user-gear"></i>
             <p>User Management</p>
             <i class="fas fa-angle-left right"></i>
         </a>
         <ul class="nav nav-treeview">
             @can('user-list')
-            <li class="nav-item">
-                <a href="{{ route('users.index') }}" class="nav-link {{ Request::is('users.index') ? 'active' : '' }}">
-                    <i class="nav-icon fa-solid fa-comment-dots"></i>
-                    <p>Users</p>
-                </a>
-            </li>
+                <li class="nav-item">
+                    <a href="{{ route('users.index') }}" class="nav-link {{ Request::is('users.index') ? 'active' : '' }}">
+                        <i class="nav-icon fa-solid fa-comment-dots"></i>
+                        <p>Users</p>
+                    </a>
+                </li>
             @endcan
             @can('role-list')
                 <li class="nav-item">

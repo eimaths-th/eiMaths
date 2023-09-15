@@ -29,8 +29,18 @@
                 <div class="col-12">
                     <div class="card card-primary">
                         <div class="card-header">
-                            <h3 class="card-title"><i class="fa-solid fa-children"></i> New Student By Term
-                            </h3>
+                            @switch(request('type'))
+                                @case(0)
+                                    <h3 class="card-title"><i class="fa-solid fa-children"></i> New Student By Term</h3>
+                                @break
+
+                                @case(1)
+                                    <h3 class="card-title"><i class="fa-solid fa-children"></i> Term Student Receipt</h3>
+                                @break
+
+                                @default
+                                    <h3 class="card-title"><i class="fa-solid fa-children"></i> Default Title</h3>
+                            @endswitch
                             <div class="card-tools">
                                 <button type="button" class="btn btn-tool" data-card-widget="maximize">
                                     <i class="fas fa-expand"></i>

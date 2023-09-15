@@ -14,7 +14,7 @@ class Position extends Seeder
     public function run(): void
     {
         Post::create([
-            'name' => 'SystemAdmin',
+            'name' => 'Manager',
             'department_id' => 1,
             'status' => 1
         ]);

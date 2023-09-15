@@ -14,8 +14,18 @@ class Department extends Seeder
     public function run(): void
     {
         Dept::create([
+            'name' => 'HQ',
+            'code' => 'HQ',
+            'status' => 1
+        ]);
+        Dept::create([
             'name' => 'Ratchaphruek',
-            'code' => 'RJ',
+            'code' => 'RP',
+            'status' => 1
+        ]);
+        Dept::create([
+            'name' => 'Bangkae',
+            'code' => 'BK',
             'status' => 1
         ]);
 

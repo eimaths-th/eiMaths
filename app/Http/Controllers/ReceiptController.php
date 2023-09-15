@@ -47,6 +47,12 @@ class ReceiptController extends Controller
     {
         if ($request->ajax()) {
             //sleep(2);
+            if ($request->get('type')) {
+                $type = $request->get('type');
+            } else {
+                $type = 0;
+            }
+
             $query = Receipt::select(
                 "receipts.id as id",
                 "receipts.receipt_number as receipt_number",
@@ -62,7 +68,8 @@ class ReceiptController extends Controller
 
                 ->join("contacts", "contacts.id", "=", "receipts.cid")
                 ->join("departments", "contacts.centre", "=", "departments.id")
-                ->where('receipts.type', 0);
+                ->where('receipts.type', $type);
+
             if (!Gate::allows('all-centre')) {
                 $query->where('receipts.centre', Auth::user()->department->id);
             }
@@ -205,7 +212,7 @@ class ReceiptController extends Controller
                     $html = '';
                     if (Gate::allows('order-edit')) {
 
-                        $html .= '<button type="button" class="btn btn-sm btn-warning btn-generate" data-book="' . $row->next_book_name . '" data-price="' . $row->next_book_price . '" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Generate Invoice</button> ';
+                        $html .= '<button type="button" class="btn btn-sm btn-warning btn-generate" data-book="' . $row->next_book_name . '" data-price="' . $row->next_book_price . '" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Generate Receipt</button> ';
                     } else {
                         $html .= '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> Confirm
                         Order</button> ';

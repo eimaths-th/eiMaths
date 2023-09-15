@@ -31,11 +31,11 @@ class InvoiceController extends Controller
      */
     function __construct(MoneyConvertServiceInterface $MoneyConvertService)
     {
-        $this->middleware('permission:invoices-list|invoices-show|invoices-create|invoices-edit|invoices-delete', ['only' => ['index', 'show']]);
-        $this->middleware('permission:invoices-show', ['only' => ['show']]);
-        $this->middleware('permission:invoices-create', ['only' => ['create', 'store']]);
-        $this->middleware('permission:invoices-edit', ['only' => ['edit', 'update']]);
-        $this->middleware('permission:invoices-delete', ['only' => ['destroy']]);
+        $this->middleware('permission:invoice-list|invoice-show|invoice-create|invoice-edit|invoice-delete', ['only' => ['index', 'show']]);
+        $this->middleware('permission:invoice-show', ['only' => ['show']]);
+        $this->middleware('permission:invoice-create', ['only' => ['create', 'store']]);
+        $this->middleware('permission:invoice-edit', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:invoice-delete', ['only' => ['destroy']]);
 
         $this->MoneyConvertService = $MoneyConvertService;
     }
@@ -91,12 +91,12 @@ class InvoiceController extends Controller
                 })
                 ->addColumn('action', function ($row) {
                     $html = '';
-                    if (Gate::allows('invoices-show')) {
+                    if (Gate::allows('invoice-show')) {
                         $html = '<button type="button" class="btn btn-sm btn-success btn-print" id="getPrintData" data-id="' . $row->id . '"><i class="fa fa-print"></i> Print</button> ';
                     } else {
                         $html = '<button type="button" class="btn btn-sm btn-success btn-print disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-print"></i> Print</button> ';
                     }
-                    if (Gate::allows('invoices-show')) {
+                    if (Gate::allows('invoice-show')) {
                         $html .= '<button type="button" class="btn btn-sm btn-danger btn-share" id="getShareData" data-id="' . $row->id . '"><i class="fa-solid fa-file-pdf"></i> PDF</button> ';
                     } else {
                         $html .= '<button type="button" class="btn btn-sm btn-danger btn-share disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa-solid fa-file-pdf"></i> PDF</button> ';
