@@ -336,8 +336,8 @@ class ReceiptController extends Controller
         $customCollection = collect($customData);
         $product = bookuse::orderBy("id", "asc")->get();
         /* where([['discontinued', '0']]) */
-        $contact = Contact::where([['centre', Auth::user()->department->id]])
-            ->orderBy("id", "asc")->get();
+        $contact = Contact::/* where([['centre', Auth::user()->department->id]])
+            -> */orderBy("id", "asc")->get();
 
         $centre = Department::where([['status', '1']])
             ->orderBy("name", "asc")->get();
