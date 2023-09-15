@@ -185,6 +185,7 @@
             }
         })
 
+
         $(".terms").change(function() {
             let level = $('#AddLevel').val();
             let term = $('#AddTerm').val();
@@ -449,6 +450,23 @@
         $('#keyword').on('input', storeFieldValues);
 
 
+        $("#AddCentre").change(function() {
+            let centre = $('#AddCentre').val();
+            if (centre.length !== 0) {
+                $.ajax({
+                    method: "GET",
+                    url: "contacts/running/" + centre,
+                    async: false,
+                    success: function(res) {
+                        //console.log(res)
+                        //$('#AddCode').prop('readonly', false);
+                        $('#AddCode').val(res.running);
+                    }
+                });
+            }
+        })
+
+
         $(document).on('click', '#CreateButton', async function(e) {
             e.preventDefault();
             $('.alert-danger').html('');
@@ -465,7 +483,7 @@
 
             await $.ajax({
                 method: "GET",
-                url: "{{ route('contacts.running') }}",
+                url: "contacts/running/" + '0',
                 success: function(res) {
                     //console.log(res)
                     $('#AddCode').val(res.running);

@@ -147,9 +147,12 @@ class ContactController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create($centre)
     {
-        $rnumber = studentRunningNumber::pre_generate(Auth::user()->department->id);
+        if ($centre == 0) {
+           $centre = Auth::user()->department->id;
+        }
+        $rnumber = studentRunningNumber::pre_generate($centre);
         //dd($rnumber);
         return response()->json([
             'running' =>  $rnumber
