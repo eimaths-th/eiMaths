@@ -70,7 +70,7 @@ class DiscontinueController extends Controller
                     return '';
                 })
                 ->addColumn('action', function ($row) {
-                    if (Gate::allows('contact-edit')) {
+                    if (Gate::allows('student-edit')) {
                         $html = '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-rowid="' . $row->id . '"><i class="fa-solid fa-retweet"></i> Restart</button> ';
                     } else {
                         $html = '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa-solid fa-retweet"></i> Restart</button> ';

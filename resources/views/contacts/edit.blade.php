@@ -52,6 +52,12 @@
                                             href="#custom-tabs-one-dise" role="tab"
                                             aria-controls="custom-tabs-one-dise" aria-selected="false">Discontinued</a>
                                     </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" id="custom-tabs-one-coursee-tab" data-toggle="pill"
+                                            href="#custom-tabs-one-coursee" role="tab"
+                                            aria-controls="custom-tabs-one-coursee" aria-selected="false">Course &
+                                            Book</a>
+                                    </li>
                                 </ul>
                             </div>
                             <div class="card-body">
@@ -67,7 +73,7 @@
                                                             <select style="width: 100%;"
                                                                 class="productl select2 select2_single form-control"
                                                                 id="EditCentre" name="centre" multiple="multiple"
-                                                                @cannot('all-centre') disabled @endcannot>
+                                                                @cannot('all-centre')  @endcannot disabled>
                                                                 <!-- <option value="" selected>Select Student</option>
                                                                                                                                                                                                                                                                                                                                                                                                         <option value="" selected>Select Parent</option>-->
                                                                 @foreach ($centre as $key2)
@@ -133,17 +139,14 @@
                                                     </div>
                                                     <div class="col-xs-6 col-sm-6 col-md-6">
                                                         <div class="form-group">
-                                                            <strong><i class="fas fa-layer-group"></i> Level:</strong>
-                                                            <select style="width: 100%;"
-                                                                class="select2 select2_single form-control elevels"
-                                                                id="EditLevel" name="level" multiple="multiple">
-                                                                @foreach ($level as $keyl)
-                                                                    <option value="{{ $keyl->id }}">
-                                                                        {{ $keyl->name }}
-                                                                    </option>
-                                                                @endforeach
-
-                                                            </select>
+                                                            <strong><i class="fas fa-calendar"></i> Birth
+                                                                Date:</strong>
+                                                            {!! Form::text('ebirth_date', null, [
+                                                                'id' => 'EditBirthDate',
+                                                                'placeholder' => '',
+                                                                'class' => 'AddDate form-control',
+                                                                'data-target' => '#reservationdate',
+                                                            ]) !!}
                                                         </div>
                                                     </div>
 
@@ -153,51 +156,6 @@
                                                         <div class="form-group">
                                                             <strong><i class="fas fa-school"></i> School:</strong>
                                                             {!! Form::text('school', null, ['id' => 'EditSchool', 'placeholder' => 'School', 'class' => 'form-control']) !!}
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-xs-3 col-sm-3 col-md-3">
-                                                        <div class="form-group">
-                                                            <strong><i class="fas fa-book-open"></i> Term:</strong>
-                                                            <select style="width: 100%;"
-                                                                class="select2 select2_single form-control eterms"
-                                                                id="EditTerm" name="term" multiple="multiple">
-                                                                @foreach ($term as $keyt)
-                                                                    <option value="{{ $keyt->id }}">
-                                                                        {{ $keyt->name }}
-                                                                    </option>
-                                                                @endforeach
-
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-xs-3 col-sm-3 col-md-3">
-                                                        <div class="form-group">
-                                                            <strong><i class="fas fa-book-medical"></i>
-                                                                BookUse:</strong>
-                                                            <select style="width: 100%;"
-                                                                class="select2 select2_single form-control ebooks"
-                                                                id="EditBook" name="book" multiple="multiple">
-                                                                @foreach ($bookuse as $keyb)
-                                                                    <option value="{{ $keyb->id }}">
-                                                                        {{ $keyb->name }}
-                                                                    </option>
-                                                                @endforeach
-
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="col-xs-6 col-sm-6 col-md-6">
-                                                        <div class="form-group">
-                                                            <strong><i class="fas fa-calendar"></i> Birth
-                                                                Date:</strong>
-                                                            {!! Form::text('ebirth_date', null, [
-                                                                'id' => 'EditBirthDate',
-                                                                'placeholder' => '',
-                                                                'class' => 'AddDate form-control',
-                                                                'data-target' => '#reservationdate',
-                                                            ]) !!}
                                                         </div>
                                                     </div>
                                                     <div class="col-xs-6 col-sm-6 col-md-6">
@@ -221,6 +179,7 @@
                                                         </div>
                                                     </div>
                                                 </div>
+
                                             </div>
                                         </div>
                                     </div>
@@ -417,6 +376,119 @@
                                                     </div>
                                                 </div>
 
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane fade" id="custom-tabs-one-coursee" role="tabpanel"
+                                        aria-labelledby="custom-tabs-one-coursee-tab">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <div class="row">
+
+                                                    <div class="col-xs-6 col-sm-6 col-md-6">
+                                                        <div class="form-group">
+                                                            <strong><i class="fas fa-layer-group"></i> Start
+                                                                Level:</strong>
+                                                            <select style="width: 100%;"
+                                                                class="select2 select2_single form-control elevels"
+                                                                id="EditLevel" name="level" multiple="multiple">
+                                                                @foreach ($level as $keyl)
+                                                                    <option value="{{ $keyl->id }}">
+                                                                        {{ $keyl->name }}
+                                                                    </option>
+                                                                @endforeach
+
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xs-3 col-sm-3 col-md-3">
+                                                        <div class="form-group">
+                                                            <strong><i class="fas fa-book-open"></i> Term:</strong>
+                                                            <select style="width: 100%;"
+                                                                class="select2 select2_single form-control eterms"
+                                                                id="EditTerm" name="term" multiple="multiple"
+                                                                readonly>
+                                                                @foreach ($term as $keyt)
+                                                                    <option value="{{ $keyt->id }}">
+                                                                        {{ $keyt->name }}
+                                                                    </option>
+                                                                @endforeach
+
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xs-3 col-sm-3 col-md-3">
+                                                        <div class="form-group">
+                                                            <strong><i class="fas fa-book-medical"></i>
+                                                                BookUse:</strong>
+                                                            <select style="width: 100%;"
+                                                                class="select2 select2_single form-control ebooks"
+                                                                id="EditBook" name="book" multiple="multiple">
+                                                                @foreach ($bookuse as $keyb)
+                                                                    <option value="{{ $keyb->id }}">
+                                                                        {{ $keyb->name }}
+                                                                    </option>
+                                                                @endforeach
+
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <div class="row">
+
+                                                    <div class="col-xs-6 col-sm-6 col-md-6">
+                                                        <div class="form-group">
+                                                            <strong><i class="fas fa-layer-group"></i> To
+                                                                Level:</strong>
+                                                            <select style="width: 100%;"
+                                                                class="select2 select2_single form-control elevels2"
+                                                                id="EditLevel2" name="level2" multiple="multiple">
+                                                                @foreach ($level as $keyl)
+                                                                    <option value="{{ $keyl->id }}">
+                                                                        {{ $keyl->name }}
+                                                                    </option>
+                                                                @endforeach
+
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xs-3 col-sm-3 col-md-3">
+                                                        <div class="form-group">
+                                                            <strong><i class="fas fa-book-open"></i> Term:</strong>
+                                                            <select style="width: 100%;"
+                                                                class="select2 select2_single form-control eterms2"
+                                                                id="EditTerm2" name="term2" multiple="multiple"
+                                                                readonly>
+                                                                @foreach ($term as $keyt)
+                                                                    <option value="{{ $keyt->id }}">
+                                                                        {{ $keyt->name }}
+                                                                    </option>
+                                                                @endforeach
+
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xs-3 col-sm-3 col-md-3">
+                                                        <div class="form-group">
+                                                            <strong><i class="fas fa-book-medical"></i>
+                                                                BookUse:</strong>
+                                                            <select style="width: 100%;"
+                                                                class="select2 select2_single form-control ebooks2"
+                                                                id="EditBook2" name="book2" multiple="multiple">
+                                                                @foreach ($bookuse as $keyb)
+                                                                    <option value="{{ $keyb->id }}">
+                                                                        {{ $keyb->name }}
+                                                                    </option>
+                                                                @endforeach
+
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
