@@ -411,6 +411,10 @@
                     name: 'contact_name'
                 },
                 {
+                    data: 'product_level',
+                    name: 'product_level'
+                },
+                {
                     data: 'product_name',
                     name: 'product_name'
                 },
@@ -426,10 +430,10 @@
                     data: 'total_price',
                     name: 'total_price'
                 },
-                {
+                /* {
                     data: 'start_term',
                     name: 'start_term'
-                },
+                }, */
                 {
                     data: 'action',
                     name: 'action'
@@ -444,14 +448,14 @@
 
                 // Calculate the sum of values in column 8 for all pages
                 var sum = api
-                    .column(6)
+                    .column(7)
                     .data()
                     .reduce(function(acc, value) {
                         return parseFloat(acc) + parseFloat(value);
                     }, 0);
 
                 // Update the footer cell with the sum
-                $(api.column(6).footer()).html(sum.toFixed(
+                $(api.column(7).footer()).html(sum.toFixed(
                     2)); // Adjust the decimal places as needed
             }
         };

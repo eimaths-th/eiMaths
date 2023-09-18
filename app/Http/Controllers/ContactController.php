@@ -69,11 +69,7 @@ class ContactController extends Controller
             }
 
             if (!empty($request->get('sdate'))) {
-                //dd($request->get('sdate'));
-                //$query->where('contacts.code', $request->get('approved'));
                 $dateRange = $request->input('sdate');
-
-                // Check if the dateRange parameter is provided
                 if ($dateRange) {
                     $dateRangeArray = explode(' - ', $dateRange);
 

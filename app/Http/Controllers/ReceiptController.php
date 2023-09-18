@@ -32,11 +32,11 @@ class ReceiptController extends Controller
      */
     function __construct(MoneyConvertServiceInterface $MoneyConvertService)
     {
-        $this->middleware('permission:order-list|order-show|order-create|order-edit|order-delete', ['only' => ['index', 'show']]);
-        $this->middleware('permission:order-show', ['only' => ['show']]);
-        $this->middleware('permission:order-create', ['only' => ['create', 'store']]);
-        $this->middleware('permission:order-edit', ['only' => ['edit', 'update']]);
-        $this->middleware('permission:order-delete', ['only' => ['destroy']]);
+        $this->middleware('permission:receipt-list|receipt-show|receipt-create|receipt-edit|receipt-delete', ['only' => ['index', 'show']]);
+        $this->middleware('permission:receipt-show', ['only' => ['show']]);
+        $this->middleware('permission:receipt-create', ['only' => ['create', 'store']]);
+        $this->middleware('permission:receipt-edit', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:receipt-delete', ['only' => ['destroy']]);
 
         $this->MoneyConvertService = $MoneyConvertService;
     }
@@ -254,19 +254,20 @@ class ReceiptController extends Controller
                 "contacts.name as contact_name",
                 "contacts.code as contact_code",
                 "contacts.start_term as start_term",
-                "departments.name as centre",
-                "bookuses.name as product_name",
-                "bookuses.unit as product_unit",
-                "first_detail.quantity as amount"
+                "departments.name as centre"
             )
+                ->addSelect(DB::raw("GROUP_CONCAT(bookuses.name SEPARATOR ' - ') as product_name"))
+                ->addSelect(DB::raw("GROUP_CONCAT(levels.name SEPARATOR ' - ') as product_level"))
+                ->addSelect(DB::raw("SUM(first_detail.quantity) as total_amount"))
                 ->join("contacts", "contacts.id", "=", "orders.cid")
                 ->join("departments", "contacts.centre", "=", "departments.id")
                 ->leftJoin("order_details as first_detail", function ($join) {
-                    $join->on("first_detail.order_id", "=", "orders.id")
-                        ->whereRaw("first_detail.id = (SELECT MIN(id) FROM order_details WHERE order_id = orders.id)");
+                    $join->on("first_detail.order_id", "=", "orders.id");
                 })
                 ->join("bookuses", "bookuses.id", "=", "first_detail.product_id")
+                ->join("levels", "levels.id", "=", "bookuses.level_id")
                 ->where('orders.status', 0);
+
             if (!Gate::allows('all-centre')) {
                 $query->where('orders.centre', Auth::user()->department->id);
             }
@@ -284,6 +285,18 @@ class ReceiptController extends Controller
                     }
                 }
             }
+            $query->groupBy(
+                "orders.id",
+                "orders.order_number",
+                "orders.total_price",
+                "orders.created_at",
+                "orders.status",
+                "contacts.name",
+                "contacts.code",
+                "contacts.start_term",
+                "departments.name"
+            );
+
             $datas = $query->orderBy("orders.id", "desc")->get();
 
             return datatables()->of($datas)
