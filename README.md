@@ -11,15 +11,7 @@
 - npm install
 - npm run build
 - php artisan migrate
-- php artisan db:seed --class=Department
-- php artisan db:seed --class=Position
-- php artisan db:seed --class=PermissionTableSeeder
-- php artisan db:seed --class=CreateAdminUserSeeder
-- php artisan db:seed --class=termSeeder
-- php artisan db:seed --class=stermSeeder
-- php artisan db:seed --class=levelSeeder
-- php artisan db:seed --class=discontinuedSeeder
-- php artisan db:seed --class=bookuseSeeder
+- php artisan db:seed-fresh
 - php artisan serve
 
 ## Using
