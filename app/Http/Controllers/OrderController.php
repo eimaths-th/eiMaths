@@ -364,6 +364,13 @@ class OrderController extends Controller
 
         $para = Parameter::orderBy("id", "asc")->get();
 
+        //discount
+        $discount = !empty($data->discount) ? $data->discount : 0;
+        $discount_book = !empty($data->discount_book) ? $data->discount_book : 0;
+        $refund = !empty($data->refund) ? $data->refund : 0;
+        $register_fee = !empty($data->register_fee) ? $data->register_fee : 0;
+        $access_fee = !empty($data->access_fee) ? $data->access_fee : 0;
+
         $data_html = '';
         $etotal = 0;
 
@@ -508,6 +515,8 @@ class OrderController extends Controller
         $data->termfee = number_format($mprice, 2, '.', '');
         $data->bookfee = number_format($mbprice, 2, '.', '');
 
+        $total_price = (($data->termfee + $data->bookfee + $refund + $register_fee + $access_fee)) - ($discount + $discount_book);
+
         return response()->json([
             'data' => $data,
             'datas' => $datas,
@@ -517,7 +526,7 @@ class OrderController extends Controller
             'para' => $para,
             'old_price' => number_format($mprice, 2, '.', ''),
             'old_book' => number_format($mbprice, 2, '.', ''),
-            'total_price' => number_format(($data->termfee + $data->bookfee + $para[0]->price) + $para[1]->price, 2, '.','')
+            'total_price' => number_format($total_price, 2, '.', '')
         ]);
     }
 

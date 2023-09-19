@@ -588,6 +588,8 @@
                     $('#EditStock').val(res.data.sid).change();
                     $("select[name=estock]").attr("readonly", "readonly"); */
                     $('#EditCompany').val(res.data.cid).change();
+                    $('#EditDiscountTerm').val(res.data.discount);
+                    $('#EditDiscountBook').val(res.data.discount_book);
                     $('#EditTotalCost').val(res.total_price);
                     $('#EditTotalCosth').val(res.old_price);
                     $('#EditDetail').val(res.data.detail);
@@ -609,6 +611,11 @@
                         $('#EditRegisterFee').val(res.data.register_fee);
                     } else {
                         $('#EditRegisterFee').val(res.para[1].price);
+                    }
+                    if (res.data.access_fee !== "" && res.data.access_fee !== null) {
+                        $('#EditAccessFee').val(res.data.access_fee);
+                    } else {
+                        $('#EditAccessFee').val(res.para[2].price);
                     }
 
                     $('#EditModalBodyTable').html(res.table_html);
@@ -639,14 +646,11 @@
                 url: "orders/edit/" + id,
                 method: 'GET',
                 success: function(res) {
-                    console.log(res)
                     $('#EditCentre').val(res.data.centre).change();
                     $('#EditCentre').prop('disabled', true);
                     $('#EditLot').val(res.receipt_number);
-                    /* $('#EditProduct').val(1).change();
-                    $("select[name=eproduct]").attr("readonly", "readonly");
-                    $('#EditStock').val(res.data.sid).change();
-                    $("select[name=estock]").attr("readonly", "readonly");*/
+                    $('#EditDiscountTerm').val(res.data.discount);
+                    $('#EditDiscountBook').val(res.data.discount_book);
                     $('#EditCompany').val(res.data.cid).change();
                     $('#EditTotalCost').val(res.total_price);
                     $('#EditTotalCosth').val(res.old_price);
@@ -669,6 +673,11 @@
                         $('#EditRegisterFee').val(res.data.register_fee);
                     } else {
                         $('#EditRegisterFee').val(res.para[1].price);
+                    }
+                    if (res.data.access_fee !== "" && res.data.access_fee !== null) {
+                        $('#EditAccessFee').val(res.data.access_fee);
+                    } else {
+                        $('#EditAccessFee').val(res.para[2].price);
                     }
 
                     $('#EditModalBodyTable').html(res.table_html);
@@ -717,7 +726,7 @@
                 refund: $('#EditRefund').val(),
                 register_fee: $('#EditRegisterFee').val(),
                 access_fee: $('#EditAccessFee').val(),
-                discount: $('#EditDiscount').val(),
+                discount: $('#EditDiscountTerm').val(),
                 discount_book: $('#EditDiscountBook').val(),
                 status: status,
                 img: values,
