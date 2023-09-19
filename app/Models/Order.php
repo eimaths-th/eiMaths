@@ -16,7 +16,9 @@ class Order extends Model
         'total_price',
         'refund',
         'register_fee',
-        'promotion',
+        'access_fee',
+        'discount',
+        'discount_book',
         'status'
     ];
 

@@ -505,8 +505,8 @@ class OrderController extends Controller
 
         $img = $this->getfileatt($id);
 
-        $data->termfee = number_format($mprice, 2, '.','');
-        $data->bookfee = number_format($mbprice, 2, '.','');
+        $data->termfee = number_format($mprice, 2, '.', '');
+        $data->bookfee = number_format($mbprice, 2, '.', '');
 
         return response()->json([
             'data' => $data,
@@ -515,8 +515,9 @@ class OrderController extends Controller
             'imgs' => $img,
             'receipt_number' => $invoice_number,
             'para' => $para,
-            'old_price' => $datas[0]->price,
-            'total_price' => number_format(($datas[0]->price + $para[0]->price) + $para[1]->price, 2, '.')
+            'old_price' => number_format($mprice, 2, '.', ''),
+            'old_book' => number_format($mbprice, 2, '.', ''),
+            'total_price' => number_format(($data->termfee + $data->bookfee + $para[0]->price) + $para[1]->price, 2, '.','')
         ]);
     }
 
@@ -571,7 +572,6 @@ class OrderController extends Controller
         //
         $rules = [
             'order_number' => 'required|string|max:20',
-            'pid' => 'required|integer|max:255',
             'cid' => 'required|integer|max:255',
         ];
 
@@ -585,22 +585,21 @@ class OrderController extends Controller
         $status = $request->get('status');
 
         $data = [
-            //'order_number' => $request->get('order_number'),
             'cid' => $request->get('cid'),
-            //'amount' => $request->get('tamount'),
-            //'cost' => $request->get('cost'),
             'total_price' => $request->get('total_cost'),
             'detail' => $request->get('detail'),
             'refund' => $request->get('refund'),
             'register_fee' => $request->get('register_fee'),
-            'promotion' => $request->get('promotion'),
+            'access_fee' => $request->get('access_fee'),
+            'discount' => $request->get('discount'),
+            'discount_book' => $request->get('discount_book'),
             'status' => $status,
             'updated_by' => Auth::id()
         ];
 
         $order = Order::find($id);
         $order->update($data);
-        OrderDetail::where('order_id', $id)->delete();
+        /* OrderDetail::where('order_id', $id)->delete();
 
         $amounts = $request->input('amount');
         $prices = $request->input('price');
@@ -621,7 +620,7 @@ class OrderController extends Controller
                 }
             }
         }
-
+ */
         //file att
 
         $filesa = $request->get('img');
