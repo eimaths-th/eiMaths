@@ -8,7 +8,6 @@ use App\Models\bookuse;
 use App\Models\Contact;
 use App\Models\Department;
 use App\Models\level;
-use App\Models\Product;
 use App\Models\studentRunningNumber;
 use App\Models\term;
 use App\Models\Sterm;

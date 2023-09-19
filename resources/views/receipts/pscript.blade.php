@@ -576,39 +576,45 @@
                 success: function(res) {
                     $('#EditCentre').val(res.data.centre).change();
                     $('#EditCentre').prop('disabled', true);
-                    $('#EditLevel').val(res.datas[0].level_id).change();
-                    $('#EditLevel').prop('disabled', true);
-                    $('#EditTerm').val(res.datas[0].term_id).change();
-                    $('#EditTerm').prop('disabled', true);
                     $('#EditLot').val(res.receipt_number);
-                    $('#EditProduct').val(1).change();
+                    /* $('#EditProduct').val(1).change();
                     $("select[name=eproduct]").attr("readonly", "readonly");
                     $('#EditStock').val(res.data.sid).change();
-                    $("select[name=estock]").attr("readonly", "readonly");
+                    $("select[name=estock]").attr("readonly", "readonly"); */
                     $('#EditCompany').val(res.data.cid).change();
-                    //$('#EditAmount').val(res.data.amount);
-                    //$('#EditCost').val(res.data.cost);
                     $('#EditTotalCost').val(res.data.total_price);
                     $('#EditTotalCosth').val(res.datas[0].price);
                     $('#EditDetail').val(res.data.detail);
+
+                    if (res.data.termfee !== "" && res.data.termfee !== null) {
+                        $('#EditTermFee').val(res.data.termfee);
+                    }
+
+                    if (res.data.bookfee !== "" && res.data.bookfee !== null) {
+                        $('#EditBookFee').val(res.data.bookfee);
+                    }
+
                     if (res.data.refund !== "" && res.data.refund !== null) {
                         $('#EditRefund').val(res.data.refund);
                     } else {
                         $('#EditRefund').val(res.para[0].price);
                     }
+
                     if (res.data.register_fee !== "" && res.data.register_fee !== null) {
                         $('#EditRegisterFee').val(res.data.register_fee);
                     } else {
                         $('#EditRegisterFee').val(res.para[1].price);
                     }
+
                     $('#EditPromotion').val(res.data.promotion);
                     $('#EditModalBodyTable').html(res.table_html);
                     $('.imgs').html(res.imgs);
-                    console.log(res);
+
                     if (res.data.status == 1) {
                         $('#SubmitEditFormp').css('display', 'none');
                         $('#SubmitEditForm').html('<i class="fas fa-download"></i> Save');
                     }
+
                     $('#EditModal').modal('show');
 
                 }
@@ -629,23 +635,27 @@
                 url: "orders/edit/" + id,
                 method: 'GET',
                 success: function(res) {
+                    console.log(res)
                     $('#EditCentre').val(res.data.centre).change();
                     $('#EditCentre').prop('disabled', true);
-                    $('#EditLevel').val(res.datas[0].level_id).change();
-                    $('#EditLevel').prop('disabled', true);
-                    $('#EditTerm').val(res.datas[0].term_id).change();
-                    $('#EditTerm').prop('disabled', true);
                     $('#EditLot').val(res.receipt_number);
-                    $('#EditProduct').val(1).change();
+                    /* $('#EditProduct').val(1).change();
                     $("select[name=eproduct]").attr("readonly", "readonly");
                     $('#EditStock').val(res.data.sid).change();
-                    $("select[name=estock]").attr("readonly", "readonly");
+                    $("select[name=estock]").attr("readonly", "readonly");*/
                     $('#EditCompany').val(res.data.cid).change();
-                    //$('#EditAmount').val(res.data.amount);
-                    //$('#EditCost').val(res.data.cost);
                     $('#EditTotalCost').val(res.total_price);
                     $('#EditTotalCosth').val(res.datas[0].price);
                     $('#EditDetail').val(res.data.detail);
+
+                    if (res.data.termfee !== "" && res.data.termfee !== null) {
+                        $('#EditTermFee').val(res.data.termfee);
+                    }
+
+                    if (res.data.bookfee !== "" && res.data.bookfee !== null) {
+                        $('#EditBookFee').val(res.data.bookfee);
+                    }
+
                     if (res.data.refund !== "" && res.data.refund !== null) {
                         $('#EditRefund').val(res.data.refund);
                     } else {

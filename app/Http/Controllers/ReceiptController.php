@@ -306,6 +306,16 @@ class ReceiptController extends Controller
                 ->editColumn('created_at', function (Order $datas) {
                     return date('Y-m-d H:i:s', strtotime($datas->created_at));
                 })
+                ->editColumn('product_name', function (Order $datas) {
+
+                    if (strpos($datas->product_name, " - ") !== false) {
+                        $expn = explode(" - ", $datas->product_name);
+                        return "(" . $expn[0] . ") - (" . $expn[1] . ")";
+                    } else {
+                        return $datas->product_name;
+                    }
+
+                })
                 ->editColumn('total_cost', function (Order $datas) {
                     //$total_cost = $datas->amount * $datas->cost;
                     return '<font class="text-success">' . number_format($datas->total_cost, 2, '.', ',') . " บาท </font>";
