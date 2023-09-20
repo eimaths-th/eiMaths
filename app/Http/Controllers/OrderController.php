@@ -367,9 +367,9 @@ class OrderController extends Controller
         //discount
         $discount = !empty($data->discount) ? $data->discount : 0;
         $discount_book = !empty($data->discount_book) ? $data->discount_book : 0;
-        $refund = !empty($data->refund) ? $data->refund : 0;
-        $register_fee = !empty($data->register_fee) ? $data->register_fee : 0;
-        $access_fee = !empty($data->access_fee) ? $data->access_fee : 0;
+        $refund = !empty($data->refund) ? $data->refund : $para[0]->price;
+        $register_fee = !empty($data->register_fee) ? $data->register_fee : $para[1]->price;
+        $access_fee = !empty($data->access_fee) ? $data->access_fee : $para[2]->price;
 
         $data_html = '';
         $etotal = 0;
