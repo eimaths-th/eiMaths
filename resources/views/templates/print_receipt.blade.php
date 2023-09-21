@@ -260,13 +260,17 @@
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
                 </tr>
                 @if ($data->refund !== '' and !is_null($data->refund))
                     <tr>
                         <td align="center" style="vertical-align: top;"></td>
                         <td align="left"> Refundable Deposit</td>
                         <td align="center"> 1.00</td>
+                        <td>&nbsp;</td>
                         <td align="right" style="padding-right:20px;">{{ $data->refund }}</td>
+                        <td>&nbsp;</td>
                         <td align="right" style="vertical-align: top; padding-right:20px;">
                             {{ number_format($data->refund, 2, '.') }}</td>
                     </tr>
@@ -276,7 +280,9 @@
                         <td align="center" style="vertical-align: top;"></td>
                         <td align="left"> Registration Fee</td>
                         <td align="center"> 1.00</td>
+                        <td>&nbsp;</td>
                         <td align="right" style="padding-right:20px;">{{ $data->register_fee }}</td>
+                        <td>&nbsp;</td>
                         <td align="right" style="vertical-align: top; padding-right:20px;">
                             {{ number_format($data->register_fee, 2, '.') }}</td>
                     </tr>
@@ -286,7 +292,9 @@
                         <td align="center" style="vertical-align: top;"></td>
                         <td align="left"> Promotion</td>
                         <td align="center"> 1.00</td>
+                        <td>&nbsp;</td>
                         <td align="right" style="padding-right:20px;"> - {{ $data->promotion }}</td>
+                        <td>&nbsp;</td>
                         <td align="right" style="vertical-align: top; padding-right:20px;"> -
                             {{ number_format($data->promotion, 2, '.') }}</td>
                     </tr>
