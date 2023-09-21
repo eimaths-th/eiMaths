@@ -128,7 +128,7 @@
                                                     <th>Bookuses</th>
                                                     {{-- <th>Amount</th> --}}
                                                     {{-- <th>ราคาต่อหน่วย</th> --}}
-                                                    <th>TermFee</th>
+                                                    <th>Term & Book Fee</th>
                                                     {{-- <th>StartTerm</th> --}}
                                                     <th width="120px" {{-- data-priority="3" --}}></th>
                                                     <th>More</th>

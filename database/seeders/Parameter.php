@@ -16,7 +16,7 @@ class Parameter extends Seeder
         para::create([
             'name' => 'Refundable Deposit',
             'name_th' => 'ค่ามัดจำ',
-            'price' => 150.00,
+            'price' => 0.00,
         ]);
         para::create([
             'name' => 'Registration Fee',

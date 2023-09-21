@@ -609,9 +609,12 @@ class ContactController extends Controller
         $contact = Contact::find($id);
         $contact->update($contactd);
 
+        $order = Order::find($contact->order);
         $input_order['centre'] = $request->get('centre');
         $input_order['cid'] = $contact->id;
-        $input_order['total_price'] = $mprice + $mbprice;
+        $total_price = (($mprice + $mbprice + $order->refund + $order->register_fee + $order->access_fee)) - ($order->discount + $order->discount_book);
+        $input_order['total_price'] = $total_price;
+
         $order = Order::find($contact->order);
 
         if ($order) {
