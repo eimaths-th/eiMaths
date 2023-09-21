@@ -20,7 +20,9 @@ return new class extends Migration
             $table->integer('status')->default(0);
             $table->decimal('refund', 12, 2)->nullable();
             $table->decimal('register_fee', 12, 2)->nullable();
-            $table->decimal('promotion', 12, 2)->nullable();
+            $table->decimal('access_fee', 12, 2)->nullable();
+            $table->decimal('discount', 12, 2)->nullable();
+            $table->decimal('discount_book', 12, 2)->nullable();
             $table->decimal('total_price', 12, 2)->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();

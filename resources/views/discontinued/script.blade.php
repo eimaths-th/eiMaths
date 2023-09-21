@@ -239,35 +239,6 @@
 
 
 
-
-        $(document).on('click', '#CreateButton', async function(e) {
-            e.preventDefault();
-            $('.alert-danger').html('');
-            $('.alert-danger').hide();
-            $('.alert-success').html('');
-            $('.alert-success').hide();
-
-            $('#custom-tabs-one-home-tab').tab('show');
-            $('#AddSTerm').val(null).trigger("change");
-            $('#AddBook').val(null).trigger("change");
-            $('#AddLevel').val(null).trigger("change")
-            $('#AddTerm').val(null).trigger("change")
-
-
-            await $.ajax({
-                method: "GET",
-                url: "{{ route('contacts.running') }}",
-                success: function(res) {
-                    //console.log(res)
-                    $('#AddCode').val(res.running);
-                    $('#AddTerm').prop('disabled', true);
-                    $('#AddBook').prop('disabled', true);
-                }
-            });
-            $('#CreateModal').modal('show');
-        });
-
-
         $(document).on('click', '#getEditData', function() {
             if (!confirm("Confirm the Restart action?")) return;
 

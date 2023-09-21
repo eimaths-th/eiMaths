@@ -125,10 +125,11 @@
                                                     <th {{-- data-priority="4" --}}>Student Code</th>
                                                     <th {{-- data-priority="5" --}}>Student Name</th>
                                                     <th>Level</th>
+                                                    <th>Bookuses</th>
                                                     {{-- <th>Amount</th> --}}
                                                     {{-- <th>ราคาต่อหน่วย</th> --}}
-                                                    <th>TermFee</th>
-                                                    <th>StartTerm</th>
+                                                    <th>Term & Book Fee</th>
+                                                    {{-- <th>StartTerm</th> --}}
                                                     <th width="120px" {{-- data-priority="3" --}}></th>
                                                     <th>More</th>
                                                 </tr>
@@ -145,8 +146,8 @@
                                                     <th></th>
                                                     {{-- <th></th> --}}
                                                     <th align="right"></th>
-                                                    <th align="right">Total</th>
-                                                    <th align="center"></th>
+                                                    <th align="right"></th>
+                                                    <th style="text-align: right;">Total</th>
                                                     <th align="right"></th>
                                                     <th></th>
                                                     <th></th>

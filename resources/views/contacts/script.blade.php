@@ -204,6 +204,44 @@
             }
         })
 
+        $(".levels2").change(function() {
+            let level = $('#AddLevel2').val();
+            //console.log(product);
+            //alert(product);
+            $('#AddTerm2').html('');
+            $('#AddBook2').html('');
+            if (level.length !== 0) {
+                $.ajax({
+                    method: "GET",
+                    url: "level/find/add/" + level,
+                    success: function(res) {
+                        $('.terms2').html(res.html);
+                        //$('.terms').removeAttr('readonly');
+                        $('.terms2').prop('disabled', false);
+                    }
+                });
+            }
+        })
+
+
+        $(".terms2").change(function() {
+            let level = $('#AddLevel2').val();
+            let term = $('#AddTerm2').val();
+            $('#AddBook2').html('');
+            if (level.length !== 0 && term.length !== 0) {
+                $.ajax({
+                    method: "GET",
+                    url: "term/find/add/" + level + "/" + term,
+                    async: false,
+                    success: function(res) {
+                        //console.log(res)
+                        $('.books2').html(res.html);
+                        $('.books2').prop('disabled', false);
+                    }
+                });
+            }
+        })
+
         $(".elevels").change(function() {
             let level = $('#EditLevel').val();
             //console.log(product);
@@ -240,6 +278,44 @@
                 });
             }
         })
+
+        $(".elevels2").change(function() {
+            let level = $('#EditLevel2').val();
+            //console.log(product);
+            //alert(product);
+            $('#EditTerm2').html('');
+            $('#EditBook2').html('');
+            if (level.length !== 0) {
+                $.ajax({
+                    method: "GET",
+                    url: "level/find/add/" + level,
+                    success: function(res) {
+                        $('.eterms2').html(res.html);
+                        //$('.terms').removeAttr('readonly');
+                        $('.eterms2').prop('disabled', false);
+                    }
+                });
+            }
+        })
+
+        $(".eterms2").change(function() {
+            let level = $('#EditLevel2').val();
+            let term = $('#EditTerm2').val();
+            $('#EditBook2').html('');
+            if (level.length !== 0 && term.length !== 0) {
+                $.ajax({
+                    method: "GET",
+                    url: "term/find/add/" + level + "/" + term,
+                    async: false,
+                    success: function(res) {
+                        //console.log(res)
+                        $('.ebooks2').html(res.html);
+                        $('.ebooks2').prop('disabled', false);
+                    }
+                });
+            }
+        })
+
 
 
         const table_option = {
@@ -319,8 +395,8 @@
                     name: 'level_name'
                 },
                 {
-                    data: 'book_name',
-                    name: 'book_name'
+                    data: 'bookuse_name',
+                    name: 'bookuse_name'
                 },
                 {
                     data: 'start_term_name',
@@ -477,8 +553,12 @@
             $('#custom-tabs-one-home-tab').tab('show');
             $('#AddSTerm').val(null).trigger("change");
             $('#AddBook').val(null).trigger("change");
-            $('#AddLevel').val(null).trigger("change")
-            $('#AddTerm').val(null).trigger("change")
+            $('#AddLevel').val(null).trigger("change");
+            $('#AddTerm').val(null).trigger("change");
+            $('#AddBook2').val(null).trigger("change");
+            $('#AddLevel2').val(null).trigger("change")
+            $('#AddTerm2').val(null).trigger("change")
+
 
 
             await $.ajax({
@@ -489,6 +569,8 @@
                     $('#AddCode').val(res.running);
                     $('#AddTerm').prop('disabled', true);
                     $('#AddBook').prop('disabled', true);
+                    $('#AddTerm2').prop('disabled', true);
+                    $('#AddBook2').prop('disabled', true);
                 }
             });
             $('#CreateModal').modal('show');
@@ -505,6 +587,28 @@
             $('.alert-success').hide();
 
 
+            var selectedValue1 = $('#AddLevel').val()[0];
+            var selectedValue2 = $('#AddLevel2').val()[0];
+
+            if (selectedValue1 && selectedValue1.trim() !== '') {
+                $("#AddLevel").removeClass("is-invalid");
+                $("#AddLevel").addClass("is-valid");
+            } else {
+                $("#AddLevel").addClass("is-invalid");
+                $("#AddLevel").removeClass("is-valid");
+                toastr.error('Please Select Start Level', {
+                    timeOut: 5000
+                });
+                return false;
+            }
+
+            if (selectedValue2 < selectedValue1) {
+                toastr.error("Cannot select 'To level' less than 'Start level'", {
+                    timeOut: 5000
+                });
+                return false;
+            }
+
             $.ajax({
                 url: "{{ route('contacts.store') }}",
                 method: 'post',
@@ -520,6 +624,9 @@
                     level: $('#AddLevel').val()[0],
                     term: $('#AddTerm').val()[0],
                     bookuse: $('#AddBook').val()[0],
+                    level2: $('#AddLevel2').val()[0],
+                    term2: $('#AddTerm2').val()[0],
+                    bookuse2: $('#AddBook2').val()[0],
                     discontinued: 0,
                     //ddate: $('#AddDDate').val(),
                     //reason: $('#AddReason').val(),
@@ -535,6 +642,7 @@
                     _token: token,
                 },
                 success: function(result) {
+                    console.log(result);
                     if (result.errors) {
                         $('.alert-danger').html('');
                         $.each(result.errors, function(key, value) {
@@ -591,14 +699,24 @@
                     $('#EditCode').val(res.data.code);
                     $('#EditDate').val(res.data.start_date);
                     $('#EditBirthDate').val(res.data.birth_date);
-                    //$('#EditSTerm').val(res.data.start_term).change();
-                    $('#EditSTerm').val(res.data.start_term).trigger('change.select2');
-                    //$('#EditLevel').val(res.data.level).change();
-                    $('#EditLevel').val(res.data.level).trigger('change.select2');
                     $('#EditSchool').val(res.data.school);
-                    //$('#EditTerm').val(res.data.term).change();
-                    $('#EditTerm').val(res.data.term).trigger('change.select2');
-                    $('#EditBook').val(res.data.bookuse).change();
+                    $('#EditSTerm').val(res.data.start_term).trigger('change.select2');
+                    $('#EditLevel').val(res.datas[0].level_id).trigger('change.select2');
+                    $('#EditTerm').val(res.datas[0].term_id).trigger('change.select2');
+                    $('#EditBook').val(res.datas[0].product_id).change();
+
+                    if (res.data.order_status==1) {
+                        $('#EditLevel').prop('disabled', true);
+                        $('#EditLevel2').prop('disabled', true);
+                    }
+
+                    if (res.datas[1] && res.datas[1].hasOwnProperty('level_id') && res
+                        .datas[1].level_id !== '') {
+                        $('#EditLevel2').val(res.datas[1].level_id).trigger(
+                            'change.select2');
+                        $('#EditTerm2').val(res.datas[1].term_id).trigger('change.select2');
+                        $('#EditBook2').val(res.datas[1].product_id).change();
+                    }
 
                     if (res.data.discontinued == 1) {
                         $('#ecustomCheckbox1').prop('checked', true);
@@ -620,8 +738,6 @@
                         $("#eradioSuccess2").prop("checked", true);
                     }
 
-
-
                     $('#EditReason').val(res.data.discontinued_reason);
 
                     $('#EditPostcode').val(res.data.postcode);
@@ -637,6 +753,8 @@
 
                     $('#EditTerm').prop('disabled', true);
                     $('#EditBook').prop('disabled', true);
+                    $('#EditTerm2').prop('disabled', true);
+                    $('#EditBook2').prop('disabled', true);
 
                     $('#EditModalBody').html(res.html);
                     $('#EditModal').modal('show');
@@ -654,6 +772,28 @@
             $('.alert-success').html('');
             $('.alert-success').hide();
 
+            var selectedValue1 = $('#EditLevel').val()[0];
+            var selectedValue2 = $('#EditLevel2').val()[0];
+
+            if (selectedValue1 && selectedValue1.trim() !== '') {
+                $("#EditLevel").removeClass("is-invalid");
+                $("#EditLevel").addClass("is-valid");
+            } else {
+                $("#EditLevel").addClass("is-invalid");
+                $("#EditLevel").removeClass("is-valid");
+                toastr.error('Please Select Start Level', {
+                    timeOut: 5000
+                });
+                return false;
+            }
+
+            if (selectedValue2 < selectedValue1) {
+                toastr.error("Cannot select 'To level' less than 'Start level'", {
+                    timeOut: 5000
+                });
+                return false;
+            }
+
 
             $.ajax({
                 url: "contacts/save/" + id,
@@ -670,6 +810,9 @@
                     level: $('#EditLevel').val()[0],
                     term: $('#EditTerm').val()[0],
                     bookuse: $('#EditBook').val()[0],
+                    level2: $('#EditLevel2').val()[0],
+                    term2: $('#EditTerm2').val()[0],
+                    bookuse2: $('#EditBook2').val()[0],
                     discontinued: $('#ecustomCheckbox1').is(':checked') ? 1 : 0,
                     discontinued_date: $('#EditDDate').val(),
                     discontinued_reason: $('#EditReason').val(),

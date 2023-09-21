@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('contacts', function (Blueprint $table) {
             $table->id();
             $table->integer('ctype')->default(0);
+            $table->integer('order')->default(0);
             $table->integer('centre')->default(0);
             $table->string('code')->nullable();
             $table->string('start_date')->nullable();
@@ -31,13 +32,18 @@ return new class extends Migration
             $table->string('mother_name')->nullable();
             $table->string('mother_email')->nullable();
             $table->string('mother_mobile')->nullable();
-            $table->integer('order')->default(0);
             $table->integer('level')->default(0);
             $table->integer('term')->default(0);
             $table->integer('bookuse')->default(0);
             $table->string('level_name')->nullable();
             $table->string('term_name')->nullable();
             $table->string('bookuse_name')->nullable();
+            $table->integer('level2')->default(0);
+            $table->integer('term2')->default(0);
+            $table->integer('bookuse2')->default(0);
+            $table->string('level2_name')->nullable();
+            $table->string('term2_name')->nullable();
+            $table->string('bookuse2_name')->nullable();
             $table->integer('discontinued')->default(0);
             $table->string('discontinued_date')->nullable();
             $table->string('discontinued_reason')->nullable();
