@@ -497,6 +497,8 @@ class ContactController extends Controller
             $order->update($input_order);
         }
 
+        OrderDetail::find($input_order_detail);
+
         $input_order_detail['order_id'] = $order->id ?? null; // Set to null if $order is not found
         $input_order_detail['product_id'] = $bookq->id;
         $input_order_detail['pname'] = $bookq->name;

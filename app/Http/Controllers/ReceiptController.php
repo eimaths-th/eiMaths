@@ -256,15 +256,15 @@ class ReceiptController extends Controller
                 "contacts.start_term as start_term",
                 "departments.name as centre"
             )
-                ->addSelect(DB::raw("GROUP_CONCAT(bookuses.name SEPARATOR ' - ') as product_name"))
+                ->addSelect(DB::raw("GROUP_CONCAT(order_detail.pname SEPARATOR ' - ') as product_name"))
                 ->addSelect(DB::raw("GROUP_CONCAT(levels.name SEPARATOR ' - ') as product_level"))
-                ->addSelect(DB::raw("SUM(first_detail.quantity) as total_amount"))
+                ->addSelect(DB::raw("SUM(order_detail.quantity) as total_amount"))
                 ->join("contacts", "contacts.id", "=", "orders.cid")
                 ->join("departments", "contacts.centre", "=", "departments.id")
-                ->leftJoin("order_details as first_detail", function ($join) {
-                    $join->on("first_detail.order_id", "=", "orders.id");
+                ->leftJoin("order_details as order_detail", function ($join) {
+                    $join->on("order_detail.order_id", "=", "orders.id");
                 })
-                ->join("bookuses", "bookuses.id", "=", "first_detail.product_id")
+                ->join("bookuses", "bookuses.id", "=", "order_detail.product_id")
                 ->join("levels", "levels.id", "=", "bookuses.level_id")
                 ->where('orders.status', 0);
 

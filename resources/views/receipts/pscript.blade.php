@@ -580,13 +580,10 @@
                 url: "orders/edit/" + id,
                 method: 'GET',
                 success: function(res) {
+                    console.log(res);
                     $('#EditCentre').val(res.data.centre).change();
                     $('#EditCentre').prop('disabled', true);
                     $('#EditLot').val(res.receipt_number);
-                    /* $('#EditProduct').val(1).change();
-                    $("select[name=eproduct]").attr("readonly", "readonly");
-                    $('#EditStock').val(res.data.sid).change();
-                    $("select[name=estock]").attr("readonly", "readonly"); */
                     $('#EditCompany').val(res.data.cid).change();
                     $('#EditTotalCost').val(res.total_price);
                     $('#EditTotalCosth').val(res.old_price);
@@ -653,15 +650,23 @@
                 url: "orders/edit/" + id,
                 method: 'GET',
                 success: function(res) {
+                    console.log(res);
                     $('#EditCentre').val(res.data.centre).change();
                     $('#EditCentre').prop('disabled', true);
                     $('#EditLot').val(res.receipt_number);
-                    $('#EditDiscountTerm').val(res.data.discount);
-                    $('#EditDiscountBook').val(res.data.discount_book);
                     $('#EditCompany').val(res.data.cid).change();
                     $('#EditTotalCost').val(res.total_price);
                     $('#EditTotalCosth').val(res.old_price);
                     $('#EditDetail').val(res.data.detail);
+
+
+                    if (res.data.discount !== "" && res.data.discount !== null) {
+                        $('#EditDiscountTerm').val(res.data.discount);
+                    }
+
+                    if (res.data.discount_book !== "" && res.data.discount_book !== null) {
+                        $('#EditDiscountBook').val(res.data.discount_book);
+                    }
 
                     if (res.data.termfee !== "" && res.data.termfee !== null) {
                         $('#EditTermFee').val(res.data.termfee);

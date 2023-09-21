@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('punit')->nullable();
             $table->decimal('quantity', 12, 2);
             $table->decimal('price', 12, 2);
+            $table->decimal('bprice', 12, 2);
             $table->timestamps();
 
             // Define foreign key constraints
