@@ -48,7 +48,7 @@ class ContactController extends Controller
      */
     public function index(Request $request)
     {
-
+        // dd($request);
         if ($request->ajax()) {
             //sleep(2);
             //dd($request->get('approved'));
@@ -137,11 +137,124 @@ class ContactController extends Controller
             ->orderBy("name", "asc")->get();
         //dd($term);
 
-        return view('contacts.index')->with(['centre' => $centre])
+        return view('contacts.index')->with(
+            ['centre' => $centre])
             ->with(['bookuse' => $bookuse])
             ->with(['level' => $level])
             ->with(['term' => $term])
             ->with(['sterm' => $sterm]);
+    }
+
+    public function graduated(Request $request) {
+
+
+        $levels = level::all();
+        $bookuses = bookuse::all();
+        $last_level = $levels->last();
+        $last_book = $bookuses->last();
+        if ($request->ajax()) {
+            //sleep(2);
+            //dd($request->get('approved'));
+
+            $query = Contact::select(
+                "contacts.*",
+                "departments.name as centre_name",
+                "levels.name as level_name",
+                "bookuses.name as book_name",
+                "start_terms.name as start_term_name",
+                "pterms.name as term_name"
+            )
+                ->join("departments", "contacts.centre", "=", "departments.id")
+                ->join("levels", "contacts.level", "=", "levels.id")
+                ->join("bookuses", "contacts.bookuse", "=", "bookuses.id")
+                ->join("terms as start_terms", "contacts.start_term", "=", "start_terms.id")
+                ->join("terms as pterms", "contacts.term", "=", "pterms.id")
+                ->where('discontinued', '0')
+                ->where('level',$last_level->id)
+                ->where('bookuse',$last_book->id);
+            // $query = Contact::where('level',$last_level->id)
+            // ->where('bookuse',$last_book->id)
+            // ->get();
+            // dd($query);
+
+            if (!Gate::allows('all-centre')) {
+                $query->where('centre', Auth::user()->department->id);
+            }
+
+            // if (!empty($request->get('sdate'))) {
+            //     //dd($request->get('sdate'));
+            //     //$query->where('contacts.code', $request->get('approved'));
+            //     $dateRange = $request->input('sdate');
+
+            //     // Check if the dateRange parameter is provided
+            //     if ($dateRange) {
+            //         $dateRangeArray = explode(' - ', $dateRange);
+
+            //         if (!empty($dateRangeArray) && count($dateRangeArray) == 2) {
+            //             $startDate = $dateRangeArray[0];
+            //             $endDate = $dateRangeArray[1];
+            //             $query->whereBetween('contacts.start_date', [$startDate, $endDate]);
+            //         }
+            //     }
+            // }
+
+            $query->orderBy("contacts.id", "desc");
+            $datas = $query->get();
+
+            return datatables()->of($datas)
+                ->editColumn('checkbox', function ($row) {
+                    return '<input type="checkbox" id="' . $row->id . '" class="flat" name="table_records[]" value="' . $row->id . '" >';
+                })
+                ->addColumn('more', function ($row) {
+                    return '';
+                })
+                ->addColumn('action', function ($row) {
+                    if (Gate::allows('student-edit')) {
+                        $html = '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit</button> ';
+                    } else {
+                        $html = '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> Edit</button> ';
+                    }
+                    if (Gate::allows('student-delete')) {
+                        $html .= '<button type="button" data-rowid="' . $row->id . '" class="btn btn-sm btn-danger btn-delete"><i class="fa fa-trash"></i> Delete</button>';
+                    } else {
+                        $html .= '<button type="button" class="btn btn-sm btn-danger disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-trash"></i> Delete</button> ';
+                    }
+                    return $html;
+                })->rawColumns(['checkbox', 'action', 'more'])->toJson();
+            /* ->filter(function ($instance) use ($request) {
+                    if ($request->get('approved') == '0' || $request->get('approved') == '1') {
+                        $instance->where('contacts.code', $request->get('approved'));
+                    }
+                    if (!empty($request->get('search'))) {
+                        $instance->where(function ($w) use ($request) {
+                            $search = $request->get('search');
+                            $w->orWhere('name', 'LIKE', "%$search%")
+                                ->orWhere('email', 'LIKE', "%$search%");
+                        });
+                    }
+                }) */
+        }
+
+        $centre = Department::where([['status', '1']])
+        ->orderBy("name", "asc")->get();
+        $term = term::where([['status', '1']])
+            ->orderBy("name", "asc")->get();
+        $sterm = Sterm::where([['status', '1']])
+            ->orderBy("name", "asc")->get();
+        $bookuse = bookuse::where([['status', '1']/* , ['type', '1'] */])
+            ->orderBy("name", "asc")->get();
+        $level = level::where([['status', '1']])
+            ->orderBy("name", "asc")->get();
+
+        // dd($last_book,$last_level,$graduated);
+
+        return view('graduated.index',[
+            'centre' => $centre,
+            'bookuse' => $bookuse,
+            'term' => $term,
+            'sterm' => $sterm,
+            'level' => $level
+        ]);
     }
 
     /**
