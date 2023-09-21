@@ -25,6 +25,7 @@ return new class extends Migration
             $table->decimal('total_fee', 12, 2)->nullable();
             $table->integer('start_term')->nullable();
             $table->integer('status')->default(0);
+            $table->integer('payment')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();

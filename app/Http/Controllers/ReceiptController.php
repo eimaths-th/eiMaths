@@ -24,6 +24,8 @@ class ReceiptController extends Controller
 {
 
     protected $MoneyConvertService;
+    //payment
+    const datap = array(array("id" => "1", "name" => "เงินสด/Cash"), array("id" => "2", "name" => "โอนเงิน/Transfer"), array("id" => "3", "name" => "บัตรเครดิต/Credit Card"));
 
     /**
      * Display a listing of the resource.
@@ -68,12 +70,12 @@ class ReceiptController extends Controller
                 DB::raw("GROUP_CONCAT(levels.name SEPARATOR ' - ') as product_level"),
                 DB::raw("SUM(order_detail.quantity) as total_amount")
             )
-            ->join("contacts", "contacts.id", "=", "receipts.cid")
-            ->join("departments", "contacts.centre", "=", "departments.id")
-            ->leftJoin("order_details as order_detail", "order_detail.order_id", "=", "receipts.oid")
-            ->join("bookuses", "bookuses.id", "=", "order_detail.product_id")
-            ->join("levels", "levels.id", "=", "bookuses.level_id")
-            ->where('receipts.type', $type);
+                ->join("contacts", "contacts.id", "=", "receipts.cid")
+                ->join("departments", "contacts.centre", "=", "departments.id")
+                ->leftJoin("order_details as order_detail", "order_detail.order_id", "=", "receipts.oid")
+                ->join("bookuses", "bookuses.id", "=", "order_detail.product_id")
+                ->join("levels", "levels.id", "=", "bookuses.level_id")
+                ->where('receipts.type', $type);
 
             if (!Gate::allows('all-centre')) {
                 $query->where('receipts.centre', Auth::user()->department->id);
@@ -101,8 +103,8 @@ class ReceiptController extends Controller
                 'contacts.code',
                 'departments.name'
             )
-            ->orderBy("receipts.id", "desc")
-            ->get();
+                ->orderBy("receipts.id", "desc")
+                ->get();
 
             return datatables()->of($datas)
                 ->editColumn('checkbox', function ($row) {
@@ -423,6 +425,7 @@ class ReceiptController extends Controller
             "orders.refund as refund",
             "orders.register_fee as register_fee",
             "orders.discount as discount",
+            "orders.payment as payment",
             "orders.discount_book as discount_book",
             //"first_detail.price as price"
 
@@ -470,12 +473,14 @@ class ReceiptController extends Controller
             'ctype' => $ctype,
             'price_text' => $price_text,
             'price_texten' => $price_texten,
-            'etype' => "ค่าสมัครเรียน / Application Fee",
+            //'etype' => "ค่าสมัครเรียน / Application Fee",
             'date' => $formattedDate,
             'data' => $datas->first(),
             'items' => compact('customItem'),
             'file_att' => $datasf,
         ];
+
+        //dd($data);
 
 
         if ($social == 1) {

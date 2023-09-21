@@ -350,9 +350,9 @@
     //hide logo when resize
     $(document).ready(function() {
 
-        $(".nav-item").on("mouseleave", function () {
+       /*  $(".nav-item").on("mouseleave", function () {
             $(this).removeClass("menu-open");
-        });
+        }); */
 
         $('.sidebar-toggle-btn').on('click', function() {
             // Get the logo element

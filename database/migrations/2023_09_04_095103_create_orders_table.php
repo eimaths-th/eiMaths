@@ -24,6 +24,7 @@ return new class extends Migration
             $table->decimal('discount', 12, 2)->nullable();
             $table->decimal('discount_book', 12, 2)->nullable();
             $table->decimal('total_price', 12, 2)->nullable();
+            $table->integer('payment')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
