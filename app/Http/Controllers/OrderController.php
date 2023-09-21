@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\ReceiptRunningNumber;
 use App\Models\OrderDetail;
+use App\Models\OrderDetailList;
 use App\Models\Contact;
 use App\Models\FileUpload;
 use App\Models\FileStore;
@@ -350,7 +351,7 @@ class OrderController extends Controller
     public function edit($id)
     {
         $data = Order::find($id);
-        $datas = OrderDetail::select(
+        /* $datas = OrderDetail::select(
             "order_details.*",
             "levels.id as level_id",
             "terms.id as term_id",
@@ -360,7 +361,7 @@ class OrderController extends Controller
             ->join("levels", "levels.id", "=", "bookuses.level_id")
             ->where('order_id', $id)
             ->orderBy("order_details.id", "asc")
-            ->get();
+            ->get(); */
 
         $para = Parameter::orderBy("id", "asc")->get();
 
@@ -376,7 +377,7 @@ class OrderController extends Controller
 
         $invoice_number = ReceiptRunningNumber::pre_generate($data->centre);
 
-        $bookq = bookuse::find($datas[0]->product_id);
+        /* $bookq = bookuse::find($datas[0]->product_id);
         $levelq = Level::find($datas[0]->level_id);
         $termq = Term::find($datas[0]->term_id);
 
@@ -465,41 +466,52 @@ class OrderController extends Controller
             $bookss[] = $books;
         }
 
-        //dd($bookss);
+        //dd($bookss); */
+        $mprice = 0;
+        $mbprice = 0;
 
-        foreach ($bookss as $dresult) {
+        $datas_list = OrderDetailList::select(
+            "order_detail_lists.*",
+        )
+            ->where('order_id', $id)
+            ->orderBy("id", "asc")
+            ->get();
 
-            $etotal = 1 * $dresult[0]->price + $dresult[0]->book_price;
+        foreach ($datas_list as $dresult) {
+            $mprice = $mprice + $dresult->price;
+            $mbprice = $mbprice + $dresult->bprice;
+            $etotal = 1 * $dresult->price + $dresult->bprice;
             $data_html .= '<tr class="firstTr">
             <td width="10%">
                 <div class="col-md-12 col-sm-12 col-xs-12">
-                <input type="text"  id="level" name="level[]" class="form-control has-feedback-left" value="' . $dresult[0]->level_name . '" readonly>
-                    <div id="elot_price" class="text-success"></div>
-                    <div id="elot_error" class="text-danger"></div>
-                </div>
-            </td>
-            <td width="10%">
-                <div class="col-md-12 col-sm-12 col-xs-12">
-                <input type="text"  id="level" name="level[]" class="form-control has-feedback-left" value="' . $dresult[0]->name . '" readonly>
+                <input type="text"  id="level" name="level[]" class="form-control has-feedback-left" value="' . $dresult->level . '" readonly>
                     <div id="elot_price" class="text-success"></div>
                     <div id="elot_error" class="text-danger"></div>
                 </div>
             </td>
             <td width="10%">
             <div class="col-md-12 col-sm-12 col-xs-12">
-            <input type="text"  id="level" name="level[]" class="form-control has-feedback-left" value="' . $dresult[0]->term_name . '" readonly>
+            <input type="text"  id="level" name="level[]" class="form-control has-feedback-left" value="' . $dresult->term . '" readonly>
                 <div id="elot_price" class="text-success"></div>
                 <div id="elot_error" class="text-danger"></div>
             </div>
             </td>
             <td width="10%">
                 <div class="col-md-12 col-sm-12 col-xs-12">
-                    <input type="number" step="0.50" id="eprice" name="eprice[]" class="auto_decimal form-control has-feedback-left" value="' . number_format($dresult[0]->price, 2, '.', '') . '" readonly>
+                <input type="text"  id="level" name="level[]" class="form-control has-feedback-left" value="' . $dresult->book . '" readonly>
+                    <div id="elot_price" class="text-success"></div>
+                    <div id="elot_error" class="text-danger"></div>
+                </div>
+            </td>
+
+            <td width="10%">
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    <input type="number" step="0.50" id="eprice" name="eprice[]" class="auto_decimal form-control has-feedback-left" value="' . number_format($dresult->price, 2, '.', '') . '" readonly>
                 </div>
             </td>
             <td width="10%">
                 <div class="col-md-12 col-sm-12 col-xs-12">
-                    <input type="number" step="0.50" id="eprice" name="eprice[]" class="auto_decimal form-control has-feedback-left" value="' . number_format($dresult[0]->book_price, 2, '.', '') . '" readonly>
+                    <input type="number" step="0.50" id="eprice" name="eprice[]" class="auto_decimal form-control has-feedback-left" value="' . number_format($dresult->bprice, 2, '.', '') . '" readonly>
                 </div>
             </td>
             <td width="10%">
@@ -519,7 +531,7 @@ class OrderController extends Controller
 
         return response()->json([
             'data' => $data,
-            'datas' => $datas,
+            //'datas' => $datas,
             'table_html' => $data_html,
             'imgs' => $img,
             'receipt_number' => $invoice_number,

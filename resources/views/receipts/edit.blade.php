@@ -1,5 +1,6 @@
  <!-- Edit  Modal -->
- <div class="fade modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" id="EditModal">
+ <div class="fade modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" id="EditModal"
+     data-backdrop="static">
      <div class="modal-dialog modal-xl" role="document">
          <form id="editdata" class="form" action="" method="POST">
              <div class="modal-content">
@@ -7,9 +8,9 @@
                      <h4 class="modal-title" id="exampleModalLongTitle"><i class="fa-solid fa-cart-shopping"></i> Create
                          Receipt
                      </h4>
-                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                     {{-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                          <span aria-hidden="true">&times;</span>
-                     </button>
+                     </button> --}}
                  </div>
                  <!-- Modal body -->
                  <div class="modal-body">
@@ -119,33 +120,33 @@
                                          </div>
                                          <div class="row">
 
-                                            <div class="col-xs-6 col-sm-6 col-md-6">
-                                                <div class="form-group">
-                                                    <strong><i class="fas fa-dollar-sign"></i> TermFees:</strong>
-                                                    {!! Form::number('term_fee', null, [
-                                                        'id' => 'EditTermFee',
-                                                        'step' => '0.50',
-                                                        'placeholder' => 'TermFees',
-                                                        'class' => 'auto_decimal form-control',
-                                                        'readonly' => true,
-                                                    ]) !!}
-                                                </div>
-                                            </div>
-                                            <div class="col-xs-6 col-sm-6 col-md-6">
-                                                <div class="form-group">
-                                                    <strong><i class="fas fa-dollar-sign"></i> BookFees
-                                                        :</strong>
-                                                    {!! Form::number('book_fee', null, [
-                                                        'id' => 'EditBookFee',
-                                                        'step' => '0.50',
-                                                        'placeholder' => 'BookFees',
-                                                        'class' => 'auto_decimal form-control',
-                                                        'readonly' => true,
-                                                    ]) !!}
-                                                </div>
-                                            </div>
+                                             <div class="col-xs-6 col-sm-6 col-md-6">
+                                                 <div class="form-group">
+                                                     <strong><i class="fas fa-dollar-sign"></i> TermFees:</strong>
+                                                     {!! Form::number('term_fee', null, [
+                                                         'id' => 'EditTermFee',
+                                                         'step' => '0.50',
+                                                         'placeholder' => 'TermFees',
+                                                         'class' => 'auto_decimal form-control',
+                                                         'readonly' => true,
+                                                     ]) !!}
+                                                 </div>
+                                             </div>
+                                             <div class="col-xs-6 col-sm-6 col-md-6">
+                                                 <div class="form-group">
+                                                     <strong><i class="fas fa-dollar-sign"></i> BookFees
+                                                         :</strong>
+                                                     {!! Form::number('book_fee', null, [
+                                                         'id' => 'EditBookFee',
+                                                         'step' => '0.50',
+                                                         'placeholder' => 'BookFees',
+                                                         'class' => 'auto_decimal form-control',
+                                                         'readonly' => true,
+                                                     ]) !!}
+                                                 </div>
+                                             </div>
 
-                                        </div>
+                                         </div>
                                          <div class="row">
                                              <div class="col-xs-6 col-sm-6 col-md-6">
                                                  <div class="form-group">
@@ -161,33 +162,33 @@
                                                  </div>
                                              </div>
                                              <div class="col-xs-6 col-sm-6 col-md-6">
-                                                <div class="form-group">
-                                                    <strong><i class="fas fa-dollar-sign"></i> Registration
-                                                        Fees:</strong>
-                                                    {!! Form::number('register_fee', '0.00', [
-                                                        'id' => 'EditRegisterFee',
-                                                        'step' => '0.50',
-                                                        'placeholder' => 'Registration Fees',
-                                                        'class' => 'auto_decimal form-control',
-                                                        'readonly' => false,
-                                                    ]) !!}
-                                                </div>
-                                            </div>
+                                                 <div class="form-group">
+                                                     <strong><i class="fas fa-dollar-sign"></i> Registration
+                                                         Fees:</strong>
+                                                     {!! Form::number('register_fee', '0.00', [
+                                                         'id' => 'EditRegisterFee',
+                                                         'step' => '0.50',
+                                                         'placeholder' => 'Registration Fees',
+                                                         'class' => 'auto_decimal form-control',
+                                                         'readonly' => false,
+                                                     ]) !!}
+                                                 </div>
+                                             </div>
                                          </div>
                                          <div class="row">
-                                            <div class="col-xs-6 col-sm-6 col-md-6">
-                                                <div class="form-group">
-                                                    <strong><i class="fas fa-dollar-sign"></i> Accessories
-                                                        Fees:</strong>
-                                                    {!! Form::number('access_fee', '0.00', [
-                                                        'id' => 'EditAccessFee',
-                                                        'step' => '0.50',
-                                                        'placeholder' => 'Accessories Fees',
-                                                        'class' => 'auto_decimal form-control',
-                                                        'readonly' => false,
-                                                    ]) !!}
-                                                </div>
-                                            </div>
+                                             <div class="col-xs-6 col-sm-6 col-md-6">
+                                                 <div class="form-group">
+                                                     <strong><i class="fas fa-dollar-sign"></i> Accessories
+                                                         Fees:</strong>
+                                                     {!! Form::number('access_fee', '0.00', [
+                                                         'id' => 'EditAccessFee',
+                                                         'step' => '0.50',
+                                                         'placeholder' => 'Accessories Fees',
+                                                         'class' => 'auto_decimal form-control',
+                                                         'readonly' => false,
+                                                     ]) !!}
+                                                 </div>
+                                             </div>
                                              <div class="col-xs-6 col-sm-6 col-md-6">
                                                  <div class="form-group">
                                                      <strong><i class="fa-solid fa-percent"></i> Discount TermFee
@@ -203,19 +204,19 @@
                                              </div>
                                          </div>
                                          <div class="row">
-                                            <div class="col-xs-6 col-sm-6 col-md-6">
-                                                <div class="form-group">
-                                                    <strong><i class="fa-solid fa-percent"></i> Discount BookFee
-                                                        :</strong>
-                                                    {!! Form::number('discount_book', '0.00', [
-                                                        'id' => 'EditDiscountBook',
-                                                        'step' => '0.50',
-                                                        'placeholder' => 'Discount',
-                                                        'class' => 'auto_decimal form-control',
-                                                        'readonly' => false,
-                                                    ]) !!}
-                                                </div>
-                                            </div>
+                                             <div class="col-xs-6 col-sm-6 col-md-6">
+                                                 <div class="form-group">
+                                                     <strong><i class="fa-solid fa-percent"></i> Discount BookFee
+                                                         :</strong>
+                                                     {!! Form::number('discount_book', '0.00', [
+                                                         'id' => 'EditDiscountBook',
+                                                         'step' => '0.50',
+                                                         'placeholder' => 'Discount',
+                                                         'class' => 'auto_decimal form-control',
+                                                         'readonly' => false,
+                                                     ]) !!}
+                                                 </div>
+                                             </div>
                                              <div class="col-xs-6 col-sm-6 col-md-6">
                                                  <div class="form-group">
                                                      <strong><i class="fa-solid fa-hand-holding-dollar"></i> Total
@@ -250,8 +251,8 @@
                                                          <th class="column-title">
                                                              Level</th>
                                                          <th class="column-title">
-                                                             BookUse</th>
-                                                         <th class="column-title"> Term
+                                                             Term</th>
+                                                         <th class="column-title"> BookUse
                                                          </th>
                                                          <th class="column-title"> TermFee
                                                          </th>
@@ -358,9 +359,9 @@
                              class="fa-solid fa-hand-holding-dollar"></i>
                          Pending</button>
                      <button type="button" class="btn btn-success" id="SubmitEditForm"><i
-                             class="fa-solid fa-sack-dollar"></i> Save</button>
-                     <button type="button" class="btn btn-danger modelClose" data-dismiss="modal"><i
-                             class="fas fa-door-closed"></i> Close</button>
+                             class="fa-solid fa-sack-dollar"></i> Create Receipt</button>
+                     {{--  <button type="button" class="btn btn-danger modelClose" data-dismiss="modal"><i
+                             class="fas fa-door-closed"></i> Close</button> --}}
                  </div>
              </div>
          </form>

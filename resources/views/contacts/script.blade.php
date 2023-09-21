@@ -705,6 +705,11 @@
                     $('#EditTerm').val(res.datas[0].term_id).trigger('change.select2');
                     $('#EditBook').val(res.datas[0].product_id).change();
 
+                    if (res.data.order_status==1) {
+                        $('#EditLevel').prop('disabled', true);
+                        $('#EditLevel2').prop('disabled', true);
+                    }
+
                     if (res.datas[1] && res.datas[1].hasOwnProperty('level_id') && res
                         .datas[1].level_id !== '') {
                         $('#EditLevel2').val(res.datas[1].level_id).trigger(
