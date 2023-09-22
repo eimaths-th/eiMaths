@@ -34,7 +34,7 @@
 
         body {
             font-family: 'sarabun', 'Roboto';
-            font-size: 16px;
+            font-size: 12px;
         }
 
         table td.grey {
