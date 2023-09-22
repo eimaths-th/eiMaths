@@ -55,12 +55,12 @@ class ContactController extends Controller
             $query = Contact::select(
                 "contacts.*",
                 "departments.name as centre_name",
-                "start_terms.name as start_term_name",
+                //"start_terms.name as start_term_name",
             )
                 ->join("departments", "contacts.centre", "=", "departments.id")
                 ->join("levels", "contacts.level", "=", "levels.id")
                 ->join("bookuses", "contacts.bookuse", "=", "bookuses.id")
-                ->join("terms as start_terms", "contacts.start_term", "=", "start_terms.id")
+                //->join("terms as start_terms", "contacts.start_term", "=", "start_terms.id")
                 ->join("terms as pterms", "contacts.term", "=", "pterms.id")
                 ->where('discontinued', '0');
 
