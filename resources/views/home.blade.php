@@ -245,7 +245,7 @@
             for (let i = 0; i < count; i++) {
                 const newStudentValue = Math.floor(Math.random() * 100); // Generate a random value for "New Student" series
                 const discontinuedStudentValue = newStudentValue *
-                0.5; // Set "Discontinued Student" as 50% of "New Student"
+                    0.5; // Set "Discontinued Student" as 50% of "New Student"
                 data.push([discontinuedStudentValue, newStudentValue]);
             }
             return data;
@@ -269,11 +269,11 @@
             var options = {
                 series: [{
                         name: 'New Student',
-                        data: generateRandomData(31).map(item => item[1])
+                        data: generateRandomData(5).map(item => item[1])
                     },
                     {
                         name: 'Discontinued Student',
-                        data: generateRandomData(31).map(item => item[0])
+                        data: generateRandomData(5).map(item => item[0])
                     },
                     /* {
                              name: 'Revenue',
@@ -330,11 +330,7 @@
                     },
 
 
-                    categories: ['01', '02', '03', '04', '05', '06', '07', '08',
-                        '09', '10', '11', '12', '13', '14', '15', '16', '17',
-                        '18', '19', '20', '21', '22', '23', '24', '25', '26',
-                        '27', '28', '29', '30', '31'
-                    ],
+                    categories: ['2019', '2020', '2021', '2022', '2023'],
                 },
                 yaxis: {
 
