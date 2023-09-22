@@ -356,7 +356,7 @@
                 tooltip: {
                     y: {
                         formatter: function(val) {
-                            return " จำนวน " + val + "  เคส"
+                            return " Amount " + val + "  Student"
                         }
                     }
                 }
@@ -367,7 +367,7 @@
 
             var options_d = {
                 series: [{
-                        name: 'สายเข้า',
+                        name: 'total Receipt',
                         data: generateRandomData(31).map(item => item[1])
                     },
                     /* {
@@ -557,7 +557,7 @@
                     left: 'center'
                 },
                 series: [{
-                    name: 'คะแนน',
+                    name: 'Student',
                     type: 'pie',
                     selectedMode: 'single',
                     radius: '60%',
@@ -644,7 +644,7 @@
                     data: datac.legendData
                 },
                 series: [{
-                    name: 'ช่วงเวลา',
+                    name: 'Level',
                     type: 'pie',
                     radius: ['40%', '70%'],
                     center: ['35%', '40%'],
