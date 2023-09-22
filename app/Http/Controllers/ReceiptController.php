@@ -612,7 +612,7 @@ class ReceiptController extends Controller
         if (!$filestore->isEmpty()) {
             foreach ($filestore as $pics) {
                 $imgf = url('/') . '/file_store/' . $pics->filename;
-                $img .= "<img src=\"" . $imgf . "\" height=\"200\">&nbsp;&nbsp;&nbsp;";
+                $img .= "<img src=\"" . $imgf . "\" height=\"150\">&nbsp;&nbsp;&nbsp;";
             }
         } else {
             $img = "";
