@@ -500,16 +500,23 @@ class ReceiptController extends Controller
         $formattedDate = $datas[0]->created_at->format('Y-m-d');
 
         // Data to pass to the view
+        if ($datas_list[0]->first_char == "K") {
+            $ccname = "Kindergarten";
+        } else if ($datas_list[0]->first_char == "P") {
+            $ccname = "Primary school";
+        }
 
         $customItem = [[
-            'pname' => 'ค่าคอร์สเรียน ' . $datas_list[0]->first_char,
+            'pname' => 'ค่าคอร์สเรียน ' . $ccname,
             'quantity' => $datas_list[0]->row_count,
             'price' => $datas_list[0]->oprice,
+            'discount' => $datas[0]->discount,
             // Add other properties as needed
         ], [
             'pname' => 'ค่าหนังสือ',
             'quantity' => $datas_list[0]->row_count,
             'price' => $datas_list[0]->obprice,
+            'discount' => $datas[0]->discount_book,
             // Add other properties as needed
         ]];
 
@@ -519,6 +526,7 @@ class ReceiptController extends Controller
                     'pname' => 'ค่ามัดจำ',
                     'quantity' => 1,
                     'price' => $datas[0]->refund,
+                    'discount' => '0.00',
 
                 ]
             ];
@@ -531,6 +539,7 @@ class ReceiptController extends Controller
                     'pname' => 'ค่าลงทะเบียนแรกเข้า',
                     'quantity' => 1,
                     'price' => $datas[0]->register_fee,
+                    'discount' => '0.00',
 
                 ]
             ];
@@ -543,11 +552,13 @@ class ReceiptController extends Controller
                     'pname' => 'ค่าอุปกรณ์การเรียน',
                     'quantity' => 1,
                     'price' => $datas[0]->access_fee,
+                    'discount' => '0.00',
 
                 ]
             ];
             $customItem = array_merge($customItem, $accessItem);
         };
+
 
         $data = [
             'ctype' => $ctype,

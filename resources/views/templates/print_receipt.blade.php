@@ -229,7 +229,7 @@
                 </tr>
                 @php
                     $total = 0; // Initialize the total variable
-                    $r = 0;
+                    $discount_val = 0;
                 @endphp
                 @foreach ($items['customItem'] as $x => $receipt_detail)
                     <tr>
@@ -238,25 +238,26 @@
                         <td align="center">{{ $receipt_detail['quantity'] }}</td>
                         <td align="center">{{-- {{ $receipt_detail['unit'] }} --}}</td>
                         <td align="center" style="padding-right:20px;">{{ $receipt_detail['price'] }}</td>
-                        <td align="center">{{-- {{ $receipt_detail['discount'] }} --}}</td>
+                        <td align="center">{{ $receipt_detail['discount'] }}</td>
                         <td align="center" style="vertical-align: top; padding-right:20px;">
                             {{ number_format($receipt_detail['quantity'] * $receipt_detail['price'], 2, '.') }}</td>
                     </tr>
                     @php
-                        $total += $receipt_detail['quantity'] * $receipt_detail['price']; // Accumulate the total
-                        $r++;
+                        $total += $receipt_detail['quantity'] * $receipt_detail['price'] - (int) $receipt_detail['discount']; // Accumulate the total
+                        $discount_val += (int) $receipt_detail['discount'];
                     @endphp
                 @endforeach
-                {{--  <tr>
-                        <td align="center" style="vertical-align: top;">1</td>
-                        <td align="left">{!! $des_text !!}</td>
-                        <td ></td>
-                        <td ></td>
-                        <td ></td>
-                        <td ></td>
-                        <td align="center" style="vertical-align: top;">{{ $price_val }}</td>
-                    </tr>
                 <tr>
+                    <td align="center" style="vertical-align: top;"></td>
+                    <td align="left"></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td align="center" style="vertical-align: top; padding-right:20px;">
+                        {{ number_format($total, 2, '.') }}</td>
+                </tr>
+                {{-- <tr>
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
@@ -265,45 +266,6 @@
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
                 </tr> --}}
-                @php
-                    $nx = $r + 1;
-                @endphp
-                @if ($data->refund !== '' and !is_null($data->refund))
-                    <tr>
-                        <td align="center" style="vertical-align: top;">{{ (int) $nx }}</td>
-                        <td align="center"> Refundable Deposit</td>
-                        <td align="center"> 1.00</td>
-                        <td>&nbsp;</td>
-                        <td align="right" style="padding-right:20px;">{{ $data->refund }}</td>
-                        <td>&nbsp;</td>
-                        <td align="right" style="vertical-align: top; padding-right:20px;">
-                            {{ number_format($data->refund, 2, '.') }}</td>
-                    </tr>
-                @endif
-                @if ($data->register_fee !== '' and !is_null($data->register_fee))
-                    <tr>
-                        <td align="center" style="vertical-align: top;"></td>
-                        <td align="left"> Registration Fee</td>
-                        <td align="center"> 1.00</td>
-                        <td>&nbsp;</td>
-                        <td align="right" style="padding-right:20px;">{{ $data->register_fee }}</td>
-                        <td>&nbsp;</td>
-                        <td align="right" style="vertical-align: top; padding-right:20px;">
-                            {{ number_format($data->register_fee, 2, '.') }}</td>
-                    </tr>
-                @endif
-                @if ($data->promotion !== '' and !is_null($data->promotion))
-                    <tr>
-                        <td align="center" style="vertical-align: top;"></td>
-                        <td align="left"> Promotion</td>
-                        <td align="center"> 1.00</td>
-                        <td>&nbsp;</td>
-                        <td align="right" style="padding-right:20px;"> - {{ $data->promotion }}</td>
-                        <td>&nbsp;</td>
-                        <td align="right" style="vertical-align: top; padding-right:20px;"> -
-                            {{ number_format($data->promotion, 2, '.') }}</td>
-                    </tr>
-                @endif
                 <tr>
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
@@ -362,6 +324,11 @@
                             </tr>
                         </table>
                     </td>
+                    @php
+                        $vatRate = 0.07;
+                        $vat_val = $total * $vatRate;
+                        $vat_price_val = $total - $vat_val;
+                    @endphp
                     <td colspan="6" class="activetop activeleft">
                         <table width="100%" cellpadding="0" cellspacing="0">
                             <tr>
@@ -378,7 +345,7 @@
                                 <td width="67%" class="grey">มูลค่าที่คำนวนภาษี/Pre-Vat Amount</td>
 
                                 <td width="15%" align="right"> <b>
-                                        {{-- {{ $vat_price_val }}  --}}</b></td>
+                                        {{ number_format($vat_price_val, 2, '.') }}</b></td>
                                 <td width="8%"></td>
 
                             </tr>
@@ -386,15 +353,17 @@
                                 <td width="10%"></td>
                                 <!-- <td width="20%"></td> -->
                                 <td width="67%" class="grey">ส่วนลด/Discout</td>
-                                <td width="15%" align="right"><b>{{-- {{ $discount_val }} --}}</b></td>
+                                <td width="15%" align="right"><b>{{ number_format($discount_val, 2, '.') }}</b>
+                                </td>
                                 <td width="8%"></td>
 
                             </tr>
+
                             <tr>
                                 <td width="10%"></td>
                                 <!-- <td width="20%"></td> -->
                                 <td width="67%" class="grey">ภาษีมูลค่าเพิ่ม 7% / Vat 7%</td>
-                                <td width="15%" align="right"><b>{{-- {{ $vat_val }} --}}</b></td>
+                                <td width="15%" align="right"><b>{{ number_format($vat_val, 2, '.') }}</b></td>
                                 <td width="8%"></td>
 
                             </tr>
@@ -402,9 +371,6 @@
                     </td>
 
                 </tr>
-                @php
-                    $total = $total + ($data->refund + $data->register_fee - $data->promotion);
-                @endphp
                 <tr class="active">
                     <td align="center" class="grey">รวมทั้งสิ้น<br>Grand Total</td>
                     <td align="left"></td>

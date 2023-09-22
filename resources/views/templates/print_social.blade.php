@@ -17,7 +17,7 @@
         } */
         @font-face {
             font-family: 'THSarabunNew';
-            font-size: 18px;
+            font-size: 12px;
             font-style: normal;
             font-weight: normal;
             src: url("{{ asset('fonts/THSarabunNew.ttf') }}") format("truetype");
@@ -26,7 +26,7 @@
 
         @font-face {
             font-family: 'THSarabunNew Bold';
-            font-size: 18px;
+            font-size: 12px;
             font-style: normal;
             font-weight: bold;
             src: url("{{ asset('fonts/THSarabunNew Bold') }}") format("truetype");
@@ -175,7 +175,7 @@
             </tr>
             <tr>
                 <td>
-                    <font class="grey"><b> {{ $data->cname }} / {{ $data->ctelephone }}
+                    <font class="grey"><b> คุณ {{ $data->parent_name }} / {{ $data->parent_mobile }}
                         </b> </font>
                 </td>
                 <td align="right" style="padding-left:15px;" class="grey">
@@ -198,7 +198,7 @@
             <tr>
                 <!-- <td colspan="3"><font class="grey">ที่อยู่</font> <b>{{ $data->street_address }} {{ $data->street_address2 }}
                                 {{ $data->city }} {{ $data->province }} {{ $data->postcode }} </b></td> -->
-                <td colspan="3">ชื่อนักเรียน / Name <b> {{ $data->ccode }} </b> </td>
+                <td colspan="3">ชื่อนักเรียน / Name <b> {{ $data->cname }} </b> </td>
                 <td width="45%" align="right" class="grey">ครบกำหนด / Due Date</td>
                 <td width="30%" style="padding-left:10px;">..........................</td>
             </tr>
@@ -228,76 +228,43 @@
                 </tr>
                 @php
                     $total = 0; // Initialize the total variable
+                    $discount_val = 0;
                 @endphp
-                @foreach ($items as $x => $receipt_detail)
+                @foreach ($items['customItem'] as $x => $receipt_detail)
                     <tr>
                         <td align="center" style="vertical-align: top;">{{ (int) $x + 1 }}</td>
-                        <td align="left"> Class Level {!! $receipt_detail['pname'] !!}</td>
+                        <td align="center"> {!! $receipt_detail['pname'] !!}</td>
                         <td align="center">{{ $receipt_detail['quantity'] }}</td>
                         <td align="center">{{-- {{ $receipt_detail['unit'] }} --}}</td>
-                        <td align="right" style="padding-right:20px;">{{ $receipt_detail['price'] }}</td>
-                        <td align="center">{{-- {{ $receipt_detail['discount'] }} --}}</td>
-                        <td align="right" style="vertical-align: top; padding-right:20px;">
+                        <td align="center" style="padding-right:20px;">{{ $receipt_detail['price'] }}</td>
+                        <td align="center">{{ $receipt_detail['discount'] }}</td>
+                        <td align="center" style="vertical-align: top; padding-right:20px;">
                             {{ number_format($receipt_detail['quantity'] * $receipt_detail['price'], 2, '.') }}</td>
                     </tr>
                     @php
-                        $total += $receipt_detail['quantity'] * $receipt_detail['price']; // Accumulate the total
+                        $total += $receipt_detail['quantity'] * $receipt_detail['price'] - (int) $receipt_detail['discount']; // Accumulate the total
+                        $discount_val += (int) $receipt_detail['discount'];
                     @endphp
                 @endforeach
-                {{--  <tr>
-                        <td align="center" style="vertical-align: top;">1</td>
-                        <td align="left">{!! $des_text !!}</td>
-                        <td ></td>
-                        <td ></td>
-                        <td ></td>
-                        <td ></td>
-                        <td align="center" style="vertical-align: top;">{{ $price_val }}</td>
-                    </tr> --}}
                 <tr>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
+                    <td align="center" style="vertical-align: top;"></td>
+                    <td align="left"></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td align="center" style="vertical-align: top; padding-right:20px;">
+                        {{ number_format($total, 2, '.') }}</td>
                 </tr>
-                @if ($data->refund !== '' and !is_null($data->refund))
-                    <tr>
-                        <td align="center" style="vertical-align: top;"></td>
-                        <td align="left"> Refundable Deposit</td>
-                        <td align="center"> 1.00</td>
-                        <td>&nbsp;</td>
-                        <td align="right" style="padding-right:20px;">{{ $data->refund }}</td>
-                        <td>&nbsp;</td>
-                        <td align="right" style="vertical-align: top; padding-right:20px;">
-                            {{ number_format($data->refund, 2, '.') }}</td>
-                    </tr>
-                @endif
-                @if ($data->register_fee !== '' and !is_null($data->register_fee))
-                    <tr>
-                        <td align="center" style="vertical-align: top;"></td>
-                        <td align="left"> Registration Fee</td>
-                        <td align="center"> 1.00</td>
-                        <td>&nbsp;</td>
-                        <td align="right" style="padding-right:20px;">{{ $data->register_fee }}</td>
-                        <td>&nbsp;</td>
-                        <td align="right" style="vertical-align: top; padding-right:20px;">
-                            {{ number_format($data->register_fee, 2, '.') }}</td>
-                    </tr>
-                @endif
-                @if ($data->promotion !== '' and !is_null($data->promotion))
-                    <tr>
-                        <td align="center" style="vertical-align: top;"></td>
-                        <td align="left"> Promotion</td>
-                        <td align="center"> 1.00</td>
-                        <td>&nbsp;</td>
-                        <td align="right" style="padding-right:20px;"> - {{ $data->promotion }}</td>
-                        <td>&nbsp;</td>
-                        <td align="right" style="vertical-align: top; padding-right:20px;"> -
-                            {{ number_format($data->promotion, 2, '.') }}</td>
-                    </tr>
-                @endif
+                {{-- <tr>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                </tr> --}}
                 <tr>
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
@@ -315,19 +282,27 @@
                             <tr>
                                 <td></td>
                                 <td colspan="2" style="padding-left:50px;" class="  grey">
-                                    การชำระเงิน/Payment</td>
+                                    การชำระเงิน/Payment{{ $data->payment }}</td>
 
                             </tr>
                             <tr>
-                                <td class="active activebottom activetop activeleft" width="10%"></td>
+                                <td class="active activebottom activetop activeleft" width="10%" align="center">
+                                    @if ($data->payment == 1)
+                                        <img src="{{ asset('images/check.png') }}" alt="..." height="18"
+                                            style="padding-bottom: 1px">
+                                    @endif
+                                </td>
                                 <td style="padding-left:30px;" class="  grey">1.เงินสด/Cash</td>
                                 <td class="  grey"></td>
 
                             </tr>
                             <tr>
-                                <td class="active_twin activebottom activeleft" width="10%" align="center"><img
-                                        src="{{ asset('images/check.png') }}" alt="..." height="18"
-                                        style="padding-bottom: 1px"></td>
+                                <td class="active_twin activebottom activeleft" width="10%" align="center">
+                                    @if ($data->payment == 2)
+                                        <img src="{{ asset('images/check.png') }}" alt="..." height="18"
+                                            style="padding-bottom: 1px">
+                                    @endif
+                                </td>
 
                                 <!-- <td class="active activebottom activeleft" width="10%" align="center"><i
                                                 style="font-size: 1.8em; color:red" class="fa fa-close"></i></td> -->
@@ -336,13 +311,23 @@
 
                             </tr>
                             <tr>
-                                <td class="active activebottom activeleft" width="10%"></td>
+                                <td class="active activebottom activeleft" width="10%" align="center">
+                                    @if ($data->payment == 3)
+                                        <img src="{{ asset('images/check.png') }}" alt="..." height="18"
+                                            style="padding-bottom: 1px">
+                                    @endif
+                                </td>
                                 <td style="padding-left:30px;" class=" grey">3.บัตรเครดิต/Credit Card</td>
                                 <td class="  grey"></td>
 
                             </tr>
                         </table>
                     </td>
+                    @php
+                        $vatRate = 0.07;
+                        $vat_val = $total * $vatRate;
+                        $vat_price_val = $total - $vat_val;
+                    @endphp
                     <td colspan="6" class="activetop activeleft">
                         <table width="100%" cellpadding="0" cellspacing="0">
                             <tr>
@@ -359,7 +344,7 @@
                                 <td width="67%" class="grey">มูลค่าที่คำนวนภาษี/Pre-Vat Amount</td>
 
                                 <td width="15%" align="right"> <b>
-                                        {{-- {{ $vat_price_val }}  --}}</b></td>
+                                        {{ number_format($vat_price_val, 2, '.') }}</b></td>
                                 <td width="8%"></td>
 
                             </tr>
@@ -367,15 +352,17 @@
                                 <td width="10%"></td>
                                 <!-- <td width="20%"></td> -->
                                 <td width="67%" class="grey">ส่วนลด/Discout</td>
-                                <td width="15%" align="right"><b>{{-- {{ $discount_val }} --}}</b></td>
+                                <td width="15%" align="right"><b>{{ number_format($discount_val, 2, '.') }}</b>
+                                </td>
                                 <td width="8%"></td>
 
                             </tr>
+
                             <tr>
                                 <td width="10%"></td>
                                 <!-- <td width="20%"></td> -->
                                 <td width="67%" class="grey">ภาษีมูลค่าเพิ่ม 7% / Vat 7%</td>
-                                <td width="15%" align="right"><b>{{-- {{ $vat_val }} --}}</b></td>
+                                <td width="15%" align="right"><b>{{ number_format($vat_val, 2, '.') }}</b></td>
                                 <td width="8%"></td>
 
                             </tr>
@@ -383,9 +370,6 @@
                     </td>
 
                 </tr>
-                @php
-                    $total = $total + ($data->refund + $data->register_fee - $data->promotion);
-                @endphp
                 <tr class="active">
                     <td align="center" class="grey">รวมทั้งสิ้น<br>Grand Total</td>
                     <td align="left"></td>
@@ -426,7 +410,7 @@
                 </tr>
                 <tr>
                     <td align="center">.........................<br>Received by<br>ผู้รับบริการ</td>
-                    <td align="center" >{!! $file_att !!}</td>
+                    <td align="center">{!! $file_att !!}</td>
                     <td align="center">.........................<br>ผู้จัดการ<br>Manager</td>
                 </tr>
                 <tr>
@@ -445,9 +429,9 @@
                     <td></td>
                 </tr>
                 <tr>
-                    <td align="center" ></td>
+                    <td align="center"></td>
                     <td></td>
-                    <td align="center" ></td>
+                    <td align="center"></td>
                 </tr>
 
             </table>
@@ -466,3 +450,4 @@
         </table>
         {{-- </div> --}}
 </body>
+
