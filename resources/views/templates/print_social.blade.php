@@ -17,7 +17,7 @@
         } */
         @font-face {
             font-family: 'THSarabunNew';
-            font-size: 12px;
+            font-size: 8px;
             font-style: normal;
             font-weight: normal;
             src: url("{{ asset('fonts/THSarabunNew.ttf') }}") format("truetype");
@@ -26,7 +26,7 @@
 
         @font-face {
             font-family: 'THSarabunNew Bold';
-            font-size: 12px;
+            font-size: 8px;
             font-style: normal;
             font-weight: bold;
             src: url("{{ asset('fonts/THSarabunNew Bold') }}") format("truetype");

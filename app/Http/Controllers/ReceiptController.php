@@ -583,12 +583,12 @@ class ReceiptController extends Controller
             //$pdf->getDomPDF()->getFontMetrics()->setFont('YourThaiFont.ttf', 'YourThaiFont');
 
             // Save the PDF to a temporary file path
-            $pdfPath = public_path('file_store/' . $datas[0]->order_number . '.pdf');
+            $pdfPath = public_path('file_store/' . $datas[0]->doc_number . '.pdf');
             //dd($pdfPath);
             $pdf->save($pdfPath);
 
             // Define the file name for the downloaded PDF
-            $pdfFileName = $datas[0]->order_number . '.pdf';
+            $pdfFileName = $datas[0]->doc_number . '.pdf';
 
             // Download the PDF file
             return response()->download($pdfPath, $pdfFileName, ['Content-Type' => 'application/pdf']);
