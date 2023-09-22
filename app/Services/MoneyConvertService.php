@@ -331,10 +331,11 @@ class  MoneyConvertService implements MoneyConvertServiceInterface
         if ($include_unit) {
             $text .= self::BAHT_TEXT_BAHT;
 
+            $moneyConvertService = new MoneyConvertService();
             $satang = explode('.', number_format($number, 2, '.', ''))[1];
             $text .= $satang == 0
                 ? self::BAHT_TEXT_INTEGER
-                : $this($satang, false) . self::BAHT_TEXT_SATANG;
+                : $moneyConvertService->baht_text($satang, false) . self::BAHT_TEXT_SATANG;
         } else {
             $exploded = explode('.', $number);
             if (isset($exploded[1])) {
