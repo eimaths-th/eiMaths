@@ -176,7 +176,7 @@
             </tr>
             <tr>
                 <td>
-                    <font class="grey"><b> {{ $data->cname }} / {{ $data->ctelephone }}
+                    <font class="grey"><b> คุณ {{ $data->parent_name }} / {{ $data->parent_mobile }}
                         </b> </font>
                 </td>
                 <td align="right" style="padding-left:15px;" class="grey">
@@ -199,7 +199,7 @@
             <tr>
                 <!-- <td colspan="3"><font class="grey">ที่อยู่</font> <b>{{ $data->street_address }} {{ $data->street_address2 }}
                                 {{ $data->city }} {{ $data->province }} {{ $data->postcode }} </b></td> -->
-                <td colspan="3">ชื่อนักเรียน / Name <b> {{ $data->ccode }} </b> </td>
+                <td colspan="3">ชื่อนักเรียน / Name <b> {{ $data->cname }} </b> </td>
                 <td width="45%" align="right" class="grey">ครบกำหนด / Due Date</td>
                 <td width="30%" style="padding-left:10px;">..........................</td>
             </tr>
@@ -229,20 +229,22 @@
                 </tr>
                 @php
                     $total = 0; // Initialize the total variable
+                    $r = 0;
                 @endphp
-                @foreach ($items as $x => $receipt_detail)
+                @foreach ($items['customItem'] as $x => $receipt_detail)
                     <tr>
                         <td align="center" style="vertical-align: top;">{{ (int) $x + 1 }}</td>
-                        <td align="left"> Class Level {!! $receipt_detail['pname'] !!}</td>
+                        <td align="center"> {!! $receipt_detail['pname'] !!}</td>
                         <td align="center">{{ $receipt_detail['quantity'] }}</td>
                         <td align="center">{{-- {{ $receipt_detail['unit'] }} --}}</td>
-                        <td align="right" style="padding-right:20px;">{{ $receipt_detail['price'] }}</td>
+                        <td align="center" style="padding-right:20px;">{{ $receipt_detail['price'] }}</td>
                         <td align="center">{{-- {{ $receipt_detail['discount'] }} --}}</td>
-                        <td align="right" style="vertical-align: top; padding-right:20px;">
+                        <td align="center" style="vertical-align: top; padding-right:20px;">
                             {{ number_format($receipt_detail['quantity'] * $receipt_detail['price'], 2, '.') }}</td>
                     </tr>
                     @php
                         $total += $receipt_detail['quantity'] * $receipt_detail['price']; // Accumulate the total
+                        $r++;
                     @endphp
                 @endforeach
                 {{--  <tr>
@@ -253,7 +255,7 @@
                         <td ></td>
                         <td ></td>
                         <td align="center" style="vertical-align: top;">{{ $price_val }}</td>
-                    </tr> --}}
+                    </tr>
                 <tr>
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
@@ -262,11 +264,14 @@
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
-                </tr>
+                </tr> --}}
+                @php
+                    $nx = $r + 1;
+                @endphp
                 @if ($data->refund !== '' and !is_null($data->refund))
                     <tr>
-                        <td align="center" style="vertical-align: top;"></td>
-                        <td align="left"> Refundable Deposit</td>
+                        <td align="center" style="vertical-align: top;">{{ (int) $nx }}</td>
+                        <td align="center"> Refundable Deposit</td>
                         <td align="center"> 1.00</td>
                         <td>&nbsp;</td>
                         <td align="right" style="padding-right:20px;">{{ $data->refund }}</td>

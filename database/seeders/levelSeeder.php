@@ -15,6 +15,7 @@ class levelSeeder extends Seeder
         level::create([
             'level_type' => 1,
             'name' => 'K1',
+            'full_name' => 'Kindergarten',
             'status' => 1,
             'price' => 525.00,
             'half_price' => 287.00,
@@ -24,6 +25,7 @@ class levelSeeder extends Seeder
         level::create([
             'level_type' => 1,
             'name' => 'K2',
+            'full_name' => 'Kindergarten',
             'status' => 1,
             'price' => 525.00,
             'half_price' => 287.00,
@@ -33,6 +35,7 @@ class levelSeeder extends Seeder
         level::create([
             'level_type' => 2,
             'name' => 'P1',
+            'full_name' => 'Primary school',
             'status' => 1,
             'price' => 525.00,
             'half_price' => 287.00,
@@ -42,6 +45,7 @@ class levelSeeder extends Seeder
         level::create([
             'level_type' => 2,
             'name' => 'P2',
+            'full_name' => 'Primary school',
             'status' => 1,
             'price' => 525.00,
             'half_price' => 287.00,
@@ -51,6 +55,7 @@ class levelSeeder extends Seeder
         level::create([
             'level_type' => 2,
             'name' => 'P3',
+            'full_name' => 'Primary school',
             'status' => 1,
             'price' => 575.00,
             'half_price' => 314.00,
@@ -60,6 +65,7 @@ class levelSeeder extends Seeder
         level::create([
             'level_type' => 2,
             'name' => 'P4',
+            'full_name' => 'Primary school',
             'status' => 1,
             'price' => 575.00,
             'half_price' => 314.00,
@@ -69,6 +75,7 @@ class levelSeeder extends Seeder
         level::create([
             'level_type' => 2,
             'name' => 'P5',
+            'full_name' => 'Primary school',
             'status' => 1,
             'price' => 595.00,
             'half_price' => 325.00,
@@ -78,6 +85,7 @@ class levelSeeder extends Seeder
         level::create([
             'level_type' => 2,
             'name' => 'P6',
+            'full_name' => 'Primary school',
             'status' => 1,
             'price' => 595.00,
             'half_price' => 325.00,

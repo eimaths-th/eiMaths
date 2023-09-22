@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Receipt;
 use App\Models\ReceiptRunningNumber;
 use App\Models\Order;
+use App\Models\OrderDetailList;
 use App\Models\bookuse;
 use App\Models\Contact;
 use App\Models\Department;
@@ -424,10 +425,21 @@ class ReceiptController extends Controller
             "orders.total_price as totalp",
             "orders.refund as refund",
             "orders.register_fee as register_fee",
+            "orders.access_fee as access_fee",
             "orders.discount as discount",
             "orders.payment as payment",
             "orders.discount_book as discount_book",
             //"first_detail.price as price"
+            DB::raw("CASE
+        WHEN contacts.father_name IS NOT NULL AND contacts.father_name != '' THEN contacts.father_name
+        WHEN contacts.mother_name IS NOT NULL AND contacts.mother_name != '' THEN contacts.mother_name
+        ELSE NULL
+    END AS parent_name"),
+            DB::raw("CASE
+        WHEN contacts.father_name IS NOT NULL AND contacts.father_name != '' THEN contacts.father_mobile
+        WHEN contacts.mother_name IS NOT NULL AND contacts.mother_name != '' THEN contacts.mother_mobile
+        ELSE NULL
+    END AS parent_mobile")
 
         )
             ->join("contacts", "contacts.id", "=", "receipts.cid")
@@ -442,6 +454,33 @@ class ReceiptController extends Controller
 
         //dd($datas);
 
+        $datas_list = OrderDetailList::select(
+            //"order_detail_lists.*",
+            "order_detail_lists.price as oprice",
+            "order_detail_lists.bprice as obprice",
+            DB::raw("SUBSTRING(order_detail_lists.level, 1, 1) as first_char"),
+            DB::raw("COUNT(*) as row_count"),
+            DB::raw("SUM(order_detail_lists.price) as total_price"),
+            DB::raw("SUM(eimatch.order_detail_lists.bprice) as total_bprice")
+        )->where('order_id', $id)
+            ->groupBy(
+                /* 'order_detail_lists.level', */
+                'first_char',
+                'order_detail_lists.price',
+                'order_detail_lists.bprice',
+                /* 'order_detail_lists.id',
+                'order_detail_lists.order_id',
+                'eimatch.order_detail_lists.term',
+                'order_detail_lists.book',
+                'order_detail_lists.price',
+                'eimatch.order_detail_lists.bprice',
+                'eimatch.order_detail_lists.created_at',
+                'eimatch.order_detail_lists.updated_at' */
+            )
+            //->orderBy("id", "asc")
+            ->get();
+
+        //dd($datas_list);
 
         $datasf = $this->getfileattprint($datas[0]->oid);
 
@@ -462,12 +501,53 @@ class ReceiptController extends Controller
 
         // Data to pass to the view
 
-        $customItem = [
-            'pname' => $datas[0]->book,
-            'quantity' => 1,
-            'price' => $datas[0]->price,
+        $customItem = [[
+            'pname' => 'ค่าคอร์สเรียน ' . $datas_list[0]->first_char,
+            'quantity' => $datas_list[0]->row_count,
+            'price' => $datas_list[0]->oprice,
             // Add other properties as needed
-        ];
+        ], [
+            'pname' => 'ค่าหนังสือ',
+            'quantity' => $datas_list[0]->row_count,
+            'price' => $datas_list[0]->obprice,
+            // Add other properties as needed
+        ]];
+
+        if ($datas[0]->refund !== "" and $datas[0]->refund !== "0.00") {
+            $refundItem = [
+                [
+                    'pname' => 'ค่ามัดจำ',
+                    'quantity' => 1,
+                    'price' => $datas[0]->refund,
+
+                ]
+            ];
+            $customItem = array_merge($customItem, $refundItem);
+        };
+
+        if ($datas[0]->register_fee !== "" and $datas[0]->register_fee !== "0.00") {
+            $regisItem = [
+                [
+                    'pname' => 'ค่าลงทะเบียนแรกเข้า',
+                    'quantity' => 1,
+                    'price' => $datas[0]->register_fee,
+
+                ]
+            ];
+            $customItem = array_merge($customItem, $regisItem);
+        };
+
+        if ($datas[0]->access_fee !== "" and $datas[0]->access_fee !== "0.00") {
+            $accessItem = [
+                [
+                    'pname' => 'ค่าอุปกรณ์การเรียน',
+                    'quantity' => 1,
+                    'price' => $datas[0]->access_fee,
+
+                ]
+            ];
+            $customItem = array_merge($customItem, $accessItem);
+        };
 
         $data = [
             'ctype' => $ctype,
