@@ -13,7 +13,7 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h4><i class="fa-solid fa-chart-pie"></i> eiMaths [{{ Auth::user()->department->name }}] State</h4>
+                    <h4><i class="fa-solid fa-chart-pie"></i> eiMaths [{{ Auth::user()->department->name }}] Stats</h4>
                 </div>
                 <div class="col-sm-6">
 
