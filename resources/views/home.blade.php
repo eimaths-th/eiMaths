@@ -180,7 +180,7 @@
                             <div class="card card-primary" style="max-height: 455px">
                                 <div class="card-header">
                                     <h3 class="card-title"><i class="fa-solid fa-chart-line"></i> New Student /
-                                        Discontinued Student 2023-08
+                                        Discontinued Student by Year
                                     </h3>
                                     <div class="card-tools">
                                         <button type="button" class="btn btn-tool" data-card-widget="maximize">
