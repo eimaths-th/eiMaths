@@ -1,10 +1,10 @@
 <!-- need to remove -->
-{{-- <li class="nav-item">
+<li class="nav-item">
     <a href="{{ route('home') }}" class="nav-link {{ Request::is('home') ? 'active' : '' }}">
         <i class="nav-icon fas fa-home"></i>
         <p>Dashboard</p>
     </a>
-</li> --}}
+</li>
 @can('student-list')
     <li class="nav-item {{ in_array(Request::route()->getName(), ['contacts', 'discontinued']) ? 'menu-open' : '' }}">
         <a href="#"

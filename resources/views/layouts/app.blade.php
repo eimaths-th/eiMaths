@@ -145,6 +145,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.37.1/apexcharts.min.js"
     integrity="sha512-hl0UXLK2ElpaU9SHbuVNsvFv2BaYszlhxB2EntUy5FTGdfg9wFJrJG2JDcT4iyKmWeuDLmK+Nr2hLoq2sKk6MQ=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="plugins/echart/echarts.min.js"></script>
 <script src="plugins/moment/moment.min.js"></script>
 <script src="plugins/daterangepicker/daterangepicker.js"></script>
 <script src="plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
@@ -350,9 +351,9 @@
     //hide logo when resize
     $(document).ready(function() {
 
-       /*  $(".nav-item").on("mouseleave", function () {
-            $(this).removeClass("menu-open");
-        }); */
+        /*  $(".nav-item").on("mouseleave", function () {
+             $(this).removeClass("menu-open");
+         }); */
 
         $('.sidebar-toggle-btn').on('click', function() {
             // Get the logo element

@@ -118,8 +118,10 @@ Route::group(['middleware' => ['auth']], function () {
     })->name('file.get');
 
 
-    Route::get('/', [App\Http\Controllers\ContactController::class, 'index']);
-    Route::get('/home', [App\Http\Controllers\ContactController::class, 'index'])->name('home');
+    /* Route::get('/', [App\Http\Controllers\ContactController::class, 'index']);
+    Route::get('/home', [App\Http\Controllers\ContactController::class, 'index'])->name('home'); */
+    Route::get('/', [App\Http\Controllers\HomeController::class, 'index']);
+    Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 });
 
 
