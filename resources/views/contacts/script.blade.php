@@ -551,7 +551,7 @@
             $('.alert-success').hide();
 
             $('#custom-tabs-one-home-tab').tab('show');
-            $('#AddSTerm').val(null).trigger("change");
+            //$('#AddSTerm').val(null).trigger("change");
             $('#AddBook').val(null).trigger("change");
             $('#AddLevel').val(null).trigger("change");
             $('#AddTerm').val(null).trigger("change");
@@ -619,7 +619,7 @@
                     gender: $("input[name='gender']:checked").val(),
                     birth_date: $('#AddBirthDate').val(),
                     start_date: $('#AddDate').val(),
-                    start_term: $('#AddSTerm').val()[0],
+                    //start_term: $('#AddSTerm').val()[0],
                     school: $('#AddSchool').val(),
                     level: $('#AddLevel').val()[0],
                     term: $('#AddTerm').val()[0],
@@ -700,7 +700,7 @@
                     $('#EditDate').val(res.data.start_date);
                     $('#EditBirthDate').val(res.data.birth_date);
                     $('#EditSchool').val(res.data.school);
-                    $('#EditSTerm').val(res.data.start_term).trigger('change.select2');
+                    //$('#EditSTerm').val(res.data.start_term).trigger('change.select2');
                     $('#EditLevel').val(res.datas[0].level_id).trigger('change.select2');
                     $('#EditTerm').val(res.datas[0].term_id).trigger('change.select2');
                     $('#EditBook').val(res.datas[0].product_id).change();
@@ -805,7 +805,7 @@
                     gender: $("input[name='egender']:checked").val(),
                     birth_date: $('#EditBirthDate').val(),
                     start_date: $('#EditDate').val(),
-                    start_term: $('#EditSTerm').val()[0],
+                    //start_term: $('#EditSTerm').val()[0],
                     school: $('#EditSchool').val(),
                     level: $('#EditLevel').val()[0],
                     term: $('#EditTerm').val()[0],
