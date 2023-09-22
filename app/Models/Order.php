@@ -19,7 +19,8 @@ class Order extends Model
         'access_fee',
         'discount',
         'discount_book',
-        'status'
+        'status',
+        'payment'
     ];
 
     public function contact()

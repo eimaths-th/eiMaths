@@ -235,6 +235,33 @@
                                                  </div>
                                              </div>
                                          </div>
+                                         <div class="row">
+                                             <div class="col-xs-6 col-sm-6 col-md-6">
+                                                 <div class="form-group">
+                                                     <strong><i class="fa-solid fa-hand-holding-dollar"></i> Payment Type:</strong>
+                                                     <div class="form-group clearfix">
+                                                         <div class="icheck-success d-inline">
+                                                             <input type="radio" name="payment" value="1"
+                                                                 checked id="radioSuccess1">
+                                                             <label for="radioSuccess1">Cash
+                                                             </label>
+                                                         </div>
+                                                         <div class="icheck-success d-inline">
+                                                             <input type="radio" name="payment" value="2"
+                                                                 id="radioSuccess2">
+                                                             <label for="radioSuccess2">Tranfer
+                                                             </label>
+                                                         </div>
+                                                         <div class="icheck-success d-inline">
+                                                            <input type="radio" name="payment" value="3"
+                                                                id="radioSuccess3">
+                                                            <label for="radioSuccess3">Credit
+                                                            </label>
+                                                        </div>
+                                                     </div>
+                                                 </div>
+                                             </div>
+                                         </div>
                                      </div>
                                  </div>
                                  <div class="tab-pane fade" id="custom-tabs-one-order2" role="tabpanel"

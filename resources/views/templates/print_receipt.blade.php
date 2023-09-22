@@ -260,13 +260,17 @@
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
                 </tr>
                 @if ($data->refund !== '' and !is_null($data->refund))
                     <tr>
                         <td align="center" style="vertical-align: top;"></td>
                         <td align="left"> Refundable Deposit</td>
                         <td align="center"> 1.00</td>
+                        <td>&nbsp;</td>
                         <td align="right" style="padding-right:20px;">{{ $data->refund }}</td>
+                        <td>&nbsp;</td>
                         <td align="right" style="vertical-align: top; padding-right:20px;">
                             {{ number_format($data->refund, 2, '.') }}</td>
                     </tr>
@@ -276,7 +280,9 @@
                         <td align="center" style="vertical-align: top;"></td>
                         <td align="left"> Registration Fee</td>
                         <td align="center"> 1.00</td>
+                        <td>&nbsp;</td>
                         <td align="right" style="padding-right:20px;">{{ $data->register_fee }}</td>
+                        <td>&nbsp;</td>
                         <td align="right" style="vertical-align: top; padding-right:20px;">
                             {{ number_format($data->register_fee, 2, '.') }}</td>
                     </tr>
@@ -286,7 +292,9 @@
                         <td align="center" style="vertical-align: top;"></td>
                         <td align="left"> Promotion</td>
                         <td align="center"> 1.00</td>
+                        <td>&nbsp;</td>
                         <td align="right" style="padding-right:20px;"> - {{ $data->promotion }}</td>
+                        <td>&nbsp;</td>
                         <td align="right" style="vertical-align: top; padding-right:20px;"> -
                             {{ number_format($data->promotion, 2, '.') }}</td>
                     </tr>
@@ -308,19 +316,27 @@
                             <tr>
                                 <td></td>
                                 <td colspan="2" style="padding-left:50px;" class="  grey">
-                                    การชำระเงิน/Payment</td>
+                                    การชำระเงิน/Payment{{ $data->payment }}</td>
 
                             </tr>
                             <tr>
-                                <td class="active activebottom activetop activeleft" width="10%"></td>
+                                <td class="active activebottom activetop activeleft" width="10%" align="center">
+                                    @if ($data->payment == 1)
+                                        <img src="{{ asset('images/check.png') }}" alt="..." height="18"
+                                            style="padding-bottom: 1px">
+                                    @endif
+                                </td>
                                 <td style="padding-left:30px;" class="  grey">1.เงินสด/Cash</td>
                                 <td class="  grey"></td>
 
                             </tr>
                             <tr>
-                                <td class="active_twin activebottom activeleft" width="10%" align="center"><img
-                                        src="{{ asset('images/check.png') }}" alt="..." height="18"
-                                        style="padding-bottom: 1px"></td>
+                                <td class="active_twin activebottom activeleft" width="10%" align="center">
+                                    @if ($data->payment == 2)
+                                        <img src="{{ asset('images/check.png') }}" alt="..." height="18"
+                                            style="padding-bottom: 1px">
+                                    @endif
+                                </td>
 
                                 <!-- <td class="active activebottom activeleft" width="10%" align="center"><i
                                                 style="font-size: 1.8em; color:red" class="fa fa-close"></i></td> -->
@@ -329,7 +345,12 @@
 
                             </tr>
                             <tr>
-                                <td class="active activebottom activeleft" width="10%"></td>
+                                <td class="active activebottom activeleft" width="10%" align="center">
+                                    @if ($data->payment == 3)
+                                        <img src="{{ asset('images/check.png') }}" alt="..." height="18"
+                                            style="padding-bottom: 1px">
+                                    @endif
+                                </td>
                                 <td style="padding-left:30px;" class=" grey">3.บัตรเครดิต/Credit Card</td>
                                 <td class="  grey"></td>
 
@@ -419,7 +440,7 @@
                 </tr>
                 <tr>
                     <td align="center">.........................<br>Received by<br>ผู้รับบริการ</td>
-                    <td align="center" >{!! $file_att !!}</td>
+                    <td align="center">{!! $file_att !!}</td>
                     <td align="center">.........................<br>ผู้จัดการ<br>Manager</td>
                 </tr>
                 <tr>
@@ -438,9 +459,9 @@
                     <td></td>
                 </tr>
                 <tr>
-                    <td align="center" ></td>
+                    <td align="center"></td>
                     <td></td>
-                    <td align="center" ></td>
+                    <td align="center"></td>
                 </tr>
 
             </table>

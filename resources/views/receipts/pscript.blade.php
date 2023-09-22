@@ -622,6 +622,15 @@
                         $('#EditAccessFee').val(res.para[2].price);
                     }
 
+
+                    if (res.data.payment == 1) {
+                        $("#eradioSuccess1").prop("checked", true);
+                    } else if (res.data.payment == 2) {
+                        $("#eradioSuccess2").prop("checked", true);
+                    } else if (res.data.payment == 3) {
+                        $("#eradioSuccess3").prop("checked", true);
+                    }
+
                     $('#EditModalBodyTable').html(res.table_html);
                     $('.imgs').html(res.imgs);
 
@@ -692,6 +701,14 @@
                         $('#EditAccessFee').val(res.para[2].price);
                     }
 
+                    if (res.data.payment == 1) {
+                        $("#radioSuccess1").prop("checked", true);
+                    } else if (res.data.payment == 2) {
+                        $("#radioSuccess2").prop("checked", true);
+                    } else if (res.data.payment == 3) {
+                        $("#radioSuccess3").prop("checked", true);
+                    }
+
                     $('#EditModalBodyTable').html(res.table_html);
                     $('.imgs').html(res.imgs);
                     if (res.data.status == 1) {
@@ -741,6 +758,7 @@
                 discount: $('#EditDiscountTerm').val(),
                 discount_book: $('#EditDiscountBook').val(),
                 status: status,
+                payment: $("input[name='payment']:checked").val(),
                 img: values,
                 _token: token
             };

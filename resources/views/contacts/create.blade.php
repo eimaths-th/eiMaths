@@ -115,7 +115,7 @@
                                                     ]) !!}
                                                 </div>
                                             </div>
-                                            <div class="col-xs-6 col-sm-6 col-md-6">
+                                            {{-- <div class="col-xs-6 col-sm-6 col-md-6">
                                                 <div class="form-group">
                                                     <strong><i class="fas fa-book-open"></i> Start Term:</strong>
                                                     <select style="width: 100%;"
@@ -129,7 +129,7 @@
 
                                                     </select>
                                                 </div>
-                                            </div>
+                                            </div> --}}
                                         </div>
                                         <div class="row">
                                             <div class="col-xs-6 col-sm-6 col-md-6">

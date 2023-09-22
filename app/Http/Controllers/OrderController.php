@@ -613,6 +613,7 @@ class OrderController extends Controller
             'register_fee' => $request->get('register_fee'),
             'access_fee' => $request->get('access_fee'),
             'discount' => $request->get('discount'),
+            'payment' => $request->get('payment'),
             'discount_book' => $request->get('discount_book'),
             'status' => $status,
             'updated_by' => Auth::id()
@@ -671,6 +672,7 @@ class OrderController extends Controller
             $receipt->receipt_number = ReceiptRunningNumber::generate($order->centre);
             $receipt->payment_date = date("Y-m-d");
             $receipt->oid = $order->id;
+            $receipt->payment = $order->payment;
             $receipt->level = $order->contact->level_name;
             $receipt->total_fee = $order->total_price;
             $receipt->start_term = $order->contact->start_term;
