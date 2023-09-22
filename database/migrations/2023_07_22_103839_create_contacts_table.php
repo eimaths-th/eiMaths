@@ -18,7 +18,7 @@ return new class extends Migration
             $table->integer('centre')->default(0);
             $table->string('code')->nullable();
             $table->string('start_date')->nullable();
-            $table->integer('start_term')->default(0);
+            $table->integer('start_term')->nullable();
             $table->string('name')->nullable();
             $table->string('school')->nullable();
             $table->integer('gender')->default(1);
