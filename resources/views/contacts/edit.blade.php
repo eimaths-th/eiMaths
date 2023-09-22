@@ -112,6 +112,18 @@
                                                             ]) !!}
                                                         </div>
                                                     </div>
+                                                    <div class="col-xs-6 col-sm-6 col-md-6">
+                                                        <div class="form-group">
+                                                            <strong><i class="fas fa-calendar"></i> Birth
+                                                                Date:</strong>
+                                                            {!! Form::text('ebirth_date', null, [
+                                                                'id' => 'EditBirthDate',
+                                                                'placeholder' => '',
+                                                                'class' => 'AddDate form-control',
+                                                                'data-target' => '#reservationdate',
+                                                            ]) !!}
+                                                        </div>
+                                                    </div>
                                                     {{-- <div class="col-xs-6 col-sm-6 col-md-6">
                                                         <div class="form-group">
                                                             <strong><i class="fas fa-book-open"></i> Start
@@ -139,25 +151,14 @@
                                                     </div>
                                                     <div class="col-xs-6 col-sm-6 col-md-6">
                                                         <div class="form-group">
-                                                            <strong><i class="fas fa-calendar"></i> Birth
-                                                                Date:</strong>
-                                                            {!! Form::text('ebirth_date', null, [
-                                                                'id' => 'EditBirthDate',
-                                                                'placeholder' => '',
-                                                                'class' => 'AddDate form-control',
-                                                                'data-target' => '#reservationdate',
-                                                            ]) !!}
+                                                            <strong><i class="fas fa-school"></i> School:</strong>
+                                                            {!! Form::text('school', null, ['id' => 'EditSchool', 'placeholder' => 'School', 'class' => 'form-control']) !!}
                                                         </div>
                                                     </div>
 
                                                 </div>
                                                 <div class="row">
-                                                    <div class="col-xs-6 col-sm-6 col-md-6">
-                                                        <div class="form-group">
-                                                            <strong><i class="fas fa-school"></i> School:</strong>
-                                                            {!! Form::text('school', null, ['id' => 'EditSchool', 'placeholder' => 'School', 'class' => 'form-control']) !!}
-                                                        </div>
-                                                    </div>
+
                                                     <div class="col-xs-6 col-sm-6 col-md-6">
                                                         <div class="form-group">
                                                             <strong><i class="fa-solid fa-venus-mars"></i>
