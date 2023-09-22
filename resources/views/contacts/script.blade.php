@@ -398,10 +398,10 @@
                     data: 'bookuse_name',
                     name: 'bookuse_name'
                 },
-                {
+               /*  {
                     data: 'start_term_name',
                     name: 'start_term_name'
-                },
+                }, */
                 {
                     data: 'term_name',
                     name: 'term_name'

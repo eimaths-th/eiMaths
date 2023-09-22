@@ -161,7 +161,7 @@
                                                     <th>Start Date</th>
                                                     <th>Level</th>
                                                     <th>BookUse </th>
-                                                    <th>Start Term</th>
+                                                    {{-- <th>Start Term</th> --}}
                                                     <th>Term</th>
                                                     <th {{-- class="none" --}}>Telephone</th>
                                                     <th>Father Mobile</th>
