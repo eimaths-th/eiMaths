@@ -21,12 +21,12 @@ class Parameter extends Seeder
         para::create([
             'name' => 'Registration Fee',
             'name_th' => 'ค่าลงทะเบียนแรกเข้า',
-            'price' => 80.00,
+            'price' => 750.00,
         ]);
         para::create([
             'name' => 'Accessories Fee',
             'name_th' => 'ค่าอุปกรณ์การเรียน',
-            'price' => 80.00,
+            'price' => 500.00,
         ]);
         para::create([
             'name' => 'Bag Order Start Quantity',
