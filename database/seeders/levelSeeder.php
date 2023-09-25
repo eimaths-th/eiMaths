@@ -19,7 +19,7 @@ class levelSeeder extends Seeder
             'status' => 1,
             'price' => 4000.00,
             'half_price' => 2000.00,
-            'book_price' => 2900.50,
+            'book_price' => 2900.00,
             'book_half_price' => 1450.00
         ]);
         level::create([
@@ -29,7 +29,7 @@ class levelSeeder extends Seeder
             'status' => 1,
             'price' => 4000.00,
             'half_price' => 2000.00,
-            'book_price' => 2900.50,
+            'book_price' => 2900.00,
             'book_half_price' => 1450.00
         ]);
         level::create([
