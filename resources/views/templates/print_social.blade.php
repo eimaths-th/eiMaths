@@ -236,7 +236,8 @@
                         <td align="center"> {!! $receipt_detail['pname'] !!}</td>
                         <td align="center">{{ $receipt_detail['quantity'] }}</td>
                         <td align="center">{{-- {{ $receipt_detail['unit'] }} --}}</td>
-                        <td align="center" style="padding-right:20px;">{{ $receipt_detail['uprice'] }}</td>
+                        <td align="center" style="padding-right:20px;">
+                            {{ number_format($receipt_detail['uprice'], 2, ',') }}</td>
                         <td align="center">{{ $receipt_detail['discount'] }}</td>
                         <td align="center" style="vertical-align: top; padding-right:20px;">
                             {{ number_format($receipt_detail['price'], 2, '.') }}</td>
