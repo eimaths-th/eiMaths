@@ -285,7 +285,7 @@
 
 
     // Get user's location and update weather
-    /* if ('geolocation' in navigator) {
+    if ('geolocation' in navigator) {
         navigator.geolocation.getCurrentPosition(position => {
             const latitude = position.coords.latitude;
             const longitude = position.coords.longitude;
@@ -295,8 +295,8 @@
         });
     } else {
         console.error('Geolocation is not available.');
-    } */
-    updateWeather('14.683409', '100.706897');
+    }
+    //updateWeather('14.683409', '100.706897');
     //getLocationAndWeather();
 
     function updateClock() {
