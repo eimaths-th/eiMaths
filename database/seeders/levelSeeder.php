@@ -17,80 +17,80 @@ class levelSeeder extends Seeder
             'name' => 'K1',
             'full_name' => 'Kindergarten',
             'status' => 1,
-            'price' => 525.00,
-            'half_price' => 287.00,
-            'book_price' => 12.50,
-            'book_half_price' => 6
+            'price' => 4000.00,
+            'half_price' => 2000.00,
+            'book_price' => 2900.50,
+            'book_half_price' => 1450.00
         ]);
         level::create([
             'level_type' => 1,
             'name' => 'K2',
             'full_name' => 'Kindergarten',
             'status' => 1,
-            'price' => 525.00,
-            'half_price' => 287.00,
-            'book_price' => 12.50,
-            'book_half_price' => 6
+            'price' => 4000.00,
+            'half_price' => 2000.00,
+            'book_price' => 2900.50,
+            'book_half_price' => 1450.00
         ]);
         level::create([
             'level_type' => 2,
             'name' => 'P1',
             'full_name' => 'Primary school',
             'status' => 1,
-            'price' => 525.00,
-            'half_price' => 287.00,
-            'book_price' => 12.50,
-            'book_half_price' => 6
+            'price' => 7000.00,
+            'half_price' => 3500.00,
+            'book_price' => 3500.00,
+            'book_half_price' => 1750.00
         ]);
         level::create([
             'level_type' => 2,
             'name' => 'P2',
             'full_name' => 'Primary school',
             'status' => 1,
-            'price' => 525.00,
-            'half_price' => 287.00,
-            'book_price' => 12.50,
-            'book_half_price' => 6
+            'price' => 7000.00,
+            'half_price' => 3500.00,
+            'book_price' => 3500.00,
+            'book_half_price' => 1750.00
         ]);
         level::create([
             'level_type' => 2,
             'name' => 'P3',
             'full_name' => 'Primary school',
             'status' => 1,
-            'price' => 575.00,
-            'half_price' => 314.00,
-            'book_price' => 12.50,
-            'book_half_price' => 6
+            'price' => 7000.00,
+            'half_price' => 3500.00,
+            'book_price' => 3500.00,
+            'book_half_price' => 1750.00
         ]);
         level::create([
             'level_type' => 2,
             'name' => 'P4',
             'full_name' => 'Primary school',
             'status' => 1,
-            'price' => 575.00,
-            'half_price' => 314.00,
-            'book_price' => 10.50,
-            'book_half_price' => 6
+            'price' => 10000.00,
+            'half_price' => 5000.00,
+            'book_price' => 5000.00,
+            'book_half_price' => 2500.00
         ]);
         level::create([
             'level_type' => 2,
             'name' => 'P5',
             'full_name' => 'Primary school',
             'status' => 1,
-            'price' => 595.00,
-            'half_price' => 325.00,
-            'book_price' => 10.50,
-            'book_half_price' => 6
+            'price' => 10000.00,
+            'half_price' => 5000.00,
+            'book_price' => 5000.00,
+            'book_half_price' => 2500.00
         ]);
         level::create([
             'level_type' => 2,
             'name' => 'P6',
             'full_name' => 'Primary school',
             'status' => 1,
-            'price' => 595.00,
-            'half_price' => 325.00,
-            'book_price' => 10.50,
-            'book_half_price' => 6
+            'price' => 10000.00,
+            'half_price' => 5000.00,
+            'book_price' => 5000.00,
+            'book_half_price' => 2500.00
         ]);
     }
 }

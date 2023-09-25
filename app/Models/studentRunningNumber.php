@@ -36,7 +36,7 @@ class studentRunningNumber extends Model
 
 
         //return $type.''.$number;
-        return $number;
+        return $type . '' .$number;
 
 
     }
@@ -66,6 +66,6 @@ class studentRunningNumber extends Model
 
         // A-21-00001
         //return $type.''.$number;
-        return $number;
+        return $type . '' .$number;
     }
 }

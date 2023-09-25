@@ -520,18 +520,25 @@ class ReceiptController extends Controller
             $ccname = "Primary school";
         }
 
+        $maxPrice = $datas_list->max('oprice');
+        $maxBPrice = $datas_list->max('obprice');
+        $book_price = $lbprice - $datas[0]->discount_book;
+        $vat_price = ($lprice + $datas[0]->register_fee + $datas[0]->access_fee + $datas[0]->refund) - $datas[0]->discount;
+        $vat_val = $vat_price * 0.07;
+        $net_price = $vat_price + $book_price;
+
         $customItem = [[
             'pname' => 'ค่าคอร์สเรียน ' . $ccname,
             'quantity' => $qty,
-            'uprice' => $oprice,
-            'price' => $lprice,
+            'uprice' => $maxPrice,
+            'price' => $lprice - $datas[0]->discount,
             'discount' => $datas[0]->discount,
             // Add other properties as needed
         ], [
             'pname' => 'ค่าหนังสือ',
             'quantity' => $qty,
-            'uprice' => $obprice,
-            'price' => $lbprice,
+            'uprice' => $maxBPrice,
+            'price' => $lbprice - $datas[0]->discount_book,
             'discount' => $datas[0]->discount_book,
             // Add other properties as needed
         ]];
@@ -581,6 +588,9 @@ class ReceiptController extends Controller
 
         $data = [
             'ctype' => $ctype,
+            'book_price' => $book_price,
+            'vat_price' => $vat_price,
+            'net_price' => $net_price,
             'price_text' => $price_text,
             'price_texten' => $price_texten,
             //'etype' => "ค่าสมัครเรียน / Application Fee",
