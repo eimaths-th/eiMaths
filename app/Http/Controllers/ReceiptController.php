@@ -499,6 +499,20 @@ class ReceiptController extends Controller
 
         $formattedDate = $datas[0]->created_at->format('Y-m-d');
 
+        $qty = 0;
+        $lprice = 0;
+        $lbprice = 0;
+        foreach ($datas_list as $price_list) {
+            $ccname = $price_list->first_char;
+            $qty = $qty + $price_list->row_count;
+            $oprice = $price_list->oprice;
+            $obprice = $price_list->obprice;
+            $lprice = $lprice + $price_list->total_price;
+            $lbprice = $lbprice + $price_list->total_bprice;
+        }
+
+        //dd($lbprice);
+
         // Data to pass to the view
         if ($datas_list[0]->first_char == "K") {
             $ccname = "Kindergarten";
@@ -508,14 +522,16 @@ class ReceiptController extends Controller
 
         $customItem = [[
             'pname' => 'ค่าคอร์สเรียน ' . $ccname,
-            'quantity' => $datas_list[0]->row_count,
-            'price' => $datas_list[0]->oprice,
+            'quantity' => $qty,
+            'uprice' => $oprice,
+            'price' => $lprice,
             'discount' => $datas[0]->discount,
             // Add other properties as needed
         ], [
             'pname' => 'ค่าหนังสือ',
-            'quantity' => $datas_list[0]->row_count,
-            'price' => $datas_list[0]->obprice,
+            'quantity' => $qty,
+            'uprice' => $obprice,
+            'price' => $lbprice,
             'discount' => $datas[0]->discount_book,
             // Add other properties as needed
         ]];
@@ -525,7 +541,8 @@ class ReceiptController extends Controller
                 [
                     'pname' => 'ค่ามัดจำ',
                     'quantity' => 1,
-                    'price' => $datas[0]->refund,
+                    'uprice' => $datas[0]->refund,
+                    'price' => $datas[0]->refund * 1,
                     'discount' => '0.00',
 
                 ]
@@ -538,6 +555,7 @@ class ReceiptController extends Controller
                 [
                     'pname' => 'ค่าลงทะเบียนแรกเข้า',
                     'quantity' => 1,
+                    'uprice' => $datas[0]->register_fee * 1,
                     'price' => $datas[0]->register_fee,
                     'discount' => '0.00',
 
@@ -551,6 +569,7 @@ class ReceiptController extends Controller
                 [
                     'pname' => 'ค่าอุปกรณ์การเรียน',
                     'quantity' => 1,
+                    'uprice' => $datas[0]->access_fee * 1,
                     'price' => $datas[0]->access_fee,
                     'discount' => '0.00',
 
