@@ -36,7 +36,7 @@ class ReceiptRunningNumber extends Model
         $number = str_pad($number, 4, '0', STR_PAD_LEFT);
 
 
-        return 'INV' . date('y') . date('m') . $number;
+        return 'IV' . date('y') . date('m') . $number;
     }
 
 
@@ -65,6 +65,6 @@ class ReceiptRunningNumber extends Model
         $number = str_pad($number, 4, '0', STR_PAD_LEFT);
 
         // A-21-00001
-        return 'INV' . date('y') . date('m') . $number;
+        return 'IV' . date('y') . date('m') . $number;
     }
 }
