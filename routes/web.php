@@ -102,6 +102,10 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/invoices_pending', [App\Http\Controllers\InvoiceController::class, 'pending'])->name('invoices_pending');
     Route::put('/invoices/generate', [App\Http\Controllers\InvoiceController::class, 'generate'])->name('invoices.generate');
 
+
+    Route::get('/histories', [App\Http\Controllers\HistoriesController::class, 'index'])->name('histories');
+
+
     //file
     Route::post('/file/upload', function (Request $request) {
         $result = FileUploadService::fileStore($request);

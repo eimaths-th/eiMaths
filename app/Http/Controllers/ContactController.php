@@ -172,31 +172,9 @@ class ContactController extends Controller
                 ->where('discontinued', '0')
                 ->where('level',$last_level->id)
                 ->where('bookuse',$last_book->id);
-            // $query = Contact::where('level',$last_level->id)
-            // ->where('bookuse',$last_book->id)
-            // ->get();
-            // dd($query);
-
             if (!Gate::allows('all-centre')) {
                 $query->where('centre', Auth::user()->department->id);
             }
-
-            // if (!empty($request->get('sdate'))) {
-            //     //dd($request->get('sdate'));
-            //     //$query->where('contacts.code', $request->get('approved'));
-            //     $dateRange = $request->input('sdate');
-
-            //     // Check if the dateRange parameter is provided
-            //     if ($dateRange) {
-            //         $dateRangeArray = explode(' - ', $dateRange);
-
-            //         if (!empty($dateRangeArray) && count($dateRangeArray) == 2) {
-            //             $startDate = $dateRangeArray[0];
-            //             $endDate = $dateRangeArray[1];
-            //             $query->whereBetween('contacts.start_date', [$startDate, $endDate]);
-            //         }
-            //     }
-            // }
 
             $query->orderBy("contacts.id", "desc");
             $datas = $query->get();
@@ -221,18 +199,7 @@ class ContactController extends Controller
                     }
                     return $html;
                 })->rawColumns(['checkbox', 'action', 'more'])->toJson();
-            /* ->filter(function ($instance) use ($request) {
-                    if ($request->get('approved') == '0' || $request->get('approved') == '1') {
-                        $instance->where('contacts.code', $request->get('approved'));
-                    }
-                    if (!empty($request->get('search'))) {
-                        $instance->where(function ($w) use ($request) {
-                            $search = $request->get('search');
-                            $w->orWhere('name', 'LIKE', "%$search%")
-                                ->orWhere('email', 'LIKE', "%$search%");
-                        });
-                    }
-                }) */
+         
         }
 
         $centre = Department::where([['status', '1']])
