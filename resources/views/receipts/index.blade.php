@@ -31,7 +31,7 @@
                         <div class="card-header">
                             @switch(request('type'))
                                 @case(0)
-                                    <h3 class="card-title"><i class="fa-solid fa-children"></i> New Student By Term</h3>
+                                    <h3 class="card-title"><i class="fa-solid fa-children"></i> New Student Receipt</h3>
                                 @break
 
                                 @case(1)
@@ -136,8 +136,9 @@
                                                     <th>ReceiptNumber</th>
                                                     <th>PaymentDate</th>
                                                     <th>Level</th>
+                                                    <th>BookUse</th>
                                                     <th>TotalFee</th>
-                                                    <th>StartTerm</th>
+                                                   {{--  <th>StartTerm</th> --}}
                                                     <th width="120px"></th>
                                                     <th>More</th>
                                                 </tr>
@@ -153,8 +154,8 @@
                                                     <th></th>
                                                     <th align="right"></th>
                                                     <th align="right"></th>
-                                                    <th align="right">Total</th>
                                                     <th align="right"></th>
+                                                    <th align="right">Total</th>
                                                     <th align="center"></th>
                                                     <th></th>
                                                     <th></th>

@@ -257,17 +257,23 @@
         });
 
 
-        $("#EditRegisterFee,#EditRefund,#EditPromotion").on("keyup input", function() {
-            let fee = $("#EditRegisterFee").val() || 0;
-            let refund = $("#EditRefund").val() || 0;
-            let promotion = $("#EditPromotion").val() || 0;
-            let price = $("#EditTotalCosth").val() || 0;
-            let total_cost = parseFloat(price) + (parseFloat(fee) + parseFloat(refund)) - parseFloat(
-                promotion);
-            let ftotal = parseFloat(total_cost);
-            let formattedc = ftotal.toFixed(2);
-            $("#EditTotalCost").val(formattedc);
-        });
+        $("#EditRegisterFee,#EditAccessFee,#EditRefund,#EditDiscountTerm,#EditDiscountBook").on("keyup input",
+            function() {
+                let fee = $("#EditRegisterFee").val() || 0;
+                let access_fee = $("#EditAccessFee").val() || 0;
+                let refund = $("#EditRefund").val() || 0;
+                let discount = $("#EditDiscountTerm").val() || 0;
+                let discount_book = $("#EditDiscountBook").val() || 0;
+                let price = $("#EditTotalCosth").val() || 0;
+                let bookfee = $("#EditBookFee").val() || 0;
+                let total_cost = (parseFloat(price) + parseFloat(bookfee)) + (parseFloat(fee) + parseFloat(
+                    refund) + parseFloat(access_fee)) - parseFloat(
+                    discount) - parseFloat(
+                    discount_book);
+                let ftotal = parseFloat(total_cost);
+                let formattedc = ftotal.toFixed(2);
+                $("#EditTotalCost").val(formattedc);
+            });
 
 
         var startDate;
@@ -411,6 +417,10 @@
                     name: 'contact_name'
                 },
                 {
+                    data: 'product_level',
+                    name: 'product_level'
+                },
+                {
                     data: 'product_name',
                     name: 'product_name'
                 },
@@ -426,10 +436,10 @@
                     data: 'total_price',
                     name: 'total_price'
                 },
-                {
+                /* {
                     data: 'start_term',
                     name: 'start_term'
-                },
+                }, */
                 {
                     data: 'action',
                     name: 'action'
@@ -444,14 +454,14 @@
 
                 // Calculate the sum of values in column 8 for all pages
                 var sum = api
-                    .column(6)
+                    .column(7)
                     .data()
                     .reduce(function(acc, value) {
                         return parseFloat(acc) + parseFloat(value);
                     }, 0);
 
                 // Update the footer cell with the sum
-                $(api.column(6).footer()).html(sum.toFixed(
+                $(api.column(7).footer()).html(sum.toFixed(
                     2)); // Adjust the decimal places as needed
             }
         };
@@ -570,23 +580,32 @@
                 url: "orders/edit/" + id,
                 method: 'GET',
                 success: function(res) {
+                    console.log(res);
                     $('#EditCentre').val(res.data.centre).change();
                     $('#EditCentre').prop('disabled', true);
-                    $('#EditLevel').val(res.datas[0].level_id).change();
-                    $('#EditLevel').prop('disabled', true);
-                    $('#EditTerm').val(res.datas[0].term_id).change();
-                    $('#EditTerm').prop('disabled', true);
                     $('#EditLot').val(res.receipt_number);
-                    $('#EditProduct').val(1).change();
-                    $("select[name=eproduct]").attr("readonly", "readonly");
-                    $('#EditStock').val(res.data.sid).change();
-                    $("select[name=estock]").attr("readonly", "readonly");
                     $('#EditCompany').val(res.data.cid).change();
-                    //$('#EditAmount').val(res.data.amount);
-                    //$('#EditCost').val(res.data.cost);
-                    $('#EditTotalCost').val(res.data.total_price);
-                    $('#EditTotalCosth').val(res.datas[0].price);
+                    $('#EditTotalCost').val(res.total_price);
+                    $('#EditTotalCosth').val(res.old_price);
                     $('#EditDetail').val(res.data.detail);
+
+
+                    if (res.data.discount !== "" && res.data.discount !== null) {
+                        $('#EditDiscountTerm').val(res.data.discount);
+                    }
+
+                    if (res.data.discount_book !== "" && res.data.discount_book !== null) {
+                        $('#EditDiscountBook').val(res.data.discount_book);
+                    }
+
+                    if (res.data.termfee !== "" && res.data.termfee !== null) {
+                        $('#EditTermFee').val(res.data.termfee);
+                    }
+
+                    if (res.data.bookfee !== "" && res.data.bookfee !== null) {
+                        $('#EditBookFee').val(res.data.bookfee);
+                    }
+
                     if (res.data.refund !== "" && res.data.refund !== null) {
                         $('#EditRefund').val(res.data.refund);
                     } else {
@@ -597,14 +616,29 @@
                     } else {
                         $('#EditRegisterFee').val(res.para[1].price);
                     }
-                    $('#EditPromotion').val(res.data.promotion);
+                    if (res.data.access_fee !== "" && res.data.access_fee !== null) {
+                        $('#EditAccessFee').val(res.data.access_fee);
+                    } else {
+                        $('#EditAccessFee').val(res.para[2].price);
+                    }
+
+
+                    if (res.data.payment == 1) {
+                        $("#eradioSuccess1").prop("checked", true);
+                    } else if (res.data.payment == 2) {
+                        $("#eradioSuccess2").prop("checked", true);
+                    } else if (res.data.payment == 3) {
+                        $("#eradioSuccess3").prop("checked", true);
+                    }
+
                     $('#EditModalBodyTable').html(res.table_html);
                     $('.imgs').html(res.imgs);
-                    console.log(res);
+
                     if (res.data.status == 1) {
                         $('#SubmitEditFormp').css('display', 'none');
                         $('#SubmitEditForm').html('<i class="fas fa-download"></i> Save');
                     }
+
                     $('#EditModal').modal('show');
 
                 }
@@ -625,23 +659,32 @@
                 url: "orders/edit/" + id,
                 method: 'GET',
                 success: function(res) {
+                    console.log(res);
                     $('#EditCentre').val(res.data.centre).change();
                     $('#EditCentre').prop('disabled', true);
-                    $('#EditLevel').val(res.datas[0].level_id).change();
-                    $('#EditLevel').prop('disabled', true);
-                    $('#EditTerm').val(res.datas[0].term_id).change();
-                    $('#EditTerm').prop('disabled', true);
                     $('#EditLot').val(res.receipt_number);
-                    $('#EditProduct').val(1).change();
-                    $("select[name=eproduct]").attr("readonly", "readonly");
-                    $('#EditStock').val(res.data.sid).change();
-                    $("select[name=estock]").attr("readonly", "readonly");
                     $('#EditCompany').val(res.data.cid).change();
-                    //$('#EditAmount').val(res.data.amount);
-                    //$('#EditCost').val(res.data.cost);
                     $('#EditTotalCost').val(res.total_price);
-                    $('#EditTotalCosth').val(res.datas[0].price);
+                    $('#EditTotalCosth').val(res.old_price);
                     $('#EditDetail').val(res.data.detail);
+
+
+                    if (res.data.discount !== "" && res.data.discount !== null) {
+                        $('#EditDiscountTerm').val(res.data.discount);
+                    }
+
+                    if (res.data.discount_book !== "" && res.data.discount_book !== null) {
+                        $('#EditDiscountBook').val(res.data.discount_book);
+                    }
+
+                    if (res.data.termfee !== "" && res.data.termfee !== null) {
+                        $('#EditTermFee').val(res.data.termfee);
+                    }
+
+                    if (res.data.bookfee !== "" && res.data.bookfee !== null) {
+                        $('#EditBookFee').val(res.data.bookfee);
+                    }
+
                     if (res.data.refund !== "" && res.data.refund !== null) {
                         $('#EditRefund').val(res.data.refund);
                     } else {
@@ -652,8 +695,20 @@
                     } else {
                         $('#EditRegisterFee').val(res.para[1].price);
                     }
+                    if (res.data.access_fee !== "" && res.data.access_fee !== null) {
+                        $('#EditAccessFee').val(res.data.access_fee);
+                    } else {
+                        $('#EditAccessFee').val(res.para[2].price);
+                    }
 
-                    $('#EditPromotion').val(res.data.promotion);
+                    if (res.data.payment == 1) {
+                        $("#radioSuccess1").prop("checked", true);
+                    } else if (res.data.payment == 2) {
+                        $("#radioSuccess2").prop("checked", true);
+                    } else if (res.data.payment == 3) {
+                        $("#radioSuccess3").prop("checked", true);
+                    }
+
                     $('#EditModalBodyTable').html(res.table_html);
                     $('.imgs').html(res.imgs);
                     if (res.data.status == 1) {
@@ -684,104 +739,6 @@
                 status = 0; // Set status to 0 if Pending button is clicked
             }
 
-            var stockValues = [];
-            var amountValues = [];
-            var priceValues = [];
-            var isValid = true;
-
-            // Initializing array values
-            $("select[name='estock[]']").each(function() {
-                stockValues.push(this.value);
-            });
-
-            // Check for duplicates in stock values
-            var duplicateValues = stockValues.filter(function(value, index, self) {
-                return self.indexOf(value) !== index;
-            });
-
-            if (duplicateValues.length > 0) {
-                toastr.error('ไม่สามารถเลือกสินค้าล็อตเดียวกันในรายการขาย', {
-                    timeOut: 5000
-                });
-                return false;
-            }
-
-            // Validate stock select
-            var stockSelects = $("select[name='estock[]']");
-            stockSelects.each(function() {
-                var stockSelect = $(this);
-                var selectedValue = stockSelect.val();
-
-                if (selectedValue === null || selectedValue.trim() === '') {
-                    stockSelect.addClass("is-invalid");
-                    stockSelect.removeClass("is-valid");
-                    toastr.error('กรุณาเลือกสินค้าในคลังสินค้า', {
-                        timeOut: 5000
-                    });
-                    isValid = false;
-                } else {
-                    stockSelect.removeClass("is-invalid");
-                    stockSelect.addClass("is-valid");
-                }
-            });
-
-            if (!isValid) {
-                return false;
-            }
-
-            // Collect amount values and validate
-            $("input[name='eamount[]']").each(function() {
-                var amountInput = $(this);
-                var value = parseFloat(amountInput.val());
-
-                if (isNaN(value) || value % 0.5 !== 0) {
-                    // Invalid amount input
-                    amountInput.addClass("is-invalid");
-                    amountInput.removeClass("is-valid");
-                    amountInput.siblings(".error-message").text(
-                        "กรุณาระบุจำนวนที่จะขาย");
-                    toastr.error('กรุณาระบุจำนวนที่จะขาย', {
-                        timeOut: 5000
-                    });
-                    isValid = false;
-                } else {
-                    // Valid amount input
-                    amountInput.removeClass("is-invalid");
-                    amountInput.addClass("is-valid");
-                    amountValues.push(value);
-                }
-            });
-
-            if (!isValid) {
-                return false;
-            }
-
-            // Collect price values and validate
-            $("input[name='eprice[]']").each(function() {
-                var priceInput = $(this);
-                var value = parseFloat(priceInput.val());
-
-                if (isNaN(value) || value <= 0) {
-                    // Invalid price input
-                    priceInput.addClass("is-invalid");
-                    priceInput.removeClass("is-valid");
-                    priceInput.siblings(".error-message").text(
-                        "กรุณาระบุราคาที่จะขาย");
-                    toastr.error('กรุณาระบุราคาที่จะขาย', {
-                        timeOut: 5000
-                    });
-                    isValid = false;
-                } else {
-                    // Valid price input
-                    priceInput.removeClass("is-invalid");
-                    priceInput.addClass("is-valid");
-                    priceValues.push(value);
-                }
-            });
-
-            if (!isValid) {
-                return false;
-            }
 
             var values = $("input[name='imgFiles2[]']")
                 .map(function() {
@@ -789,68 +746,60 @@
                 }).get();
 
 
-            if ($('#EditCompany').val()[0] !== undefined) {
-                var formData = {
-                    order_number: $('#EditLot').val(),
-                    sid: stockValues,
-                    amount: amountValues,
-                    price: priceValues,
-                    //tamount: $('#EditAmount').val(),
-                    //cost: $('#AddCost').val(),
-                    cid: $('#EditCompany').val()[0],
-                    pid: $('#EditProduct').val()[0],
-                    total_cost: $('#EditTotalCost').val(),
-                    detail: $('#EditDetail').val(),
-                    refund: $('#EditRefund').val(),
-                    register_fee: $('#EditRegisterFee').val(),
-                    promotion: $('#EditPromotion').val(),
-                    status: status,
-                    img: values,
-                    _token: token
-                };
 
-                $.ajax({
-                    url: "orders/save/" + id,
-                    method: 'PUT',
-                    data: formData,
+            var formData = {
+                order_number: $('#EditLot').val(),
+                cid: $('#EditCompany').val()[0],
+                total_cost: $('#EditTotalCost').val(),
+                detail: $('#EditDetail').val(),
+                refund: $('#EditRefund').val(),
+                register_fee: $('#EditRegisterFee').val(),
+                access_fee: $('#EditAccessFee').val(),
+                discount: $('#EditDiscountTerm').val(),
+                discount_book: $('#EditDiscountBook').val(),
+                status: status,
+                payment: $("input[name='payment']:checked").val(),
+                img: values,
+                _token: token
+            };
 
-                    success: function(result) {
-                        //console.log(result);
-                        if (result.errors) {
-                            $('.alert-danger').html('');
-                            $.each(result.errors, function(key, value) {
-                                $('.alert-danger').show();
-                                $('.alert-danger').append('<strong><li>' + value +
-                                    '</li></strong>');
-                            });
+            $.ajax({
+                url: "orders/save/" + id,
+                method: 'PUT',
+                data: formData,
+
+                success: function(result) {
+                    //console.log(result);
+                    if (result.errors) {
+                        $('.alert-danger').html('');
+                        $.each(result.errors, function(key, value) {
+                            $('.alert-danger').show();
+                            $('.alert-danger').append('<strong><li>' + value +
+                                '</li></strong>');
+                        });
+                    } else {
+
+                        var ostatus = result.status;
+                        if (ostatus == 1) {
+                            var url = "{{ route('receipts') }}";
+                            window.location.href = url;
                         } else {
-
-                            var ostatus = result.status;
-                            if (ostatus == 1) {
-                                var url = "{{ route('receipts') }}";
-                                window.location.href = url;
-                            } else {
-                                $('.alert-danger').hide();
-                                $('.alert-success').show();
-                                $('.alert-success').append('<strong><li>' + result.success +
-                                    '</li></strong>');
-                                $('#EditModal').modal('hide');
-                                toastr.success(result.success, {
-                                    timeOut: 5000
-                                });
-                                clearDropzonePreviews2();
-                                $('#Listview').DataTable().ajax.reload();
-                            }
-
-
+                            $('.alert-danger').hide();
+                            $('.alert-success').show();
+                            $('.alert-success').append('<strong><li>' + result.success +
+                                '</li></strong>');
+                            $('#EditModal').modal('hide');
+                            toastr.success(result.success, {
+                                timeOut: 5000
+                            });
+                            clearDropzonePreviews2();
+                            $('#Listview').DataTable().ajax.reload();
                         }
+
+
                     }
-                });
-            } else {
-                toastr.error('กรุณากรอกข้อมูลให้ครบ', {
-                    timeOut: 5000
-                });
-            }
+                }
+            });
         });
 
 

@@ -21,6 +21,7 @@ class Receipt extends Model
         'total_fee',
         'start_term',
         'status',
+        'payment'
     ];
 
     // Fields that are not allowed for mass assignment

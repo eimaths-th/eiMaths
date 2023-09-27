@@ -17,7 +17,7 @@
         } */
         @font-face {
             font-family: 'THSarabunNew';
-            font-size: 18px;
+            font-size: 8px;
             font-style: normal;
             font-weight: normal;
             src: url("{{ asset('fonts/THSarabunNew.ttf') }}") format("truetype");
@@ -26,25 +26,24 @@
 
         @font-face {
             font-family: 'THSarabunNew Bold';
-            font-size: 18px;
+            font-size: 6px;
             font-style: normal;
             font-weight: bold;
             src: url("{{ asset('fonts/THSarabunNew Bold') }}") format("truetype");
         }
 
         body {
-            font-family: 'sarabun', serif;
-            font-size: 10px;
+            font-family: 'sarabun', 'Roboto';
+            font-size: 12px;
         }
-
-
-        /*  body {
-            font-family: 'THSarabunNew';
-            font-size: 16px;
-        } */
 
         table td.grey {
             color: rgb(141, 138, 138);
+
+        }
+
+        table td.whiteh {
+            color: rgb(255, 255, 255);
 
         }
 
@@ -56,38 +55,38 @@
 
 
         .tbr table tr.active td {
-            border-top: 2px solid rgb(138, 175, 61);
-            border-bottom: 2px solid rgb(138, 175, 61);
+            border-top: 2px solid rgb(255, 105, 0);
+            border-bottom: 2px solid rgb(255, 105, 0);
         }
 
         .tbr table td.activetop {
-            border-top: 2px solid rgb(138, 175, 61);
+            border-top: 2px solid rgb(255, 105, 0);
         }
 
         .tbr table td.active_twin {
-            border-left: 2px solid rgb(138, 175, 61);
-            border-right: 2px solid rgb(138, 175, 61);
+            border-left: 2px solid rgb(255, 105, 0);
+            border-right: 2px solid rgb(255, 105, 0);
         }
 
         .tbr table td.active {
 
-            border-right: 2px solid rgb(138, 175, 61);
+            border-right: 2px solid rgb(255, 105, 0);
         }
 
         .tbr table td.activebottom {
-            border-bottom: 2px solid rgb(138, 175, 61);
+            border-bottom: 2px solid rgb(255, 105, 0);
         }
 
         .tbr table td.activeright {
-            border-right: 2px solid rgb(138, 175, 61);
+            border-right: 2px solid rgb(255, 105, 0);
         }
 
         .tbr table td.activeleft {
-            border-left: 2px solid rgb(138, 175, 61);
+            border-left: 2px solid rgb(255, 105, 0);
         }
 
         .aaa {
-            color: rgb(138, 175, 61);
+            color: rgb(255, 105, 0);
         }
 
         div.row.tbr {
@@ -103,27 +102,13 @@
             /* This centers the table inside the div */
         }
 
-
-        #background {
-            z-index: 9999;
-            display: block;
-            min-height: 50%;
-            min-width: 50%;
-        }
-
-        #bg-text {
-            text-decoration: underline;
-            /* Add underline to the text */
-            z-index: 9999;
-            top: 30%;
-            /* Adjust the top position */
-            left: 20%;
-            /* Adjust the left position */
-            position: absolute;
-            color: rgba(255, 0, 0, 0.7);
-            font-size: 100px;
-            transform: rotate(200deg);
-            -webkit-transform: rotate(300deg);
+        .bottom-table {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: white;
+            /* Add background color if needed */
         }
     </style>
 </head>
@@ -134,30 +119,31 @@
         <table align="center" width="99%" cellpadding="0" cellspacing="0">
 
             <tr>
-                <td width="25%" rowspan="6" align="center" style="vertical-align: top;"><img src="{{ asset('images/logo.png') }}"
-                        alt="..." height="120" style="padding-bottom: 5px; "></td>
-                <td align="right">
-                    <table align="right">
+                <td width="15%" align="center" style="margin: 0 auto;"><img src="{{ asset('images/logo_meta.png') }}"
+                        alt="..." height="110" style="padding-top: 5px; display: block; margin: 0 auto;"></td>
+                <td align="left">
+                    <table align="left">
                         <tr>
-                            <td align="right" style="vertical-align: top;" height="5px">eiMaths Ratchaphruek
+                            <td align="left" style="vertical-align: top;" height="5px">บริษัท เมต้า โนวเลจ จำกัด
                             </td>
                         </tr>
                         <tr>
-                            <td align="right" style="vertical-align: top;"height="5px">The Crystal SB Ratchaphruek,
-                                3rd floor<br>
-                                555/9 Bang Kruai District, Nonthaburi 11130
+                            <td align="left" style="vertical-align: top;"height="5px">555 / 9 หมู่ 1 ตำบลบางขนุน
+                                อำเภอบางกรวย จังหวัดนนทบุรี 11130
                             </td>
                         </tr>
                         <tr>
-                            <td align="right" style="vertical-align: top;"height="5px">Tax: 0125563031038</td>
+                            <td align="left" style="vertical-align: top;"height="5px">เลขประจำตัวผู้เสียภาษี :
+                                0125565026368</td>
                         </tr>
                         <tr>
-                            <td align="right" style="vertical-align: top;" height="5px">Phone: 0 616-208-666</td>
-                        </tr>
-                        <tr>
-                            <td align="right" style="vertical-align: top;" height="50px"></td>
+                            <td align="left" style="vertical-align: top;" height="5px">โทร. 061 620 8666</td>
                         </tr>
                     </table>
+                </td>
+                <td align="right">
+                    <img src="{{ asset('images/logo.png') }}" alt="..." height="80"
+                        style="padding-bottom: 5px; display: block; margin: 0 auto;">
                 </td>
 
             </tr>
@@ -165,94 +151,121 @@
 
         </table>
 
-
         <table align="center" width="100%" cellpadding="0" cellspacing="0">
             <tr>
-                <td colspan="4" align="center"><b>
+                <td colspan="4" align="center" width="75%"><b>
                         {{--  {{ $mes }}<br>
                         {{ $text }} --}}
                     </b></td>
 
-                <td align="center" class="aaa"><b>ต้นฉบับ <br> Original <br>สำหรับลูกค้า</b></td>
+                <td width="25%" align="center" class="aaa"><b>ใบกำกับภาษี/ใบเสร็จรับเงิน <br> TAX
+                        INVOICE/RECEIPT</b></td>
 
             </tr>
+        </table>
+        <table align="center" width="100%" cellpadding="0" cellspacing="0">
             <tr>
-                <td width="28%" class="grey">นามลูกค้า,เบอร์โทร/Client,Telephone</td>
-                <td width="28%" style="padding-left:10px;" align="right" class="grey">
-                    รหัสลูกค้า/Customer's Code</td>
-                <td width="28%" style="padding-left:12px;"> <b> {{ $data->ccode }} </b>
+                <td width="30%" class="grey">นามลูกค้า,ที่อยู่/Client,Address</td>
+                <td width="5%" style="padding-left:10px;" align="right" class="grey">
                 </td>
-                <td width="20%" align="right" class="grey">Order No.</td>
-                <td width="10%" style="padding-left:5px;"> <b> {{ $data->order_number }} </b></td>
+                <td width="5%" style="padding-left:12px;">
+                </td>
+                <td width="30%" align="right" class="grey">เลขที่ / Document No. </td>
+                <td width="30%" style="padding-left:5px;"> <b> {{ $data->doc_number }} </b></td>
             </tr>
             <tr>
                 <td>
-                    <font class="grey">{{ $ctype }}</font> <b> {{ $data->cname }} / {{ $data->ctelephone }}
-                    </b>
+                    <font class="grey"><b> คุณ {{ $data->parent_name }} / {{ $data->parent_mobile }}
+                        </b> </font>
                 </td>
-                <td align="right" style="padding-left:15px;" class="grey">ประเภทค่าใช้จ่าย</td>
+                <td align="right" style="padding-left:15px;" class="grey">
+                </td>
                 <td align="left" style="padding-left:12px;"> <b>
-                        {{ $etype }}</b></td>
+                        {{-- {{ $etype }} --}}</b></td>
                 <td align="right" class="grey">วันที่ / Date</td>
                 <td style="padding-left:5px;"> <b>{{ $date }}</b></td>
             </tr>
-            {{--   <tr>
-                        <!-- <td colspan="3"><font class="grey">ที่อยู่</font> <b>{{ $data->street_address }} {{ $data->street_address2 }}
+            <tr>
+                <td>
+                    <font class="grey">รหัสลูกค้า/Customer's Code <b> {{ $data->ccode }} </b> </font>
+                </td>
+                <td align="right" style="padding-left:15px;" class="grey"></td>
+                <td align="left" style="padding-left:12px;"> <b>
+                        {{-- {{ $etype }} --}}</b></td>
+                <td align="right" class="grey"> เงื่อนไขการชำระเงิน / Credit Term</td>
+                <td style="padding-left:10px;">.......................... </td>
+            </tr>
+            <tr>
+                <!-- <td colspan="3"><font class="grey">ที่อยู่</font> <b>{{ $data->street_address }} {{ $data->street_address2 }}
                                 {{ $data->city }} {{ $data->province }} {{ $data->postcode }} </b></td> -->
-                        <td colspan="3"></td>
-                        <td width="45%" align="right" class="grey">เงื่อนไขการชำระเงิน / Credit Term</td>
-                        <td width="30%" style="padding-left:10px;">..........................</td>
-                    </tr>
-                    <tr>
-                        <td colspan="3"></td>
+                <td colspan="3">ชื่อนักเรียน / Name <b> {{ $data->cname }} </b> </td>
+                <td width="45%" align="right" class="grey">ครบกำหนด / Due Date</td>
+                <td width="30%" style="padding-left:10px;">..........................</td>
+            </tr>
+            <tr>
+                <td colspan="3"></td>
 
-                        <td align="right" width="45%" class="grey">ครบกำหนด / Due Date</td>
-                        <td align="right" width="30%" style="padding-left:10px;">..........................</td>
-                    </tr> --}}
+                <td align="right" width="45%" class="grey"></td>
+                <td align="right" width="30%" style="padding-left:10px;"></td>
+            </tr>
             <!-- <tr>
                         <td colspan="5"><font class="grey">โทร.</font> <b> {{ $data->mobile }} </b></td>
 
                     </tr> -->
         </table>
         <div class="row tbr">
+        </div>
+        <div class="row tbr">
             <table class="centered-table" width="100%" cellpadding="0" cellspacing="0">
                 <tr class="active">
-                    <td align="center" width="10%" class="grey">ลำดับที่<br> NO.</td>
-                    <td align="center" class="grey">รายการ <br>Description</td>
-                    <td align="center" class="grey">จำนวน <br>Quantity</td>
-                    {{--  <td align="center" class="grey">หน่วย <br>Unit</td> --}}
-                    <td align="center" class="grey">ราคาต่อหน่วย <br>Unit Price</td>
-                    {{-- <td align="center" class="grey">ส่วนลด <br>Discount</td> --}}
-                    <td align="center" class="grey">จำนวนเงิน <br>Amount</td>
-
+                    <td bgcolor="#FF6900" align="center" width="10%" class="whiteh">ลำดับที่<br> NO.</td>
+                    <td bgcolor="#FF6900" align="center" class="whiteh">รายการ <br>Description</td>
+                    <td bgcolor="#FF6900" align="center" class="whiteh">จำนวน <br>Quantity</td>
+                    <td bgcolor="#FF6900" align="center" class="whiteh">หน่วย <br>Unit</td>
+                    <td bgcolor="#FF6900" align="center" class="whiteh">ราคาต่อหน่วย <br>Unit Price</td>
+                    <td bgcolor="#FF6900" align="center" class="whiteh">ส่วนลด <br>Discount</td>
+                    <td bgcolor="#FF6900" align="center" class="whiteh">จำนวนเงิน <br>Amount</td>
                 </tr>
                 @php
                     $total = 0; // Initialize the total variable
+                    $discount_val = 0;
                 @endphp
-                @foreach ($items as $x => $receipt_detail)
+                @foreach ($items['customItem'] as $x => $receipt_detail)
                     <tr>
-                        <td align="center" style="vertical-align: top;">{{ $x + 1 }}</td>
-                        <td align="left"> Class Level {!! $receipt_detail['pname'] !!}</td>
+                        <td align="center" style="vertical-align: top;">{{ (int) $x + 1 }}</td>
+                        <td align="center"> {!! $receipt_detail['pname'] !!}</td>
                         <td align="center">{{ $receipt_detail['quantity'] }}</td>
-                        {{-- <td align="center">{{ $receipt_detail['unit'] }}</td> --}}
-                        <td align="right" style="padding-right:20px;">{{ $receipt_detail['price'] }}</td>
-                        {{-- <td align="center">{{ $receipt_detail['discount'] }}</td> --}}
-                        <td align="right" style="vertical-align: top; padding-right:20px;">
-                            {{ number_format($receipt_detail['quantity'] * $receipt_detail['price'], 2, '.') }}</td>
+                        <td align="center">{{-- {{ $receipt_detail['unit'] }} --}}</td>
+                        <td align="center" style="padding-right:20px;">
+                            {{ number_format($receipt_detail['uprice'], 2, '.') }}</td>
+                        <td align="center">{{ $receipt_detail['discount'] }}</td>
+                        <td align="center" style="vertical-align: top; padding-right:20px;">
+                            {{ number_format($receipt_detail['price'], 2, '.') }}</td>
                     </tr>
                     @php
-                        $total += $receipt_detail['quantity'] * $receipt_detail['price']; // Accumulate the total
+                        $total += $receipt_detail['price'] - (int) $receipt_detail['discount']; // Accumulate the total
+                        $discount_val += (int) $receipt_detail['discount'];
                     @endphp
                 @endforeach
-                {{--  <tr>
-                        <td align="center" style="vertical-align: top;">1</td>
-                        <td align="left">{!! $des_text !!}</td>
-                        <td ></td>
-                        <td ></td>
-                        <td ></td>
-                        <td ></td>
-                        <td align="center" style="vertical-align: top;">{{ $price_val }}</td>
-                    </tr> --}}
+                <tr>
+                    <td align="center" style="vertical-align: top;"></td>
+                    <td align="left"></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td align="center" style="vertical-align: top; padding-right:20px;">
+                        {{-- {{ number_format($total, 2, '.') }} --}}</td>
+                </tr>
+                {{-- <tr>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                </tr> --}}
                 <tr>
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
@@ -260,142 +273,124 @@
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
                 </tr>
-                @if ($data->refund !== '' and !is_null($data->refund))
-                    <tr>
-                        <td align="center" style="vertical-align: top;"></td>
-                        <td align="left"> Refundable Deposit</td>
-                        <td align="center"> 1.00</td>
-                        <td align="right" style="padding-right:20px;">{{ $data->refund }}</td>
-                        <td align="right" style="vertical-align: top; padding-right:20px;">
-                            {{ number_format($data->refund, 2, '.') }}</td>
-                    </tr>
-                @endif
-                @if ($data->register_fee !== '' and !is_null($data->register_fee))
-                    <tr>
-                        <td align="center" style="vertical-align: top;"></td>
-                        <td align="left"> Registration Fee</td>
-                        <td align="center"> 1.00</td>
-                        <td align="right" style="padding-right:20px;">{{ $data->register_fee }}</td>
-                        <td align="right" style="vertical-align: top; padding-right:20px;">
-                            {{ number_format($data->register_fee, 2, '.') }}</td>
-                    </tr>
-                @endif
-                @if ($data->promotion !== '' and !is_null($data->promotion))
-                    <tr>
-                        <td align="center" style="vertical-align: top;"></td>
-                        <td align="left"> Promotion</td>
-                        <td align="center"> 1.00</td>
-                        <td align="right" style="padding-right:20px;"> - {{ $data->promotion }}</td>
-                        <td align="right" style="vertical-align: top; padding-right:20px;"> -
-                            {{ number_format($data->promotion, 2, '.') }}</td>
-                    </tr>
-                @endif
+
+            </table>
+            <table align="center" width="99%" cellpadding="0" cellspacing="0">
                 <tr>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
+                    <td width="37%" class="activetop"
+                        style="padding-top:20px;padding-bottom:30px; padding-left:40px;">
+                        <table width="100%" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <td></td>
+                                <td colspan="2" style="padding-left:50px;" class="  grey">
+                                    การชำระเงิน/Payment{{ $data->payment }}</td>
+
+                            </tr>
+                            <tr>
+                                <td class="active activebottom activetop activeleft" width="10%" align="center">
+                                    @if ($data->payment == 1)
+                                        <img src="{{ asset('images/check.png') }}" alt="..." height="18"
+                                            style="padding-bottom: 1px">
+                                    @endif
+                                </td>
+                                <td style="padding-left:30px;" class="  grey">1.เงินสด/Cash</td>
+                                <td class="  grey"></td>
+
+                            </tr>
+                            <tr>
+                                <td class="active_twin activebottom activeleft" width="10%" align="center">
+                                    @if ($data->payment == 2)
+                                        <img src="{{ asset('images/check.png') }}" alt="..." height="18"
+                                            style="padding-bottom: 1px">
+                                    @endif
+                                </td>
+
+                                <!-- <td class="active activebottom activeleft" width="10%" align="center"><i
+                                                style="font-size: 1.8em; color:red" class="fa fa-close"></i></td> -->
+                                <td style="padding-left:30px;" class=" grey">2.โอนเงิน/Transfer</td>
+                                <td class="  grey"></td>
+
+                            </tr>
+                            <tr>
+                                <td class="active activebottom activeleft" width="10%" align="center">
+                                    @if ($data->payment == 3)
+                                        <img src="{{ asset('images/check.png') }}" alt="..." height="18"
+                                            style="padding-bottom: 1px">
+                                    @endif
+                                </td>
+                                <td style="padding-left:30px;" class=" grey">3.บัตรเครดิต/Credit Card</td>
+                                <td class="  grey"></td>
+
+                            </tr>
+                        </table>
+                    </td>
+                    @php
+                        $vatRate = 0.07;
+                        $vat_val = $vat_price * $vatRate;
+                        //$vat_price_val = $total - $vat_val;
+                    @endphp
+                    <td colspan="6" class="activetop activeleft">
+                        <table width="100%" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <td width="10%"></td>
+                                <td width="67%" class="grey">มูลค่าที่ยกเว้นภาษี/Non-Vat Amount</td>
+                                <!-- <td width="20%"></td> -->
+                                <td width="15%" align="right"> <b> {{ number_format($book_price, 2, '.') }}
+                                    </b></td>
+                                <td width="8%"></td>
+
+
+                            </tr>
+                            <tr>
+                                <td width="10%"></td>
+                                <td width="67%" class="grey">มูลค่าที่คำนวนภาษี/Pre-Vat Amount</td>
+
+                                <td width="15%" align="right"> <b>
+                                        {{ number_format($vat_price, 2, '.') }}</b></td>
+                                <td width="8%"></td>
+
+                            </tr>
+                            <tr>
+                                <td width="10%"></td>
+                                <!-- <td width="20%"></td> -->
+                                <td width="67%" class="grey">ส่วนลด/Discout</td>
+                                <td width="15%" align="right"><b>{{ number_format($discount_val, 2, '.') }}</b>
+                                </td>
+                                <td width="8%"></td>
+
+                            </tr>
+
+                            <tr>
+                                <td width="10%"></td>
+                                <!-- <td width="20%"></td> -->
+                                <td width="67%" class="grey">ภาษีมูลค่าเพิ่ม 7% / Vat 7%</td>
+                                <td width="15%" align="right"><b>{{ number_format($vat_val, 2, '.') }}</b></td>
+                                <td width="8%"></td>
+
+                            </tr>
+                        </table>
+                    </td>
+
                 </tr>
-                @php
-                    $total = $total + ($data->refund + $data->register_fee - $data->promotion);
-                @endphp
                 <tr class="active">
                     <td align="center" class="grey">รวมทั้งสิ้น<br>Grand Total</td>
                     <td align="left"></td>
                     <td align="center"><b>{{ $price_text }}</b><br><b>{{ $price_texten }}</b></td>
-                    <td align="center"><b>{{ number_format($total, 2, '.') }}</b></td>
+                    <td align="center"><b>{{ number_format($net_price, 2, '.') }}</b></td>
 
                     <td align="right" class="grey">บาท<br>Baht</td>
                 </tr>
+                {{--  <tr class="active">
+                    <td width="20%" align="center" class="grey">รวมทั้งสิ้น<br>Grand Total</td>
+                    <td colspan="4" width="40%" align="left">
+                        <b>{{ $price_text }}</b><br><b>{{ $price_texten }}</b>
+                    </td>
+                    <td width="20%" align="center"><b>{{ $price_val }}</b></td>
+
+                    <td width="20%" align="center" class="grey">บาท<br>Baht</td>
+                </tr>
+ --}}
             </table>
-            {{-- <table align="center" width="99%" cellpadding="0" cellspacing="0">
-                        <tr>
-                            <td width="37%" class="activetop"
-                                style="padding-top:20px;padding-bottom:30px; padding-left:40px;">
-                                <table width="100%" cellpadding="0" cellspacing="0">
-                                    <tr>
-                                        <td></td>
-                                        <td colspan="2" style="padding-left:50px;" class="  grey">
-                                            การชำระเงิน/Payment</td>
-
-                                    </tr>
-                                    <tr>
-                                        <td class="active activebottom activetop activeleft" width="10%"></td>
-                                        <td style="padding-left:30px;" class="  grey">1.เงินสด/Cash</td>
-                                        <td class="  grey"></td>
-
-                                    </tr>
-                                    <tr>
-                                        <td class="active_twin activebottom activeleft" width="10%"
-                                            align="center"><img src="{{ asset('images/close.png') }}" alt="..."
-                                                height="14" style="padding-bottom: 1px"></td>
-
-                                        <!-- <td class="active activebottom activeleft" width="10%" align="center"><i
-                                                style="font-size: 1.8em; color:red" class="fa fa-close"></i></td> -->
-                                        <td style="padding-left:30px;" class=" grey">2.โอนเงิน/Transfer</td>
-                                        <td class="  grey"></td>
-
-                                    </tr>
-                                    <tr>
-                                        <td class="active activebottom activeleft" width="10%"></td>
-                                        <td style="padding-left:30px;" class=" grey">3.บัตรเครดิต/Credit Card</td>
-                                        <td class="  grey"></td>
-
-                                    </tr>
-                                </table>
-                            </td>
-                            <td colspan="6" class="activetop activeleft">
-                                <table width="100%" cellpadding="0" cellspacing="0">
-                                    <tr>
-                                        <td width="10%"></td>
-                                        <td width="67%" class="grey">มูลค่าที่ยกเว้นภาษี/Non-Vat Amount</td>
-                                        <!-- <td width="20%"></td> -->
-                                        <td width="15%" align="right"> <b> 00.00 </b></td>
-                                        <td width="8%"></td>
-
-
-                                    </tr>
-                                    <tr>
-                                        <td width="10%"></td>
-                                        <td width="67%" class="grey">มูลค่าที่คำนวนภาษี/Pre-Vat Amount</td>
-
-                                        <td width="15%" align="right"> <b>
-                                                {{ $vat_price_val }} </b></td>
-                                        <td width="8%"></td>
-
-                                    </tr>
-                                    <tr>
-                                        <td width="10%"></td>
-                                        <!-- <td width="20%"></td> -->
-                                        <td width="67%" class="grey">ส่วนลด/Discout</td>
-                                        <td width="15%" align="right"><b>{{ $discount_val }}</b></td>
-                                        <td width="8%"></td>
-
-                                    </tr>
-                                    <tr>
-                                        <td width="10%"></td>
-                                        <!-- <td width="20%"></td> -->
-                                        <td width="67%" class="grey">ภาษีมูลค่าเพิ่ม 7% / Vat 7%</td>
-                                        <td width="15%" align="right"><b>{{ $vat_val }}</b></td>
-                                        <td width="8%"></td>
-
-                                    </tr>
-                                </table>
-                            </td>
-
-                        </tr>
-                        <tr class="active">
-                            <td width="20%" align="center" class="grey">รวมทั้งสิ้น<br>Grand Total</td>
-                            <td colspan="4" width="40%" align="left">
-                                <b>{{ $price_text }}</b><br><b>{{ $price_texten }}</b>
-                            </td>
-                            <td width="20%" align="center"><b>{{ $price_val }}</b></td>
-
-                            <td width="20%" align="center" class="grey">บาท<br>Baht</td>
-                        </tr>
-
-                    </table> --}}
 
             <!-- <table align="center" width="85%" cellpadding="0" cellspacing="0">
                         <tr>
@@ -416,17 +411,14 @@
                     <td></td>
                 </tr>
                 <tr>
-                    <td align="center">.........................</td>
-                    <td align="center">.........................</td>
+                    <td align="center">.........................<br>Received by<br>ผู้รับบริการ</td>
+                    <td align="center">{!! $file_att !!}</td>
+                    <td align="center">.........................<br>ผู้จัดการ<br>Manager</td>
                 </tr>
                 <tr>
-                    <td align="center" class="grey">ผู้รับ</td>
-                    <td align="center" class="grey">ผู้จัดการ</td>
-                </tr>
-                <tr>
+                    <td align="center" class="grey"></td>
                     <td></td>
-                    <td></td>
-                    <td></td>
+                    <td align="center" class="grey"></td>
                 </tr>
                 <tr>
                     <td></td>
@@ -434,8 +426,14 @@
                     <td></td>
                 </tr>
                 <tr>
-                    <td align="center">Received by</td>
-                    <td align="center">Manager</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td align="center"></td>
+                    <td></td>
+                    <td align="center"></td>
                 </tr>
 
             </table>
@@ -444,13 +442,14 @@
         <div class="row tbr">
 
         </div>
-        <table align="center" width="100%" cellpadding="0" cellspacing="0" style="margin-top:30px;">
+        {{--  <div style="position: relative;"> --}}
+        <!-- Your table with a class for styling -->
+        <table class="print-table" width="100%" cellpadding="0" cellspacing="0">
             <tr>
-                <td align="center">{!! $file_att !!}</td>
-
+                <td align="center"><img src="{{ asset('images/banner.png') }}" alt="..."
+                        style="padding-bottom: 5px; display: block; margin: 0 auto;"></td>
             </tr>
-
         </table>
-
-
+        {{-- </div> --}}
 </body>
+

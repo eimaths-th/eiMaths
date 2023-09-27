@@ -1,10 +1,10 @@
 <!-- need to remove -->
-{{-- <li class="nav-item">
+<li class="nav-item">
     <a href="{{ route('home') }}" class="nav-link {{ Request::is('home') ? 'active' : '' }}">
         <i class="nav-icon fas fa-home"></i>
         <p>Dashboard</p>
     </a>
-</li> --}}
+</li>
 @can('student-list')
     <li class="nav-item {{ in_array(Request::route()->getName(), ['contacts', 'discontinued']) ? 'menu-open' : '' }}">
         <a href="#"
@@ -42,7 +42,7 @@
     </li>
 @endcan
 @can('order-list')
-    <li class="nav-item {{ in_array(Request::route()->getName(), ['orders']) ? 'menu-open' : '' }}">
+    <!--<li class="nav-item {{ in_array(Request::route()->getName(), ['orders']) ? 'menu-open' : '' }}">
         <a href="#" class="nav-link {{ in_array(Request::route()->getName(), ['orders']) ? 'active' : '' }}">
             <i class="nav-icon fas fa-cart-shopping"></i>
             <p>Orders Management</p>
@@ -59,10 +59,10 @@
                 </a>
             </li>
         </ul>
-    </li>
+    </li>-->
 @endcan
 @can('invoice-list')
-    <li class="nav-item {{ in_array(Request::route()->getName(), ['invoices', 'invoices_pending']) ? 'menu-open' : '' }}">
+    <!--<li class="nav-item {{ in_array(Request::route()->getName(), ['invoices', 'invoices_pending']) ? 'menu-open' : '' }}">
         <a href="#"
             class="nav-link {{ in_array(Request::route()->getName(), ['invoices', 'invoices_pending']) ? 'active' : '' }}">
             <i class="nav-icon fas fa-file-invoice-dollar"></i>
@@ -84,7 +84,7 @@
                 </a>
             </li>
         </ul>
-    </li>
+    </li>-->
 @endcan
 @can('receipt-list')
     <li class="nav-item {{ in_array(Request::route()->getName(), ['receipts', 'receipts_pending']) ? 'menu-open' : '' }}">
@@ -102,13 +102,13 @@
                     <p>New Student Pending</p>
                 </a>
             </li>
-            <li class="nav-item">
+            {{-- <li class="nav-item">
                 <a href="{{ route('receipts_pending_term') }}"
                     class="nav-link {{ Request::is('receipts_pending_term') ? 'active' : '' }}">
                     <i class="nav-icon fa-solid fa-comment-dots"></i>
                     <p>Term Payment Update</p>
                 </a>
-            </li>
+            </li> --}}
             <li class="nav-item">
                 <a href="{{ route('receipts', ['type' => 0]) }}"
                     class="nav-link {{ Route::currentRouteName() == 'receipts' && request('type') == 0 ? 'active' : '' }}">
@@ -116,13 +116,13 @@
                     <p>New Student Receipt</p>
                 </a>
             </li>
-            <li class="nav-item">
+           {{--  <li class="nav-item">
                 <a href="{{ route('receipts', ['type' => 1]) }}"
                     class="nav-link {{ Route::currentRouteName() == 'receipts' && request('type') == 1 ? 'active' : '' }}">
                     <i class="nav-icon fa-solid fa-comment-dots"></i>
                     <p>Term Student Receipt</p>
                 </a>
-            </li>
+            </li> --}}
         </ul>
     </li>
 @endcan

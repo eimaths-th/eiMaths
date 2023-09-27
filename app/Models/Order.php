@@ -16,8 +16,11 @@ class Order extends Model
         'total_price',
         'refund',
         'register_fee',
-        'promotion',
-        'status'
+        'access_fee',
+        'discount',
+        'discount_book',
+        'status',
+        'payment'
     ];
 
     public function contact()

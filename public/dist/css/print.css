@@ -22,6 +22,11 @@ table td.grey {
 
 }
 
+table td.whiteh {
+    color: rgb(255, 255, 255);
+
+}
+
 font.grey {
     color: rgb(141, 138, 138);
 
@@ -29,38 +34,38 @@ font.grey {
 
 
 .tbr table tr.active td {
-    border-top: 2px solid rgb(138, 175, 61);
-    border-bottom: 2px solid rgb(138, 175, 61);
+    border-top: 2px solid rgb(255, 105, 0);
+    border-bottom: 2px solid rgb(255, 105, 0);
 }
 
 .tbr table td.activetop {
-    border-top: 2px solid rgb(138, 175, 61);
+    border-top: 2px solid rgb(255, 105, 0);
 }
 
 .tbr table td.active_twin {
-    border-left: 2px solid rgb(138, 175, 61);
-    border-right: 2px solid rgb(138, 175, 61);
+    border-left: 2px solid rgb(255, 105, 0);
+    border-right: 2px solid rgb(255, 105, 0);
 }
 
 .tbr table td.active {
 
-    border-right: 2px solid rgb(138, 175, 61);
+    border-right: 2px solid rgb(255, 105, 0);
 }
 
 .tbr table td.activebottom {
-    border-bottom: 2px solid rgb(138, 175, 61);
+    border-bottom: 2px solid rgb(255, 105, 0);
 }
 
 .tbr table td.activeright {
-    border-right: 2px solid rgb(138, 175, 61);
+    border-right: 2px solid rgb(255, 105, 0);
 }
 
 .tbr table td.activeleft {
-    border-left: 2px solid rgb(138, 175, 61);
+    border-left: 2px solid rgb(255, 105, 0);
 }
 
 .aaa {
-    color: rgb(138, 175, 61);
+    color: rgb(255, 105, 0);
 }
 
 div.row.tbr {
@@ -96,4 +101,27 @@ table.centered-table {
     font-size: 100px;
     transform: rotate(200deg);
     -webkit-transform: rotate(300deg);
+}
+
+@media print {
+    /* Hide the modal header and footer when printing */
+    .modal-header,
+    .modal-footer {
+      display: none !important;
+    }
+
+    /* Add spacing at the bottom of the page for the table */
+    body {
+      padding-bottom: 50px; /* Adjust the value as needed */
+    }
+
+    /* Style the table for printing */
+    table.print-table {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background-color: white; /* Add background color if needed */
+      page-break-before: always; /* Ensure a page break before the table */
+    }
 }

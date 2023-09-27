@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Receipt;
 use App\Models\ReceiptRunningNumber;
 use App\Models\Order;
+use App\Models\OrderDetailList;
 use App\Models\bookuse;
 use App\Models\Contact;
 use App\Models\Department;
@@ -24,6 +25,8 @@ class ReceiptController extends Controller
 {
 
     protected $MoneyConvertService;
+    //payment
+    const datap = array(array("id" => "1", "name" => "เงินสด/Cash"), array("id" => "2", "name" => "โอนเงิน/Transfer"), array("id" => "3", "name" => "บัตรเครดิต/Credit Card"));
 
     /**
      * Display a listing of the resource.
@@ -32,11 +35,11 @@ class ReceiptController extends Controller
      */
     function __construct(MoneyConvertServiceInterface $MoneyConvertService)
     {
-        $this->middleware('permission:order-list|order-show|order-create|order-edit|order-delete', ['only' => ['index', 'show']]);
-        $this->middleware('permission:order-show', ['only' => ['show']]);
-        $this->middleware('permission:order-create', ['only' => ['create', 'store']]);
-        $this->middleware('permission:order-edit', ['only' => ['edit', 'update']]);
-        $this->middleware('permission:order-delete', ['only' => ['destroy']]);
+        $this->middleware('permission:receipt-list|receipt-show|receipt-create|receipt-edit|receipt-delete', ['only' => ['index', 'show']]);
+        $this->middleware('permission:receipt-show', ['only' => ['show']]);
+        $this->middleware('permission:receipt-create', ['only' => ['create', 'store']]);
+        $this->middleware('permission:receipt-edit', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:receipt-delete', ['only' => ['destroy']]);
 
         $this->MoneyConvertService = $MoneyConvertService;
     }
@@ -58,16 +61,21 @@ class ReceiptController extends Controller
                 "receipts.receipt_number as receipt_number",
                 "receipts.total_fee as total_fee",
                 "receipts.payment_date as payment_date",
-                "receipts.level as level",
-                "receipts.status as order_status",
+                //"receipts.level as level",
+                //"receipts.status as order_status",
                 "contacts.name as contact_name",
                 "contacts.code as contact_code",
-                "contacts.start_term as start_term",
+                //"contacts.start_term as start_term",
                 "departments.name as centre",
+                DB::raw("GROUP_CONCAT(order_detail.pname SEPARATOR ' - ') as book_use"),
+                DB::raw("GROUP_CONCAT(levels.name SEPARATOR ' - ') as product_level"),
+                DB::raw("SUM(order_detail.quantity) as total_amount")
             )
-
                 ->join("contacts", "contacts.id", "=", "receipts.cid")
                 ->join("departments", "contacts.centre", "=", "departments.id")
+                ->leftJoin("order_details as order_detail", "order_detail.order_id", "=", "receipts.oid")
+                ->join("bookuses", "bookuses.id", "=", "order_detail.product_id")
+                ->join("levels", "levels.id", "=", "bookuses.level_id")
                 ->where('receipts.type', $type);
 
             if (!Gate::allows('all-centre')) {
@@ -87,7 +95,17 @@ class ReceiptController extends Controller
                     }
                 }
             }
-            $datas = $query->orderBy("receipts.id", "desc")->get();
+            $datas = $query->groupBy(
+                'receipts.id',
+                'receipts.receipt_number',
+                'receipts.total_fee',
+                'receipts.payment_date',
+                'contacts.name',
+                'contacts.code',
+                'departments.name'
+            )
+                ->orderBy("receipts.id", "desc")
+                ->get();
 
             return datatables()->of($datas)
                 ->editColumn('checkbox', function ($row) {
@@ -95,6 +113,15 @@ class ReceiptController extends Controller
                 })
                 ->addColumn('more', function ($row) {
                     return '';
+                })
+                ->editColumn('book_use', function (Receipt $datas) {
+
+                    if (strpos($datas->book_use, " - ") !== false) {
+                        $expn = explode(" - ", $datas->book_use);
+                        return "(" . $expn[0] . ") - (" . $expn[1] . ")";
+                    } else {
+                        return $datas->book_use;
+                    }
                 })
                 ->addColumn('action', function ($row) {
                     $html = '';
@@ -254,19 +281,20 @@ class ReceiptController extends Controller
                 "contacts.name as contact_name",
                 "contacts.code as contact_code",
                 "contacts.start_term as start_term",
-                "departments.name as centre",
-                "bookuses.name as product_name",
-                "bookuses.unit as product_unit",
-                "first_detail.quantity as amount"
+                "departments.name as centre"
             )
+                ->addSelect(DB::raw("GROUP_CONCAT(order_detail.pname SEPARATOR ' - ') as product_name"))
+                ->addSelect(DB::raw("GROUP_CONCAT(levels.name SEPARATOR ' - ') as product_level"))
+                ->addSelect(DB::raw("SUM(order_detail.quantity) as total_amount"))
                 ->join("contacts", "contacts.id", "=", "orders.cid")
                 ->join("departments", "contacts.centre", "=", "departments.id")
-                ->leftJoin("order_details as first_detail", function ($join) {
-                    $join->on("first_detail.order_id", "=", "orders.id")
-                        ->whereRaw("first_detail.id = (SELECT MIN(id) FROM order_details WHERE order_id = orders.id)");
+                ->leftJoin("order_details as order_detail", function ($join) {
+                    $join->on("order_detail.order_id", "=", "orders.id");
                 })
-                ->join("bookuses", "bookuses.id", "=", "first_detail.product_id")
+                ->join("bookuses", "bookuses.id", "=", "order_detail.product_id")
+                ->join("levels", "levels.id", "=", "bookuses.level_id")
                 ->where('orders.status', 0);
+
             if (!Gate::allows('all-centre')) {
                 $query->where('orders.centre', Auth::user()->department->id);
             }
@@ -284,6 +312,18 @@ class ReceiptController extends Controller
                     }
                 }
             }
+            $query->groupBy(
+                "orders.id",
+                "orders.order_number",
+                "orders.total_price",
+                "orders.created_at",
+                "orders.status",
+                "contacts.name",
+                "contacts.code",
+                "contacts.start_term",
+                "departments.name"
+            );
+
             $datas = $query->orderBy("orders.id", "desc")->get();
 
             return datatables()->of($datas)
@@ -292,6 +332,15 @@ class ReceiptController extends Controller
                 })
                 ->editColumn('created_at', function (Order $datas) {
                     return date('Y-m-d H:i:s', strtotime($datas->created_at));
+                })
+                ->editColumn('product_name', function (Order $datas) {
+
+                    if (strpos($datas->product_name, " - ") !== false) {
+                        $expn = explode(" - ", $datas->product_name);
+                        return "(" . $expn[0] . ") - (" . $expn[1] . ")";
+                    } else {
+                        return $datas->product_name;
+                    }
                 })
                 ->editColumn('total_cost', function (Order $datas) {
                     //$total_cost = $datas->amount * $datas->cost;
@@ -376,22 +425,62 @@ class ReceiptController extends Controller
             "orders.total_price as totalp",
             "orders.refund as refund",
             "orders.register_fee as register_fee",
-            "orders.promotion as promotion",
-            "first_detail.price as price"
+            "orders.access_fee as access_fee",
+            "orders.discount as discount",
+            "orders.payment as payment",
+            "orders.discount_book as discount_book",
+            //"first_detail.price as price"
+            DB::raw("CASE
+        WHEN contacts.father_name IS NOT NULL AND contacts.father_name != '' THEN contacts.father_name
+        WHEN contacts.mother_name IS NOT NULL AND contacts.mother_name != '' THEN contacts.mother_name
+        ELSE NULL
+    END AS parent_name"),
+            DB::raw("CASE
+        WHEN contacts.father_name IS NOT NULL AND contacts.father_name != '' THEN contacts.father_mobile
+        WHEN contacts.mother_name IS NOT NULL AND contacts.mother_name != '' THEN contacts.mother_mobile
+        ELSE NULL
+    END AS parent_mobile")
 
         )
             ->join("contacts", "contacts.id", "=", "receipts.cid")
             ->join("orders", "orders.id", "=", "receipts.oid")
-            ->leftJoin("order_details as first_detail", function ($join) {
+            /* ->leftJoin("order_details as first_detail", function ($join) {
                 $join->on("first_detail.order_id", "=", "orders.id")
                     ->whereRaw("first_detail.id = (SELECT MIN(id) FROM order_details WHERE order_id = orders.id)");
-            })
+            }) */
             ->join("departments", "contacts.centre", "=", "departments.id")
             ->where("receipts.id", $id)
             ->get();
 
         //dd($datas);
 
+        $datas_list = OrderDetailList::select(
+            //"order_detail_lists.*",
+            "order_detail_lists.price as oprice",
+            "order_detail_lists.bprice as obprice",
+            DB::raw("SUBSTRING(order_detail_lists.level, 1, 1) as first_char"),
+            DB::raw("COUNT(*) as row_count"),
+            DB::raw("SUM(order_detail_lists.price) as total_price"),
+            DB::raw("SUM(eimatch.order_detail_lists.bprice) as total_bprice")
+        )->where('order_id', $id)
+            ->groupBy(
+                /* 'order_detail_lists.level', */
+                'first_char',
+                'order_detail_lists.price',
+                'order_detail_lists.bprice',
+                /* 'order_detail_lists.id',
+                'order_detail_lists.order_id',
+                'eimatch.order_detail_lists.term',
+                'order_detail_lists.book',
+                'order_detail_lists.price',
+                'eimatch.order_detail_lists.bprice',
+                'eimatch.order_detail_lists.created_at',
+                'eimatch.order_detail_lists.updated_at' */
+            )
+            //->orderBy("id", "asc")
+            ->get();
+
+        //dd($datas_list);
 
         $datasf = $this->getfileattprint($datas[0]->oid);
 
@@ -410,25 +499,108 @@ class ReceiptController extends Controller
 
         $formattedDate = $datas[0]->created_at->format('Y-m-d');
 
-        // Data to pass to the view
+        $qty = 0;
+        $lprice = 0;
+        $lbprice = 0;
+        foreach ($datas_list as $price_list) {
+            $ccname = $price_list->first_char;
+            $qty = $qty + $price_list->row_count;
+            $oprice = $price_list->oprice;
+            $obprice = $price_list->obprice;
+            $lprice = $lprice + $price_list->total_price;
+            $lbprice = $lbprice + $price_list->total_bprice;
+        }
 
-        $customItem = [
-            'pname' => $datas[0]->book,
-            'quantity' => 1,
-            'price' => $datas[0]->price,
+        //dd($lbprice);
+
+        // Data to pass to the view
+        if ($datas_list[0]->first_char == "K") {
+            $ccname = "Kindergarten";
+        } else if ($datas_list[0]->first_char == "P") {
+            $ccname = "Primary school";
+        }
+
+        $maxPrice = $datas_list->max('oprice');
+        $maxBPrice = $datas_list->max('obprice');
+        $book_price = $lbprice - $datas[0]->discount_book;
+        $vat_price = ($lprice + $datas[0]->register_fee + $datas[0]->access_fee + $datas[0]->refund) - $datas[0]->discount;
+        $vat_val = $vat_price * 0.07;
+        $net_price = $vat_price + $book_price;
+
+        $customItem = [[
+            'pname' => 'ค่าคอร์สเรียน ' . $ccname,
+            'quantity' => $qty,
+            'uprice' => $maxPrice,
+            'price' => $lprice - $datas[0]->discount,
+            'discount' => $datas[0]->discount,
             // Add other properties as needed
-        ];
+        ], [
+            'pname' => 'ค่าหนังสือ',
+            'quantity' => $qty,
+            'uprice' => $maxBPrice,
+            'price' => $lbprice - $datas[0]->discount_book,
+            'discount' => $datas[0]->discount_book,
+            // Add other properties as needed
+        ]];
+
+        if ($datas[0]->refund !== "" and $datas[0]->refund !== "0.00") {
+            $refundItem = [
+                [
+                    'pname' => 'ค่ามัดจำ',
+                    'quantity' => 1,
+                    'uprice' => $datas[0]->refund,
+                    'price' => $datas[0]->refund * 1,
+                    'discount' => '0.00',
+
+                ]
+            ];
+            $customItem = array_merge($customItem, $refundItem);
+        };
+
+        if ($datas[0]->register_fee !== "" and $datas[0]->register_fee !== "0.00") {
+            $regisItem = [
+                [
+                    'pname' => 'ค่าลงทะเบียนแรกเข้า',
+                    'quantity' => 1,
+                    'uprice' => $datas[0]->register_fee * 1,
+                    'price' => $datas[0]->register_fee,
+                    'discount' => '0.00',
+
+                ]
+            ];
+            $customItem = array_merge($customItem, $regisItem);
+        };
+
+        if ($datas[0]->access_fee !== "" and $datas[0]->access_fee !== "0.00") {
+            $accessItem = [
+                [
+                    'pname' => 'ค่าอุปกรณ์การเรียน',
+                    'quantity' => 1,
+                    'uprice' => $datas[0]->access_fee * 1,
+                    'price' => $datas[0]->access_fee,
+                    'discount' => '0.00',
+
+                ]
+            ];
+            $customItem = array_merge($customItem, $accessItem);
+        };
+
 
         $data = [
             'ctype' => $ctype,
+            'book_price' => $book_price,
+            'vat_price' => $vat_price,
+            'net_price' => $net_price,
             'price_text' => $price_text,
             'price_texten' => $price_texten,
-            'etype' => "ค่าสมัครเรียน / Application Fee",
+            //'etype' => "ค่าสมัครเรียน / Application Fee",
             'date' => $formattedDate,
             'data' => $datas->first(),
             'items' => compact('customItem'),
             'file_att' => $datasf,
         ];
+
+        //dd($data);
 
 
         if ($social == 1) {
@@ -440,12 +612,12 @@ class ReceiptController extends Controller
             //$pdf->getDomPDF()->getFontMetrics()->setFont('YourThaiFont.ttf', 'YourThaiFont');
 
             // Save the PDF to a temporary file path
-            $pdfPath = public_path('file_store/' . $datas[0]->order_number . '.pdf');
+            $pdfPath = public_path('file_store/' . $datas[0]->doc_number . '.pdf');
             //dd($pdfPath);
             $pdf->save($pdfPath);
 
             // Define the file name for the downloaded PDF
-            $pdfFileName = $datas[0]->order_number . '.pdf';
+            $pdfFileName = $datas[0]->doc_number . '.pdf';
 
             // Download the PDF file
             return response()->download($pdfPath, $pdfFileName, ['Content-Type' => 'application/pdf']);
@@ -469,7 +641,7 @@ class ReceiptController extends Controller
         if (!$filestore->isEmpty()) {
             foreach ($filestore as $pics) {
                 $imgf = url('/') . '/file_store/' . $pics->filename;
-                $img .= "<img src=\"" . $imgf . "\" height=\"200\">&nbsp;&nbsp;&nbsp;";
+                $img .= "<img src=\"" . $imgf . "\" height=\"150\">&nbsp;&nbsp;&nbsp;";
             }
         } else {
             $img = "";

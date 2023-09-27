@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\ReceiptRunningNumber;
 use App\Models\OrderDetail;
+use App\Models\OrderDetailList;
 use App\Models\Contact;
 use App\Models\FileUpload;
 use App\Models\FileStore;
@@ -83,6 +84,7 @@ class OrderController extends Controller
                 })
                 ->join("bookuses", "bookuses.id", "=", "first_detail.product_id")
                 ->where('orders.status', 1);
+
             if (!Gate::allows('all-centre')) {
                 $query->where('orders.centre', Auth::user()->department->id);
             }
@@ -349,61 +351,167 @@ class OrderController extends Controller
     public function edit($id)
     {
         $data = Order::find($id);
-        $datas = OrderDetail::where('order_id', $id)
-            ->orderBy("order_details.id", "asc")
+        /* $datas = OrderDetail::select(
+            "order_details.*",
+            "levels.id as level_id",
+            "terms.id as term_id",
+        )
             ->join('bookuses', 'bookuses.id', '=', 'order_details.product_id')
-            ->get();
+            ->join("terms", "terms.id", "=", "bookuses.term_id")
+            ->join("levels", "levels.id", "=", "bookuses.level_id")
+            ->where('order_id', $id)
+            ->orderBy("order_details.id", "asc")
+            ->get(); */
 
         $para = Parameter::orderBy("id", "asc")->get();
 
-        $select_list = "";
-        $x = 1;
+        //discount
+        $discount = !empty($data->discount) ? $data->discount : 0.00;
+        $discount_book = !empty($data->discount_book) ? $data->discount_book : 0.00;
+        $refund = !empty($data->refund) ? $data->refund : $para[0]->price;
+        $register_fee = !empty($data->register_fee) ? $data->register_fee : $para[1]->price;
+        $access_fee = !empty($data->access_fee) ? $data->access_fee : $para[2]->price;
+
         $data_html = '';
         $etotal = 0;
 
         $invoice_number = ReceiptRunningNumber::pre_generate($data->centre);
-        //all product
-        $datasp = bookuse::select(
-            "bookuses.id as id",
-            //"bookuses.price as cost",
-            "bookuses.name as name",
-            //"levels.unit as unit",
-        )
-            //->where('type', 1)
-            ->orderBy("id", "asc")
-            ->get();
 
-        foreach ($datas as $dresult) {
-            $select_list = '';
-            foreach ($datasp as $keysp) {
+        /* $bookq = bookuse::find($datas[0]->product_id);
+        $levelq = Level::find($datas[0]->level_id);
+        $termq = Term::find($datas[0]->term_id);
 
-                if ($keysp->id == $dresult->product_id) {
-                    $select_list .= '<option value="' . $keysp->id . '" selected> ' . $keysp->name . ' </option>';
+        if ($bookq->type == 1) {
+            $mprice = $levelq->price;
+            $mbprice =  $levelq->book_price;
+            $fprice = $levelq->price;
+        } elseif ($bookq->type == 2) {
+            $mprice = $levelq->half_price;
+            $mbprice =  $levelq->book_price;
+            $fprice = $levelq->half_price;
+        }
+
+        if (!empty($datas[1]->level_id)) {
+
+            $bookq2 = bookuse::find($datas[1]->product_id);
+            $levelq2 = Level::find($datas[1]->level_id);
+            $termq2 = Term::find($datas[1]->term_id);
+
+            $mprice = 0;
+            $mbprice = 0;
+            for ($i = $levelq->id; $i <= $levelq2->id; $i++) {
+                $sbook = 1;
+
+                if ($i == $levelq->id) {
+                    $sterm = $termq->name;
                 } else {
-                    $select_list .= '<option value="' . $keysp->id . '" > ' . $keysp->name . ' </option>';
+                    $sterm = 1;
+                }
+
+                if ($i == $levelq2->id) {
+                    $eterm = $termq2->name;
+                } else {
+                    $eterm = 4;
+                }
+
+                for ($j = $sterm; $j <= $eterm; $j++) {
+                    if ($i == $levelq->id && $j == $sterm) {
+                        $sbook = $bookq->type;
+                    } else {
+                        $sbook = 1;
+                    }
+
+                    $books = bookuse::select(
+                        "bookuses.*",
+                        "levels.name as level_name",
+                        "levels.price as price",
+                        "levels.book_price as book_price",
+                        "terms.name as term_name",
+                    )->where('type', '=', $sbook)
+                        ->join("terms", "terms.id", "=", "bookuses.term_id")
+                        ->join("levels", "levels.id", "=", "bookuses.level_id")
+                        ->where('bookuses.level_id', '=', $i)
+                        ->where('bookuses.term_id', '=', $j)
+                        ->get();
+
+                    $lprice = $books[0]->price;
+                    $bprice = $books[0]->book_price;
+                    $bookss[] = $books;
+
+                    $mprice = $mprice + $lprice;
+                    $mbprice = $mbprice + $bprice;
                 }
             }
 
-            $etotal = $dresult->quantity * $dresult->price;
+
+
+            if ($bookq2->type == 1) {
+                $fprice2 = $levelq2->price;
+            } elseif ($bookq2->type == 2) {
+                $fprice2 = $levelq2->half_price;
+            }
+        } else {
+            $books = bookuse::select(
+                "bookuses.*",
+                "levels.name as level_name",
+                "levels.price as price",
+                "levels.book_price as book_price",
+                "terms.name as term_name",
+            )
+                ->join("terms", "terms.id", "=", "bookuses.term_id")
+                ->join("levels", "levels.id", "=", "bookuses.level_id")
+                ->where('bookuses.level_id', '=', $datas[0]->level_id)
+                ->where('bookuses.term_id', '=', $datas[0]->term_id)
+                ->get();
+            $bookss[] = $books;
+        }
+
+        //dd($bookss); */
+        $mprice = 0;
+        $mbprice = 0;
+
+        $datas_list = OrderDetailList::select(
+            "order_detail_lists.*",
+        )
+            ->where('order_id', $id)
+            ->orderBy("id", "asc")
+            ->get();
+
+        foreach ($datas_list as $dresult) {
+            $mprice = $mprice + $dresult->price;
+            $mbprice = $mbprice + $dresult->bprice;
+            $etotal = 1 * $dresult->price + $dresult->bprice;
             $data_html .= '<tr class="firstTr">
-            <td width="30%">
+            <td width="10%">
                 <div class="col-md-12 col-sm-12 col-xs-12">
-                    <select style="width: 100%;" class="bookuses form-control" id="estock" name="estock[]" required disabled>
-                        ' . $select_list . '
-                    </select>
+                <input type="text"  id="level" name="level[]" class="form-control has-feedback-left" value="' . $dresult->level . '" readonly>
                     <div id="elot_price" class="text-success"></div>
                     <div id="elot_error" class="text-danger"></div>
                 </div>
             </td>
             <td width="10%">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+            <input type="text"  id="level" name="level[]" class="form-control has-feedback-left" value="' . $dresult->term . '" readonly>
+                <div id="elot_price" class="text-success"></div>
+                <div id="elot_error" class="text-danger"></div>
+            </div>
+            </td>
+            <td width="10%">
                 <div class="col-md-12 col-sm-12 col-xs-12">
-                    <input type="number" step="0.50" id="eamount" name="eamount[]" class="auto_decimal form-control has-feedback-left" value="' . number_format($dresult->quantity, 2, '.', '') . '" required readonly>
-                    <input type="hidden" id="eamounth" name="eamounth[]" value="' . number_format($dresult->quantity, 2, '.', '') . '">
+                <input type="text"  id="level" name="level[]" class="form-control has-feedback-left" value="' . $dresult->book . '" readonly>
+                    <div id="elot_price" class="text-success"></div>
+                    <div id="elot_error" class="text-danger"></div>
+                </div>
+            </td>
+
+            <td width="10%">
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    <input type="number" step="0.50" id="eprice" name="eprice[]" class="auto_decimal form-control has-feedback-left" value="' . number_format($dresult->price, 2, '.', '') . '" readonly>
                 </div>
             </td>
             <td width="10%">
                 <div class="col-md-12 col-sm-12 col-xs-12">
-                    <input type="number" step="0.50" id="eprice" name="eprice[]" class="auto_decimal form-control has-feedback-left" value="' . number_format($dresult->price, 2, '.', '') . '" required readonly>
+                    <input type="number" step="0.50" id="eprice" name="eprice[]" class="auto_decimal form-control has-feedback-left" value="' . number_format($dresult->bprice, 2, '.', '') . '" readonly>
                 </div>
             </td>
             <td width="10%">
@@ -411,23 +519,26 @@ class OrderController extends Controller
                     <input type="number" step="0.50" id="etotal" name="etotal[]" class="auto_decimal form-control has-feedback-left" value="' . number_format($etotal, 2, '.', '') . '" readonly>
                 </div>
             </td>
-           <!-- <td width="10%">
-                <button type="button" id="removeRowg" class="btn btn-sm btn-danger btnRemoveg"><i class="fa fa-minus"></i></button>
-            </td> -->
         </tr>';
         }
 
         $img = $this->getfileatt($id);
 
+        $data->termfee = number_format($mprice, 2, '.', '');
+        $data->bookfee = number_format($mbprice, 2, '.', '');
+
+        $total_price = (($data->termfee + $data->bookfee + $refund + $register_fee + $access_fee)) - ($discount + $discount_book);
+
         return response()->json([
             'data' => $data,
-            'datas' => $datas,
+            //'datas' => $datas,
             'table_html' => $data_html,
             'imgs' => $img,
             'receipt_number' => $invoice_number,
             'para' => $para,
-            'old_price' => $datas[0]->price,
-            'total_price' => number_format(($datas[0]->price + $para[0]->price) + $para[1]->price, 2, '.')
+            'old_price' => number_format($mprice, 2, '.', ''),
+            'old_book' => number_format($mbprice, 2, '.', ''),
+            'total_price' => number_format($total_price, 2, '.', '')
         ]);
     }
 
@@ -482,7 +593,6 @@ class OrderController extends Controller
         //
         $rules = [
             'order_number' => 'required|string|max:20',
-            'pid' => 'required|integer|max:255',
             'cid' => 'required|integer|max:255',
         ];
 
@@ -496,22 +606,22 @@ class OrderController extends Controller
         $status = $request->get('status');
 
         $data = [
-            //'order_number' => $request->get('order_number'),
             'cid' => $request->get('cid'),
-            //'amount' => $request->get('tamount'),
-            //'cost' => $request->get('cost'),
             'total_price' => $request->get('total_cost'),
             'detail' => $request->get('detail'),
             'refund' => $request->get('refund'),
             'register_fee' => $request->get('register_fee'),
-            'promotion' => $request->get('promotion'),
+            'access_fee' => $request->get('access_fee'),
+            'discount' => $request->get('discount'),
+            'payment' => $request->get('payment'),
+            'discount_book' => $request->get('discount_book'),
             'status' => $status,
             'updated_by' => Auth::id()
         ];
 
         $order = Order::find($id);
         $order->update($data);
-        OrderDetail::where('order_id', $id)->delete();
+        /* OrderDetail::where('order_id', $id)->delete();
 
         $amounts = $request->input('amount');
         $prices = $request->input('price');
@@ -532,7 +642,7 @@ class OrderController extends Controller
                 }
             }
         }
-
+ */
         //file att
 
         $filesa = $request->get('img');
@@ -562,6 +672,7 @@ class OrderController extends Controller
             $receipt->receipt_number = ReceiptRunningNumber::generate($order->centre);
             $receipt->payment_date = date("Y-m-d");
             $receipt->oid = $order->id;
+            $receipt->payment = $order->payment;
             $receipt->level = $order->contact->level_name;
             $receipt->total_fee = $order->total_price;
             $receipt->start_term = $order->contact->start_term;

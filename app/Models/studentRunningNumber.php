@@ -32,11 +32,11 @@ class studentRunningNumber extends Model
         $running_number->number++;
         //$running_number->save();
         $number = $running_number->number;
-        $number = str_pad($number, 5, '0', STR_PAD_LEFT);
+        $number = str_pad($number, 4, '0', STR_PAD_LEFT);
 
 
         //return $type.''.$number;
-        return $number;
+        return $type . '' .$number;
 
 
     }
@@ -62,10 +62,10 @@ class studentRunningNumber extends Model
         $running_number->number++;
         $running_number->save();
         $number = $running_number->number;
-        $number = str_pad($number, 5, '0', STR_PAD_LEFT);
+        $number = str_pad($number, 4, '0', STR_PAD_LEFT);
 
         // A-21-00001
         //return $type.''.$number;
-        return $number;
+        return $type . '' .$number;
     }
 }

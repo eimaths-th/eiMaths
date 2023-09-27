@@ -33,10 +33,10 @@ class ReceiptRunningNumber extends Model
         $running_number->number++;
         //$running_number->save();
         $number = $running_number->number;
-        $number = str_pad($number, 4, '0', STR_PAD_LEFT);
+        $number = str_pad($number, 3, '0', STR_PAD_LEFT);
 
 
-        return 'Rpt-'.$type . '' . date('y') . date('m') . $number;
+        return 'IV' . date('y') . date('m') . $number;
     }
 
 
@@ -62,9 +62,9 @@ class ReceiptRunningNumber extends Model
         $running_number->number++;
         $running_number->save();
         $number = $running_number->number;
-        $number = str_pad($number, 4, '0', STR_PAD_LEFT);
+        $number = str_pad($number, 3, '0', STR_PAD_LEFT);
 
         // A-21-00001
-        return 'Rpt-'.$type . '' . date('y') . date('m') . $number;
+        return 'IV' . date('y') . date('m') . $number;
     }
 }

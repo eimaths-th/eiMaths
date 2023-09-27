@@ -1,14 +1,16 @@
  <!-- Edit  Modal -->
- <div class="fade modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" id="EditModal">
+ <div class="fade modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" id="EditModal"
+     data-backdrop="static">
      <div class="modal-dialog modal-xl" role="document">
          <form id="editdata" class="form" action="" method="POST">
              <div class="modal-content">
                  <div class="modal-header bg-primary">
-                     <h4 class="modal-title" id="exampleModalLongTitle"><i class="fa-solid fa-cart-shopping"></i> Create Receipt
+                     <h4 class="modal-title" id="exampleModalLongTitle"><i class="fa-solid fa-cart-shopping"></i> Create
+                         Receipt
                      </h4>
-                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                     {{-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                          <span aria-hidden="true">&times;</span>
-                     </button>
+                     </button> --}}
                  </div>
                  <!-- Modal body -->
                  <div class="modal-body">
@@ -32,7 +34,13 @@
                                  <li class="nav-item">
                                      <a class="nav-link active" id="custom-tabs-one-home2-tab" data-toggle="pill"
                                          href="#custom-tabs-one-home2" role="tab"
-                                         aria-controls="custom-tabs-one-home2" aria-selected="true">New Student Detail</a>
+                                         aria-controls="custom-tabs-one-home2" aria-selected="true">Receipt
+                                         Detail</a>
+                                 </li>
+                                 <li class="nav-item">
+                                     <a class="nav-link" id="custom-tabs-one-order2-tab" data-toggle="pill"
+                                         href="#custom-tabs-one-order2" role="tab"
+                                         aria-controls="custom-tabs-one-order2" aria-selected="true">Order Detail</a>
                                  </li>
                                  <li class="nav-item">
                                      <a class="nav-link" id="custom-tabs-one-profile2-tab" data-toggle="pill"
@@ -49,63 +57,47 @@
                                      aria-labelledby="custom-tabs-one-home2-tab">
 
                                      <div id="EditModalBody">
-                                        <div class="row">
-                                            <div class="col-xs-6 col-sm-6 col-md-6">
-                                                <div class="form-group">
-                                                    <strong><i class="fas fa-code"></i> Centre Code:</strong>
-                                                    <select style="width: 100%;"
-                                                        class="productl select2 select2_single form-control"
-                                                        id="EditCentre" name="centre" multiple="multiple"
-                                                        @cannot('all-centre') disabled @endcannot>
-                                                        <!-- <option value="" selected>Select Student</option>
-                                                                                                                                                                                                                                                                                                                                                                                                <option value="" selected>Select Parent</option>-->
-                                                        @foreach ($centre as $key2)
-                                                            <option value="{{ $key2->id }}"
-                                                                @if (Auth::user()->department->id == (int) $key2->id) selected @endif>
-                                                                {{ $key2->code }}
-                                                                {{ $key2->name }}
-                                                            </option>
-                                                        @endforeach
+                                         <div class="row">
+                                             <div class="col-xs-6 col-sm-6 col-md-6">
+                                                 <div class="form-group">
+                                                     <strong><i class="fas fa-code"></i> Centre Code:</strong>
+                                                     <select style="width: 100%;"
+                                                         class="productl select2 select2_single form-control"
+                                                         id="EditCentre" name="centre" multiple="multiple"
+                                                         @cannot('all-centre') disabled @endcannot>
+                                                         <option value="" selected>Select Parent</option>-->
+                                                         @foreach ($centre as $key2)
+                                                             <option value="{{ $key2->id }}"
+                                                                 @if (Auth::user()->department->id == (int) $key2->id) selected @endif>
+                                                                 {{ $key2->code }}
+                                                                 {{ $key2->name }}
+                                                             </option>
+                                                         @endforeach
 
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div class="col-xs-3 col-sm-3 col-md-3">
-                                                <div class="form-group">
-                                                    <strong><i class="fas fa-layer-group"></i> Level:</strong>
-                                                    <select style="width: 100%;"
-                                                        class="select2 select2_single form-control elevels"
-                                                        id="EditLevel" name="level" multiple="multiple">
-                                                        @foreach ($level as $keyl)
-                                                            <option value="{{ $keyl->id }}">
-                                                                {{ $keyl->name }}
-                                                            </option>
-                                                        @endforeach
-
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div class="col-xs-3 col-sm-3 col-md-3">
-                                                <div class="form-group">
-                                                    <strong><i class="fas fa-book-open"></i> Term:</strong>
-                                                    <select style="width: 100%;"
-                                                        class="select2 select2_single form-control eterms"
-                                                        id="EditTerm" name="term" multiple="multiple">
-                                                        @foreach ($term as $keyt)
-                                                            <option value="{{ $keyt->id }}">
-                                                                {{ $keyt->name }}
-                                                            </option>
-                                                        @endforeach
-
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        </div>
+                                                     </select>
+                                                 </div>
+                                             </div>
+                                             <div class="col-xs-6 col-sm-6 col-md-6">
+                                                 <div class="form-group">
+                                                     <strong><i class="fa-solid fa-graduation-cap"></i>
+                                                         Student:</strong>
+                                                     <select style="width: 100%;"
+                                                         class="select2 select2_singlec form-control" id="EditCompany"
+                                                         name="companies" multiple="multiple" disabled>
+                                                         @foreach ($contact as $key2)
+                                                             <option value="{{ $key2->id }}">{{ $key2->name }}
+                                                             </option>
+                                                         @endforeach
+                                                     </select>
+                                                 </div>
+                                             </div>
+                                         </div>
 
                                          <div class="row">
                                              <div class="col-xs-6 col-sm-6 col-md-6">
                                                  <div class="form-group">
-                                                     <strong><i class="fa-solid fa-hashtag"></i> Receipt Number:</strong>
+                                                     <strong><i class="fa-solid fa-hashtag"></i> Receipt
+                                                         Number:</strong>
                                                      {!! Form::text('lot', null, [
                                                          'id' => 'EditLot',
                                                          'placeholder' => 'Receipt Number',
@@ -116,122 +108,51 @@
                                              </div>
                                              <div class="col-xs-6 col-sm-6 col-md-6">
                                                  <div class="form-group">
-                                                     <strong><i class="fa-solid fa-list"></i> Type:</strong>
-                                                     <select style="width: 100%;"
-                                                         class="producte select2 select2_single form-control"
-                                                         id="EditProduct" name="eproduct" multiple="multiple">
-                                                         @foreach ($order_type as $key2)
-                                                             <option value="{{ $key2['id'] }}">{{ $key2['name'] }}
-                                                             </option>
-                                                         @endforeach
-
-                                                     </select>
+                                                     <strong><i class="fa-solid fa-list"></i> Remark:</strong>
+                                                     {!! Form::textarea('detail', null, [
+                                                         'rows' => 1,
+                                                         'id' => 'EditDetail',
+                                                         'class' => 'form-control',
+                                                     ]) !!}
                                                  </div>
                                              </div>
+
                                          </div>
                                          <div class="row">
-                                             <div class="col-xs-12 col-sm-12 col-md-12">
-                                                 <table id="myTbl"
-                                                     class="table table-striped table-bordered responsive-utilities jambo_table "
-                                                     width="400">
-                                                     <thead>
-                                                         <tr class="headings">
-                                                             {{-- <th class="column-title"> สินค้า</th> --}}
-                                                             <th class="column-title">
-                                                                 Class Level</th>
-                                                             <th class="column-title"> Amount
-                                                             </th>
-                                                             <th class="column-title"> Fee
-                                                             </th>
-                                                             <th class="column-title"> Total
-                                                             </th>
-                                                             {{-- <th class="column-title"> </th> --}}
-                                                         </tr>
-                                                     </thead>
-                                                     <tbody id="EditModalBodyTable">
-                                                         <tr class="firstTr">
 
-                                                             <td width="30%">
-                                                                 <div class="col-md-12 col-sm-12 col-xs-12">
-                                                                     <select style="width: 100%;"
-                                                                         class="products form-control" id="estock"
-                                                                         name="estock[]" required>
-
-
-                                                                     </select>
-                                                                     <div id="lot_price" class="text-success"></div>
-                                                                     <div id="lot_error" class="text-danger"></div>
-                                                                 </div>
-                                                             </td>
-
-                                                             <td width="10%">
-                                                                 <div class="col-md-12 col-sm-12 col-xs-12">
-                                                                     <input type="number" step="0.50"
-                                                                         id="eamount" name="eamount[]"
-                                                                         class="form-control has-feedback-left"
-                                                                         value="" required="required">
-                                                                 </div>
-                                                             </td>
-                                                             <td width="10%">
-                                                                 <div class="col-md-12 col-sm-12 col-xs-12">
-                                                                     <input type="number" step="0.50"
-                                                                         id="eprice" name="eprice[]"
-                                                                         class="form-control has-feedback-left"
-                                                                         value="" required="required">
-                                                                 </div>
-                                                             </td>
-
-                                                             <td width="10%">
-                                                                 <div class="col-md-12 col-sm-12 col-xs-12">
-                                                                     <input type="number" step="0.50"
-                                                                         id="etotal" name="etotal[]"
-                                                                         class="form-control has-feedback-left"
-                                                                         value="" readonly>
-                                                                 </div>
-                                                             </td>
-
-                                                             {{-- <td width="10%"><button type="button"
-                                                                     id="removeRowg"
-                                                                     class="btn btn-sm btn-danger btnRemoveg"><i
-                                                                         class="fa fa-minus"></i></button></td> --}}
-
-                                                         </tr>
-                                                     </tbody>
-                                                 </table>
-                                             </div>
-                                             {{-- <div class="col-md-12" align="right">
-
-                                                 <button type="button" id="addRow"
-                                                     class="btn btn-sm btn-primary"><i
-                                                         class="fa fa-plus"></i></button>
-                                                 <button type="button" id="removeRow"
-                                                     class="btn btn-sm btn-danger"><i
-                                                         class="fa fa-minus"></i></button>
-                                             </div> --}}
-                                         </div>
-
-                                         <div class="row">
                                              <div class="col-xs-6 col-sm-6 col-md-6">
                                                  <div class="form-group">
-                                                     <strong><i class="fa-solid fa-graduation-cap"></i>
-                                                         Student:</strong>
-                                                     <select style="width: 100%;"
-                                                         class="select2 select2_singlec form-control" id="EditCompany"
-                                                         name="companies" multiple="multiple" disabled>
-                                                         <option value="" selected>Select Parent</option>-->
-                                                         @foreach ($contact as $key2)
-                                                             <option value="{{ $key2->id }}">{{ $key2->name }}
-                                                             </option>
-                                                         @endforeach
-
-                                                     </select>
+                                                     <strong><i class="fas fa-dollar-sign"></i> TermFees:</strong>
+                                                     {!! Form::number('term_fee', null, [
+                                                         'id' => 'EditTermFee',
+                                                         'step' => '0.50',
+                                                         'placeholder' => 'TermFees',
+                                                         'class' => 'auto_decimal form-control',
+                                                         'readonly' => true,
+                                                     ]) !!}
                                                  </div>
                                              </div>
+                                             <div class="col-xs-6 col-sm-6 col-md-6">
+                                                 <div class="form-group">
+                                                     <strong><i class="fas fa-dollar-sign"></i> BookFees
+                                                         :</strong>
+                                                     {!! Form::number('book_fee', null, [
+                                                         'id' => 'EditBookFee',
+                                                         'step' => '0.50',
+                                                         'placeholder' => 'BookFees',
+                                                         'class' => 'auto_decimal form-control',
+                                                         'readonly' => true,
+                                                     ]) !!}
+                                                 </div>
+                                             </div>
+
+                                         </div>
+                                         <div class="row">
                                              <div class="col-xs-6 col-sm-6 col-md-6">
                                                  <div class="form-group">
                                                      <strong><i class="fas fa-dollar-sign"></i> Refundable
                                                          Deposit:</strong>
-                                                     {!! Form::number('refund', null, [
+                                                     {!! Form::number('refund', '0.00', [
                                                          'id' => 'EditRefund',
                                                          'step' => '0.50',
                                                          'placeholder' => 'Refundable Deposit',
@@ -240,26 +161,11 @@
                                                      ]) !!}
                                                  </div>
                                              </div>
-                                             {{-- <div class="col-xs-6 col-sm-6 col-md-6">
-                                                 <div class="form-group">
-                                                     <strong> จำนวนที่ขาย:</strong>
-                                                     {!! Form::text('amount', null, [
-                                                         'id' => 'EditAmount',
-                                                         'placeholder' => 'Amount',
-                                                         'class' => 'form-control',
-                                                         'readonly' => 'true',
-                                                     ]) !!}
-                                                 </div>
-                                             </div> --}}
-
-                                         </div>
-                                         <div class="row">
-
                                              <div class="col-xs-6 col-sm-6 col-md-6">
                                                  <div class="form-group">
                                                      <strong><i class="fas fa-dollar-sign"></i> Registration
                                                          Fees:</strong>
-                                                     {!! Form::number('register_fee', null, [
+                                                     {!! Form::number('register_fee', '0.00', [
                                                          'id' => 'EditRegisterFee',
                                                          'step' => '0.50',
                                                          'placeholder' => 'Registration Fees',
@@ -268,22 +174,49 @@
                                                      ]) !!}
                                                  </div>
                                              </div>
+                                         </div>
+                                         <div class="row">
                                              <div class="col-xs-6 col-sm-6 col-md-6">
                                                  <div class="form-group">
-                                                     <strong><i class="fa-solid fa-percent"></i> Promotion
-                                                         :</strong>
-                                                     {!! Form::number('promotion', null, [
-                                                         'id' => 'EditPromotion',
+                                                     <strong><i class="fas fa-dollar-sign"></i> Accessories
+                                                         Fees:</strong>
+                                                     {!! Form::number('access_fee', '0.00', [
+                                                         'id' => 'EditAccessFee',
                                                          'step' => '0.50',
-                                                         'placeholder' => 'Promotion',
+                                                         'placeholder' => 'Accessories Fees',
                                                          'class' => 'auto_decimal form-control',
                                                          'readonly' => false,
                                                      ]) !!}
                                                  </div>
                                              </div>
-
+                                             <div class="col-xs-6 col-sm-6 col-md-6">
+                                                 <div class="form-group">
+                                                     <strong><i class="fa-solid fa-percent"></i> Discount TermFee
+                                                         :</strong>
+                                                     {!! Form::number('discount_term', '0.00', [
+                                                         'id' => 'EditDiscountTerm',
+                                                         'step' => '0.50',
+                                                         'placeholder' => 'Discount',
+                                                         'class' => 'auto_decimal form-control',
+                                                         'readonly' => false,
+                                                     ]) !!}
+                                                 </div>
+                                             </div>
                                          </div>
                                          <div class="row">
+                                             <div class="col-xs-6 col-sm-6 col-md-6">
+                                                 <div class="form-group">
+                                                     <strong><i class="fa-solid fa-percent"></i> Discount BookFee
+                                                         :</strong>
+                                                     {!! Form::number('discount_book', '0.00', [
+                                                         'id' => 'EditDiscountBook',
+                                                         'step' => '0.50',
+                                                         'placeholder' => 'Discount',
+                                                         'class' => 'auto_decimal form-control',
+                                                         'readonly' => false,
+                                                     ]) !!}
+                                                 </div>
+                                             </div>
                                              <div class="col-xs-6 col-sm-6 col-md-6">
                                                  <div class="form-group">
                                                      <strong><i class="fa-solid fa-hand-holding-dollar"></i> Total
@@ -301,19 +234,102 @@
                                                      ]) !!}
                                                  </div>
                                              </div>
-                                             <div class="col-xs-6 col-sm-6 col-md-6">
-                                                <div class="form-group">
-                                                    <strong>{{-- <i class="fas fa-comment"></i> --}} Detail:</strong>
-                                                    {!! Form::textarea('detail', null, [
-                                                        'rows' => 1,
-                                                        'id' => 'EditDetail',
-                                                        'class' => 'form-control',
-                                                    ]) !!}
-                                                </div>
-                                            </div>
                                          </div>
-
-
+                                         <div class="row">
+                                             <div class="col-xs-6 col-sm-6 col-md-6">
+                                                 <div class="form-group">
+                                                     <strong><i class="fa-solid fa-hand-holding-dollar"></i> Payment Type:</strong>
+                                                     <div class="form-group clearfix">
+                                                         <div class="icheck-success d-inline">
+                                                             <input type="radio" name="payment" value="1"
+                                                                 checked id="radioSuccess1">
+                                                             <label for="radioSuccess1">Cash
+                                                             </label>
+                                                         </div>
+                                                         <div class="icheck-success d-inline">
+                                                             <input type="radio" name="payment" value="2"
+                                                                 id="radioSuccess2">
+                                                             <label for="radioSuccess2">Tranfer
+                                                             </label>
+                                                         </div>
+                                                         <div class="icheck-success d-inline">
+                                                            <input type="radio" name="payment" value="3"
+                                                                id="radioSuccess3">
+                                                            <label for="radioSuccess3">Credit
+                                                            </label>
+                                                        </div>
+                                                     </div>
+                                                 </div>
+                                             </div>
+                                         </div>
+                                     </div>
+                                 </div>
+                                 <div class="tab-pane fade" id="custom-tabs-one-order2" role="tabpanel"
+                                     aria-labelledby="custom-tabs-one-order2-tab">
+                                     <div class="row">
+                                         <div class="col-xs-12 col-sm-12 col-md-12"
+                                             style="height: 400px; overflow: auto;">
+                                             <table id="myTbl"
+                                                 class="table table-striped table-bordered responsive-utilities jambo_table "
+                                                 width="400">
+                                                 <thead>
+                                                     <tr class="headings">
+                                                         {{-- <th class="column-title"> สินค้า</th> --}}
+                                                         <th class="column-title">
+                                                             Level</th>
+                                                         <th class="column-title">
+                                                             Term</th>
+                                                         <th class="column-title"> BookUse
+                                                         </th>
+                                                         <th class="column-title"> TermFee
+                                                         </th>
+                                                         <th class="column-title"> BookFee
+                                                         </th>
+                                                         <th class="column-title"> Total
+                                                         </th>
+                                                         {{-- <th class="column-title"> </th> --}}
+                                                     </tr>
+                                                 </thead>
+                                                 <tbody id="EditModalBodyTable">
+                                                     <tr class="firstTr">
+                                                         <td width="30%">
+                                                             <div class="col-md-12 col-sm-12 col-xs-12">
+                                                                 <select style="width: 100%;"
+                                                                     class="products form-control" id="estock"
+                                                                     name="estock[]" required>
+                                                                 </select>
+                                                                 <div id="lot_price" class="text-success"></div>
+                                                                 <div id="lot_error" class="text-danger"></div>
+                                                             </div>
+                                                         </td>
+                                                         <td width="10%">
+                                                             <div class="col-md-12 col-sm-12 col-xs-12">
+                                                                 <input type="number" step="0.50" id="eamount"
+                                                                     name="eamount[]"
+                                                                     class="form-control has-feedback-left"
+                                                                     value="" required="required">
+                                                             </div>
+                                                         </td>
+                                                         <td width="10%">
+                                                             <div class="col-md-12 col-sm-12 col-xs-12">
+                                                                 <input type="number" step="0.50" id="eprice"
+                                                                     name="eprice[]"
+                                                                     class="form-control has-feedback-left"
+                                                                     value="" required="required">
+                                                             </div>
+                                                         </td>
+                                                         <td width="10%">
+                                                             <div class="col-md-12 col-sm-12 col-xs-12">
+                                                                 <input type="number" step="0.50" id="etotal"
+                                                                     name="etotal[]"
+                                                                     class="form-control has-feedback-left"
+                                                                     value="" readonly>
+                                                             </div>
+                                                         </td>
+                                                     </tr>
+                                                 </tbody>
+                                             </table>
+                                         </div>
                                      </div>
                                  </div>
                                  <div class="tab-pane fade" id="custom-tabs-one-profile2" role="tabpanel"
@@ -370,9 +386,9 @@
                              class="fa-solid fa-hand-holding-dollar"></i>
                          Pending</button>
                      <button type="button" class="btn btn-success" id="SubmitEditForm"><i
-                             class="fa-solid fa-sack-dollar"></i> Save</button>
-                     <button type="button" class="btn btn-danger modelClose" data-dismiss="modal"><i
-                             class="fas fa-door-closed"></i> Close</button>
+                             class="fa-solid fa-sack-dollar"></i> Create Receipt</button>
+                     {{--  <button type="button" class="btn btn-danger modelClose" data-dismiss="modal"><i
+                             class="fas fa-door-closed"></i> Close</button> --}}
                  </div>
              </div>
          </form>

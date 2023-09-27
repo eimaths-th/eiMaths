@@ -17,7 +17,7 @@
                         <li class="breadcrumb-item active">Users Management</li> --}}
 
 
-                        @can('contact-edit')
+                        @can('student-edit')
                             <button type="button" class="btn btn-danger delete_all_button"><i class="fa-solid fa-retweet"></i> Restart
                                 All</button>
                         @else
