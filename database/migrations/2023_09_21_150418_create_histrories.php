@@ -21,7 +21,7 @@ return new class extends Migration
             $table->date('date')->nullable(0);//วันที่เข้าเรียน
             $table->time('stime')->nullable(0);//เวลาเข้าเรียน
             $table->time('etime')->nullable(0);//เวลาเลิกเรียน
-            $table->date('start_course')->nullable(0);//วันแรกที่เรียน
+            $table->date('start_date')->nullable(0);//วันแรกที่เรียน
             $table->string('comment')->nullable(0);//คอมเมนต์
             $table->string('signature')->nullable(0);//ลานเซ็น
             $table->timestamps();

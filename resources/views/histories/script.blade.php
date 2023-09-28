@@ -311,10 +311,19 @@
                     name: 'name'
                 },
                 {
-                    data: 'start_date',
-                    name: 'start_date'
+                    data: 'date',
+                    name: 'date'
                 },
                 {
+                    data: 'stime',
+                    name: 'stime'
+                },{
+                    data: 'etime',
+                    name: 'etime'
+                },{
+                    data: 'course_remaining',
+                    name: 'course_remaining'
+                },{
                     data: 'level_name',
                     name: 'level_name'
                 },
@@ -323,41 +332,23 @@
                     name: 'book_name'
                 },
                 {
-                    data: 'start_term_name',
-                    name: 'start_term_name'
+                    data: 'start_date',
+                    name: 'start_date'
                 },
+                // {
+                //     data: 'start_term_name',
+                //     name: 'start_term_name'
+                // },
                 {
                     data: 'term_name',
                     name: 'term_name'
                 },
+
                 {
-                    data: 'telephone',
-                    name: 'telephone'
+                    data: 'comment',
+                    name: 'comment'
                 },
-                {
-                    data: 'father_mobile',
-                    name: 'father_mobile'
-                },
-                {
-                    data: 'mother_mobile',
-                    name: 'mother_mobile'
-                },
-                {
-                    data: 'father_email',
-                    name: 'father_email'
-                },
-                {
-                    data: 'mother_email',
-                    name: 'mother_email'
-                },
-                {
-                    data: 'father_name',
-                    name: 'father_name'
-                },
-                {
-                    data: 'mother_name',
-                    name: 'mother_name'
-                },
+
                 {
                     data: 'action',
                     name: 'action'

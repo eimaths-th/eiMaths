@@ -13,7 +13,7 @@
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
                         <li class="breadcrumb-item active">Users Management</li>
                     </ol>
 
@@ -160,24 +160,23 @@
                                             class="display nowrap table table-bordered table-striped table-hover">
                                             <thead>
                                                 <tr>
-                                                    <th width="90px"><input type="checkbox" id="check-all"
-                                                            class="flat">
+                                                    <th width="1%">
+                                                        <input type="checkbox" id="check-all" class="flat">
                                                     </th>
-                                                    <th>Centre</th>
+                                                    <th width="1%" class="text-center">Centre</th>
                                                     <th>Code</th>
                                                     <th>Student Name</th>
-                                                    <th>Start Date</th>
+                                                    <th>date</th>
+                                                    <th>stime</th>
+                                                    <th>etime</th>
+                                                    <th>remaining</th>
                                                     <th>Level</th>
                                                     <th>BookUse </th>
-                                                    <th>Start Term</th>
+                                                    <th>start_date</th>
+                                                    {{-- <th>Start Term</th> --}}
                                                     <th>Term</th>
-                                                    <th {{-- class="none" --}}>Telephone</th>
-                                                    <th>Father Mobile</th>
-                                                    <th>Mother Mobile</th>
-                                                    <th class="none">Father Email</th>
-                                                    <th class="none">Mother Email</th>
-                                                    <th class="none">Father Name</th>
-                                                    <th class="none">Mother Name</th>
+                                                    <th>comment</th>
+
                                                     <th class="none" width="180px"></th>
                                                     <th>More</th>
                                                 </tr>
@@ -197,9 +196,9 @@
     </section>
 
 
-    @include('graduated.create')
+    {{-- @include('histories.create') --}}
 
-    @include('graduated.edit')
+    {{-- @include('histories.edit') --}}
 
     {{--  {!! $data->render() !!} --}}
 @endsection

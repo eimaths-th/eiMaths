@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * @property integer $id
+ * @property integer $centre
  * @property integer $student_id
  * @property integer $level_id
  * @property string $term
@@ -25,5 +26,12 @@ class Histrories extends Model
     /**
      * @var array
      */
-    protected $fillable = ['student_id', 'level_id', 'term', 'bookuse', 'course_remaining', 'date', 'stime', 'etime', 'start_course', 'comment', 'signature', 'created_at', 'updated_at'];
+    protected $fillable = ['centre','student_id', 'level_id', 'term', 'bookuse', 'course_remaining', 'date', 'stime', 'etime', 'start_date', 'comment', 'signature', 'created_at', 'updated_at'];
+
+    public function student()
+    {
+        return $this->hasMany(Contact::class, 'student_id','id');
+        // return $this->hasOne(Receipt_School::class, 'pid','id');
+    }
+
 }

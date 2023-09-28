@@ -20,36 +20,34 @@ class HistoriesController extends Controller
      */
     public function index(Request $request)
     {
-        $levels = level::all();
-        $bookuses = bookuse::all();
-        $last_level = $levels->last();
-        $last_book = $bookuses->last();
+
         if ($request->ajax()) {
             //sleep(2);
             //dd($request->get('approved'));
 
-            $query = Contact::select(
-                "contacts.*",
+            // $query = Histrories::all();
+            $query = Histrories::select(
+                "histrories.*",
                 "departments.name as centre_name",
-                "levels.name as level_name",
-                "bookuses.name as book_name",
-                "start_terms.name as start_term_name",
-                "pterms.name as term_name"
+                "contacts.code as code",
+                "contacts.name as name",
+                "contacts.start_date as start_date",
+                "contacts.level_name as level_name",
+                "contacts.bookuse_name as book_name",
+                "contacts.term_name as term_name",
+
             )
-                ->join("departments", "contacts.centre", "=", "departments.id")
-                ->join("levels", "contacts.level", "=", "levels.id")
-                ->join("bookuses", "contacts.bookuse", "=", "bookuses.id")
-                ->join("terms as start_terms", "contacts.start_term", "=", "start_terms.id")
-                ->join("terms as pterms", "contacts.term", "=", "pterms.id")
-                ->where('discontinued', '0')
-                ->where('level', $last_level->id)
-                ->where('bookuse', $last_book->id);
+                ->join("contacts", "histrories.student_id", "=", "contacts.id")
+                ->join("departments", "histrories.centre", "=", "departments.id")
+                ->where('discontinued', '0');
             if (!Gate::allows('all-centre')) {
                 $query->where('centre', Auth::user()->department->id);
             }
 
             $query->orderBy("contacts.id", "desc");
             $datas = $query->get();
+
+            // dd($datas);
 
             return datatables()->of($datas)
                 ->editColumn('checkbox', function ($row) {
