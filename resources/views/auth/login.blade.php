@@ -110,6 +110,9 @@
 
                         <div class="col-6">
                             <button type="submit" class="btn btn-primary btn-block">Login</button>
+                            <a href="{{ route('auth.google') }}" class="btn btn-danger">
+                                <i class="fab fa-google"></i> Login with Google
+                            </a>
                         </div>
 
                     </div>
