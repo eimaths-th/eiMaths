@@ -121,11 +121,11 @@ Route::group(['middleware' => ['auth']], function () {
     /* Route::get('/', [App\Http\Controllers\ContactController::class, 'index']);
     Route::get('/home', [App\Http\Controllers\ContactController::class, 'index'])->name('home'); */
     Route::get('/', [App\Http\Controllers\HomeController::class, 'index']);
-    Route::get('/home', [App\Http\Controllers\HomeController::class, 'redirectToGoogle'])->name('home');
-    Route::get('auth/google', [App\Http\Controllers\Auth\LoginController::class, 'index']);
-    Route::get('auth/google/callback', [App\Http\Controllers\Auth\LoginController::class, 'handleGoogleCallback']);
+    Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 });
 
 
 
 Auth::routes();
+Route::get('auth/google', [App\Http\Controllers\Auth\LoginController::class, 'redirectToGoogle']);
+Route::get('auth/google/callback', [App\Http\Controllers\Auth\LoginController::class, 'handleGoogleCallback']);
