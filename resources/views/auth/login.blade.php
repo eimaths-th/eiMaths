@@ -59,8 +59,7 @@
 
 <body class="hold-transition login-page">
     <div class="login-box">
-        <div class="image-container"><img src="{{ asset('images/logo.png') }}" alt="..."
-                height="120"></div>
+        <div class="image-container"><img src="{{ asset('images/logo.png') }}" alt="..." height="120"></div>
         <div class="login-logo">
             <a href="{{ url('/home') }}"><b> {{ config('app.name') }} {{ config('app.subtitle') }}</b></a>
         </div>
@@ -69,67 +68,71 @@
         <!-- /.login-box-body -->
         <div class="card" style="box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);">
             <div class="card" style="">
-            <div class="card-body login-card-body">
-                <p class="login-box-msg">Please log in to start using the system.</p>
+                <div class="card-body login-card-body">
+                    <p class="login-box-msg">Please log in to start using the system.</p>
 
-                <form method="post" action="{{ url('/login') }}">
-                    @csrf
+                    <form method="post" action="{{ url('/login') }}">
+                        @csrf
 
-                    <div class="input-group mb-3">
-                        <input type="email" name="email" value="{{ old('email') }}" placeholder="Email"
-                            class="form-control @error('email') is-invalid @enderror">
-                        <div class="input-group-append">
-                            <div class="input-group-text"><span class="fas fa-user"></span></div>
-                        </div>
-                        @error('email')
-                            <span class="error invalid-feedback">{{ $message }}</span>
-                        @enderror
-                    </div>
-
-                    <div class="input-group mb-3">
-                        <input type="password" name="password" placeholder="Password"
-                            class="form-control @error('password') is-invalid @enderror">
-                        <div class="input-group-append">
-                            <div class="input-group-text">
-                                <span class="fas fa-lock"></span>
+                        <div class="input-group mb-3">
+                            <input type="email" name="email" value="{{ old('email') }}" placeholder="Email"
+                                class="form-control @error('email') is-invalid @enderror">
+                            <div class="input-group-append">
+                                <div class="input-group-text"><span class="fas fa-user"></span></div>
                             </div>
+                            @error('email')
+                                <span class="error invalid-feedback">{{ $message }}</span>
+                            @enderror
                         </div>
-                        @error('password')
-                            <span class="error invalid-feedback">{{ $message }}</span>
-                        @enderror
 
-                    </div>
+                        <div class="input-group mb-3">
+                            <input type="password" name="password" placeholder="Password"
+                                class="form-control @error('password') is-invalid @enderror">
+                            <div class="input-group-append">
+                                <div class="input-group-text">
+                                    <span class="fas fa-lock"></span>
+                                </div>
+                            </div>
+                            @error('password')
+                                <span class="error invalid-feedback">{{ $message }}</span>
+                            @enderror
 
-                    <div class="row">
-                        {{-- <div class="col-8">
+                        </div>
+
+                        <div class="row">
+                            {{-- <div class="col-8">
                                 <div class="icheck-primary">
                                     <input type="checkbox" id="remember">
                                     <label for="remember">Remember Me</label>
                                 </div>
                             </div> --}}
 
-                        <div class="col-6">
-                            <button type="submit" class="btn btn-primary btn-block">Login</button>
-                            <a href="{{ route('google.login') }}" class="btn btn-danger">
-                                <i class="fab fa-google"></i> Login with Google
-                            </a>
+                            <div class="col-6">
+                                <button type="submit" class="btn btn-primary btn-block">Login</button>
+
+                            </div>
+                            <div class="col-6">
+
+                                <a href="{{ route('google.login') }}" class="btn btn-danger">
+                                    <i class="fab fa-google"></i> Login with Google
+                                </a>
+                            </div>
+
                         </div>
+                    </form>
 
-                    </div>
-                </form>
-
-                {{--  <p class="mb-1">
+                    {{--  <p class="mb-1">
                         <a href="{{ route('password.request') }}">I forgot my password</a>
                     </p>
                     <p class="mb-0">
                         <a href="{{ route('register') }}" class="text-center">Register a new membership</a>
                     </p> --}}
+                </div>
+                <!-- /.login-card-body -->
             </div>
-            <!-- /.login-card-body -->
-        </div>
 
-    </div>
-    <!-- /.login-box -->
+        </div>
+        <!-- /.login-box -->
 </body>
 
 </html>
