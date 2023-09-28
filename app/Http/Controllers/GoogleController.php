@@ -22,7 +22,7 @@ class GoogleController extends Controller
 
             if ($saveUser != "" && $saveUser != NULL) {
                 //(Auth::guard('parent')->loginUsingId($saveUser->id));
-                return redirect('/parent');
+                return redirect('/home');
             } else {
                 return redirect('/login')->withErrors([
                     'email' => 'Your email has not been registered , Please register',
