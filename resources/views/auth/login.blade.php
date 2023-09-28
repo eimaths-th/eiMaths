@@ -108,13 +108,13 @@
                             </div> --}}
 
                             <div class="col-6">
-                                <button type="submit" class="btn btn-primary btn-block">Login</button>
+                                <button type="submit" class="btn btn-primary btn-block"><i class="fa-solid fa-unlock"></i> Login</button>
 
                             </div>
                             <div class="col-6">
 
                                 <a href="{{ route('google.login') }}" class="btn btn-danger">
-                                    <i class="fab fa-google"></i> Login with Google
+                                    <i class="fab fa-google"></i> Google
                                 </a>
                             </div>
 
