@@ -452,23 +452,21 @@
             "footerCallback": function(row, data, start, end, display) {
                 var api = this.api();
 
-                // Calculate the sum of values in column 8 for all pages
+                // Calculate the sum of values in column 8 (index 7) for all pages
                 var sum = 0;
 
                 // Iterate through all pages
                 api.rows().every(function() {
                     var data = this.data();
-                    var value = parseFloat(data[
-                    7]); // Replace '7' with the index of the column you want to sum
+                    var value = parseFloat(data[7]); // Index 7 corresponds to the 8th column
 
                     if (!isNaN(value)) {
                         sum += value;
                     }
                 });
 
-                // Update the footer cell with the sum
-                $(api.column(7).footer()).html(sum.toFixed(
-                    2)); // Adjust the decimal places as needed
+                // Update the footer cell with the sum rounded to two decimal places
+                $(api.column(7).footer()).html(sum.toFixed(2));
             }
         };
         var table = $('#Listview').DataTable(table_option);
