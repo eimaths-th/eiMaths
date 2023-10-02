@@ -453,12 +453,18 @@
                 var api = this.api();
 
                 // Calculate the sum of values in column 8 for all pages
-                var sum = api
-                    .column(7)
-                    .data()
-                    .reduce(function(acc, value) {
-                        return parseFloat(acc) + parseFloat(value);
-                    }, 0);
+                var sum = 0;
+
+                // Iterate through all pages
+                api.rows().every(function() {
+                    var data = this.data();
+                    var value = parseFloat(data[
+                    7]); // Replace '7' with the index of the column you want to sum
+
+                    if (!isNaN(value)) {
+                        sum += value;
+                    }
+                });
 
                 // Update the footer cell with the sum
                 $(api.column(7).footer()).html(sum.toFixed(
