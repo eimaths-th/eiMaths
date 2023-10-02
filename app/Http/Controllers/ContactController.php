@@ -82,8 +82,12 @@ class ContactController extends Controller
             }
 
             $query->orderBy("contacts.id", "desc");
+
+            //$sqlQuery = $query->toSql();
+            //dd($sqlQuery);
             $datas = $query->get();
 
+            //dd($datas);
             return datatables()->of($datas)
                 ->editColumn('checkbox', function ($row) {
                     return '<input type="checkbox" id="' . $row->id . '" class="flat" name="table_records[]" value="' . $row->id . '" >';
