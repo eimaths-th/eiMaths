@@ -20,12 +20,45 @@ class HistoriesController extends Controller
      */
     public function index(Request $request)
     {
+        // ->where('discontinued', '0');
 
+        // $datas = Histrories::with(['contacts', 'departments'])
+        //     ->select(
+        //         "departments.name as centre_name",
+        //         "contacts.code as code",
+        //         "contacts.name as name",
+        //         "contacts.start_date as start_date",
+        //         "contacts.level_name as level_name",
+        //         "contacts.bookuse_name as book_name",
+        //         "contacts.term_name as term_name"
+        //     )
+        //     ->join("contacts", "histrories.student_id", "=", "contacts.id")
+        //     ->join("departments", "histrories.centre", "=", "departments.id")
+        //     ->where('contacts.discontinued', '0')
+        //     ->get();
+
+        // dd($datas);
+        // // $query->orderBy("contacts.id", "desc");
+        // // $query->orderBy("contacts.id", "desc");
+        // // $datas = $query->get();
+        // // dd($datas);
+        // // ->where('discontinued', '0');
+
+
+        // // if (!Gate::allows('all-centre')) {
+        // //     $query->where('centre', Auth::user()->department->id);
+        // // }
+
+        // // // $query->orderBy("contacts.id", "desc");
+        // // $datas = $query->get();
+
+        // dd($datas);
         if ($request->ajax()) {
             //sleep(2);
-            //dd($request->get('approved'));
 
             // $query = Histrories::all();
+            // $query = Histrories::with(['contacts', 'departments']);
+
             $query = Histrories::select(
                 "histrories.*",
                 "departments.name as centre_name",
@@ -35,7 +68,6 @@ class HistoriesController extends Controller
                 "contacts.level_name as level_name",
                 "contacts.bookuse_name as book_name",
                 "contacts.term_name as term_name",
-
             )
                 ->join("contacts", "histrories.student_id", "=", "contacts.id")
                 ->join("departments", "histrories.centre", "=", "departments.id")
@@ -43,11 +75,21 @@ class HistoriesController extends Controller
             if (!Gate::allows('all-centre')) {
                 $query->where('centre', Auth::user()->department->id);
             }
-
-            $query->orderBy("contacts.id", "desc");
+            $query->orderBy("date", "desc");
             $datas = $query->get();
 
             // dd($datas);
+
+            // $datas = Histrories::with(['contacts', 'departments'])
+            //     ->join("contacts", "histrories.student_id", "=", "contacts.id")
+            //     ->join("departments", "histrories.centre", "=", "departments.id")
+            //     ->where('contacts.discontinued', '0')
+            //     ->when(!Gate::allows('all-centre'), function ($query) {
+            //         $query->where('departments.id', Auth::user()->department->id);
+            //     })
+            //     ->orderBy("histrories.date", "desc")
+            //     ->get();
+
 
             return datatables()->of($datas)
                 ->editColumn('checkbox', function ($row) {

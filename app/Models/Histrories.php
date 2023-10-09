@@ -28,10 +28,17 @@ class Histrories extends Model
      */
     protected $fillable = ['centre','student_id', 'level_id', 'term', 'bookuse', 'course_remaining', 'date', 'stime', 'etime', 'start_date', 'comment', 'signature', 'created_at', 'updated_at'];
 
-    public function student()
-    {
-        return $this->hasMany(Contact::class, 'student_id','id');
-        // return $this->hasOne(Receipt_School::class, 'pid','id');
+    // public function student()
+    // {
+    //     return $this->hasMany(Contact::class, 'student_id','id');
+    //     // return $this->hasOne(Receipt_School::class, 'pid','id');
+    // }
+    public function contacts() {
+        return $this->belongsTo(Contact::class, 'student_id');
+    }
+
+    public function departments() {
+        return $this->belongsTo(Department::class, 'centre');
     }
 
 }

@@ -50,4 +50,8 @@ class Contact extends Model
     {
         return $this->hasOne(Order::class, 'cid', 'id');
     }
+
+    public function histrories() {
+        return $this->hasMany(Histrories::class, 'centre');
+    }
 }
