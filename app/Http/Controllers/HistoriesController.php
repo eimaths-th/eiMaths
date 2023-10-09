@@ -51,12 +51,14 @@ class HistoriesController extends Controller
 
         // // // $query->orderBy("contacts.id", "desc");
         // // $datas = $query->get();
-
+        // $query = Histrories::all();
+        // dd($query);
         // dd($datas);
         if ($request->ajax()) {
             //sleep(2);
 
-            // $query = Histrories::all();
+
+
             // $query = Histrories::with(['contacts', 'departments']);
 
             $query = Histrories::select(
