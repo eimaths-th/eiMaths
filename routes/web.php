@@ -33,6 +33,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::resource('roles', RoleController::class);
 
     Route::get('/contacts', [App\Http\Controllers\ContactController::class, 'index'])->name('contacts');
+    Route::get('/graduated', [App\Http\Controllers\ContactController::class, 'graduated'])->name('contacts.graduated');
     Route::get('/contacts/running/{centre}', [App\Http\Controllers\ContactController::class, 'create'])->name('contacts.running');
     Route::post('/contacts/store', [App\Http\Controllers\ContactController::class, 'store'])->name('contacts.store');
     Route::get('/contacts/edit/{id}', [App\Http\Controllers\ContactController::class, 'edit'])->name('contacts.edit');
@@ -100,6 +101,10 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/invoices/show/{id}/{param}', [App\Http\Controllers\InvoiceController::class, 'show'])->name('invoices.show');
     Route::get('/invoices_pending', [App\Http\Controllers\InvoiceController::class, 'pending'])->name('invoices_pending');
     Route::put('/invoices/generate', [App\Http\Controllers\InvoiceController::class, 'generate'])->name('invoices.generate');
+
+
+    Route::get('/histories', [App\Http\Controllers\HistoriesController::class, 'index'])->name('histories');
+
 
     //file
     Route::post('/file/upload', function (Request $request) {

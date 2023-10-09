@@ -30,4 +30,8 @@ class Department extends Model
 
         return null;
     }
+
+    public function histrories() {
+        return $this->hasMany(Histrories::class, 'student_id');
+    }
 }

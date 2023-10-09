@@ -27,9 +27,15 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a href="{{ route('contacts') }}" class="nav-link {{ Request::is('contacts') ? 'active' : '' }}">
+                <a href="{{ route('contacts.graduated') }}" class="nav-link {{ Request::is('contacts') ? 'active' : '' }}">
                     <i class="nav-icon fa-solid fa-comment-dots"></i>
                     <p>Graduated Student</p>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{{ route('histories') }}" class="nav-link {{ Request::is('contacts') ? 'active' : '' }}">
+                    <i class="nav-icon fa-solid fa-comment-dots"></i>
+                    <p>Histories</p>
                 </a>
             </li>
         </ul>
