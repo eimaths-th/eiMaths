@@ -317,13 +317,13 @@
                 {
                     data: 'stime',
                     name: 'stime'
-                },{
+                }, {
                     data: 'etime',
                     name: 'etime'
-                },{
+                }, {
                     data: 'course_remaining',
                     name: 'course_remaining'
-                },{
+                }, {
                     data: 'level_name',
                     name: 'level_name'
                 },
@@ -471,18 +471,25 @@
             $('#AddLevel').val(null).trigger("change")
             $('#AddTerm').val(null).trigger("change")
 
+            var centre = 0;
 
-            await $.ajax({
+            var createUrl = "{{ route('create', ':centre') }}".replace(':centre', centre);
+
+            $.ajax({
+                url: createUrl,
                 method: "GET",
-                url: "contacts/running/" + '0',
-                success: function(res) {
-                    //console.log(res)
-                    $('#AddCode').val(res.running);
+                success: function(response) {
+                    $('#AddCode').val(response.running);
                     $('#AddTerm').prop('disabled', true);
                     $('#AddBook').prop('disabled', true);
+                },
+                error: function(error) {
+                    console.error(error);
                 }
             });
+
             $('#CreateModal').modal('show');
+
         });
 
 

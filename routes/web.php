@@ -106,6 +106,7 @@ Route::group(['middleware' => ['auth']], function () {
 
     // Route::get('/histories', [App\Http\Controllers\HistoriesController::class, 'index'])->name('histories');
     Route::resource('histories', HistoriesController::class);
+    Route::get('create/{centre}', [App\Http\Controllers\HistoriesController::class, 'create'])->name('create');
 
 
     //file

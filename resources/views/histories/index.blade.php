@@ -196,9 +196,9 @@
     </section>
 
 
-    {{-- @include('histories.create') --}}
+    @include('histories.create')
 
-    {{-- @include('histories.edit') --}}
+    @include('histories.edit')
 
     {{--  {!! $data->render() !!} --}}
 @endsection

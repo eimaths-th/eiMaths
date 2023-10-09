@@ -7,7 +7,10 @@ use App\Models\Contact;
 use App\Models\Department;
 use App\Models\Histrories;
 use App\Models\level;
+use App\Models\Order;
+use App\Models\OrderDetail;
 use App\Models\Sterm;
+use App\Models\studentRunningNumber;
 use App\Models\term;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Http\Request;
@@ -143,9 +146,17 @@ class HistoriesController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create($centre)
     {
         //
+        if ($centre == 0) {
+            $centre = Auth::user()->department->id;
+        }
+        $rnumber = studentRunningNumber::pre_generate($centre);
+        //dd($rnumber);
+        return response()->json([
+            'running' =>  $rnumber
+        ]);
     }
 
     /**
@@ -159,7 +170,7 @@ class HistoriesController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show( $id)
+    public function show($id)
     {
         //
     }
@@ -167,16 +178,37 @@ class HistoriesController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit( $id)
+    public function edit($id)
     {
         //
         dd($id);
+
+        $data = Order::select(
+            "contacts.*",
+            "orders.status as order_status",
+            "departments.name as centre_name",
+        )
+            ->join("contacts", "contacts.id", "=", "orders.cid")
+            ->join("departments", "contacts.centre", "=", "departments.id")
+            ->where('cid', $id)
+            ->orderBy("id", "desc")->first();
+        // dd($data);
+        $datas = OrderDetail::select(
+            "order_details.*",
+            "levels.id as level_id",
+            "terms.id as term_id",
+        )
+            ->join("bookuses", "bookuses.id", "=", "order_details.product_id")
+            ->join("terms", "terms.id", "=", "bookuses.term_id")
+            ->join("levels", "levels.id", "=", "bookuses.level_id")
+            ->where('order_id', $data->id)->orderBy("id", "asc")->get();
+        return response()->json(['data' => $data, 'datas' => $datas]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request,$id)
+    public function update(Request $request, $id)
     {
         //
 
