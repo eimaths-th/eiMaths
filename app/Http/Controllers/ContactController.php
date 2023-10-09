@@ -149,14 +149,16 @@ class ContactController extends Controller
         //dd($term);
 
         return view('contacts.index')->with(
-            ['centre' => $centre])
+            ['centre' => $centre]
+        )
             ->with(['bookuse' => $bookuse])
             ->with(['level' => $level])
             ->with(['term' => $term])
             ->with(['sterm' => $sterm]);
     }
 
-    public function graduated(Request $request) {
+    public function graduated(Request $request)
+    {
 
 
         $levels = level::all();
@@ -181,8 +183,8 @@ class ContactController extends Controller
                 ->join("terms as start_terms", "contacts.start_term", "=", "start_terms.id")
                 ->join("terms as pterms", "contacts.term", "=", "pterms.id")
                 ->where('discontinued', '0')
-                ->where('level',$last_level->id)
-                ->where('bookuse',$last_book->id);
+                ->where('level', $last_level->id)
+                ->where('bookuse', $last_book->id);
             if (!Gate::allows('all-centre')) {
                 $query->where('centre', Auth::user()->department->id);
             }
@@ -210,11 +212,10 @@ class ContactController extends Controller
                     }
                     return $html;
                 })->rawColumns(['checkbox', 'action', 'more'])->toJson();
-         
         }
 
         $centre = Department::where([['status', '1']])
-        ->orderBy("name", "asc")->get();
+            ->orderBy("name", "asc")->get();
         $term = term::where([['status', '1']])
             ->orderBy("name", "asc")->get();
         $sterm = Sterm::where([['status', '1']])
@@ -226,7 +227,7 @@ class ContactController extends Controller
 
         // dd($last_book,$last_level,$graduated);
 
-        return view('graduated.index',[
+        return view('graduated.index', [
             'centre' => $centre,
             'bookuse' => $bookuse,
             'term' => $term,
@@ -480,6 +481,9 @@ class ContactController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
+
+
+
     public function edit($id)
     {
         //$data = Contact::find($id);
@@ -492,7 +496,7 @@ class ContactController extends Controller
             ->join("departments", "contacts.centre", "=", "departments.id")
             ->where('cid', $id)
             ->orderBy("id", "desc")->first();
-
+        // dd($data);
         $datas = OrderDetail::select(
             "order_details.*",
             "levels.id as level_id",
@@ -502,7 +506,6 @@ class ContactController extends Controller
             ->join("terms", "terms.id", "=", "bookuses.term_id")
             ->join("levels", "levels.id", "=", "bookuses.level_id")
             ->where('order_id', $data->id)->orderBy("id", "asc")->get();
-
         return response()->json(['data' => $data, 'datas' => $datas]);
     }
 

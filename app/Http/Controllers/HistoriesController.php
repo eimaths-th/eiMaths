@@ -77,7 +77,7 @@ class HistoriesController extends Controller
             if (!Gate::allows('all-centre')) {
                 $query->where('centre', Auth::user()->department->id);
             }
-            $query->orderBy("date", "desc");
+            $query->orderBy("id", "desc");
             $datas = $query->get();
 
             // dd($datas);
@@ -159,7 +159,7 @@ class HistoriesController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show( $id)
     {
         //
     }
@@ -167,17 +167,19 @@ class HistoriesController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit( $id)
     {
         //
+        dd($id);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request,$id)
     {
         //
+
     }
 
     /**

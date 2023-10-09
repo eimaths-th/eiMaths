@@ -689,8 +689,9 @@
             $('.alert-success').hide();
 
             $('#custom-tabs-one-homee-tab').tab('show');
-
             id = $(this).data('id');
+            console.log(id);
+
             $.ajax({
                 url: "contacts/edit/" + id,
                 method: 'GET',

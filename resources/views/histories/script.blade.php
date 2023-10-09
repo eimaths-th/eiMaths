@@ -574,7 +574,8 @@
 
             id = $(this).data('id');
             $.ajax({
-                url: "contacts/edit/" + id,
+                // url: "histories/edit/" + id,
+                url: "{{ route('histories.edit', ':id') }}".replace(':id', id),
                 method: 'GET',
                 success: function(res) {
                     $('#EditCentre').val(res.data.centre).change();
