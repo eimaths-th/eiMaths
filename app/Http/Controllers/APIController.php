@@ -8,6 +8,8 @@ use Illuminate\Support\Str;
 use App\Models\level;
 use App\Models\Contact;
 use App\Models\Department;
+use App\Models\term;
+use App\Models\bookuse;
 use App\Models\History;
 use Carbon\Carbon;
 
@@ -47,6 +49,45 @@ class APIController extends Controller
 
         return response()->json($levels);
     }
+
+
+    public function searchTerm(Request $request)
+    {
+        //$query = $request->query('query');
+
+        $data = term::select(
+            "terms.id as id",
+            "terms.name as name",
+        )
+
+            ->where('level_id', $request->get('level'))
+            ->where('status', 1)
+            ->orderBy("terms.name", "asc")
+            ->get();
+
+        return response()->json($data);
+    }
+
+    public function searchBook(Request $request)
+    {
+        //$query = $request->query('query');
+
+        $data = bookuse::select(
+            "bookuses.id as id",
+            "bookuses.name as name",
+        )
+
+            ->where('level_id', $request->get('level'))
+            ->where('term_id', $request->get('term'))
+            //->where('type', 1)
+            ->where('status', 1)
+            ->orderBy("bookuses.name", "asc")
+            ->get();
+
+        return response()->json($data);
+    }
+
+
 
     public function saveHistories(Request $request)
     {
