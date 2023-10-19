@@ -10,7 +10,7 @@ use App\Models\Contact;
 use App\Models\Department;
 use App\Models\term;
 use App\Models\bookuse;
-use App\Models\History;
+use App\Models\Histrories;
 use Carbon\Carbon;
 
 class APIController extends Controller
@@ -97,7 +97,7 @@ class APIController extends Controller
             $imageName = $image->getClientOriginalName();
 
             $newname = Str::random(40) . "_" . $imageName;
-            $image->move(public_path('form_images'), $newname);
+            $image->move(public_path('file_upload'), $newname);
 
             //endtime
             $time =  $request->get('stime'); // Time string
@@ -107,11 +107,14 @@ class APIController extends Controller
                 ->addHours($durationHours)
                 ->format('H:i:s');
 
-            $course = new History([
+            $course = new Histrories([
+                'centre' => $request->get('centre'),
                 'student_id' => $request->get('student'),
-                'subject_id' => $request->get('subject'),
+                'level_id' => $request->get('subject'),
+                'term' => $request->get('term'),
+                'bookuse' => $request->get('book'),
                 //'level_id' => $request->get('level'),
-                'datetime' => $request->get('date'),
+                'date' => $request->get('date'),
                 'stime' => $request->get('stime'),
                 'etime' => $updatedTime,
                 //'description' => $request->get('des'),
