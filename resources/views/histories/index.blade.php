@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('style')
-    @include('graduated.style')
+    @include('histories.style')
 @endsection
 
 @section('content')
@@ -27,12 +27,12 @@
                     <ol class="breadcrumb float-sm-right">
                         @can('student-create')
                             <button type="button" class="btn btn-success" id="CreateButton">
-                                <i class="fas fa-graduation-cap"></i> New Student </button>
+                                <i class="fas fa-graduation-cap"></i>Create History</button>
                         @else
                             <span class="d-inline-block" tabindex="0" data-toggle="tooltip" data-placement="bottom"
                                 title="You Not Have Permission">
                                 <button type="button" class="btn btn-success disabled">
-                                    <i class="fas fa-graduation-cap"></i> Add Student </button>
+                                    <i class="fas fa-graduation-cap"></i>Create History</button>
                             </span>
                         @endcan &nbsp;
 
@@ -164,18 +164,21 @@
                                                         <input type="checkbox" id="check-all" class="flat">
                                                     </th>
                                                     <th width="1%" class="text-center">Centre</th>
-                                                    <th>Code</th>
+                                                    <th width="1%" class="text-center">Code</th>
                                                     <th>Student Name</th>
-                                                    <th>date</th>
-                                                    <th>stime</th>
-                                                    <th>etime</th>
-                                                    <th>remaining</th>
-                                                    <th>Level</th>
-                                                    <th>BookUse </th>
-                                                    <th>start_date</th>
+                                                    <th width="1%">Level</th>
+                                                    <th width="1%">Term</th>
+                                                    <th>Book Use </th>
+
+                                                    <th>Date</th>
+                                                    <th>Stat Time</th>
+                                                    <th>End Time</th>
+                                                    <th width="1%">Remain</th>
+                                                    <th>Start Date</th>
+                                                    <th>End Date</th>
+
                                                     {{-- <th>Start Term</th> --}}
-                                                    <th>Term</th>
-                                                    <th>comment</th>
+                                                    <th>Comment</th>
 
                                                     <th class="none" width="180px"></th>
                                                     <th>More</th>
@@ -206,3 +209,4 @@
 @section('script')
     @include('histories.script')
 @endsection
+

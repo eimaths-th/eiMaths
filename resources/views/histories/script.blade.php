@@ -1,6 +1,21 @@
 <script>
     $(document).ready(function() {
 
+        $("#timepicker").timepicker();
+        $(".timepicker").timepicker({
+            timeFormat: 'hh:mm tt', // Display format
+            // dateFormat: 'yy-mm-dd', // Date format
+            showButtonPanel: true, // Show the "Now" and "Done" buttons
+            controlType: 'select'
+        });
+
+        $('#datetimepicker').timepicker({
+            timeFormat: 'hh:mm tt', // Display format
+            // dateFormat: 'yy-mm-dd', // Date format
+            showButtonPanel: true, // Show the "Now" and "Done" buttons
+            controlType: 'select' // Use select menus for hours and minutes
+        });
+
         function showOverlay() {
             $('#overlay').css({
                 'display': 'flex',
@@ -65,6 +80,12 @@
             //theme: 'bootstrap4'
             placeholder: 'Please select'
         });
+        $(".select3_single").select2({
+            maximumSelectionLength: 1,
+            allowClear: false,
+            //theme: 'bootstrap4'
+            placeholder: 'select student'
+        });
 
         $(".select2_single").on("select2:unselect", function(e) {
             //$('.products').html('');
@@ -122,19 +143,16 @@
                 $('#keyword').val(savedKeyword);
             }
         }
-
         // Call the function to set initial field values on page load
         retrieveFieldValues();
-
         let daterange = () => {
             $('#reservation').daterangepicker({
                 startDate: startDate,
                 endDate: endDate,
                 locale: {
-                    format: 'YYYY-MM'
+                    format: 'YYYY-MM-DD'
                 }
             });
-
             // Apply the custom date range filter on input change
             $('#reservation').on('apply.daterangepicker', function() {
                 table.draw();
@@ -155,8 +173,6 @@
             yearRange: '1980:2050'
         });
 
-
-
         //$.noConflict();
         var token = ''
         $.ajaxSetup({
@@ -165,13 +181,32 @@
             }
         });
 
-
-        $(".levels").change(function() {
+        $(".s_student").change(function() {
+            let std_id = $('#s_student').val();
+            //console.log(product);
+            //alert(product);
+            $('#AddLevel').html('');
+            $('#AddTerm').html('');
+            $('#AddBook').html('');
+            if (std_id.length !== 0) {
+                $.ajax({
+                    method: "GET",
+                    url: "student/find/add/" + std_id,
+                    success: function(res) {
+                        $('.level_id').html(res.html);
+                        //$('.terms').removeAttr('readonly');
+                        $('.level_id').prop('disabled', false);
+                    }
+                });
+            }
+        })
+        $(".level_id").change(function() {
             let level = $('#AddLevel').val();
             //console.log(product);
             //alert(product);
             $('#AddTerm').html('');
             $('#AddBook').html('');
+            // console.log(level);
             if (level.length !== 0) {
                 $.ajax({
                     method: "GET",
@@ -184,8 +219,6 @@
                 });
             }
         })
-
-
         $(".terms").change(function() {
             let level = $('#AddLevel').val();
             let term = $('#AddTerm').val();
@@ -241,7 +274,6 @@
             }
         })
 
-
         const table_option = {
             ajax: {
                 data: function(d) {
@@ -249,6 +281,7 @@
                     //d.search = $('input[type="search"]').val();
                 }
             },
+
             serverSide: true,
             processing: true,
             language: {
@@ -299,8 +332,8 @@
                     searchable: false
                 },
                 {
-                    data: 'centre_name',
-                    name: 'centre_name'
+                    data: 'centre',
+                    name: 'centre'
                 },
                 {
                     data: 'code',
@@ -309,6 +342,17 @@
                 {
                     data: 'name',
                     name: 'name'
+                },
+                {
+                    data: 'level_name',
+                    name: 'level_name'
+                },
+                {
+                    data: 'term',
+                    name: 'term'
+                }, {
+                    data: 'bookuse',
+                    name: 'bookuse'
                 },
                 {
                     data: 'date',
@@ -323,26 +367,21 @@
                 }, {
                     data: 'course_remaining',
                     name: 'course_remaining'
-                }, {
-                    data: 'level_name',
-                    name: 'level_name'
                 },
-                {
-                    data: 'book_name',
-                    name: 'book_name'
-                },
+
                 {
                     data: 'start_date',
                     name: 'start_date'
+                },
+                {
+                    data: 'end_date',
+                    name: 'end_date'
                 },
                 // {
                 //     data: 'start_term_name',
                 //     name: 'start_term_name'
                 // },
-                {
-                    data: 'term_name',
-                    name: 'term_name'
-                },
+
 
                 {
                     data: 'comment',
@@ -359,7 +398,6 @@
                 }
             ]
         };
-
         var table = $('#Listview').DataTable(table_option);
 
         $('#SearchButtons').on('click', function() {
@@ -411,14 +449,11 @@
                 table.state.clear();
                 await table.destroy();
             }
-
             // Set the date range back to its default
             var currentDate = moment();
             var startDate = moment(currentDate).subtract(7, 'days').format('YYYY-MM-DD');
             var endDate = moment(currentDate).endOf('month').format('YYYY-MM-DD');
-
             daterange();
-
             table = $('#Listview').DataTable(table_option);
             table.draw();
         });
@@ -470,11 +505,8 @@
             $('#AddBook').val(null).trigger("change");
             $('#AddLevel').val(null).trigger("change")
             $('#AddTerm').val(null).trigger("change")
-
             var centre = 0;
-
             var createUrl = "{{ route('create', ':centre') }}".replace(':centre', centre);
-
             $.ajax({
                 url: createUrl,
                 method: "GET",
@@ -482,12 +514,13 @@
                     $('#AddCode').val(response.running);
                     $('#AddTerm').prop('disabled', true);
                     $('#AddBook').prop('disabled', true);
+                    $('#s_student').html(response.html_std);
+                    console.log(response);
                 },
                 error: function(error) {
                     console.error(error);
                 }
             });
-
             $('#CreateModal').modal('show');
 
         });
@@ -501,69 +534,79 @@
             $('.alert-danger').hide();
             $('.alert-success').html('');
             $('.alert-success').hide();
-
-
             $.ajax({
-                url: "{{ route('contacts.store') }}",
+                url: "{{ route('histories.store') }}",
                 method: 'post',
                 data: {
                     centre: $('#AddCentre').val()[0],
-                    code: $('#AddCode').val(),
-                    name: $('#AddName').val(),
-                    gender: $("input[name='gender']:checked").val(),
-                    birth_date: $('#AddBirthDate').val(),
-                    start_date: $('#AddDate').val(),
-                    start_term: $('#AddSTerm').val()[0],
-                    school: $('#AddSchool').val(),
-                    level: $('#AddLevel').val()[0],
+                    student_id: $('#s_student').val()[0],
+                    level_id: $('#AddLevel').val()[0],
                     term: $('#AddTerm').val()[0],
                     bookuse: $('#AddBook').val()[0],
-                    discontinued: 0,
-                    //ddate: $('#AddDDate').val(),
-                    //reason: $('#AddReason').val(),
-                    postcode: $('#AddPostcode').val(),
-                    address: $('#AddAddress').val(),
-                    telephone: $('#AddTelephone').val(),
-                    father_name: $('#AddfName').val(),
-                    father_email: $('#AddfEmail').val(),
-                    father_mobile: $('#AddfTelephone').val(),
-                    mother_name: $('#AddmName').val(),
-                    mother_email: $('#AddmEmail').val(),
-                    mother_mobile: $('#AddmTelephone').val(),
+                    date: $('#AddDate').val(),
+                    stime: $('#AddStartTime').val(),
+                    etime: $('#AddEndTime').val(),
+                    comment: $('#AddComment').val(),
+                    signature: $('#AddSignature').val(),
                     _token: token,
                 },
-                success: function(result) {
-                    if (result.errors) {
-                        $('.alert-danger').html('');
-                        $.each(result.errors, function(key, value) {
-                            $('.alert-danger').show();
-                            $('.alert-danger').append('<strong><li>' + value +
-                                '</li></strong>');
+                // error: function(result) {
+                //     if (result.errors) {
+                //         $('.alert-danger').html('');
+                //         $.each(result.errors, function(key, value) {
+                //             $('.alert-danger').show();
+                //             $('.alert-danger').append('<strong><li>' + value +
+                //                 '</li></strong>');
+                //         });
+                //     }
+                // },
+                error: function(result) {
+                    $('.alert-danger').html('');
+                    if (result.responseJSON.errors) {
+                        $.each(result.responseJSON.errors, function(field, messages) {
+                            messages.forEach(function(message) {
+                                $('.alert-danger').append('<strong><li>' +
+                                    message + '</li></strong>');
+                            });
                         });
                     } else {
+                        $('.alert-danger').append('<strong><li>' + result.responseJSON
+                            .message + '</li></strong>');
+                    }
+                },
+                success: function(result) {
+                    console.log(result);
+                    if (result.success) {
+
                         $('.alert-danger').hide();
                         $('.alert-success').show();
-                        $('.alert-success').append('<strong><li>' + result.success +
+                        $('.alert-success').append('<strong><li>' + result.message +
                             '</li></strong>');
-                        toastr.success(result.success, {
+                        toastr.success(result.message, {
                             timeOut: 5000
                         });
                         $('#Listview').DataTable().ajax.reload();
                         $('#AddSTerm').val(null).trigger("change");
                         $('#AddBook').val(null).trigger("change");
-                        $('#AddLevel').val(null).trigger("change")
-                        $('#AddTerm').val(null).trigger("change")
-                        $('.form').trigger('reset');
+                        $('#AddLevel').val(null).trigger("change");
+                        $('#AddTerm').val(null).trigger("change");
+                        // $('.form').trigger('reset');
                         $('#CreateModal').modal('hide');
 
-                        showOverlay();
+                    } else {
 
-                        var oid = result.oid;
-                        var url = "{{ route('receipts_pending') }}?new=" +
-                            encodeURIComponent(oid);
-                        window.location.href = url;
+                        $('.alert-danger').html('');
+                        $('.alert-danger').show();
+                        $('.alert-danger').append('<strong><li>' + result.message +
+                            '</li></strong>');
+
+
                     }
-                }
+                },
+                // error: function(xhr, textStatus, errorThrown) {
+                //     console.error(xhr.statusText);
+                // }
+
             });
         });
 
@@ -717,8 +760,8 @@
         $(document).on('click', '.btn-delete', function() {
             if (!confirm("Confirm the action?")) return;
 
-            var rowid = $(this).data('rowid')
-            var el = $(this)
+            var rowid = $(this).data('rowid');
+            var el = $(this);
             if (!rowid) return;
 
 
@@ -726,7 +769,7 @@
                 //type: "POST",
                 method: 'DELETE',
                 dataType: 'JSON',
-                url: "contacts/destroy/",
+                url: "/histories/" + rowid,
                 data: {
                     id: rowid,
                     //_method: 'delete',

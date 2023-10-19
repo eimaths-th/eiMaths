@@ -53,6 +53,9 @@
     <link rel="stylesheet" href="dist/css/adminlte.css?v=3.2.0">
     <link rel="stylesheet" href="dist/css/fontawesome/css/all.min.css">
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+	{{-- <link rel="stylesheet"  href="/plugins/bootstrap-timepicker/css/bootstrap-timepicker.min.css" /> --}}
+
+
     <style>
         /* body {
             font-family: 'Sarabun', serif;
@@ -139,6 +142,7 @@
     </div>
 </body>
 
+{{-- <script src="/plugins/bootstrap-timepicker/js/bootstrap-timepicker.min.js"></script> --}}
 
 <script src="plugins/datatables/jquery.dataTables.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.37.1/apexcharts.min.js"
