@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use App\Models\Subject;
+use App\Models\level;
 use App\Models\Contact;
 use App\Models\Department;
 use App\Models\History;
@@ -40,10 +40,12 @@ class APIController extends Controller
     {
         //$query = $request->query('query');
 
-        $results = Subject::orderBy("id", "asc")
-            ->get();
+        $student = Contact::find($request->get('std'));
+        $lv1 = $student->level;
+        $lv2 = $student->level2;
+        $levels = level::whereBetween('id', [$lv1, $lv2])->get();
 
-        return response()->json($results);
+        return response()->json($levels);
     }
 
     public function saveHistories(Request $request)
