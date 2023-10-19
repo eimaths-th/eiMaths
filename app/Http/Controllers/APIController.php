@@ -20,6 +20,7 @@ class APIController extends Controller
         //$query = $request->query('query');
 
         $results = Department::orderBy("code", "asc")
+            ->where('status', 1)
             ->get();
 
         return response()->json($results);
@@ -29,6 +30,7 @@ class APIController extends Controller
         //$query = $request->query('query');
 
         $results = Contact::orderBy("code", "asc")
+            ->where('centre', $request->get('centre'))
             ->get();
 
         return response()->json($results);
