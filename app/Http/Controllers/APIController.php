@@ -112,20 +112,55 @@ class APIController extends Controller
                 ->addHours($durationHours)
                 ->format('H:i:s');
 
-            $course = new Histrories([
-                'centre' => $request->get('centre'),
-                'student_id' => $request->get('student'),
-                'level_id' => $request->get('subject'),
-                'term' => $request->get('term'),
-                'bookuse' => $request->get('book'),
-                //'level_id' => $request->get('level'),
-                'date' => $request->get('date'),
-                'stime' => $request->get('stime'),
-                'etime' => $updatedTime,
-                //'description' => $request->get('des'),
-                'signature' => $newname,
+            $centre = $request->get('centre');
+            $std_id = $request->get('student');
+            $level_id = $request->get('subject');
+            $term = $request->get('term');
+            $bookuse = $request->get('book');
+            $datetolearn = $request->get('date');
+            $stime = $request->get('stime');
+            $etime = $updatedTime;
+            //$comment = $request->input('comment');
+            $signature = $newname;
+
+            $level = level::find($level_id);
+            $level_name = $level->name;
+
+            $history = Histrories::where([
+                ['student_id', $std_id],
+                ['term', $term],
+                ['level_id', $level_id]
+            ])->get();
+            if ($history->isEmpty()) {
+                $start_date = Carbon::parse($request->input('date'));
+                $end_date = $start_date->copy()->addMonths(4);
+                $course_remaining = 9;
+            } elseif ($history->count() < 10) {
+                $lastHistory = $history->sortByDesc('created_at')->first();
+                $firstHistory = $history->sortBy('created_at')->first();
+                $course_remaining = $lastHistory->course_remaining - 1;
+                $start_date = $firstHistory->start_date;
+                $end_date = $firstHistory->end_date;
+            } else {
+                return response()->json(['message' => 'เกินกำหนดของเทอมนี้แล้ว']);
+            }
+            Histrories::create([
+                'centre' => $centre,
+                'student_id' => $std_id,
+                'level_id' => $level_id,
+                'level_name' => $level_name,
+                'term' => $term,
+                'bookuse' => $bookuse,
+                'date' => $datetolearn,
+                'stime' => $stime,
+                'etime' => $etime,
+                'start_date' => $start_date,
+                'end_date' => $end_date,
+                //'comment' => $comment,
+                'signature' => $signature,
+                'course_remaining' => $course_remaining
             ]);
-            $course->save();
+
 
             return response()->json([
                 'message' => 'Data Save Successfully',

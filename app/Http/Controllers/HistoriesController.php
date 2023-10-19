@@ -170,7 +170,7 @@ class HistoriesController extends Controller
         }
         $rnumber = studentRunningNumber::pre_generate($centre);
         //dd($rnumber);
-        $stds = Contact::where('centre',$centre)->get();
+        $stds = Contact::where('centre', $centre)->get();
         $html_std = '';
         $remaining = '';
 
