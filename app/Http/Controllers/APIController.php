@@ -43,9 +43,14 @@ class APIController extends Controller
         //$query = $request->query('query');
 
         $student = Contact::find($request->get('std'));
-        $lv1 = $student->level;
-        $lv2 = $student->level2;
-        $levels = level::whereBetween('id', [$lv1, $lv2])->get();
+        if ($student) {
+            $lv1 = $student->level;
+            $lv2 = $student->level2;
+            $levels = level::whereBetween('id', [$lv1, $lv2])->get();
+        } else {
+            $levels = [];
+        }
+
 
         return response()->json($levels);
     }
