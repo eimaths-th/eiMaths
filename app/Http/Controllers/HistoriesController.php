@@ -136,6 +136,32 @@ class HistoriesController extends Controller
     /**
      * Show the form for creating a new resource.
      */
+    // public function running($centre)
+    // {
+    //     //
+    //     if ($centre == 0) {
+    //         $centre = Auth::user()->department->id;
+    //     }
+    //     $rnumber = studentRunningNumber::pre_generate($centre);
+    //     //dd($rnumber);
+    //     $stds = Contact::all();
+    //     $html_std = '';
+    //     $remaining = '';
+
+    //     foreach ($stds as $std) {
+    //         $id = $std->id;
+    //         $code = $std->code;
+    //         $name = $std->name;
+    //         $html_std .= '<option value="' . $id . '">' . $code . ' ' . $name . '</option>';
+    //     }
+
+    //     return response()->json([
+    //         'running' =>  $rnumber,
+    //         'html_std' => $html_std
+    //     ]);
+    // }
+
+
     public function create($centre)
     {
         //
@@ -144,7 +170,7 @@ class HistoriesController extends Controller
         }
         $rnumber = studentRunningNumber::pre_generate($centre);
         //dd($rnumber);
-        $stds = Contact::all();
+        $stds = Contact::where('centre',$centre)->get();
         $html_std = '';
         $remaining = '';
 

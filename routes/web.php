@@ -109,7 +109,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/student/find/{type}/{std_id}', [App\Http\Controllers\HistoriesController::class, 'stdfind'])->name('student.find');
     Route::delete('/histories/{id}', [App\Http\Controllers\HistoriesController::class, 'destroy'])->name('histories.destroys');
     Route::get('create/{centre}', [App\Http\Controllers\HistoriesController::class, 'create'])->name('create');
-
+    Route::get('/histories/running/{centre}', [App\Http\Controllers\HistoriesController::class, 'create'])->name('histories.running');
 
     //file
     Route::post('/file/upload', function (Request $request) {

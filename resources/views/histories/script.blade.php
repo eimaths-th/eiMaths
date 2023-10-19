@@ -478,15 +478,16 @@
 
         $("#AddCentre").change(function() {
             let centre = $('#AddCentre').val();
+            console.log(centre);
             if (centre.length !== 0) {
                 $.ajax({
                     method: "GET",
-                    url: "contacts/running/" + centre,
+                    url: "histories/running/" + centre,
                     async: false,
                     success: function(res) {
-                        //console.log(res)
+                        console.log(res)
                         //$('#AddCode').prop('readonly', false);
-                        $('#AddCode').val(res.running);
+                        $('#s_student').html(res.html_std);
                     }
                 });
             }
