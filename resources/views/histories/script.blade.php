@@ -143,19 +143,16 @@
                 $('#keyword').val(savedKeyword);
             }
         }
-
         // Call the function to set initial field values on page load
         retrieveFieldValues();
-
         let daterange = () => {
             $('#reservation').daterangepicker({
                 startDate: startDate,
                 endDate: endDate,
                 locale: {
-                    format: 'YYYY-MM'
+                    format: 'YYYY-MM-DD'
                 }
             });
-
             // Apply the custom date range filter on input change
             $('#reservation').on('apply.daterangepicker', function() {
                 table.draw();
@@ -175,8 +172,6 @@
             changeYear: true,
             yearRange: '1980:2050'
         });
-
-
 
         //$.noConflict();
         var token = ''
@@ -205,7 +200,6 @@
                 });
             }
         })
-
         $(".level_id").change(function() {
             let level = $('#AddLevel').val();
             //console.log(product);
@@ -225,8 +219,6 @@
                 });
             }
         })
-
-
         $(".terms").change(function() {
             let level = $('#AddLevel').val();
             let term = $('#AddTerm').val();
@@ -282,7 +274,6 @@
             }
         })
 
-
         const table_option = {
             ajax: {
                 data: function(d) {
@@ -290,6 +281,7 @@
                     //d.search = $('input[type="search"]').val();
                 }
             },
+
             serverSide: true,
             processing: true,
             language: {
@@ -457,14 +449,11 @@
                 table.state.clear();
                 await table.destroy();
             }
-
             // Set the date range back to its default
             var currentDate = moment();
             var startDate = moment(currentDate).subtract(7, 'days').format('YYYY-MM-DD');
             var endDate = moment(currentDate).endOf('month').format('YYYY-MM-DD');
-
             daterange();
-
             table = $('#Listview').DataTable(table_option);
             table.draw();
         });
@@ -771,8 +760,8 @@
         $(document).on('click', '.btn-delete', function() {
             if (!confirm("Confirm the action?")) return;
 
-            var rowid = $(this).data('rowid')
-            var el = $(this)
+            var rowid = $(this).data('rowid');
+            var el = $(this);
             if (!rowid) return;
 
 
@@ -780,7 +769,7 @@
                 //type: "POST",
                 method: 'DELETE',
                 dataType: 'JSON',
-                url: "contacts/destroy/",
+                url: "/histories/" + rowid,
                 data: {
                     id: rowid,
                     //_method: 'delete',

@@ -27,7 +27,28 @@ class HistoriesController extends Controller
     {
 
         if ($request->ajax()) {
-            $datas = Histrories::orderBy('id', 'desc')->get();
+
+            $datass = Histrories::orderBy('id', 'desc');
+            if (!Gate::allows('all-centre')) {
+                $datass->where('centre', Auth::user()->department->id);
+            }
+
+            if (!empty($request->get('sdate'))) {
+                $dateRange = $request->input('sdate');
+                if ($dateRange) {
+                    $dateRangeArray = explode(' - ', $dateRange);
+
+                    if (!empty($dateRangeArray) && count($dateRangeArray) == 2) {
+                        $startDate = $dateRangeArray[0];
+                        $endDate = $dateRangeArray[1];
+                        $datass->whereBetween('date', [$startDate, $endDate]);
+                    }
+                }
+                // dd($request->all());
+
+            }
+
+            $datas = $datass->get();
             return datatables()->of($datas)
                 ->editColumn('checkbox', function ($row) {
                     return '<input type="checkbox" id="' . $row->id . '" class="flat" name="table_records[]" value="' . $row->id . '" >';
@@ -367,10 +388,15 @@ class HistoriesController extends Controller
     {
         //
         $id = $request->get('id');
-        Histrories::find($id)->delete();
-        $this->order_clear($id);
-        $this->receive_clear($id);
+        $history = Histrories::find($id);
 
-        return ['success' => true, 'message' => 'Deleted student successfully'];
+        if ($history) {
+            $history->delete();
+            // $this->order_clear($id);
+            // $this->receive_clear($id);
+            return ['success' => true, 'message' => 'Deleted student successfully'];
+        } else {
+            return ['success' => false, 'message' => 'Student not found'];
+        }
     }
 }
