@@ -92,12 +92,12 @@ class APIController extends Controller
     public function saveHistories(Request $request)
     {
 
-       /*  if ($request->hasFile('file')) {
+        if ($request->hasFile('file')) {
             $image = $request->file('file');
             $imageName = $image->getClientOriginalName();
 
             $newname = Str::random(40) . "_" . $imageName;
-            $image->move(public_path('file_upload'), $newname); */
+            $image->move(public_path('file_upload'), $newname);
 
             //endtime
             $time =  $request->get('stime'); // Time string
@@ -118,16 +118,16 @@ class APIController extends Controller
                 'stime' => $request->get('stime'),
                 'etime' => $updatedTime,
                 //'description' => $request->get('des'),
-                //'signature' => $newname,
+                'signature' => $newname,
             ]);
             $course->save();
 
             return response()->json([
                 'message' => 'Data Save Successfully',
-                //'file' => $newname
+                'file' => $newname
             ]);
-       /*  }
+        }
 
-        return response()->json(['message' => 'No file found'], 400); */
+        return response()->json(['message' => 'No file found'], 400);
     }
 }
