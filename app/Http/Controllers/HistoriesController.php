@@ -94,7 +94,7 @@ class HistoriesController extends Controller
                     return '';
                 })
                 ->addColumn('action', function ($row) {
-                    // $html = '';
+                    $html = '';
                     // if (Gate::allows('student-edit')) {
                     //     $html = '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit</button> ';
                     // } else {
