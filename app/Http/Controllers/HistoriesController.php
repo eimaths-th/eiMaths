@@ -95,11 +95,11 @@ class HistoriesController extends Controller
                 })
                 ->addColumn('action', function ($row) {
                     // $html = '';
-                    if (Gate::allows('student-edit')) {
-                        $html = '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit</button> ';
-                    } else {
-                        $html = '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> Edit</button> ';
-                    }
+                    // if (Gate::allows('student-edit')) {
+                    //     $html = '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit</button> ';
+                    // } else {
+                    //     $html = '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> Edit</button> ';
+                    // }
                     if (Gate::allows('student-delete')) {
                         $html .= '<button type="button" data-rowid="' . $row->id . '" class="btn btn-sm btn-danger btn-delete"><i class="fa fa-trash"></i> Delete</button>';
                     } else {
@@ -392,8 +392,6 @@ class HistoriesController extends Controller
 
         if ($history) {
             $history->delete();
-            // $this->order_clear($id);
-            // $this->receive_clear($id);
             return ['success' => true, 'message' => 'Deleted student successfully'];
         } else {
             return ['success' => false, 'message' => 'Student not found'];
