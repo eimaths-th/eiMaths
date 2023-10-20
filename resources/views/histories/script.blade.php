@@ -614,8 +614,6 @@
         let id;
         $(document).on('click', '#getEditData', function(e) {
             e.preventDefault();
-
-
             $('.alert-danger').html('');
             $('.alert-danger').hide();
             $('.alert-success').html('');
@@ -630,7 +628,7 @@
                 method: 'GET',
                 success: function(res) {
                     $('#getCentre').val(res.data.centre).change();
-                    $('#getStudent').val(res.data.code+' '+res.data.student_id);
+                    $('#getStudent').val(res.data.code + ' ' + res.data.student_id);
                     $('#getLevel').val(res.data.level_name);
                     $('#getTerm').val(res.data.term);
                     $('#getBookuse').val(res.data.bookuse);
@@ -641,52 +639,9 @@
                     $('#getStartDate').val(res.data.start_date);
                     $('#getEndDate').val(res.data.end_date);
                     $('#getComment').val(res.data.comment);
-                    $('#getSignature').val(res.data.signature);
-                    //$('#EditLevel').val(res.data.level).change();
-                    // $('#EditLevel').val(res.data.level).trigger('change.select2');
-                    // $('#EditSchool').val(res.data.school);
-                    // //$('#EditTerm').val(res.data.term).change();
-                    // $('#EditTerm').val(res.data.term).trigger('change.select2');
-                    // $('#EditBook').val(res.data.bookuse).change();
-
-                    // if (res.data.discontinued == 1) {
-                    //     $('#ecustomCheckbox1').prop('checked', true);
-                    //     $('#EditDDate').prop('disabled', false);
-                    //     $('#EditReason').prop('disabled', false);
-                    //     $('#sreason').removeClass('d-none');
-                    //     $('#EditDDate').val(res.data.discontinued_date);
-                    // } else {
-                    //     $('#ecustomCheckbox1').prop('checked', false);
-                    //     $('#EditDDate').prop('disabled', true);
-                    //     $('#EditReason').prop('disabled', true);
-                    //     $('#sreason').addClass('d-none');
-                    //     $('#EditDDate').val('');
-                    // }
-
-                    // if (res.data.gender == 1) {
-                    //     $("#eradioSuccess1").prop("checked", true);
-                    // } else if (res.data.gender == 2) {
-                    //     $("#eradioSuccess2").prop("checked", true);
-                    // }
-
-
-
-                    // $('#EditReason').val(res.data.discontinued_reason);
-
-                    // $('#EditPostcode').val(res.data.postcode);
-                    // $('#EditAddress').val(res.data.address);
-                    // $('#EditTelephone').val(res.data.telephone);
-
-                    // $('#EditfName').val(res.data.father_name);
-                    // $('#EditfEmail').val(res.data.father_email);
-                    // $('#EditfTelephone').val(res.data.father_mobile);
-                    // $('#EditmName').val(res.data.mother_name);
-                    // $('#EditmEmail').val(res.data.mother_email);
-                    // $('#EditmTelephone').val(res.data.mother_mobile);
-
-                    // $('#EditTerm').prop('disabled', true);
-                    // $('#EditBook').prop('disabled', true);
-
+                    // $('#getSignature').val(res.data.signature);
+                    $('#getSignature').attr('src', '{{ asset("file_upload/") }}/' + res.data.signature);
+                    console.log($('#getSignature').val(res.data.signature));
                     $('#EditModalBody').html(res.html);
                     $('#EditModal').modal('show');
                 }

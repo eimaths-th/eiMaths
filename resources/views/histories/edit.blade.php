@@ -242,7 +242,9 @@
                                             <div class="col-xs-12 col-sm-12 col-md-12">
                                                 <div class="form-group">
                                                     <strong><i class="fas fa-calendar"></i> Signature:</strong>
-                                                    <textarea name="signature" id="getSignature" rows="5" placeholder="getSignature" class="form-control"></textarea>
+                                                    {{-- <textarea name="signature" id="getSignature" rows="5" placeholder="getSignature" class="form-control"></textarea> --}}
+                                                    <br>
+                                                    <img src="" alt="Signature" id="getSignature" class="img-fluid" style="width: 750px; height: 400px;">
 
                                                 </div>
                                             </div>
