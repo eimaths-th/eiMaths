@@ -67,7 +67,7 @@ class HistoriesController extends Controller
                     if ($row->booku) {
                         $bookuse = $row->booku->name;
                     } else {
-                        $bookuse = 'N/A';
+                        $bookuse = $row->bookuse;
                     }
                     return $bookuse;
                 })
@@ -95,11 +95,18 @@ class HistoriesController extends Controller
                 })
                 ->addColumn('action', function ($row) {
                     $html = '';
-                    // if (Gate::allows('student-edit')) {
-                    //     $html = '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit</button> ';
-                    // } else {
-                    //     $html = '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> Edit</button> ';
-                    // }
+                    if (Gate::allows('student-edit')) {
+                        $html = '<button type="button" class="btn btn-sm btn-primary btn-view" id="getViewData" data-id="' . $row->id . '"><i class="fa fa-eye"></i> View</button> ';
+                    } else {
+                        $html = '<button type="button" class="btn btn-sm btn-primary disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> Edit</button> ';
+                    }
+
+                    if (Gate::allows('student-edit')) {
+                        $html .= '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit</button> ';
+                    } else {
+                        $html .= '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> Edit</button> ';
+                    }
+
                     if (Gate::allows('student-delete')) {
                         $html .= '<button type="button" data-rowid="' . $row->id . '" class="btn btn-sm btn-danger btn-delete"><i class="fa fa-trash"></i> Delete</button>';
                     } else {
@@ -374,28 +381,36 @@ class HistoriesController extends Controller
     public function edit($id)
     {
         //
-        dd($id);
 
-        $data = Order::select(
-            "contacts.*",
-            "orders.status as order_status",
-            "departments.name as centre_name",
-        )
-            ->join("contacts", "contacts.id", "=", "orders.cid")
-            ->join("departments", "contacts.centre", "=", "departments.id")
-            ->where('cid', $id)
-            ->orderBy("id", "desc")->first();
-        // dd($data);
-        $datas = OrderDetail::select(
-            "order_details.*",
-            "levels.id as level_id",
-            "terms.id as term_id",
-        )
-            ->join("bookuses", "bookuses.id", "=", "order_details.product_id")
-            ->join("terms", "terms.id", "=", "bookuses.term_id")
-            ->join("levels", "levels.id", "=", "bookuses.level_id")
-            ->where('order_id', $data->id)->orderBy("id", "asc")->get();
-        return response()->json(['data' => $data, 'datas' => $datas]);
+
+        $history = Histrories::find($id);
+        $data = [
+            'id'                    => $history->id,
+            'centre'                => $history->department->name,
+            'code'                  => $history->student->code,
+            'student_id'            => $history->student->name,
+            'level_name'            => $history->level_name,
+            'term'                  => $history->term,
+            'bookuse'               => $history->booku->name,
+            'course_remaining'      => $history->course_remaining,
+            'date'                  => $history->date,
+            'stime'                 => $history->stime,
+            'etime'                 => $history->etime,
+            'start_date'            => $history->start_date,
+            'end_date'              => $history->end_date,
+            'comment'               => $history->comment,
+            'signature'             => $history->signature,
+        ];
+        // dd($data,$history, $id, );
+
+
+
+        return response()->json([
+            'history' => $history,
+            'data' => $data,
+            // 'datas' => $datas
+
+        ]);
     }
 
     /**
@@ -404,7 +419,10 @@ class HistoriesController extends Controller
     public function update(Request $request, $id)
     {
         //
-
+        $input = $request->all();
+        $history = Histrories::find($id)->update($input);
+        return ['success' => 'Comment student successfully'];
+        // dd($request,$history);
     }
 
     /**

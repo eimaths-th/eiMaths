@@ -187,7 +187,7 @@
             //alert(product);
             $('#AddLevel').html('');
             $('#AddTerm').html('');
-            $('#AddBook').html('');
+            // $('#AddBook').html('');
             if (std_id.length !== 0) {
                 $.ajax({
                     method: "GET",
@@ -205,7 +205,7 @@
             //console.log(product);
             //alert(product);
             $('#AddTerm').html('');
-            $('#AddBook').html('');
+            // $('#AddBook').html('');
             // console.log(level);
             if (level.length !== 0) {
                 $.ajax({
@@ -222,7 +222,7 @@
         $(".terms").change(function() {
             let level = $('#AddLevel').val();
             let term = $('#AddTerm').val();
-            $('#AddBook').html('');
+            // $('#AddBook').html('');
             if (level.length !== 0 && term.length !== 0) {
                 $.ajax({
                     method: "GET",
@@ -503,7 +503,7 @@
 
             $('#custom-tabs-one-home-tab').tab('show');
             $('#AddSTerm').val(null).trigger("change");
-            $('#AddBook').val(null).trigger("change");
+            // $('#AddBook').val(null).trigger("change");
             $('#AddLevel').val(null).trigger("change")
             $('#AddTerm').val(null).trigger("change")
             var centre = 0;
@@ -514,7 +514,7 @@
                 success: function(response) {
                     $('#AddCode').val(response.running);
                     $('#AddTerm').prop('disabled', true);
-                    $('#AddBook').prop('disabled', true);
+                    // $('#AddBook').prop('disabled', true);
                     $('#s_student').html(response.html_std);
                     console.log(response);
                 },
@@ -543,7 +543,7 @@
                     student_id: $('#s_student').val()[0],
                     level_id: $('#AddLevel').val()[0],
                     term: $('#AddTerm').val()[0],
-                    bookuse: $('#AddBook').val()[0],
+                    bookuse: $('#AddBook').val(),
                     date: $('#AddDate').val(),
                     stime: $('#AddStartTime').val(),
                     etime: $('#AddEndTime').val(),
@@ -588,7 +588,7 @@
                         });
                         $('#Listview').DataTable().ajax.reload();
                         $('#AddSTerm').val(null).trigger("change");
-                        $('#AddBook').val(null).trigger("change");
+                        // $('#AddBook').val(null).trigger("change");
                         $('#AddLevel').val(null).trigger("change");
                         $('#AddTerm').val(null).trigger("change");
                         // $('.form').trigger('reset');
@@ -629,57 +629,63 @@
                 url: "{{ route('histories.edit', ':id') }}".replace(':id', id),
                 method: 'GET',
                 success: function(res) {
-                    $('#EditCentre').val(res.data.centre).change();
-                    $('#EditName').val(res.data.name);
-                    $('#EditCode').val(res.data.code);
-                    $('#EditDate').val(res.data.start_date);
-                    $('#EditBirthDate').val(res.data.birth_date);
-                    //$('#EditSTerm').val(res.data.start_term).change();
-                    $('#EditSTerm').val(res.data.start_term).trigger('change.select2');
+                    $('#getCentre').val(res.data.centre).change();
+                    $('#getStudent').val(res.data.code+' '+res.data.student_id);
+                    $('#getLevel').val(res.data.level_name);
+                    $('#getTerm').val(res.data.term);
+                    $('#getBookuse').val(res.data.bookuse);
+                    $('#getCourseRemaining').val(res.data.course_remaining);
+                    $('#getDate').val(res.data.date);
+                    $('#getStartTime').val(res.data.stime);
+                    $('#getEndTime').val(res.data.etime);
+                    $('#getStartDate').val(res.data.start_date);
+                    $('#getEndDate').val(res.data.end_date);
+                    $('#getComment').val(res.data.comment);
+                    $('#getSignature').val(res.data.signature);
                     //$('#EditLevel').val(res.data.level).change();
-                    $('#EditLevel').val(res.data.level).trigger('change.select2');
-                    $('#EditSchool').val(res.data.school);
-                    //$('#EditTerm').val(res.data.term).change();
-                    $('#EditTerm').val(res.data.term).trigger('change.select2');
-                    $('#EditBook').val(res.data.bookuse).change();
+                    // $('#EditLevel').val(res.data.level).trigger('change.select2');
+                    // $('#EditSchool').val(res.data.school);
+                    // //$('#EditTerm').val(res.data.term).change();
+                    // $('#EditTerm').val(res.data.term).trigger('change.select2');
+                    // $('#EditBook').val(res.data.bookuse).change();
 
-                    if (res.data.discontinued == 1) {
-                        $('#ecustomCheckbox1').prop('checked', true);
-                        $('#EditDDate').prop('disabled', false);
-                        $('#EditReason').prop('disabled', false);
-                        $('#sreason').removeClass('d-none');
-                        $('#EditDDate').val(res.data.discontinued_date);
-                    } else {
-                        $('#ecustomCheckbox1').prop('checked', false);
-                        $('#EditDDate').prop('disabled', true);
-                        $('#EditReason').prop('disabled', true);
-                        $('#sreason').addClass('d-none');
-                        $('#EditDDate').val('');
-                    }
+                    // if (res.data.discontinued == 1) {
+                    //     $('#ecustomCheckbox1').prop('checked', true);
+                    //     $('#EditDDate').prop('disabled', false);
+                    //     $('#EditReason').prop('disabled', false);
+                    //     $('#sreason').removeClass('d-none');
+                    //     $('#EditDDate').val(res.data.discontinued_date);
+                    // } else {
+                    //     $('#ecustomCheckbox1').prop('checked', false);
+                    //     $('#EditDDate').prop('disabled', true);
+                    //     $('#EditReason').prop('disabled', true);
+                    //     $('#sreason').addClass('d-none');
+                    //     $('#EditDDate').val('');
+                    // }
 
-                    if (res.data.gender == 1) {
-                        $("#eradioSuccess1").prop("checked", true);
-                    } else if (res.data.gender == 2) {
-                        $("#eradioSuccess2").prop("checked", true);
-                    }
+                    // if (res.data.gender == 1) {
+                    //     $("#eradioSuccess1").prop("checked", true);
+                    // } else if (res.data.gender == 2) {
+                    //     $("#eradioSuccess2").prop("checked", true);
+                    // }
 
 
 
-                    $('#EditReason').val(res.data.discontinued_reason);
+                    // $('#EditReason').val(res.data.discontinued_reason);
 
-                    $('#EditPostcode').val(res.data.postcode);
-                    $('#EditAddress').val(res.data.address);
-                    $('#EditTelephone').val(res.data.telephone);
+                    // $('#EditPostcode').val(res.data.postcode);
+                    // $('#EditAddress').val(res.data.address);
+                    // $('#EditTelephone').val(res.data.telephone);
 
-                    $('#EditfName').val(res.data.father_name);
-                    $('#EditfEmail').val(res.data.father_email);
-                    $('#EditfTelephone').val(res.data.father_mobile);
-                    $('#EditmName').val(res.data.mother_name);
-                    $('#EditmEmail').val(res.data.mother_email);
-                    $('#EditmTelephone').val(res.data.mother_mobile);
+                    // $('#EditfName').val(res.data.father_name);
+                    // $('#EditfEmail').val(res.data.father_email);
+                    // $('#EditfTelephone').val(res.data.father_mobile);
+                    // $('#EditmName').val(res.data.mother_name);
+                    // $('#EditmEmail').val(res.data.mother_email);
+                    // $('#EditmTelephone').val(res.data.mother_mobile);
 
-                    $('#EditTerm').prop('disabled', true);
-                    $('#EditBook').prop('disabled', true);
+                    // $('#EditTerm').prop('disabled', true);
+                    // $('#EditBook').prop('disabled', true);
 
                     $('#EditModalBody').html(res.html);
                     $('#EditModal').modal('show');
@@ -699,34 +705,11 @@
 
 
             $.ajax({
-                url: "contacts/save/" + id,
+                url: "history/update/" + id,
                 method: 'PUT',
                 data: {
-                    centre: $('#EditCentre').val()[0],
-                    code: $('#EditCode').val(),
-                    name: $('#EditName').val(),
-                    gender: $("input[name='egender']:checked").val(),
-                    birth_date: $('#EditBirthDate').val(),
-                    start_date: $('#EditDate').val(),
-                    start_term: $('#EditSTerm').val()[0],
-                    school: $('#EditSchool').val(),
-                    level: $('#EditLevel').val()[0],
-                    term: $('#EditTerm').val()[0],
-                    bookuse: $('#EditBook').val()[0],
-                    discontinued: $('#ecustomCheckbox1').is(':checked') ? 1 : 0,
-                    discontinued_date: $('#EditDDate').val(),
-                    discontinued_reason: $('#EditReason').val(),
-                    postcode: $('#EditPostcode').val(),
-                    address: $('#EditAddress').val(),
-                    telephone: $('#EditTelephone').val(),
-                    father_name: $('#EditfName').val(),
-                    father_email: $('#EditfEmail').val(),
-                    father_mobile: $('#EditfTelephone').val(),
-                    mother_name: $('#EditmName').val(),
-                    mother_email: $('#EditmEmail').val(),
-                    mother_mobile: $('#EditmTelephone').val(),
+                    comment: $('#getComment').val(),
                 },
-
                 success: function(result) {
                     //console.log(result);
                     if (result.errors) {

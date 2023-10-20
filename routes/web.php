@@ -110,6 +110,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::delete('/histories/{id}', [App\Http\Controllers\HistoriesController::class, 'destroy'])->name('histories.destroys');
     Route::get('create/{centre}', [App\Http\Controllers\HistoriesController::class, 'create'])->name('create');
     Route::get('/histories/running/{centre}', [App\Http\Controllers\HistoriesController::class, 'create'])->name('histories.running');
+    Route::put('/history/update/{id}', [App\Http\Controllers\HistoriesController::class, 'update'])->name('history.update');
 
     //file
     Route::post('/file/upload', function (Request $request) {

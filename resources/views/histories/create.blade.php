@@ -8,7 +8,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                
+
                 <div class="alert alert-danger alert-dismissible fade show" role="alert" style="display: none;">
                     <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
@@ -116,7 +116,7 @@
                                             <div class="col-xs-6 col-sm-6 col-md-6">
                                                 <div class="form-group">
                                                     <strong><i class="fas fa-code"></i> Bookuse</strong>
-                                                    <select style="width: 100%;"
+                                                    {{-- <select style="width: 100%;"
                                                         class="books select2 select2_single form-control" id="AddBook"
                                                         name="bookuse" multiple="multiple"
                                                         @cannot('all-centre') disabled @endcannot>
@@ -125,7 +125,8 @@
                                                         <option value="2">2</option>
                                                         <option value="3">3</option>
 
-                                                    </select>
+                                                    </select> --}}
+                                                    <input type="text" class="form-control" id="AddBook" name="bookuse" placeholder="pls Enter book for student">
                                                 </div>
                                             </div>
                                             {{-- ต่อหน้า create view history --}}
