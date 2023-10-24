@@ -309,7 +309,7 @@ class HistoriesController extends Controller
             'stime' => 'required',
             'etime' => 'required',
             'comment' => 'required',
-            'signature' => 'required',
+            // 'signature' => 'required',
         ]);
 
         $centre = $request->input('centre');

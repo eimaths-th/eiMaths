@@ -1,4 +1,3 @@
-
 <style>
     .nav-tabs .nav-item:first-child .nav-link {
         margin-left: 10px;
@@ -33,4 +32,19 @@
         /* Set a high z-index to make sure it's on top of everything */
     }
 
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .table td {
+        max-width: 150px;
+        /* Set the maximum width for the cell */
+        white-space: nowrap;
+        /* Prevent text from wrapping */
+        overflow: hidden;
+        /* Hide any overflow */
+        text-overflow: ellipsis;
+        /* Display an ellipsis (...) when text overflows */
+    }
 </style>
