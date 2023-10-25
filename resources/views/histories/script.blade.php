@@ -493,6 +493,23 @@
             }
         })
 
+        if ($("#AddCentre").val() !== null) {
+            let centre = $('#AddCentre').val();
+            console.log(centre);
+            if (centre.length !== 0) {
+                $.ajax({
+                    method: "GET",
+                    url: "histories/running/" + centre,
+                    async: false,
+                    success: function(res) {
+                        console.log(res)
+                        //$('#AddCode').prop('readonly', false);
+                        $('#s_student').html(res.html_std);
+                    }
+                });
+            }
+        }
+
 
         $(document).on('click', '#CreateButton', async function(e) {
             e.preventDefault();
