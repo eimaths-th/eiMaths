@@ -92,7 +92,7 @@
                                                         <strong><i class="fas fa-calendar"></i> First Name
                                                             (ชื่อจริง):</strong>
                                                         <input type="text" name="fname" id="AddFname"
-                                                            class="form-control" autocomplete="off">
+                                                            class="form-control" autocomplete="off" placeholder="Enter Parent Name">
                                                     </div>
                                                 </div>
                                                 <div class="col-xs-6 col-sm-6 col-md-6">
@@ -100,7 +100,7 @@
                                                         <strong><i class="fas fa-calendar"></i>Last Name
                                                             (นามสกุล):</strong>
                                                         <input type="text" name="lname" id="AddLname"
-                                                            class="form-control" autocomplete="off">
+                                                            class="form-control" autocomplete="off" placeholder="Enter Parent Last Name">
 
                                                     </div>
                                                 </div>
@@ -112,7 +112,7 @@
                                                         <strong><i class="fas fa-calendar"></i> Telp.
                                                             (เบอร์โทรศัพท์):</strong>
                                                         <input type="text" name="telp" id="AddTelp"
-                                                            class="form-control" autocomplete="off">
+                                                            class="form-control" autocomplete="off" placeholder="Enter Parent telphone">
                                                     </div>
                                                 </div>
                                                 <div class="col-xs-6 col-sm-6 col-md-6">
@@ -120,7 +120,7 @@
                                                         <strong><i class="fas fa-calendar"></i>Email
                                                             (อีเมลล์):</strong>
                                                         <input type="text" name="email" id="AddEmail"
-                                                            class="form-control" autocomplete="off">
+                                                            class="form-control" autocomplete="off" placeholder="Enter Parent Email">
                                                     </div>
                                                 </div>
                                             </div>
@@ -128,11 +128,11 @@
                                             <div class="row">
                                                 <div class="col-xs-6 col-sm-6 col-md-6">
                                                     <div class="form-group">
-                                                        <strong><i class="fas fa-calendar"></i>Emergency
+                                                        <strong><i class="fas fa-calendar"></i> Emergency
                                                             Contact(เบอร์ติดต่อด่วน)</strong>
                                                         <input type="text" name="emergency_contact"
                                                             id="AddEmergency" class="form-control"
-                                                            autocomplete="off">
+                                                            autocomplete="off" placeholder="Enter Emergency Contact">
                                                     </div>
                                                 </div>
                                                 <div class="col-xs-6 col-sm-6 col-md-6">
@@ -177,7 +177,7 @@
                                                 <div class="col-xs-12 col-sm-12 col-md-12">
                                                     <div class="form-group">
                                                         <strong><i class="fas fa-calendar"></i> Address:</strong>
-                                                        <textarea name="address" id="AddAddress" rows="5" class="form-control"></textarea>
+                                                        <textarea name="address" id="AddAddress" rows="5" class="form-control" placeholder="Enter Address"></textarea>
 
                                                     </div>
                                                 </div>
@@ -187,7 +187,7 @@
                                                     <div class="form-group">
                                                         <strong><i class="fas fa-calendar"></i>Orther Details
                                                             :</strong>
-                                                        <textarea name="notes" id="AddNotes" rows="5" class="form-control"></textarea>
+                                                        <textarea name="notes" id="AddNotes" rows="5" class="form-control" placeholder="Enter Detail"></textarea>
 
                                                     </div>
                                                 </div>
@@ -201,7 +201,7 @@
                                                         <strong><i class="fas fa-calendar"></i>Password.
                                                             (รหัสผ่าน):</strong>
                                                         <input type="password" name="password" id="AddPassword"
-                                                            class="form-control" autocomplete="off">
+                                                            class="form-control" autocomplete="off"  placeholder="Enter Password">
 
                                                     </div>
                                                 </div>
@@ -210,7 +210,7 @@
                                                         <strong><i class="fas fa-calendar"></i>Conf Password. (ยืนยัน
                                                             รหัสผ่าน):</strong>
                                                         <input type="password" name="password_confirmation" id="password_confirmation"
-                                                            class="form-control" autocomplete="off">
+                                                            class="form-control" autocomplete="off" placeholder="Enter Confirm Password">
                                                     </div>
                                                 </div>
                                             </div>

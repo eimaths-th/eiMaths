@@ -177,13 +177,13 @@ class ParentController extends Controller
             'centre_id' => 'required',
             'fname' => 'required',
             'lname' => 'required',
-            'telp' => 'required|unique:parents',
+            'telp' => 'required|unique:parents|max:10|min:10',
             'email' => 'required|email|unique:parents',
             'password' => 'required|min:6|confirmed',
             'address' => 'required',
             'relationship' => 'required',
             'gender' => 'required',
-            'emergency_contact' => 'required',
+            'emergency_contact' => 'required|unique:parents|max:10|min:10',
         ]);
         $hashedPassword = bcrypt($request->input('password'));
         $stds = $request->input('student_id');
