@@ -611,7 +611,7 @@
             id = $(this).data('id');
             $.ajax({
                 // url: "histories/edit/" + id,
-                url: "{{ route('histories.edit', ':id') }}".replace(':id', id),
+                url: "{{ route('parent.edit', ':id') }}".replace(':id', id),
                 method: 'GET',
                 success: function(res) {
                     $('#getCentre').val(res.data.centre).change();
@@ -648,7 +648,7 @@
 
 
             $.ajax({
-                url: "history/update/" + id,
+                url: "parent/update/" + id,
                 method: 'PUT',
                 data: {
                     comment: $('#getComment').val(),
@@ -696,7 +696,7 @@
                 //type: "POST",
                 method: 'DELETE',
                 dataType: 'JSON',
-                url: "/histories/" + rowid,
+                url: "/parent/" + rowid,
                 data: {
                     id: rowid,
                     //_method: 'delete',
