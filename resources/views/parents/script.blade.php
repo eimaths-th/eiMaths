@@ -571,11 +571,12 @@
                         $('.alert-success').append('<strong><li>' + result.message +
                             '</li></strong>');
                         toastr.success(result.message, {
-                            timeOut: 5000
+                            timeOut: 3000
                         });
 
                         // $('.form').trigger('reset');
                         $('#CreateModal').modal('hide');
+                        location.reload();
 
                     } else {
 
@@ -586,12 +587,15 @@
 
 
                     }
+                    location.reload();
                 },
                 // error: function(xhr, textStatus, errorThrown) {
                 //     console.error(xhr.statusText);
                 // }
 
             });
+            location.reload();
+
         });
 
         let id;
