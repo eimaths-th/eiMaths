@@ -545,7 +545,7 @@
                     var dangerValidate = $('#danger_validate');
                     dangerValidate.html(''); // Clear any previous messages
 
-                    console.log(result);
+                    // console.log(result);
 
                     if (result.responseJSON.errors) {
                         dangerValidate.show();
@@ -563,7 +563,7 @@
                     dangerValidate.show();
                 },
                 success: function(result) {
-                    console.log(result);
+                    // console.log(result);
                     if (result.success) {
 
                         $('.alert-danger').hide();
@@ -594,7 +594,7 @@
                 // }
 
             });
-            location.reload();
+            // location.reload();
 
         });
 
