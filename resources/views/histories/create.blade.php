@@ -217,6 +217,43 @@
                                                 </div>
                                             </div>
                                         </div>
+
+                                        {{-- <div class="form-row form-focus" id="dropzone-att">
+                                            <div class="col-md-12 col-sm-12">
+                                                <a id="datt"></a>
+                                                <div class="position-relative form-group">
+                                                    <label class="form-label form-label-top form-label-auto"
+                                                        for="att">อัพโหลดหลักฐานการชำระเงิน<span
+                                                            class="form-required">*</span>
+                                                        <div style="width: 280px"></div>
+                                                    </label>
+                                                    <input type="text" id="drop2" name="drop2"
+                                                        class="form-control form_none" value="" required>
+                                                    <div class="dropzone" id="my-awesome-dropzone2"
+                                                        style="font-size: 1.5em;">
+                                                        <div class="fallback">
+
+                                                        </div>
+                                                    </div>
+                                                    <label class="form-sub-label" style="min-height:13px"
+                                                        aria-hidden="false">Receipt Photo</label>
+                                                    <div id="dropzone-att-error" class="form-error-message" role="alert">
+                                                        <img src="https://cdn.jotfor.ms/images/exclamation-octagon.png"
+                                                            height="10">
+                                                        <span class="error-navigation-message">This field is
+                                                            required.</span>
+                                                        <div class="form-error-arrow">
+                                                            <div class="form-error-arrow-inner"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="dropzonex dz-default dz-message" id="dropzone_preview2"
+                                            style="font-size: 1.5em;">
+                                            <h3 class="dropzone-previews ui"></h3>
+                                        </div> --}}
+
                                     </div>
                                 </div>
                             </div>
