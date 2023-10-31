@@ -106,11 +106,13 @@ class APIController extends Controller
 
             //endtime
             $time =  $request->get('stime'); // Time string
-            $durationHours = $request->get('hour'); // Duration in hours to add
+
+
+            /* $durationHours = $request->get('hour');
 
             $updatedTime = Carbon::createFromFormat('H:i:s', $time)
                 ->addHours($durationHours)
-                ->format('H:i:s');
+                ->format('H:i:s'); */
 
             $centre = $request->get('centre');
             $std_id = $request->get('student');
@@ -119,8 +121,8 @@ class APIController extends Controller
             $bookuse = $request->get('book');
             $datetolearn = $request->get('date');
             $stime = $request->get('stime');
-            $etime = $updatedTime;
-            //$comment = $request->input('comment');
+            $etime = $request->get('etime');
+            $comment = $request->input('comments');
             $signature = $newname;
 
             $level = level::find($level_id);
@@ -156,7 +158,7 @@ class APIController extends Controller
                 'etime' => $etime,
                 'start_date' => $start_date,
                 'end_date' => $end_date,
-                //'comment' => $comment,
+                'comment' => $comment,
                 'signature' => $signature,
                 'course_remaining' => $course_remaining
             ]);
