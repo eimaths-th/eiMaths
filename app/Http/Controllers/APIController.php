@@ -104,6 +104,17 @@ class APIController extends Controller
             $newname = Str::random(40) . "_" . $imageName;
             $image->move(public_path('file_upload'), $newname);
 
+            $uploadedFileNames = [];
+
+            $files = $request->file('files');
+            foreach ($files as $file) {
+                if ($file->isValid()) {
+                    $newname = Str::random(40) . "_" . $file->getClientOriginalName();
+                    $file->move(public_path('file_upload'), $newname);
+                    $uploadedFileNames[] = $newname;
+                }
+            }
+
             //endtime
             $time =  $request->get('stime'); // Time string
 
