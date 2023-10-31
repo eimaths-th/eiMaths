@@ -11,6 +11,7 @@ use App\Models\Department;
 use App\Models\term;
 use App\Models\bookuse;
 use App\Models\Histrories;
+use App\Models\HistoryStudentImg;
 use Carbon\Carbon;
 
 class APIController extends Controller
@@ -106,14 +107,7 @@ class APIController extends Controller
 
             $uploadedFileNames = [];
 
-            $files = $request->file('files');
-            foreach ($files as $file) {
-                if ($file->isValid()) {
-                    $newname = Str::random(40) . "_" . $file->getClientOriginalName();
-                    $file->move(public_path('file_upload'), $newname);
-                    $uploadedFileNames[] = $newname;
-                }
-            }
+
 
             //endtime
             $time =  $request->get('stime'); // Time string
@@ -157,7 +151,7 @@ class APIController extends Controller
             } else {
                 return response()->json(['message' => 'เกินกำหนดของเทอมนี้แล้ว']);
             }
-            Histrories::create([
+            $create = Histrories::create([
                 'centre' => $centre,
                 'student_id' => $std_id,
                 'level_id' => $level_id,
@@ -173,6 +167,21 @@ class APIController extends Controller
                 'signature' => $signature,
                 'course_remaining' => $course_remaining
             ]);
+
+            $files = $request->file('files');
+            foreach ($files as $file) {
+                if ($file->isValid()) {
+                    $newname = Str::random(40) . "_" . $file->getClientOriginalName();
+                    $file->move(public_path('file_upload'), $newname);
+                    $uploadedFileNames[] = $newname;
+
+                    $historyStudentImg = new HistoryStudentImg;
+                    $historyStudentImg->history_id = $create->id;
+                    $historyStudentImg->student_id = $std_id;
+                    $historyStudentImg->img = $newname;
+                    $historyStudentImg->save();
+                }
+            }
 
 
             return response()->json([
