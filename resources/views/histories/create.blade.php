@@ -24,7 +24,7 @@
 
 
                 {{-- 'route' => 'users.store', --}}
-                {!! Form::open(['method' => 'POST', 'class' => 'form']) !!}
+                {!! Form::open(['method' => 'POST', 'class' => 'form', 'id' => 'myForm']) !!}
 
                 <div class="card card-success card-tabs">
                     <div class="card-header p-0 pt-1">
@@ -218,7 +218,7 @@
                                             </div>
                                         </div>
 
-                                        {{-- <div class="form-row form-focus" id="dropzone-att">
+                                        <div class="form-row form-focus" id="dropzone-att">
                                             <div class="col-md-12 col-sm-12">
                                                 <a id="datt"></a>
                                                 <div class="position-relative form-group">
@@ -252,7 +252,7 @@
                                         <div class="dropzonex dz-default dz-message" id="dropzone_preview2"
                                             style="font-size: 1.5em;">
                                             <h3 class="dropzone-previews ui"></h3>
-                                        </div> --}}
+                                        </div>
 
                                     </div>
                                 </div>

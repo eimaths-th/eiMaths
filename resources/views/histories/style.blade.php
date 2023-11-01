@@ -1,3 +1,5 @@
+{{-- <link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" type="text/css" /> --}}
+
 <style>
     .nav-tabs .nav-item:first-child .nav-link {
         margin-left: 10px;
@@ -46,6 +48,26 @@
         /* Hide any overflow */
         text-overflow: ellipsis;
         /* Display an ellipsis (...) when text overflows */
+    }
+</style>
+<style>
+    <style>input:required:focus:invalid~.form-error-message {
+        display: block;
+    }
+
+    .form-error-message {
+        color: #fff;
+        background-color: #f23a3c;
+        background-image: url(data:image/svg+xml;charset=utf-8,%3Csvg width='14' height='15' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M7 14.515a7 7 0 110-14 7 7 0 010 14zm-.814-5.86h1.628v-5.21H6.186v5.21zM7 11.259a.82.82 0 00.814-.824A.816.816 0 007 9.631a.813.813 0 100 1.628z' fill='%23fff'/%3E%3C/svg%3E);
+        font-size: .75em;
+        margin-top: 8px;
+        border-radius: 4px;
+        background-size: 0.875em;
+        background-position: 0.375em;
+        background-repeat: no-repeat;
+        display: none;
+        width: 200px;
+        padding: 0.25em 0.5em 0.25em 1.625em;
     }
 
     .dropzone {
@@ -359,4 +381,9 @@
         border-right: 6px solid transparent;
         border-bottom: 6px solid #be2626;
     }
+
+    .modal-xxl {
+        max-width: 1600px !important;
+    }
 </style>
+

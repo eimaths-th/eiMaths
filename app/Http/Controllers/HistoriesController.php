@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\bookuse;
 use App\Models\Contact;
 use App\Models\Department;
+use App\Models\FileUpload;
+use App\Models\HistoryStudentImg;
 use App\Models\Histrories;
 use App\Models\histroriesTes;
 use App\Models\level;
@@ -17,6 +19,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
 
 class HistoriesController extends Controller
 {
@@ -299,6 +302,7 @@ class HistoriesController extends Controller
     // }
     public function store(Request $request)
     {
+        // dd($request);
         $request->validate([
             'centre' => 'required',
             'student_id' => 'required',
@@ -344,7 +348,8 @@ class HistoriesController extends Controller
         } else {
             return response()->json(['success' => false, 'message' => 'เกินกำหนดของเทอมนี้แล้ว']);
         }
-        Histrories::create([
+
+        $history = Histrories::create([
             'centre' => $centre,
             'student_id' => $std_id,
             'level_id' => $level_id,
@@ -360,6 +365,29 @@ class HistoriesController extends Controller
             'signature' => $signature,
             'course_remaining' => $course_remaining
         ]);
+
+        $filesb = $request->get('img');
+
+        $filebs = "";
+        foreach ($filesb as $fileb) {
+            //echo $fileb;
+
+            $oldfile = FileUpload::where('oldname', $fileb)->get();
+            $filebs .= $oldfile[0]->filename . "|";
+            File::move(public_path() . '/file_upload/' . $oldfile[0]->filename, public_path() . '/file_upload/' . $oldfile[0]->filename);
+            FileUpload::where('filename', $oldfile[0]->filename)->delete();
+
+            HistoryStudentImg::create([
+
+                'history_id' => $history->id,
+                'student_id' => $std_id,
+                'img' => $filebs,
+
+            ]);
+        }
+
+
+
 
         // dd($request);
 
