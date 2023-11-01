@@ -223,7 +223,7 @@
                                                 <a id="datt"></a>
                                                 <div class="position-relative form-group">
                                                     <label class="form-label form-label-top form-label-auto"
-                                                        for="att">อัพโหลดหลักฐานการชำระเงิน<span
+                                                        for="att">รูปนักเรียน<span
                                                             class="form-required">*</span>
                                                         <div style="width: 280px"></div>
                                                     </label>
@@ -236,7 +236,7 @@
                                                         </div>
                                                     </div>
                                                     <label class="form-sub-label" style="min-height:13px"
-                                                        aria-hidden="false">Receipt Photo</label>
+                                                        aria-hidden="false">Student Photo</label>
                                                     <div id="dropzone-att-error" class="form-error-message" role="alert">
                                                         <img src="https://cdn.jotfor.ms/images/exclamation-octagon.png"
                                                             height="10">
