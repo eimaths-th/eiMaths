@@ -116,6 +116,8 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/history/upload', [App\Http\Controllers\HistoryStudentImgController::class, 'store'])->name('history.upload');
     Route::post('/history/upload/delete', [App\Http\Controllers\HistoryStudentImgController::class, 'destroy'])->name('history.delete');
 
+    Route::get('/histories/show/{id}', [App\Http\Controllers\HistoriesController::class, 'show'])->name('history.show');
+
 
     //parent route
     Route::resource('parent', ParentController::class);

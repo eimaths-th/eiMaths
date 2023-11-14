@@ -543,6 +543,48 @@
             $('#CreateModal').modal('show');
 
         });
+        $(document).on('click', '#getViewData', async function(e) {
+            e.preventDefault();
+            $('.alert-danger').html('');
+            $('.alert-danger').hide();
+            $('.alert-success').html('');
+            $('.alert-success').hide();
+
+            $('#custom-tabs-one-home-tab').tab('show');
+
+            var id = document.getElementById('getViewData').getAttribute('data-id');
+            var route = "{{ route('history.show', ['id' => ':id']) }}".replace(':id', id);
+
+            $.ajax({
+                url: route,
+                method: "GET",
+                success: function(response) {
+                    console.log(response.centre);
+                    console.log(response.history);
+                    console.log(response.student);
+                    $('#viewCentre').val(response.centre);
+                    $('#viewStudent').val(response.student);
+                    $('#viewLV').val(response.history.level_name);
+                    $('#viewTerm').val(response.history.term);
+                    $('#viewBook').val(response.history.bookuse);
+                    $('#viewCourseRemaining').val(response.history.course_remaining);
+                    $('#viewDate').val(response.history.date);
+                    $('#ViewStartTime').val(response.history.stime);
+                    $('#ViewEndTime').val(response.history.etime);
+                    $('#viewStartDate').val(response.history.start_date);
+                    $('#viewEndDate').val(response.history.end_date);
+                    $('#ViewComment').val(response.history.comment);
+                    $('#ViewSignature').attr('src', 'https://app.eimaths-th.com/file_upload/' + response.history.signature);
+                    // console.log(response.code);
+                },
+                error: function(error) {
+                    console.error(error);
+                }
+            });
+
+            $('#ViewModal').modal('show');
+
+        });
 
 
 

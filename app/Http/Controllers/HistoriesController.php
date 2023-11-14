@@ -104,11 +104,11 @@ class HistoriesController extends Controller
                         $html = '<button type="button" class="btn btn-sm btn-primary disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> Edit</button> ';
                     }
 
-                    if (Gate::allows('student-edit')) {
-                        $html .= '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit</button> ';
-                    } else {
-                        $html .= '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> Edit</button> ';
-                    }
+                    // if (Gate::allows('student-edit')) {
+                    //     $html .= '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit</button> ';
+                    // } else {
+                    //     $html .= '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> Edit</button> ';
+                    // }
 
                     if (Gate::allows('student-delete')) {
                         $html .= '<button type="button" data-rowid="' . $row->id . '" class="btn btn-sm btn-danger btn-delete"><i class="fa fa-trash"></i> Delete</button>';
@@ -401,6 +401,15 @@ class HistoriesController extends Controller
     public function show($id)
     {
         //
+        // dd($id);
+        $history = Histrories::find($id);
+        $centre = Department::where('id',$history->centre)->get();
+        return response()->json([
+            'history' =>  $history,
+            'centre' =>  $history->department->name,
+            'student' =>  $history->student->student_code,
+            // 'code' =>  $history->student->code,
+        ]);
     }
 
     /**
