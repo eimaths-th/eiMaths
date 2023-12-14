@@ -48,6 +48,9 @@ class ReceiptController extends Controller
      */
     public function index(Request $request)
     {
+        // $centre = Auth::user()->department->id;
+        // $type = strtoupper(Department::getDepartmentCodeById($centre));
+        // dd($type);
         if ($request->ajax()) {
             //sleep(2);
             if ($request->get('type')) {
@@ -464,18 +467,18 @@ class ReceiptController extends Controller
             DB::raw("SUM(eimatch.order_detail_lists.bprice) as total_bprice")
         )->where('order_id', $id)
             ->groupBy(
-                /* 'order_detail_lists.level', */
+                // 'order_detail_lists.level',
                 'first_char',
                 'order_detail_lists.price',
                 'order_detail_lists.bprice',
-                /* 'order_detail_lists.id',
-                'order_detail_lists.order_id',
-                'eimatch.order_detail_lists.term',
-                'order_detail_lists.book',
-                'order_detail_lists.price',
-                'eimatch.order_detail_lists.bprice',
-                'eimatch.order_detail_lists.created_at',
-                'eimatch.order_detail_lists.updated_at' */
+                // 'order_detail_lists.id',
+                // 'order_detail_lists.order_id',
+                // 'eimatch.order_detail_lists.term',
+                // 'order_detail_lists.book',
+                // 'order_detail_lists.price',
+                // 'eimatch.order_detail_lists.bprice',
+                // 'eimatch.order_detail_lists.created_at',
+                // 'eimatch.order_detail_lists.updated_at'
             )
             //->orderBy("id", "asc")
             ->get();

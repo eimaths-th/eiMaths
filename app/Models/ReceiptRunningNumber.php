@@ -27,7 +27,7 @@ class ReceiptRunningNumber extends Model
                 'centre' => $type,
             ]);
         }
-
+        // dd($type);
         $running_number = ReceiptRunningNumber::where('year', $year)->where('month', $month)->where('centre', $type)->first();
 
         $running_number->number++;
@@ -36,7 +36,7 @@ class ReceiptRunningNumber extends Model
         $number = str_pad($number, 3, '0', STR_PAD_LEFT);
 
 
-        return 'IV' . date('y') . date('m') . $number;
+        return $type . date('y') . date('m') . $number;
     }
 
 
@@ -57,6 +57,7 @@ class ReceiptRunningNumber extends Model
                 'year' => $year,
             ]);
         }
+        // dd($type);
 
         $running_number = ReceiptRunningNumber::where('centre', $type)->where('year', $year)->where('month', $month)->first();
         $running_number->number++;
@@ -65,6 +66,6 @@ class ReceiptRunningNumber extends Model
         $number = str_pad($number, 3, '0', STR_PAD_LEFT);
 
         // A-21-00001
-        return 'IV' . date('y') . date('m') . $number;
+        return $type . date('y') . date('m') . $number;
     }
 }
