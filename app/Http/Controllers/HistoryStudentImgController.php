@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\FileUpload;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class HistoryStudentImgController extends Controller
 {
@@ -28,6 +31,44 @@ class HistoryStudentImgController extends Controller
     public function store(Request $request)
     {
         //
+
+        $validator =  Validator::make($request->all(), [
+            'file.*' => 'required|image',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()->all()]);
+        }
+
+        $filecount = count($request->file('file'));
+        //return response()->json(['success'=>$x]);
+        //print_r($request->file('file'));
+        //exit();
+        $newname = "";
+        for ($i = 0; $i <= ($filecount - 1); $i++) {
+            $image = $request->file('file')[$i];
+            //print_r($image);
+            //exit();
+            $imageName = $image->getClientOriginalName();
+            $oldfile = FileUpload::where('oldname', $imageName)->get();
+
+
+            if (!is_array($oldfile)) {
+
+                $newname = Str::random(40) . "_" . $imageName;
+                $image->move(public_path('file_upload'), $newname);
+
+                $imageUpload = new FileUpload();
+                $imageUpload->filename = $newname;
+                $imageUpload->oldname = $imageName;
+                $imageUpload->save();
+            }
+
+            //return response()->json(['success' => $newname]);
+
+            //$newnamea[$i] = $newname;
+        }
+        return response()->json(['success' => $newname]);
     }
 
     /**
@@ -57,8 +98,16 @@ class HistoryStudentImgController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Request $request)
     {
         //
+        $filename =  $request->get('name');
+        $oldfile = FileUpload::where('oldname', $filename)->get();
+        $path = public_path() . '/file_upload/' . $oldfile[0]->filename;
+        if (file_exists($path)) {
+            unlink($path);
+            FileUpload::where('oldname', $filename)->delete();
+        }
+        return $filename;
     }
 }

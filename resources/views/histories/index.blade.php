@@ -198,10 +198,10 @@
 
     </section>
 
-
     @include('histories.create')
 
-    @include('histories.edit')
+    @include('histories.view')
+
 
     {{--  {!! $data->render() !!} --}}
 @endsection
@@ -209,4 +209,5 @@
 @section('script')
     @include('histories.script')
 @endsection
+
 

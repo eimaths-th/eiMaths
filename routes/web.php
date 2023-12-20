@@ -112,8 +112,11 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('create/{centre}', [App\Http\Controllers\HistoriesController::class, 'create'])->name('create');
     Route::get('/histories/running/{centre}', [App\Http\Controllers\HistoriesController::class, 'create'])->name('histories.running');
     Route::put('/history/update/{id}', [App\Http\Controllers\HistoriesController::class, 'update'])->name('history.update');
-    Route::post('/history/upload/', [App\Http\Controllers\HistoryStudentImgController::class, 'filestore'])->name('history.upload');
-    Route::post('/history/upload/delete', [HistoryStudentImgController::class, 'fileDestroy'])->name('history.delete');
+
+    Route::post('/history/upload', [App\Http\Controllers\HistoryStudentImgController::class, 'store'])->name('history.upload');
+    Route::post('/history/upload/delete', [App\Http\Controllers\HistoryStudentImgController::class, 'destroy'])->name('history.delete');
+
+    Route::get('/histories/show/{id}', [App\Http\Controllers\HistoriesController::class, 'show'])->name('history.show');
 
 
     //parent route
