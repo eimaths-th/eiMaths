@@ -99,6 +99,9 @@ class ContactController extends Controller
                         return $row->level_name;
                     }
                 })
+                ->editColumn('nickname', function ($row) {
+                    return $row->nickname !== null && $row->nickname !== '' ? $row->nickname : '-';
+                })
                 ->editColumn('bookuse_name', function ($row) {
                     if (!empty($row->bookuse2_name)) {
                         return ' ( ' . $row->bookuse_name . ') - (' . $row->bookuse2_name . ')';

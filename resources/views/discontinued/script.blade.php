@@ -147,6 +147,10 @@
                     name: 'name'
                 },
                 {
+                    data: 'nickname',
+                    name: 'nickname'
+                },
+                {
                     data: 'start_date',
                     name: 'start_date'
                 },
