@@ -556,7 +556,7 @@
             //document.getElementById('getViewData').getAttribute('data-id');
             var route = "{{ route('history.show', ['id' => ':id']) }}".replace(':id', id);
 
-            console.log(hid)
+            //console.log(hid)
 
             $.ajax({
                 url: route,
