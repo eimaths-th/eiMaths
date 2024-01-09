@@ -577,6 +577,8 @@
                     $('#ViewEndTime').val(response.history.etime);
                     $('#viewStartDate').val(response.history.start_date);
                     $('#viewEndDate').val(response.history.end_date);
+                    $('#hsliden').html(response.slide_html);
+                    $('#hslidei').html(response.img_html);
                     $('#ViewComment').val(response.history.comment);
                     $('#ViewSignature').attr('src', 'https://app.eimaths-th.com/file_upload/' + response.history.signature);
                     // console.log(response.code);
