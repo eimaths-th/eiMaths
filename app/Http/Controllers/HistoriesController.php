@@ -415,7 +415,7 @@ class HistoriesController extends Controller
             class="active"></li>';
             $img_html .= ' <div class="carousel-item active">
             <img class="d-block w-100"
-                src="' . url('public/file_upload/' . $img->img) . '"
+                src="' . asset('file_upload/' . $img->img) . '"
                 alt="' . $img->id . '"></div>';
             $i++;
         }
