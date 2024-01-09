@@ -554,14 +554,14 @@
 
             var hid = $(this).data('id')
             //document.getElementById('getViewData').getAttribute('data-id');
-            var route = "{{ route('history.show', ['id' => ':id']) }}".replace(':id', id);
+            var route = "{{ route('history.show', ['id' => ':id']) }}".replace(':id', hid);
 
             //console.log(hid)
 
             $.ajax({
                 url: route,
                 method: "GET",
-                data: { id: hid },
+                //data: { id: hid },
                 success: function(response) {
                     console.log(response.centre);
                     console.log(response.history);
