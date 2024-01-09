@@ -552,15 +552,16 @@
 
             $('#custom-tabs-one-home-tab').tab('show');
 
-            var id = document.getElementById('getViewData').getAttribute('data-id');
+            var hid = $(this).data('id')
+            //document.getElementById('getViewData').getAttribute('data-id');
             var route = "{{ route('history.show', ['id' => ':id']) }}".replace(':id', id);
 
-            console.log(id)
+            console.log(hid)
 
             $.ajax({
                 url: route,
                 method: "GET",
-                data: { id: id },
+                data: { id: hid },
                 success: function(response) {
                     console.log(response.centre);
                     console.log(response.history);
