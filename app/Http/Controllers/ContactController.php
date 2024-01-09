@@ -197,7 +197,7 @@ class ContactController extends Controller
                     return '<input type="checkbox" id="' . $row->id . '" class="flat" name="table_records[]" value="' . $row->id . '" >';
                 })
                 ->editColumn('nickname', function ($row) {
-                    return $row->nickname != '' ? $row->nickname : '-';
+                    return $row->nickname !== null && $row->nickname !== '' ? $row->nickname : '-';
                 })
                 ->addColumn('more', function ($row) {
                     return '';
