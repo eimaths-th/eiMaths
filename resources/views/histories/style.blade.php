@@ -383,7 +383,7 @@
     }
 
     .modal-xxl {
-        max-width: 1600px !important;
+        max-width: 1200px !important;
     }
 </style>
 
