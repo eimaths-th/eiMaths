@@ -67,7 +67,7 @@ class ReceiptController extends Controller
                 //"receipts.level as level",
                 //"receipts.status as order_status",
                 "contacts.name as contact_name",
-                "contacts.nickname as contact_nivkname",
+                "contacts.nickname as contact_nickname",
                 "contacts.code as contact_code",
                 //"contacts.start_term as start_term",
                 "departments.name as centre",
