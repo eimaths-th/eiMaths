@@ -61,7 +61,7 @@
     <div class="login-box">
         <div class="image-container"><img src="{{ asset('images/logo.png') }}" alt="..." height="120"></div>
         <div class="login-logo">
-            <a href="{{ url('/home') }}"><b> {{ config('app.name') }} 1 {{ config('app.subtitle') }}</b></a>
+            <a href="{{ url('/home') }}"><b> {{ config('app.name') }} {{ config('app.subtitle') }}</b></a>
         </div>
         <!-- /.login-logo -->
 
