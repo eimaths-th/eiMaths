@@ -119,7 +119,7 @@ class ReceiptController extends Controller
                 ->addColumn('more', function ($row) {
                     return '';
                 })
-                ->editColumn('contavt_nickname', function ($row) {
+                ->editColumn('contact_nickname', function ($row) {
                     return $row->contact_nickname !== null && $row->contact_nickname !== '' ? $row->contact_nickname : '-';
                 })
                 ->editColumn('book_use', function (Receipt $datas) {
