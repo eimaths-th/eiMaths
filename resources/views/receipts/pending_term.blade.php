@@ -124,6 +124,7 @@
                                                     <th>Date</th>
                                                     <th>Student Code</th>
                                                     <th>Student Name</th>
+                                                    <th>Student Nick  Name</th>
                                                     <th>BookUse</th>
                                                     <th>BookNewBuy</th>
                                                     <th>TermFee</th>
@@ -136,6 +137,7 @@
                                             </tbody>
                                             <tfoot>
                                                 <tr>
+                                                    <th></th>
                                                     <th></th>
                                                     <th></th>
                                                     <th></th>

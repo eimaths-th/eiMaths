@@ -163,6 +163,10 @@
                     name: 'contact_name'
                 },
                 {
+                    data: 'contact_nickname',
+                    name: 'contact_nickname'
+                },
+                {
                     data: 'receipt_number',
                     name: 'receipt_number'
                 },
