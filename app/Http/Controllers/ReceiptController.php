@@ -105,6 +105,7 @@ class ReceiptController extends Controller
                 'receipts.total_fee',
                 'receipts.payment_date',
                 'contacts.name',
+                'contacts.nickname',
                 'contacts.code',
                 'departments.name'
             )
@@ -331,6 +332,7 @@ class ReceiptController extends Controller
                 "orders.created_at",
                 "orders.status",
                 "contacts.name",
+                'contacts.nickname',
                 "contacts.code",
                 "contacts.start_term",
                 "departments.name"
