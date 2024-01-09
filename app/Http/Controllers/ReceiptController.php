@@ -120,7 +120,7 @@ class ReceiptController extends Controller
                     return '';
                 })
                 ->editColumn('contact_name', function ($row) {
-                    $nic = $row->contact_nickname !== null && $row->contact_nickname !== '' ? '(' . $row->contact_nickname . ')' : '-';
+                    $nic = $row->contact_nickname !== null && $row->contact_nickname !== '' ? '(' . $row->contact_nickname . ')' : '';
                     return $row->contact_name . ' ' . $nic;
                 })
                 ->editColumn('book_use', function (Receipt $datas) {
@@ -246,7 +246,7 @@ class ReceiptController extends Controller
                     return '';
                 })
                 ->editColumn('contact_name', function ($row) {
-                    $nic = $row->contact_nickname !== null && $row->contact_nickname !== '' ? '(' . $row->contact_nickname . ')' : '-';
+                    $nic = $row->contact_nickname !== null && $row->contact_nickname !== '' ? '(' . $row->contact_nickname . ')' : '';
                     return $row->contact_name . ' ' . $nic;
                 })
                 ->addColumn('action', function ($row) {
@@ -350,7 +350,7 @@ class ReceiptController extends Controller
                     return date('Y-m-d H:i:s', strtotime($datas->created_at));
                 })
                 ->editColumn('contact_name', function ($row) {
-                    $nic = $row->contact_nickname !== null && $row->contact_nickname !== '' ? '(' . $row->contact_nickname . ')' : '-';
+                    $nic = $row->contact_nickname !== null && $row->contact_nickname !== '' ? '(' . $row->contact_nickname . ')' : '';
                     return $row->contact_name . ' ' . $nic;
                 })
                 ->editColumn('product_name', function (Order $datas) {
