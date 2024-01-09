@@ -86,12 +86,13 @@ class HistoriesController extends Controller
                 })
                 ->editColumn('name', function ($row) {
                     // $name = 1;
+                    $nic = $row->contact_nickname !== null && $row->contact_nickname !== '' ? '(' . $row->contact_nickname . ')' : '';
                     if ($row->student) {
                         $name = $row->student->name;
                     } else {
                         $name = 'N/A';
                     }
-                    return $name;
+                    return $name . ' ' . $nic;
                 })
                 ->addColumn('more', function ($row) {
                     return '';
@@ -403,12 +404,20 @@ class HistoriesController extends Controller
         //
         //dd($id);
         $history = Histrories::find($id);
-        $centre = Department::where('id',$history->centre)->get();
+        $images = HistoryStudentImg::where('history_id', $id)->get();
+        $centre = Department::where('id', $history->centre)->get();
+
+        $img_html = '';
+        foreach ($images as $img) {
+            // Assuming the image filename is stored in the 'image_filename' column
+            $img_html .= '<img src="' . url('public/file_upload/' . $img->img) . '">';
+        }
+
         return response()->json([
-            'history' =>  $history,
-            'centre' =>  $history->department->name,
-            'student' =>  $history->student->student_code,
-            // 'code' =>  $history->student->code,
+            'history' => $history,
+            'centre' => $history->department->name,
+            'student' => $history->student->student_code,
+            'img_html' => $img_html,  // Include the generated HTML in the JSON response
         ]);
     }
 
