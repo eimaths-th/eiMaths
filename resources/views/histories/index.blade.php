@@ -209,5 +209,3 @@
 @section('script')
     @include('histories.script')
 @endsection
-
-

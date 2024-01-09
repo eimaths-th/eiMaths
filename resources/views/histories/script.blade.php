@@ -558,6 +558,7 @@
             $.ajax({
                 url: route,
                 method: "GET",
+                data: { id: id },
                 success: function(response) {
                     console.log(response.centre);
                     console.log(response.history);
