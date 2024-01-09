@@ -124,7 +124,6 @@
                                                     <th {{-- data-priority="2" --}}>Date</th>
                                                     <th {{-- data-priority="4" --}}>Student Code</th>
                                                     <th {{-- data-priority="5" --}}>Student Name</th>
-                                                    <th {{-- data-priority="5" --}}>Student Nick Name</th>
                                                     <th>Level</th>
                                                     <th>Bookuses</th>
                                                     {{-- <th>Amount</th> --}}
@@ -142,7 +141,7 @@
                                                 <tr>
                                                     <th></th>
                                                     <th></th>
-                                                    <th></th>
+                                                    {{-- <th></th> --}}
                                                     <th></th>
                                                     <th></th>
                                                     {{-- <th></th> --}}

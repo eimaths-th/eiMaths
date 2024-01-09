@@ -163,10 +163,6 @@
                     name: 'contact_name'
                 },
                 {
-                    data: 'contact_nickname',
-                    name: 'contact_nickname'
-                },
-                {
                     data: 'receipt_number',
                     name: 'receipt_number'
                 },
@@ -204,14 +200,14 @@
 
                 // Calculate the sum of values in column 8 for all pages
                 var sum = api
-                    .column(9)
+                    .column(8)
                     .data()
                     .reduce(function(acc, value) {
                         return parseFloat(acc) + parseFloat(value);
                     }, 0);
 
                 // Update the footer cell with the sum
-                $(api.column(9).footer()).html(sum.toFixed(
+                $(api.column(8).footer()).html(sum.toFixed(
                     2)); // Adjust the decimal places as needed
             }
         };

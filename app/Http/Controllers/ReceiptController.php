@@ -119,8 +119,9 @@ class ReceiptController extends Controller
                 ->addColumn('more', function ($row) {
                     return '';
                 })
-                ->editColumn('contact_nickname', function ($row) {
-                    return $row->contact_nickname !== null && $row->contact_nickname !== '' ? $row->contact_nickname : '-';
+                ->editColumn('contact_name', function ($row) {
+                    $nic = $row->contact_nickname !== null && $row->contact_nickname !== '' ? '(' . $row->contact_nickname . ')' : '-';
+                    return $row->contact_name . ' ' . $nic;
                 })
                 ->editColumn('book_use', function (Receipt $datas) {
 
@@ -244,8 +245,9 @@ class ReceiptController extends Controller
                 ->addColumn('more', function ($row) {
                     return '';
                 })
-                ->editColumn('contavt_nickname', function ($row) {
-                    return $row->contact_nickname !== null && $row->contact_nickname !== '' ? $row->contact_nickname : '-';
+                ->editColumn('contact_name', function ($row) {
+                    $nic = $row->contact_nickname !== null && $row->contact_nickname !== '' ? '(' . $row->contact_nickname . ')' : '-';
+                    return $row->contact_name . ' ' . $nic;
                 })
                 ->addColumn('action', function ($row) {
                     $html = '';
@@ -347,8 +349,9 @@ class ReceiptController extends Controller
                 ->editColumn('created_at', function (Order $datas) {
                     return date('Y-m-d H:i:s', strtotime($datas->created_at));
                 })
-                ->editColumn('contavt_nickname', function ($row) {
-                    return $row->contact_nickname !== null && $row->contact_nickname !== '' ? $row->contact_nickname : '-';
+                ->editColumn('contact_name', function ($row) {
+                    $nic = $row->contact_nickname !== null && $row->contact_nickname !== '' ? '(' . $row->contact_nickname . ')' : '-';
+                    return $row->contact_name . ' ' . $nic;
                 })
                 ->editColumn('product_name', function (Order $datas) {
 
