@@ -401,7 +401,7 @@ class HistoriesController extends Controller
     public function show($id)
     {
         //
-        // dd($id);
+        dd($id);
         $history = Histrories::find($id);
         $centre = Department::where('id',$history->centre)->get();
         return response()->json([
