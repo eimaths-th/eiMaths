@@ -617,6 +617,7 @@
                     centre: $('#AddCentre').val()[0],
                     code: $('#AddCode').val(),
                     name: $('#AddName').val(),
+                    nickname: $('#AddNickname').val(),
                     gender: $("input[name='gender']:checked").val(),
                     birth_date: $('#AddBirthDate').val(),
                     start_date: $('#AddDate').val(),
@@ -698,6 +699,7 @@
                 success: function(res) {
                     $('#EditCentre').val(res.data.centre).change();
                     $('#EditName').val(res.data.name);
+                    $('#EditNickname').val(res.data.nickname);
                     $('#EditCode').val(res.data.code);
                     $('#EditDate').val(res.data.start_date);
                     $('#EditBirthDate').val(res.data.birth_date);
@@ -804,6 +806,7 @@
                     centre: $('#EditCentre').val()[0],
                     code: $('#EditCode').val(),
                     name: $('#EditName').val(),
+                    nickname: $('#EditNickname').val(),
                     gender: $("input[name='egender']:checked").val(),
                     birth_date: $('#EditBirthDate').val(),
                     start_date: $('#EditDate').val(),

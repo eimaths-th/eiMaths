@@ -660,6 +660,7 @@ class ContactController extends Controller
 
         $contactd = [
             'name' => $request->get('name'),
+            'nickname' => $request->get('nickname'),
             'address' => $request->get('address'),
             'postcode' => $request->get('postcode'),
             'telephone' => $request->get('telephone'),

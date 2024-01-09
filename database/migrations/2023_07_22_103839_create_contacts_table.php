@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('start_date')->nullable();
             $table->integer('start_term')->nullable();
             $table->string('name')->nullable();
+            $table->string('nickname')->nullable();
             $table->string('school')->nullable();
             $table->integer('gender')->default(1);
             $table->string('birth_date')->nullable();

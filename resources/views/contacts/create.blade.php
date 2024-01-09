@@ -151,6 +151,14 @@
                                             </div>
                                             <div class="col-xs-6 col-sm-6 col-md-6">
                                                 <div class="form-group">
+                                                    <strong><i class="fas fa-graduation-cap"></i> Nick Name:</strong>
+                                                    {!! Form::text('nickname', null, ['id' => 'AddNickname', 'placeholder' => 'Nick Name', 'class' => 'form-control']) !!}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-6 col-sm-6 col-md-6">
+                                                <div class="form-group">
                                                     <strong><i class="fas fa-school"></i> School:</strong>
                                                     {!! Form::text('school', null, ['id' => 'AddSchool', 'placeholder' => 'School', 'class' => 'form-control']) !!}
                                                 </div>
