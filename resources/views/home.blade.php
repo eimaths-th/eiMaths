@@ -15,9 +15,8 @@
                 <div class="col-sm-6">
                     <h4><i class="fa-solid fa-chart-pie"></i> eiMaths [{{ Auth::user()->department->name }}] Stats</h4>
                 </div>
-                <div class="col-sm-6">
+                <div class="col-sm-4">
                     <div class="form-group">
-                        <label>Select</label>
                         <select name="dcentre" id="dcentre" class="form-control" @cannot('all-centre') disabled @endcannot>
                             <option value="all">All</option>                                                                                                                                                                                                                                                                                                                                          <option value="" selected>Select Parent</option>-->
                             @foreach ($centre as $key2)
