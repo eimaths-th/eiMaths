@@ -9,7 +9,7 @@ $jsonPayload = json_encode([
         "personalAccessTokenName" => "poc",
         "personalAccessTokenSecret" => "blSvagtWSxClIO/qeVRKrw==:O7IPFXRckilttDSbeddCxfSi2UdltPzT",
         "site" => [
-            "contentUrl" => "EmailPerformancebyCampaign"
+            "contentUrl" => "reicpoc"
         ]
     ]
 ]);
