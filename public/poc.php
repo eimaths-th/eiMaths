@@ -27,7 +27,7 @@ curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonPayload);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 
 // Execute cURL session and get the response
-$response = curl_exec($ch);
+echo $response = curl_exec($ch);
 
 // Check for errors
 if (curl_errno($ch)) {
