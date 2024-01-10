@@ -44,9 +44,9 @@ print_r($data);
 ?>
 
 
-<!-- <script type='module' src='https://prod-apnortheast-a.online.tableau.com/javascripts/api/tableau.embedding.3.latest.min.js'></script>
+<script type='module' src='https://prod-apnortheast-a.online.tableau.com/javascripts/api/tableau.embedding.3.latest.min.js'></script>
 <tableau-viz id='tableau-viz' src='https://prod-apnortheast-a.online.tableau.com/t/reicpoc/views/poc/EmailPerformancebyCampaign'
-width='1536' height='786' hide-tabs toolbar='bottom'></tableau-viz> -->
+width='1536' height='786' hide-tabs toolbar='bottom' token='DPR659eREbs3wDlh/jUsrYaDARmPUO/tBQlQqDX1IXc='></tableau-viz>
 <!DOCTYPE html>
 <html>
 <head>
