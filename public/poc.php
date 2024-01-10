@@ -3,6 +3,7 @@
 // Tableau API endpoint URL
 //$apiUrl = "https://<server>/api/<version>/sites/reicpoc/projects";
 $apiUrl = "https://prod-apnortheast-a.online.tableau.com/api/3.4/sites/reicpoc/projects";
+$apiUrl = "https://prod-apnortheast-a.online.tableau.com/api/3.21/auth/signin";
 
 // Personal Access Token
 $pat = "blSvagtWSxClIO/qeVRKrw==:O7IPFXRckilttDSbeddCxfSi2UdltPzT";
