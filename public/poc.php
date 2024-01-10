@@ -51,7 +51,7 @@ width='1536' height='786' hide-tabs toolbar='bottom'></tableau-viz> -->
 <html>
 <head>
     <title>Tableau Embed Example</title>
-    <script type="module" src="https://online.tableau.com/javascripts/api/tableau-2.min.js"></script>
+    <script type='module' src='https://prod-apnortheast-a.online.tableau.com/javascripts/api/tableau.embedding.3.latest.min.js'></script>
 </head>
 <body>
 
