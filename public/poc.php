@@ -57,7 +57,7 @@ width='1536' height='786' hide-tabs toolbar='bottom'></tableau-viz> -->
 
 <script>
     // Replace with your actual Personal Access Token (PAT)
-    var pat = "7kgyqujPT3q9C9HIHa3sNA|N03ZXWFQ3FyTHrhAZl3jrrbUk6ThEngg|63a7b254-a3ed-4e93-aa40-cf3ed3fb1964";
+    var pat = "blSvagtWSxClIO/qeVRKrw==:O7IPFXRckilttDSbeddCxfSi2UdltPzT";
 
     // Tableau view URL with embedded PAT
     var viewUrl = "https://prod-apnortheast-a.online.tableau.com/t/reicpoc/views/poc/EmailPerformancebyCampaign?:showAppBanner=false&:embed=yes&:toolbar=top&:tabs=no&:showVizHome=no&:accessToken=" + pat;
