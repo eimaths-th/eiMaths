@@ -17,6 +17,7 @@ curl_setopt($ch, CURLOPT_HTTPHEADER, array(
     "Content-Type: application/json",
     "X-Tableau-Auth: Bearer $pat"
 ));
+curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 
 // Execute cURL session and get the response
