@@ -17,14 +17,23 @@
                 </div>
                 <div class="col-sm-3">
                     <div class="form-group">
-                        <select name="dcentre" id="dcentre" class="form-control" @cannot('all-centre') disabled @endcannot>
-                            @foreach ($centre as $key2)
-                                <option value="{{ $key2->id }}" @if (Auth::user()->department->id == (int) $key2->id) selected @endif>
-                                    {{-- {{ $key2->code }} --}}
-                                    {{ $key2->name }}
-                                </option>
-                            @endforeach
-                        </select>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+                                    <i class="fas fa-lg fa-building nav-icon"></i>
+                                </span>
+                            </div>
+                            <select name="dcentre" id="dcentre" class="form-control"
+                                @cannot('all-centre') disabled @endcannot>
+                                @foreach ($centre as $key2)
+                                    <option value="{{ $key2->id }}" @if (Auth::user()->department->id == (int) $key2->id) selected @endif>
+                                        {{-- {{ $key2->code }} --}}
+                                        {{ $key2->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
                     </div>
                 </div>
                 <div class="col-sm-3">
@@ -241,7 +250,8 @@
 
                             <div class="card card-primary" style="max-height: 455px">
                                 <div class="card-header">
-                                    <h3 class="card-title"><i class="fa-solid fa-chart-line"></i> Graduated Student by Year
+                                    <h3 class="card-title"><i class="fa-solid fa-chart-line"></i> Graduated Student by
+                                        Year
                                     </h3>
                                     <div class="card-tools">
                                         <button type="button" class="btn btn-tool" data-card-widget="maximize">
