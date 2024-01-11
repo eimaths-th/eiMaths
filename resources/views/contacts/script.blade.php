@@ -195,9 +195,18 @@
                 $.ajax({
                     method: "GET",
                     url: "term/find/add/" + level + "/" + term,
+                    data: {
+                        level: $('#AddLevel').val()[0],
+                        term: $('#AddTerm').val()[0],
+                        level2: $('#AddLevel2').val()[0],
+                        term2: $('#AddTerm2').val()[0],
+                        _token: token,
+                    },
                     async: false,
                     success: function(res) {
                         //console.log(res)
+                        $('.scoin').val(res.scoin);
+
                         $('.books').html(res.html);
                         $('.books').prop('disabled', false);
                     }
@@ -233,10 +242,18 @@
                 $.ajax({
                     method: "GET",
                     url: "term/find/add/" + level + "/" + term,
+                    data: {
+                        level: $('#AddLevel').val()[0],
+                        term: $('#AddTerm').val()[0],
+                        level2: $('#AddLevel2').val()[0],
+                        term2: $('#AddTerm2').val()[0],
+                        _token: token,
+                    },
                     async: false,
                     success: function(res) {
                         //console.log(res)
                         $('.books2').html(res.html);
+                        $('.scoin').val(res.scoin);
                         $('.books2').prop('disabled', false);
                     }
                 });
@@ -270,6 +287,7 @@
                 $.ajax({
                     method: "GET",
                     url: "term/find/add/" + level + "/" + term,
+
                     async: false,
                     success: function(res) {
                         //console.log(res)
@@ -307,6 +325,7 @@
                 $.ajax({
                     method: "GET",
                     url: "term/find/add/" + level + "/" + term,
+
                     async: false,
                     success: function(res) {
                         //console.log(res)
@@ -403,10 +422,10 @@
                     data: 'bookuse_name',
                     name: 'bookuse_name'
                 },
-               /*  {
-                    data: 'start_term_name',
-                    name: 'start_term_name'
-                }, */
+                /*  {
+                     data: 'start_term_name',
+                     name: 'start_term_name'
+                 }, */
                 {
                     data: 'term_name',
                     name: 'term_name'
@@ -713,7 +732,7 @@
                     $('#EditTerm').val(res.datas[0].term_id).trigger('change.select2');
                     $('#EditBook').val(res.datas[0].product_id).change();
 
-                    if (res.data.order_status==1) {
+                    if (res.data.order_status == 1) {
                         $('#EditLevel').prop('disabled', true);
                         $('#EditLevel2').prop('disabled', true);
                     }

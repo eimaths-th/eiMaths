@@ -476,6 +476,7 @@ class ReceiptController extends Controller
 
         $datas_list = OrderDetailList::select(
             //"order_detail_lists.*",
+            "order_detail_lists.id as id",
             "order_detail_lists.price as oprice",
             "order_detail_lists.bprice as obprice",
             DB::raw("SUBSTRING(order_detail_lists.level, 1, 1) as first_char"),
@@ -488,7 +489,7 @@ class ReceiptController extends Controller
                 'first_char',
                 'order_detail_lists.price',
                 'order_detail_lists.bprice',
-                // 'order_detail_lists.id',
+                'order_detail_lists.id',
                 // 'order_detail_lists.order_id',
                 // 'eimatch.order_detail_lists.term',
                 // 'order_detail_lists.book',
@@ -501,6 +502,12 @@ class ReceiptController extends Controller
             ->get();
 
         //dd($datas_list);
+        // dd(
+        //     $id,
+        //     $datas,
+        //     $datas_list,
+
+        // );
 
         $datasf = $this->getfileattprint($datas[0]->oid);
 
