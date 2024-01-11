@@ -64,12 +64,14 @@
         daterange();
         handle_student_by_level();
         handle_receipt_sum_by_date();
+        handle_daily_study();
     });
 
 
     $('#SearchButtons').on('click', async function() {
         handle_student_by_level();
         handle_receipt_sum_by_date();
+        handle_daily_study();
     });
 
 
@@ -365,6 +367,114 @@
         }
     };
 
+    const daily_study_date = async () => {
+        try {
+            const dcentreValue = $('#dcentre').val();
+            const reservationValue = $('#reservation').val();
+
+            const response = await $.ajax({
+                url: '{{ route('dashboard.daily_study') }}',
+                method: 'POST',
+                data: {
+                    _token: token,
+                    dcentre: dcentreValue,
+                    reservation: reservationValue,
+                },
+            });
+
+            // Process the response as needed
+            return response.daily_study;
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            throw error;
+        }
+    };
+
+    const daily_study_chart_data = (data) => {
+        const labels = data.map(entry => entry.start_date);
+        const totalData = data.map(entry => entry.total_transactions);
+
+
+        const option = {
+            series: [{
+                    name: 'Total Study',
+                    type: 'area',
+                    data: totalData,
+                },
+            ],
+            markers: {
+                size: 5,
+                colors: ["#FFFFFF"],
+                strokeColor: "#A5978B",
+                strokeWidth: 4
+            },
+            chart: {
+                type: 'area',
+                height: 380,
+                zoom: {
+                    enabled: false
+                }
+            },
+            dataLabels: {
+                enabled: false,
+                offsetY: -18,
+                enabledOnSeries: [1]
+            },
+            stroke: {
+                curve: 'straight',
+                width: 4
+            },
+            colors: ['#E91E63', '#91cc75', '#546E7A', '#E91E63', '#FF9800', '#66DA26', '#4ECDC4', '#81D4FA',
+                '#A5978B', '#FD6A6A'
+            ],
+            title: {
+                //text: 'สถิติการเข้าชม รายวัน ประจำเดือน 2023-06',
+                align: 'left'
+            },
+            subtitle: {
+                //text: 'จำนวน',
+                align: 'left'
+            },
+            xaxis: {
+                labels: {
+                    show: true,
+                    rotate: -30,
+                    rotateAlways: true,
+                    maxHeight: 300,
+                },
+                categories: labels,
+            },
+            yaxis: [{
+                /* title: {
+                    text: 'Website Blog',
+                }, */
+
+            }, {
+                opposite: true,
+                /* title: {
+                    text: 'Social Media'
+                } */
+            }],
+            legend: {
+                horizontalAlign: 'left'
+            }
+        };
+
+        return option;
+    };
+
+    const handle_daily_study = async () => {
+        try {
+            const datas = await daily_study_date();
+            const options = daily_study_chart_data(datas);
+            var chart_data = new ApexCharts(document.querySelector("#daily_study"), options);
+            chart_data.render();
+            chart_data.updateOptions(options);
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+
 
 
     $(document).ready(() => {
@@ -374,6 +484,7 @@
 
         handle_student_by_level();
         handle_receipt_sum_by_date();
+        handle_daily_study();
 
     });
 </script>

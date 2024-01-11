@@ -223,8 +223,7 @@
 
                             <div class="card card-primary" style="max-height: 455px">
                                 <div class="card-header">
-                                    <h3 class="card-title"><i class="fa-solid fa-chart-line"></i> New Student /
-                                        Discontinued Student by Year
+                                    <h3 class="card-title"><i class="fa-solid fa-chart-line"></i> Daily Study Student
                                     </h3>
                                     <div class="card-tools">
                                         <button type="button" class="btn btn-tool" data-card-widget="maximize">
@@ -239,7 +238,7 @@
                                 <div class="card-body">
                                     <div class="chart">
                                         <div class="col-md-12">
-                                            <div id="chart"></div>
+                                            <div id="daily_study"></div>
                                         </div>
                                     </div>
                                 </div>

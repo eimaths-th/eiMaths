@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\Contact;
 use App\Models\Receipt;
+use App\Models\Histrories;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 /* use Carbon\Carbon;
@@ -493,6 +494,33 @@ class DashboardController extends Controller
 
         return response()->json([
             'receipt_sum_by_date' => $datas,
+        ]);
+    }
+
+
+    public function daily_study(Request $request)
+    {
+        $dcentreValue = $request->input('dcentre');
+        $reservationValue = $request->input('reservation');
+
+        $query = Histrories::select(
+            'start_date',
+            DB::raw('COUNT(*) as total_transactions')
+        );
+
+        if ($dcentreValue && $dcentreValue !== '1') {
+            $query->where('centre', $dcentreValue);
+        }
+
+       /*  if ($reservationValue) {
+            $summaryByDate->where('payment_date', 'like', $reservationValue.'%');
+        } */
+
+        $query->groupBy('start_date');
+        $datas = $query->get();
+
+        return response()->json([
+            'daily_study' => $datas,
         ]);
     }
 }
