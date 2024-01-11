@@ -249,8 +249,7 @@
 
                             <div class="card card-primary" style="max-height: 455px">
                                 <div class="card-header">
-                                    <h3 class="card-title"><i class="fa-solid fa-chart-line"></i> Graduated Student by
-                                        Year
+                                    <h3 class="card-title"><i class="fa-solid fa-chart-line"></i> Student By Centre
                                     </h3>
                                     <div class="card-tools">
                                         <button type="button" class="btn btn-tool" data-card-widget="maximize">
@@ -264,7 +263,7 @@
                                 </div>
                                 <div class="card-body">
                                     <div class="col-md-12">
-                                        <div id="mainbc2_4071" style="width: 100%; height: 420px;"></div>
+                                        <div id="student_by_centre" style="width: 100%; height: 420px;"></div>
                                     </div>
                                 </div>
 

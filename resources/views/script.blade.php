@@ -253,6 +253,112 @@
         }
     };
 
+    const student_by_centre = async () => {
+        try {
+            const dcentreValue = $('#dcentre').val();
+            const reservationValue = $('#reservation').val();
+
+            const response = await $.ajax({
+                url: '{{ route('dashboard.student_by_centre') }}',
+                method: 'POST',
+                data: {
+                    _token: token,
+                    dcentre: dcentreValue,
+                    reservation: reservationValue,
+                },
+            });
+
+            // Process the response as needed
+            return response.centre_data;
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            throw error;
+        }
+    };
+
+    const student_by_centre_chart_data = (data) => {
+        const labels = Object.keys(data);
+        const values = Object.values(data);
+
+        const dataArray = labels.map(label => ({
+            value: data[label],
+            name: label,
+            selected: true
+        }));
+
+        // Find the item with the maximum value
+        const maxItem = dataArray.reduce((max, current) => (current.value > max.value ? current : max), dataArray[
+            0]);
+
+        // Update the 'selected' property for the maxItem
+        dataArray.forEach(item => {
+            item.selected = item === maxItem;
+        });
+
+        const option = {
+            title: {
+                show: false,
+                text: 'Referer of a Website',
+                subtext: 'Fake Data',
+                left: 'center'
+            },
+            tooltip: {
+                trigger: 'item'
+            },
+            toolbox: {
+                show: true,
+                feature: {
+                    saveAsImage: {}
+                }
+            },
+            legend: {
+                top: '5%',
+                left: 'center',
+                data: labels.map(String)
+            },
+            series: [{
+                name: 'Centre',
+                type: 'pie',
+                selectedMode: 'single',
+                radius: '60%',
+                center: ['50%', '45%'],
+                data: dataArray,
+                color: ['#fc8452', '#96BFFF', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#5470c6',
+                    '#9a60b4', '#ea7ccc', '#91c7ae',
+                    '#fb7293',
+                    '#91cc75',
+                    '#bda29a',
+                ],
+                emphasis: {
+                    label: {
+                        show: true,
+                        fontSize: 20,
+                        fontWeight: 'bold'
+                    }
+                },
+                labelLine: {
+                    show: true
+                },
+            }]
+        };
+
+        return option;
+    };
+
+    const handle_student_by_centre = async () => {
+        try {
+            const datas = await student_by_centre();
+            const options = student_by_centre_chart_data(datas);
+            var chart_data = echarts.init(document.getElementById("student_by_centre"));
+            chart_data.setOption(options);
+            window.addEventListener('resize', chart_data.resize);
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+
+
+
 
     const receipt_sum_by_date = async () => {
         try {
@@ -485,6 +591,8 @@
         handle_student_by_level();
         handle_receipt_sum_by_date();
         handle_daily_study();
+        handle_student_by_centre();
+
 
     });
 </script>

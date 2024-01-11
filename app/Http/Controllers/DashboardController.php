@@ -470,6 +470,38 @@ class DashboardController extends Controller
         ]);
     }
 
+    public function dashboard_student_by_centre(Request $request)
+    {
+        $dcentreValue = $request->input('dcentre');
+        $reservationValue = $request->input('reservation');
+
+        $results = Contact::select(
+            'contacts.centre as centre_id',  // Alias for clarity
+            'departments.name as centre_name', // Alias for clarity
+            DB::raw('COUNT(*) as count')
+        )
+            ->join('departments', 'contacts.centre', '=', 'departments.id') // Adjust the join condition based on your actual schema
+            ->where('contacts.centre', '!=', 1);
+
+        /* if ($dcentreValue && $dcentreValue !== '1') {
+            $results->where('contacts.centre', $dcentreValue);
+        } */
+
+        $results->groupBy('contacts.centre', 'departments.name'); // Group by both centre columns
+        $datas = $results->get();
+
+        $maxData = $datas->max('count');
+
+        $dataCounts = $datas->pluck('count', 'centre_name')->all();
+
+        ksort($dataCounts);
+
+        return response()->json([
+            'centre_data' => $dataCounts,
+            'max_data' => $maxData,
+        ]);
+    }
+
     public function receipt_sum_by_date(Request $request)
     {
         $dcentreValue = $request->input('dcentre');
@@ -485,7 +517,7 @@ class DashboardController extends Controller
             $summaryByDate->where('centre', $dcentreValue);
         }
 
-       /*  if ($reservationValue) {
+        /*  if ($reservationValue) {
             $summaryByDate->where('payment_date', 'like', $reservationValue.'%');
         } */
 
@@ -512,7 +544,7 @@ class DashboardController extends Controller
             $query->where('centre', $dcentreValue);
         }
 
-       /*  if ($reservationValue) {
+        /*  if ($reservationValue) {
             $summaryByDate->where('payment_date', 'like', $reservationValue.'%');
         } */
 
