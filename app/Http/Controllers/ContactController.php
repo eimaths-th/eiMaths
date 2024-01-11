@@ -322,6 +322,7 @@ class ContactController extends Controller
 
             $mprice = 0;
             $mbprice = 0;
+            $coin = 0;
             for ($i = $levelq->id; $i <= $levelq2->id; $i++) {
                 $sbook = 1;
 
@@ -372,7 +373,6 @@ class ContactController extends Controller
                             ->where('bookuses.term_id', '=', $j);
                     }
                     $books = $books->get();
-
                     $bookss[] = $books;
 
                     if ($books[0]->level_type == 1) {
@@ -382,6 +382,8 @@ class ContactController extends Controller
                         $mprice = $mprice + $books[0]->half_price;
                         $mbprice = $mbprice + $books[0]->book_half_price;
                     }
+
+                    $coin++;
                 }
             }
 
@@ -411,6 +413,7 @@ class ContactController extends Controller
             $bookss[] = $books;
         }
 
+        // dd($coin);
 
         $input = $request->all();
         $input['code'] = studentRunningNumber::generate($request->get('centre'));
@@ -476,7 +479,8 @@ class ContactController extends Controller
         $select_list_contact = '<option value="' . $contact->id . '" > ' . $contact->name . '</option>';
         return response()->json([
             'success' => 'Added student information successfully.',
-            'contact' => $select_list_contact, 'cid' => $contact->id, 'oid' => $order->id
+            'contact' => $select_list_contact, 'cid' => $contact->id, 'oid' => $order->id,
+            'coin' => $coin,
         ]);
     }
 
@@ -868,9 +872,10 @@ class ContactController extends Controller
     }
 
 
-    public function tfind($type, $level, $term)
+    public function tfind(Request $request, $type, $level, $term)
     {
         //$select_list = "<option value=''>please select</option>";
+
         $select_list = "";
         if ($type == 'add') {
             $data = bookuse::select(
@@ -889,8 +894,42 @@ class ContactController extends Controller
                 $select_list .= '<option value="' . $key->id . '" >' . $key->name . '</option>';
             }
 
+            $levelq = Level::find($request->get('level'));
+            $termq = Term::find($request->get('term'));
+            $coin = 0;
+
+            if (!empty($request->get('level2'))) {
+
+                $levelq2 = Level::find($request->get('level2'));
+                $termq2 = Term::find($request->get('term2'));
+
+                for ($i = $levelq->id; $i <= $levelq2->id; $i++) {
+
+                    if ($i == $levelq->id) {
+                        $sterm = $termq->name;
+                    } else {
+                        $sterm = 1;
+                    }
+
+                    if ($i == $levelq2->id) {
+                        $eterm = $termq2->name;
+                    } else {
+                        $eterm = 4;
+                    }
+
+                    for ($j = $sterm; $j <= $eterm; $j++) {
+
+                        $coin++;
+                    }
+                }
+            }
+
+            $result_coin = $coin * 10;
+
             return response()->json([
-                'html' =>  $select_list
+                'html' =>  $select_list,
+
+                'scoin' => $result_coin,
             ]);
         }
     }

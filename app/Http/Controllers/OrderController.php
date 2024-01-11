@@ -477,6 +477,9 @@ class OrderController extends Controller
             ->orderBy("id", "asc")
             ->get();
 
+        //  dd($datas_list);
+
+
         foreach ($datas_list as $dresult) {
             $mprice = $mprice + $dresult->price;
             $mbprice = $mbprice + $dresult->bprice;

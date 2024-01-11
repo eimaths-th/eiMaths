@@ -457,6 +457,26 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="row">
+
+                                            <div class="col-xs-6 col-sm-6 col-md-6">
+                                            </div>
+                                            <div class="col-xs-3 col-sm-3 col-md-3">
+                                            </div>
+                                            <div class="col-xs-3 col-sm-3 col-md-3">
+                                                <div class="form-group">
+                                                    <strong><i class="fas fa-book-open"></i> Total Class:</strong>
+
+                                                    <input type="text" disabled class="form-control scoin" value="0">
+
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
