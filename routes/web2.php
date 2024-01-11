@@ -16,8 +16,13 @@ use Illuminate\Support\Facades\Storage;
 |
 */
 
-Route::get('manon', function (Request $request) {
-    return $request;
+
+Route::group(['middleware' => ['auth']], function () {
+    Route::post('/student_by_level', [App\Http\Controllers\DashboardController::class, 'dashboard_student_by_level'])->name('dashboard.student_by_level');
+    Route::post('/receipt_sum_by_date', [App\Http\Controllers\DashboardController::class, 'receipt_sum_by_date'])->name('dashboard.receipt_sum_by_date');
 });
 
 
+Route::get('manon', function (Request $request) {
+    return $request;
+});

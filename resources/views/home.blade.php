@@ -12,7 +12,7 @@
     <section class="content-header">
         <div class="container-fluid">
             <div class="row mb-2 justify-content-end">
-                <div class="col-sm-4">
+                <div class="col-sm-7">
                     <h4><i class="fa-solid fa-chart-pie"></i> eiMaths {{--  [{{ Auth::user()->department->name }}]  --}}Stats</h4>
                 </div>
                 <div class="col-sm-3">
@@ -36,7 +36,7 @@
 
                     </div>
                 </div>
-                <div class="col-sm-3">
+                {{-- <div class="col-sm-3">
                     <div class="form-group">
                         <div class="input-group">
                             <div class="input-group-prepend">
@@ -47,7 +47,7 @@
                             <input type="text" class="form-control float-right" id="reservation" name="reservation">
                         </div>
                     </div>
-                </div>
+                </div> --}}
                 <div class="col-xs-1 col-sm-1 col-md-1">
                     <div class="form-group">
                         <button type="button" class="form-control btn bg-gradient-success" id="SearchButtons">
@@ -166,7 +166,7 @@
                     </div> --}}
 
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-4">
 
                             <div class="card card-primary" style="max-height: 485px">
                                 <div class="card-header">
@@ -183,16 +183,16 @@
                                     </div>
                                 </div>
                                 <div class="card-body">
-                                    <div id="mainbc2_4072" style="width: 100%; height: 450px;"></div>
+                                    <div id="chart_student_by_level" style="width: 100%; height: 450px;"></div>
                                 </div>
 
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-8">
 
                             <div class="card card-primary" style="max-height: 485px">
                                 <div class="card-header">
-                                    <h3 class="card-title"><i class="fa-solid fa-chart-line"></i> Monthly Receipt 2023-08
+                                    <h3 class="card-title"><i class="fa-solid fa-chart-line"></i> Monthly Receipt
                                     </h3>
                                     <div class="card-tools">
                                         <button type="button" class="btn btn-tool" data-card-widget="maximize">
@@ -207,7 +207,7 @@
                                 <div class="card-body">
                                     <div class="chart">
                                         <div class="col-md-12">
-                                            <div id="chart_date"></div>
+                                            <div id="receipt_sum_by_date" style="width: 100%; height: 450px;"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -404,8 +404,8 @@
                 }
             };
 
-            var chart = new ApexCharts(document.querySelector("#chart"), options);
-            chart.render();
+            //var chart = new ApexCharts(document.querySelector("#chart"), options);
+            //chart.render();
 
             var options_d = {
                 series: [{

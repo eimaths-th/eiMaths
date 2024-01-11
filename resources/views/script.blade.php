@@ -1,11 +1,17 @@
 <script language="javascript" type="text/javascript">
     $.datepicker.setDefaults($.datepicker.regional['en']);
+    var token = ''
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
 
     let currentYear, currentMonth; // Declare variables globally
 
     function datesearch() {
-        currentYear = new Date().getFullYear();
-        currentMonth = new Date().getMonth();
+       currentYear = new Date().getFullYear();
+       currentMonth = new Date().getMonth();
     }
 
     function retrieveFieldValues() {
@@ -56,7 +62,16 @@
         // Set the date range back to its default
         datesearch();
         daterange();
+        handle_student_by_level();
+        handle_receipt_sum_by_date();
     });
+
+
+    $('#SearchButtons').on('click', async function() {
+        handle_student_by_level();
+        handle_receipt_sum_by_date();
+    });
+
 
     function storeFieldValues() {
         var Yearstart = $('#reservation').val();
@@ -73,8 +88,292 @@
 
     $('#dcentre').on('change', storeFieldValues);
 
-    // Call the function to set initial field values on page load
-    retrieveFieldValues();
-    // Initialize date range on page load
-    daterange();
+
+    const student_by_level = async () => {
+        try {
+            const dcentreValue = $('#dcentre').val();
+            const reservationValue = $('#reservation').val();
+
+            const response = await $.ajax({
+                url: '{{ route('dashboard.student_by_level') }}',
+                method: 'POST',
+                data: {
+                    _token: token,
+                    dcentre: dcentreValue,
+                    reservation: reservationValue,
+                },
+            });
+
+            // Process the response as needed
+            return response.level_data;
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            throw error;
+        }
+    };
+
+    const student_by_level_chart_data = (data) => {
+        const labels = Object.keys(data);
+        const values = Object.values(data);
+
+        const dataArray = labels.map(label => ({
+            value: data[label],
+            name: label,
+            selected: true
+        }));
+
+        // Find the item with the maximum value
+        const maxItem = dataArray.reduce((max, current) => (current.value > max.value ? current : max), dataArray[
+            0]);
+
+        // Update the 'selected' property for the maxItem
+        dataArray.forEach(item => {
+            item.selected = item === maxItem;
+        });
+
+        const option = {
+            title: {
+                show: false,
+                text: 'Referer of a Website',
+                subtext: 'Fake Data',
+                left: 'center'
+            },
+            tooltip: {
+                trigger: 'item'
+            },
+            toolbox: {
+                show: true,
+                feature: {
+                    saveAsImage: {}
+                }
+            },
+            legend: {
+                top: '5%',
+                left: 'center',
+                data: labels.map(String)
+            },
+            series: [{
+                name: 'Level',
+                type: 'pie',
+                selectedMode: 'single',
+                radius: '60%',
+                center: ['50%', '45%'],
+                data: dataArray,
+                color: ['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452',
+                    '#9a60b4', '#ea7ccc', '#91c7ae',
+                    '#fb7293',
+                    '#96BFFF',
+                    '#bda29a',
+                ],
+                emphasis: {
+                    label: {
+                        show: true,
+                        fontSize: 20,
+                        fontWeight: 'bold'
+                    }
+                },
+                labelLine: {
+                    show: true
+                },
+            }]
+        };
+
+
+        /* const option = {
+            tooltip: {
+                trigger: 'item'
+            },
+            toolbox: {
+                show: true,
+                feature: {
+                    saveAsImage: {}
+                }
+            },
+            legend: {
+                show: true,
+                type: 'scroll',
+                orient: 'vertical',
+                right: 10,
+                top: 30,
+                bottom: 20,
+                data: labels.map(String)
+            },
+            series: [{
+                name: 'Level',
+                type: 'pie',
+                radius: ['45%', '80%'],
+                center: ['40%', '40%'],
+                avoidLabelOverlap: true,
+                label: {
+                    show: true,
+                    position: 'inner',
+                    fontSize: 10,
+                    color: '#ffffff',
+                    formatter(param) {
+                        return  ' (' + param.percent * 2 + '%)';
+                    }
+                },
+                color: ['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452',
+                    '#9a60b4', '#ea7ccc', '#91c7ae',
+                    '#fb7293',
+                    '#96BFFF',
+                    '#bda29a',
+                ],
+                emphasis: {
+                    label: {
+                        show: true,
+                        fontSize: 20,
+                        fontWeight: 'bold'
+                    }
+                },
+                labelLine: {
+                    show: true
+                },
+                data: labels.map(label => ({
+                    value: data[label],
+                    name: label
+                })),
+            }]
+        }; */
+
+        return option;
+    };
+
+    const handle_student_by_level = async () => {
+        try {
+            const datas = await student_by_level();
+            const options = student_by_level_chart_data(datas);
+            var chart_data = echarts.init(document.getElementById("chart_student_by_level"));
+            chart_data.setOption(options);
+            window.addEventListener('resize', chart_data.resize);
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+
+
+    const receipt_sum_by_date = async () => {
+        try {
+            const dcentreValue = $('#dcentre').val();
+            const reservationValue = $('#reservation').val();
+
+            const response = await $.ajax({
+                url: '{{ route('dashboard.receipt_sum_by_date') }}',
+                method: 'POST',
+                data: {
+                    _token: token,
+                    dcentre: dcentreValue,
+                    reservation: reservationValue,
+                },
+            });
+
+            // Process the response as needed
+            return response.receipt_sum_by_date;
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            throw error;
+        }
+    };
+
+    const receipt_sum_by_date_chart_data = (data) => {
+        const labels = data.map(entry => entry.payment_date);
+        const totalReceiptData = data.map(entry => entry.total_transactions);
+        const totalPriceData = data.map(entry => entry.total_fee_sum);
+
+        const option = {
+            series: [{
+                    name: 'Total Receipt',
+                    type: 'line',
+                    data: totalReceiptData,
+                },
+                {
+                    name: 'Total Price',
+                    type: 'column',
+                    data: totalPriceData,
+                },
+            ],
+            markers: {
+                size: 5,
+                colors: ["#FFFFFF"],
+                strokeColor: "#A5978B",
+                strokeWidth: 4
+            },
+            chart: {
+                type: 'line',
+                height: 380,
+                zoom: {
+                    enabled: false
+                }
+            },
+            dataLabels: {
+                enabled: true,
+                offsetY: -18,
+                enabledOnSeries: [1]
+            },
+            stroke: {
+                curve: 'straight',
+                width: 4
+            },
+            colors: ['#E91E63', '#91cc75', '#546E7A', '#E91E63', '#FF9800', '#66DA26', '#4ECDC4', '#81D4FA',
+                '#A5978B', '#FD6A6A'
+            ],
+            title: {
+                //text: 'สถิติการเข้าชม รายวัน ประจำเดือน 2023-06',
+                align: 'left'
+            },
+            subtitle: {
+                //text: 'จำนวน',
+                align: 'left'
+            },
+            xaxis: {
+                labels: {
+                    show: true,
+                    rotate: -30,
+                    rotateAlways: true,
+                    maxHeight: 300,
+                },
+                categories: labels,
+            },
+            yaxis: [{
+                /* title: {
+                    text: 'Website Blog',
+                }, */
+
+            }, {
+                opposite: true,
+                /* title: {
+                    text: 'Social Media'
+                } */
+            }],
+            legend: {
+                horizontalAlign: 'left'
+            }
+        };
+
+        return option;
+    };
+
+    const handle_receipt_sum_by_date = async () => {
+        try {
+            const datas = await receipt_sum_by_date();
+            const options = receipt_sum_by_date_chart_data(datas);
+            var chart_data = new ApexCharts(document.querySelector("#receipt_sum_by_date"), options);
+            chart_data.render();
+            chart_data.updateOptions(options);
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+
+
+
+    $(document).ready(() => {
+
+        retrieveFieldValues();
+        daterange();
+
+        handle_student_by_level();
+        handle_receipt_sum_by_date();
+
+    });
 </script>
