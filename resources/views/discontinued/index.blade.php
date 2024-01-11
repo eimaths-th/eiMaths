@@ -140,6 +140,7 @@
                                                     <th>Centre</th>
                                                     <th>Code</th>
                                                     <th>Student Name</th>
+                                                    <th>Student Nick Name</th>
                                                     <th>Start Date</th>
                                                     <th>Discontinued Date</th>
                                                     <th>Discontinued Reason</th>

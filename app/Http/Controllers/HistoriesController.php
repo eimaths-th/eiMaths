@@ -86,12 +86,13 @@ class HistoriesController extends Controller
                 })
                 ->editColumn('name', function ($row) {
                     // $name = 1;
+                    $nic = $row->contact_nickname !== null && $row->contact_nickname !== '' ? '(' . $row->contact_nickname . ')' : '';
                     if ($row->student) {
                         $name = $row->student->name;
                     } else {
                         $name = 'N/A';
                     }
-                    return $name;
+                    return $name . ' ' . $nic;
                 })
                 ->addColumn('more', function ($row) {
                     return '';
@@ -99,7 +100,7 @@ class HistoriesController extends Controller
                 ->addColumn('action', function ($row) {
                     $html = '';
                     if (Gate::allows('student-edit')) {
-                        $html = '<button type="button" class="btn btn-sm btn-primary btn-view" id="getViewData" data-id="' . $row->id . '"><i class="fa fa-eye"></i> View</button> ';
+                        $html = '<button type="button" class="btn btn-sm btn-primary btn-view" id="getViewData" data-id="' . $row->id . '"><i class="fa fa-eye"></i> View </button> ';
                     } else {
                         $html = '<button type="button" class="btn btn-sm btn-primary disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> Edit</button> ';
                     }
@@ -401,14 +402,30 @@ class HistoriesController extends Controller
     public function show($id)
     {
         //
-        // dd($id);
+        //dd($id);
         $history = Histrories::find($id);
-        $centre = Department::where('id',$history->centre)->get();
+        $images = HistoryStudentImg::where('history_id', $id)->get();
+        $centre = Department::where('id', $history->centre)->get();
+
+        $img_html = '';
+        $i = 0;
+        foreach ($images as $img) {
+            // Assuming the image filename is stored in the 'image_filename' column
+            $slide_html = ' <li data-target="#carouselExampleIndicators" data-slide-to="' . $i . '"
+            class="active"></li>';
+            $img_html .= ' <div class="carousel-item active">
+            <img class="d-block w-100"
+                src="' . asset('file_upload/' . $img->img) . '"
+                alt="' . $img->id . '"></div>';
+            $i++;
+        }
+
         return response()->json([
-            'history' =>  $history,
-            'centre' =>  $history->department->name,
-            'student' =>  $history->student->student_code,
-            // 'code' =>  $history->student->code,
+            'history' => $history,
+            'centre' => $history->department->name,
+            'student' => $history->student->student_code,
+            'slide_html' => $slide_html,
+            'img_html' => $img_html,  // Include the generated HTML in the JSON response
         ]);
     }
 

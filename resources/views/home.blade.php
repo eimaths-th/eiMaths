@@ -1,26 +1,70 @@
 @extends('layouts.app')
 
-@section('content')
-    {{-- <div class="container-fluid">
-        <h1 class="text-black-50">You are logged in!</h1>
-        <canvas id="signature-pad" width="400" height="200"></canvas>
-        <button id="save-signature">Save Signature</button>
-        <button id="clear-signature">Clear Signature</button>
-        <img id="signature-image" src="" alt="Signature Image">
-    </div> --}}
+@section('style')
+    <style>
+        .ui-datepicker-calendar {
+            display: none;
+        }
+    </style>
+@endsection
 
+@section('content')
     <section class="content-header">
         <div class="container-fluid">
-            <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h4><i class="fa-solid fa-chart-pie"></i> eiMaths [{{ Auth::user()->department->name }}] Stats</h4>
+            <div class="row mb-2 justify-content-end">
+                <div class="col-sm-4">
+                    <h4><i class="fa-solid fa-chart-pie"></i> eiMaths {{--  [{{ Auth::user()->department->name }}]  --}}Stats</h4>
                 </div>
-                <div class="col-sm-6">
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+                                    <i class="fas fa-lg fa-building nav-icon"></i>
+                                </span>
+                            </div>
+                            <select name="dcentre" id="dcentre" class="form-control"
+                                @cannot('all-centre') disabled @endcannot>
+                                @foreach ($centre as $key2)
+                                    <option value="{{ $key2->id }}" @if (Auth::user()->department->id == (int) $key2->id) selected @endif>
+                                        {{-- {{ $key2->code }} --}}
+                                        {{ $key2->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
 
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+                                    <i class="far fa-calendar-alt"></i>
+                                </span>
+                            </div>
+                            <input type="text" class="form-control float-right" id="reservation" name="reservation">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-1 col-sm-1 col-md-1">
+                    <div class="form-group">
+                        <button type="button" class="form-control btn bg-gradient-success" id="SearchButtons">
+                            <i class="fas fa-search"></i></button>
+
+                    </div>
+                </div>
+                <div class="col-xs-1 col-sm-1 col-md-1" style="align-items: flex-end;">
+                    <div class="form-group">
+                        <button type="button" class="form-control btn bg-gradient-warning" id="resetSearchButton"><i
+                                class="fa-solid fa-rotate"></i></button>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
+
 
     <section class="content">
         <div class="container-fluid">
@@ -206,7 +250,8 @@
 
                             <div class="card card-primary" style="max-height: 455px">
                                 <div class="card-header">
-                                    <h3 class="card-title"><i class="fa-solid fa-chart-line"></i> Graduated Student by Year
+                                    <h3 class="card-title"><i class="fa-solid fa-chart-line"></i> Graduated Student by
+                                        Year
                                     </h3>
                                     <div class="card-tools">
                                         <button type="button" class="btn btn-tool" data-card-widget="maximize">
@@ -239,6 +284,7 @@
 @endsection
 
 @section('script')
+    @include('script')
     <script language="javascript" type="text/javascript">
         function generateRandomData(count) {
             const data = [];

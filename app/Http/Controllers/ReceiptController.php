@@ -67,6 +67,7 @@ class ReceiptController extends Controller
                 //"receipts.level as level",
                 //"receipts.status as order_status",
                 "contacts.name as contact_name",
+                "contacts.nickname as contact_nickname",
                 "contacts.code as contact_code",
                 //"contacts.start_term as start_term",
                 "departments.name as centre",
@@ -104,6 +105,7 @@ class ReceiptController extends Controller
                 'receipts.total_fee',
                 'receipts.payment_date',
                 'contacts.name',
+                'contacts.nickname',
                 'contacts.code',
                 'departments.name'
             )
@@ -116,6 +118,10 @@ class ReceiptController extends Controller
                 })
                 ->addColumn('more', function ($row) {
                     return '';
+                })
+                ->editColumn('contact_name', function ($row) {
+                    $nic = $row->contact_nickname !== null && $row->contact_nickname !== '' ? '(' . $row->contact_nickname . ')' : '';
+                    return $row->contact_name . ' ' . $nic;
                 })
                 ->editColumn('book_use', function (Receipt $datas) {
 
@@ -157,6 +163,7 @@ class ReceiptController extends Controller
                 "receipts.level as level",
                 "receipts.status as receipts_status",
                 "contacts.name as contact_name",
+                "contacts.nickname as contact_nickname",
                 "contacts.code as contact_code",
                 "contacts.start_term as start_term",
                 "departments.name as centre",
@@ -238,6 +245,10 @@ class ReceiptController extends Controller
                 ->addColumn('more', function ($row) {
                     return '';
                 })
+                ->editColumn('contact_name', function ($row) {
+                    $nic = $row->contact_nickname !== null && $row->contact_nickname !== '' ? '(' . $row->contact_nickname . ')' : '';
+                    return $row->contact_name . ' ' . $nic;
+                })
                 ->addColumn('action', function ($row) {
                     $html = '';
                     if (Gate::allows('order-edit')) {
@@ -282,6 +293,7 @@ class ReceiptController extends Controller
                 "orders.created_at as created_at",
                 "orders.status as order_status",
                 "contacts.name as contact_name",
+                "contacts.nickname as contact_nickname",
                 "contacts.code as contact_code",
                 "contacts.start_term as start_term",
                 "departments.name as centre"
@@ -322,6 +334,7 @@ class ReceiptController extends Controller
                 "orders.created_at",
                 "orders.status",
                 "contacts.name",
+                'contacts.nickname',
                 "contacts.code",
                 "contacts.start_term",
                 "departments.name"
@@ -335,6 +348,10 @@ class ReceiptController extends Controller
                 })
                 ->editColumn('created_at', function (Order $datas) {
                     return date('Y-m-d H:i:s', strtotime($datas->created_at));
+                })
+                ->editColumn('contact_name', function ($row) {
+                    $nic = $row->contact_nickname !== null && $row->contact_nickname !== '' ? '(' . $row->contact_nickname . ')' : '';
+                    return $row->contact_name . ' ' . $nic;
                 })
                 ->editColumn('product_name', function (Order $datas) {
 

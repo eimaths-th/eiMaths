@@ -7,7 +7,7 @@
     }
 
     .modal-xxl {
-        max-width: 1200px !important;
+        max-width: 900px !important;
     }
 
     .select2-container.select2-container-disabled .select2-choice {
@@ -383,7 +383,7 @@
     }
 
     .modal-xxl {
-        max-width: 1600px !important;
+        max-width: 1200px !important;
     }
 </style>
 

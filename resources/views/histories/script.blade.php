@@ -552,12 +552,16 @@
 
             $('#custom-tabs-one-home-tab').tab('show');
 
-            var id = document.getElementById('getViewData').getAttribute('data-id');
-            var route = "{{ route('history.show', ['id' => ':id']) }}".replace(':id', id);
+            var hid = $(this).data('id')
+            //document.getElementById('getViewData').getAttribute('data-id');
+            var route = "{{ route('history.show', ['id' => ':id']) }}".replace(':id', hid);
+
+            //console.log(hid)
 
             $.ajax({
                 url: route,
                 method: "GET",
+                //data: { id: hid },
                 success: function(response) {
                     console.log(response.centre);
                     console.log(response.history);
@@ -573,6 +577,10 @@
                     $('#ViewEndTime').val(response.history.etime);
                     $('#viewStartDate').val(response.history.start_date);
                     $('#viewEndDate').val(response.history.end_date);
+                    $('#hsliden').html(response.slide_html);
+                    $('#hslidei').html(response.img_html);
+                    //console.log(response.slide_html);
+                    //console.log(response.img_html);
                     $('#ViewComment').val(response.history.comment);
                     $('#ViewSignature').attr('src', 'https://app.eimaths-th.com/file_upload/' + response.history.signature);
                     // console.log(response.code);

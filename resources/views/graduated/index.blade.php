@@ -54,7 +54,7 @@
                 <div class="col-12">
                     <div class="card card-primary">
                         <div class="card-header">
-                            <h3 class="card-title"><i class="fas fa-graduation-cap"></i> Student List</h3>
+                            <h3 class="card-title"><i class="fas fa-graduation-cap"></i>Graduated Student List</h3>
                             <div class="card-tools">
                                 <button type="button" class="btn btn-tool" data-card-widget="maximize">
                                     <i class="fas fa-expand"></i>
@@ -158,6 +158,7 @@
                                                     <th>Centre</th>
                                                     <th>Code</th>
                                                     <th>Student Name</th>
+                                                    <th>Student Nick Name</th>
                                                     <th>Start Date</th>
                                                     <th>Level</th>
                                                     <th>BookUse </th>

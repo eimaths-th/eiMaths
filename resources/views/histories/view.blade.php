@@ -123,7 +123,9 @@
                                                                 Time:</strong>
 
 
-                                                            <input type="text" class="form-control" id="ViewStartTime"placeholder="pls Enter book for student"  disabled>
+                                                            <input type="text" class="form-control"
+                                                                id="ViewStartTime"placeholder="pls Enter book for student"
+                                                                disabled>
 
                                                         </div>
                                                     </div>
@@ -131,7 +133,9 @@
 
                                                         <div class="form-group">
                                                             <strong><i class="fas fa-calendar"></i> End Time:</strong>
-                                                            <input type="text" class="form-control" id="ViewEndTime"placeholder="pls Enter book for student"  disabled>
+                                                            <input type="text" class="form-control"
+                                                                id="ViewEndTime"placeholder="pls Enter book for student"
+                                                                disabled>
                                                         </div>
 
                                                     </div>
@@ -144,7 +148,9 @@
                                             <div class="col-xs-6 col-sm-6 col-md-6">
                                                 <div class="form-group">
                                                     <strong><i class="fas fa-code"></i> Start Date</strong>
-                                                    <input type="text" class="form-control" id="viewStartDate"placeholder="pls Enter book for student" disabled>
+                                                    <input type="text" class="form-control"
+                                                        id="viewStartDate"placeholder="pls Enter book for student"
+                                                        disabled>
 
                                                 </div>
                                             </div>
@@ -152,7 +158,9 @@
                                             <div class="col-xs-6 col-sm-6 col-md-6">
                                                 <div class="form-group">
                                                     <strong><i class="fas fa-code"></i>End Date</strong>
-                                                    <input type="text" class="form-control" id="viewEndDate"placeholder="pls Enter book for student" disabled>
+                                                    <input type="text" class="form-control"
+                                                        id="viewEndDate"placeholder="pls Enter book for student"
+                                                        disabled>
 
 
                                                 </div>
@@ -165,9 +173,35 @@
                                                     {{-- <textarea name="signature" id="AddSignature" rows="5" class="form-control"></textarea> --}}
 
                                                     <img class="d-block w-100" id="ViewSignature" height="400px"
-                                                        src=""
-                                                        alt="" />
+                                                        src="" alt="" />
 
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-12 col-sm-12 col-md-12">
+                                                <div id="carouselExampleIndicators" class="carousel slide"
+                                                    data-ride="carousel">
+                                                    <ol class="carousel-indicators" id="hsliden">
+
+                                                    </ol>
+                                                    <div class="carousel-inner" id="hslidei">
+
+                                                    </div>
+                                                    <a class="carousel-control-prev" href="#carouselExampleIndicators"
+                                                        role="button" data-slide="prev">
+                                                        <span class="carousel-control-custom-icon" aria-hidden="true">
+                                                            <i class="fas fa-chevron-left"></i>
+                                                        </span>
+                                                        <span class="sr-only">Previous</span>
+                                                    </a>
+                                                    <a class="carousel-control-next" href="#carouselExampleIndicators"
+                                                        role="button" data-slide="next">
+                                                        <span class="carousel-control-custom-icon" aria-hidden="true">
+                                                            <i class="fas fa-chevron-right"></i>
+                                                        </span>
+                                                        <span class="sr-only">Next</span>
+                                                    </a>
                                                 </div>
                                             </div>
                                         </div>

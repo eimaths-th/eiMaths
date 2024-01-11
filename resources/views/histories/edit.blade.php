@@ -60,7 +60,8 @@
                                                         @endforeach
 
                                                     </select> --}}
-                                                    <input type="text" name="centre" id="getCentre" class="form-control" placeholder="Centre student" disabled>
+                                                    <input type="text" name="centre" id="getCentre"
+                                                        class="form-control" placeholder="Centre student" disabled>
 
                                                 </div>
                                             </div>
@@ -74,7 +75,8 @@
                                                         'class' => 'form-control',
                                                         'readonly' => true,
                                                     ]) !!} --}}
-                                                    <input type="text" name="student" id="getStudent" class="form-control" placeholder="name student" disabled>
+                                                    <input type="text" name="student" id="getStudent"
+                                                        class="form-control" placeholder="name student" disabled>
                                                     {{-- <select name="student" id="s_student"class="select2 select2_single form-control s_student"
                                                         multiple="multiple">
                                                         <option value="">select student</option>
@@ -97,7 +99,8 @@
                                                         <option value="3">3</option>
 
                                                     </select> --}}
-                                                    <input type="text" name="level_id" id="getLevel" class="form-control" placeholder="Level student" disabled>
+                                                    <input type="text" name="level_id" id="getLevel"
+                                                        class="form-control" placeholder="Level student" disabled>
 
                                                 </div>
                                             </div>
@@ -113,7 +116,8 @@
                                                         <option value="2">2</option>
                                                         <option value="3">3</option>
                                                     </select> --}}
-                                                    <input type="text" name="term" id="getTerm" class="form-control" placeholder="Term student" disabled>
+                                                    <input type="text" name="term" id="getTerm"
+                                                        class="form-control" placeholder="Term student" disabled>
 
                                                 </div>
                                             </div>
@@ -132,7 +136,8 @@
                                                         <option value="3">3</option>
 
                                                     </select> --}}
-                                                    <input type="text" name="bookuse" id="getBookuse" class="form-control" placeholder="getBookuse" disabled>
+                                                    <input type="text" name="bookuse" id="getBookuse"
+                                                        class="form-control" placeholder="getBookuse" disabled>
 
                                                 </div>
                                             </div>
@@ -140,7 +145,8 @@
                                             <div class="col-xs-6 col-sm-6 col-md-6">
                                                 <div class="form-group">
                                                     <strong><i class="fas fa-code"></i>Course Remaining</strong>
-                                                    <input type="text" name="course_remaining" id="getCourseRemaining" disabled class="form-control">
+                                                    <input type="text" name="course_remaining"
+                                                        id="getCourseRemaining" disabled class="form-control">
 
                                                     {{-- <select name="course_remaining" id="AddCourseRemaining"class="select2 select2_single form-control"
                                                     multiple="multiple">
@@ -157,8 +163,7 @@
                                                 <div class="form-group">
                                                     <strong><i class="fas fa-calendar"></i> Date:</strong>
                                                     <input type="text" name="date" id="getDate"
-                                                        class="getDate form-control" disabled
-                                                        placeholder="getDate">
+                                                        class="getDate form-control" disabled placeholder="getDate">
                                                     {{-- {!! Form::text('date', null, [
                                                         'id' => 'AddDate',
                                                         'placeholder' => '',
@@ -171,14 +176,17 @@
                                                 <div class="row">
                                                     <div class="col-lg-6">
                                                         <div class="form-group">
-                                                            <strong><i class="fas fa-calendar"></i> Start Time:</strong>
+                                                            <strong><i class="fas fa-calendar"></i> Start
+                                                                Time:</strong>
 
-                                                                <div class="row">
-                                                                    <input type="text" id="getStartTime" class="form-control col-sm-10" placeholder="getStartTime" disabled>
-                                                                    <span class="input-group-text input-group-addon">
-                                                                        <i class="fa fa-clock"></i>
-                                                                    </span>
-                                                                </div>
+                                                            <div class="row">
+                                                                <input type="text" id="getStartTime"
+                                                                    class="form-control col-sm-10"
+                                                                    placeholder="getStartTime" disabled>
+                                                                <span class="input-group-text input-group-addon">
+                                                                    <i class="fa fa-clock"></i>
+                                                                </span>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                     <div class="col-lg-6">
@@ -186,7 +194,9 @@
                                                         <div class="form-group">
                                                             <strong><i class="fas fa-calendar"></i> End Time:</strong>
                                                             <div class="row">
-                                                                <input type="text" id="getEndTime" class="form-control col-sm-10" placeholder="getEndTime" disabled>
+                                                                <input type="text" id="getEndTime"
+                                                                    class="form-control col-sm-10"
+                                                                    placeholder="getEndTime" disabled>
                                                                 <span class="input-group-text input-group-addon">
                                                                     <i class="fa fa-clock"></i>
                                                                 </span>
@@ -218,7 +228,8 @@
                                                         <option value="3">3</option>
 
                                                     </select> --}}
-                                                    <input type="text" name="start_date" id="getStartDate" class="form-control" placeholder="getStartDate" disabled>
+                                                    <input type="text" name="start_date" id="getStartDate"
+                                                        class="form-control" placeholder="getStartDate" disabled>
 
                                                 </div>
                                             </div>
@@ -226,7 +237,8 @@
                                             <div class="col-xs-6 col-sm-6 col-md-6">
                                                 <div class="form-group">
                                                     <strong><i class="fas fa-code"></i>End Date</strong>
-                                                    <input type="text" name="end_date" id="getEndDate" disabled class="form-control">
+                                                    <input type="text" name="end_date" id="getEndDate" disabled
+                                                        class="form-control">
 
                                                     {{-- <select name="course_remaining" id="AddCourseRemaining"class="select2 select2_single form-control"
                                                     multiple="multiple">
@@ -244,11 +256,13 @@
                                                     <strong><i class="fas fa-calendar"></i> Signature:</strong>
                                                     {{-- <textarea name="signature" id="getSignature" rows="5" placeholder="getSignature" class="form-control"></textarea> --}}
                                                     <br>
-                                                    <img src="" alt="Signature" id="getSignature" class="img-fluid" style="width: 750px; height: 400px;">
+                                                    <img src="" alt="Signature" id="getSignature"
+                                                        class="img-fluid" style="width: 750px; height: 400px;">
 
                                                 </div>
                                             </div>
                                         </div>
+
                                         <div class="row">
                                             <div class="col-xs-12 col-sm-12 col-md-12">
                                                 <div class="form-group">

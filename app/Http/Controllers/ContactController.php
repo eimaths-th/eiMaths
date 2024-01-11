@@ -99,6 +99,9 @@ class ContactController extends Controller
                         return $row->level_name;
                     }
                 })
+                ->editColumn('nickname', function ($row) {
+                    return $row->nickname !== null && $row->nickname !== '' ? $row->nickname : '-';
+                })
                 ->editColumn('bookuse_name', function ($row) {
                     if (!empty($row->bookuse2_name)) {
                         return ' ( ' . $row->bookuse_name . ') - (' . $row->bookuse2_name . ')';
@@ -195,6 +198,9 @@ class ContactController extends Controller
             return datatables()->of($datas)
                 ->editColumn('checkbox', function ($row) {
                     return '<input type="checkbox" id="' . $row->id . '" class="flat" name="table_records[]" value="' . $row->id . '" >';
+                })
+                ->editColumn('nickname', function ($row) {
+                    return $row->nickname !== null && $row->nickname !== '' ? $row->nickname : '-';
                 })
                 ->addColumn('more', function ($row) {
                     return '';
@@ -660,6 +666,7 @@ class ContactController extends Controller
 
         $contactd = [
             'name' => $request->get('name'),
+            'nickname' => $request->get('nickname'),
             'address' => $request->get('address'),
             'postcode' => $request->get('postcode'),
             'telephone' => $request->get('telephone'),

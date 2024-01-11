@@ -69,6 +69,9 @@ class DiscontinueController extends Controller
                 ->addColumn('more', function ($row) {
                     return '';
                 })
+                ->editColumn('nickname', function ($row) {
+                    return $row->nickname !== null && $row->nickname !== '' ? $row->nickname : '-';
+                })
                 ->addColumn('action', function ($row) {
                     if (Gate::allows('student-edit')) {
                         $html = '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-rowid="' . $row->id . '"><i class="fa-solid fa-retweet"></i> Restart</button> ';

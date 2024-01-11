@@ -27,19 +27,19 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a href="{{ route('contacts.graduated') }}" class="nav-link {{ Request::is('contacts') ? 'active' : '' }}">
+                <a href="{{ route('contacts.graduated') }}" class="nav-link {{ Request::is('graduated') ? 'active' : '' }}">
                     <i class="nav-icon fa-solid fa-comment-dots"></i>
                     <p>Graduated Student</p>
                 </a>
             </li>
             <li class="nav-item">
-                <a href="{{ route('histories.index') }}" class="nav-link {{ Request::is('contacts') ? 'active' : '' }}">
+                <a href="{{ route('histories.index') }}" class="nav-link {{ Request::is('histories') ? 'active' : '' }}">
                     <i class="nav-icon fa-solid fa-comment-dots"></i>
                     <p>Histories</p>
                 </a>
             </li>
             <li class="nav-item">
-                <a href="{{ route('parent.index') }}" class="nav-link {{ Request::is('contacts') ? 'active' : '' }}">
+                <a href="{{ route('parent.index') }}" class="nav-link {{ Request::is('parent') ? 'active' : '' }}">
                     <i class="nav-icon fa-solid fa-comment-dots"></i>
                     <p>Parent Manage</p>
                 </a>
