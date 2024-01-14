@@ -497,7 +497,7 @@
     };
 
     const daily_study_chart_data = (data) => {
-        const labels = data.map(entry => entry.start_date);
+        const labels = data.map(entry => entry.date);
         const totalData = data.map(entry => entry.total_transactions);
 
 
