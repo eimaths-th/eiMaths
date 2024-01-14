@@ -536,7 +536,7 @@ class DashboardController extends Controller
         $reservationValue = $request->input('reservation');
 
         $query = Histrories::select(
-            'start_date',
+            'date',
             DB::raw('COUNT(*) as total_transactions')
         );
 
@@ -548,7 +548,7 @@ class DashboardController extends Controller
             $summaryByDate->where('payment_date', 'like', $reservationValue.'%');
         } */
 
-        $query->groupBy('start_date');
+        $query->groupBy('date');
         $datas = $query->get();
 
         return response()->json([
