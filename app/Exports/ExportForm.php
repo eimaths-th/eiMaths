@@ -96,6 +96,10 @@ class ExportForm implements FromCollection, WithHeadings
                 "level2_name" => $contact->level2_name,
                 "term2_name" => $contact->term2_name,
                 "bookuse2_name" => $contact->bookuse2_name,
+                "father_name" => $contact->father_name,
+                "father_mobile" => $contact->father_mobile,
+                "mother_name" => $contact->mother_name,
+                "mother_mobile" => $contact->mother_mobile,
 
             ];
         });
@@ -124,6 +128,10 @@ class ExportForm implements FromCollection, WithHeadings
             'To level',
             'To term',
             'To bookuse',
+            'father name',
+            'father mobile',
+            'mother name',
+            'mother mobile',
 
             // 'Package',
             // 'Price',
