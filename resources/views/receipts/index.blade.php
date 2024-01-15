@@ -15,6 +15,10 @@
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
+                        <button type="button" class="btn btn-info export_button" id="export_button"><i
+                                class="fa-solid fa-file-export"></i>
+                            Export Excel </button>
+                        &nbsp;
                     </ol>
                 </div>
             </div>
@@ -138,7 +142,7 @@
                                                     <th>Level</th>
                                                     <th>BookUse</th>
                                                     <th>TotalFee</th>
-                                                   {{--  <th>StartTerm</th> --}}
+                                                    {{--  <th>StartTerm</th> --}}
                                                     <th width="120px"></th>
                                                     <th>More</th>
                                                 </tr>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\ExportReciept;
 use Illuminate\Http\Request;
 use App\Models\Receipt;
 use App\Models\ReceiptRunningNumber;
@@ -19,6 +20,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\DB;
 use App\Interfaces\MoneyConvertServiceInterface;
+use Maatwebsite\Excel\Facades\Excel;
 use PDF;
 
 class ReceiptController extends Controller
@@ -707,5 +709,11 @@ class ReceiptController extends Controller
 
 
         return response()->json(['success' => true, 'message' => 'Generate Receipt successfully']);
+    }
+
+    public function exportReciept(Request $request)
+    {
+
+        return Excel::download(new ExportReciept($request->get('table_records')), 'ExportReciept.xlsx');
     }
 }

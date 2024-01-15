@@ -3,6 +3,7 @@
 namespace App\Exports;
 
 use App\Models\Contact;
+use App\Models\Receipt;
 use App\Models\ReceiptForm;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -43,59 +44,32 @@ class ExportReciept implements FromCollection, WithHeadings
      */
     public function collection()
     {
-        // dd($this->export_id);
 
-        // $contacts = Contact::select(
-        //     "name",
-        //     "nickname",
-        //     "school",
-        //     "gender",
-        //     "birth_date",
-        //     "address",
-        //     "telephone",
-        //     // "birth_date",
-        //     // "street_address",
-        //     // "postcode",
-        //     // "name_parent",
-        //     // "mobile",
-        //     // "package",
-        //     // "contest",
-        //     // DB::raw("CONCAT('" . url('/') . "/receipt_form_images/',photo_att) AS photo"),
-        //     // DB::raw("CONCAT('" . url('/') . "/receipt_form_images/',file_att) AS slip"),
-        //     // "news_form"
-        // )
-        //     ->whereIn('id', $this->export_id)
-        //     // ->where([['sfield', $this->sfield_check]])
-        //     ->get();
-        $contacts = Contact::whereIn('id', $this->export_id)
+        $receipts = Receipt::whereIn('id', $this->export_id)
 
             ->get();
 
-        $customResults = $contacts->map(function ($contact) {
-            if ($contact->gender == 1) {
+        $customResults = $receipts->map(function ($receipt) {
+            if ($receipt->gender == 1) {
 
                 $sex = 'male';
             }else {
                 $sex = 'female';
             }
+            $contacts = Contact::find($receipt->cid);
+            // dd($contacts);
+
+            $level = $contacts->level_name . ' - ' . $contacts->level2_name;
+
+
             return [
-                "code" => $contact->code,
-                "start_date" => $contact->start_date,
-                "start_term" => $contact->start_term,
-                "name" => $contact->name,
-                "nickname" => $contact->nickname,
-                "school" => $contact->school,
-                "gender" => $sex,
-                "birth_date" => $contact->birth_date,
-                "telephone" => $contact->telephone,
+                "receipt_number" => $receipt->receipt_number,
+                "payment_date" => $receipt->payment_date,
+                "code" => $receipt->student_no,
+                "name" => $receipt->student_name,
+                "level name" => $level,
+                "total_fee" => $receipt->total_fee,
 
-                "level_name" => $contact->level_name,
-                "term_name" => $contact->term_name,
-                "bookuse_name" => $contact->bookuse_name,
-
-                "level2_name" => $contact->level2_name,
-                "term2_name" => $contact->term2_name,
-                "bookuse2_name" => $contact->bookuse2_name,
 
             ];
         });
@@ -108,28 +82,13 @@ class ExportReciept implements FromCollection, WithHeadings
     public function headings(): array
     {
         return [
-            'start_date',
-            'start_term',
+            'receipt_number',
+            'payment_date',
             'code',
             'name',
-            'Nick Name',
-            'School Name',
-            'gender',
-            'Birth Date',
-            'Mobile',
-            'start level',
-            'start term',
-            'start bookuse',
-            'To level',
-            'To term',
-            'To bookuse',
+            'level name',
+            'total_fee',
 
-            // 'Package',
-            // 'Price',
-            // 'Contest',
-            // 'Photo',
-            // 'Slip',
-            // 'News From',
         ];
     }
 }
