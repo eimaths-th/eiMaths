@@ -75,6 +75,7 @@ class ExportReciept implements FromCollection, WithHeadings
         });
 
         // dd($customResults);
+        // dd($customResults);
 
         return $customResults;
     }
