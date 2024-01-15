@@ -108,9 +108,10 @@ class ExportForm implements FromCollection, WithHeadings
     public function headings(): array
     {
         return [
+
+            'code',
             'start_date',
             'start_term',
-            'code',
             'name',
             'Nick Name',
             'School Name',
