@@ -501,7 +501,7 @@ class ReceiptController extends Controller
             //->orderBy("id", "asc")
             ->get();
 
-        //dd($datas_list);
+        dd($datas_list);
         // dd(
         //     $id,
         //     $datas,
