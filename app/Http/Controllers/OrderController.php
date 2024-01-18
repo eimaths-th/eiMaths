@@ -615,6 +615,7 @@ class OrderController extends Controller
             'refund' => $request->get('refund'),
             'register_fee' => $request->get('register_fee'),
             'access_fee' => $request->get('access_fee'),
+            'orther_fee' => $request->get('orther_fee'),
             'discount' => $request->get('discount'),
             'payment' => $request->get('payment'),
             'discount_book' => $request->get('discount_book'),

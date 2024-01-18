@@ -257,17 +257,18 @@
         });
 
 
-        $("#EditRegisterFee,#EditAccessFee,#EditRefund,#EditDiscountTerm,#EditDiscountBook").on("keyup input",
+        $("#EditOrtherFee,#EditRegisterFee,#EditAccessFee,#EditRefund,#EditDiscountTerm,#EditDiscountBook").on("keyup input",
             function() {
                 let fee = $("#EditRegisterFee").val() || 0;
                 let access_fee = $("#EditAccessFee").val() || 0;
+                let orther_fee = $("#EditOrtherFee").val() || 0;
                 let refund = $("#EditRefund").val() || 0;
                 let discount = $("#EditDiscountTerm").val() || 0;
                 let discount_book = $("#EditDiscountBook").val() || 0;
                 let price = $("#EditTotalCosth").val() || 0;
                 let bookfee = $("#EditBookFee").val() || 0;
                 let total_cost = (parseFloat(price) + parseFloat(bookfee)) + (parseFloat(fee) + parseFloat(
-                    refund) + parseFloat(access_fee)) - parseFloat(
+                    refund) + parseFloat(access_fee) + parseFloat(orther_fee)) - parseFloat(
                     discount) - parseFloat(
                     discount_book);
                 let ftotal = parseFloat(total_cost);
@@ -756,6 +757,7 @@
                 refund: $('#EditRefund').val(),
                 register_fee: $('#EditRegisterFee').val(),
                 access_fee: $('#EditAccessFee').val(),
+                orther_fee: $('#EditOrtherFee').val(),
                 discount: $('#EditDiscountTerm').val(),
                 discount_book: $('#EditDiscountBook').val(),
                 status: status,

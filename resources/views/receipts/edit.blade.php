@@ -190,6 +190,21 @@
                                                  </div>
                                              </div>
                                              <div class="col-xs-6 col-sm-6 col-md-6">
+                                                <div class="form-group">
+                                                    <strong><i class="fas fa-dollar-sign"></i> รายได้อื่นๆ
+                                                        :</strong>
+                                                    {!! Form::number('orther_fee', '0.00', [
+                                                        'id' => 'EditOrtherFee',
+                                                        'step' => '0.50',
+                                                        'placeholder' => 'รายได้อื่นๆ',
+                                                        'class' => 'auto_decimal form-control',
+                                                        'readonly' => false,
+                                                    ]) !!}
+                                                </div>
+                                            </div>
+                                         </div>
+                                         <div class="row">
+                                             <div class="col-xs-6 col-sm-6 col-md-6">
                                                  <div class="form-group">
                                                      <strong><i class="fa-solid fa-percent"></i> Discount TermFee
                                                          :</strong>
@@ -202,8 +217,6 @@
                                                      ]) !!}
                                                  </div>
                                              </div>
-                                         </div>
-                                         <div class="row">
                                              <div class="col-xs-6 col-sm-6 col-md-6">
                                                  <div class="form-group">
                                                      <strong><i class="fa-solid fa-percent"></i> Discount BookFee
@@ -217,6 +230,9 @@
                                                      ]) !!}
                                                  </div>
                                              </div>
+
+                                         </div>
+                                         <div class="row">
                                              <div class="col-xs-6 col-sm-6 col-md-6">
                                                  <div class="form-group">
                                                      <strong><i class="fa-solid fa-hand-holding-dollar"></i> Total
@@ -238,7 +254,8 @@
                                          <div class="row">
                                              <div class="col-xs-6 col-sm-6 col-md-6">
                                                  <div class="form-group">
-                                                     <strong><i class="fa-solid fa-hand-holding-dollar"></i> Payment Type:</strong>
+                                                     <strong><i class="fa-solid fa-hand-holding-dollar"></i> Payment
+                                                         Type:</strong>
                                                      <div class="form-group clearfix">
                                                          <div class="icheck-success d-inline">
                                                              <input type="radio" name="payment" value="1"
@@ -253,11 +270,11 @@
                                                              </label>
                                                          </div>
                                                          <div class="icheck-success d-inline">
-                                                            <input type="radio" name="payment" value="3"
-                                                                id="radioSuccess3">
-                                                            <label for="radioSuccess3">Credit
-                                                            </label>
-                                                        </div>
+                                                             <input type="radio" name="payment" value="3"
+                                                                 id="radioSuccess3">
+                                                             <label for="radioSuccess3">Credit
+                                                             </label>
+                                                         </div>
                                                      </div>
                                                  </div>
                                              </div>
