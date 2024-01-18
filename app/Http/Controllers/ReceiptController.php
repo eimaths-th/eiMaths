@@ -616,7 +616,7 @@ class ReceiptController extends Controller
         };
 
 
-        if ($datas[0]->orther_fee !== "" and $datas[0]->orther_fee !== "0.00") {
+        if ($datas[0]->orther_fee !== null && $datas[0]->orther_fee !== "0.00") {
             $accessItem = [
                 [
                     'pname' => 'รายได้อื่นๆ',
@@ -624,11 +624,10 @@ class ReceiptController extends Controller
                     'uprice' => $datas[0]->orther_fee * 1,
                     'price' => $datas[0]->orther_fee,
                     'discount' => '0.00',
-
                 ]
             ];
             $customItem = array_merge($customItem, $accessItem);
-        };
+        }
 
 
 
