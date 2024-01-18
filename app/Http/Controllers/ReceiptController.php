@@ -650,10 +650,14 @@ class ReceiptController extends Controller
 
             // Download the PDF file
             //return response()->download($pdfPath, $pdfFileName, ['Content-Type' => 'application/pdf']);
-            return response(file_get_contents($pdfPath), 200, [
+            /*  return response(file_get_contents($pdfPath), 200, [
                 'Content-Type' => 'application/pdf',
                 'Content-Disposition' => 'inline; filename="' . $pdfFileName . '"',
-            ]);
+            ]); */
+            echo '<script>window.open("' . asset($pdfPath) . '", "_blank");</script>';
+
+            // Return a response (optional)
+            return response()->json(['status' => 'success']);
         } else {
             // Render the view with the data and get the HTML content
             $htmlContent = View::make($template, $data)->render();
