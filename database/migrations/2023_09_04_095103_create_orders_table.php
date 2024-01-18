@@ -21,6 +21,7 @@ return new class extends Migration
             $table->decimal('refund', 12, 2)->nullable();
             $table->decimal('register_fee', 12, 2)->nullable();
             $table->decimal('access_fee', 12, 2)->nullable();
+            $table->decimal('orther_fee', 12, 2)->nullable();
             $table->decimal('discount', 12, 2)->nullable();
             $table->decimal('discount_book', 12, 2)->nullable();
             $table->decimal('total_price', 12, 2)->nullable();

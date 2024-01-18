@@ -17,6 +17,7 @@ class Order extends Model
         'refund',
         'register_fee',
         'access_fee',
+        'orther_fee',
         'discount',
         'discount_book',
         'status',

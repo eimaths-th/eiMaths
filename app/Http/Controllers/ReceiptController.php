@@ -448,6 +448,7 @@ class ReceiptController extends Controller
             "orders.refund as refund",
             "orders.register_fee as register_fee",
             "orders.access_fee as access_fee",
+            "orders.orther_fee as orther_fee",
             "orders.discount as discount",
             "orders.payment as payment",
             "orders.discount_book as discount_book",
@@ -552,7 +553,7 @@ class ReceiptController extends Controller
         $maxPrice = $datas_list->max('oprice');
         $maxBPrice = $datas_list->max('obprice');
         $book_price = $lbprice - $datas[0]->discount_book;
-        $vat_price = ($lprice + $datas[0]->register_fee + $datas[0]->access_fee + $datas[0]->refund) - $datas[0]->discount;
+        $vat_price = ($lprice + $datas[0]->register_fee + $datas[0]->access_fee + $datas[0]->orther_fee + $datas[0]->refund) - $datas[0]->discount;
         $vat_val = $vat_price * 0.07;
         $net_price = $vat_price + $book_price;
 
@@ -613,6 +614,22 @@ class ReceiptController extends Controller
             ];
             $customItem = array_merge($customItem, $accessItem);
         };
+
+
+        if ($datas[0]->orther_fee !== "" and $datas[0]->orther_fee !== "0.00") {
+            $accessItem = [
+                [
+                    'pname' => 'รายได้อื่นๆ',
+                    'quantity' => 1,
+                    'uprice' => $datas[0]->orther_fee * 1,
+                    'price' => $datas[0]->orther_fee,
+                    'discount' => '0.00',
+
+                ]
+            ];
+            $customItem = array_merge($customItem, $accessItem);
+        };
+
 
 
         $data = [
