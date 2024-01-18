@@ -485,7 +485,7 @@ class ReceiptController extends Controller
             DB::raw("COUNT(*) as row_count"),
             DB::raw("SUM(order_detail_lists.price) as total_price"),
             DB::raw("SUM(eimatch.order_detail_lists.bprice) as total_bprice")
-        )->where('order_id', $id)
+        )->where('order_id', $datas[0]->oid)
             ->groupBy(
                 // 'order_detail_lists.level',
                 'first_char',
@@ -503,7 +503,7 @@ class ReceiptController extends Controller
             //->orderBy("id", "asc")
             ->get();
 
-        dd($datas_list);
+        //dd($datas_list);
         // dd(
         //     $id,
         //     $datas,
