@@ -649,11 +649,11 @@ class ReceiptController extends Controller
             $pdfFileName = $datas[0]->doc_number . '.pdf';
 
             // Download the PDF file
-            return response()->download($pdfPath, $pdfFileName, ['Content-Type' => 'application/pdf']);
-           /*  return response(file_get_contents($pdfPath), 200, [
+            //return response()->download($pdfPath, $pdfFileName, ['Content-Type' => 'application/pdf']);
+            return response(file_get_contents($pdfPath), 200, [
                 'Content-Type' => 'application/pdf',
                 'Content-Disposition' => 'inline; filename="' . $pdfFileName . '"',
-            ]); */
+            ]);
         } else {
             // Render the view with the data and get the HTML content
             $htmlContent = View::make($template, $data)->render();
