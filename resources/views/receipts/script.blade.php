@@ -28,6 +28,23 @@
     }
 
 
+    $('#check-all').click(function() {
+        $(':checkbox.flat').prop('checked', this.checked);
+    });
+    $(".export_button").click(function() {
+            var len = $('input[name="table_records[]"]:checked').length;
+            if (len > 0) {
+                if (confirm("Click OK to Export?")) {
+                    $('form#delete_all').attr('action',
+                        '{{ route('reciept.export') }}'); //this fails silently
+                    $('form#delete_all').submit();
+                }
+            } else {
+                alert("Please Select Record For Export");
+            }
+
+        });
+
     $(document).ready(function() {
         let id;
 

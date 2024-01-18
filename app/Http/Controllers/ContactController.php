@@ -18,6 +18,10 @@ use App\Models\OrderDetailList;
 use App\Models\OrderRunningNumber;
 use Illuminate\Support\Facades\Gate;
 
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\ExportForm;
+use App\Exports\ExportExcel;
+
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 
@@ -932,5 +936,18 @@ class ContactController extends Controller
                 'scoin' => $result_coin,
             ]);
         }
+    }
+    public function exportContact(Request $request) {
+
+        // dd($request);
+
+        if ($request->excel === "1") {
+            # code...
+            return Excel::download(new ExportExcel( $request->get('table_records')), 'ReceiptForm.xlsx');
+        } else {
+            # code...
+            return Excel::download(new ExportForm( $request->get('table_records')), 'ExportContact.xlsx');
+        }
+
     }
 }

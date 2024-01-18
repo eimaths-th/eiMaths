@@ -17,19 +17,27 @@
                         <li class="breadcrumb-item active">Users Management</li> --}}
 
 
+                        <button type="button" class="btn btn-info export_button" id="export_button"><i
+                                class="fa-solid fa-file-export"></i>
+                            Export Excel </button>
+                        &nbsp;
                         @can('student-create')
-                            <button type="button" class="btn btn-success" id="CreateButton">
-                                <i class="fas fa-graduation-cap"></i> New Student </button>
+                            <button type="button" class="btn btn-success" id="CreateButton"><i
+                                    class="fas fa-graduation-cap"></i>
+                                New Student </button>
                         @else
                             <span class="d-inline-block" tabindex="0" data-toggle="tooltip" data-placement="bottom"
                                 title="You Not Have Permission">
+                                <button type="button" class="btn btn-info" id="export_button"><i
+                                        class="fa-solid fa-file-export"></i> Export Excel </button>
                                 <button type="button" class="btn btn-success disabled">
                                     <i class="fas fa-graduation-cap"></i> Add Student </button>
                             </span>
                         @endcan &nbsp;
 
                         @can('student-delete')
-                            <button type="button" class="btn btn-danger delete_all_button"><i class="fa fa-trash"></i> Delete
+                            <button type="button" class="btn btn-danger delete_all_button"><i class="fa fa-trash"></i>
+                                Delete
                                 All</button>
                         @else
                             <span class="d-inline-block" tabindex="0" data-toggle="tooltip" data-placement="bottom"
@@ -38,6 +46,9 @@
                                     Delete All</button>
                             </span>
                         @endcan
+
+
+
                     </ol>
 
                 </div>
