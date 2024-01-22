@@ -189,7 +189,7 @@ class ParentController extends Controller
             'gender' => 'required',
             'emergency_contact' => 'required|unique:parents|max:10|min:10',
         ]);
-        $hashedPassword = encrypt($request->input('password'));
+        $hashedPassword = bcrypt($request->input('password'));
         $stds = $request->input('student_id');
         $students = implode(',', $stds);
 
@@ -306,10 +306,12 @@ class ParentController extends Controller
         $students = implode(',', $stds);
         $parent = Parents::find($id);
 
-        // dd($input);
+        // dd($request->password);
 
         if ($parent) {
-            $parent->update(['student_id' => $students] + $input);
+
+            $parent->update(['student_id' => $students, 'password' => bcrypt($request->password)] + $input);
+
         } else {
             return response()->json([
                 'errors' => true,
