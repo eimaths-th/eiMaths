@@ -614,22 +614,24 @@
                 url: "{{ route('parent.edit', ':id') }}".replace(':id', id),
                 method: 'GET',
                 success: function(res) {
-                    $('#getCentre').val(res.data.centre).change();
-                    $('#getStudent').val(res.data.code + ' ' + res.data.student_id);
-                    $('#getLevel').val(res.data.level_name);
-                    $('#getTerm').val(res.data.term);
-                    $('#getBookuse').val(res.data.bookuse);
-                    $('#getCourseRemaining').val(res.data.course_remaining);
-                    $('#getDate').val(res.data.date);
-                    $('#getStartTime').val(res.data.stime);
-                    $('#getEndTime').val(res.data.etime);
-                    $('#getStartDate').val(res.data.start_date);
-                    $('#getEndDate').val(res.data.end_date);
-                    $('#getComment').val(res.data.comment);
-                    // $('#getSignature').val(res.data.signature);
-                    $('#getSignature').attr('src', '{{ asset('file_upload/') }}/' + res.data
-                        .signature);
-                    console.log($('#getSignature').val(res.data.signature));
+                    $('#Edits_student').html(res.html_std);
+
+                    $('#EditCentre').html(res.centre);
+                    $('#EditFname').val(res.data.fname);
+                    $('#EditLname').val(res.data.lname);
+                    $('#EditTelp').val(res.data.telp);
+                    $('#EditEmail').val(res.data.email);
+                    $('#EditEmergency').val(res.data.emergency_contact);
+                    $('#EditRelationship').val(res.data.relationship);
+                    $('#EditAddress').val(res.data.address);
+                    $('#EditNotes').val(res.data.notes);
+                    // $('#EditPassword').val(res.data.password);
+                    if (res.data.gender) {
+                        $("input[name='gender'][value='" + res.data.gender + "']").prop(
+                            'checked', true);
+                    }
+
+                    // console.log($('#getSignature').val(res.data.signature));
                     $('#EditModalBody').html(res.html);
                     $('#EditModal').modal('show');
                 }
@@ -649,39 +651,78 @@
 
             $.ajax({
                 url: "parent/update/" + id,
+                // url: "{{ route('parents.update', ['id' => '+id+']) }}",
+
                 method: 'PUT',
                 data: {
-                    comment: $('#getComment').val(),
+                    centre_id: $('#EditCentre').val()[0],
+                    student_id: $('#Edits_student').val(),
+                    fname: $('#EditFname').val(),
+                    lname: $('#EditLname').val(),
+                    telp: $('#EditTelp').val(),
+                    email: $('#EditEmail').val(),
+                    address: $('#EditAddress').val(),
+                    relationship: $('#EditRelationship').val(),
+                    // gender: $('#getComment').val(),
+                    emergency_contact: $('#EditEmergency').val(),
+                    notes: $('#EditNotes').val(),
+                    gender: $('input[name="gender"]:checked').val(),
+                    password: $('#EditPassword').val(),
+                    password_confirmation: $('#password_confirmation1').val(),
                 },
-                success: function(result) {
-                    //console.log(result);
-                    if (result.errors) {
-                        $('.alert-danger').html('');
-                        $.each(result.errors, function(key, value) {
-                            $('.alert-danger').show();
-                            $('.alert-danger').append('<strong><li>' + value +
-                                '</li></strong>');
+
+                error: function(result) {
+                    var dangerValidate = $('#edit_validate');
+                    dangerValidate.html(''); // Clear any previous messages
+                    // console.log(result);
+                    if (result.responseJSON.errors) {
+                        dangerValidate.show();
+
+                        $.each(result.responseJSON.errors, function(field, messages) {
+                            messages.forEach(function(message) {
+                                dangerValidate.append('<strong><li>' +
+                                    message + '</li></strong>');
+                            });
                         });
                     } else {
-                        var ostatus = result.discontinued;
-                        if (ostatus == 1) {
-                            var url = "{{ route('discontinued') }}";
-                            window.location.href = url;
-                        } else {
-                            $('.alert-danger').hide();
-                            $('.alert-success').show();
-                            $('.alert-success').append('<strong><li>' + result.success +
-                                '</li></strong>');
-                            $('#EditModal').modal('hide');
-                            toastr.success(result.success, {
-                                timeOut: 5000
-                            });
-                            $('#Listview').DataTable().ajax.reload();
-                        }
+                        dangerValidate.append('<strong><li>' + result.responseJSON.message +
+                            '</li></strong>');
+                    }
+                    dangerValidate.show();
+                },
+                success: function(result) {
+                    // console.log(result);
+                    if (result.success) {
+
+                        $('.alert-danger').hide();
+                        $('.alert-success').show();
+                        $('.alert-success').append('<strong><li>' + result.message +
+                            '</li></strong>');
+                        $('#EditModal').modal('hide');
+
+                        toastr.success(result.message, {
+                            timeOut: 3000,
+
+                        });
+
+                        // $('.form').trigger('reset');
+
+
+                        // location.reload();
+
+                    } else {
+
+                        $('.alert-danger').html('');
+                        $('.alert-danger').show();
+                        $('.alert-danger').append('<strong><li>' + result.message +
+                            '</li></strong>');
+
 
                     }
-                }
+
+                },
             });
+
         });
 
         $(document).on('click', '.btn-delete', function() {
