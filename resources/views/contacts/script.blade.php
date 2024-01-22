@@ -144,6 +144,8 @@
             $('#reservation').daterangepicker({
                 startDate: startDate,
                 endDate: endDate,
+                showDropdowns: true,
+                linkedCalendars: false,
                 locale: {
                     format: 'YYYY-MM-DD'
                 }
@@ -537,7 +539,7 @@
 
             // Set the date range back to its default
             var currentDate = moment();
-            var startDate = moment(currentDate).subtract(7, 'days').format('YYYY-MM-DD');
+            var startDate = moment(currentDate).subtract(365, 'days').format('YYYY-MM-DD');
             var endDate = moment(currentDate).endOf('month').format('YYYY-MM-DD');
 
             daterange();
