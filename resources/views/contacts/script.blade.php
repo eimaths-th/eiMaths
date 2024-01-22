@@ -156,7 +156,7 @@
             });
         }
 
-        daterange();
+        //daterange();
 
         $.datepicker.setDefaults($.datepicker.regional['en']);
         $(".AddDate").datepicker({
