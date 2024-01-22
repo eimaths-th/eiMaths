@@ -111,9 +111,9 @@
         function datesearch() {
             var currentDate = moment();
             // Set the start date to 7 days before today
-            startDate = moment(currentDate).subtract(465, 'days').format('YYYY-MM-DD');
+            startDate = moment(currentDate).subtract(365, 'days').format('YYYY-MM-DD');
             // Set the end date to the end of the current month
-            endDate = moment(currentDate).endOf('month').format('YYYY-MM-DD');
+            endDate = moment(currentDate).endOf('year').format('YYYY-MM-DD');
         }
 
         function retrieveFieldValues() {
@@ -539,8 +539,8 @@
 
             // Set the date range back to its default
             var currentDate = moment();
-            var startDate = moment(currentDate).subtract(465, 'days').format('YYYY-MM-DD');
-            var endDate = moment(currentDate).endOf('month').format('YYYY-MM-DD');
+            var startDate = moment(currentDate).subtract(365, 'days').format('YYYY-MM-DD');
+            var endDate = moment(currentDate).endOf('year').format('YYYY-MM-DD');
 
             daterange();
 
