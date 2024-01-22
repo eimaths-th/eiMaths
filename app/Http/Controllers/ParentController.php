@@ -3,15 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Models\bookuse;
+use App\Models\Contact;
 use App\Models\Department;
 use App\Models\Histrories;
 use App\Models\level;
 use App\Models\Parents;
 use App\Models\Sterm;
+use App\Models\studentRunningNumber;
 use App\Models\term;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class ParentController extends Controller
 {
@@ -20,13 +23,6 @@ class ParentController extends Controller
      */
     public function index(Request $request)
     {
-        //
-        // $parents = Parents::all();
-        // foreach ($parents as $key => $parent) {
-        //     $students = $parent->students();
-        //     # code...
-        // }
-        // dd($students);
 
         if ($request->ajax()) {
 
@@ -48,13 +44,12 @@ class ParentController extends Controller
                             foreach ($stds as $std) {
                                 $stdName .= $std->name . ' , ';
                             }
-                        }else {
+                        } else {
                             # code...
                             foreach ($stds as $std) {
-                                $stdName .= $std->name ;
+                                $stdName .= $std->name;
                             }
                         }
-
                     } else {
                         $stdName = 'N/A';
                     }
@@ -95,27 +90,16 @@ class ParentController extends Controller
                     return $telp_email;
                 })
 
-
-
-                // ->editColumn('name', function ($row) {
-                //     // $name = 1;
-                //     if ($row->student) {
-                //         $name = $row->student->name;
-                //     } else {
-                //         $name = 'N/A';
-                //     }
-                //     return $name;
-                // })
                 ->addColumn('more', function ($row) {
                     return '';
                 })
                 ->addColumn('action', function ($row) {
                     $html = '';
-                    if (Gate::allows('student-edit')) {
-                        $html = '<button type="button" class="btn btn-sm btn-primary btn-view" id="getViewData" data-id="' . $row->id . '"><i class="fa fa-eye"></i> View</button> ';
-                    } else {
-                        $html = '<button type="button" class="btn btn-sm btn-primary disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> Edit</button> ';
-                    }
+                    // if (Gate::allows('student-edit')) {
+                    //     // $html = '<button type="button" class="btn btn-sm btn-primary btn-view" id="getViewData" data-id="' . $row->id . '"><i class="fa fa-eye"></i> View</button> ';
+
+                    //     $html = '<button type="button" class="btn btn-sm btn-primary disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> Edit</button> ';
+                    // }
 
                     if (Gate::allows('student-edit')) {
                         $html .= '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit</button> ';
@@ -160,9 +144,29 @@ class ParentController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create($centre)
     {
         //
+        if ($centre == 0) {
+            $centre = Auth::user()->department->id;
+        }
+        $rnumber = studentRunningNumber::pre_generate($centre);
+        //dd($rnumber);
+        $stds = Contact::where('centre', $centre)->get();
+        $html_std = '';
+        $remaining = '';
+
+        foreach ($stds as $std) {
+            $id = $std->id;
+            $code = $std->code;
+            $name = $std->name;
+            $html_std .= '<option value="' . $id . '">' . $code . ' ' . $name . '</option>';
+        }
+
+        return response()->json([
+            'running' =>  $rnumber,
+            'html_std' => $html_std
+        ]);
     }
 
     /**
@@ -185,7 +189,7 @@ class ParentController extends Controller
             'gender' => 'required',
             'emergency_contact' => 'required|unique:parents|max:10|min:10',
         ]);
-        $hashedPassword = bcrypt($request->input('password'));
+        $hashedPassword = encrypt($request->input('password'));
         $stds = $request->input('student_id');
         $students = implode(',', $stds);
 
@@ -206,7 +210,7 @@ class ParentController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Your success message here'
+            'message' => 'Parent account Created successfully'
         ]);
     }
 
@@ -221,9 +225,37 @@ class ParentController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit($id)
     {
         //
+
+        $data = Parents::find($id);
+
+        $centre = '<option value="' . $data->department->id . '" selected> ' . $data->department->name . ' </option>';
+
+        $stds = Contact::where('centre', $data->department->id)->get();
+
+        $remaining = '';
+        $html_std = '';
+        $students_id = explode(',', $data->student_id);
+        $students = Contact::whereIn('id', $students_id)->get();
+
+        foreach ($students as $student) {
+            # code...
+            $html_std .= '<option value="' . $student->id . '" selected>' . $student->code . ' ' . $student->name . '</option>';
+            // $html_std = '<option value="' . $student->id . '">' . $student->code . ' ' . $student->name . '</option>';
+        }
+
+        // dd($stds);
+        foreach ($stds as $std) {
+            $id = $std->id;
+            $code = $std->code;
+            $name = $std->name;
+            $html_std .= '<option value="' . $id . '">' . $code . ' ' . $name . '</option>';
+        }
+
+
+        return response()->json(['data' => $data, 'centre' => $centre, 'html_std' => $html_std]);
     }
 
     /**
@@ -232,6 +264,62 @@ class ParentController extends Controller
     public function update(Request $request, string $id)
     {
         //
+        // dd($request);
+        if ($request->password) {
+            # code...
+            $request->validate([
+                // Uncomment rules as needed
+                'student_id' => 'required|array',
+                // 'student_id.*' => 'exists:contacts,id',
+                'centre_id' => 'required',
+                'fname' => 'required',
+                'lname' => 'required',
+                'telp' => 'required|unique:parents,telp,' . $id . '|max:10|min:10',
+                'email' => 'required|email|unique:parents,email,' . $id,
+                'password' => 'required|min:6|confirmed',
+                'address' => 'required',
+                'relationship' => 'required',
+                'gender' => 'required',
+                'emergency_contact' => 'required|unique:parents,emergency_contact,' . $id . '|max:10|min:10',
+            ]);
+        } else {
+            # code...
+            $request->validate([
+                // Uncomment rules as needed
+                'student_id' => 'required|array',
+                // 'student_id.*' => 'exists:contacts,id',
+                'centre_id' => 'required',
+                'fname' => 'required',
+                'lname' => 'required',
+                'telp' => 'required|unique:parents,telp,' . $id . '|max:10|min:10',
+                'email' => 'required|email|unique:parents,email,' . $id,
+                // 'password' => 'required|min:6|confirmed',
+                'address' => 'required',
+                'relationship' => 'required',
+                'gender' => 'required',
+                'emergency_contact' => 'required|unique:parents,emergency_contact,' . $id . '|max:10|min:10',
+            ]);
+        }
+
+        $input = $request->all();
+        $stds = $request->input('student_id');
+        $students = implode(',', $stds);
+        $parent = Parents::find($id);
+
+        // dd($input);
+
+        if ($parent) {
+            $parent->update(['student_id' => $students] + $input);
+        } else {
+            return response()->json([
+                'errors' => true,
+                'message' => 'parent is does not exist'
+            ]);
+        }
+        return response()->json([
+            'success' => true,
+            'message' => 'Parent account updated successfully'
+        ]);
     }
 
     /**

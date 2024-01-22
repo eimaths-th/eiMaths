@@ -2,11 +2,12 @@
     <div class="modal-dialog modal-xxl">
         <div class="modal-content">
             <div class="modal-header bg-primary">
-                <h4 class="modal-title"><i class="fas fa-graduation-cap"></i>History Student</h4>
+                <h4 class="modal-title"><i class="fas fa-graduation-cap"></i>Edit Parent</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
+
             <div class="modal-body">
 
                 <div class="alert alert-danger alert-dismissible fade show" role="alert" style="display: none;">
@@ -23,251 +24,212 @@
                 </div>
 
 
+
                 {{-- 'route' => 'users.store', --}}
                 {!! Form::open(['method' => 'POST', 'class' => 'form']) !!}
 
-                <div class="card card-success card-tabs">
-                    <div class="card-header p-0 pt-1">
-                        <ul class="nav nav-tabs" id="custom-tabs-one-tab" role="tablist">
-                            <li class="nav-item">
-                                <a class="nav-link active" id="custom-tabs-one-home-tab" data-toggle="pill"
-                                    href="#custom-tabs-one-home" role="tab" aria-controls="custom-tabs-one-home"
-                                    aria-selected="true">Student Detail</a>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="card-body">
-                        <div class="tab-content" id="custom-tabs-one-tabContent">
-                            <div class="tab-pane fade show active" id="custom-tabs-one-home" role="tabpanel"
-                                aria-labelledby="custom-tabs-one-home-tab">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <div class="row">
-                                            <div class="col-xs-6 col-sm-6 col-md-6">
-                                                <div class="form-group">
-                                                    <strong><i class="fas fa-code"></i> Centre Code:</strong>
-                                                    {{-- <select style="width: 100%;"
-                                                        class="productl select2 select2_single form-control"
-                                                        id="AddCentre" name="centre" multiple="multiple"
-                                                        @cannot('all-centre') disabled @endcannot>
-                                                        <!-- <option value="" selected>Select Student</option>
-                                                                                                                                                                                                                                                                                                                                                                                                    <option value="" selected>Select Parent</option>-->
-                                                        @foreach ($centre as $key2)
-                                                            <option value="{{ $key2->id }}"
-                                                                @if (Auth::user()->department->id == (int) $key2->id) selected @endif>
-                                                                {{ $key2->name }}
-                                                            </option>
-                                                        @endforeach
+                <form action="#" method="POST">
+                    @csrf
+                    <div class="card card-success card-tabs">
+                        <div class="card-header p-0 pt-1">
+                            <ul class="nav nav-tabs" id="custom-tabs-one-tab" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" id="custom-tabs-one-home-tab" data-toggle="pill"
+                                        href="#custom-tabs-one-home" role="tab" aria-controls="custom-tabs-one-home"
+                                        aria-selected="true">Parent Detail</a>
+                                </li>
+                            </ul>
+                        </div>
 
-                                                    </select> --}}
-                                                    <input type="text" name="centre" id="getCentre" class="form-control" placeholder="Centre student" disabled>
 
-                                                </div>
-                                            </div>
-                                            {{-- ต่อหน้า create view history --}}
-                                            <div class="col-xs-6 col-sm-6 col-md-6">
-                                                <div class="form-group">
-                                                    <strong><i class="fas fa-code"></i> Student No.</strong>
-                                                    {{-- {!! Form::text('code', null, [
-                                                        'id' => 'AddCode',
-                                                        'placeholder' => 'Code',
-                                                        'class' => 'form-control',
-                                                        'readonly' => true,
-                                                    ]) !!} --}}
-                                                    <input type="text" name="student" id="getStudent" class="form-control" placeholder="name student" disabled>
-                                                    {{-- <select name="student" id="s_student"class="select2 select2_single form-control s_student"
-                                                        multiple="multiple">
-                                                        <option value="">select student</option>
+                        <div class="card-body">
 
-                                                    </select> --}}
-                                                    {{-- <input type="text" placeholder="Code" class="form-control" id="AddCode" name="code" readonly="ture"> --}}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-xs-6 col-sm-6 col-md-6">
-                                                <div class="form-group">
-                                                    <strong><i class="fas fa-code"></i> Level</strong>
-                                                    {{-- <select style="width: 100%;" class="select2 select2_single form-control" id="AddLevel"  name="level" multiple="multiple"> --}}
-                                                    {{-- <select name="level_id" id="AddLevel" class="level_id select2 select2_single form-control" multiple="multiple">
-                                                        <option value="">Select Level</option>
+                            <div class="alert alert-danger " id="edit_validate" role="alert" style="display: none;">
 
-                                                        <option value="1">1</option>
-                                                        <option value="2">2</option>
-                                                        <option value="3">3</option>
+                            </div>
 
-                                                    </select> --}}
-                                                    <input type="text" name="level_id" id="getLevel" class="form-control" placeholder="Level student" disabled>
+                            <div class="tab-content" id="custom-tabs-one-tabContent">
+                                <div class="tab-pane fade show active" id="custom-tabs-one-home" role="tabpanel"
+                                    aria-labelledby="custom-tabs-one-home-tab">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-xs-6 col-sm-6 col-md-6">
+                                                    <div class="form-group">
+                                                        <strong><i class="fas fa-code"></i> Centre Code1:</strong>
+                                                        <select style="width: 100%;"
+                                                            class="productl select2 select2_single form-control"
+                                                            id="EditCentre" name="centre_id" multiple="multiple">
 
-                                                </div>
-                                            </div>
-                                            {{-- ต่อหน้า create view history --}}
-                                            <div class="col-xs-6 col-sm-6 col-md-6">
-                                                <div class="form-group">
-                                                    <strong><i class="fas fa-code"></i>Term</strong>
-                                                    {{-- <select name="term"
-                                                        id="AddTerm"class="terms select2 select2_single form-control"
-                                                        multiple="multiple">
-                                                        <option value="">select Term</option>
-                                                        <option value="1">1</option>
-                                                        <option value="2">2</option>
-                                                        <option value="3">3</option>
-                                                    </select> --}}
-                                                    <input type="text" name="term" id="getTerm" class="form-control" placeholder="Term student" disabled>
+                                                            @foreach ($centre as $key2)
+                                                                <option value="{{ $key2->id }}"
+                                                                    @if (Auth::user()->department->id == (int) $key2->id) selected @endif>
+                                                                    {{-- {{ $key2->code }} --}}
+                                                                    {{ $key2->name }}
+                                                                </option>
+                                                            @endforeach
 
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-xs-6 col-sm-6 col-md-6">
-                                                <div class="form-group">
-                                                    <strong><i class="fas fa-code"></i> Bookuse</strong>
-                                                    {{-- <select style="width: 100%;"
-                                                        class="books select2 select2_single form-control" id="AddBook"
-                                                        name="bookuse" multiple="multiple"
-                                                        @cannot('all-centre') disabled @endcannot>
-                                                        <option value="">Select Book</option>
-                                                        <option value="1">1</option>
-                                                        <option value="2">2</option>
-                                                        <option value="3">3</option>
-
-                                                    </select> --}}
-                                                    <input type="text" name="bookuse" id="getBookuse" class="form-control" placeholder="getBookuse" disabled>
-
-                                                </div>
-                                            </div>
-                                            {{-- ต่อหน้า create view history --}}
-                                            <div class="col-xs-6 col-sm-6 col-md-6">
-                                                <div class="form-group">
-                                                    <strong><i class="fas fa-code"></i>Course Remaining</strong>
-                                                    <input type="text" name="course_remaining" id="getCourseRemaining" disabled class="form-control">
-
-                                                    {{-- <select name="course_remaining" id="AddCourseRemaining"class="select2 select2_single form-control"
-                                                    multiple="multiple">
-                                                        <option value="">select student</option>
-                                                        <option value="1">1</option>
-                                                        <option value="2">2</option>
-                                                        <option value="3">3</option>
-                                                    </select> --}}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-xs-6 col-sm-6 col-md-6">
-                                                <div class="form-group">
-                                                    <strong><i class="fas fa-calendar"></i> Date:</strong>
-                                                    <input type="text" name="date" id="getDate"
-                                                        class="getDate form-control" disabled
-                                                        placeholder="getDate">
-                                                    {{-- {!! Form::text('date', null, [
-                                                        'id' => 'AddDate',
-                                                        'placeholder' => '',
-                                                        'class' => 'AddDate form-control',
-                                                        'data-target' => '#reservationdate',
-                                                    ]) !!} --}}
-                                                </div>
-                                            </div>
-                                            <div class="col-xs-6 col-sm-6 col-md-6">
-                                                <div class="row">
-                                                    <div class="col-lg-6">
-                                                        <div class="form-group">
-                                                            <strong><i class="fas fa-calendar"></i> Start Time:</strong>
-
-                                                                <div class="row">
-                                                                    <input type="text" id="getStartTime" class="form-control col-sm-10" placeholder="getStartTime" disabled>
-                                                                    <span class="input-group-text input-group-addon">
-                                                                        <i class="fa fa-clock"></i>
-                                                                    </span>
-                                                                </div>
-                                                        </div>
+                                                        </select>
                                                     </div>
-                                                    <div class="col-lg-6">
+                                                </div>
+                                                <div class="col-xs-6 col-sm-6 col-md-6">
+                                                    <div class="form-group">
+                                                        <strong><i class="fas fa-code"></i> Student No.</strong>
 
-                                                        <div class="form-group">
-                                                            <strong><i class="fas fa-calendar"></i> End Time:</strong>
+                                                        <select name="student"
+                                                            id="Edits_student"class="select2 select2_multiple form-control s_student"
+                                                            multiple="multiple">
+                                                            <option value="">select student</option>
+
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xs-6 col-sm-6 col-md-6">
+                                                    <div class="form-group">
+                                                        <strong><i class="fas fa-calendar"></i> First Name
+                                                            (ชื่อจริง):</strong>
+                                                        <input type="text" name="fname" id="EditFname"
+                                                            class="form-control" autocomplete="off"
+                                                            placeholder="Enter Parent Name">
+                                                    </div>
+                                                </div>
+                                                <div class="col-xs-6 col-sm-6 col-md-6">
+                                                    <div class="form-group">
+                                                        <strong><i class="fas fa-calendar"></i>Last Name
+                                                            (นามสกุล):</strong>
+                                                        <input type="text" name="lname" id="EditLname"
+                                                            class="form-control" autocomplete="off"
+                                                            placeholder="Enter Parent Last Name">
+
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-xs-6 col-sm-6 col-md-6">
+                                                    <div class="form-group">
+                                                        <strong><i class="fas fa-calendar"></i> Telp.
+                                                            (เบอร์โทรศัพท์):</strong>
+                                                        <input type="text" name="telp" id="EditTelp"
+                                                            class="form-control" autocomplete="off"
+                                                            placeholder="Enter Parent telphone">
+                                                    </div>
+                                                </div>
+                                                <div class="col-xs-6 col-sm-6 col-md-6">
+                                                    <div class="form-group">
+                                                        <strong><i class="fas fa-calendar"></i>Email
+                                                            (อีเมลล์):</strong>
+                                                        <input type="text" name="email" id="EditEmail"
+                                                            class="form-control" autocomplete="off"
+                                                            placeholder="Enter Parent Email">
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-xs-6 col-sm-6 col-md-6">
+                                                    <div class="form-group">
+                                                        <strong><i class="fas fa-calendar"></i> Emergency
+                                                            Contact(เบอร์ติดต่อด่วน)</strong>
+                                                        <input type="text" name="emergency_contact"
+                                                            id="EditEmergency" class="form-control"
+                                                            autocomplete="off" placeholder="Enter Emergency Contact">
+                                                    </div>
+                                                </div>
+                                                <div class="col-xs-6 col-sm-6 col-md-6">
+                                                    <div class="row">
+                                                        <div class="col-lg-6">
+                                                            <strong><i class="fas fa-calendar"></i>Relationship
+                                                                (ความสัมพันธ์):</strong>
+                                                            <select name="relationship" id="EditRelationship"
+                                                                class="form-control">
+                                                                <option value="">Select Relation</option>
+                                                                <option value="father">Father</option>
+                                                                <option value="mother">Mother</option>
+                                                                <option value="relative">Relative</option>
+                                                                <option value="other">Other</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-lg-6">
+                                                            <strong class="mb-5"><i
+                                                                    class="fas fa-calendar"></i>Gender (เพศ):
+                                                            </strong>
                                                             <div class="row">
-                                                                <input type="text" id="getEndTime" class="form-control col-sm-10" placeholder="getEndTime" disabled>
-                                                                <span class="input-group-text input-group-addon">
-                                                                    <i class="fa fa-clock"></i>
-                                                                </span>
+                                                                <div class="col-lg-6">
+                                                                    <label>
+                                                                        <input type="radio" name="gender"
+                                                                            id="male" value="male"> Male
+                                                                    </label>
+                                                                </div>
+
+                                                                <div class="col-lg-6">
+                                                                    <label>
+                                                                        <input type="radio" name="gender"
+                                                                            id="female" value="female"> Female
+                                                                    </label>
+                                                                </div>
                                                             </div>
-
-                                                            {{-- <input id="" type="text" class="form-control timepicker"/> --}}
-
-
                                                         </div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xs-12 col-sm-12 col-md-12">
+                                                    <div class="form-group">
+                                                        <strong><i class="fas fa-calendar"></i> Address:</strong>
+                                                        <textarea name="address" id="EditAddress" rows="5" class="form-control" placeholder="Enter Address"></textarea>
 
                                                     </div>
                                                 </div>
-
                                             </div>
+                                            <div class="row">
+                                                <div class="col-xs-12 col-sm-12 col-md-12">
+                                                    <div class="form-group">
+                                                        <strong><i class="fas fa-calendar"></i>Orther Details
+                                                            :</strong>
+                                                        <textarea name="notes" id="EditNotes" rows="5" class="form-control" placeholder="Enter Detail"></textarea>
 
-                                        </div>
-
-                                        <div class="row">
-                                            <div class="col-xs-6 col-sm-6 col-md-6">
-                                                <div class="form-group">
-                                                    <strong><i class="fas fa-code"></i>Start Date</strong>
-                                                    {{-- <select style="width: 100%;"
-                                                        class="books select2 select2_single form-control" id="AddBook"
-                                                        name="bookuse" multiple="multiple"
-                                                        @cannot('all-centre') disabled @endcannot>
-                                                        <option value="">Select Book</option>
-                                                        <option value="1">1</option>
-                                                        <option value="2">2</option>
-                                                        <option value="3">3</option>
-
-                                                    </select> --}}
-                                                    <input type="text" name="start_date" id="getStartDate" class="form-control" placeholder="getStartDate" disabled>
-
+                                                    </div>
                                                 </div>
                                             </div>
-                                            {{-- ต่อหน้า create view history --}}
-                                            <div class="col-xs-6 col-sm-6 col-md-6">
-                                                <div class="form-group">
-                                                    <strong><i class="fas fa-code"></i>End Date</strong>
-                                                    <input type="text" name="end_date" id="getEndDate" disabled class="form-control">
+                                            <div class="row">
+                                                @error('password')
+                                                    <div class="alert alert-danger">{{ $message }}</div>
+                                                @enderror
+                                                <div class="col-xs-6 col-sm-6 col-md-6">
+                                                    <div class="form-group">
+                                                        <strong><i class="fas fa-calendar"></i>Password.
+                                                            (รหัสผ่าน):</strong>
+                                                        <input type="password" name="password" id="EditPassword"
+                                                            class="form-control" autocomplete="off"
+                                                            placeholder="Enter Password">
 
-                                                    {{-- <select name="course_remaining" id="AddCourseRemaining"class="select2 select2_single form-control"
-                                                    multiple="multiple">
-                                                        <option value="">select student</option>
-                                                        <option value="1">1</option>
-                                                        <option value="2">2</option>
-                                                        <option value="3">3</option>
-                                                    </select> --}}
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-xs-12 col-sm-12 col-md-12">
-                                                <div class="form-group">
-                                                    <strong><i class="fas fa-calendar"></i> Signature:</strong>
-                                                    {{-- <textarea name="signature" id="getSignature" rows="5" placeholder="getSignature" class="form-control"></textarea> --}}
-                                                    <br>
-                                                    <img src="" alt="Signature" id="getSignature" class="img-fluid" style="width: 750px; height: 400px;">
-
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-xs-12 col-sm-12 col-md-12">
-                                                <div class="form-group">
-                                                    <strong><i class="fas fa-calendar"></i> Comment:</strong>
-                                                    <textarea name="comment" id="getComment" rows="5" class="form-control" placeholder="Pls Enter Comment"></textarea>
-
+                                                <div class="col-xs-6 col-sm-6 col-md-6">
+                                                    <div class="form-group">
+                                                        <strong><i class="fas fa-calendar"></i>Conf Password. (ยืนยัน
+                                                            รหัสผ่าน):</strong>
+                                                        <input type="password" name="password_confirmation"
+                                                            id="password_confirmation1" class="form-control"
+                                                            autocomplete="off" placeholder="Enter Confirm Password">
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
 
+                            </div>
                         </div>
                     </div>
-                </div>
+                </form>
 
-                {!! Form::close() !!}
             </div>
+
             <div class="modal-footer {{-- justify-content-between --}}">
                 <button type="button" class="btn btn-success" id="SubmitEditForm"><i class="fas fa-download"></i>
                     Save </button>
