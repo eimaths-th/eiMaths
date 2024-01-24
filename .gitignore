@@ -6,6 +6,7 @@
 /public/file_store
 /public/form_images
 /public/fonts
+/public/fonts/*
 /public/stamps
 /public/storage
 /storage/*.key
