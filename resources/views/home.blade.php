@@ -71,50 +71,51 @@
             <div class="row">
                 <div class="col-12">
 
-                    {{-- <div class="row">
+                    <div class="row">
                         <div class="col-md-6 col-sm-6 col-lg-6  col-xl-3 col-12">
                             <div class="info-box">
-                                <span class="info-box-icon bg-primary"><i
-                                        class="fa-solid fa-arrow-right-to-bracket"></i></span>
+                                <span class="info-box-icon bg-success"><i class="fa-solid fa-building"></i></span>
                                 <div class="info-box-content">
-                                    <span class="info-box-text">สายเข้า</span>
-                                    <span class="info-box-number">15 ครั้ง</span>
+                                    <span class="info-box-text">Total Centre</span>
+                                    <span class="info-box-number" id="tcentre">2</span>
                                 </div>
 
                             </div>
                         </div>
                         <div class="col-md-6 col-sm-6 col-lg-6  col-xl-3 col-12">
                             <div class="info-box">
-                                <span class="info-box-icon bg-warning"><i class="fa-solid fa-user-clock"></i></span>
+                                <span class="info-box-icon bg-success"><i class="fa-solid fa-graduation-cap"></i></span>
                                 <div class="info-box-content">
-                                    <span class="info-box-text">เวลารอสายเฉลี่ย</span>
-                                    <span class="info-box-number">00:00:12</span>
+                                    <span class="info-box-text">Total Student</span>
+                                    <span class="info-box-number" id="tstudent">0</span>
                                 </div>
 
                             </div>
                         </div>
                         <div class="col-md-6 col-sm-6 col-lg-6  col-xl-3 col-12">
                             <div class="info-box">
-                                <span class="info-box-icon bg-success"><i class="fa-solid fa-phone-volume"></i></span>
+                                <span class="info-box-icon bg-success"><i
+                                        class="fa-solid fa-file-invoice-dollar"></i></span>
                                 <div class="info-box-content">
-                                    <span class="info-box-text ">เวลาที่สนทนาทั้งหมด</span>
-                                    <span class="info-box-number">00:38:43</span>
+                                    <span class="info-box-text ">Total Receipt</span>
+                                    <span class="info-box-number" id="treceipt">0</span>
                                 </div>
 
                             </div>
                         </div>
                         <div class="col-md-6 col-sm-6 col-lg-6  col-xl-3 col-12">
                             <div class="info-box">
-                                <span class="info-box-icon bg-info"><i class="fa-solid fa-headset"></i></span>
+                                <span class="info-box-icon bg-success"><i
+                                        class="fa-solid fa-hand-holding-dollar"></i></span>
                                 <div class="info-box-content">
-                                    <span class="info-box-text ">เวลาสนทนาเฉลี่ยต่อสาย</span>
-                                    <span class="info-box-number"> 00:05:12</span>
+                                    <span class="info-box-text ">Total Income</span>
+                                    <span class="info-box-number" id="tincome">0</span>
                                 </div>
 
                             </div>
                         </div>
 
-                    </div> --}}
+                    </div>
                     {{-- <div class="row">
                         <div class="col-md-6 col-sm-6 col-lg-6  col-xl-3 col-12">
                             <div class="info-box">

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\Contact;
+use App\Models\Department;
 use App\Models\Receipt;
 use App\Models\Histrories;
 use Illuminate\Http\Request;
@@ -490,13 +491,19 @@ class DashboardController extends Controller
         $results->groupBy('contacts.centre', 'departments.name'); // Group by both centre columns
         $datas = $results->get();
 
+        $totalStudent = $datas->sum('count');
+
         $maxData = $datas->max('count');
 
         $dataCounts = $datas->pluck('count', 'centre_name')->all();
 
         ksort($dataCounts);
 
+        $numberOfCentresWithContacts = Department::where('id', '!=', 1)->count();
+
         return response()->json([
+            'total_student' => $totalStudent,
+            'total_center'=> $numberOfCentresWithContacts,
             'centre_data' => $dataCounts,
             'max_data' => $maxData,
         ]);
@@ -524,7 +531,12 @@ class DashboardController extends Controller
         $summaryByDate->groupBy('payment_date');
         $datas = $summaryByDate->get();
 
+        $totalTransactionsSum = $datas->sum('total_transactions');
+        $totalFeeSum = $datas->sum('total_fee_sum');
+
         return response()->json([
+            'total_receipt' => $totalTransactionsSum,
+            'total_income' => $totalFeeSum,
             'receipt_sum_by_date' => $datas,
         ]);
     }
