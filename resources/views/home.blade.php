@@ -281,9 +281,9 @@
     </section>
 @endsection
 
-{{-- @section('script')
+@section('script')
     @include('script')
-    <script language="javascript" type="text/javascript">
+    {{-- <script language="javascript" type="text/javascript">
         function generateRandomData(count) {
             const data = [];
             for (let i = 0; i < count; i++) {
@@ -723,5 +723,5 @@
             window.addEventListener('resize', pie4072.resize);
 
         })
-    </script>
-@endsection --}}
+    </script> --}}
+@endsection
