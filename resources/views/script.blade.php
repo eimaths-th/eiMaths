@@ -480,7 +480,7 @@
             const options = receipt_sum_by_date_chart_data(datas);
             var chart_data = new ApexCharts(document.querySelector("#receipt_sum_by_date"), options);
             chart_data.render();
-            chart_data.updateOptions(options);
+            //chart_data.updateOptions(options);
         } catch (error) {
             console.error('Error:', error);
         }
@@ -600,7 +600,7 @@
             const options = daily_study_chart_data(datas);
             var chart_data = new ApexCharts(document.querySelector("#daily_study"), options);
             chart_data.render();
-            chart_data.updateOptions(options);
+            //chart_data.updateOptions(options);
         } catch (error) {
             console.error('Error:', error);
         }
