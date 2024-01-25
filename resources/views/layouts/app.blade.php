@@ -150,7 +150,7 @@
 {{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.37.1/apexcharts.min.js"
     integrity="sha512-hl0UXLK2ElpaU9SHbuVNsvFv2BaYszlhxB2EntUy5FTGdfg9wFJrJG2JDcT4iyKmWeuDLmK+Nr2hLoq2sKk6MQ=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script> --}}
-<script src="plugins/apex/pexcharts.min.js"></script>
+<script src="plugins/apex/apexcharts.min.js"></script>
 <script src="plugins/echart/echarts.min.js"></script>
 <script src="plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
 <script src="plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
