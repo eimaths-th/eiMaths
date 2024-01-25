@@ -281,7 +281,7 @@
     </section>
 @endsection
 
-@section('script')
+{{-- @section('script')
     @include('script')
     <script language="javascript" type="text/javascript">
         function generateRandomData(count) {
@@ -724,4 +724,4 @@
 
         })
     </script>
-@endsection
+@endsection --}}
