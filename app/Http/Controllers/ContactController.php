@@ -723,7 +723,7 @@ class ContactController extends Controller
             $order->update($input_order);
         }
 
-        $orderDetailsLToDelete = OrderDetailList::where('order_id', $id)->get();
+        $orderDetailsLToDelete = OrderDetailList::where('order_id', $order->id)->get();
         $orderDetailsLToDelete->each->delete();
 
 
@@ -748,7 +748,7 @@ class ContactController extends Controller
             }
         }
 
-        $orderDetailsToDelete = OrderDetail::where('order_id', $id)->get();
+        $orderDetailsToDelete = OrderDetail::where('order_id', $order->id)->get();
         $orderDetailsToDelete->each->delete();
 
         $input_order_detail['order_id'] = $order->id ?? null; // Set to null if $order is not found
@@ -779,6 +779,12 @@ class ContactController extends Controller
             } */
             $order_detail2 = OrderDetail::create($input_order_detail2);
         }
+
+        Receipt::where('cid', $id)->update([
+            'level' => $request->get('level'),
+            'total_fee' => $total_price,
+            // Add more columns as needed
+        ]);
 
 
         return response()->json(['success' => 'Student information updated successfully', 'discontinued' => $contact->discontinued]);
@@ -937,17 +943,17 @@ class ContactController extends Controller
             ]);
         }
     }
-    public function exportContact(Request $request) {
+    public function exportContact(Request $request)
+    {
 
         // dd($request);
 
         if ($request->excel === "1") {
             # code...
-            return Excel::download(new ExportExcel( $request->get('table_records')), 'ReceiptForm.xlsx');
+            return Excel::download(new ExportExcel($request->get('table_records')), 'ReceiptForm.xlsx');
         } else {
             # code...
-            return Excel::download(new ExportForm( $request->get('table_records')), 'ExportContact.xlsx');
+            return Excel::download(new ExportForm($request->get('table_records')), 'ExportContact.xlsx');
         }
-
     }
 }
