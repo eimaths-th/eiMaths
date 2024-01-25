@@ -411,7 +411,7 @@
                 height: 380,
                 zoom: {
                     enabled: false
-                },
+                },//
                 animations: {
                     enabled: true,
                     easing: 'easeinout',
