@@ -145,7 +145,7 @@
 {{-- <script src="/plugins/bootstrap-timepicker/js/bootstrap-timepicker.min.js"></script> --}}
 
 <script src="plugins/datatables/jquery.dataTables.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.37.1/apexcharts.min.js"
+<script src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.41.0/apexcharts.min.js"
     integrity="sha512-hl0UXLK2ElpaU9SHbuVNsvFv2BaYszlhxB2EntUy5FTGdfg9wFJrJG2JDcT4iyKmWeuDLmK+Nr2hLoq2sKk6MQ=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="plugins/echart/echarts.min.js"></script>
