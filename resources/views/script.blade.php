@@ -384,239 +384,240 @@
     };
 
     const receipt_sum_by_date_chart_data = (data) => {
-            const labels = data.map(entry => entry.payment_date);
-            const totalReceiptData = data.map(entry => entry.total_transactions);
-            const totalPriceData = data.map(entry => entry.total_fee_sum);
+        const labels = data.map(entry => entry.payment_date);
+        const totalReceiptData = data.map(entry => entry.total_transactions);
+        const totalPriceData = data.map(entry => entry.total_fee_sum);
 
-            const option = {
-                series: [{
-                        name: 'Total Receipt',
-                        type: 'line',
-                        data: totalReceiptData,
-                    },
-                    {
-                        name: 'Total Price',
-                        type: 'column',
-                        data: totalPriceData,
-                    },
-                ],
-                markers: {
-                    size: 5,
-                    colors: ["#FFFFFF"],
-                    strokeColor: "#A5978B",
-                    strokeWidth: 4
-                },
-                chart: {
+        const option = {
+            series: [{
+                    name: 'Total Receipt',
                     type: 'line',
-                    height: 380,
-                    zoom: {
-                        enabled: false
-                    },
-                    animations: {
+                    data: totalReceiptData,
+                },
+                {
+                    name: 'Total Price',
+                    type: 'column',
+                    data: totalPriceData,
+                },
+            ],
+            markers: {
+                size: 5,
+                colors: ["#FFFFFF"],
+                strokeColor: "#A5978B",
+                strokeWidth: 4
+            },
+            chart: {
+                type: 'line',
+                height: 380,
+                zoom: {
+                    enabled: false
+                },
+                animations: {
+                    enabled: true,
+                    easing: 'easeinout',
+                    speed: 800,
+                    animateGradually: {
                         enabled: true,
-                        easing: 'easeinout',
-                        speed: 800,
-                        animateGradually: {
-                            enabled: true,
-                            delay: 150
-                        },
-                        dynamicAnimation: {
-                            enabled: true,
-                            speed: 350
-                        }
+                        delay: 150
                     },
-                    dataLabels: {
+                    dynamicAnimation: {
                         enabled: true,
-                        offsetY: -18,
-                        enabledOnSeries: [1]
-                    },
-                    stroke: {
-                        curve: 'straight',
-                        width: 4
-                    },
-                    colors: ['#E91E63', '#91cc75', '#546E7A', '#E91E63', '#FF9800', '#66DA26', '#4ECDC4', '#81D4FA',
-                        '#A5978B', '#FD6A6A'
-                    ],
-                    title: {
-                        //text: 'สถิติการเข้าชม รายวัน ประจำเดือน 2023-06',
-                        align: 'left'
-                    },
-                    subtitle: {
-                        //text: 'จำนวน',
-                        align: 'left'
-                    },
-                    xaxis: {
-                        labels: {
-                            show: true,
-                            rotate: -30,
-                            rotateAlways: true,
-                            maxHeight: 300,
-                        },
-                        categories: labels,
-                    },
-                    yaxis: [{
-                        /* title: {
-                            text: 'Website Blog',
-                        }, */
-
-                    }, {
-                        opposite: true,
-                        /* title: {
-                            text: 'Social Media'
-                        } */
-                    }],
-                    legend: {
-                        horizontalAlign: 'left'
+                        speed: 350
                     }
-                };
-
-                return option;
-            };
-
-            const handle_receipt_sum_by_date = async () => {
-                try {
-                    const datas = await receipt_sum_by_date();
-                    const options = receipt_sum_by_date_chart_data(datas);
-                    var chart_data = new ApexCharts(document.querySelector("#receipt_sum_by_date"), options);
-                    chart_data.render();
-                    chart_data.updateOptions(options);
-                } catch (error) {
-                    console.error('Error:', error);
                 }
-            };
+            },
+            dataLabels: {
+                enabled: true,
+                offsetY: -18,
+                enabledOnSeries: [1]
+            },
+            stroke: {
+                curve: 'straight',
+                width: 4
+            },
+            colors: ['#E91E63', '#91cc75', '#546E7A', '#E91E63', '#FF9800', '#66DA26', '#4ECDC4', '#81D4FA',
+                '#A5978B', '#FD6A6A'
+            ],
+            title: {
+                //text: 'สถิติการเข้าชม รายวัน ประจำเดือน 2023-06',
+                align: 'left'
+            },
+            subtitle: {
+                //text: 'จำนวน',
+                align: 'left'
+            },
+            xaxis: {
+                labels: {
+                    show: true,
+                    rotate: -30,
+                    rotateAlways: true,
+                    maxHeight: 300,
+                },
+                categories: labels,
+            },
+            yaxis: [{
+                /* title: {
+                    text: 'Website Blog',
+                }, */
 
-            const daily_study_date = async () => {
-                try {
-                    const dcentreValue = $('#dcentre').val();
-                    const reservationValue = $('#reservation').val();
+            }, {
+                opposite: true,
+                /* title: {
+                    text: 'Social Media'
+                } */
+            }],
+            legend: {
+                horizontalAlign: 'left'
+            }
+        };
 
-                    const response = await $.ajax({
-                        url: '{{ route('dashboard.daily_study') }}',
-                        method: 'POST',
-                        data: {
-                            _token: token,
-                            dcentre: dcentreValue,
-                            reservation: reservationValue,
-                        },
-                    });
+        return option;
+    };
 
-                    // Process the response as needed
-                    return response.daily_study;
-                } catch (error) {
-                    console.error('Error fetching data:', error);
-                    throw error;
+    const handle_receipt_sum_by_date = async () => {
+        try {
+            const datas = await receipt_sum_by_date();
+            const options = receipt_sum_by_date_chart_data(datas);
+            var chart_data = new ApexCharts(document.querySelector("#receipt_sum_by_date"), options);
+            chart_data.render();
+            chart_data.updateOptions(options);
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+
+    const daily_study_date = async () => {
+        try {
+            const dcentreValue = $('#dcentre').val();
+            const reservationValue = $('#reservation').val();
+
+            const response = await $.ajax({
+                url: '{{ route('dashboard.daily_study') }}',
+                method: 'POST',
+                data: {
+                    _token: token,
+                    dcentre: dcentreValue,
+                    reservation: reservationValue,
+                },
+            });
+
+            // Process the response as needed
+            return response.daily_study;
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            throw error;
+        }
+    };
+
+    const daily_study_chart_data = (data) => {
+        const labels = data.map(entry => entry.date);
+        const totalData = data.map(entry => entry.total_transactions);
+
+
+        const option = {
+            series: [{
+                name: 'Total Study',
+                type: 'area',
+                data: totalData,
+            }, ],
+            markers: {
+                size: 5,
+                colors: ["#FFFFFF"],
+                strokeColor: "#A5978B",
+                strokeWidth: 4
+            },
+            chart: {
+                type: 'area',
+                height: 380,
+                zoom: {
+                    enabled: false
+                },
+                animations: {
+                    enabled: true,
+                    easing: 'easeinout',
+                    speed: 800,
+                    animateGradually: {
+                        enabled: true,
+                        delay: 150
+                    },
+                    dynamicAnimation: {
+                        enabled: true,
+                        speed: 350
+                    }
                 }
-            };
+            },
+            dataLabels: {
+                enabled: false,
+                offsetY: -18,
+                enabledOnSeries: [1]
+            },
+            stroke: {
+                curve: 'straight',
+                width: 4
+            },
+            colors: ['#81D4FA', '#E91E63', '#91cc75', '#546E7A', '#E91E63', '#FF9800', '#66DA26', '#4ECDC4',
+                '#A5978B', '#FD6A6A'
+            ],
+            title: {
+                //text: 'สถิติการเข้าชม รายวัน ประจำเดือน 2023-06',
+                align: 'left'
+            },
+            subtitle: {
+                //text: 'จำนวน',
+                align: 'left'
+            },
+            xaxis: {
+                labels: {
+                    show: true,
+                    rotate: -30,
+                    rotateAlways: true,
+                    maxHeight: 300,
+                },
+                categories: labels,
+            },
+            yaxis: [{
+                /* title: {
+                    text: 'Website Blog',
+                }, */
 
-            const daily_study_chart_data = (data) => {
-                    const labels = data.map(entry => entry.date);
-                    const totalData = data.map(entry => entry.total_transactions);
+            }, {
+                opposite: true,
+                /* title: {
+                    text: 'Social Media'
+                } */
+            }],
+            legend: {
+                horizontalAlign: 'left'
+            }
+        };
 
+        return option;
+    };
 
-                    const option = {
-                        series: [{
-                            name: 'Total Study',
-                            type: 'area',
-                            data: totalData,
-                        }, ],
-                        markers: {
-                            size: 5,
-                            colors: ["#FFFFFF"],
-                            strokeColor: "#A5978B",
-                            strokeWidth: 4
-                        },
-                        chart: {
-                            type: 'area',
-                            height: 380,
-                            zoom: {
-                                enabled: false
-                            },
-                            animations: {
-                                enabled: true,
-                                easing: 'easeinout',
-                                speed: 800,
-                                animateGradually: {
-                                    enabled: true,
-                                    delay: 150
-                                },
-                                dynamicAnimation: {
-                                    enabled: true,
-                                    speed: 350
-                                }
-                            },
-                            dataLabels: {
-                                enabled: false,
-                                offsetY: -18,
-                                enabledOnSeries: [1]
-                            },
-                            stroke: {
-                                curve: 'straight',
-                                width: 4
-                            },
-                            colors: ['#81D4FA', '#E91E63', '#91cc75', '#546E7A', '#E91E63', '#FF9800', '#66DA26',
-                                '#4ECDC4',
-                                '#A5978B', '#FD6A6A'
-                            ],
-                            title: {
-                                //text: 'สถิติการเข้าชม รายวัน ประจำเดือน 2023-06',
-                                align: 'left'
-                            },
-                            subtitle: {
-                                //text: 'จำนวน',
-                                align: 'left'
-                            },
-                            xaxis: {
-                                labels: {
-                                    show: true,
-                                    rotate: -30,
-                                    rotateAlways: true,
-                                    maxHeight: 300,
-                                },
-                                categories: labels,
-                            },
-                            yaxis: [{
-                                /* title: {
-                                    text: 'Website Blog',
-                                }, */
-
-                            }, {
-                                opposite: true,
-                                /* title: {
-                                    text: 'Social Media'
-                                } */
-                            }],
-                            legend: {
-                                horizontalAlign: 'left'
-                            }
-                        };
-
-                        return option;
-                    };
-
-                    const handle_daily_study = async () => {
-                        try {
-                            const datas = await daily_study_date();
-                            const options = daily_study_chart_data(datas);
-                            var chart_data = new ApexCharts(document.querySelector("#daily_study"), options);
-                            chart_data.render();
-                            chart_data.updateOptions(options);
-                        } catch (error) {
-                            console.error('Error:', error);
-                        }
-                    };
+    const handle_daily_study = async () => {
+        try {
+            const datas = await daily_study_date();
+            const options = daily_study_chart_data(datas);
+            var chart_data = new ApexCharts(document.querySelector("#daily_study"), options);
+            chart_data.render();
+            chart_data.updateOptions(options);
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
 
 
 
-                    $(document).ready(() => {
+    $(document).ready(() => {
 
-                        retrieveFieldValues();
-                        daterange();
+        retrieveFieldValues();
+        daterange();
 
-                        handle_student_by_level();
-                        handle_receipt_sum_by_date();
-                        handle_daily_study();
-                        handle_student_by_centre();
+        handle_student_by_level();
+        handle_receipt_sum_by_date();
+        handle_daily_study();
+        handle_student_by_centre();
 
 
-                    });
+    });
 </script>
