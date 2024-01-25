@@ -74,17 +74,17 @@
                     <div class="row">
                         <div class="col-md-6 col-sm-6 col-lg-6  col-xl-3 col-12">
                             <div class="info-box">
-                                <span class="info-box-icon bg-success"><i class="fa-solid fa-building"></i></span>
+                                <span class="info-box-icon bg-primary"><i class="fa-solid fa-building"></i></span>
                                 <div class="info-box-content">
                                     <span class="info-box-text">Total Centre</span>
-                                    <span class="info-box-number" id="tcentre">2</span>
+                                    <span class="info-box-number" id="tcentre">0</span>
                                 </div>
 
                             </div>
                         </div>
                         <div class="col-md-6 col-sm-6 col-lg-6  col-xl-3 col-12">
                             <div class="info-box">
-                                <span class="info-box-icon bg-success"><i class="fa-solid fa-graduation-cap"></i></span>
+                                <span class="info-box-icon bg-primary"><i class="fa-solid fa-graduation-cap"></i></span>
                                 <div class="info-box-content">
                                     <span class="info-box-text">Total Student</span>
                                     <span class="info-box-number" id="tstudent">0</span>
@@ -94,7 +94,7 @@
                         </div>
                         <div class="col-md-6 col-sm-6 col-lg-6  col-xl-3 col-12">
                             <div class="info-box">
-                                <span class="info-box-icon bg-success"><i
+                                <span class="info-box-icon bg-primary"><i
                                         class="fa-solid fa-file-invoice-dollar"></i></span>
                                 <div class="info-box-content">
                                     <span class="info-box-text ">Total Receipt</span>
@@ -105,7 +105,7 @@
                         </div>
                         <div class="col-md-6 col-sm-6 col-lg-6  col-xl-3 col-12">
                             <div class="info-box">
-                                <span class="info-box-icon bg-success"><i
+                                <span class="info-box-icon bg-primary"><i
                                         class="fa-solid fa-hand-holding-dollar"></i></span>
                                 <div class="info-box-content">
                                     <span class="info-box-text ">Total Income</span>

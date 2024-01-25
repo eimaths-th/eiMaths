@@ -348,6 +348,7 @@
     const handle_student_by_centre = async () => {
         try {
             const datas = await student_by_centre();
+            console.log(datas);
             $('#tstudent').html(datas.total_student)
             $('#tcentre').html(datas.total_centre)
             const options = student_by_centre_chart_data(datas);
@@ -479,6 +480,7 @@
     const handle_receipt_sum_by_date = async () => {
         try {
             const datas = await receipt_sum_by_date();
+            console.log(datas);
             $('#treceipt').html(datas.total_receipt)
             $('#tincome').html(datas.total_income)
             const options = receipt_sum_by_date_chart_data(datas);
