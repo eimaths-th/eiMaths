@@ -268,6 +268,8 @@
                 },
             });
 
+            $('#tstudent').html(response.total_student)
+            $('#tcentre').html(response.total_centre)
             // Process the response as needed
             return response.centre_data;
         } catch (error) {
@@ -348,9 +350,7 @@
     const handle_student_by_centre = async () => {
         try {
             const datas = await student_by_centre();
-            console.log(datas);
-            $('#tstudent').html(datas.total_student)
-            $('#tcentre').html(datas.total_centre)
+
             const options = student_by_centre_chart_data(datas);
             var chart_data = echarts.init(document.getElementById("student_by_centre"));
             chart_data.setOption(options);
@@ -378,6 +378,8 @@
                 },
             });
 
+            $('#treceipt').html(response.total_receipt)
+            $('#tincome').html(response.total_income)
             // Process the response as needed
             return response.receipt_sum_by_date;
         } catch (error) {
@@ -480,9 +482,7 @@
     const handle_receipt_sum_by_date = async () => {
         try {
             const datas = await receipt_sum_by_date();
-            console.log(datas);
-            $('#treceipt').html(datas.total_receipt)
-            $('#tincome').html(datas.total_income)
+
             const options = receipt_sum_by_date_chart_data(datas);
             var chart_data = new ApexCharts(document.querySelector("#receipt_sum_by_date"), options);
             chart_data.render();
