@@ -181,13 +181,15 @@ class ParentController extends Controller
             'centre_id' => 'required',
             'fname' => 'required',
             'lname' => 'required',
-            'telp' => 'required|unique:parents|max:10|min:10',
+            //'telp' => 'required|unique:parents|max:10|min:10',
+            'telp' => 'required|max:10|min:10',
             'email' => 'required|email|unique:parents',
             'password' => 'required|min:6|confirmed',
             'address' => 'required',
             'relationship' => 'required',
             'gender' => 'required',
-            'emergency_contact' => 'required|unique:parents|max:10|min:10',
+            //'emergency_contact' => 'required|unique:parents|max:10|min:10',
+            'emergency_contact' => 'required|max:10|min:10',
         ]);
         $hashedPassword = bcrypt($request->input('password'));
         $stds = $request->input('student_id');
@@ -274,13 +276,15 @@ class ParentController extends Controller
                 'centre_id' => 'required',
                 'fname' => 'required',
                 'lname' => 'required',
-                'telp' => 'required|unique:parents,telp,' . $id . '|max:10|min:10',
+                //'telp' => 'required|unique:parents,telp,' . $id . '|max:10|min:10',
+                'telp' => 'required|max:10|min:10',
                 'email' => 'required|email|unique:parents,email,' . $id,
                 'password' => 'required|min:6|confirmed',
                 'address' => 'required',
                 'relationship' => 'required',
                 'gender' => 'required',
-                'emergency_contact' => 'required|unique:parents,emergency_contact,' . $id . '|max:10|min:10',
+                //'emergency_contact' => 'required|unique:parents,emergency_contact,' . $id . '|max:10|min:10',
+                'emergency_contact' => 'required|max:10|min:10',
             ]);
         } else {
             # code...
