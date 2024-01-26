@@ -477,32 +477,27 @@ class DashboardController extends Controller
         $reservationValue = $request->input('reservation');
 
         $results = Contact::select(
-            'contacts.centre as centre_id',
-            'departments.name as centre_name',
+            'contacts.centre as centre_id',  // Alias for clarity
+            'departments.name as centre_name', // Alias for clarity
             DB::raw('COUNT(*) as count')
         )
-            ->join('departments', 'contacts.centre', '=', 'departments.id')
-            ->where('contacts.centre', '!=', 1)
-            ->groupBy('contacts.centre', 'departments.name')
-            ->when($dcentreValue && $dcentreValue !== '1', function ($query) use ($dcentreValue) {
-                return $query->havingRaw('centre_id = ?', [$dcentreValue]);
-            })
-            ->get();
+            ->join('departments', 'contacts.centre', '=', 'departments.id') // Adjust the join condition based on your actual schema
+            ->where('contacts.centre', '!=', 1);
 
-        $totalStudent = $results->count();
-        $datas = $results;
+        /*
+            $results->where('contacts.centre', $dcentreValue);
+        } */
+
+        $results->groupBy('contacts.centre', 'departments.name'); // Group by both centre columns
+        $datas = $results->get();
 
         $maxData = $datas->max('count');
 
         $dataCounts = $datas->pluck('count', 'centre_name')->all();
 
         ksort($dataCounts);
-
-        $numberOfCentresWithContacts = Department::where('id', '!=', 1)->count();
-
         return response()->json([
-            'total_student' => $totalStudent,
-            'total_center' => $numberOfCentresWithContacts,
+
             'centre_data' => $dataCounts,
             'max_data' => $maxData,
         ]);
@@ -518,7 +513,7 @@ class DashboardController extends Controller
             DB::raw('COUNT(*) as total_transactions'),
             DB::raw('SUM(total_fee) as total_fee_sum')
         )
-            ->join('orders', 'receipts.oid', '=', 'orders.id');
+        ->join('orders', 'receipts.oid', '=', 'orders.id');
 
         if ($dcentreValue && $dcentreValue !== '1') {
             $summaryByDate->where('receipts.centre', $dcentreValue);
