@@ -80,11 +80,11 @@
         var searchCentre = $('#dcentre').val();
 
         // Split Yearstart into Yearsave and Monthsave
-        var [Yearsave, Monthsave] = Yearstart.split('-');
+        //var [Yearsave, Monthsave] = Yearstart.split('-');
 
         // Store values in local storage
-        localStorage.setItem('Yearsave', Yearsave);
-        localStorage.setItem('Monthsave', Monthsave - 1);
+        //localStorage.setItem('Yearsave', Yearsave);
+        //localStorage.setItem('Monthsave', Monthsave - 1);
         localStorage.setItem('searchCentre', searchCentre);
     }
 
