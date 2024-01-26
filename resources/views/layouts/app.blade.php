@@ -199,8 +199,8 @@
         const weatherElement = document.getElementById('weather');
         const locationElement = document.getElementById('location');
 
-        const apiKey = 'AIzaSyDqYYjqgTjuUglGygeLPZrH1KPjrZQDkic';
-        const geoApiUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lon}&key=${apiKey}`;
+        const lapiKey = 'AIzaSyDqYYjqgTjuUglGygeLPZrH1KPjrZQDkic';
+        const geoApiUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lon}&key=${lapiKey}`;
 
         // Fetch location data
         fetch(geoApiUrl)
