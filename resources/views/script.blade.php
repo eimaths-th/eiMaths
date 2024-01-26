@@ -268,7 +268,7 @@
                 },
             });
 
-            console.log(response.centre_data);
+            console.log(response.total_student);
             $('#tstudent').html(response.total_student)
             // Process the response as needed
             return response.centre_data;
@@ -289,7 +289,7 @@
         }));
 
 
-        $('#tcentre').html(count(dataArray))
+        //$('#tcentre').html(count(dataArray))
 
         // Find the item with the maximum value
         const maxItem = dataArray.reduce((max, current) => (current.value > max.value ? current : max), dataArray[
