@@ -529,7 +529,7 @@ class DashboardController extends Controller
         ->join('orders', 'receipts.oid', '=', 'orders.id');
 
         if ($dcentreValue && $dcentreValue !== '1') {
-            $summaryByDate->where('centre', $dcentreValue);
+            $summaryByDate->where('receipts.centre', $dcentreValue);
         }
 
         $summaryByDate->where('orders.status', 1);
