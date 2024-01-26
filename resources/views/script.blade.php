@@ -69,6 +69,7 @@
 
 
     $('#SearchButtons').on('click', async function() {
+        handle_student_by_centre();
         handle_student_by_level();
         handle_receipt_sum_by_date();
         handle_daily_study();
