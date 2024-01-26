@@ -510,7 +510,7 @@ class DashboardController extends Controller
 
         ksort($dataCounts);
         return response()->json([
-            'total_student' => $total_student,
+            'total_student' => $totalStudent,
             'centre_data' => $dataCounts,
             'max_data' => $maxData,
         ]);

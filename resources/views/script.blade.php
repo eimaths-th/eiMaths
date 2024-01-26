@@ -269,7 +269,7 @@
             });
 
             console.log(response.centre_data);
-            $('#tstudent').html(response.centre_data)
+            $('#tstudent').html(response.total_student)
             // Process the response as needed
             return response.centre_data;
         } catch (error) {
