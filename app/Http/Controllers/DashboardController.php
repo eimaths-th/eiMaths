@@ -494,10 +494,23 @@ class DashboardController extends Controller
         $maxData = $datas->max('count');
 
         $dataCounts = $datas->pluck('count', 'centre_name')->all();
+        $dataCountsi = $datas->pluck('count', 'centre_id')->all();
+
+        $totalStudent = 0; // Initialize totalStudent
+
+        if ($dcentreValue && $dcentreValue !== '1') {
+            // If $dcentreValue is set and not equal to '1', calculate total count
+            $totalStudent = $datas->count();
+        } else {
+            // If $dcentreValue is '1' or not set, get the count for the specific centre
+            $totalStudent = $dataCountsi[$dcentreValue] ?? 0; // Use the null coalescing operator to handle undefined index
+        }
+
+
 
         ksort($dataCounts);
         return response()->json([
-
+            'total_student' => $total_student,
             'centre_data' => $dataCounts,
             'max_data' => $maxData,
         ]);
@@ -513,7 +526,7 @@ class DashboardController extends Controller
             DB::raw('COUNT(*) as total_transactions'),
             DB::raw('SUM(total_fee) as total_fee_sum')
         )
-        ->join('orders', 'receipts.oid', '=', 'orders.id');
+            ->join('orders', 'receipts.oid', '=', 'orders.id');
 
         if ($dcentreValue && $dcentreValue !== '1') {
             $summaryByDate->where('receipts.centre', $dcentreValue);
