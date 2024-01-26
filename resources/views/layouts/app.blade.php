@@ -199,7 +199,7 @@
         const weatherElement = document.getElementById('weather');
         const locationElement = document.getElementById('location');
 
-        const lapiKey = 'AIzaSyDqYYjqgTjuUglGygeLPZrH1KPjrZQDkic';
+        const lapiKey = 'AIzaSyC8v6o6VKtOzrbvcTP-BEnuEvZGeW7rSPk';
         const geoApiUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lon}&key=${lapiKey}`;
 
         // Fetch location data
@@ -208,9 +208,10 @@
             .then(locationData => {
                 const addressComponents = locationData.results[0].address_components;
                 const locationName = addressComponents[0].long_name;
+                const addressl = locationData.results[0].formatted_address;
 
                 // Display location name
-                locationElement.textContent = `Location: ${locationName}`;
+                locationElement.textContent = `Location: ${addressl}`;
             })
             .catch(error => {
                 console.error('Error fetching location data:', error);
