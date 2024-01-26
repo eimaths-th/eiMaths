@@ -497,11 +497,13 @@ class DashboardController extends Controller
 
         $dataCounts = $datas->pluck('count', 'centre_name')->all();
 
-        if ($dcentreValue && $dcentreValue !== '1') {
-            $totalStudent = $dataCounts[$dcentreValue] ?? 0;
-        } else {
-            $totalStudent = $datas->sum('count');
-        }
+
+        $datasc = $results->filter(function ($result) use ($dcentreValue) {
+            return $dcentreValue && $dcentreValue !== '1' ? $result->centre_id == $dcentreValue : true;
+        });
+
+        $totalStudent = $datasc->count();
+
 
 
         ksort($dataCounts);
@@ -526,7 +528,7 @@ class DashboardController extends Controller
             DB::raw('COUNT(*) as total_transactions'),
             DB::raw('SUM(total_fee) as total_fee_sum')
         )
-        ->join('orders', 'receipts.oid', '=', 'orders.id');
+            ->join('orders', 'receipts.oid', '=', 'orders.id');
 
         if ($dcentreValue && $dcentreValue !== '1') {
             $summaryByDate->where('receipts.centre', $dcentreValue);
