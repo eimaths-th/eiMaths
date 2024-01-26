@@ -525,11 +525,14 @@ class DashboardController extends Controller
             'payment_date',
             DB::raw('COUNT(*) as total_transactions'),
             DB::raw('SUM(total_fee) as total_fee_sum')
-        );
+        )
+        ->join('orders', 'receipts.oid', '=', 'orders.id');
 
         if ($dcentreValue && $dcentreValue !== '1') {
             $summaryByDate->where('centre', $dcentreValue);
         }
+
+        $summaryByDate->where('orders.status', 1);
 
         /*  if ($reservationValue) {
             $summaryByDate->where('payment_date', 'like', $reservationValue.'%');
