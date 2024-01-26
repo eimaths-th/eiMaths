@@ -484,26 +484,33 @@ class DashboardController extends Controller
             ->join('departments', 'contacts.centre', '=', 'departments.id') // Adjust the join condition based on your actual schema
             ->where('contacts.centre', '!=', 1);
 
-        /* if ($dcentreValue && $dcentreValue !== '1') {
+        /*
             $results->where('contacts.centre', $dcentreValue);
         } */
 
         $results->groupBy('contacts.centre', 'departments.name'); // Group by both centre columns
         $datas = $results->get();
 
-        $totalStudent = $datas->sum('count');
+
 
         $maxData = $datas->max('count');
 
         $dataCounts = $datas->pluck('count', 'centre_name')->all();
+
+        if ($dcentreValue && $dcentreValue !== '1') {
+            $totalStudent = $dataCounts[$dcentreValue] ?? 0;
+        } else {
+            $totalStudent = $datas->sum('count');
+        }
+
 
         ksort($dataCounts);
 
         $numberOfCentresWithContacts = Department::where('id', '!=', 1)->count();
 
         return response()->json([
-            'total_student' => $totalStudent,
-            'total_center'=> $numberOfCentresWithContacts,
+            'total_student' =>  $totalStudent,
+            'total_center' => $numberOfCentresWithContacts,
             'centre_data' => $dataCounts,
             'max_data' => $maxData,
         ]);
