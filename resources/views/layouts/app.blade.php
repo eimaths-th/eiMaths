@@ -323,7 +323,7 @@
         console.error('Geolocation is not available.');
     }
     //updateWeather('14.683409', '100.706897');
-    //getLocationAndWeather();
+    getLocationAndWeather();
 
     function updateClock() {
         const datetimeElement = document.getElementById('real-time-clock');
