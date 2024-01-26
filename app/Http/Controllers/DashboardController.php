@@ -501,7 +501,7 @@ class DashboardController extends Controller
         if ($dcentreValue && $dcentreValue !== '1') {
             $totalStudent = $dataCountsi[$dcentreValue] ?? 0;
         } else {
-             $totalStudent = $datas->count;
+            $totalStudent = $datas->count();
         }
 
 
