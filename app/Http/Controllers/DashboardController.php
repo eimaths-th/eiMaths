@@ -499,11 +499,9 @@ class DashboardController extends Controller
         $totalStudent = 0; // Initialize totalStudent
 
         if ($dcentreValue && $dcentreValue !== '1') {
-            // If $dcentreValue is set and not equal to '1', calculate total count
-            $totalStudent = $datas->count();
+            $totalStudent = $dataCountsi[$dcentreValue] ?? 0;
         } else {
-            // If $dcentreValue is '1' or not set, get the count for the specific centre
-            $totalStudent = $dataCountsi[$dcentreValue] ?? 0; // Use the null coalescing operator to handle undefined index
+             $totalStudent = $datas->count();
         }
 
 
