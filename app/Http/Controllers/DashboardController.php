@@ -496,6 +496,8 @@ class DashboardController extends Controller
         $dataCounts = $datas->pluck('count', 'centre_name')->all();
         $dataCountsi = $datas->pluck('count', 'centre_id')->all();
 
+        dd($dataCountsi);
+
         $totalStudent = 0; // Initialize totalStudent
 
         if ($dcentreValue && $dcentreValue !== '1') {
