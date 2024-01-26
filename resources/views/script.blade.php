@@ -268,8 +268,7 @@
                 },
             });
 
-            $('#tstudent').html(response.total_student)
-            $('#tcentre').html(response.total_centre)
+
             // Process the response as needed
             return response.centre_data;
         } catch (error) {
@@ -287,6 +286,10 @@
             name: label,
             selected: true
         }));
+
+        console.log(data)
+        $('#tstudent').html(response.total_student)
+        $('#tcentre').html(count(dataArray))
 
         // Find the item with the maximum value
         const maxItem = dataArray.reduce((max, current) => (current.value > max.value ? current : max), dataArray[
@@ -416,7 +419,7 @@
                 height: 380,
                 zoom: {
                     enabled: false
-                },//
+                }, //
                 animations: {
                     enabled: true,
                     easing: 'easeinout',
