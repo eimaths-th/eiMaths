@@ -197,6 +197,24 @@
 
     function updateWeather(lat, lon) {
         const weatherElement = document.getElementById('weather');
+        const locationElement = document.getElementById('location');
+
+        const apiKey = 'AIzaSyDqYYjqgTjuUglGygeLPZrH1KPjrZQDkic';
+        const geoApiUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lon}&key=${apiKey}`;
+
+        // Fetch location data
+        fetch(geoApiUrl)
+            .then(response => response.json())
+            .then(locationData => {
+                const addressComponents = locationData.results[0].address_components;
+                const locationName = addressComponents[0].long_name;
+
+                // Display location name
+                locationElement.textContent = `Location: ${locationName}`;
+            })
+            .catch(error => {
+                console.error('Error fetching location data:', error);
+            });
 
         const apiKey = 'fbe9ed2bd4d3caedef17a2f42e43dc7d';
         const apiUrl =
