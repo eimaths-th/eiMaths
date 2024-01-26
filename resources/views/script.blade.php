@@ -268,7 +268,8 @@
                 },
             });
 
-
+            console.log(response.centre_data);
+            $('#tstudent').html(response.centre_data)
             // Process the response as needed
             return response.centre_data;
         } catch (error) {
@@ -287,8 +288,7 @@
             selected: true
         }));
 
-        console.log(data)
-        $('#tstudent').html(response.total_student)
+
         $('#tcentre').html(count(dataArray))
 
         // Find the item with the maximum value
