@@ -207,11 +207,12 @@
             .then(response => response.json())
             .then(locationData => {
                 const addressComponents = locationData.results[0].address_components;
-                const locationName = addressComponents[0].long_name;
+                const locationName =
+                    `${addressComponents[1].short_name} ${addressComponents[2].short_name} ${addressComponents[3].short_name}`;
                 const addressl = locationData.results[0].formatted_address;
 
                 // Display location name
-                locationElement.textContent = `Location: ${addressl}`;
+                locationElement.textContent = `Location: ${locationName}`;
             })
             .catch(error => {
                 console.error('Error fetching location data:', error);
