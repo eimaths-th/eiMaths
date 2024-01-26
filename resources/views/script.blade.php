@@ -268,6 +268,7 @@
                 },
             });
 
+            console.log(dcentreValue);
             console.log(response.total_student);
             $('#tstudent').html(response.total_student)
             // Process the response as needed
