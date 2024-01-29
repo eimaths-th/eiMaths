@@ -408,16 +408,19 @@ class HistoriesController extends Controller
         $centre = Department::where('id', $history->centre)->get();
 
         $img_html = '';
+        $slide_html = '';
         $i = 0;
-        foreach ($images as $img) {
-            // Assuming the image filename is stored in the 'image_filename' column
-            $slide_html = ' <li data-target="#carouselExampleIndicators" data-slide-to="' . $i . '"
+        if (!empty($images)) {
+            foreach ($images as $img) {
+                // Assuming the image filename is stored in the 'image_filename' column
+                $slide_html = ' <li data-target="#carouselExampleIndicators" data-slide-to="' . $i . '"
             class="active"></li>';
-            $img_html .= ' <div class="carousel-item active">
+                $img_html .= ' <div class="carousel-item active">
             <img class="d-block w-100"
                 src="' . asset('file_upload/' . $img->img) . '"
                 alt="' . $img->id . '"></div>';
-            $i++;
+                $i++;
+            }
         }
 
         return response()->json([
