@@ -168,7 +168,7 @@ class APIController extends Controller
                 'course_remaining' => $course_remaining
             ]);
 
-            /* $files = $request->file('files');
+            $files = $request->file('files');
             foreach ($files as $file) {
                 if ($file->isValid()) {
                     $newname = Str::random(40) . "_" . $file->getClientOriginalName();
@@ -181,7 +181,7 @@ class APIController extends Controller
                     $historyStudentImg->img = $newname;
                     $historyStudentImg->save();
                 }
-            } */
+            }
 
 
             return response()->json([
