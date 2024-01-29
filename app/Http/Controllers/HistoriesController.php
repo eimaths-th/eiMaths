@@ -67,11 +67,11 @@ class HistoriesController extends Controller
                     return $centre;
                 })
                 ->editColumn('bookuse', function ($row) {
-                    if ($row->booku) {
+                    /* if ($row->booku) {
                         $bookuse = $row->booku->name;
-                    } else {
+                    } else { */
                         $bookuse = $row->bookuse;
-                    }
+                    //}
                     return $bookuse;
                 })
                 ->editColumn('code', function ($row) {
