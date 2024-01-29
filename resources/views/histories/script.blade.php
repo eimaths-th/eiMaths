@@ -456,7 +456,7 @@
             var currentDate = moment();
             var startDate = moment(currentDate).subtract(365, 'days').format('YYYY-MM-DD');
             // Set the end date to the end of the current month
-            var = moment(currentDate).endOf('year').format('YYYY-MM-DD');
+            var endDate = moment(currentDate).endOf('year').format('YYYY-MM-DD');
             daterange();
             table = $('#Listview').DataTable(table_option);
             table.draw();
