@@ -70,7 +70,7 @@ class HistoriesController extends Controller
                     /* if ($row->booku) {
                         $bookuse = $row->booku->name;
                     } else { */
-                        $bookuse = $row->bookuse;
+                    $bookuse = $row->bookuse;
                     //}
                     return $bookuse;
                 })
@@ -485,6 +485,24 @@ class HistoriesController extends Controller
     /**
      * Remove the specified resource from storage.
      */
+    public function destroy_all(Request $request)
+    {
+        //
+        $his_id = $request->get('table_records');
+
+        $history = Histrories::whereIn('id', $his_id);
+
+
+        if ($history) {
+
+            $history->delete();
+            return redirect()->route('histories.index')->with('success', 'Deleted Histrories to select successfully');
+
+            return ['success' => true, 'message' => 'Deleted Histrories successfully'];
+        } else {
+            return ['success' => false, 'message' => 'Histrories not found'];
+        }
+    }
     public function destroy(Request $request)
     {
         //
@@ -493,9 +511,9 @@ class HistoriesController extends Controller
 
         if ($history) {
             $history->delete();
-            return ['success' => true, 'message' => 'Deleted student successfully'];
+            return ['success' => true, 'message' => 'Deleted Histrories successfully'];
         } else {
-            return ['success' => false, 'message' => 'Student not found'];
+            return ['success' => false, 'message' => 'Histrories not found'];
         }
     }
 }

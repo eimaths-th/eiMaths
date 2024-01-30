@@ -482,14 +482,14 @@
 
         $("#AddCentre").change(function() {
             let centre = $('#AddCentre').val();
-            console.log(centre);
+            // console.log(centre);
             if (centre.length !== 0) {
                 $.ajax({
                     method: "GET",
                     url: "histories/running/" + centre,
                     async: false,
                     success: function(res) {
-                        console.log(res)
+                        // console.log(res)
                         //$('#AddCode').prop('readonly', false);
                         $('#s_student').html(res.html_std);
                     }
@@ -499,14 +499,14 @@
 
         if ($("#AddCentre").val() !== null) {
             let centre = $('#AddCentre').val();
-            console.log(centre);
+            // console.log(centre);
             if (centre.length !== 0) {
                 $.ajax({
                     method: "GET",
                     url: "histories/running/" + centre,
                     async: false,
                     success: function(res) {
-                        console.log(res)
+                        // console.log(res)
                         //$('#AddCode').prop('readonly', false);
                         $('#s_student').html(res.html_std);
                     }
@@ -537,7 +537,7 @@
                     $('#AddTerm').prop('disabled', true);
                     // $('#AddBook').prop('disabled', true);
                     $('#s_student').html(response.html_std);
-                    console.log(response);
+                    // console.log(response);
                 },
                 error: function(error) {
                     console.error(error);
@@ -566,9 +566,9 @@
                 method: "GET",
                 //data: { id: hid },
                 success: function(response) {
-                    console.log(response.centre);
-                    console.log(response.history);
-                    console.log(response.student);
+                    // console.log(response.centre);
+                    // console.log(response.history);
+                    // console.log(response.student);
                     $('#viewCentre').val(response.centre);
                     $('#viewStudent').val(response.student);
                     $('#viewLV').val(response.history.level_name);
@@ -652,7 +652,7 @@
                     }
                 },
                 success: function(result) {
-                    console.log(result);
+                    // console.log(result);
                     if (result.success) {
 
                         $('.alert-danger').hide();
@@ -718,7 +718,7 @@
                     // $('#getSignature').val(res.data.signature);
                     $('#getSignature').attr('src', '{{ asset('file_upload/') }}/' + res.data
                         .signature);
-                    console.log($('#getSignature').val(res.data.signature));
+                    // console.log($('#getSignature').val(res.data.signature));
                     $('#EditModalBody').html(res.html);
                     $('#EditModal').modal('show');
                 }
@@ -792,7 +792,7 @@
                     _token: token
                 },
                 success: function(data) {
-                    console.log(data);
+                    // console.log(data);
                     if (data.success) {
                         toastr.success(data.message, {
                             timeOut: 5000
@@ -859,7 +859,7 @@
                         name: name,
                     },
                     success: function(data) {
-                        console.log('success: ' + data);
+                        // console.log('success: ' + data);
                         var element = document.getElementById("infinite");
                         var child = document.getElementById(name);
                         element.removeChild(child);
