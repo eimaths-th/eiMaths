@@ -10,6 +10,7 @@ use App\Models\HistoryStudentImg;
 use App\Models\Histrories;
 use App\Models\histroriesTes;
 use App\Models\level;
+use App\Models\LogHistory;
 use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\Sterm;
@@ -479,9 +480,45 @@ class HistoriesController extends Controller
     public function update(Request $request, $id)
     {
         //
+        $history = Histrories::find($id);
         $input = $request->all();
+        $logHistory = LogHistory::create([
+            'history_id' => $history->id,
+            'centre' => $history->centre,
+            'student_id' => $history->student_id,
+            'level_id_old' => $history->level_id,
+            'level_name_old' => $history->level_name,
+            'term_old' => $history->term,
+            'bookuse_old' => $history->bookuse,
+            'date_old' => $history->date,
+            'stime_old' => $history->stime,
+            'etime_old' => $history->etime,
+            'comment_old' => $history->comment,
+            'course_remaining_old' => $history->course_remaining,
+            'approve_id' => auth()->user()->id,
+            'approve_name' => auth()->user()->name,
 
-        $history = Histrories::find($id)->update($input);
+        ]);
+
+        $logHistory->update([
+            'level_id_new' => $request->level_id,
+            'level_name_new' => $request->level_name,
+            'term_new' => $request->term,
+            'bookuse_new' => $request->bookuse,
+            'date_new' => $request->date,
+            'stime_new' => $request->stime,
+            'etime_new' => $request->etime,
+            'comment_new' => $request->comment,
+            'course_remaining_new' => $request->course_remaining,
+            'approve_id' => auth()->user()->id,
+            'approve_name' => auth()->user()->name,
+
+        ]);
+
+        $history->update($input);
+
+        dd($input,$history,$logHistory);
+
         return ['success' => 'Updated history successfully'];
     }
 
