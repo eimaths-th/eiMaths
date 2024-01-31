@@ -517,7 +517,7 @@ class HistoriesController extends Controller
 
         $history->update($input);
 
-        dd($input,$history,$logHistory);
+        // dd($input,$history,$logHistory);
 
         return ['success' => 'Updated history successfully'];
     }
