@@ -703,7 +703,7 @@
                 url: "{{ route('histories.edit', ':id') }}".replace(':id', id),
                 method: 'GET',
                 success: function(res) {
-                    console.log(res);
+                    // console.log(res);
                     $('#getCentre').val(res.data.centre).change();
                     $('#getStudent').val(res.data.code + ' ' + res.data.student_id);
                     $('#getLevelId').val(res.history.level_id);
@@ -722,6 +722,30 @@
                     // console.log($('#getSignature').val(res.data.signature));
                     $('#EditModalBody').html(res.html);
                     $('#EditModal').modal('show');
+                }
+            });
+
+        })
+
+        $(document).on('click', '#getLogData', function(e) {
+            e.preventDefault();
+            $('.alert-danger').html('');
+            $('.alert-danger').hide();
+            $('.alert-success').html('');
+            $('.alert-success').hide();
+
+            $('#custom-tabs-one-homee-tab').tab('show');
+
+            id = $(this).data('id');
+            $.ajax({
+                // url: "histories/edit/" + id,
+                url: "{{ route('histories.log', ':id') }}".replace(':id', id),
+                method: 'GET',
+                success: function(res) {
+                    // console.log(res);
+
+                    $('#bodyLog').html(res.html);
+                    $('#LogModal').modal('show');
                 }
             });
 

@@ -202,6 +202,7 @@
 
     @include('histories.view')
     @include('histories.edit')
+    @include('histories.log')
 
 
     {{--  {!! $data->render() !!} --}}

@@ -102,12 +102,11 @@ class HistoriesController extends Controller
                     $html = '';
                     if (Gate::allows('student-edit')) {
                         $html = '<button type="button" class="btn btn-sm btn-primary btn-view" id="getViewData" data-id="' . $row->id . '"><i class="fa fa-eye"></i> View </button> ';
-                        $html .= '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit</button> ';
-
+                        $html .= '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit </button> ';
+                        $html .= '<button type="button" class="btn btn-sm btn-info btn-edit" id="getLogData" data-id="' . $row->id . '"><i class="fa fa-clipboard"></i> Log </button> ';
                     } else {
                         $html = '<button type="button" class="btn btn-sm btn-primary disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> View</button> ';
                         $html .= '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> Edit</button> ';
-
                     }
 
 
@@ -444,8 +443,6 @@ class HistoriesController extends Controller
     public function edit($id)
     {
         //
-
-
         $history = Histrories::find($id);
         $data = [
             'id'                    => $history->id,
@@ -465,12 +462,190 @@ class HistoriesController extends Controller
             'signature'             => $history->signature,
         ];
         // dd($data,$history, $id, );
-
         return response()->json([
             'history' => $history,
             'data' => $data,
             // 'datas' => $datas
 
+        ]);
+    }
+    public function log($id)
+    {
+        //
+        $histories = LogHistory::where('history_id', $id)->get();
+
+
+        $html = '';
+
+        if ($histories->count() > 0) {
+            # code...
+            $html .= '
+            <div class="row mb-3">
+            <div class="col-xs-3 col-sm-3 col-md-3">
+                <div class="form-group">
+                    <strong><i class="fas fa-code"></i> Centre :</strong>
+                    <span class="text-info"> ' . $histories->first()->history->department->name . ' </span>
+
+                </div>
+            </div>
+
+            <div class="col-xs-3 col-sm-3 col-md-3">
+                <div class="form-group">
+                    <strong><i class="fas fa-code"></i> Code : </strong>
+
+                    <span class="text-info">' . $histories->first()->history->student->code . '</span>
+                </div>
+            </div>
+            <div class="col-xs-3 col-sm-3 col-md-3">
+                <div class="form-group">
+                    <strong><i class="fas fa-code"></i> Student : </strong>
+                    <span class="text-info" for="" >' . $histories->first()->history->student->name . '</span>
+
+                </div>
+            </div>
+            <div class="col-xs-3 col-sm-3 col-md-3">
+                <div class="form-group">
+                <strong><i class="fas fa-code"></i> Nick Name : </strong>
+                <span class="text-info" for="" >' . $histories->first()->history->student->nickname . '</span>
+                </div>
+            </div>
+            </div>
+            ';
+            foreach ($histories as $key => $historys) {
+                # code...
+                $html .= '
+
+                <label for="" > ' . $key + 1 . '. Edited : ' . $historys->updated_at . '</label> <br>
+                <label for="" >Old History</label>
+                    <div class="row mb-3">
+                        <div class="col-xs-3 col-sm-3 col-md-3">
+                            <div class="form-group">
+                                <strong><i class="fas fa-code"></i> Level : </strong>
+                                <span class="text-danger" for="" >' . $historys->level_name_old . '</span>
+                            </div>
+                        </div>
+
+                        <div class="col-xs-3 col-sm-3 col-md-3">
+                            <div class="form-group">
+                                <strong><i class="fas fa-code"></i> Term : </strong>
+                                <span class="text-danger" for="" >' . $historys->term_old . '</span>
+                            </div>
+                        </div>
+                        <div class="col-xs-3 col-sm-3 col-md-3">
+                            <div class="form-group">
+                                <strong><i class="fas fa-code"></i> Bookuse : </strong>
+                                <span class="text-danger" for="" >' . $historys->bookuse_old . '</span>
+
+                            </div>
+                        </div>
+                        <div class="col-xs-3 col-sm-3 col-md-3">
+                            <div class="form-group text-nowrap">
+                                <strong><i class="fas fa-code"></i> Course Remaining : </strong>
+                                <span class="text-danger" for="" >' . $historys->course_remaining_old . '</span>
+
+
+                            </div>
+                        </div>
+
+                        <div class="col-xs-3 col-sm-3 col-md-3">
+                            <div class="form-group">
+                                <strong><i class="fas fa-code"></i> Date : </strong>
+                                <span class="text-danger" for="" >' . $historys->date_old . '</span>
+                            </div>
+                        </div>
+
+                        <div class="col-xs-3 col-sm-3 col-md-3">
+                            <div class="form-group">
+                                <strong><i class="fas fa-code"></i> Start Time : </strong>
+                                <span class="text-danger" for="" >' . $historys->stime_old . '</span>
+                            </div>
+                        </div>
+                        <div class="col-xs-3 col-sm-3 col-md-3">
+                            <div class="form-group">
+                                <strong><i class="fas fa-code"></i> End Time : </strong>
+                                <span class="text-danger" for="" >' . $historys->etime_old . '</span>
+
+                            </div>
+                        </div>
+                        <div class="col-xs-3 col-sm-3 col-md-3">
+                            <div class="form-group">
+                                <strong><i class="fas fa-code"></i> Comment : </strong>
+                                <span class="text-danger" for="" >' . $historys->comment_old . '</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <label for="" >New History</label>
+                    <div class="row mb-3">
+                        <div class="col-xs-3 col-sm-3 col-md-3">
+                            <div class="form-group">
+                                <strong><i class="fas fa-code"></i> Level : </strong>
+                                <span class="text-success" for="" >' . $historys->level_name_new . '</span>
+                            </div>
+                        </div>
+
+                        <div class="col-xs-3 col-sm-3 col-md-3">
+                            <div class="form-group">
+                                <strong><i class="fas fa-code"></i> Term : </strong>
+                                <span class="text-success" for="" >' . $historys->term_new . '</span>
+                            </div>
+                        </div>
+                        <div class="col-xs-3 col-sm-3 col-md-3">
+                            <div class="form-group">
+                                <strong><i class="fas fa-code"></i> Bookuse : </strong>
+                                <span class="text-success" for="" >' . $historys->bookuse_new . '</span>
+
+                            </div>
+                        </div>
+                        <div class="col-xs-3 col-sm-3 col-md-3">
+                            <div class="form-group text-nowrap">
+                                <strong><i class="fas fa-code"></i> Course Remaining : </strong>
+                                <span class="text-success" for="" >' . $historys->course_remaining_new . '</span>
+
+
+                            </div>
+                        </div>
+
+                        <div class="col-xs-3 col-sm-3 col-md-3">
+                            <div class="form-group">
+                                <strong><i class="fas fa-code"></i> Date : </strong>
+                                <span class="text-success" for="" >' . $historys->date_new . '</span>
+                            </div>
+                        </div>
+
+                        <div class="col-xs-3 col-sm-3 col-md-3">
+                            <div class="form-group">
+                                <strong><i class="fas fa-code"></i> Start Time : </strong>
+                                <span class="text-success" for="" >' . $historys->stime_new . '</span>
+                            </div>
+                        </div>
+                        <div class="col-xs-3 col-sm-3 col-md-3">
+                            <div class="form-group">
+                                <strong><i class="fas fa-code"></i> End Time : </strong>
+                                <span class="text-success" for="" >' . $historys->etime_new . '</span>
+
+                            </div>
+                        </div>
+                        <div class="col-xs-3 col-sm-3 col-md-3">
+                            <div class="form-group">
+                                <strong><i class="fas fa-code"></i> Comment : </strong>
+                                <span class="text-success" for="" >' . $historys->comment_new . '</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <label for="" class="breadcrumb float-sm-right"> Approve By : ' . $histories->first()->approve_name . '</label> <br>
+
+                    <div class="modal-footer"></div>
+                ';
+            }
+        } else {
+            $html = 'Noting Edit';
+        }
+
+        // dd($histories, $id);
+        return response()->json([
+            'html' => $html
         ]);
     }
 
@@ -486,6 +661,7 @@ class HistoriesController extends Controller
             'history_id' => $history->id,
             'centre' => $history->centre,
             'student_id' => $history->student_id,
+            'status' => 'edit',
             'level_id_old' => $history->level_id,
             'level_name_old' => $history->level_name,
             'term_old' => $history->term,
@@ -530,12 +706,31 @@ class HistoriesController extends Controller
         //
         $his_id = $request->get('table_records');
 
-        $history = Histrories::whereIn('id', $his_id);
+        $loghistories = Histrories::whereIn('id', $his_id)->get();
+        $histories = Histrories::whereIn('id', $his_id);
 
+        foreach ($loghistories as $history) {
+            LogHistory::create([
+                'history_id' => $history->id,
+                'centre' => $history->centre,
+                'student_id' => $history->student_id,
+                'status' => 'delete',
+                'level_id_old' => $history->level_id,
+                'level_name_old' => $history->level_name,
+                'term_old' => $history->term,
+                'bookuse_old' => $history->bookuse,
+                'date_old' => $history->date,
+                'stime_old' => $history->stime,
+                'etime_old' => $history->etime,
+                'comment_old' => $history->comment,
+                'course_remaining_old' => $history->course_remaining,
+                'approve_id' => auth()->user()->id,
+                'approve_name' => auth()->user()->name,
+            ]);
+        }
+        if ($histories) {
 
-        if ($history) {
-
-            $history->delete();
+            $histories->delete();
             return redirect()->route('histories.index')->with('success', 'Deleted Histrories to select successfully');
 
             return ['success' => true, 'message' => 'Deleted Histrories successfully'];
@@ -548,6 +743,24 @@ class HistoriesController extends Controller
         //
         $id = $request->get('id');
         $history = Histrories::find($id);
+        $logHistory = LogHistory::create([
+            'history_id' => $history->id,
+            'centre' => $history->centre,
+            'student_id' => $history->student_id,
+            'status' => 'delete',
+            'level_id_old' => $history->level_id,
+            'level_name_old' => $history->level_name,
+            'term_old' => $history->term,
+            'bookuse_old' => $history->bookuse,
+            'date_old' => $history->date,
+            'stime_old' => $history->stime,
+            'etime_old' => $history->etime,
+            'comment_old' => $history->comment,
+            'course_remaining_old' => $history->course_remaining,
+            'approve_id' => auth()->user()->id,
+            'approve_name' => auth()->user()->name,
+        ]);
+
 
         if ($history) {
             $history->delete();
