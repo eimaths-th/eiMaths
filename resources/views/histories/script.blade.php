@@ -703,9 +703,11 @@
                 url: "{{ route('histories.edit', ':id') }}".replace(':id', id),
                 method: 'GET',
                 success: function(res) {
+                    console.log(res);
                     $('#getCentre').val(res.data.centre).change();
                     $('#getStudent').val(res.data.code + ' ' + res.data.student_id);
-                    $('#getLevel').val(res.data.level_name);
+                    $('#getLevelId').val(res.history.level_id);
+                    $('#getLevelName').val(res.data.level_name);
                     $('#getTerm').val(res.data.term);
                     $('#getBookuse').val(res.data.bookuse);
                     $('#getCourseRemaining').val(res.data.course_remaining);
@@ -716,8 +718,7 @@
                     $('#getEndDate').val(res.data.end_date);
                     $('#getComment').val(res.data.comment);
                     // $('#getSignature').val(res.data.signature);
-                    $('#getSignature').attr('src', '{{ asset('file_upload/') }}/' + res.data
-                        .signature);
+                    $('#getSignature').attr('src', '{{ asset('file_upload/') }}/' + res.data.signature);
                     // console.log($('#getSignature').val(res.data.signature));
                     $('#EditModalBody').html(res.html);
                     $('#EditModal').modal('show');
@@ -740,6 +741,14 @@
                 url: "history/update/" + id,
                 method: 'PUT',
                 data: {
+                    level_id: $('#getLevelId').val(),
+                    level_name: $('#getLevelName').val(),
+                    term: $('#getTerm').val(),
+                    bookuse: $('#getBookuse').val(),
+                    course_remaining: $('#getCourseRemaining').val(),
+                    date: $('#getDate').val(),
+                    stime: $('#getStartTime').val(),
+                    etime: $('#getEndTime').val(),
                     comment: $('#getComment').val(),
                 },
                 success: function(result) {

@@ -101,9 +101,14 @@ class HistoriesController extends Controller
                     $html = '';
                     if (Gate::allows('student-edit')) {
                         $html = '<button type="button" class="btn btn-sm btn-primary btn-view" id="getViewData" data-id="' . $row->id . '"><i class="fa fa-eye"></i> View </button> ';
+                        $html .= '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit</button> ';
+
                     } else {
                         $html = '<button type="button" class="btn btn-sm btn-primary disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> Edit</button> ';
+                        $html .= '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> Edit</button> ';
+
                     }
+
 
                     // if (Gate::allows('student-edit')) {
                     //     $html .= '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit</button> ';
@@ -448,7 +453,7 @@ class HistoriesController extends Controller
             'student_id'            => $history->student->name,
             'level_name'            => $history->level_name,
             'term'                  => $history->term,
-            'bookuse'               => $history->booku->name,
+            'bookuse'               => $history->bookuse,
             'course_remaining'      => $history->course_remaining,
             'date'                  => $history->date,
             'stime'                 => $history->stime,
@@ -459,8 +464,6 @@ class HistoriesController extends Controller
             'signature'             => $history->signature,
         ];
         // dd($data,$history, $id, );
-
-
 
         return response()->json([
             'history' => $history,
@@ -477,9 +480,9 @@ class HistoriesController extends Controller
     {
         //
         $input = $request->all();
+
         $history = Histrories::find($id)->update($input);
-        return ['success' => 'Comment student successfully'];
-        // dd($request,$history);
+        return ['success' => 'Updated history successfully'];
     }
 
     /**

@@ -99,8 +99,8 @@
                                                         <option value="3">3</option>
 
                                                     </select> --}}
-                                                    <input type="text" name="level_id" id="getLevel"
-                                                        class="form-control" placeholder="Level student" disabled>
+                                                    <input type="text" name="level_name" id="getLevelName" class="form-control" placeholder="Level student">
+                                                    <input type="hidden" name="level_id" id="getLevelId">
 
                                                 </div>
                                             </div>
@@ -117,7 +117,7 @@
                                                         <option value="3">3</option>
                                                     </select> --}}
                                                     <input type="text" name="term" id="getTerm"
-                                                        class="form-control" placeholder="Term student" disabled>
+                                                        class="form-control" placeholder="Term student" >
 
                                                 </div>
                                             </div>
@@ -137,7 +137,7 @@
 
                                                     </select> --}}
                                                     <input type="text" name="bookuse" id="getBookuse"
-                                                        class="form-control" placeholder="getBookuse" disabled>
+                                                        class="form-control" placeholder="getBookuse" >
 
                                                 </div>
                                             </div>
@@ -146,7 +146,7 @@
                                                 <div class="form-group">
                                                     <strong><i class="fas fa-code"></i>Course Remaining</strong>
                                                     <input type="text" name="course_remaining"
-                                                        id="getCourseRemaining" disabled class="form-control">
+                                                        id="getCourseRemaining" class="form-control">
 
                                                     {{-- <select name="course_remaining" id="AddCourseRemaining"class="select2 select2_single form-control"
                                                     multiple="multiple">
@@ -163,7 +163,7 @@
                                                 <div class="form-group">
                                                     <strong><i class="fas fa-calendar"></i> Date:</strong>
                                                     <input type="text" name="date" id="getDate"
-                                                        class="getDate form-control" disabled placeholder="getDate">
+                                                        class="getDate form-control" placeholder="getDate">
                                                     {{-- {!! Form::text('date', null, [
                                                         'id' => 'AddDate',
                                                         'placeholder' => '',
@@ -182,7 +182,7 @@
                                                             <div class="row">
                                                                 <input type="text" id="getStartTime"
                                                                     class="form-control col-sm-10"
-                                                                    placeholder="getStartTime" disabled>
+                                                                    placeholder="getStartTime" >
                                                                 <span class="input-group-text input-group-addon">
                                                                     <i class="fa fa-clock"></i>
                                                                 </span>
@@ -196,7 +196,7 @@
                                                             <div class="row">
                                                                 <input type="text" id="getEndTime"
                                                                     class="form-control col-sm-10"
-                                                                    placeholder="getEndTime" disabled>
+                                                                    placeholder="getEndTime" >
                                                                 <span class="input-group-text input-group-addon">
                                                                     <i class="fa fa-clock"></i>
                                                                 </span>
@@ -237,8 +237,8 @@
                                             <div class="col-xs-6 col-sm-6 col-md-6">
                                                 <div class="form-group">
                                                     <strong><i class="fas fa-code"></i>End Date</strong>
-                                                    <input type="text" name="end_date" id="getEndDate" disabled
-                                                        class="form-control">
+                                                    <input type="text" name="end_date" id="getEndDate"
+                                                        class="form-control" disabled>
 
                                                     {{-- <select name="course_remaining" id="AddCourseRemaining"class="select2 select2_single form-control"
                                                     multiple="multiple">
@@ -250,6 +250,7 @@
                                                 </div>
                                             </div>
                                         </div>
+
                                         <div class="row">
                                             <div class="col-xs-12 col-sm-12 col-md-12">
                                                 <div class="form-group">
