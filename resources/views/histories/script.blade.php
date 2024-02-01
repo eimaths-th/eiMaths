@@ -482,14 +482,14 @@
 
         $("#AddCentre").change(function() {
             let centre = $('#AddCentre').val();
-            console.log(centre);
+            // console.log(centre);
             if (centre.length !== 0) {
                 $.ajax({
                     method: "GET",
                     url: "histories/running/" + centre,
                     async: false,
                     success: function(res) {
-                        console.log(res)
+                        // console.log(res)
                         //$('#AddCode').prop('readonly', false);
                         $('#s_student').html(res.html_std);
                     }
@@ -499,14 +499,14 @@
 
         if ($("#AddCentre").val() !== null) {
             let centre = $('#AddCentre').val();
-            console.log(centre);
+            // console.log(centre);
             if (centre.length !== 0) {
                 $.ajax({
                     method: "GET",
                     url: "histories/running/" + centre,
                     async: false,
                     success: function(res) {
-                        console.log(res)
+                        // console.log(res)
                         //$('#AddCode').prop('readonly', false);
                         $('#s_student').html(res.html_std);
                     }
@@ -537,7 +537,7 @@
                     $('#AddTerm').prop('disabled', true);
                     // $('#AddBook').prop('disabled', true);
                     $('#s_student').html(response.html_std);
-                    console.log(response);
+                    // console.log(response);
                 },
                 error: function(error) {
                     console.error(error);
@@ -566,9 +566,9 @@
                 method: "GET",
                 //data: { id: hid },
                 success: function(response) {
-                    console.log(response.centre);
-                    console.log(response.history);
-                    console.log(response.student);
+                    // console.log(response.centre);
+                    // console.log(response.history);
+                    // console.log(response.student);
                     $('#viewCentre').val(response.centre);
                     $('#viewStudent').val(response.student);
                     $('#viewLV').val(response.history.level_name);
@@ -652,7 +652,7 @@
                     }
                 },
                 success: function(result) {
-                    console.log(result);
+                    // console.log(result);
                     if (result.success) {
 
                         $('.alert-danger').hide();
@@ -703,9 +703,11 @@
                 url: "{{ route('histories.edit', ':id') }}".replace(':id', id),
                 method: 'GET',
                 success: function(res) {
+                    // console.log(res);
                     $('#getCentre').val(res.data.centre).change();
                     $('#getStudent').val(res.data.code + ' ' + res.data.student_id);
-                    $('#getLevel').val(res.data.level_name);
+                    $('#getLevelId').val(res.history.level_id);
+                    $('#getLevelName').val(res.data.level_name);
                     $('#getTerm').val(res.data.term);
                     $('#getBookuse').val(res.data.bookuse);
                     $('#getCourseRemaining').val(res.data.course_remaining);
@@ -716,11 +718,34 @@
                     $('#getEndDate').val(res.data.end_date);
                     $('#getComment').val(res.data.comment);
                     // $('#getSignature').val(res.data.signature);
-                    $('#getSignature').attr('src', '{{ asset('file_upload/') }}/' + res.data
-                        .signature);
-                    console.log($('#getSignature').val(res.data.signature));
+                    $('#getSignature').attr('src', '{{ asset('file_upload/') }}/' + res.data.signature);
+                    // console.log($('#getSignature').val(res.data.signature));
                     $('#EditModalBody').html(res.html);
                     $('#EditModal').modal('show');
+                }
+            });
+
+        })
+
+        $(document).on('click', '#getLogData', function(e) {
+            e.preventDefault();
+            $('.alert-danger').html('');
+            $('.alert-danger').hide();
+            $('.alert-success').html('');
+            $('.alert-success').hide();
+
+            $('#custom-tabs-one-homee-tab').tab('show');
+
+            id = $(this).data('id');
+            $.ajax({
+                // url: "histories/edit/" + id,
+                url: "{{ route('histories.log', ':id') }}".replace(':id', id),
+                method: 'GET',
+                success: function(res) {
+                    // console.log(res);
+
+                    $('#bodyLog').html(res.html);
+                    $('#LogModal').modal('show');
                 }
             });
 
@@ -740,6 +765,14 @@
                 url: "history/update/" + id,
                 method: 'PUT',
                 data: {
+                    level_id: $('#getLevelId').val(),
+                    level_name: $('#getLevelName').val(),
+                    term: $('#getTerm').val(),
+                    bookuse: $('#getBookuse').val(),
+                    course_remaining: $('#getCourseRemaining').val(),
+                    date: $('#getDate').val(),
+                    stime: $('#getStartTime').val(),
+                    etime: $('#getEndTime').val(),
                     comment: $('#getComment').val(),
                 },
                 success: function(result) {
@@ -792,7 +825,7 @@
                     _token: token
                 },
                 success: function(data) {
-                    console.log(data);
+                    // console.log(data);
                     if (data.success) {
                         toastr.success(data.message, {
                             timeOut: 5000
@@ -859,7 +892,7 @@
                         name: name,
                     },
                     success: function(data) {
-                        console.log('success: ' + data);
+                        // console.log('success: ' + data);
                         var element = document.getElementById("infinite");
                         var child = document.getElementById(name);
                         element.removeChild(child);

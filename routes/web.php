@@ -110,7 +110,11 @@ Route::group(['middleware' => ['auth']], function () {
     // Route::get('/histories', [App\Http\Controllers\HistoriesController::class, 'index'])->name('histories');
     Route::resource('histories', HistoriesController::class);
     Route::get('/student/find/{type}/{std_id}', [App\Http\Controllers\HistoriesController::class, 'stdfind'])->name('student.find');
+    Route::post('/histories/destroy_all', [App\Http\Controllers\HistoriesController::class, 'destroy_all'])->name('histories.destroy_all');
+    Route::get('/histories/log/{id}', [App\Http\Controllers\HistoriesController::class, 'log'])->name('histories.log');
+
     Route::delete('/histories/{id}', [App\Http\Controllers\HistoriesController::class, 'destroy'])->name('histories.destroys');
+
     Route::get('create/{centre}', [App\Http\Controllers\HistoriesController::class, 'create'])->name('create');
     Route::get('/histories/running/{centre}', [App\Http\Controllers\HistoriesController::class, 'create'])->name('histories.running');
     Route::put('/history/update/{id}', [App\Http\Controllers\HistoriesController::class, 'update'])->name('history.update');
