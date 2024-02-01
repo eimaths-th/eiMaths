@@ -212,7 +212,7 @@
                 const addressl = locationData.results[0].formatted_address;
 
                 // Display location name
-                locationElement.textContent = `Location: ${locationName}`;
+                locationElement.textContent = `<i class="fa-solid fa-location-dot"></i> ${locationName}`;
             })
             .catch(error => {
                 console.error('Error fetching location data:', error);
