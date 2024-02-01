@@ -23,7 +23,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 
 Route::middleware('auth.apikey')->group(function () {
-    Route::post('/applogin', [APIController::class, 'login']);
+    //Route::post('/applogin', [APIController::class, 'login']);
+    Route::middleware('cors')->post('/applogin', [APIController::class, 'login']);
     Route::get('/searchdepartment', [APIController::class, 'searchDepartment']);
     Route::get('/searchstudent', [APIController::class, 'searchStudent']);
     Route::get('/searchsubject', [APIController::class, 'searchSubject']);
