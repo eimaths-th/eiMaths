@@ -103,12 +103,19 @@ class HistoriesController extends Controller
                     if (Gate::allows('student-edit')) {
                         $html = '<button type="button" class="btn btn-sm btn-primary btn-view" id="getViewData" data-id="' . $row->id . '"><i class="fa fa-eye"></i> View </button> ';
                         $html .= '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit </button> ';
-                        $html .= '<button type="button" class="btn btn-sm btn-info btn-edit" id="getLogData" data-id="' . $row->id . '"><i class="fa fa-clipboard"></i> Log </button> ';
+                        // $html .= '<button type="button" class="btn btn-sm btn-info btn-edit" id="getLogData" data-id="' . $row->id . '"><i class="fa fa-clipboard"></i> Log </button> ';
                     } else {
                         $html = '<button type="button" class="btn btn-sm btn-primary disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> View</button> ';
                         $html .= '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> Edit</button> ';
                     }
+                    if (Gate::allows('view-log')) {
 
+                        $html .= '<button type="button" class="btn btn-sm btn-info btn-edit" id="getLogData" data-id="' . $row->id . '"><i class="fa fa-clipboard"></i> Log </button> ';
+                    } else {
+
+                        $html .= '<button type="button" class="btn btn-sm btn-info btn-edit" id="getLogData" disabled><i class="fa fa-clipboard"></i> Log </button> ';
+
+                    }
 
                     // if (Gate::allows('student-edit')) {
                     //     $html .= '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit</button> ';
