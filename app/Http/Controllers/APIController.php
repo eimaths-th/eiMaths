@@ -116,77 +116,79 @@ class APIController extends Controller
     public function saveHistories(Request $request)
     {
 
-       // if ($request->hasFile('file')) {
+        if ($request->hasFile('file')) {
             $image = $request->file('file');
             $imageName = $image->getClientOriginalName();
 
             $newname = Str::random(40) . "_" . $imageName;
             $image->move(public_path('file_upload'), $newname);
-
-            $uploadedFileNames = [];
-
-
-
-            //endtime
-            $time =  $request->get('stime'); // Time string
+        } else {
+            $newname = '';
+        }
+        $uploadedFileNames = [];
 
 
-            /* $durationHours = $request->get('hour');
+
+        //endtime
+        $time =  $request->get('stime'); // Time string
+
+
+        /* $durationHours = $request->get('hour');
 
             $updatedTime = Carbon::createFromFormat('H:i:s', $time)
                 ->addHours($durationHours)
                 ->format('H:i:s'); */
 
-            $centre = $request->get('centre');
-            $std_id = $request->get('student');
-            $level_id = $request->get('subject');
-            $term = $request->get('term');
-            $bookuse = $request->get('book');
-            $datetolearn = $request->get('date');
-            $stime = $request->get('stime');
-            $etime = $request->get('etime');
-            $comment = $request->input('comments');
-            $signature = $newname;
+        $centre = $request->get('centre');
+        $std_id = $request->get('student');
+        $level_id = $request->get('subject');
+        $term = $request->get('term');
+        $bookuse = $request->get('book');
+        $datetolearn = $request->get('date');
+        $stime = $request->get('stime');
+        $etime = $request->get('etime');
+        $comment = $request->input('comments');
+        $signature = $newname;
 
-            $level = level::find($level_id);
-            $level_name = $level->name;
+        $level = level::find($level_id);
+        $level_name = $level->name;
 
-            $history = Histrories::where([
-                ['student_id', $std_id],
-                ['term', $term],
-                ['level_id', $level_id]
-            ])->get();
-            if ($history->isEmpty()) {
-                $start_date = Carbon::parse($request->input('date'));
-                $end_date = $start_date->copy()->addMonths(4);
-                $course_remaining = 9;
-            } elseif ($history->count() < 10) {
-                $lastHistory = $history->sortByDesc('created_at')->first();
-                $firstHistory = $history->sortBy('created_at')->first();
-                $course_remaining = $lastHistory->course_remaining - 1;
-                $start_date = $firstHistory->start_date;
-                $end_date = $firstHistory->end_date;
-            } else {
-                return response()->json(['message' => 'เกินกำหนดของเทอมนี้แล้ว']);
-            }
-            $create = Histrories::create([
-                'centre' => $centre,
-                'student_id' => $std_id,
-                'level_id' => $level_id,
-                'level_name' => $level_name,
-                'term' => $term,
-                'bookuse' => $bookuse,
-                'date' => $datetolearn,
-                'stime' => $stime,
-                'etime' => $etime,
-                'start_date' => $start_date,
-                'end_date' => $end_date,
-                'comment' => $comment,
-                'signature' => $signature,
-                'course_remaining' => $course_remaining
-            ]);
+        $history = Histrories::where([
+            ['student_id', $std_id],
+            ['term', $term],
+            ['level_id', $level_id]
+        ])->get();
+        if ($history->isEmpty()) {
+            $start_date = Carbon::parse($request->input('date'));
+            $end_date = $start_date->copy()->addMonths(4);
+            $course_remaining = 9;
+        } elseif ($history->count() < 10) {
+            $lastHistory = $history->sortByDesc('created_at')->first();
+            $firstHistory = $history->sortBy('created_at')->first();
+            $course_remaining = $lastHistory->course_remaining - 1;
+            $start_date = $firstHistory->start_date;
+            $end_date = $firstHistory->end_date;
+        } else {
+            return response()->json(['message' => 'เกินกำหนดของเทอมนี้แล้ว']);
+        }
+        $create = Histrories::create([
+            'centre' => $centre,
+            'student_id' => $std_id,
+            'level_id' => $level_id,
+            'level_name' => $level_name,
+            'term' => $term,
+            'bookuse' => $bookuse,
+            'date' => $datetolearn,
+            'stime' => $stime,
+            'etime' => $etime,
+            'start_date' => $start_date,
+            'end_date' => $end_date,
+            'comment' => $comment,
+            'signature' => $signature,
+            'course_remaining' => $course_remaining
+        ]);
 
-            /* $files = $request->file('files');
+        /* $files = $request->file('files');
             foreach ($files as $file) {
                 if ($file->isValid()) {
                     $newname = Str::random(40) . "_" . $file->getClientOriginalName();
@@ -200,24 +202,24 @@ class APIController extends Controller
                     $historyStudentImg->save();
                 }
             } */
-            if ($request->hasFile('files')) {
-                $uploadedFileNames = [];
-                foreach ($request->file('files') as $file) {
-                    if ($file->isValid()) {
-                        $newname = Str::random(40) . "_" . $file->getClientOriginalName();
-                        $file->move(public_path('file_upload'), $newname);
-                        $uploadedFileNames[] = $newname;
+        if ($request->hasFile('files')) {
+            $uploadedFileNames = [];
+            foreach ($request->file('files') as $file) {
+                if ($file->isValid()) {
+                    $newname = Str::random(40) . "_" . $file->getClientOriginalName();
+                    $file->move(public_path('file_upload'), $newname);
+                    $uploadedFileNames[] = $newname;
 
-                        // Save file details to database
-                        $historyStudentImg = new HistoryStudentImg;
-                        $historyStudentImg->history_id = $create->id; // Assuming $create is available
-                        // Add other necessary fields
-                        $historyStudentImg->student_id = $std_id;
-                        $historyStudentImg->img = $newname;
-                        $historyStudentImg->save();
-                    }
+                    // Save file details to database
+                    $historyStudentImg = new HistoryStudentImg;
+                    $historyStudentImg->history_id = $create->id; // Assuming $create is available
+                    // Add other necessary fields
+                    $historyStudentImg->student_id = $std_id;
+                    $historyStudentImg->img = $newname;
+                    $historyStudentImg->save();
                 }
             }
+        }
         //}
         return response()->json([
             'message' => 'Data Save Successfully',
