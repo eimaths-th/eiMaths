@@ -116,7 +116,7 @@ class APIController extends Controller
     public function saveHistories(Request $request)
     {
 
-        if ($request->hasFile('file')) {
+       // if ($request->hasFile('file')) {
             $image = $request->file('file');
             $imageName = $image->getClientOriginalName();
 
@@ -218,7 +218,7 @@ class APIController extends Controller
                     }
                 }
             }
-        }
+        //}
         return response()->json([
             'message' => 'Data Save Successfully',
             //'file' => $newname
