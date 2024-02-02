@@ -30,4 +30,5 @@ Route::middleware('auth.apikey')->group(function () {
     Route::get('/searchterm', [APIController::class, 'searchTerm']);
     Route::get('/searchbook', [APIController::class, 'searchBook']);
     Route::post('/savehistories', [APIController::class, 'saveHistories'])->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
+    Route::post('/savefile', [APIController::class, 'saveFile'])->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
 });

@@ -228,4 +228,26 @@ class APIController extends Controller
 
         return response()->json(['message' => 'No file found'], 400);
     }
+
+    public function saveFile(Request $request)
+    {
+        if ($request->hasFile('files')) {
+            $uploadedFileNames = [];
+            foreach ($request->file('files') as $file) {
+                if ($file->isValid()) {
+                    $newname = Str::random(40) . "_" . $file->getClientOriginalName();
+                    $file->move(public_path('file_upload'), $newname);
+                    $uploadedFileNames[] = $newname;
+
+                }
+            }
+
+            return response()->json([
+                'message' => 'Files saved successfully',
+                'uploaded_files' => $uploadedFileNames
+            ]);
+        }
+
+        return response()->json(['message' => 'No file found'], 400);
+    }
 }
