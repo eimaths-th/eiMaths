@@ -186,7 +186,7 @@ class APIController extends Controller
                 'course_remaining' => $course_remaining
             ]);
 
-            $files = $request->file('files');
+            /* $files = $request->file('files');
             foreach ($files as $file) {
                 if ($file->isValid()) {
                     $newname = Str::random(40) . "_" . $file->getClientOriginalName();
@@ -198,6 +198,24 @@ class APIController extends Controller
                     $historyStudentImg->student_id = $std_id;
                     $historyStudentImg->img = $newname;
                     $historyStudentImg->save();
+                }
+            } */
+            if ($request->hasFile('files')) {
+                $uploadedFileNames = [];
+                foreach ($request->file('files') as $file) {
+                    if ($file->isValid()) {
+                        $newname = Str::random(40) . "_" . $file->getClientOriginalName();
+                        $file->move(public_path('file_upload'), $newname);
+                        $uploadedFileNames[] = $newname;
+
+                        // Save file details to database
+                        $historyStudentImg = new HistoryStudentImg;
+                        $historyStudentImg->history_id = $create->id; // Assuming $create is available
+                        // Add other necessary fields
+                        $historyStudentImg->student_id = $std_id;
+                        $historyStudentImg->img = $newname;
+                        $historyStudentImg->save();
+                    }
                 }
             }
 
