@@ -218,15 +218,13 @@ class APIController extends Controller
                     }
                 }
             }
-
-
-            return response()->json([
-                'message' => 'Data Save Successfully',
-                'file' => $newname
-            ]);
         }
+        return response()->json([
+            'message' => 'Data Save Successfully',
+            'file' => $newname
+        ]);
 
-        return response()->json(['message' => 'No file found'], 400);
+        //return response()->json(['message' => 'No file found'], 400);
     }
 
     public function saveFile(Request $request)
@@ -238,7 +236,6 @@ class APIController extends Controller
                     $newname = Str::random(40) . "_" . $file->getClientOriginalName();
                     $file->move(public_path('file_upload'), $newname);
                     $uploadedFileNames[] = $newname;
-
                 }
             }
 
