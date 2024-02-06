@@ -7,7 +7,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 use App\Models\level;
+use App\Models\User;
 use App\Models\Contact;
 use App\Models\Department;
 use App\Models\term;
@@ -34,6 +36,34 @@ class APIController extends Controller
         }
 
         return response()->json(['message' => 'Invalid credentials'], 401);
+    }
+
+    public function googleLogin(Request $request) {
+        // Verify Google token
+        $response = Http::get('https://www.googleapis.com/oauth2/v3/tokeninfo', [
+            'id_token' => $request->idToken,
+        ]);
+
+        if ($response->status() === 200 && $response['aud'] === env('GOOGLE_CLIENT_ID')) {
+            // Google token is valid, find user by email
+            $user = User::where('email', $response['email'])->first();
+
+            if ($user) {
+                // User exists, authenticate user
+                Auth::login($user);
+
+                // Create token using Laravel Passport
+                $token = $user->createToken('Personal Access Token')->accessToken;
+
+                return response()->json(['token' => $token]);
+            } else {
+                // User doesn't exist, return error
+                return response()->json(['error' => 'User not found. Please sign up with your Google account.'], 404);
+            }
+        } else {
+            // Invalid Google token
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
     }
 
     public function searchDepartment(Request $request)
