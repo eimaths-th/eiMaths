@@ -185,6 +185,7 @@ class APIController extends Controller
         $stime = $request->get('stime');
         $etime = $request->get('etime');
         $comment = $request->input('comments');
+        $userid = $request->input('userid');
         $signature = $newname;
 
         $level = level::find($level_id);
@@ -210,7 +211,8 @@ class APIController extends Controller
         }
         $create = Histrories::create([
             'centre' => $centre,
-            'student_id' => $std_id,
+            'student_id' => $userid,
+            'teacher_id' => $comment,
             'level_id' => $level_id,
             'level_name' => $level_name,
             'term' => $term,

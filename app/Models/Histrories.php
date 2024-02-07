@@ -35,7 +35,7 @@ class Histrories extends Model
     /**
      * @var array
      */
-    protected $fillable = ['centre', 'student_id', 'level_id', 'level_name', 'term', 'bookuse', 'course_remaining', 'date', 'stime', 'etime', 'start_date', 'end_date', 'comment', 'signature', 'created_at', 'updated_at'];
+    protected $fillable = ['centre', 'student_id', 'teacher_id', 'level_id', 'level_name', 'term', 'bookuse', 'course_remaining', 'date', 'stime', 'etime', 'start_date', 'end_date', 'comment', 'signature', 'created_at', 'updated_at'];
 
     public function student()
     {
