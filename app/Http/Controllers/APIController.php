@@ -211,8 +211,8 @@ class APIController extends Controller
         }
         $create = Histrories::create([
             'centre' => $centre,
-            'student_id' => $userid,
-            'teacher_id' => $comment,
+            'student_id' => $std_id,
+            'teacher_id' => $userid,
             'level_id' => $level_id,
             'level_name' => $level_name,
             'term' => $term,
