@@ -32,13 +32,17 @@ class APIController extends Controller
             $user = Auth::user();
             $token = $user->createToken('auth_token')->plainTextToken;
 
-            return response()->json(['token' => $token]);
+            return response()->json([
+                'token' => $token, 'user_id' => $user->id,
+                'user_name' => $user->name,
+            ]);
         }
 
         return response()->json(['message' => 'Invalid credentials'], 401);
     }
 
-    public function googleLogin(Request $request) {
+    public function googleLogin(Request $request)
+    {
         // Verify Google token
         $response = Http::get('https://www.googleapis.com/oauth2/v3/tokeninfo', [
             'id_token' => $request->idToken,
@@ -55,7 +59,10 @@ class APIController extends Controller
                 // Create token using Laravel Passport
                 $token = $user->createToken('Personal Access Token')->accessToken;
 
-                return response()->json(['token' => $token]);
+                return response()->json([
+                    'token' => $token, 'user_id' => $user->id,
+                    'user_name' => $user->name,
+                ]);
             } else {
                 // User doesn't exist, return error
                 return response()->json(['error' => 'User not found. Please sign up with your Google account.'], 404);
