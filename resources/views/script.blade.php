@@ -70,6 +70,8 @@
 
     $('#SearchButtons').on('click', async function() {
         handle_student_by_centre();
+        teacher_by_centre();
+        study_by_centre();
         handle_student_by_level();
         handle_receipt_sum_by_date();
         handle_daily_study();
@@ -270,6 +272,60 @@
             });
 
             $('#tstudent').html(response.total_student)
+            // Process the response as needed
+            return response.centre_data;
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            throw error;
+        }
+    };
+
+
+    const teacher_by_centre = async () => {
+        try {
+            const dcentreValue = $('#dcentre').val();
+            const reservationValue = $('#reservation').val();
+
+            console.log(dcentreValue);
+
+            const response = await $.ajax({
+                url: '{{ route('dashboard.teacher_by_centre') }}',
+                method: 'POST',
+                data: {
+                    _token: token,
+                    dcentre: dcentreValue,
+                    reservation: reservationValue,
+                },
+            });
+
+            $('#tteacher').html(response.total_teacher)
+            // Process the response as needed
+            return response.centre_data;
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            throw error;
+        }
+    };
+
+
+    const study_by_centre = async () => {
+        try {
+            const dcentreValue = $('#dcentre').val();
+            const reservationValue = $('#reservation').val();
+
+            console.log(dcentreValue);
+
+            const response = await $.ajax({
+                url: '{{ route('dashboard.study_by_centre') }}',
+                method: 'POST',
+                data: {
+                    _token: token,
+                    dcentre: dcentreValue,
+                    reservation: reservationValue,
+                },
+            });
+
+            $('#tstudy').html(response.total_study)
             // Process the response as needed
             return response.centre_data;
         } catch (error) {
@@ -626,6 +682,8 @@
         handle_receipt_sum_by_date();
         handle_daily_study();
         handle_student_by_centre();
+        teacher_by_centre();
+        study_by_centre();
 
 
     });
