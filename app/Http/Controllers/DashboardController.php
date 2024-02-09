@@ -628,7 +628,9 @@ class DashboardController extends Controller
         $summaryByDate = Receipt::select(
             'payment_date',
             DB::raw('COUNT(*) as total_transactions'),
-            DB::raw('SUM(total_fee) as total_fee_sum')
+            DB::raw('COUNT(CASE WHEN orders.status = 1 THEN 1 ELSE NULL END) as total_transactions_payment'),
+            DB::raw('COUNT(CASE WHEN orders.status = 0 THEN 1 ELSE NULL END) as total_transactions_pending'),
+            DB::raw('SUM(CASE WHEN orders.status = 1 THEN total_fee ELSE 0 END) as total_fee_sum')
         )
             ->join('orders', 'receipts.oid', '=', 'orders.id');
 
@@ -636,7 +638,7 @@ class DashboardController extends Controller
             $summaryByDate->where('receipts.centre', $dcentreValue);
         }
 
-        $summaryByDate->where('orders.status', 1);
+        //$summaryByDate->where('orders.status', 1);
 
         /*  if ($reservationValue) {
             $summaryByDate->where('payment_date', 'like', $reservationValue.'%');
@@ -646,10 +648,14 @@ class DashboardController extends Controller
         $datas = $summaryByDate->get();
 
         $totalTransactionsSum = $datas->sum('total_transactions');
+        $totalTransactionsPay = $datas->sum('total_transactions_payment');
+        $totalTransactionsPen = $datas->sum('total_transactions_pending');
         $totalFeeSum = $datas->sum('total_fee_sum');
 
         return response()->json([
             'total_receipt' => $totalTransactionsSum,
+            'total_receipt_pay' => $totalTransactionsPay,
+            'total_receipt_pen' => $totalTransactionsPen,
             'total_income' => $totalFeeSum,
             'receipt_sum_by_date' => $datas,
         ]);

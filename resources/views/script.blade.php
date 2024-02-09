@@ -438,6 +438,8 @@
             });
 
             $('#treceipt').html(response.total_receipt)
+            $('#pareceipt').html(response.total_receipt_pay)
+            $('#preceipt').html(response.total_receipt_pen)
             $('#tincome').html(response.total_income)
             // Process the response as needed
             return response.receipt_sum_by_date;
