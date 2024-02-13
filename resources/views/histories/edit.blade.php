@@ -42,9 +42,13 @@
                                 aria-labelledby="custom-tabs-one-home-tab">
                                 <div class="card">
                                     <div class="card-body">
-                                        <div class="callout callout-info">
-                                            <h5><i class="fa-solid fa-chalkboard-user"></i> ครูผู้สอน:</h5>
+                                        <div class="row">
+                                            <div class="col-xs-12 col-sm-12 col-md-12">
+                                            <div class="callout callout-info">
+                                                <h5><i class="fa-solid fa-chalkboard-user"></i> ครูผู้สอน:</h5>
                                                 <span id="eteacher_name"></span>
+                                            </div>
+                                            </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-xs-6 col-sm-6 col-md-6">
@@ -103,7 +107,8 @@
                                                         <option value="3">3</option>
 
                                                     </select> --}}
-                                                    <input type="text" name="level_name" id="getLevelName" class="form-control" placeholder="Level student">
+                                                    <input type="text" name="level_name" id="getLevelName"
+                                                        class="form-control" placeholder="Level student">
                                                     <input type="hidden" name="level_id" id="getLevelId">
 
                                                 </div>
@@ -121,7 +126,7 @@
                                                         <option value="3">3</option>
                                                     </select> --}}
                                                     <input type="text" name="term" id="getTerm"
-                                                        class="form-control" placeholder="Term student" >
+                                                        class="form-control" placeholder="Term student">
 
                                                 </div>
                                             </div>
@@ -141,7 +146,7 @@
 
                                                     </select> --}}
                                                     <input type="text" name="bookuse" id="getBookuse"
-                                                        class="form-control" placeholder="getBookuse" >
+                                                        class="form-control" placeholder="getBookuse">
 
                                                 </div>
                                             </div>
@@ -186,7 +191,7 @@
                                                             <div class="row">
                                                                 <input type="text" id="getStartTime"
                                                                     class="form-control col-sm-10"
-                                                                    placeholder="getStartTime" >
+                                                                    placeholder="getStartTime">
                                                                 <span class="input-group-text input-group-addon">
                                                                     <i class="fa fa-clock"></i>
                                                                 </span>
@@ -200,7 +205,7 @@
                                                             <div class="row">
                                                                 <input type="text" id="getEndTime"
                                                                     class="form-control col-sm-10"
-                                                                    placeholder="getEndTime" >
+                                                                    placeholder="getEndTime">
                                                                 <span class="input-group-text input-group-addon">
                                                                     <i class="fa fa-clock"></i>
                                                                 </span>
