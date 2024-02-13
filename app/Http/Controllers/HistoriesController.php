@@ -459,7 +459,7 @@ class HistoriesController extends Controller
         //
         $history = Histrories::find($id);
         $teacher = User::where('id', $history->teacher_id)->first();
-        if ($teacher) {
+        if ($teacher !== null) {
             $teacher_name = $teacher->name;
         } else {
             $teacher_name = 'ไม่มีการบันทึกครูผู้สอน';

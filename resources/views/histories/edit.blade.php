@@ -43,7 +43,7 @@
                                 <div class="card">
                                     <div class="card-body">
                                         <div class="callout callout-info">
-                                            <h5><i class="fas fa-info"></i> ครูผู้สอน:</h5>
+                                            <h5><i class="fa-solid fa-chalkboard-user"></i> ครูผู้สอน:</h5>
                                                 <span id="eteacher_name"></span>
                                         </div>
                                         <div class="row">

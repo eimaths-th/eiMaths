@@ -705,6 +705,7 @@
                 method: 'GET',
                 success: function(res) {
                     // console.log(res);
+                    $('#eteacher_name').html(res.teacher);
                     $('#getCentre').val(res.data.centre).change();
                     $('#getStudent').val(res.data.code + ' ' + res.data.student_id);
                     $('#getLevelId').val(res.history.level_id);
