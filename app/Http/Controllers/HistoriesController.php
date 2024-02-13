@@ -419,6 +419,11 @@ class HistoriesController extends Controller
         $images = HistoryStudentImg::where('history_id', $id)->get();
         $centre = Department::where('id', $history->centre)->get();
         $teacher = User::where('id', $history->teacher_id)->get();
+        if ($teacher) {
+            $teacher_name = $teacher->name;
+        } else {
+            $teacher_name = 'ไม่มีการบันทึกครูผู้สอน';
+        }
 
         $img_html = '';
         $slide_html = '';
@@ -440,7 +445,7 @@ class HistoriesController extends Controller
             'history' => $history,
             'centre' => $history->department->name,
             'student' => $history->student->student_code,
-            'teacher' => $teacher->name,
+            'teacher' => $teacher_name,
             'slide_html' => $slide_html,
             'img_html' => $img_html,  // Include the generated HTML in the JSON response
         ]);
@@ -454,13 +459,17 @@ class HistoriesController extends Controller
         //
         $history = Histrories::find($id);
         $teacher = User::where('id', $history->teacher_id)->get();
-        dd($teacher);
+        if ($teacher) {
+            $teacher_name = $teacher->name;
+        } else {
+            $teacher_name = 'ไม่มีการบันทึกครูผู้สอน';
+        }
         $data = [
             'id'                    => $history->id,
             'centre'                => $history->department->name,
             'code'                  => $history->student->code,
             'student_id'            => $history->student->name,
-            'teacher'               => $teacher[0]->name,
+            'teacher'               => $teacher_name,
             'level_name'            => $history->level_name,
             'term'                  => $history->term,
             'bookuse'               => $history->bookuse,
