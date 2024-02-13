@@ -459,7 +459,7 @@ class HistoriesController extends Controller
             'centre'                => $history->department->name,
             'code'                  => $history->student->code,
             'student_id'            => $history->student->name,
-            'teacher'               => $teacher->name,
+            'teacher'               => $teacher[0]->name,
             'level_name'            => $history->level_name,
             'term'                  => $history->term,
             'bookuse'               => $history->bookuse,
