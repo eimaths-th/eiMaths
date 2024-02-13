@@ -776,6 +776,7 @@
                     date: $('#getDate').val(),
                     stime: $('#getStartTime').val(),
                     etime: $('#getEndTime').val(),
+                    teacher_id: $('#eteacher').val(),
                     comment: $('#getComment').val(),
                 },
                 success: function(result) {
