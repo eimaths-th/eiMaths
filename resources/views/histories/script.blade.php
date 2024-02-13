@@ -569,7 +569,6 @@
                     // console.log(response.centre);
                     // console.log(response.history);
                     // console.log(response.student);
-                    $('#vteacher_name').val(response.teacher);
                     $('#viewCentre').val(response.centre);
                     $('#viewStudent').val(response.student);
                     $('#viewLV').val(response.history.level_name);
