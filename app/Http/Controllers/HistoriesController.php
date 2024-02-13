@@ -454,6 +454,7 @@ class HistoriesController extends Controller
         //
         $history = Histrories::find($id);
         $teacher = User::where('id', $history->teacher_id)->get();
+        dd($teacher);
         $data = [
             'id'                    => $history->id,
             'centre'                => $history->department->name,
