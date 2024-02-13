@@ -158,7 +158,7 @@ class HistoriesController extends Controller
             'sterm' => $sterm,
             // 'histories' => $histories,
             'level' => $level,
-            'teacherl' => $teacher
+            'lteacher' => $teacher
         ]);
     }
 
