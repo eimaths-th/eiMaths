@@ -418,7 +418,7 @@ class HistoriesController extends Controller
         $history = Histrories::find($id);
         $images = HistoryStudentImg::where('history_id', $id)->get();
         $centre = Department::where('id', $history->centre)->get();
-        $teacher = User::where('id', $history->teacher_id)->get();
+        $teacher = User::where('id', $history->teacher_id)->first();
         if ($teacher) {
             $teacher_name = $teacher->name;
         } else {
@@ -458,7 +458,7 @@ class HistoriesController extends Controller
     {
         //
         $history = Histrories::find($id);
-        $teacher = User::where('id', $history->teacher_id)->get();
+        $teacher = User::where('id', $history->teacher_id)->first();
         if ($teacher) {
             $teacher_name = $teacher->name;
         } else {
