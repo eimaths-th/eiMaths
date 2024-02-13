@@ -461,8 +461,10 @@ class HistoriesController extends Controller
         $teacher = User::where('id', $history->teacher_id)->first();
         if ($teacher !== null) {
             $teacher_name = $teacher->name;
+            $teacher_id = $teacher->id;
         } else {
             $teacher_name = 'ไม่มีการบันทึกครูผู้สอน';
+            $teacher_id = '';
         }
         $data = [
             'id'                    => $history->id,
@@ -470,6 +472,7 @@ class HistoriesController extends Controller
             'code'                  => $history->student->code,
             'student_id'            => $history->student->name,
             'teacher'               => $teacher_name,
+            'teacher_id'            => $teacher_id,
             'level_name'            => $history->level_name,
             'term'                  => $history->term,
             'bookuse'               => $history->bookuse,
