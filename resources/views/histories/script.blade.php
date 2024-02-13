@@ -571,7 +571,7 @@
                     // console.log(response.student);
                     $('#viewCentre').val(response.centre);
                     $('#viewStudent').val(response.student);
-                    $('#vteacher_name').val(response.teacher);
+                    $('#vteacher_name').html(response.teacher);
                     $('#viewLV').val(response.history.level_name);
                     $('#viewTerm').val(response.history.term);
                     $('#viewBook').val(response.history.bookuse);
