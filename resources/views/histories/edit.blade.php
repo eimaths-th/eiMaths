@@ -46,7 +46,14 @@
                                             <div class="col-xs-12 col-sm-12 col-md-12">
                                                 <div class="callout callout-info">
                                                     <h5><i class="fa-solid fa-chalkboard-user"></i> ครูผู้สอน:</h5>
-                                                    <span id="eteacher_name"></span>
+                                                    <select name="eteacher" id="eteacher" class="form-control">
+                                                        @foreach ($lteacher as $keyt)
+                                                            <option value="{{ $keyt->id }}">
+                                                                {{-- {{ $key2->code }} --}}
+                                                                {{ $keyt->name }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
                                                 </div>
                                             </div>
                                         </div>

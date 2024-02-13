@@ -143,6 +143,11 @@ class HistoriesController extends Controller
         $level = level::where([['status', '1']])
             ->orderBy("name", "asc")->get();
 
+        $role = 'Teacher';
+        $teacher = User::whereHas('roles', function ($query) use ($role) {
+                $query->where('name', $role);
+            })->get();
+
         // dd($last_book,$last_level,$graduated);
         // $histories = Histrories::all();
 
@@ -152,7 +157,8 @@ class HistoriesController extends Controller
             'term' => $term,
             'sterm' => $sterm,
             // 'histories' => $histories,
-            'level' => $level
+            'level' => $level,
+            'teacherl' => $teacher
         ]);
     }
 
