@@ -42,6 +42,10 @@
                                 aria-labelledby="custom-tabs-one-home-tab">
                                 <div class="card">
                                     <div class="card-body">
+                                        <div class="callout callout-info">
+                                            <h5><i class="fas fa-info"></i> ครูผู้สอน:</h5>
+                                                <span id="eteacher_name"></span>
+                                        </div>
                                         <div class="row">
                                             <div class="col-xs-6 col-sm-6 col-md-6">
                                                 <div class="form-group">

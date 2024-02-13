@@ -16,6 +16,7 @@ use App\Models\OrderDetail;
 use App\Models\Sterm;
 use App\Models\studentRunningNumber;
 use App\Models\term;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Http\Request;
@@ -114,7 +115,6 @@ class HistoriesController extends Controller
                     } else {
 
                         $html .= '<button type="button" class="btn btn-sm btn-info btn-edit" id="getLogData" disabled><i class="fa fa-clipboard"></i> Log </button> ';
-
                     }
 
                     // if (Gate::allows('student-edit')) {
@@ -418,6 +418,7 @@ class HistoriesController extends Controller
         $history = Histrories::find($id);
         $images = HistoryStudentImg::where('history_id', $id)->get();
         $centre = Department::where('id', $history->centre)->get();
+        $teacher = User::where('id', $history->teacher_id)->get();
 
         $img_html = '';
         $slide_html = '';
@@ -439,6 +440,7 @@ class HistoriesController extends Controller
             'history' => $history,
             'centre' => $history->department->name,
             'student' => $history->student->student_code,
+            'teacher' => $teacher->name,
             'slide_html' => $slide_html,
             'img_html' => $img_html,  // Include the generated HTML in the JSON response
         ]);
@@ -451,11 +453,13 @@ class HistoriesController extends Controller
     {
         //
         $history = Histrories::find($id);
+        $teacher = User::where('id', $history->teacher_id)->get();
         $data = [
             'id'                    => $history->id,
             'centre'                => $history->department->name,
             'code'                  => $history->student->code,
             'student_id'            => $history->student->name,
+            'teacher'               => $teacher->name,
             'level_name'            => $history->level_name,
             'term'                  => $history->term,
             'bookuse'               => $history->bookuse,
