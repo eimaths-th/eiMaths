@@ -47,10 +47,11 @@
                                                 <div class="callout callout-info">
                                                     <h5><i class="fa-solid fa-chalkboard-user"></i> ครูผู้สอน:</h5>
                                                     <select name="eteacher" id="eteacher" class="form-control">
-                                                        @foreach ($lteacher as $keyt)
                                                         <option value="">
                                                             ไม่มีการบันทึกครูผู้สอน
                                                         </option>
+                                                        @foreach ($lteacher as $keyt)
+
                                                             <option value="{{ $keyt->id }}">
                                                                 {{-- {{ $key2->code }} --}}
                                                                 {{ $keyt->name }}
