@@ -43,194 +43,179 @@
                                 <div class="card">
                                     <div class="card-body">
                                         <div class="row">
-                                            <div class="col-12">
-                                                <div class="callout callout-info">
-                                                    <h5><i class="fa-solid fa-chalkboard-user"></i> ครูผู้สอน:</h5>
-                                                        <span id="vteacher_name"></span>
+                                            <div class="col-xs-6 col-sm-6 col-md-6">
+                                                <div class="form-group">
+                                                    <strong><i class="fas fa-code"></i> Centre Code:</strong>
+                                                    <input type="text" class="form-control"
+                                                        id="viewCentre"placeholder="pls Enter book for student"
+                                                        disabled>
+
                                                 </div>
+                                            </div>
+                                            {{-- ต่อหน้า create view history --}}
+                                            <div class="col-xs-6 col-sm-6 col-md-6">
+                                                <div class="form-group">
+                                                    <strong><i class="fas fa-code"></i> Student No.</strong>
+
+                                                    <input type="text" class="form-control"
+                                                        id="viewStudent"placeholder="pls Enter book for student"
+                                                        disabled>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-6 col-sm-6 col-md-6">
+                                                <div class="form-group">
+                                                    <strong><i class="fas fa-code"></i> Level</strong>
+                                                    {{-- <select style="width: 100%;" class="select2 select2_single form-control" id="AddLevel"  name="level" multiple="multiple"> --}}
+                                                    <input type="text" class="form-control"
+                                                        id="viewLV"placeholder="pls Enter book for student" disabled>
+
+                                                </div>
+                                            </div>
+                                            {{-- ต่อหน้า create view history --}}
+                                            <div class="col-xs-6 col-sm-6 col-md-6">
+                                                <div class="form-group">
+                                                    <strong><i class="fas fa-code"></i>Term</strong>
+                                                    <input type="text" class="form-control"
+                                                        id="viewTerm"placeholder="pls Enter book for student" disabled>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-6 col-sm-6 col-md-6">
+                                                <div class="form-group">
+                                                    <strong><i class="fas fa-code"></i> Bookuse</strong>
+                                                    <input type="text" class="form-control"
+                                                        id="viewBook"placeholder="pls Enter book for student" disabled>
+
+                                                </div>
+                                            </div>
+                                            {{-- ต่อหน้า create view history --}}
+                                            <div class="col-xs-6 col-sm-6 col-md-6">
+                                                <div class="form-group">
+                                                    <strong><i class="fas fa-code"></i>Course Remaining</strong>
+                                                    <input type="text" class="form-control"
+                                                        id="viewCourseRemaining"placeholder="pls Enter book for student"
+                                                        disabled>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-6 col-sm-6 col-md-6">
+                                                <div class="form-group">
+                                                    <strong><i class="fas fa-calendar"></i> Date:</strong>
+
+
+                                                    <input type="text" class="form-control"
+                                                        id="viewDate"placeholder="pls Enter book for student" disabled>
+
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-6 col-sm-6 col-md-6">
                                                 <div class="row">
-                                                    <div class="col-xs-6 col-sm-6 col-md-6">
+                                                    <div class="col-lg-6">
                                                         <div class="form-group">
-                                                            <strong><i class="fas fa-code"></i> Centre Code:</strong>
+                                                            <strong><i class="fas fa-calendar"></i> Start
+                                                                Time:</strong>
+
+
                                                             <input type="text" class="form-control"
-                                                                id="viewCentre"placeholder="pls Enter book for student"
+                                                                id="ViewStartTime"placeholder="pls Enter book for student"
                                                                 disabled>
 
                                                         </div>
                                                     </div>
-                                                    {{-- ต่อหน้า create view history --}}
-                                                    <div class="col-xs-6 col-sm-6 col-md-6">
-                                                        <div class="form-group">
-                                                            <strong><i class="fas fa-code"></i> Student No.</strong>
+                                                    <div class="col-lg-6">
 
+                                                        <div class="form-group">
+                                                            <strong><i class="fas fa-calendar"></i> End Time:</strong>
                                                             <input type="text" class="form-control"
-                                                                id="viewStudent"placeholder="pls Enter book for student"
+                                                                id="ViewEndTime"placeholder="pls Enter book for student"
                                                                 disabled>
-
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="col-xs-6 col-sm-6 col-md-6">
-                                                        <div class="form-group">
-                                                            <strong><i class="fas fa-code"></i> Level</strong>
-                                                            {{-- <select style="width: 100%;" class="select2 select2_single form-control" id="AddLevel"  name="level" multiple="multiple"> --}}
-                                                            <input type="text" class="form-control"
-                                                                id="viewLV"placeholder="pls Enter book for student"
-                                                                disabled>
-
-                                                        </div>
-                                                    </div>
-                                                    {{-- ต่อหน้า create view history --}}
-                                                    <div class="col-xs-6 col-sm-6 col-md-6">
-                                                        <div class="form-group">
-                                                            <strong><i class="fas fa-code"></i>Term</strong>
-                                                            <input type="text" class="form-control"
-                                                                id="viewTerm"placeholder="pls Enter book for student"
-                                                                disabled>
-
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="col-xs-6 col-sm-6 col-md-6">
-                                                        <div class="form-group">
-                                                            <strong><i class="fas fa-code"></i> Bookuse</strong>
-                                                            <input type="text" class="form-control"
-                                                                id="viewBook"placeholder="pls Enter book for student"
-                                                                disabled>
-
-                                                        </div>
-                                                    </div>
-                                                    {{-- ต่อหน้า create view history --}}
-                                                    <div class="col-xs-6 col-sm-6 col-md-6">
-                                                        <div class="form-group">
-                                                            <strong><i class="fas fa-code"></i>Course Remaining</strong>
-                                                            <input type="text" class="form-control"
-                                                                id="viewCourseRemaining"placeholder="pls Enter book for student"
-                                                                disabled>
-
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="col-xs-6 col-sm-6 col-md-6">
-                                                        <div class="form-group">
-                                                            <strong><i class="fas fa-calendar"></i> Date:</strong>
-
-
-                                                            <input type="text" class="form-control"
-                                                                id="viewDate"placeholder="pls Enter book for student"
-                                                                disabled>
-
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-xs-6 col-sm-6 col-md-6">
-                                                        <div class="row">
-                                                            <div class="col-lg-6">
-                                                                <div class="form-group">
-                                                                    <strong><i class="fas fa-calendar"></i> Start
-                                                                        Time:</strong>
-
-
-                                                                    <input type="text" class="form-control"
-                                                                        id="ViewStartTime"placeholder="pls Enter book for student"
-                                                                        disabled>
-
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-lg-6">
-
-                                                                <div class="form-group">
-                                                                    <strong><i class="fas fa-calendar"></i> End
-                                                                        Time:</strong>
-                                                                    <input type="text" class="form-control"
-                                                                        id="ViewEndTime"placeholder="pls Enter book for student"
-                                                                        disabled>
-                                                                </div>
-
-                                                            </div>
                                                         </div>
 
-                                                    </div>
-
-                                                </div>
-                                                <div class="row">
-                                                    <div class="col-xs-6 col-sm-6 col-md-6">
-                                                        <div class="form-group">
-                                                            <strong><i class="fas fa-code"></i> Start Date</strong>
-                                                            <input type="text" class="form-control"
-                                                                id="viewStartDate"placeholder="pls Enter book for student"
-                                                                disabled>
-
-                                                        </div>
-                                                    </div>
-                                                    {{-- ต่อหน้า create view history --}}
-                                                    <div class="col-xs-6 col-sm-6 col-md-6">
-                                                        <div class="form-group">
-                                                            <strong><i class="fas fa-code"></i>End Date</strong>
-                                                            <input type="text" class="form-control"
-                                                                id="viewEndDate"placeholder="pls Enter book for student"
-                                                                disabled>
-
-
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="col-xs-12 col-sm-12 col-md-12">
-                                                        <div class="form-group">
-                                                            <strong><i class="fas fa-calendar"></i> Signature:</strong>
-                                                            {{-- <textarea name="signature" id="AddSignature" rows="5" class="form-control"></textarea> --}}
-
-                                                            <img class="d-block w-100" id="ViewSignature"
-                                                                height="400px" src="" alt="" />
-
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="col-xs-12 col-sm-12 col-md-12">
-                                                        <div id="carouselExampleIndicators" class="carousel slide"
-                                                            data-ride="carousel">
-                                                            <ol class="carousel-indicators" id="hsliden">
-
-                                                            </ol>
-                                                            <div class="carousel-inner" id="hslidei">
-
-                                                            </div>
-                                                            <a class="carousel-control-prev"
-                                                                href="#carouselExampleIndicators" role="button"
-                                                                data-slide="prev">
-                                                                <span class="carousel-control-custom-icon"
-                                                                    aria-hidden="true">
-                                                                    <i class="fas fa-chevron-left"></i>
-                                                                </span>
-                                                                <span class="sr-only">Previous</span>
-                                                            </a>
-                                                            <a class="carousel-control-next"
-                                                                href="#carouselExampleIndicators" role="button"
-                                                                data-slide="next">
-                                                                <span class="carousel-control-custom-icon"
-                                                                    aria-hidden="true">
-                                                                    <i class="fas fa-chevron-right"></i>
-                                                                </span>
-                                                                <span class="sr-only">Next</span>
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="col-xs-12 col-sm-12 col-md-12">
-                                                        <div class="form-group">
-                                                            <strong><i class="fas fa-calendar"></i> Comment:</strong>
-                                                            <textarea name="comment" id="ViewComment" rows="5" class="form-control" disabled></textarea>
-
-                                                        </div>
                                                     </div>
                                                 </div>
 
-                                                {{-- <div class="form-row form-focus" id="dropzone-att">
+                                            </div>
+
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-6 col-sm-6 col-md-6">
+                                                <div class="form-group">
+                                                    <strong><i class="fas fa-code"></i> Start Date</strong>
+                                                    <input type="text" class="form-control"
+                                                        id="viewStartDate"placeholder="pls Enter book for student"
+                                                        disabled>
+
+                                                </div>
+                                            </div>
+                                            {{-- ต่อหน้า create view history --}}
+                                            <div class="col-xs-6 col-sm-6 col-md-6">
+                                                <div class="form-group">
+                                                    <strong><i class="fas fa-code"></i>End Date</strong>
+                                                    <input type="text" class="form-control"
+                                                        id="viewEndDate"placeholder="pls Enter book for student"
+                                                        disabled>
+
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-12 col-sm-12 col-md-12">
+                                                <div class="form-group">
+                                                    <strong><i class="fas fa-calendar"></i> Signature:</strong>
+                                                    {{-- <textarea name="signature" id="AddSignature" rows="5" class="form-control"></textarea> --}}
+
+                                                    <img class="d-block w-100" id="ViewSignature" height="400px"
+                                                        src="" alt="" />
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-12 col-sm-12 col-md-12">
+                                                <div id="carouselExampleIndicators" class="carousel slide"
+                                                    data-ride="carousel">
+                                                    <ol class="carousel-indicators" id="hsliden">
+
+                                                    </ol>
+                                                    <div class="carousel-inner" id="hslidei">
+
+                                                    </div>
+                                                    <a class="carousel-control-prev" href="#carouselExampleIndicators"
+                                                        role="button" data-slide="prev">
+                                                        <span class="carousel-control-custom-icon" aria-hidden="true">
+                                                            <i class="fas fa-chevron-left"></i>
+                                                        </span>
+                                                        <span class="sr-only">Previous</span>
+                                                    </a>
+                                                    <a class="carousel-control-next" href="#carouselExampleIndicators"
+                                                        role="button" data-slide="next">
+                                                        <span class="carousel-control-custom-icon" aria-hidden="true">
+                                                            <i class="fas fa-chevron-right"></i>
+                                                        </span>
+                                                        <span class="sr-only">Next</span>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-12 col-sm-12 col-md-12">
+                                                <div class="form-group">
+                                                    <strong><i class="fas fa-calendar"></i> Comment:</strong>
+                                                    <textarea name="comment" id="ViewComment" rows="5" class="form-control" disabled></textarea>
+
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {{-- <div class="form-row form-focus" id="dropzone-att">
                                             <div class="col-md-12 col-sm-12">
                                                 <a id="datt"></a>
                                                 <div class="position-relative form-group">
@@ -264,22 +249,22 @@
                                             <h3 class="dropzone-previews ui"></h3>
                                         </div> --}}
 
-                                            </div>
-                                        </div>
                                     </div>
-
                                 </div>
                             </div>
-                        </div>
 
-                        {{-- {!! Form::close() !!} --}}
-                    </div>
-                    <div class="modal-footer {{-- justify-content-between --}}">
-                        {{-- <button type="button" class="btn btn-success" id="SubmitCreateForm"><i class="fas fa-download"></i>
-                    Save </button> --}}
-                        <button type="button" class="btn btn-danger modelClose" data-dismiss="modal"><i
-                                class="fas fa-door-closed"></i> Close</button>
+                        </div>
                     </div>
                 </div>
+
+                {{-- {!! Form::close() !!} --}}
+            </div>
+            <div class="modal-footer {{-- justify-content-between --}}">
+                {{-- <button type="button" class="btn btn-success" id="SubmitCreateForm"><i class="fas fa-download"></i>
+                    Save </button> --}}
+                <button type="button" class="btn btn-danger modelClose" data-dismiss="modal"><i
+                        class="fas fa-door-closed"></i> Close</button>
             </div>
         </div>
+    </div>
+</div>
