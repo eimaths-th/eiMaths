@@ -566,7 +566,7 @@
                 method: "GET",
                 //data: { id: hid },
                 success: function(response) {
-                    // console.log(response.centre);
+                    console.log(response);
                     // console.log(response.history);
                     // console.log(response.student);
                     $('#viewCentre').val(response.centre);
