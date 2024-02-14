@@ -45,19 +45,19 @@
                                         <div class="row">
                                             <div class="col-xs-12 col-sm-12 col-md-12">
                                                 <div class="callout callout-info">
-                                                    <h5><i class="fa-solid fa-chalkboard-user"></i> ครูผู้สอน:</h5>
-                                                    <select name="eteacher" id="eteacher" class="form-control">
-                                                        <option value="">
-                                                            ไม่มีการบันทึกครูผู้สอน
-                                                        </option>
-                                                        @foreach ($lteacher as $keyt)
-
-                                                            <option value="{{ $keyt->id }}">
-                                                                {{-- {{ $key2->code }} --}}
-                                                                {{ $keyt->name }}
+                                                    <h5><i class="fa-solid fa-chalkboard-user"></i> ครูผู้สอน: <select
+                                                            name="eteacher" id="eteacher" class="form-control">
+                                                            <option value="">
+                                                                ไม่มีการบันทึกครูผู้สอน
                                                             </option>
-                                                        @endforeach
-                                                    </select>
+                                                            @foreach ($lteacher as $keyt)
+                                                                <option value="{{ $keyt->id }}">
+                                                                    {{-- {{ $key2->code }} --}}
+                                                                    {{ $keyt->name }}
+                                                                </option>
+                                                            @endforeach
+                                                        </select></h5>
+
                                                 </div>
                                             </div>
                                         </div>
