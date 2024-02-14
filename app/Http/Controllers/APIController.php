@@ -153,29 +153,11 @@ class APIController extends Controller
     public function saveHistories(Request $request)
     {
 
-        if ($request->hasFile('file')) {
-            $image = $request->file('file');
-            $imageName = $image->getClientOriginalName();
-
-            $newname = Str::random(40) . "_" . $imageName;
-            $image->move(public_path('file_upload'), $newname);
-        } else {
-            $newname = '';
-        }
-        $uploadedFileNames = [];
-
-
-
-        //endtime
-        $time =  $request->get('stime'); // Time string
-
-
         /* $durationHours = $request->get('hour');
 
             $updatedTime = Carbon::createFromFormat('H:i:s', $time)
                 ->addHours($durationHours)
                 ->format('H:i:s'); */
-
         $centre = $request->get('centre');
         $std_id = $request->get('student');
         $level_id = $request->get('subject');
@@ -186,16 +168,21 @@ class APIController extends Controller
         $etime = $request->get('etime');
         $comment = $request->input('comments');
         $userid = $request->input('userid');
-        $signature = $newname;
+        $time =  $request->get('stime');
+
 
         $level = level::find($level_id);
         $level_name = $level->name;
+
+        //contact data
+        $contact = Contact::find($std_id);
 
         $history = Histrories::where([
             ['student_id', $std_id],
             ['term', $term],
             ['level_id', $level_id]
         ])->get();
+
         if ($history->isEmpty()) {
             $start_date = Carbon::parse($request->input('date'));
             $end_date = $start_date->copy()->addMonths(4);
@@ -206,18 +193,33 @@ class APIController extends Controller
             $course_remaining = $lastHistory->course_remaining - 1;
             $start_date = $firstHistory->start_date;
             $end_date = $firstHistory->end_date;
-        } else {
-            //auto discontinue
-            $contactd = [
-                'discontinued' => 1,
-                'discontinued_date' => date("Y-m-d"),
-                'discontinued_reason' => 'End of course',
-            ];
 
-            $contact = Contact::find($std_id);
-            $contact->update($contactd);
+            if ($contact->level2 == $level_id && $contact->level2 == $term && $course_remaining == 0) {
+                //auto discontinue
+                $contactd = [
+                    'discontinued' => 1,
+                    'discontinued_date' => date("Y-m-d"),
+                    'discontinued_reason' => 'End of course',
+                ];
+
+                $contact->update($contactd);
+            }
+        } else {
             return response()->json(['message' => 'เกินกำหนดของเทอมนี้แล้ว']);
         }
+
+        if ($request->hasFile('file')) {
+            $image = $request->file('file');
+            $imageName = $image->getClientOriginalName();
+
+            $newname = Str::random(40) . "_" . $imageName;
+            $image->move(public_path('file_upload'), $newname);
+        } else {
+            $newname = '';
+        }
+
+        $signature = $newname;
+
         $create = Histrories::create([
             'centre' => $centre,
             'student_id' => $std_id,
@@ -236,20 +238,8 @@ class APIController extends Controller
             'course_remaining' => $course_remaining
         ]);
 
-        /* $files = $request->file('files');
-            foreach ($files as $file) {
-                if ($file->isValid()) {
-                    $newname = Str::random(40) . "_" . $file->getClientOriginalName();
-                    $file->move(public_path('file_upload'), $newname);
-                    $uploadedFileNames[] = $newname;
+        $uploadedFileNames = [];
 
-                    $historyStudentImg = new HistoryStudentImg;
-                    $historyStudentImg->history_id = $create->id;
-                    $historyStudentImg->student_id = $std_id;
-                    $historyStudentImg->img = $newname;
-                    $historyStudentImg->save();
-                }
-            } */
         if ($request->hasFile('files')) {
             $uploadedFileNames = [];
             foreach ($request->file('files') as $file) {
@@ -268,6 +258,24 @@ class APIController extends Controller
                 }
             }
         }
+
+
+
+        /* $files = $request->file('files');
+            foreach ($files as $file) {
+                if ($file->isValid()) {
+                    $newname = Str::random(40) . "_" . $file->getClientOriginalName();
+                    $file->move(public_path('file_upload'), $newname);
+                    $uploadedFileNames[] = $newname;
+
+                    $historyStudentImg = new HistoryStudentImg;
+                    $historyStudentImg->history_id = $create->id;
+                    $historyStudentImg->student_id = $std_id;
+                    $historyStudentImg->img = $newname;
+                    $historyStudentImg->save();
+                }
+            } */
+
         //}
         return response()->json([
             'message' => 'Data Save Successfully',

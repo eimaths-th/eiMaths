@@ -145,8 +145,8 @@ class HistoriesController extends Controller
 
         $role = 'Teacher';
         $teacher = User::whereHas('roles', function ($query) use ($role) {
-                $query->where('name', $role);
-            })->get();
+            $query->where('name', $role);
+        })->get();
 
         // dd($last_book,$last_level,$graduated);
         // $histories = Histrories::all();
@@ -349,6 +349,9 @@ class HistoriesController extends Controller
         $level = level::find($level_id);
         $level_name = $level->name;
 
+        //contact data
+        $contact = Contact::find($std_id);
+
         $history = Histrories::where([
             ['student_id', $std_id],
             ['term', $term],
@@ -364,17 +367,18 @@ class HistoriesController extends Controller
             $course_remaining = $lastHistory->course_remaining - 1;
             $start_date = $firstHistory->start_date;
             $end_date = $firstHistory->end_date;
+
+            if ($contact->level2 == $level_id && $contact->level2 == $term && $course_remaining == 0) {
+                //auto discontinue
+                $contactd = [
+                    'discontinued' => 1,
+                    'discontinued_date' => date("Y-m-d"),
+                    'discontinued_reason' => 'End of course',
+                ];
+
+                $contact->update($contactd);
+            }
         } else {
-            //auto discontinue
-            $contactd = [
-                'discontinued' => 1,
-                'discontinued_date' => date("Y-m-d"),
-                'discontinued_reason' => 'End of course',
-            ];
-
-            $contact = Contact::find($std_id);
-            $contact->update($contactd);
-
             return response()->json(['success' => false, 'message' => 'เกินกำหนดของเทอมนี้แล้ว']);
         }
 
