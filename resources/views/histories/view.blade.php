@@ -45,8 +45,9 @@
                                         <div class="row">
                                             <div class="col-xs-12 col-sm-12 col-md-12">
                                                 <div class="callout callout-info">
-                                                    <h5><i class="fa-solid fa-chalkboard-user"></i> ครูผู้สอน:</h5>
-                                                    <span id="vteacher_name"></span>
+                                                    <h5><i class="fa-solid fa-chalkboard-user"></i> ครูผู้สอน: <span
+                                                            id="vteacher_name"></span></h5>
+
                                                 </div>
                                             </div>
                                         </div>
