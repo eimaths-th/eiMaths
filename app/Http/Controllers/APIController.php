@@ -194,7 +194,7 @@ class APIController extends Controller
             $start_date = $firstHistory->start_date;
             $end_date = $firstHistory->end_date;
 
-            if ($contact->level2 == $level_id && $contact->level2 == $term && $course_remaining == 0) {
+            if ($contact->level2 == $level_id && $contact->term2 == $term && $course_remaining == 0) {
                 //auto discontinue
                 $contactd = [
                     'discontinued' => 1,
