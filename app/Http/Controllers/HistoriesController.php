@@ -365,6 +365,16 @@ class HistoriesController extends Controller
             $start_date = $firstHistory->start_date;
             $end_date = $firstHistory->end_date;
         } else {
+            //auto discontinue
+            $contactd = [
+                'discontinued' => 1,
+                'discontinued_date' => date("Y-m-d"),
+                'discontinued_reason' => 'End of course',
+            ];
+
+            $contact = Contact::find($std_id);
+            $contact->update($contactd);
+
             return response()->json(['success' => false, 'message' => 'เกินกำหนดของเทอมนี้แล้ว']);
         }
 
