@@ -357,6 +357,7 @@ class HistoriesController extends Controller
             ['term', $term],
             ['level_id', $level_id]
         ])->get();
+        // dd( $history->count(),$std_id,$term,$level_id,$history,);
         if ($history->isEmpty()) {
             $start_date = Carbon::parse($request->input('date'));
             $end_date = $start_date->copy()->addMonths(4);
@@ -368,7 +369,7 @@ class HistoriesController extends Controller
             $start_date = $firstHistory->start_date;
             $end_date = $firstHistory->end_date;
 
-            if ($contact->level2 == $level_id && $contact->level2 == $term && $course_remaining == 0) {
+            if ($contact->level2 == $level_id && $contact->term2 == $term && $course_remaining == 0) {
                 //auto discontinue
                 $contactd = [
                     'discontinued' => 1,

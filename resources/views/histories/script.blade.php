@@ -206,6 +206,8 @@
         $(".level_id").change(function() {
             let level = $('#AddLevel').val();
             //console.log(product);
+            console.log(level);
+
             //alert(product);
             $('#AddTerm').html('');
             // $('#AddBook').html('');
