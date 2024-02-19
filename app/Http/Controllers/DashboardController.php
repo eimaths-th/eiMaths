@@ -667,15 +667,15 @@ class DashboardController extends Controller
         $reservationValue = $request->input('reservation');
 
         $results = Contact::select(
-            'centre',
+            'departments.name as centre_name',
             DB::raw('COUNT(*) as count'),
             DB::raw('COUNT(CASE WHEN discontinued = 1 THEN 1 ELSE NULL END) as count_dis'),
             DB::raw('COUNT(CASE WHEN discontinued = 2 THEN 1 ELSE NULL END) as count_gradute'),
-        );
+        )
 
-     
+            ->join('departments', 'histrories.centre', '=', 'departments.id');
 
-        $results->groupBy('centre');
+        $results->groupBy('centre_name');
         $datas = $results->get();
 
         // Modify the code to find max data directly from the database query
