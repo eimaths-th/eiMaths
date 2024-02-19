@@ -10,6 +10,7 @@ use App\Models\Receipt;
 use App\Models\Histrories;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 /* use Carbon\Carbon;
 use DateInterval;
 use DateTime;
@@ -533,8 +534,12 @@ class DashboardController extends Controller
             //->where('users.department_id', '!=', 1);
             ->whereHas('roles', function ($query) use ($role) {
                 $query->where('name', $role);
-            })
-            ->where('users.department_id', $dcentreValue);
+            });
+
+        if (!Gate::allows('all-centre')) {
+            $results->where('users.department_id', $dcentreValue);
+        }
+
 
         /*
             $results->where('contacts.centre', $dcentreValue);
@@ -583,8 +588,11 @@ class DashboardController extends Controller
         )
             ->join('departments', 'histrories.centre', '=', 'departments.id') // Adjust the join condition based on your actual schema
             //->where('users.department_id', '!=', 1);
-            ->where('histrories.date', date("Y-m-d"))
-            ->where('histrories.centre', $dcentreValue);
+            ->where('histrories.date', date("Y-m-d"));
+        if (!Gate::allows('all-centre')) {
+            $results->where('users.department_id', $dcentreValue);
+        }
+
 
         /*
             $results->where('contacts.centre', $dcentreValue);
