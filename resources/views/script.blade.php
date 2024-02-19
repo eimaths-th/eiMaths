@@ -70,6 +70,8 @@
 
     $('#SearchButtons').on('click', async function() {
         handle_student_by_centre();
+        teacher_by_centre();
+        study_by_centre();
         handle_student_by_level();
         handle_receipt_sum_by_date();
         handle_daily_study();
@@ -278,6 +280,60 @@
         }
     };
 
+
+    const teacher_by_centre = async () => {
+        try {
+            const dcentreValue = $('#dcentre').val();
+            const reservationValue = $('#reservation').val();
+
+            console.log(dcentreValue);
+
+            const response = await $.ajax({
+                url: '{{ route('dashboard.teacher_by_centre') }}',
+                method: 'POST',
+                data: {
+                    _token: token,
+                    dcentre: dcentreValue,
+                    reservation: reservationValue,
+                },
+            });
+
+            $('#tteacher').html(response.total_teacher)
+            // Process the response as needed
+            return response.centre_data;
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            throw error;
+        }
+    };
+
+
+    const study_by_centre = async () => {
+        try {
+            const dcentreValue = $('#dcentre').val();
+            const reservationValue = $('#reservation').val();
+
+            console.log(dcentreValue);
+
+            const response = await $.ajax({
+                url: '{{ route('dashboard.study_by_centre') }}',
+                method: 'POST',
+                data: {
+                    _token: token,
+                    dcentre: dcentreValue,
+                    reservation: reservationValue,
+                },
+            });
+
+            $('#tstudy').html(response.total_study)
+            // Process the response as needed
+            return response.centre_data;
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            throw error;
+        }
+    };
+
     const student_by_centre_chart_data = (data) => {
         const labels = Object.keys(data);
         const values = Object.values(data);
@@ -382,6 +438,8 @@
             });
 
             $('#treceipt').html(response.total_receipt)
+            $('#pareceipt').html(response.total_receipt_pay)
+            $('#preceipt').html(response.total_receipt_pen)
             $('#tincome').html(response.total_income)
             // Process the response as needed
             return response.receipt_sum_by_date;
@@ -626,6 +684,8 @@
         handle_receipt_sum_by_date();
         handle_daily_study();
         handle_student_by_centre();
+        teacher_by_centre();
+        study_by_centre();
 
 
     });

@@ -43,6 +43,15 @@
                                 <div class="card">
                                     <div class="card-body">
                                         <div class="row">
+                                            <div class="col-xs-12 col-sm-12 col-md-12">
+                                                <div class="callout callout-info">
+                                                    <h5><i class="fa-solid fa-chalkboard-user"></i> ครูผู้สอน: <span
+                                                            id="vteacher_name"></span></h5>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
                                             <div class="col-xs-6 col-sm-6 col-md-6">
                                                 <div class="form-group">
                                                     <strong><i class="fas fa-code"></i> Centre Code:</strong>
@@ -111,7 +120,8 @@
 
 
                                                     <input type="text" class="form-control"
-                                                        id="viewDate"placeholder="pls Enter book for student" disabled>
+                                                        id="viewDate"placeholder="pls Enter book for student"
+                                                        disabled>
 
                                                 </div>
                                             </div>

@@ -16,6 +16,7 @@ use App\Models\OrderDetail;
 use App\Models\Sterm;
 use App\Models\studentRunningNumber;
 use App\Models\term;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Http\Request;
@@ -114,7 +115,6 @@ class HistoriesController extends Controller
                     } else {
 
                         $html .= '<button type="button" class="btn btn-sm btn-info btn-edit" id="getLogData" disabled><i class="fa fa-clipboard"></i> Log </button> ';
-
                     }
 
                     // if (Gate::allows('student-edit')) {
@@ -143,6 +143,11 @@ class HistoriesController extends Controller
         $level = level::where([['status', '1']])
             ->orderBy("name", "asc")->get();
 
+        $role = 'Teacher';
+        $teacher = User::whereHas('roles', function ($query) use ($role) {
+            $query->where('name', $role);
+        })->get();
+
         // dd($last_book,$last_level,$graduated);
         // $histories = Histrories::all();
 
@@ -152,7 +157,8 @@ class HistoriesController extends Controller
             'term' => $term,
             'sterm' => $sterm,
             // 'histories' => $histories,
-            'level' => $level
+            'level' => $level,
+            'lteacher' => $teacher
         ]);
     }
 
@@ -343,11 +349,15 @@ class HistoriesController extends Controller
         $level = level::find($level_id);
         $level_name = $level->name;
 
+        //contact data
+        $contact = Contact::find($std_id);
+
         $history = Histrories::where([
             ['student_id', $std_id],
             ['term', $term],
             ['level_id', $level_id]
         ])->get();
+        // dd( $history->count(),$std_id,$term,$level_id,$history,);
         if ($history->isEmpty()) {
             $start_date = Carbon::parse($request->input('date'));
             $end_date = $start_date->copy()->addMonths(4);
@@ -358,6 +368,17 @@ class HistoriesController extends Controller
             $course_remaining = $lastHistory->course_remaining - 1;
             $start_date = $firstHistory->start_date;
             $end_date = $firstHistory->end_date;
+
+            if ($contact->level2 == $level_id && $contact->term2 == $term && $course_remaining == 0) {
+                //auto discontinue
+                $contactd = [
+                    'discontinued' => 1,
+                    'discontinued_date' => date("Y-m-d"),
+                    'discontinued_reason' => 'End of course',
+                ];
+
+                $contact->update($contactd);
+            }
         } else {
             return response()->json(['success' => false, 'message' => 'เกินกำหนดของเทอมนี้แล้ว']);
         }
@@ -418,6 +439,12 @@ class HistoriesController extends Controller
         $history = Histrories::find($id);
         $images = HistoryStudentImg::where('history_id', $id)->get();
         $centre = Department::where('id', $history->centre)->get();
+        $teacher = User::where('id', $history->teacher_id)->first();
+        if ($teacher !== null) {
+            $teacher_name = $teacher->name;
+        } else {
+            $teacher_name = 'ไม่มีการบันทึกครูผู้สอน';
+        }
 
         $img_html = '';
         $slide_html = '';
@@ -439,6 +466,7 @@ class HistoriesController extends Controller
             'history' => $history,
             'centre' => $history->department->name,
             'student' => $history->student->student_code,
+            'teacher' => $teacher_name,
             'slide_html' => $slide_html,
             'img_html' => $img_html,  // Include the generated HTML in the JSON response
         ]);
@@ -451,11 +479,21 @@ class HistoriesController extends Controller
     {
         //
         $history = Histrories::find($id);
+        $teacher = User::where('id', $history->teacher_id)->first();
+        if ($teacher !== null) {
+            $teacher_name = $teacher->name;
+            $teacher_id = $teacher->id;
+        } else {
+            $teacher_name = 'ไม่มีการบันทึกครูผู้สอน';
+            $teacher_id = '';
+        }
         $data = [
             'id'                    => $history->id,
             'centre'                => $history->department->name,
             'code'                  => $history->student->code,
             'student_id'            => $history->student->name,
+            'teacher'               => $teacher_name,
+            'teacher_id'            => $teacher_id,
             'level_name'            => $history->level_name,
             'term'                  => $history->term,
             'bookuse'               => $history->bookuse,

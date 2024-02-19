@@ -476,6 +476,7 @@ class DashboardController extends Controller
         $dcentreValue = $request->input('dcentre');
         $reservationValue = $request->input('reservation');
 
+
         $results = Contact::select(
             'contacts.centre as centre_id',  // Alias for clarity
             'departments.name as centre_name', // Alias for clarity
@@ -517,6 +518,108 @@ class DashboardController extends Controller
         ]);
     }
 
+    public function dashboard_teacher_by_centre(Request $request)
+    {
+        $dcentreValue = $request->input('dcentre');
+        $reservationValue = $request->input('reservation');
+        $role = 'Teacher';
+
+        $results = User::select(
+            'users.department_id as centre_id',
+            'departments.name as centre_name',
+            DB::raw('COUNT(*) as count')
+        )
+            ->join('departments', 'users.department_id', '=', 'departments.id') // Adjust the join condition based on your actual schema
+            //->where('users.department_id', '!=', 1);
+            ->whereHas('roles', function ($query) use ($role) {
+                $query->where('name', $role);
+            })
+            ->where('users.department_id', $dcentreValue);
+
+        /*
+            $results->where('contacts.centre', $dcentreValue);
+        } */
+
+        $results->groupBy('users.department_id', 'departments.name'); // Group by both centre columns
+        $datas = $results->get();
+
+        $maxData = $datas->max('count');
+
+        $dataCounts = $datas->pluck('count', 'centre_name')->all();
+        $dataCountsi = $datas->pluck('count', 'centre_id')->all();
+
+        //dd($dcentreValue);
+        //dd($dataCountsi);
+
+        $totalTeacher = 0; // Initialize totalStudent
+
+        if ($dcentreValue && $dcentreValue !== '1') {
+            $totalTeacher = $dataCountsi[$dcentreValue] ?? 0;
+        } else {
+            $totalTeacher = $datas->sum('count');
+        }
+
+
+
+        ksort($dataCounts);
+        return response()->json([
+            'total_teacher' => $totalTeacher,
+            'centre_data' => $dataCounts,
+            'max_data' => $maxData,
+        ]);
+    }
+
+
+    public function today_study_student_by_centre(Request $request)
+    {
+        $dcentreValue = $request->input('dcentre');
+        $reservationValue = $request->input('reservation');
+
+
+        $results = Histrories::select(
+            'histrories.centre as centre_id',
+            'departments.name as centre_name',
+            DB::raw('COUNT(*) as count')
+        )
+            ->join('departments', 'histrories.centre', '=', 'departments.id') // Adjust the join condition based on your actual schema
+            //->where('users.department_id', '!=', 1);
+            ->where('histrories.date', date("Y-m-d"))
+            ->where('histrories.centre', $dcentreValue);
+
+        /*
+            $results->where('contacts.centre', $dcentreValue);
+        } */
+
+        $results->groupBy('histrories.centre', 'departments.name'); // Group by both centre columns
+        $datas = $results->get();
+
+        $maxData = $datas->max('count');
+
+        $dataCounts = $datas->pluck('count', 'centre_name')->all();
+        $dataCountsi = $datas->pluck('count', 'centre_id')->all();
+
+        //dd($dcentreValue);
+        //dd($dataCountsi);
+
+        $totalStudy = 0; // Initialize totalStudent
+
+        if ($dcentreValue && $dcentreValue !== '1') {
+            $totalStudy = $dataCountsi[$dcentreValue] ?? 0;
+        } else {
+            $totalStudy = $datas->sum('count');
+        }
+
+
+
+        ksort($dataCounts);
+        return response()->json([
+            'total_study' => $totalStudy,
+            'centre_data' => $dataCounts,
+            'max_data' => $maxData,
+        ]);
+    }
+
+
     public function receipt_sum_by_date(Request $request)
     {
         $dcentreValue = $request->input('dcentre');
@@ -525,7 +628,9 @@ class DashboardController extends Controller
         $summaryByDate = Receipt::select(
             'payment_date',
             DB::raw('COUNT(*) as total_transactions'),
-            DB::raw('SUM(total_fee) as total_fee_sum')
+            DB::raw('COUNT(CASE WHEN orders.status = 1 THEN 1 ELSE NULL END) as total_transactions_payment'),
+            DB::raw('COUNT(CASE WHEN orders.status = 0 THEN 1 ELSE NULL END) as total_transactions_pending'),
+            DB::raw('SUM(CASE WHEN orders.status = 1 THEN total_fee ELSE 0 END) as total_fee_sum')
         )
             ->join('orders', 'receipts.oid', '=', 'orders.id');
 
@@ -533,7 +638,7 @@ class DashboardController extends Controller
             $summaryByDate->where('receipts.centre', $dcentreValue);
         }
 
-        $summaryByDate->where('orders.status', 1);
+        //$summaryByDate->where('orders.status', 1);
 
         /*  if ($reservationValue) {
             $summaryByDate->where('payment_date', 'like', $reservationValue.'%');
@@ -543,10 +648,14 @@ class DashboardController extends Controller
         $datas = $summaryByDate->get();
 
         $totalTransactionsSum = $datas->sum('total_transactions');
+        $totalTransactionsPay = $datas->sum('total_transactions_payment');
+        $totalTransactionsPen = $datas->sum('total_transactions_pending');
         $totalFeeSum = $datas->sum('total_fee_sum');
 
         return response()->json([
             'total_receipt' => $totalTransactionsSum,
+            'total_receipt_pay' => $totalTransactionsPay,
+            'total_receipt_pen' => $totalTransactionsPen,
             'total_income' => $totalFeeSum,
             'receipt_sum_by_date' => $datas,
         ]);

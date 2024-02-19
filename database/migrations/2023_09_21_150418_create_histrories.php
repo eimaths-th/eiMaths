@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('histrories', function (Blueprint $table) {
             $table->id();
             $table->integer('student_id')->nullable(0);//id ของนักเรียน
+            $table->integer('teacher_id')->nullable(0);
             $table->integer('level_id')->nullable(0);//ระดับชั้น
             $table->string('term')->nullable(0);//เทอมของนักเรียน
             $table->string('bookuse')->nullable(0);//หนังสือที่ใช่้

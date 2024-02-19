@@ -7,7 +7,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 use App\Models\level;
+use App\Models\User;
 use App\Models\Contact;
 use App\Models\Department;
 use App\Models\term;
@@ -30,10 +32,45 @@ class APIController extends Controller
             $user = Auth::user();
             $token = $user->createToken('auth_token')->plainTextToken;
 
-            return response()->json(['token' => $token]);
+            return response()->json([
+                'token' => $token, 'user_id' => $user->id,
+                'user_name' => $user->name,
+            ]);
         }
 
         return response()->json(['message' => 'Invalid credentials'], 401);
+    }
+
+    public function googleLogin(Request $request)
+    {
+        // Verify Google token
+        $response = Http::get('https://www.googleapis.com/oauth2/v3/tokeninfo', [
+            'id_token' => $request->idToken,
+        ]);
+
+        if ($response->status() === 200 && $response['aud'] === env('GOOGLE_CLIENT_ID')) {
+            // Google token is valid, find user by email
+            $user = User::where('email', $response['email'])->first();
+
+            if ($user) {
+                // User exists, authenticate user
+                Auth::login($user);
+
+                // Create token using Laravel Passport
+                $token = $user->createToken('Personal Access Token')->accessToken;
+
+                return response()->json([
+                    'token' => $token, 'user_id' => $user->id,
+                    'user_name' => $user->name,
+                ]);
+            } else {
+                // User doesn't exist, return error
+                return response()->json(['error' => 'User not found. Please sign up with your Google account.'], 404);
+            }
+        } else {
+            // Invalid Google token
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
     }
 
     public function searchDepartment(Request $request)
@@ -116,77 +153,115 @@ class APIController extends Controller
     public function saveHistories(Request $request)
     {
 
+        /* $durationHours = $request->get('hour');
+
+            $updatedTime = Carbon::createFromFormat('H:i:s', $time)
+                ->addHours($durationHours)
+                ->format('H:i:s'); */
+        $centre = $request->get('centre');
+        $std_id = $request->get('student');
+        $level_id = $request->get('subject');
+        $term = $request->get('term');
+        $bookuse = $request->get('book');
+        $datetolearn = $request->get('date');
+        $stime = $request->get('stime');
+        $etime = $request->get('etime');
+        $comment = $request->input('comments');
+        $userid = $request->input('userid');
+        $time =  $request->get('stime');
+
+
+        $level = level::find($level_id);
+        $level_name = $level->name;
+
+        //contact data
+        $contact = Contact::find($std_id);
+
+        $history = Histrories::where([
+            ['student_id', $std_id],
+            ['term', $term],
+            ['level_id', $level_id]
+        ])->get();
+
+        if ($history->isEmpty()) {
+            $start_date = Carbon::parse($request->input('date'));
+            $end_date = $start_date->copy()->addMonths(4);
+            $course_remaining = 9;
+        } elseif ($history->count() < 10) {
+            $lastHistory = $history->sortByDesc('created_at')->first();
+            $firstHistory = $history->sortBy('created_at')->first();
+            $course_remaining = $lastHistory->course_remaining - 1;
+            $start_date = $firstHistory->start_date;
+            $end_date = $firstHistory->end_date;
+
+            if ($contact->level2 == $level_id && $contact->term2 == $term && $course_remaining == 0) {
+                //auto discontinue
+                $contactd = [
+                    'discontinued' => 1,
+                    'discontinued_date' => date("Y-m-d"),
+                    'discontinued_reason' => 'End of course',
+                ];
+
+                $contact->update($contactd);
+            }
+        } else {
+            return response()->json(['message' => 'เกินกำหนดของเทอมนี้แล้ว']);
+        }
+
         if ($request->hasFile('file')) {
             $image = $request->file('file');
             $imageName = $image->getClientOriginalName();
 
             $newname = Str::random(40) . "_" . $imageName;
             $image->move(public_path('file_upload'), $newname);
+        } else {
+            $newname = '';
+        }
 
+        $signature = $newname;
+
+        $create = Histrories::create([
+            'centre' => $centre,
+            'student_id' => $std_id,
+            'teacher_id' => $userid,
+            'level_id' => $level_id,
+            'level_name' => $level_name,
+            'term' => $term,
+            'bookuse' => $bookuse,
+            'date' => $datetolearn,
+            'stime' => $stime,
+            'etime' => $etime,
+            'start_date' => $start_date,
+            'end_date' => $end_date,
+            'comment' => $comment,
+            'signature' => $signature,
+            'course_remaining' => $course_remaining
+        ]);
+
+        $uploadedFileNames = [];
+
+        if ($request->hasFile('files')) {
             $uploadedFileNames = [];
+            foreach ($request->file('files') as $file) {
+                if ($file->isValid()) {
+                    $newname = Str::random(40) . "_" . $file->getClientOriginalName();
+                    $file->move(public_path('file_upload'), $newname);
+                    $uploadedFileNames[] = $newname;
 
-
-
-            //endtime
-            $time =  $request->get('stime'); // Time string
-
-
-            /* $durationHours = $request->get('hour');
-
-            $updatedTime = Carbon::createFromFormat('H:i:s', $time)
-                ->addHours($durationHours)
-                ->format('H:i:s'); */
-
-            $centre = $request->get('centre');
-            $std_id = $request->get('student');
-            $level_id = $request->get('subject');
-            $term = $request->get('term');
-            $bookuse = $request->get('book');
-            $datetolearn = $request->get('date');
-            $stime = $request->get('stime');
-            $etime = $request->get('etime');
-            $comment = $request->input('comments');
-            $signature = $newname;
-
-            $level = level::find($level_id);
-            $level_name = $level->name;
-
-            $history = Histrories::where([
-                ['student_id', $std_id],
-                ['term', $term],
-                ['level_id', $level_id]
-            ])->get();
-            if ($history->isEmpty()) {
-                $start_date = Carbon::parse($request->input('date'));
-                $end_date = $start_date->copy()->addMonths(4);
-                $course_remaining = 9;
-            } elseif ($history->count() < 10) {
-                $lastHistory = $history->sortByDesc('created_at')->first();
-                $firstHistory = $history->sortBy('created_at')->first();
-                $course_remaining = $lastHistory->course_remaining - 1;
-                $start_date = $firstHistory->start_date;
-                $end_date = $firstHistory->end_date;
-            } else {
-                return response()->json(['message' => 'เกินกำหนดของเทอมนี้แล้ว']);
+                    // Save file details to database
+                    $historyStudentImg = new HistoryStudentImg;
+                    $historyStudentImg->history_id = $create->id; // Assuming $create is available
+                    // Add other necessary fields
+                    $historyStudentImg->student_id = $std_id;
+                    $historyStudentImg->img = $newname;
+                    $historyStudentImg->save();
+                }
             }
-            $create = Histrories::create([
-                'centre' => $centre,
-                'student_id' => $std_id,
-                'level_id' => $level_id,
-                'level_name' => $level_name,
-                'term' => $term,
-                'bookuse' => $bookuse,
-                'date' => $datetolearn,
-                'stime' => $stime,
-                'etime' => $etime,
-                'start_date' => $start_date,
-                'end_date' => $end_date,
-                'comment' => $comment,
-                'signature' => $signature,
-                'course_remaining' => $course_remaining
-            ]);
+        }
 
-            $files = $request->file('files');
+
+
+        /* $files = $request->file('files');
             foreach ($files as $file) {
                 if ($file->isValid()) {
                     $newname = Str::random(40) . "_" . $file->getClientOriginalName();
@@ -199,12 +274,32 @@ class APIController extends Controller
                     $historyStudentImg->img = $newname;
                     $historyStudentImg->save();
                 }
+            } */
+
+        //}
+        return response()->json([
+            'message' => 'Data Save Successfully',
+            //'file' => $newname
+        ]);
+
+        //return response()->json(['message' => 'No file found'], 400);
+    }
+
+    public function saveFile(Request $request)
+    {
+        if ($request->hasFile('files')) {
+            $uploadedFileNames = [];
+            foreach ($request->file('files') as $file) {
+                if ($file->isValid()) {
+                    $newname = Str::random(40) . "_" . $file->getClientOriginalName();
+                    $file->move(public_path('file_upload'), $newname);
+                    $uploadedFileNames[] = $newname;
+                }
             }
 
-
             return response()->json([
-                'message' => 'Data Save Successfully',
-                'file' => $newname
+                'message' => 'Files saved successfully',
+                'uploaded_files' => $uploadedFileNames
             ]);
         }
 

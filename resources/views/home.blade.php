@@ -94,11 +94,51 @@
                         </div>
                         <div class="col-md-6 col-sm-6 col-lg-6  col-xl-3 col-12">
                             <div class="info-box">
+                                <span class="info-box-icon bg-warning"><i class="fa-solid fa-chalkboard-user"></i></span>
+                                <div class="info-box-content">
+                                    <span class="info-box-text">Total Teacher</span>
+                                    <span class="info-box-number" id="tteacher">0</span>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-sm-6 col-lg-6  col-xl-3 col-12">
+                            <div class="info-box">
+                                <span class="info-box-icon bg-warning"><i class="fa-solid fa-book"></i></span>
+                                <div class="info-box-content">
+                                    <span class="info-box-text">Today Study Student</span>
+                                    <span class="info-box-number" id="tstudy">0</span>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-sm-6 col-lg-6  col-xl-3 col-12">
+                            <div class="info-box">
                                 <span class="info-box-icon bg-warning"><i
                                         class="fa-solid fa-file-invoice-dollar"></i></span>
                                 <div class="info-box-content">
                                     <span class="info-box-text ">Total Receipt</span>
                                     <span class="info-box-number" id="treceipt">0</span>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-sm-6 col-lg-6  col-xl-3 col-12">
+                            <div class="info-box">
+                                <span class="info-box-icon bg-warning"><i class="fa-solid fa-cash-register"></i></span>
+                                <div class="info-box-content">
+                                    <span class="info-box-text ">Payment Receipt</span>
+                                    <span class="info-box-number" id="pareceipt">0</span>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-sm-6 col-lg-6  col-xl-3 col-12">
+                            <div class="info-box">
+                                <span class="info-box-icon bg-warning"><i class="fa-solid fa-hourglass-half"></i></span>
+                                <div class="info-box-content">
+                                    <span class="info-box-text ">Pending Receipt</span>
+                                    <span class="info-box-number" id="preceipt">0</span>
                                 </div>
 
                             </div>

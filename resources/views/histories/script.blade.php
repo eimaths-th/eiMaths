@@ -206,6 +206,8 @@
         $(".level_id").change(function() {
             let level = $('#AddLevel').val();
             //console.log(product);
+            console.log(level);
+
             //alert(product);
             $('#AddTerm').html('');
             // $('#AddBook').html('');
@@ -566,11 +568,12 @@
                 method: "GET",
                 //data: { id: hid },
                 success: function(response) {
-                    // console.log(response.centre);
+                    console.log(response);
                     // console.log(response.history);
                     // console.log(response.student);
                     $('#viewCentre').val(response.centre);
                     $('#viewStudent').val(response.student);
+                    $('#vteacher_name').html(response.teacher);
                     $('#viewLV').val(response.history.level_name);
                     $('#viewTerm').val(response.history.term);
                     $('#viewBook').val(response.history.bookuse);
@@ -703,7 +706,9 @@
                 url: "{{ route('histories.edit', ':id') }}".replace(':id', id),
                 method: 'GET',
                 success: function(res) {
-                    // console.log(res);
+                    console.log(res);
+                    //$('#eteacher_name').html(res.data.teacher);
+                    $('#eteacher').val(res.data.teacher_id).change();
                     $('#getCentre').val(res.data.centre).change();
                     $('#getStudent').val(res.data.code + ' ' + res.data.student_id);
                     $('#getLevelId').val(res.history.level_id);
@@ -773,6 +778,7 @@
                     date: $('#getDate').val(),
                     stime: $('#getStartTime').val(),
                     etime: $('#getEndTime').val(),
+                    teacher_id: $('#eteacher').val(),
                     comment: $('#getComment').val(),
                 },
                 success: function(result) {

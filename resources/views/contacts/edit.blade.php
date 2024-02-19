@@ -151,8 +151,13 @@
                                                     </div>
                                                     <div class="col-xs-6 col-sm-6 col-md-6">
                                                         <div class="form-group">
-                                                            <strong><i class="fas fa-graduation-cap"></i> Nick Name:</strong>
-                                                            {!! Form::text('nickname', null, ['id' => 'EditNickname', 'placeholder' => 'Nick Name', 'class' => 'form-control']) !!}
+                                                            <strong><i class="fas fa-graduation-cap"></i> Nick
+                                                                Name:</strong>
+                                                            {!! Form::text('nickname', null, [
+                                                                'id' => 'EditNickname',
+                                                                'placeholder' => 'Nick Name',
+                                                                'class' => 'form-control',
+                                                            ]) !!}
                                                         </div>
                                                     </div>
 
@@ -369,6 +374,7 @@
                                                                     Mode</option>
                                                                 <option value="Dislike Class Environment">Dislike Class
                                                                     Environment</option>
+                                                                <option value="End of course">Too Difficult</option>
                                                                 <option value="Home Tution">Home Tution</option>
                                                                 <option value="Missing in Action">Missing in Action
                                                                 </option>
