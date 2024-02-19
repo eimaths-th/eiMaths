@@ -728,6 +728,12 @@
                 type: 'category',
                 data: labels
             },
+            color: ['#3ba272','#fc8452', '#96BFFF', '#fac858', '#ee6666', '#73c0de', '#5470c6',
+                '#9a60b4', '#ea7ccc', '#91c7ae',
+                '#fb7293',
+                '#91cc75',
+                '#bda29a',
+            ],
             series: [{
                     name: 'Total Student',
                     type: 'bar',
@@ -752,7 +758,7 @@
                     },
                     data: totaldis
                 },
-                {
+                /* {
                     name: 'Total Graduated',
                     type: 'bar',
                     stack: 'total',
@@ -763,7 +769,7 @@
                         focus: 'series'
                     },
                     data: totalgra
-                },
+                }, */
 
             ]
         };
