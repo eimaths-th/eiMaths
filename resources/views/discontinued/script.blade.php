@@ -19,12 +19,13 @@
         var startDate;
         var endDate;
 
+       
         function datesearch() {
             var currentDate = moment();
             // Set the start date to 7 days before today
-            startDate = moment(currentDate).subtract(7, 'days').format('YYYY-MM-DD');
+            startDate = moment(currentDate).subtract(365, 'days').format('YYYY-MM-DD');
             // Set the end date to the end of the current month
-            endDate = moment(currentDate).endOf('month').format('YYYY-MM-DD');
+            endDate = moment(currentDate).endOf('year').format('YYYY-MM-DD');
         }
 
         function retrieveFieldValues() {
@@ -55,6 +56,8 @@
             $('#reservation').daterangepicker({
                 startDate: startDate,
                 endDate: endDate,
+                showDropdowns: true,
+                linkedCalendars: false,
                 locale: {
                     format: 'YYYY-MM-DD'
                 }
