@@ -673,7 +673,7 @@ class DashboardController extends Controller
             DB::raw('COUNT(CASE WHEN discontinued = 2 THEN 1 ELSE NULL END) as count_gradute'),
         )
 
-            ->join('departments', 'histrories.centre', '=', 'departments.id');
+            ->join('departments', 'contacts.centre', '=', 'departments.id');
 
         $results->groupBy('centre_name');
         $datas = $results->get();
