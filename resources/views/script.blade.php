@@ -624,7 +624,7 @@
                 curve: 'straight',
                 width: 4
             },
-            colors: ['#81D4FA', '#E91E63', '#91cc75', '#546E7A', '#E91E63', '#FF9800', '#66DA26', '#4ECDC4',
+            colors: ['#FF9800', '#E91E63', '#91cc75', '#546E7A', '#E91E63', '#81D4FA', '#66DA26', '#4ECDC4',
                 '#A5978B', '#FD6A6A'
             ],
             title: {

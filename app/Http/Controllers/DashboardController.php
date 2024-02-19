@@ -668,7 +668,7 @@ class DashboardController extends Controller
 
         $results = Contact::select(
             'departments.name as centre_name',
-            DB::raw('COUNT(*) as count'),
+            DB::raw('COUNT(CASE WHEN discontinued = 0 THEN 1 ELSE NULL END) as count'),
             DB::raw('COUNT(CASE WHEN discontinued = 1 THEN 1 ELSE NULL END) as count_dis'),
             DB::raw('COUNT(CASE WHEN discontinued = 2 THEN 1 ELSE NULL END) as count_gradute'),
         )
