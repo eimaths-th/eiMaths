@@ -682,7 +682,7 @@
             const reservationValue = $('#reservation').val();
 
             const response = await $.ajax({
-                url: '{{ route('dashboard.student_statud') }}',
+                url: '{{ route('dashboard.student_status') }}',
                 method: 'POST',
                 data: {
                     _token: token,
