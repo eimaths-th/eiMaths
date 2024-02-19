@@ -463,7 +463,7 @@
                     data: totalReceiptData,
                 },
                 {
-                    name: 'Total Price',
+                    name: 'Total Income',
                     type: 'column',
                     data: totalPriceData,
                 },
@@ -503,7 +503,7 @@
                 curve: 'straight',
                 width: 4
             },
-            colors: ['#E91E63', '#91cc75', '#546E7A', '#E91E63', '#FF9800', '#66DA26', '#4ECDC4', '#81D4FA',
+            colors: ['#E91E63', '#81D4FA', '#546E7A', '#E91E63', '#FF9800', '#66DA26', '#4ECDC4', '#91cc75',
                 '#A5978B', '#FD6A6A'
             ],
             title: {
