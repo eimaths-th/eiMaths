@@ -775,7 +775,7 @@
             const datas = await student_status();
 
             const options = student_status_chart_data(datas);
-            var chart_data = echarts.init(document.getElementById("student_stutus"));
+            var chart_data = echarts.init(document.getElementById("student_status"));
             chart_data.setOption(options);
             window.addEventListener('resize', chart_data.resize);
         } catch (error) {
