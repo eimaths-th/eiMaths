@@ -735,7 +735,7 @@
                 '#bda29a',
             ],
             series: [{
-                    name: 'Total Student',
+                    name: 'Active Student',
                     type: 'bar',
                     stack: 'total',
                     label: {
@@ -747,7 +747,7 @@
                     data: total
                 },
                 {
-                    name: 'Total Discontinue',
+                    name: 'Discontinue Student',
                     type: 'bar',
                     stack: 'total',
                     label: {

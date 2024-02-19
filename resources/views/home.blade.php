@@ -229,44 +229,12 @@
 
                             </div>
                         </div>
+
                         <div class="col-md-8">
 
                             <div class="card card-primary" style="max-height: 485px">
                                 <div class="card-header">
-                                    <h3 class="card-title"><i class="fa-solid fa-chart-line"></i> Monthly Receipt
-                                    </h3>
-                                    <div class="card-tools">
-                                        <button type="button" class="btn btn-tool" data-card-widget="maximize">
-                                            <i class="fas fa-expand"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                                            <i class="fas fa-minus"></i>
-                                        </button>
-
-                                    </div>
-                                </div>
-                                <div class="card-body">
-                                    <div class="chart">
-                                        <div class="col-md-12">
-                                            <div id="receipt_sum_by_date" style="width: 100%; height: 450px;"></div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
-
-
-
-                    </div>
-
-
-                    <div class="row">
-                        <div class="col-md-12">
-
-                            <div class="card card-primary" style="max-height: 485px">
-                                <div class="card-header">
-                                    <h3 class="card-title"><i class="fa-solid fa-chart-line"></i> Centre Student
+                                    <h3 class="card-title"><i class="fa-solid fa-chart-line"></i> Centre Student Stutus
                                     </h3>
                                     <div class="card-tools">
                                         <button type="button" class="btn btn-tool" data-card-widget="maximize">
@@ -289,67 +257,102 @@
                             </div>
                         </div>
 
-
-
                     </div>
 
-                    <div class="row">
-                        <div class="col-md-8">
-
-                            <div class="card card-primary" style="max-height: 455px">
-                                <div class="card-header">
-                                    <h3 class="card-title"><i class="fa-solid fa-chart-line"></i> Daily Study Student
-                                    </h3>
-                                    <div class="card-tools">
-                                        <button type="button" class="btn btn-tool" data-card-widget="maximize">
-                                            <i class="fas fa-expand"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                                            <i class="fas fa-minus"></i>
-                                        </button>
-
-                                    </div>
-                                </div>
-                                <div class="card-body">
-                                    <div class="chart">
-                                        <div class="col-md-12">
-                                            <div id="daily_study"></div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-
-                            <div class="card card-primary" style="max-height: 455px">
-                                <div class="card-header">
-                                    <h3 class="card-title"><i class="fa-solid fa-chart-line"></i> Student By Centre
-                                    </h3>
-                                    <div class="card-tools">
-                                        <button type="button" class="btn btn-tool" data-card-widget="maximize">
-                                            <i class="fas fa-expand"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                                            <i class="fas fa-minus"></i>
-                                        </button>
-
-                                    </div>
-                                </div>
-                                <div class="card-body">
-                                    <div class="col-md-12">
-                                        <div id="student_by_centre" style="width: 100%; height: 420px;"></div>
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
-                    </div>
 
 
                 </div>
 
+
+                <div class="row">
+                    <div class="col-md-8">
+
+                        <div class="card card-primary" style="max-height: 485px">
+                            <div class="card-header">
+                                <h3 class="card-title"><i class="fa-solid fa-chart-line"></i> Monthly Receipt
+                                </h3>
+                                <div class="card-tools">
+                                    <button type="button" class="btn btn-tool" data-card-widget="maximize">
+                                        <i class="fas fa-expand"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart">
+                                    <div class="col-md-12">
+                                        <div id="receipt_sum_by_date" style="width: 100%; height: 450px;"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+
+
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-8">
+
+                        <div class="card card-primary" style="max-height: 455px">
+                            <div class="card-header">
+                                <h3 class="card-title"><i class="fa-solid fa-chart-line"></i> Daily Study Student
+                                </h3>
+                                <div class="card-tools">
+                                    <button type="button" class="btn btn-tool" data-card-widget="maximize">
+                                        <i class="fas fa-expand"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart">
+                                    <div class="col-md-12">
+                                        <div id="daily_study"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+
+                        <div class="card card-primary" style="max-height: 455px">
+                            <div class="card-header">
+                                <h3 class="card-title"><i class="fa-solid fa-chart-line"></i> Student By Centre
+                                </h3>
+                                <div class="card-tools">
+                                    <button type="button" class="btn btn-tool" data-card-widget="maximize">
+                                        <i class="fas fa-expand"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="col-md-12">
+                                    <div id="student_by_centre" style="width: 100%; height: 420px;"></div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+
             </div>
+
+        </div>
 
         </div>
 
