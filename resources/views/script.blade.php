@@ -64,6 +64,7 @@
         daterange();
         handle_student_by_level();
         handle_receipt_sum_by_date();
+        handle_student_stutus();
         handle_daily_study();
     });
 
@@ -74,6 +75,7 @@
         study_by_centre();
         handle_student_by_level();
         handle_receipt_sum_by_date();
+        handle_student_stutus();
         handle_daily_study();
     });
 
@@ -674,6 +676,113 @@
     };
 
 
+    const student_status = async () => {
+        try {
+
+            const reservationValue = $('#reservation').val();
+
+            const response = await $.ajax({
+                url: '{{ route('dashboard.student_statud') }}',
+                method: 'POST',
+                data: {
+                    _token: token,
+                    reservation: reservationValue,
+                },
+            });
+
+
+            // Process the response as needed
+            return response.student_status;
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            throw error;
+        }
+    };
+
+    const student_status_chart_data = (data) => {
+        const labels = data.map(entry => entry.centre);
+        const total = data.map(entry => entry.count);
+        const totaldis = data.map(entry => entry.count_dis);
+        const totalgra = data.map(entry => entry.count_gradute);
+
+        const option = {
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    // Use axis to trigger tooltip
+                    type: 'shadow' // 'shadow' as default; can also be 'line' or 'shadow'
+                }
+            },
+            legend: {},
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'value'
+            },
+            yAxis: {
+                type: 'category',
+                data: labels
+            },
+            series: [{
+                    name: 'Total Student',
+                    type: 'bar',
+                    stack: 'total',
+                    label: {
+                        show: true
+                    },
+                    emphasis: {
+                        focus: 'series'
+                    },
+                    data: total
+                },
+                {
+                    name: 'Total Discontinue',
+                    type: 'bar',
+                    stack: 'total',
+                    label: {
+                        show: true
+                    },
+                    emphasis: {
+                        focus: 'series'
+                    },
+                    data: totaldis
+                },
+                {
+                    name: 'Total Graduated',
+                    type: 'bar',
+                    stack: 'total',
+                    label: {
+                        show: true
+                    },
+                    emphasis: {
+                        focus: 'series'
+                    },
+                    data: totalgra
+                },
+                
+            ]
+        };
+
+        return option;
+    };
+
+    const handle_student_stutus = async () => {
+        try {
+            const datas = await student_status();
+
+            const options = student_status_chart_data(datas);
+            var chart_data = echarts.init(document.getElementById("student_stutus"));
+            chart_data.setOption(options);
+            window.addEventListener('resize', chart_data.resize);
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+
 
     $(document).ready(() => {
 
@@ -684,6 +793,7 @@
         handle_receipt_sum_by_date();
         handle_daily_study();
         handle_student_by_centre();
+        handle_student_stutus();
         teacher_by_centre();
         study_by_centre();
 
