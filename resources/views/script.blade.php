@@ -700,12 +700,13 @@
     };
 
     const student_status_chart_data = (data) => {
-        const labels = data.map(entry => entry.centre);
+        const labels = data.map(entry => entry.centre_name);
         const total = data.map(entry => entry.count);
         const totaldis = data.map(entry => entry.count_dis);
         const totalgra = data.map(entry => entry.count_gradute);
 
         const option = {
+            height: 300,
             tooltip: {
                 trigger: 'axis',
                 axisPointer: {
@@ -763,7 +764,7 @@
                     },
                     data: totalgra
                 },
-                
+
             ]
         };
 
