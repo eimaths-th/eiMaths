@@ -35,7 +35,7 @@
             <li class="nav-item">
                 <a href="{{ route('histories.index') }}" class="nav-link {{ Request::is('histories') ? 'active' : '' }}">
                     <i class="nav-icon fa-solid fa-comment-dots"></i>
-                    <p>Histories</p>
+                    <p>Study Histories</p>
                 </a>
             </li>
             <li class="nav-item">
@@ -105,7 +105,7 @@
                 <a href="{{ route('receipts_pending') }}"
                     class="nav-link {{ Request::is('receipts_pending') ? 'active' : '' }}">
                     <i class="nav-icon fa-solid fa-comment-dots"></i>
-                    <p>New Student Pending</p>
+                    <p>Pending Receipt</p>
                 </a>
             </li>
             {{-- <li class="nav-item">
@@ -119,7 +119,7 @@
                 <a href="{{ route('receipts', ['type' => 0]) }}"
                     class="nav-link {{ Route::currentRouteName() == 'receipts' && request('type') == 0 ? 'active' : '' }}">
                     <i class="nav-icon fa-solid fa-comment-dots"></i>
-                    <p>New Student Receipt</p>
+                    <p>Payment Receipt</p>
                 </a>
             </li>
            {{--  <li class="nav-item">
