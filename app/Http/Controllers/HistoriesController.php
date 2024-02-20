@@ -457,7 +457,7 @@ class HistoriesController extends Controller
                 if (substr($img->img, -1) === '|') {
                     $img->img = rtrim($img->img, '|');
                 }
-                $slide_html = ' <li data-target="#carouselExampleIndicators" data-slide-to="' . $i . '"
+                $slide_html .= ' <li data-target="#carouselExampleIndicators" data-slide-to="' . $i . '"
             class="active"></li>';
                 $img_html .= ' <div class="carousel-item active">
             <img class="d-block w-100"
