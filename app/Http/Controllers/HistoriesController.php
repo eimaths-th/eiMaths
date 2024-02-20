@@ -19,6 +19,7 @@ use App\Models\term;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
@@ -407,9 +408,9 @@ class HistoriesController extends Controller
             //echo $fileb;
 
             $oldfile = FileUpload::where('oldname', $fileb)->get();
-            $filebs .= $oldfile[0]->filename . "|";
-            File::move(public_path() . '/file_upload/' . $oldfile[0]->filename, public_path() . '/file_upload/' . $oldfile[0]->filename);
-            FileUpload::where('filename', $oldfile[0]->filename)->delete();
+            $filebs .= Str::random(40) . "_" .$oldfile[0]->filename;
+            File::move(public_path() . '/file_upload/' . $oldfile[0]->filename, public_path() . '/file_upload/' . $filebs);
+            //FileUpload::where('filename', $oldfile[0]->filename)->delete();
 
             HistoryStudentImg::create([
 
