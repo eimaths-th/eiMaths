@@ -212,7 +212,7 @@
             $('#AddTerm').html('');
             // $('#AddBook').html('');
             console.log(level);
-            if (level.length !== 0) {
+            if (Array.isArray(level) && level.length !== 0 && level[0] !== '') {
                 $.ajax({
                     method: "GET",
                     url: "level/find/add/" + level,
@@ -588,7 +588,9 @@
                     //console.log(response.slide_html);
                     //console.log(response.img_html);
                     $('#ViewComment').val(response.history.comment);
-                    $('#ViewSignature').attr('src', 'https://app.eimaths-th.com/file_upload/' + response.history.signature);
+                    $('#ViewSignature').attr('src',
+                        'https://app.eimaths-th.com/file_upload/' + response.history
+                        .signature);
                     // console.log(response.code);
                 },
                 error: function(error) {
@@ -723,7 +725,8 @@
                     $('#getEndDate').val(res.data.end_date);
                     $('#getComment').val(res.data.comment);
                     // $('#getSignature').val(res.data.signature);
-                    $('#getSignature').attr('src', '{{ asset('file_upload/') }}/' + res.data.signature);
+                    $('#getSignature').attr('src', '{{ asset('file_upload/') }}/' + res.data
+                        .signature);
                     // console.log($('#getSignature').val(res.data.signature));
                     $('#EditModalBody').html(res.html);
                     $('#EditModal').modal('show');
