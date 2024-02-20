@@ -768,11 +768,15 @@
             $('.alert-success').html('');
             $('.alert-success').hide();
 
-
+            var values = $("input[name='imgFiles2[]']")
+                .map(function() {
+                    return $(this).val();
+                }).get();
             $.ajax({
                 url: "history/update/" + id,
                 method: 'PUT',
                 data: {
+                    img: values,
                     level_id: $('#getLevelId').val(),
                     level_name: $('#getLevelName').val(),
                     term: $('#getTerm').val(),

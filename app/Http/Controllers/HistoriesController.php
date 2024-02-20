@@ -402,23 +402,24 @@ class HistoriesController extends Controller
         ]);
 
         $filesb = $request->get('img');
+        if ($filesb !== null) {
+            $filebs = "";
+            foreach ($filesb as $fileb) {
+                //echo $fileb;
 
-        $filebs = "";
-        foreach ($filesb as $fileb) {
-            //echo $fileb;
+                $oldfile = FileUpload::where('oldname', $fileb)->get();
+                $filebs .= Str::random(40) . "_" . $oldfile[0]->filename;
+                File::move(public_path() . '/file_upload/' . $oldfile[0]->filename, public_path() . '/file_upload/' . $filebs);
+                //FileUpload::where('filename', $oldfile[0]->filename)->delete();
 
-            $oldfile = FileUpload::where('oldname', $fileb)->get();
-            $filebs .= Str::random(40) . "_" . $oldfile[0]->filename;
-            File::move(public_path() . '/file_upload/' . $oldfile[0]->filename, public_path() . '/file_upload/' . $filebs);
-            //FileUpload::where('filename', $oldfile[0]->filename)->delete();
+                HistoryStudentImg::create([
 
-            HistoryStudentImg::create([
+                    'history_id' => $history->id,
+                    'student_id' => $std_id,
+                    'img' => $filebs,
 
-                'history_id' => $history->id,
-                'student_id' => $std_id,
-                'img' => $filebs,
-
-            ]);
+                ]);
+            }
         }
 
 
@@ -731,6 +732,7 @@ class HistoriesController extends Controller
 
         ]);
 
+
         $logHistory->update([
             'level_id_new' => $request->level_id,
             'level_name_new' => $request->level_name,
@@ -747,6 +749,29 @@ class HistoriesController extends Controller
         ]);
 
         $history->update($input);
+
+        $filesb = $request->get('img');
+
+        if ($filesb !== null) {
+            $filebs = "";
+            foreach ($filesb as $fileb) {
+                //echo $fileb;
+
+                $oldfile = FileUpload::where('oldname', $fileb)->get();
+                $filebs .= Str::random(40) . "_" . $oldfile[0]->filename;
+                File::move(public_path() . '/file_upload/' . $oldfile[0]->filename, public_path() . '/file_upload/' . $filebs);
+                //FileUpload::where('filename', $oldfile[0]->filename)->delete();
+
+                HistoryStudentImg::create([
+
+                    'history_id' => $history->id,
+                    'student_id' => $history->student_id,
+                    'img' => $filebs,
+
+                ]);
+            }
+        }
+
 
         // dd($input,$history,$logHistory);
 

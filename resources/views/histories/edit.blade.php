@@ -300,7 +300,7 @@
                                                 <a id="datt"></a>
                                                 <div class="position-relative form-group">
                                                     <label class="form-label form-label-top form-label-auto"
-                                                        for="att"><i class="fas fa-file-pdf"></i> อัพโหลดไฟล์<span class="form-required">*</span>
+                                                        for="att"><i class="fas fa-image"></i> รูปนักเรียน<span class="form-required">*</span>
                                                         <div style="width: 280px"></div>
                                                     </label>
                                                     <input type="text" id="drop" name="drop"
