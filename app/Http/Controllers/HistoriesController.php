@@ -408,7 +408,7 @@ class HistoriesController extends Controller
                 //echo $fileb;
 
                 $oldfile = FileUpload::where('oldname', $fileb)->get();
-                $filebs .= $oldfile[0]->filename;
+                $filebs = $oldfile[0]->filename;
                 //File::move(public_path() . '/file_upload/' . $oldfile[0]->filename, public_path() . '/file_upload/' . $filebs);
                 //FileUpload::where('filename', $oldfile[0]->filename)->delete();
 
@@ -758,7 +758,7 @@ class HistoriesController extends Controller
                 //echo $fileb;
 
                 $oldfile = FileUpload::where('oldname', $fileb)->get();
-                $filebs .= $oldfile[0]->filename;
+                $filebs  = $oldfile[0]->filename;
                 //File::move(public_path() . '/file_upload/' . $oldfile[0]->filename, public_path() . '/file_upload/' . $filebs);
                 //FileUpload::where('filename', $oldfile[0]->filename)->delete();
 
