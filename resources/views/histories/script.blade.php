@@ -768,7 +768,7 @@
             $('.alert-success').html('');
             $('.alert-success').hide();
 
-            var values = $("input[name='imgFiles2[]']")
+            var values = $("input[name='imgFiles[]']")
                 .map(function() {
                     return $(this).val();
                 }).get();
