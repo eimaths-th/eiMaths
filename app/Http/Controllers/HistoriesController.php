@@ -453,8 +453,8 @@ class HistoriesController extends Controller
             foreach ($images as $img) {
                 // Assuming the image filename is stored in the 'image_filename' column
 
-                if (substr($img->img, -1) === '/') {
-                    $img->img = rtrim($img->img, '/');
+                if (substr($img->img, -1) === '|') {
+                    $img->img = rtrim($img->img, '|');
                 }
                 $slide_html = ' <li data-target="#carouselExampleIndicators" data-slide-to="' . $i . '"
             class="active"></li>';
