@@ -459,6 +459,8 @@ class HistoriesController extends Controller
                 }
                 if ($i == 1) {
                     $imgac = "active";
+                } else {
+                    $imgac = "";
                 }
                 $slide_html .= ' <li data-target="#carouselExampleIndicators" data-slide-to="' . $i . '"
             class="' . $imgac . '"></li>';
