@@ -211,7 +211,7 @@
             //alert(product);
             $('#AddTerm').html('');
             // $('#AddBook').html('');
-            // console.log(level);
+            console.log(level);
             if (level.length !== 0) {
                 $.ajax({
                     method: "GET",
@@ -899,7 +899,7 @@
                     },
                     success: function(data) {
                         // console.log('success: ' + data);
-                        var element = document.getElementById("infinite");
+                        var element = document.getElementById("myForm");
                         var child = document.getElementById(name);
                         element.removeChild(child);
                         if (!document.getElementsByName('imgFiles2[]').length) {
