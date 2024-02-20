@@ -160,7 +160,7 @@
                                             class="display nowrap table table-bordered table-striped table-hover">
                                             <thead>
                                                 <tr>
-                                                    <th width="1%">
+                                                    <th width="5%">
                                                         <input type="checkbox" id="check-all" class="flat">
                                                     </th>
                                                     <th width="1%" class="text-center">Centre</th>

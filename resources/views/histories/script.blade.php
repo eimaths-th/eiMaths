@@ -333,7 +333,7 @@
             columns: [{
                     data: 'checkbox',
                     name: 'checkbox',
-                    orderable: false,
+                    orderable: true,
                     searchable: false
                 },
                 {
