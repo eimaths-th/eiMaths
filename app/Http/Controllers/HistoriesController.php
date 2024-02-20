@@ -408,7 +408,7 @@ class HistoriesController extends Controller
             //echo $fileb;
 
             $oldfile = FileUpload::where('oldname', $fileb)->get();
-            $filebs .= Str::random(40) . "_" .$oldfile[0]->filename;
+            $filebs .= Str::random(40) . "_" . $oldfile[0]->filename;
             File::move(public_path() . '/file_upload/' . $oldfile[0]->filename, public_path() . '/file_upload/' . $filebs);
             //FileUpload::where('filename', $oldfile[0]->filename)->delete();
 
@@ -449,7 +449,7 @@ class HistoriesController extends Controller
 
         $img_html = '';
         $slide_html = '';
-        $i = 0;
+        $i = 1;
         if (!empty($images)) {
             foreach ($images as $img) {
                 // Assuming the image filename is stored in the 'image_filename' column
@@ -457,9 +457,12 @@ class HistoriesController extends Controller
                 if (substr($img->img, -1) === '|') {
                     $img->img = rtrim($img->img, '|');
                 }
+                if ($i == 1) {
+                    $imgac = "active";
+                }
                 $slide_html .= ' <li data-target="#carouselExampleIndicators" data-slide-to="' . $i . '"
-            class="active"></li>';
-                $img_html .= ' <div class="carousel-item active">
+            class="' . $imgac . '"></li>';
+                $img_html .= ' <div class="carousel-item ' . $imgac . '">
             <img class="d-block w-100"
                 src="' . asset('file_upload/' . $img->img) . '"
                 alt="' . $img->id . '"></div>';
