@@ -182,8 +182,7 @@
                                                     <strong><i class="fas fa-calendar"></i> Signature:</strong>
                                                     {{-- <textarea name="signature" id="AddSignature" rows="5" class="form-control"></textarea> --}}
 
-                                                    <img class="d-block w-100" id="ViewSignature" height="400px"
-                                                        src="" alt="" />
+                                                    <div id="signimg"></div>
 
                                                 </div>
                                             </div>

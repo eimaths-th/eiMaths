@@ -9,20 +9,7 @@
             </div>
             <div class="modal-body">
 
-                <div class="alert alert-danger alert-dismissible fade show" role="alert" style="display: none;">
-                    <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-
-                <div class="alert alert-success alert-dismissible fade show" role="alert" style="display: none;">
-
-                    <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true"></span>
-                    </button>
-                </div>
-
-
+        
                 {{-- 'route' => 'users.store', --}}
                 {!! Form::open(['method' => 'POST', 'class' => 'form', 'id' => 'myForm']) !!}
 
@@ -288,6 +275,18 @@
                 </div>
 
                 {!! Form::close() !!}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert" style="display: none;">
+                    <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="alert alert-success alert-dismissible fade show" role="alert" style="display: none;">
+
+                    <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true"></span>
+                    </button>
+                </div>
             </div>
             <div class="modal-footer {{-- justify-content-between --}}">
                 <button type="button" class="btn btn-warning" id="clear-signature"><i class="fas fa-eraser"></i>

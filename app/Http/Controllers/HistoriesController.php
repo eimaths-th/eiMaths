@@ -533,6 +533,8 @@ class HistoriesController extends Controller
             $teacher_name = 'ไม่มีการบันทึกครูผู้สอน';
             $teacher_id = '';
         }
+
+
         $data = [
             'id'                    => $history->id,
             'centre'                => $history->department->name,
@@ -748,6 +750,48 @@ class HistoriesController extends Controller
         //
         $history = Histrories::find($id);
         $input = $request->all();
+
+        $validator = Validator::make($request->all(), [
+            'level_id' => 'required',
+            'teacher_id' => 'required',
+            'term' => 'required',
+            'bookuse' => 'required',
+            'date' => 'required',
+            'stime' => 'required',
+            'etime' => 'required',
+            'comment' => 'required',
+            // 'signature' => 'required',
+        ], [
+            'teacher_id.required' => 'Teacher must not be empty.',
+            'date.required' => 'Please provide date.',
+            'stime.required' => 'Please provide start tine.',
+            'etime.required' => 'Please provide end time.',
+            'comment.required' => 'Please provide comment.',
+            'level_id.required' => 'Please select a level.',
+            'term.required' => 'Please select a term.',
+            'bookuse.required' => 'Please specify book usage.',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()->all()]);
+        }
+
+
+        if (!empty($history->signature)) {
+            $fileToDelete = public_path() .  '/file_upload/'  . $history->signature;
+            if (file_exists($fileToDelete)) {
+                unlink($fileToDelete);
+            }
+        }
+
+        $signatureData = $request->input('signature');
+        $encodedData = str_replace('data:image/png;base64,', '', $signatureData);
+        $decodedData = base64_decode($encodedData);
+        $sign_name = uniqid() . '.png';
+        $sign_pname = '/file_upload/' . $sign_name;
+        $signpath = public_path() . $sign_pname;
+        File::put($signpath, $decodedData);
+
         $logHistory = LogHistory::create([
             'history_id' => $history->id,
             'centre' => $history->centre,
@@ -783,6 +827,7 @@ class HistoriesController extends Controller
 
         ]);
 
+        $input['signature'] = $sign_name;
         $history->update($input);
 
         $filesb = $request->get('img');

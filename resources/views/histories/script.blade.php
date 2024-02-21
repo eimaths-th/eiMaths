@@ -59,6 +59,22 @@
             //$('#signature-image').attr('src', '');
         });
 
+
+
+        var ecanvas = document.getElementById('esignature-pad');
+        var esignaturePad = new SignaturePad(ecanvas);
+
+        // Optional: Customize the appearance of the signature pad
+        esignaturePad.penColor = 'blue'; // Change the pen color
+        esignaturePad.backgroundColor = 'rgba(0, 0, 0, 0)'; // Set the background color
+
+        // Handle clear button click event
+        $('#eclear-signature').on('click', function() {
+            esignaturePad.clear();
+            ecanvas.style.backgroundColor = 'rgba(0, 0, 0, 0)';
+            //$('#signature-image').attr('src', '');
+        });
+
         const discontinuedCheckbox = $('#ecustomCheckbox1');
         const editDDateInput = $('#EditDDate');
         const editReasonInput = $('#EditReason');
@@ -584,9 +600,18 @@
                     $('#hslidei').html(response.img_html);
 
                     $('#ViewComment').val(response.history.comment);
-                    $('#ViewSignature').attr('src',
-                        'https://app.eimaths-th.com/file_upload/' + response.history
-                        .signature);
+
+                    if (response.history.signature !== null) {
+                        $('#signimg').html(
+                            '<img class="d-block w-100" id="ViewSignature" height="400px" src="https://app.eimaths-th.com/file_upload/' +
+                            response
+                            .history
+                            .signature + '"/>');
+                        /* $('#ViewSignature').attr('src',
+                            'https://app.eimaths-th.com/file_upload/' + response
+                            .history
+                            .signature); */
+                    }
 
                 },
                 error: function(error) {
@@ -696,6 +721,12 @@
             $('.alert-success').hide();
 
             $('#custom-tabs-one-homee-tab').tab('show');
+            clearDropzonePreviewsEdit();
+            /* $('#upload_preview').html('');
+            esignaturePad.clear();
+            ecanvas.style.backgroundColor = 'rgba(0, 0, 0, 0)'; */
+            $('input[name="imgFiles[]"]').remove();
+
 
             id = $(this).data('id');
             $.ajax({
@@ -719,8 +750,25 @@
                     $('#getEndDate').val(res.data.end_date);
                     $('#getComment').val(res.data.comment);
                     // $('#getSignature').val(res.data.signature);
-                    $('#getSignature').attr('src', '{{ asset('file_upload/') }}/' + res.data
-                        .signature);
+                    if (res.data.signature !== null) {
+                        /* $('#getSignature').attr('src', '{{ asset('file_upload/') }}/' + res
+                            .data.signature); */
+                        var backgroundImageUrl =
+                            'https://app.eimaths-th.com/file_upload/' + res.data
+                            .signature; // Replace this with the path to your image
+                        var image = new Image();
+
+                        image.onload = function() {
+                            // Draw the image onto the second canvas as a background
+                            ecanvas.getContext('2d').drawImage(image, 0, 0, ecanvas
+                                .width,
+                                ecanvas.height);
+                        };
+
+                        image.src = backgroundImageUrl;
+                        image.setAttribute('id', 'background-image');
+                    }
+
                     $('#EditModalBody').html(res.html);
                     $('#EditModal').modal('show');
                 }
@@ -750,6 +798,13 @@
 
         })
 
+        function clearDropzonePreviewsEdit() {
+            $('input[name="imgFiles[]"]').remove();
+            $('#dropzone_preview').html('');
+            $('#dropzone_preview').css("display", "none");
+        }
+
+
         $('#SubmitEditForm').click(function(e) {
             if (!confirm("Confirm the action?")) return;
             e.preventDefault();
@@ -763,11 +818,13 @@
                 .map(function() {
                     return $(this).val();
                 }).get();
+            var esignatureData = esignaturePad.toDataURL();
             $.ajax({
                 url: "history/update/" + id,
                 method: 'PUT',
                 data: {
                     img: values,
+                    signature: esignatureData,
                     level_id: $('#getLevelId').val(),
                     level_name: $('#getLevelName').val(),
                     term: $('#getTerm').val(),
@@ -801,6 +858,9 @@
                             toastr.success(result.success, {
                                 timeOut: 5000
                             });
+                            clearDropzonePreviewsEdit();
+                            esignaturePad.clear();
+                            ecanvas.style.backgroundColor = 'rgba(0, 0, 0, 0)';
                             $('#Listview').DataTable().ajax.reload();
                         }
 

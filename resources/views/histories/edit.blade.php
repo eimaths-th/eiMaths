@@ -271,18 +271,18 @@
                                             </div>
                                         </div>
 
-                                        <div class="row">
+                                       {{--  <div class="row">
                                             <div class="col-xs-12 col-sm-12 col-md-12">
                                                 <div class="form-group">
                                                     <strong><i class="fas fa-calendar"></i> Signature:</strong>
-                                                    {{-- <textarea name="signature" id="getSignature" rows="5" placeholder="getSignature" class="form-control"></textarea> --}}
+                                                   
                                                     <br>
                                                     <img src="" alt="Signature" id="getSignature"
                                                         class="img-fluid" style="width: 750px; height: 400px;">
 
                                                 </div>
                                             </div>
-                                        </div>
+                                        </div> --}}
 
                                         <div class="row">
                                             <div class="col-xs-12 col-sm-12 col-md-12">
@@ -300,7 +300,8 @@
                                                 <a id="datt"></a>
                                                 <div class="position-relative form-group">
                                                     <label class="form-label form-label-top form-label-auto"
-                                                        for="att"><i class="fas fa-image"></i> รูปนักเรียน<span class="form-required">*</span>
+                                                        for="att"><i class="fas fa-image"></i> รูปนักเรียน<span
+                                                            class="form-required">*</span>
                                                         <div style="width: 280px"></div>
                                                     </label>
                                                     <input type="text" id="drop" name="drop"
@@ -331,6 +332,18 @@
                                             <h3 class="dropzone-previews ui"></h3>
                                         </div>
 
+                                        <div class="row">
+                                            <div class="col-xs-12 col-sm-12 col-md-12">
+                                                <div class="form-group">
+                                                    <strong><i class="fas fa-signature"></i> ลายเซ็นต์:</strong>
+                                                    <div class="esignpadi">
+                                                        <canvas id="esignature-pad" width="354"
+                                                            height="147"></canvas>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -342,6 +355,8 @@
                 {!! Form::close() !!}
             </div>
             <div class="modal-footer {{-- justify-content-between --}}">
+                <button type="button" class="btn btn-warning" id="eclear-signature"><i class="fas fa-eraser"></i>
+                    ล้างลายเซ็นต์</button>
                 <button type="button" class="btn btn-success" id="SubmitEditForm"><i class="fas fa-download"></i>
                     Save </button>
                 <button type="button" class="btn btn-danger modelClose" data-dismiss="modal"><i

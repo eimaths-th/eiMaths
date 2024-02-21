@@ -21,6 +21,21 @@
         height: 150px;
     }
 
+    .esignpad {
+        background-color: rgb(226, 223, 223);
+        border: 1px solid black;
+        margin: auto;
+        width: 450px;
+    }
+
+    .esignpadi {
+        background-color: rgb(226, 223, 223);
+        border: 1px solid black;
+        margin: auto;
+        width: 350px;
+        height: 150px;
+    }
+
 
     .modal-xxl {
         max-width: 900px !important;
