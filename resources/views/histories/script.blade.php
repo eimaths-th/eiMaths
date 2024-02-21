@@ -45,6 +45,20 @@
         });
         //
 
+        var canvas = document.getElementById('signature-pad');
+        var signaturePad = new SignaturePad(canvas);
+
+        // Optional: Customize the appearance of the signature pad
+        signaturePad.penColor = 'blue'; // Change the pen color
+        signaturePad.backgroundColor = 'rgba(0, 0, 0, 0)'; // Set the background color
+
+        // Handle clear button click event
+        $('#clear-signature').on('click', function() {
+            signaturePad.clear();
+            canvas.style.backgroundColor = 'rgba(0, 0, 0, 0)';
+            //$('#signature-image').attr('src', '');
+        });
+
         const discontinuedCheckbox = $('#ecustomCheckbox1');
         const editDDateInput = $('#EditDDate');
         const editReasonInput = $('#EditReason');
@@ -186,8 +200,6 @@
 
         $(".s_student").change(function() {
             let std_id = $('#s_student').val();
-            //console.log(product);
-            //alert(product);
             $('#AddLevel').html('');
             $('#AddTerm').html('');
             // $('#AddBook').html('');
@@ -205,13 +217,10 @@
         })
         $(".level_id").change(function() {
             let level = $('#AddLevel').val();
-            //console.log(product);
-            console.log(level);
-
             //alert(product);
             $('#AddTerm').html('');
             // $('#AddBook').html('');
-            console.log(level);
+
             if (Array.isArray(level) && level.length !== 0 && level[0] !== '') {
                 $.ajax({
                     method: "GET",
@@ -234,7 +243,6 @@
                     url: "term/find/add/" + level + "/" + term,
                     async: false,
                     success: function(res) {
-                        //console.log(res)
                         $('.books').html(res.html);
                         $('.books').prop('disabled', false);
                     }
@@ -244,8 +252,6 @@
 
         $(".elevels").change(function() {
             let level = $('#EditLevel').val();
-            //console.log(product);
-            //alert(product);
             $('#EditTerm').html('');
             $('#EditBook').html('');
             if (level.length !== 0) {
@@ -271,7 +277,6 @@
                     url: "term/find/add/" + level + "/" + term,
                     async: false,
                     success: function(res) {
-                        //console.log(res)
                         $('.ebooks').html(res.html);
                         $('.ebooks').prop('disabled', false);
                     }
@@ -484,14 +489,12 @@
 
         $("#AddCentre").change(function() {
             let centre = $('#AddCentre').val();
-            // console.log(centre);
             if (centre.length !== 0) {
                 $.ajax({
                     method: "GET",
                     url: "histories/running/" + centre,
                     async: false,
                     success: function(res) {
-                        // console.log(res)
                         //$('#AddCode').prop('readonly', false);
                         $('#s_student').html(res.html_std);
                     }
@@ -501,14 +504,12 @@
 
         if ($("#AddCentre").val() !== null) {
             let centre = $('#AddCentre').val();
-            // console.log(centre);
             if (centre.length !== 0) {
                 $.ajax({
                     method: "GET",
                     url: "histories/running/" + centre,
                     async: false,
                     success: function(res) {
-                        // console.log(res)
                         //$('#AddCode').prop('readonly', false);
                         $('#s_student').html(res.html_std);
                     }
@@ -539,7 +540,7 @@
                     $('#AddTerm').prop('disabled', true);
                     // $('#AddBook').prop('disabled', true);
                     $('#s_student').html(response.html_std);
-                    // console.log(response);
+
                 },
                 error: function(error) {
                     console.error(error);
@@ -561,16 +562,12 @@
             //document.getElementById('getViewData').getAttribute('data-id');
             var route = "{{ route('history.show', ['id' => ':id']) }}".replace(':id', hid);
 
-            //console.log(hid)
-
             $.ajax({
                 url: route,
                 method: "GET",
                 //data: { id: hid },
                 success: function(response) {
-                    console.log(response);
-                    // console.log(response.history);
-                    // console.log(response.student);
+
                     $('#viewCentre').val(response.centre);
                     $('#viewStudent').val(response.student);
                     $('#vteacher_name').html(response.teacher);
@@ -585,13 +582,12 @@
                     $('#viewEndDate').val(response.history.end_date);
                     $('#hsliden').html(response.slide_html);
                     $('#hslidei').html(response.img_html);
-                    //console.log(response.slide_html);
-                    //console.log(response.img_html);
+
                     $('#ViewComment').val(response.history.comment);
                     $('#ViewSignature').attr('src',
                         'https://app.eimaths-th.com/file_upload/' + response.history
                         .signature);
-                    // console.log(response.code);
+
                 },
                 error: function(error) {
                     console.error(error);
@@ -603,7 +599,11 @@
         });
 
 
-
+        function clearDropzonePreviewsCreate() {
+            $('input[name="imgFiles2[]"]').remove();
+            $('#dropzone_preview2').html('');
+            $('#dropzone_preview2').css("display", "none");
+        }
         // Create product Ajax request.
         $('#SubmitCreateForm').click(function(e) {
             e.preventDefault();
@@ -615,13 +615,23 @@
                 .map(function() {
                     return $(this).val();
                 }).get();
+
+            /*  if (signaturePad.isEmpty()) {
+                 toastr.error('กรุณาเซ็นต์ลายเซ็น', {
+                     timeOut: 5000
+                 });
+                 isValid = false;
+             } */
+            var signatureData = signaturePad.toDataURL();
             $.ajax({
                 url: "{{ route('histories.store') }}",
                 method: 'post',
                 data: {
                     img: values,
+                    signature: signatureData,
                     centre: $('#AddCentre').val()[0],
                     student_id: $('#s_student').val()[0],
+                    teacher_id: $('#teacher').val(),
                     level_id: $('#AddLevel').val()[0],
                     term: $('#AddTerm').val()[0],
                     bookuse: $('#AddBook').val(),
@@ -629,36 +639,18 @@
                     stime: $('#AddStartTime').val(),
                     etime: $('#AddEndTime').val(),
                     comment: $('#AddComment').val(),
-                    signature: $('#AddSignature').val(),
+                    //signature: $('#AddSignature').val(),
                     _token: token,
                 },
-                // error: function(result) {
-                //     if (result.errors) {
-                //         $('.alert-danger').html('');
-                //         $.each(result.errors, function(key, value) {
-                //             $('.alert-danger').show();
-                //             $('.alert-danger').append('<strong><li>' + value +
-                //                 '</li></strong>');
-                //         });
-                //     }
-                // },
-                error: function(result) {
-                    $('.alert-danger').html('');
-                    if (result.responseJSON.errors) {
-                        $.each(result.responseJSON.errors, function(field, messages) {
-                            messages.forEach(function(message) {
-                                $('.alert-danger').append('<strong><li>' +
-                                    message + '</li></strong>');
-                            });
+                success: function(result) {
+                    if (result.errors) {
+                        $('.alert-danger').html('');
+                        $.each(result.errors, function(key, value) {
+                            $('.alert-danger').show();
+                            $('.alert-danger').append('<strong><li>' + value +
+                                '</li></strong>');
                         });
                     } else {
-                        $('.alert-danger').append('<strong><li>' + result.responseJSON
-                            .message + '</li></strong>');
-                    }
-                },
-                success: function(result) {
-                    // console.log(result);
-                    if (result.success) {
 
                         $('.alert-danger').hide();
                         $('.alert-success').show();
@@ -667,21 +659,24 @@
                         toastr.success(result.message, {
                             timeOut: 5000
                         });
+
+                        signaturePad.clear();
+                        canvas.style.backgroundColor = 'rgba(0, 0, 0, 0)';
+
                         $('#Listview').DataTable().ajax.reload();
-                        $('#AddSTerm').val(null).trigger("change");
-                        // $('#AddBook').val(null).trigger("change");
+                        $('#AddCentre').val(null).trigger("change");
+                        $('#teacher').val(null).trigger("change");
+                        $('#s_student').val(null).trigger("change");
                         $('#AddLevel').val(null).trigger("change");
                         $('#AddTerm').val(null).trigger("change");
+                        $('#AddBook').val('');
+                        $('#AddDate').val('');
+                        $('#AddStartTime').val('');
+                        $('#AddEndTime').val('');
+                        $('#AddComment').val('');
+                        clearDropzonePreviewsCreate();
                         // $('.form').trigger('reset');
                         $('#CreateModal').modal('hide');
-
-                    } else {
-
-                        $('.alert-danger').html('');
-                        $('.alert-danger').show();
-                        $('.alert-danger').append('<strong><li>' + result.message +
-                            '</li></strong>');
-
 
                     }
                 },
@@ -708,7 +703,6 @@
                 url: "{{ route('histories.edit', ':id') }}".replace(':id', id),
                 method: 'GET',
                 success: function(res) {
-                    console.log(res);
                     //$('#eteacher_name').html(res.data.teacher);
                     $('#eteacher').val(res.data.teacher_id).change();
                     $('#getCentre').val(res.data.centre).change();
@@ -727,7 +721,6 @@
                     // $('#getSignature').val(res.data.signature);
                     $('#getSignature').attr('src', '{{ asset('file_upload/') }}/' + res.data
                         .signature);
-                    // console.log($('#getSignature').val(res.data.signature));
                     $('#EditModalBody').html(res.html);
                     $('#EditModal').modal('show');
                 }
@@ -750,8 +743,6 @@
                 url: "{{ route('histories.log', ':id') }}".replace(':id', id),
                 method: 'GET',
                 success: function(res) {
-                    // console.log(res);
-
                     $('#bodyLog').html(res.html);
                     $('#LogModal').modal('show');
                 }
@@ -789,7 +780,6 @@
                     comment: $('#getComment').val(),
                 },
                 success: function(result) {
-                    //console.log(result);
                     if (result.errors) {
                         $('.alert-danger').html('');
                         $.each(result.errors, function(key, value) {
@@ -838,7 +828,6 @@
                     _token: token
                 },
                 success: function(data) {
-                    // console.log(data);
                     if (data.success) {
                         toastr.success(data.message, {
                             timeOut: 5000
@@ -907,7 +896,6 @@
                         name: name,
                     },
                     success: function(data) {
-                        // console.log('success: ' + data);
                         var element = document.getElementById("myeForm");
                         var child = document.getElementById(name);
                         element.removeChild(child);
@@ -1000,7 +988,6 @@
                         name: name,
                     },
                     success: function(data) {
-                        // console.log('success: ' + data);
                         var element = document.getElementById("myForm");
                         var child = document.getElementById(name);
                         element.removeChild(child);

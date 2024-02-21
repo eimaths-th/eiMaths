@@ -6,6 +6,22 @@
         /* Adjust the value to your desired space */
     }
 
+    .signpad {
+        background-color: rgb(226, 223, 223);
+        border: 1px solid black;
+        margin: auto;
+        width: 450px;
+    }
+
+    .signpadi {
+        background-color: rgb(226, 223, 223);
+        border: 1px solid black;
+        margin: auto;
+        width: 350px;
+        height: 150px;
+    }
+
+
     .modal-xxl {
         max-width: 900px !important;
     }

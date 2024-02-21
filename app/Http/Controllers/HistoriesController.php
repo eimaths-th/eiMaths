@@ -19,6 +19,7 @@ use App\Models\term;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -323,10 +324,11 @@ class HistoriesController extends Controller
     public function store(Request $request)
     {
         // dd($request);
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'centre' => 'required',
             'student_id' => 'required',
             'level_id' => 'required',
+            'teacher_id' => 'required',
             'term' => 'required',
             'bookuse' => 'required',
             'date' => 'required',
@@ -334,10 +336,27 @@ class HistoriesController extends Controller
             'etime' => 'required',
             'comment' => 'required',
             // 'signature' => 'required',
+        ], [
+            'centre.required' => 'Centre must not be empty.',
+            'student_id.required' => 'Student must not be empty.',
+            'teacher_id.required' => 'Teacher must not be empty.',
+            'date.required' => 'Please provide date.',
+            'stime.required' => 'Please provide start tine.',
+            'etime.required' => 'Please provide end time.',
+            'comment.required' => 'Please provide comment.',
+            'level_id.required' => 'Please select a level.',
+            'term.required' => 'Please select a term.',
+            'bookuse.required' => 'Please specify book usage.',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()->all()]);
+        }
+
 
         $centre = $request->input('centre');
         $std_id = $request->input('student_id');
+        $teacher_id = $request->input('teacher_id');
         $level_id = $request->input('level_id');
         $term = $request->input('term');
         $bookuse = $request->input('bookuse');
@@ -345,7 +364,7 @@ class HistoriesController extends Controller
         $stime = $request->input('stime');
         $etime = $request->input('etime');
         $comment = $request->input('comment');
-        $signature = $request->input('signature');
+        //$signature = $request->input('signature');
 
         $level = level::find($level_id);
         $level_name = $level->name;
@@ -384,8 +403,24 @@ class HistoriesController extends Controller
             return response()->json(['success' => false, 'message' => 'เกินกำหนดของเทอมนี้แล้ว']);
         }
 
+
+        /*  if (!empty($expen->signature)) {
+            $fileToDelete = public_path() . $expen->signature;
+            if (file_exists($fileToDelete)) {
+                unlink($fileToDelete);
+            }
+        } */
+        $signatureData = $request->input('signature');
+        $encodedData = str_replace('data:image/png;base64,', '', $signatureData);
+        $decodedData = base64_decode($encodedData);
+        $sign_name = uniqid() . '.png';
+        $sign_pname = '/file_upload/' . $sign_name;
+        $signpath = public_path() . $sign_pname;
+        File::put($signpath, $decodedData);
+
         $history = Histrories::create([
             'centre' => $centre,
+            'teacher_id' => $teacher_id,
             'student_id' => $std_id,
             'level_id' => $level_id,
             'level_name' => $level_name,
@@ -397,7 +432,7 @@ class HistoriesController extends Controller
             'start_date' => $start_date,
             'end_date' => $end_date,
             'comment' => $comment,
-            'signature' => $signature,
+            'signature' => $sign_name,
             'course_remaining' => $course_remaining
         ]);
 
@@ -790,6 +825,34 @@ class HistoriesController extends Controller
         $histories = Histrories::whereIn('id', $his_id);
 
         foreach ($loghistories as $history) {
+
+            $filePath = public_path('file_upload/' . $history->signature);
+
+            // Delete the file if it exists
+            if (file_exists($filePath)) {
+                unlink($filePath);
+            }
+
+            $dataimg = HistoryStudentImg::where([
+                'history_id' => $history->id,
+            ])->get();
+
+            // Delete the found records
+            if (!$dataimg->isEmpty()) {
+                $dataimg->each(function ($item) {
+                    $filename = $item->img;
+
+                    // Build the full path to the file within the 'public/file_store' directory
+                    $filePath = public_path('file_upload/' . $filename);
+
+                    // Delete the file if it exists
+                    if (file_exists($filePath)) {
+                        unlink($filePath);
+                    }
+                    $item->delete();
+                });
+            }
+
             LogHistory::create([
                 'history_id' => $history->id,
                 'centre' => $history->centre,
@@ -823,6 +886,35 @@ class HistoriesController extends Controller
         //
         $id = $request->get('id');
         $history = Histrories::find($id);
+
+        $filePath = public_path('file_upload/' . $history->signature);
+
+        // Delete the file if it exists
+        if (file_exists($filePath)) {
+            unlink($filePath);
+        }
+
+        $dataimg = HistoryStudentImg::where([
+            'history_id' => $id,
+        ])->get();
+
+        // Delete the found records
+        if (!$dataimg->isEmpty()) {
+            $dataimg->each(function ($item) {
+                $filename = $item->img;
+
+                // Build the full path to the file within the 'public/file_store' directory
+                $filePath = public_path('file_upload/' . $filename);
+
+                // Delete the file if it exists
+                if (file_exists($filePath)) {
+                    unlink($filePath);
+                }
+                $item->delete();
+            });
+        }
+
+
         $logHistory = LogHistory::create([
             'history_id' => $history->id,
             'centre' => $history->centre,
