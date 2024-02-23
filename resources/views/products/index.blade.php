@@ -33,7 +33,7 @@
                             <span class="d-inline-block" tabindex="0" data-toggle="tooltip" data-placement="bottom"
                                 title="คุณไม่มีสิทธิ์ในส่วนนี้">
                                 <button type="button" class="btn btn-danger disabled"><i class="fa fa-trash"></i> Delete
-                                    all</button>
+                                    All</button>
                             </span>
                         @endcan
                     </ol>
