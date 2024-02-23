@@ -18,10 +18,10 @@ class ProductController extends Controller
     public function __construct()
     {
         //$this->middleware('auth');
-        $this->middleware('permission:master-data-list|master-data-create|master-data-edit|master-data-delete', ['only' => ['index', 'show']]);
-        $this->middleware('permission:master-data-create', ['only' => ['create', 'store']]);
-        $this->middleware('permission:master-data-edit', ['only' => ['edit', 'update']]);
-        $this->middleware('permission:master-data-delete', ['only' => ['destroy']]);
+        $this->middleware('permission:centre-list|centre-create|centre-edit|centre-delete', ['only' => ['index', 'show']]);
+        $this->middleware('permission:centre-create', ['only' => ['create', 'store']]);
+        $this->middleware('permission:centre-edit', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:centre-delete', ['only' => ['destroy']]);
     }
 
     /**

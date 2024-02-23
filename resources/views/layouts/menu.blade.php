@@ -132,6 +132,25 @@
         </ul>
     </li>
 @endcan
+@can('receipt-list')
+    <li class="nav-item {{ in_array(Request::route()->getName(), ['receipts', 'receipts_pending']) ? 'menu-open' : '' }}">
+        <a href="#"
+            class="nav-link {{ in_array(Request::route()->getName(), ['receipts', 'receipts_pending']) ? 'active' : '' }}">
+            <i class="nav-icon fas fa-sack-dollar"></i>
+            <p>Stock Management</p>
+            <i class="fas fa-angle-left right"></i>
+        </a>
+        <ul class="nav nav-treeview">
+            <li class="nav-item">
+                <a href="{{ route('products') }}"
+                    class="nav-link {{ Request::is('products') ? 'active' : '' }}">
+                    <i class="nav-icon fa-solid fa-comment-dots"></i>
+                    <p>Products</p>
+                </a>
+            </li>
+        </ul>
+    </li>
+@endcan
 @can('centre-manage')
     <li
         class="nav-item {{ in_array(Request::route()->getName(), ['departments', 'positions', 'termfee', 'parameter']) ? 'menu-open' : '' }}">
