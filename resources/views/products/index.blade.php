@@ -80,9 +80,10 @@
                                         <tr>
                                             <th><input type="checkbox" id="check-all" class="flat"></th>
                                             <th>Code</th>
+                                            <th>Branch</th>
                                             <th>Name</th>
+                                            <th>Quantity in Stock</th>
                                             <th>Unit</th>
-                                            <th>Amount</th>
                                             <th width="120px"></th>
                                         </tr>
                                     </thead>

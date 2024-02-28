@@ -132,11 +132,11 @@
         </ul>
     </li>
 @endcan
-@can('receipt-list')
-    <li class="nav-item {{ in_array(Request::route()->getName(), ['receipts', 'receipts_pending']) ? 'menu-open' : '' }}">
+@can('product-list')
+    <li class="nav-item {{ in_array(Request::route()->getName(), ['products']) ? 'menu-open' : '' }}">
         <a href="#"
-            class="nav-link {{ in_array(Request::route()->getName(), ['receipts', 'receipts_pending']) ? 'active' : '' }}">
-            <i class="nav-icon fas fa-sack-dollar"></i>
+            class="nav-link {{ in_array(Request::route()->getName(), ['products']) ? 'active' : '' }}">
+            <i class="nav-icon fa-solid fa-cubes"></i>
             <p>Stock Management</p>
             <i class="fas fa-angle-left right"></i>
         </a>
@@ -145,7 +145,7 @@
                 <a href="{{ route('products') }}"
                     class="nav-link {{ Request::is('products') ? 'active' : '' }}">
                     <i class="nav-icon fa-solid fa-comment-dots"></i>
-                    <p>Products</p>
+                    <p> Education Acceseries</p>
                 </a>
             </li>
         </ul>

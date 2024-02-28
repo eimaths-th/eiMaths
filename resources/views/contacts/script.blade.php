@@ -599,11 +599,11 @@
             $('#AddLevel2').val(null).trigger("change")
             $('#AddTerm2').val(null).trigger("change")
 
-
+            var addCentre = $('#AddCentre').val();
 
             await $.ajax({
                 method: "GET",
-                url: "contacts/running/" + '0',
+                url: "contacts/running/" + addCentre,
                 success: function(res) {
                     //console.log(res)
                     $('#AddCode').val(res.running);

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('product_running_numbers', function (Blueprint $table) {
             $table->id();
             $table->year('year');
-            $table->string('month');
+            $table->string('department');
             $table->unsignedInteger('number')->default(0);
             $table->timestamps();
         });

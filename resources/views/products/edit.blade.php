@@ -3,8 +3,9 @@
     <div class="modal-dialog modal-lg" role="document">
         <form id="editdata" class="form" action="" method="POST">
             <div class="modal-content">
-                <div class="modal-header bg-info">
-                    <h4 class="modal-title" id="exampleModalLongTitle"> <i class="fas fa-cubes"></i> แก้ไข สินค้า</h4>
+                <div class="modal-header bg-primary">
+                    <h4 class="modal-title" id="exampleModalLongTitle"> <i class="fas fa-cubes"></i> Edit Acceseries
+                    </h4>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -27,6 +28,25 @@
                         <div class="row">
                             <div class="col-xs-6 col-sm-6 col-md-6">
                                 <div class="form-group">
+                                    <strong><i class="fas fa-code"></i> Centre Code:</strong>
+                                    <select style="width: 100%;" class="productl select2 select2_single form-control"
+                                        id="EditCentre" name="centre" multiple="multiple"
+                                        @cannot('all-centre')  @endcannot disabled>
+                                        <!-- <option value="" selected>Select Student</option>
+                                                                                                                                                                                                                                                                                                                                                                                <option value="" selected>Select Parent</option>-->
+                                        @foreach ($centre as $key2)
+                                            <option value="{{ $key2->id }}"
+                                                @if (Auth::user()->department->id == (int) $key2->id) selected @endif>
+                                                {{ $key2->code }}
+                                                {{ $key2->name }}
+                                            </option>
+                                        @endforeach
+
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-xs-6 col-sm-6 col-md-6">
+                                <div class="form-group">
                                     <strong>รหัสสินค้า:</strong>
                                     {!! Form::text('name', null, [
                                         'id' => 'EditCode',
@@ -36,6 +56,9 @@
                                     ]) !!}
                                 </div>
                             </div>
+
+                        </div>
+                        <div class="row">
                             <div class="col-xs-6 col-sm-6 col-md-6">
                                 <div class="form-group">
                                     <strong>ชื่อสินค้า:</strong>
@@ -60,7 +83,7 @@
 
                             <div class="col-xs-6 col-sm-6 col-md-6">
                                 <div class="form-group">
-                                    <strong>หน่วยนับ:</strong>
+                                    <strong>Unit:</strong>
                                     {!! Form::text('unit', null, [
                                         'id' => 'EditUnit',
                                         'placeholder' => 'Unit',
@@ -70,10 +93,11 @@
                             </div>
                             <div class="col-xs-6 col-sm-6 col-md-6">
                                 <div class="form-group">
-                                    <strong>ราคาตลาด:</strong>
-                                    {!! Form::text('price', null, [
-                                        'id' => 'EditPrice',
-                                        'placeholder' => 'Price',
+                                    <strong>Quantity:</strong>
+                                    {!! Form::text('amount', null, [
+                                        'id' => 'EditAmount',
+                                        'readonly' => true,
+                                        'placeholder' => 'Quantity',
                                         'class' => 'auto_decimal form-control',
                                     ]) !!}
                                 </div>
@@ -84,8 +108,10 @@
                 </div>
                 <!-- Modal footer -->
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-success" id="SubmitEditForm"><i class="fas fa-download"></i> บันทึก</button>
-                    <button type="button" class="btn btn-danger modelClose" data-dismiss="modal"><i class="fas fa-door-closed"></i> ปิด</button>
+                    <button type="button" class="btn btn-success" id="SubmitEditForm"><i class="fas fa-download"></i>
+                        Save</button>
+                    <button type="button" class="btn btn-danger modelClose" data-dismiss="modal"><i
+                            class="fas fa-door-closed"></i> Close</button>
                 </div>
             </div>
         </form>

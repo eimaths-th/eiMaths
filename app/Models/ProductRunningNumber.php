@@ -8,61 +8,63 @@ use Illuminate\Database\Eloquent\Model;
 class ProductRunningNumber extends Model
 {
     use HasFactory;
-    protected $fillable = ['number', 'year', 'month'];
+    protected $fillable = ['department', 'number', 'year'];
 
-    public static function pre_generate()
+    public static function pre_generate(string $department)
     {
 
         $number = 0;
         $year = date('Y');
-        $month = date('m');
+        $type = strtoupper(Department::getDepartmentCodeById($department));
 
 
-        if (!ProductRunningNumber::where('year', $year)->where('month', $month)->exists()) {
+        if (!ProductRunningNumber::where('year', $year)->where('department', $type)->exists()) {
             ProductRunningNumber::create([
                 'number' => $number,
                 'year' => $year,
-                'month' => $month,
+                'department' => $type,
             ]);
         }
 
-        $running_number = ProductRunningNumber::where('year', $year)->where('month', $month)->first();
+        $running_number = ProductRunningNumber::where('year', $year)->where('department', $type)->first();
 
         $running_number->number++;
         //$running_number->save();
         $number = $running_number->number;
-        $number = str_pad($number, 3, '0', STR_PAD_LEFT);
+        $number = str_pad($number, 4, '0', STR_PAD_LEFT);
 
 
-        return  'PR'.date('y') . '' . date('m') . '' . $number;
+        //return $type.''.$number;
+        return 'AC-'.$type . '' .$number;
 
 
     }
 
-    public static function generate()
-    {
 
+    public static function generate(string $department)
+    {
+        $type = strtoupper(Department::getDepartmentCodeById($department));
+       /*  if (! in_array($type, self::TYPES)) {
+            throw new \Exception('Undefined running number type.');
+        } */
         $number = 0;
         $year = date('Y');
-        $month = date('m');
-        //$month = "01";
-
-        if (!ProductRunningNumber::where('year', $year)->where('month', $month)->exists()) {
+        if (! ProductRunningNumber::where('department', $type)->where('year', $year)->exists()) {
             ProductRunningNumber::create([
+                'department' => $type,
                 'number' => $number,
                 'year' => $year,
-                'month' => $month,
             ]);
         }
 
-        $running_number = ProductRunningNumber::where('year', $year)->where('month', $month)->first();
-
+        $running_number = ProductRunningNumber::where('department', $type)->where('year', $year)->first();
         $running_number->number++;
         $running_number->save();
         $number = $running_number->number;
-        $number = str_pad($number, 3, '0', STR_PAD_LEFT);
+        $number = str_pad($number, 4, '0', STR_PAD_LEFT);
 
-        return 'PR'.date('y') . '' . date('m') . '' . $number;
-
+        // A-21-00001
+        //return $type.''.$number;
+        return 'AC-'.$type . '' .$number;
     }
 }

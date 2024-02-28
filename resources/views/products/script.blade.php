@@ -11,6 +11,38 @@
             this.value = formattedValue;
         });
 
+        $(".select2_single").select2({
+            maximumSelectionLength: 1,
+            allowClear: false,
+            //theme: 'bootstrap4'
+            placeholder: 'Please select'
+        });
+
+        $(".select2_single").on("select2:unselect", function(e) {
+            //$('.products').html('');
+        });
+
+        $(".select2_singles").select2({
+            maximumSelectionLength: 1,
+            allowClear: false,
+            //theme: 'bootstrap4'
+            placeholder: 'Please select'
+        });
+
+        $(".select2_singlec").select2({
+            maximumSelectionLength: 1,
+            allowClear: false,
+            //theme: 'bootstrap4'
+            placeholder: 'Please select'
+        });
+
+        $(".select2_multiple").select2({
+            maximumSelectionLength: 2,
+            allowClear: false,
+            //theme: 'bootstrap4'
+            placeholder: 'Please select'
+        });
+
         $(".delete_all_button").click(function() {
             var len = $('input[name="table_records[]"]:checked').length;
             if (len > 0) {
@@ -57,20 +89,20 @@
             language: {
                 loadingRecords: '&nbsp;',
                 processing: `<div class="spinner-border text-primary"></div>`,
-                "sProcessing": "กำลังดำเนินการ...",
-                "sLengthMenu": "แสดง_MENU_ แถว",
-                "sZeroRecords": "ไม่พบข้อมูล",
-                "sInfo": "แสดง _START_ ถึง _END_ จาก _TOTAL_ รายการ",
-                "sInfoEmpty": "แสดง 0 ถึง 0 จาก 0 รายการ",
-                "sInfoFiltered": "(กรองข้อมูล _MAX_ ทุกแถว)",
+                "sProcessing": "Processing...",
+                "sLengthMenu": "Display _MENU_ Row",
+                "sZeroRecords": "No Data Found",
+                "sInfo": "Display _START_ To _END_ From _TOTAL_ Records",
+                "sInfoEmpty": "Display 0 To 0 From 0 Records",
+                "sInfoFiltered": "(Filters _MAX_ Row)",
                 "sInfoPostFix": "",
-                "sSearch": "ค้นหา:",
+                "sSearch": "Search:",
                 "sUrl": "",
                 "oPaginate": {
-                    "sFirst": "เริ่มต้น",
-                    "sPrevious": "ก่อนหน้า",
-                    "sNext": "ถัดไป",
-                    "sLast": "สุดท้าย"
+                    "sFirst": "First",
+                    "sPrevious": "Previous",
+                    "sNext": "Next",
+                    "sLast": "Last"
                 }
             },
             aaSorting: [
@@ -94,16 +126,20 @@
                     name: 'code'
                 },
                 {
+                    data: 'centre_name',
+                    name: 'centre_name'
+                },
+                {
                     data: 'name',
                     name: 'name'
                 },
                 {
-                    data: 'unit',
-                    name: 'unit'
+                    data: 'amount',
+                    name: 'amount'
                 },
                 {
-                    data: 'price',
-                    name: 'price'
+                    data: 'unit',
+                    name: 'unit'
                 },
                 {
                     data: 'action',
@@ -130,18 +166,35 @@
         });
 
 
+        $("#AddCentre").change(function() {
+            let centre = $('#AddCentre').val();
+            if (centre.length !== 0) {
+                $.ajax({
+                    method: "GET",
+                    url: "products/running/" + centre,
+                    async: false,
+                    success: function(res) {
+                        //console.log(res)
+                        //$('#AddCode').prop('readonly', false);
+                        $('#AddCode').val(res.running);
+                    }
+                });
+            }
+        })
 
-        $(document).on('click', '#CreateButton', function(e) {
+        $(document).on('click', '#CreateButton', async function(e) {
             e.preventDefault();
             $('.alert-danger').html('');
             $('.alert-danger').hide();
             $('.alert-success').html('');
             $('.alert-success').hide();
-            $.ajax({
+
+            var addCentre = $('#AddCentre').val();
+            await $.ajax({
                 method: "GET",
-                url: "{{ route('products.running') }}",
+                url: "products/running/" + addCentre,
                 success: function(res) {
-                    console.log(res)
+                    //console.log(res)
                     $('#AddCode').val(res.running);
                 }
             });
@@ -162,10 +215,11 @@
                 url: "{{ route('products.store') }}",
                 method: 'post',
                 data: {
+                    centre: $('#AddCentre').val()[0],
                     code: $('#AddCode').val(),
                     name: $('#AddName').val(),
                     unit: $('#AddUnit').val(),
-                    price: $('#AddPrice').val(),
+                    amount: $('#AddAmount').val(),
                     detail: $('#AddDetail').val(),
                     _token: token,
                 },
@@ -186,6 +240,7 @@
                             timeOut: 5000
                         });
                         $('#Listview').DataTable().ajax.reload();
+                        //$('#AddCentre').val(null).trigger("change");
                         $('.form').trigger('reset');
                         $('#CreateModal').modal('hide');
                     }
@@ -208,10 +263,11 @@
                 url: "products/edit/" + id,
                 method: 'GET',
                 success: function(res) {
-                    $('#EditCode').val(res.data.code);
+                    $('#EditCentre').val(res.data.centre).change();
                     $('#EditName').val(res.data.name);
+                    $('#EditCode').val(res.data.code);
                     $('#EditUnit').val(res.data.unit);
-                    $('#EditPrice').val(res.data.price);
+                    $('#EditAmount').val(res.data.amount);
                     $('#EditDetail').val(res.data.detail);
                     $('#EditModalBody').html(res.html);
                     $('#EditModal').modal('show');
@@ -221,7 +277,7 @@
         })
 
         $('#SubmitEditForm').click(function(e) {
-            if (!confirm("ยืนยันการทำรายการ ?")) return;
+            if (!confirm("Confirm the action?")) return;
             e.preventDefault();
 
             $('.alert-danger').html('');
@@ -233,10 +289,10 @@
                 url: "products/save/" + id,
                 method: 'PUT',
                 data: {
-                    code: $('#EditCode').val(),
+
                     name: $('#EditName').val(),
                     unit: $('#EditUnit').val(),
-                    price: $('#EditPrice').val(),
+                    amount: $('#EditAmount').val(),
                     detail: $('#EditDetail').val(),
                 },
 
@@ -270,7 +326,7 @@
         });
 
         $(document).on('click', '.btn-delete', function() {
-            if (!confirm("ยืนยันการทำรายการ ?")) return;
+            if (!confirm("Confirm the action?")) return;
 
             var rowid = $(this).data('rowid')
             var el = $(this)

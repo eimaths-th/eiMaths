@@ -74,7 +74,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/positions/destroy_all', [App\Http\Controllers\PositionController::class, 'destroy_all'])->name('positions.destroy_all');
 
     Route::get('/products', [App\Http\Controllers\ProductController::class, 'index'])->name('products');
-    Route::get('/products/running', [App\Http\Controllers\ProductController::class, 'create'])->name('products.running');
+    Route::get('/products/running/{centre}', [App\Http\Controllers\ProductController::class, 'create'])->name('products.running');
     Route::post('/products/store', [App\Http\Controllers\ProductController::class, 'store'])->name('products.store');
     Route::get('/products/edit/{id}', [App\Http\Controllers\ProductController::class, 'edit'])->name('products.edit');
     Route::put('/products/save/{id}', [App\Http\Controllers\ProductController::class, 'update'])->name('products.save');
