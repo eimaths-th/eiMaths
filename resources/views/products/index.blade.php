@@ -82,9 +82,9 @@
                                             <th>Code</th>
                                             <th>Branch</th>
                                             <th>Name</th>
-                                            <th>Quantity in Stock</th>
+                                            <th>In Stock</th>
                                             <th>Unit</th>
-                                            <th width="120px"></th>
+                                            <th width="320px"></th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -110,6 +110,10 @@
     @include('products.create')
 
     @include('products.edit')
+
+    @include('products.barcode')
+
+    @include('products.qrcode')
 
     {{--  {!! $data->render() !!} --}}
 @endsection

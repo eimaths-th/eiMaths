@@ -12,6 +12,9 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
+use Milon\Barcode\DNS1D;
+use Milon\Barcode\DNS2D;
+
 class ProductController extends Controller
 {
     /**
@@ -53,12 +56,24 @@ class ProductController extends Controller
                 })
                 ->addColumn('action', function ($row) {
                     if (Gate::allows('product-edit')) {
-                        $html = '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit</button> ';
+                        $html = '<button type="button" class="btn btn-sm btn-info btn-barcode" data-id="' . $row->id . '"><i class="fa-solid fa-barcode"></i> Barcode</button> ';
                     } else {
-                        $html = '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> Edit</button> ';
+                        $html = '<button type="button" class="btn btn-sm btn-info disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa-solid fa-barcode"></i> Barcode</button> ';
+                    }
+
+                    if (Gate::allows('product-edit')) {
+                        $html .= '<button type="button" class="btn btn-sm btn-info btn-qbarcode" data-id="' . $row->id . '"><i class="fa-solid fa-qrcode"></i> QRcode</button> ';
+                    } else {
+                        $html .= '<button type="button" class="btn btn-sm btn-info disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa-solid fa-qrcode"></i> Barcode</button> ';
+                    }
+
+                    if (Gate::allows('product-edit')) {
+                        $html .= '<button type="button" class="btn btn-sm btn-warning btn-edit" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit</button> ';
+                    } else {
+                        $html .= '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> Edit</button> ';
                     }
                     if (Gate::allows('product-delete')) {
-                        $html .= '<button type="button" data-rowid="' . $row->id . '" class="btn btn-sm btn-danger btn-delete"><i class="fa fa-trash"></i> Delete</button>';
+                        $html .= '<button type="button" data-rowid="' . $row->id . '" class="btn btn-sm btn-danger btn-delete"><i class="fa fa-trash"></i> Delete</button> ';
                     } else {
                         $html .= '<button type="button" class="btn btn-sm btn-danger disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-trash"></i> Delete</button> ';
                     }
@@ -141,11 +156,48 @@ class ProductController extends Controller
      */
     public function edit($id)
     {
+        $product = Product::find($id);
 
-        $data =  Product::find($id);
-        return response()->json(['data' => $data]);
+        if (!$product) {
+            return response()->json(['error' => 'Product not found'], 404);
+        }
+
+        return response()->json([
+            'data' => $product,
+        ]);
     }
 
+    public function barcode($id)
+    {
+        $product = Product::find($id);
+
+        if (!$product) {
+            return response()->json(['error' => 'Product not found'], 404);
+        }
+
+        $barcode = new DNS1D();
+        $barcodeData = $barcode->getBarcodeHTML($id, 'C39', 2, 40, 'black', false);
+
+        return response()->json([
+            'barcode' => $barcodeData,
+        ]);
+    }
+
+    public function qbarcode($id)
+    {
+        $product = Product::find($id);
+
+        if (!$product) {
+            return response()->json(['error' => 'Product not found'], 404);
+        }
+
+        $qbarcode = new DNS2D();
+        $qbarcodeData = $qbarcode->getBarcodeHTML($id, 'QRCODE', 5, 5, 'black', false);
+
+        return response()->json([
+            'qbarcode' => $qbarcodeData,
+        ]);
+    }
 
     /**
      * Update the specified resource in storage.

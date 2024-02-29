@@ -26,6 +26,7 @@
                     <div id="EditModalBody">
                         {!! Form::open(['method' => 'POST']) !!}
                         <div class="row">
+
                             <div class="col-xs-6 col-sm-6 col-md-6">
                                 <div class="form-group">
                                     <strong><i class="fas fa-code"></i> Centre Code:</strong>

@@ -249,7 +249,7 @@
         });
 
         let id;
-        $(document).on('click', '#getEditData', function(e) {
+        $(document).on('click', '.btn-edit', function(e) {
             e.preventDefault();
 
 
@@ -271,6 +271,46 @@
                     $('#EditDetail').val(res.data.detail);
                     $('#EditModalBody').html(res.html);
                     $('#EditModal').modal('show');
+                }
+            });
+
+        })
+
+        $(document).on('click', '.btn-barcode', function(e) {
+            e.preventDefault();
+
+            $('.alert-danger').html('');
+            $('.alert-danger').hide();
+            $('.alert-success').html('');
+            $('.alert-success').hide();
+
+            id = $(this).data('id');
+            $.ajax({
+                url: "products/barcode/" + id,
+                method: 'GET',
+                success: function(res) {
+                    $('#barcodeContainer').html(res.barcode);
+                    $('#BarcodeModal').modal('show');
+                }
+            });
+
+        })
+
+        $(document).on('click', '.btn-qbarcode', function(e) {
+            e.preventDefault();
+
+            $('.alert-danger').html('');
+            $('.alert-danger').hide();
+            $('.alert-success').html('');
+            $('.alert-success').hide();
+
+            id = $(this).data('id');
+            $.ajax({
+                url: "products/qbarcode/" + id,
+                method: 'GET',
+                success: function(res) {
+                    $('#qbarcodeContainer').html(res.qbarcode);
+                    $('#qBarcodeModal').modal('show');
                 }
             });
 
@@ -324,6 +364,47 @@
                 }
             });
         });
+
+        $('#printBarcodeButton').click(function(event) {
+            event.preventDefault(); // Prevent default button behavior
+
+            // Create a new window with the barcode content
+            var printWindow = window.open('', '_blank');
+            printWindow.document.open();
+            printWindow.document.write('<html><head><title>Print Barcode</title></head><body>');
+            printWindow.document.write('<div id="barcodeContainer">' + $('#barcodeContainer').html() +
+                '</div>');
+            printWindow.document.write('</body></html>');
+            printWindow.document.close();
+
+            setTimeout(function() {
+                printWindow.focus();
+                printWindow.print();
+                printWindow.close();
+            }, 1000);
+
+        });
+
+        $('#printqBarcodeButton').click(function(event) {
+            event.preventDefault(); // Prevent default button behavior
+
+            // Create a new window with the barcode content
+            var printWindow = window.open('', '_blank');
+            printWindow.document.open();
+            printWindow.document.write('<html><head><title>Print Qrcode</title></head><body>');
+            printWindow.document.write('<div id="qbarcodeContainer">' + $('#qbarcodeContainer').html() +
+                '</div>');
+            printWindow.document.write('</body></html>');
+            printWindow.document.close();
+
+            setTimeout(function() {
+                printWindow.focus();
+                printWindow.print();
+                printWindow.close();
+            }, 1000);
+
+        });
+
 
         $(document).on('click', '.btn-delete', function() {
             if (!confirm("Confirm the action?")) return;
