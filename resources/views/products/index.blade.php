@@ -47,6 +47,30 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-12">
+
+                    <div class="row">
+                        @foreach ($data as $rr)
+                            <div class="col-md-6 col-sm-6 col-lg-6 col-xl-3 col-12">
+                                <div class="info-box">
+                                    <span class="info-box-icon bg-success"><i class="fas fa-warehouse"></i></span>
+                                    <div class="info-box-content">
+                                        <span class="info-box-text text-primary">{{ $rr['name'] }}
+                                            {{-- ทั้งหมด --}}In Stock</span>
+                                        <span class="info-box-number">{{ number_format($rr['amount'], 2) }}
+                                            {{ $rr['unit'] }}</span>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        @endforeach
+
+                    </div>
+
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
                     <div class="card card-primary">
                         <div class="card-header">
                             <h3 class="card-title"><i class="fas fa-cubes"></i> Education Acceseries</h3>
@@ -71,31 +95,7 @@
                                     });
                                 </script>
                             @endif
-                            <div class="row">
-                                <div class="col-12">
 
-                                    <div class="row">
-                                        @foreach ($data as $rr)
-                                            <div class="col-md-6 col-sm-6 col-lg-6 col-xl-3 col-12">
-                                                <div class="info-box">
-                                                    <span class="info-box-icon bg-success"><i
-                                                            class="fas fa-warehouse"></i></span>
-                                                    <div class="info-box-content">
-                                                        <span class="info-box-text text-primary">{{ $rr['name'] }}
-                                                            {{-- ทั้งหมด --}}In Stock</span>
-                                                        <span class="info-box-number">{{ number_format($rr['amount'], 2) }}
-                                                            {{ $rr['unit'] }}</span>
-                                                    </div>
-
-                                                </div>
-
-                                            </div>
-                                        @endforeach
-
-                                    </div>
-
-                                </div>
-                            </div>
                             <form method="post" action="{{ route('products.destroy_all') }}" name="delete_all"
                                 id="delete_all">
                                 @csrf

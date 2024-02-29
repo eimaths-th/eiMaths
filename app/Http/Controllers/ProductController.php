@@ -45,7 +45,7 @@ class ProductController extends Controller
             $datas->where('centre', Auth::user()->department->id);
         }
 
-        $datas->orderBy("id", "asc")->get();
+        $datas = $datas->orderBy("id", "asc")->get();
         if ($request->ajax()) {
             //sleep(2);
 
