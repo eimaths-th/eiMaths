@@ -37,18 +37,18 @@ class ProductController extends Controller
     public function index(Request $request)
     {
 
+        $datas = Product::select(
+            "products.*",
+            "departments.name as centre_name",
+        )->join("departments", "products.centre", "=", "departments.id");
+        if (!Gate::allows('all-centre')) {
+            $datas->where('centre', Auth::user()->department->id);
+        }
+
+        $datas->orderBy("id", "asc")->get();
         if ($request->ajax()) {
             //sleep(2);
 
-            $datas = Product::select(
-                "products.*",
-                "departments.name as centre_name",
-            )->join("departments", "products.centre", "=", "departments.id");
-            if (!Gate::allows('all-centre')) {
-                $datas->where('centre', Auth::user()->department->id);
-            }
-
-            $datas->orderBy("id", "asc")->get();
             $state_text = array('Enable', 'Disable');
             return datatables()->of($datas)
                 ->editColumn('checkbox', function ($row) {
@@ -87,6 +87,8 @@ class ProductController extends Controller
 
         return view('products.index')->with(
             ['centre' => $centre]
+        )->with(
+            ['data' => $datas]
         );
     }
 
