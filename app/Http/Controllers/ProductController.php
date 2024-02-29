@@ -85,11 +85,10 @@ class ProductController extends Controller
         $centre = Department::where([['status', '1']])
             ->orderBy("name", "asc")->get();
 
-        return view('products.index')->with(
-            ['centre' => $centre]
-        )->with(
-            ['data' => $datas]
-        );
+        return view('products.index')->with([
+            'centre' => $centre,
+            'data' => $datas
+        ]);
     }
 
 
