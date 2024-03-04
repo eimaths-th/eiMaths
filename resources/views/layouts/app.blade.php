@@ -20,9 +20,100 @@
     {{--  <meta name="description" content="This is an example dashboard created using build-in elements and components."> --}}
     <meta name="msapplication-tap-highlight" content="no">
     <script src="plugins/jquery/jquery.min.js"></script>
+    <script src="plugins/jquery-scanner-detection/jquery.scannerdetection.js"></script>
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
     <script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="plugins/toastr/toastr.min.js"></script>
+    <script type="text/javascript">
+        var BarcodeScanner = function(options) {
+            this.initialize.call(this, options);
+        };
+        BarcodeScanner.prototype = {
+            initialize: function(options) {
+                $.extend(this._options, options);
+                if (this._options.debug) console.log("BarcodeScanner: Initializing");
+                $(this._options.eventObj).on({
+                    keyup: $.proxy(this._keyup, this),
+                    keydown: $.proxy(this._keydown, this),
+                });
+            },
+            destroy: function() {
+                $(this._options.eventObj).off("keyup", null, this._keyup);
+                $(this._options.eventObj).off("keydown", null, this._keydown);
+            },
+            fire: function(str) {
+                if (this._options.debug) console.log("BarcodeScanner: Firing barcode event with string: " + str);
+                $(this._options.fireObj).trigger('barcode', [str]);
+            },
+            isReading: function() {
+                return this._isReading;
+            },
+            checkEvent: function(e) {
+                return this._isReading || (this._options.isShiftPrefix ? e.shiftKey : !e.shiftKey) && e.which ==
+                    this._options.prefixCode;
+            },
+            _options: {
+                timeout: 600,
+                prefixCode: 36,
+                suffixCode: 13,
+                minCode: 32,
+                maxCode: 126,
+                isShiftPrefix: false,
+                debug: false,
+                eventObj: document,
+                fireObj: document
+            },
+            _isReading: false,
+            _timeoutHandler: false,
+            _inputString: '',
+            _keydown: function(e) {
+                if (this._input.call(this, e))
+                    return false;
+            },
+            _input: function(e) {
+                if (this._isReading) {
+                    if (e.which == this._options.suffixCode) {
+                        //read end
+                        if (this._options.debug) console.log("BarcodeScanner: Read END");
+                        if (this._timeoutHandler)
+                            clearTimeout(this._timeoutHandler);
+                        this._isReading = false;
+                        this.fire.call(this, this._inputString);
+                        this._inputString = '';
+                    } else {
+                        //char reading
+                        if (this._options.debug) console.log("BarcodeScanner: Char reading " + (e.which));
+                        if (e.which >= this._options.minCode && e.which <= this._options.maxCode)
+                            this._inputString += String.fromCharCode(e.which);
+                    }
+                    return true;
+                } else {
+                    if ((this._options.isShiftPrefix ? e.shiftKey : !e.shiftKey) && e.which == this._options
+                        .prefixCode) {
+                        //start reading
+                        if (this._options.debug) console.log("BarcodeScanner: Start reading");
+                        this._isReading = true;
+                        this._timeoutHandler = setTimeout($.proxy(function() {
+                            //read timeout
+                            if (this._options.debug) console.log("BarcodeScanner: Read timeout");
+                            this._inputString = '';
+                            this._isReading = false;
+                            this._timeoutHandler = false;
+                        }, this), this._options.timeout);
+                        return true;
+                    }
+                }
+                return false;
+            }
+        };
+
+        var bs = new BarcodeScanner({
+            debug: true
+        });
+        $(document).on("barcode", function(e, str) {
+            $("pre").append("\r\n" + str);
+        });
+    </script>
 
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -152,6 +243,7 @@
     crossorigin="anonymous" referrerpolicy="no-referrer"></script> --}}
 <script src="plugins/apex/apexcharts.min.js"></script>
 <script src="plugins/echart/echarts.min.js"></script>
+
 <script src="plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
 <script src="plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
 <script src="plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>

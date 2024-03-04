@@ -205,7 +205,7 @@ class APIController extends Controller
                 $contact->update($contactd);
             }
         } else {
-            return response()->json(['message' => 'เกินกำหนดของเทอมนี้แล้ว']);
+            return response()->json(['message' => 'เกินกำหนดของเทอมนี้แล้ว'], 400);
         }
 
         if ($request->hasFile('file')) {
@@ -280,7 +280,7 @@ class APIController extends Controller
         return response()->json([
             'message' => 'Data Save Successfully',
             //'file' => $newname
-        ]);
+        ], 200);
 
         //return response()->json(['message' => 'No file found'], 400);
     }

@@ -1,4 +1,5 @@
 <script>
+
     $(document).ready(function() {
         $(document).on('change', '.auto_decimal', function() {
             // Parse the input value to a number
@@ -405,6 +406,50 @@
 
         });
 
+
+
+
+        /*  $(document).on('keyup', function(e) {
+             // Check if the pressed key is a numeric key (key codes 48 to 57) or Enter key (key code 13)
+             if ((e.keyCode >= 48 && e.keyCode <= 57) || e.keyCode === 13) {
+                 // If so, focus on the barcodeInput field
+                 $('#barcodeInput').focus();
+
+                 // Get the pressed key character
+                 var char = String.fromCharCode(e.keyCode);
+
+                 console.log(char);
+                 // Append the character to the barcodeInput value
+                 $('#barcodeInput').val(char);
+             }
+         }); */
+
+        $(document).scannerDetection({
+
+            //https://github.com/kabachello/jQuery-Scanner-Detection
+
+            timeBeforeScanTest: 200, // wait for the next character for upto 200ms
+            avgTimeByChar: 40, // it's not a barcode if a character takes longer than 100ms
+            preventDefault: true,
+
+            endChar: [13],
+            onComplete: function(barcode, qty) {
+                    validScan = true;
+
+
+                    $('#scannerInput').val(barcode);
+
+                } // main callback function	,
+                ,
+            onError: function(string, qty) {
+
+                $('#userInput').val($('#userInput').val() + string);
+
+
+            }
+
+
+        });
 
         $(document).on('click', '.btn-delete', function() {
             if (!confirm("Confirm the action?")) return;
