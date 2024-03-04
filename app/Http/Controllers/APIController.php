@@ -205,7 +205,7 @@ class APIController extends Controller
                 $contact->update($contactd);
             }
         } else {
-            return response()->json(['message' => 'เกินกำหนดของเทอมนี้แล้ว'], 400);
+            return response()->json(['message' => 'Study time is full  for this term'], 400);
         }
 
         if ($request->hasFile('file')) {
