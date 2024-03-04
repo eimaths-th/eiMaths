@@ -28,7 +28,6 @@
                         <div id="qbarcodeContainer"></div>
                     </div>
                     <div class="row"><br></div>
-
                 </div>
             </div>
             <!-- Modal footer -->

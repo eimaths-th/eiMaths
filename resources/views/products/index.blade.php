@@ -1,15 +1,67 @@
 @extends('layouts.app')
 
 @section('style')
-
 @endsection
 
 @section('content')
     <section class="content-header">
         <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+
+                  {{--   <div class="row">
+                        @foreach ($data as $rr)
+                            <div class="col-md-6 col-sm-6 col-lg-6 col-xl-3 col-12">
+                                <div class="info-box">
+                                    <span class="info-box-icon bg-success"><i class="fas fa-warehouse"></i></span>
+                                    <div class="info-box-content">
+                                        <span class="info-box-text text-primary">{{ $rr['name'] }}
+                                           In Stock</span>
+                                        <span class="info-box-number">{{ number_format($rr['amount'], 2) }}
+                                            {{ $rr['unit'] }}</span>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        @endforeach
+
+                    </div> --}}
+
+                </div>
+            </div>
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    {{-- <h4>Users & Roles Management</h4> --}}
+                    <ol class="breadcrumb">
+                        {{-- <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item active">Users Management</li> --}}
+
+                        @can('product-create')
+                            <button type="button" class="btn btn-success" id="AddStock">
+                                <i class="fa-solid fa-plus"></i> รับเข้า Stock
+                            </button>
+                        @else
+                            <span class="d-inline-block" tabindex="0" data-toggle="tooltip" data-placement="bottom"
+                                title="คุณไม่มีสิทธิ์ในส่วนนี้">
+                                <button type="button" class="btn btn-success disabled">
+                                    <i class="fa-solid fa-plus"></i> รับเข้า Stock
+                                </button>
+                            </span>
+                        @endcan &nbsp;
+
+                        @can('product-edit')
+                            <button type="button" class="btn btn-danger" id="RmStock">
+                                <i class="fa-solid fa-minus"></i> จ่ายออก
+                            </button>
+                        @else
+                            <span class="d-inline-block" tabindex="0" data-toggle="tooltip" data-placement="bottom"
+                                title="คุณไม่มีสิทธิ์ในส่วนนี้">
+                                <button type="button" class="btn btn-danger disabled">
+                                    <i class="fa-solid fa-minus"></i> จ่ายออก
+                                </button>
+                            </span>
+                        @endcan
+                    </ol>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
@@ -46,30 +98,7 @@
 
     <section class="content">
         <div class="container-fluid">
-            <div class="row">
-                <div class="col-12">
 
-                    <div class="row">
-                        @foreach ($data as $rr)
-                            <div class="col-md-6 col-sm-6 col-lg-6 col-xl-3 col-12">
-                                <div class="info-box">
-                                    <span class="info-box-icon bg-success"><i class="fas fa-warehouse"></i></span>
-                                    <div class="info-box-content">
-                                        <span class="info-box-text text-primary">{{ $rr['name'] }}
-                                            {{-- ทั้งหมด --}}In Stock</span>
-                                        <span class="info-box-number">{{ number_format($rr['amount'], 2) }}
-                                            {{ $rr['unit'] }}</span>
-                                    </div>
-
-                                </div>
-
-                            </div>
-                        @endforeach
-
-                    </div>
-
-                </div>
-            </div>
             <div class="row">
                 <div class="col-12">
                     <div class="card card-primary">
@@ -140,6 +169,8 @@
     @include('products.barcode')
 
     @include('products.qrcode')
+
+    @include('products.plus')
 
     {{--  {!! $data->render() !!} --}}
 @endsection

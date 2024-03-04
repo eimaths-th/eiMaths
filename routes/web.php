@@ -76,10 +76,12 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/products', [App\Http\Controllers\ProductController::class, 'index'])->name('products');
     Route::get('/products/running/{centre}', [App\Http\Controllers\ProductController::class, 'create'])->name('products.running');
     Route::post('/products/store', [App\Http\Controllers\ProductController::class, 'store'])->name('products.store');
+    Route::get('/products/find/{id}', [App\Http\Controllers\ProductController::class, 'pfind'])->name('products.find');
     Route::get('/products/edit/{id}', [App\Http\Controllers\ProductController::class, 'edit'])->name('products.edit');
     Route::get('/products/barcode/{id}', [App\Http\Controllers\ProductController::class, 'barcode'])->name('products.barcode');
     Route::get('/products/qbarcode/{id}', [App\Http\Controllers\ProductController::class, 'qbarcode'])->name('products.qbarcode');
     Route::put('/products/save/{id}', [App\Http\Controllers\ProductController::class, 'update'])->name('products.save');
+    Route::put('/products/add_stock/{id}', [App\Http\Controllers\ProductController::class, 'add_stock'])->name('products.add_stock');
     Route::delete('/products/destroy', [App\Http\Controllers\ProductController::class, 'destroy'])->name('products.destroy');
     Route::post('/products/destroy_all', [App\Http\Controllers\ProductController::class, 'destroy_all'])->name('products.destroy_all');
 

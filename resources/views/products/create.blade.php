@@ -109,7 +109,7 @@
                                 'id' => 'AddAmount',
                                 'placeholder' => 'Quantity',
                                 'class' => 'form-control auto_decimal',
-                                'step' => '0.01',
+                                'step' => '1.0',
                             ]) !!}
                         </div>
                     </div>

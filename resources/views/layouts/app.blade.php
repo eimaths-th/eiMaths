@@ -24,96 +24,6 @@
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
     <script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="plugins/toastr/toastr.min.js"></script>
-    <script type="text/javascript">
-        var BarcodeScanner = function(options) {
-            this.initialize.call(this, options);
-        };
-        BarcodeScanner.prototype = {
-            initialize: function(options) {
-                $.extend(this._options, options);
-                if (this._options.debug) console.log("BarcodeScanner: Initializing");
-                $(this._options.eventObj).on({
-                    keyup: $.proxy(this._keyup, this),
-                    keydown: $.proxy(this._keydown, this),
-                });
-            },
-            destroy: function() {
-                $(this._options.eventObj).off("keyup", null, this._keyup);
-                $(this._options.eventObj).off("keydown", null, this._keydown);
-            },
-            fire: function(str) {
-                if (this._options.debug) console.log("BarcodeScanner: Firing barcode event with string: " + str);
-                $(this._options.fireObj).trigger('barcode', [str]);
-            },
-            isReading: function() {
-                return this._isReading;
-            },
-            checkEvent: function(e) {
-                return this._isReading || (this._options.isShiftPrefix ? e.shiftKey : !e.shiftKey) && e.which ==
-                    this._options.prefixCode;
-            },
-            _options: {
-                timeout: 600,
-                prefixCode: 36,
-                suffixCode: 13,
-                minCode: 32,
-                maxCode: 126,
-                isShiftPrefix: false,
-                debug: false,
-                eventObj: document,
-                fireObj: document
-            },
-            _isReading: false,
-            _timeoutHandler: false,
-            _inputString: '',
-            _keydown: function(e) {
-                if (this._input.call(this, e))
-                    return false;
-            },
-            _input: function(e) {
-                if (this._isReading) {
-                    if (e.which == this._options.suffixCode) {
-                        //read end
-                        if (this._options.debug) console.log("BarcodeScanner: Read END");
-                        if (this._timeoutHandler)
-                            clearTimeout(this._timeoutHandler);
-                        this._isReading = false;
-                        this.fire.call(this, this._inputString);
-                        this._inputString = '';
-                    } else {
-                        //char reading
-                        if (this._options.debug) console.log("BarcodeScanner: Char reading " + (e.which));
-                        if (e.which >= this._options.minCode && e.which <= this._options.maxCode)
-                            this._inputString += String.fromCharCode(e.which);
-                    }
-                    return true;
-                } else {
-                    if ((this._options.isShiftPrefix ? e.shiftKey : !e.shiftKey) && e.which == this._options
-                        .prefixCode) {
-                        //start reading
-                        if (this._options.debug) console.log("BarcodeScanner: Start reading");
-                        this._isReading = true;
-                        this._timeoutHandler = setTimeout($.proxy(function() {
-                            //read timeout
-                            if (this._options.debug) console.log("BarcodeScanner: Read timeout");
-                            this._inputString = '';
-                            this._isReading = false;
-                            this._timeoutHandler = false;
-                        }, this), this._options.timeout);
-                        return true;
-                    }
-                }
-                return false;
-            }
-        };
-
-        var bs = new BarcodeScanner({
-            debug: true
-        });
-        $(document).on("barcode", function(e, str) {
-            $("pre").append("\r\n" + str);
-        });
-    </script>
 
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -465,6 +375,132 @@
 
     function initializeTooltips() {
         $('[data-toggle="tooltip"]').tooltip();
+    }
+
+    function ezBSAlert(options) {
+        var deferredObject = $.Deferred();
+        var defaults = {
+            type: "alert", //alert, prompt,confirm
+            modalSize: 'modal-sm', //modal-sm, modal-lg
+            okButtonText: 'OK',
+            cancelButtonText: 'Cancel',
+            yesButtonText: 'Yes',
+            noButtonText: 'No',
+            headerText: 'Attention',
+            messageText: 'Message',
+            alertType: 'default', //default, primary, success, info, warning, danger
+            inputFieldType: 'text', //could ask for number,email,etc
+        }
+        $.extend(defaults, options);
+
+        var _show = function() {
+            var headClass = "navbar-default";
+            switch (defaults.alertType) {
+                case "primary":
+                    headClass = "alert-primary";
+                    break;
+                case "success":
+                    headClass = "alert-success";
+                    break;
+                case "info":
+                    headClass = "alert-info";
+                    break;
+                case "warning":
+                    headClass = "alert-warning";
+                    break;
+                case "danger":
+                    headClass = "alert-danger";
+                    break;
+            }
+            $('BODY').append(
+                '<div id="ezAlerts" class="modal fade">' +
+                '<div class="modal-dialog" class="' + defaults.modalSize + '">' +
+                '<div class="modal-content">' +
+                '<div id="ezAlerts-header" class="modal-header ' + headClass + '">' +
+                '<h4 id="ezAlerts-title" class="modal-title">Modal title</h4>' +
+                '<button id="close-button" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>' +
+                '</div>' +
+                '<div id="ezAlerts-body" class="modal-body">' +
+                '<div id="ezAlerts-message" ></div>' +
+                '</div>' +
+                '<div id="ezAlerts-footer" class="modal-footer">' +
+                '</div>' +
+                '</div>' +
+                '</div>' +
+                '</div>'
+            );
+
+            $('.modal-header').css({
+                'padding': '15px 15px',
+                '-webkit-border-top-left-radius': '5px',
+                '-webkit-border-top-right-radius': '5px',
+                '-moz-border-radius-topleft': '5px',
+                '-moz-border-radius-topright': '5px',
+                'border-top-left-radius': '5px',
+                'border-top-right-radius': '5px'
+            });
+
+            $('#ezAlerts-title').text(defaults.headerText);
+            $('#ezAlerts-message').html(defaults.messageText);
+
+            var keyb = "false",
+                backd = "static";
+            var calbackParam = "";
+            switch (defaults.type) {
+                case 'alert':
+                    keyb = "true";
+                    backd = "true";
+                    $('#ezAlerts-footer').html('<button class="btn btn-' + defaults.alertType + '">' + defaults
+                        .okButtonText + '</button>').on('click', ".btn", function() {
+                        calbackParam = true;
+                        $('#ezAlerts').modal('hide');
+                    });
+                    break;
+                case 'confirm':
+                    var btnhtml = '<button id="ezok-btn" class="btn btn-primary">' + defaults.yesButtonText +
+                        '</button>';
+                    if (defaults.noButtonText && defaults.noButtonText.length > 0) {
+                        btnhtml += '<button id="ezclose-btn" class="btn btn-default">' + defaults.noButtonText +
+                            '</button>';
+                    }
+                    $('#ezAlerts-footer').html(btnhtml).on('click', 'button', function(e) {
+                        if (e.target.id === 'ezok-btn') {
+                            calbackParam = true;
+                            $('#ezAlerts').modal('hide');
+                        } else if (e.target.id === 'ezclose-btn') {
+                            calbackParam = false;
+                            $('#ezAlerts').modal('hide');
+                        }
+                    });
+                    break;
+                case 'prompt':
+                    $('#ezAlerts-message').html(defaults.messageText +
+                        '<br /><br /><div class="form-group"><input type="' + defaults.inputFieldType +
+                        '" class="form-control" id="prompt" /></div>');
+                    $('#ezAlerts-footer').html('<button class="btn btn-primary">' + defaults.okButtonText +
+                        '</button>').on('click', ".btn", function() {
+                        calbackParam = $('#prompt').val();
+                        $('#ezAlerts').modal('hide');
+                    });
+                    break;
+            }
+
+            $('#ezAlerts').modal({
+                show: false,
+                backdrop: backd,
+                keyboard: keyb === "true",
+            }).on('hidden.bs.modal', function(e) {
+                $('#ezAlerts').remove();
+                deferredObject.resolve(calbackParam);
+            }).on('shown.bs.modal', function(e) {
+                if ($('#prompt').length > 0) {
+                    $('#prompt').focus();
+                }
+            }).modal('show');
+        }
+
+        _show();
+        return deferredObject.promise();
     }
     //hide logo when resize
     $(document).ready(function() {

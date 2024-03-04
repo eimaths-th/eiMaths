@@ -92,7 +92,16 @@ class ProductController extends Controller
     }
 
 
+    public function pfind($pid)
+    {
+        $product = Product::where('code', $pid)->first();
 
+        if (!$product) {
+            return response()->json(['message' => 'Product not found']);
+        }
+
+        return response()->json(['product' =>  $product]);
+    }
 
     /**
      * Show the form for creating a new resource.
@@ -177,7 +186,7 @@ class ProductController extends Controller
         }
 
         $barcode = new DNS1D();
-        $barcodeData = $barcode->getBarcodeHTML($id, 'C39', 2, 40, 'black', false);
+        $barcodeData = $barcode->getBarcodeHTML($product->code, 'C39', 1, 50, 'black', false);
 
         return response()->json([
             'barcode' => $barcodeData,
@@ -193,7 +202,7 @@ class ProductController extends Controller
         }
 
         $qbarcode = new DNS2D();
-        $qbarcodeData = $qbarcode->getBarcodeHTML($id, 'QRCODE', 5, 5, 'black', false);
+        $qbarcodeData = $qbarcode->getBarcodeHTML($product->code, 'QRCODE', 5, 5, 'black', false);
 
         return response()->json([
             'qbarcode' => $qbarcodeData,
@@ -241,6 +250,36 @@ class ProductController extends Controller
         $update->update($contactd);
 
         return response()->json(['success' => 'The Acceseries has been successfully edited.']);
+    }
+
+
+    public function add_stock(Request $request, $id)
+    {
+        $rules = [
+            'amount' => 'required|numeric|min:1', // Added numeric rule to ensure 'amount' is a number
+        ];
+
+        $messages = [
+            'amount.required' => 'Amount must not be blank!',
+            'amount.numeric' => 'Amount must be a number!',
+            'amount.min' => 'Amount must be greater than or equal to 1!',
+        ];
+
+        $validator = Validator::make($request->all(), $rules, $messages);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()->all()]);
+        }
+
+
+
+        $update = Product::find($id);
+
+        $newAmount = $update->amount + $request->input('amount');
+
+        $update->update(['amount' => $newAmount]);
+
+        return response()->json(['success' => 'The Acceseries has been successfully update.']);
     }
 
     /**

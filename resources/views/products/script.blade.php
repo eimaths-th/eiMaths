@@ -1,4 +1,110 @@
 <script>
+    const detectKeyboardLanguage = (inputText) => {
+        // Define patterns for different languages
+        const thaiPattern = /[ก-๙]/;
+        const englishPattern = /[a-zA-Z]/;
+        const defaultLanguage = 'Unknown';
+
+        // Check if input text contains Thai characters
+        if (thaiPattern.test(inputText)) {
+            return 'Thai';
+        }
+
+        // Check if input text contains English characters
+        if (englishPattern.test(inputText)) {
+            return 'English';
+        }
+
+        // If no language pattern is matched, return default language
+        return defaultLanguage;
+    };
+
+    function showAlert(message) {
+        ezBSAlert({
+            headerText: "Alert",
+            messageText: message,
+            alertType: "danger",
+        });
+    }
+
+    function clearFields() {
+        $('#PlusCode').val('');
+        $('#PlusCodeh').val('');
+        $('#PlusName').val('');
+        $('#PlusUnit').val('');
+        $('#PlusUnit').val('');
+        $('#istock').html('');
+    }
+
+    $(window).ready(function() {
+
+        /* $("#scannerInput").scannerDetection({
+            timeBeforeScanTest: 200,
+            avgTimeByChar: 40,
+            preventDefault: true,
+
+            endChar: [13],
+            onError: function(string){alert('Error ' + string);}
+        }); */
+
+        console.log('all is well');
+
+        $(document).scannerDetection({
+            timeBeforeScanTest: 200, // wait for the next character for upto 200ms
+            avgTimeByChar: 40, // it's not a barcode if a character takes longer than 100ms
+            preventDefault: true,
+            endChar: [13],
+        });
+
+        $(document).bind('scannerDetectionComplete', async function(e, data) {
+                console.log('complete ' + data.string);
+                const userInput = data.string; // Sample input text
+                const keyboardLanguage = detectKeyboardLanguage(userInput);
+
+                // Display alert error if the detected language is not English
+                if (keyboardLanguage !== 'English') {
+                    //alert("Error: กรุณาเปลี่ยน Keyboard เป็นภาษาไทย");
+                    const prom = ezBSAlert({
+                        headerText: "Alert",
+                        messageText: "กรุณาเปลี่ยน Keyboard เป็นภาษาอังกฤษ",
+                        alertType: "danger",
+                    });
+                } else {
+                    $("#PlusCode").val(data.string);
+                    var pcode = $('#PlusCode').val();
+                    await $.ajax({
+                        url: "products/find/" + pcode,
+                        method: 'GET',
+                        success: function(res) {
+                            if (res.product) {
+                                $('#PlusCodeh').val(res.product.id);
+                                $('#PlusName').val(res.product.name);
+                                $('#PlusUnit').val(res.product.unit);
+                                $('#PlusDetail').val(res.product.detail);
+                                $('#istock').html('คงเหลือ ' + res.product.amount + ' ' +
+                                    res.product.unit);
+                            } else {
+                                showAlert(res.message);
+                                clearFields();
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            showAlert(error);
+                            clearFields();
+                        }
+                    });
+                }
+
+            })
+            .bind('scannerDetectionError', function(e, data) {
+                console.log('detection error ' + data.string);
+            })
+            .bind('scannerDetectionReceive', function(e, data) {
+                console.log('Recieve');
+                console.log(data.evt.which);
+            });
+    });
+    //$(window).scannerDetection('success');
 
     $(document).ready(function() {
         $(document).on('change', '.auto_decimal', function() {
@@ -183,6 +289,16 @@
             }
         })
 
+        $(document).on('click', '#AddStock', async function(e) {
+            e.preventDefault();
+            $('.alert-danger').html('');
+            $('.alert-danger').hide();
+            $('.alert-success').html('');
+            $('.alert-success').hide();
+
+            $('#PlusModal').modal('show');
+        });
+
         $(document).on('click', '#CreateButton', async function(e) {
             e.preventDefault();
             $('.alert-danger').html('');
@@ -366,6 +482,50 @@
             });
         });
 
+
+        $('#PlusButton').click(function(e) {
+            if (!confirm("Confirm the action?")) return;
+            e.preventDefault();
+
+            $('.alert-danger').html('');
+            $('.alert-danger').hide();
+            $('.alert-success').html('');
+            $('.alert-success').hide();
+
+            id = $('#PlusCodeh').val();
+
+            $.ajax({
+                url: "products/add_stock/" + id,
+                method: 'PUT',
+                data: {
+                    amount: $('#PlusAmount').val(),
+                },
+
+                success: function(result) {
+                    //console.log(result);
+                    if (result.errors) {
+                        $('.alert-danger').html('');
+                        $.each(result.errors, function(key, value) {
+                            $('.alert-danger').show();
+                            $('.alert-danger').append('<strong><li>' + value +
+                                '</li></strong>');
+                        });
+                    } else {
+                        $('.alert-danger').hide();
+                        $('.alert-success').show();
+                        $('.alert-success').append('<strong><li>' + result.success +
+                            '</li></strong>');
+                        $('#PlusModal').modal('hide');
+                        toastr.success(result.success, {
+                            timeOut: 5000
+                        });
+                        clearFields();
+                        $('#Listview').DataTable().ajax.reload();
+                    }
+                }
+            });
+        });
+
         $('#printBarcodeButton').click(function(event) {
             event.preventDefault(); // Prevent default button behavior
 
@@ -424,32 +584,6 @@
              }
          }); */
 
-        $(document).scannerDetection({
-
-            //https://github.com/kabachello/jQuery-Scanner-Detection
-
-            timeBeforeScanTest: 200, // wait for the next character for upto 200ms
-            avgTimeByChar: 40, // it's not a barcode if a character takes longer than 100ms
-            preventDefault: true,
-
-            endChar: [13],
-            onComplete: function(barcode, qty) {
-                    validScan = true;
-
-
-                    $('#scannerInput').val(barcode);
-
-                } // main callback function	,
-                ,
-            onError: function(string, qty) {
-
-                $('#userInput').val($('#userInput').val() + string);
-
-
-            }
-
-
-        });
 
         $(document).on('click', '.btn-delete', function() {
             if (!confirm("Confirm the action?")) return;

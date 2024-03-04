@@ -28,15 +28,7 @@
                         <div id="barcodeContainer"></div>
                     </div>
                     <div class="row"><br></div>
-                    <div class="test">
-                        <input type="text" id="scannerInput" value="barcodescan" autofocus>
-                    </div>
 
-                    <div id="banner-message">
-                        <p>Barcode test</p>
-                        <input type="text" id="input" />
-                        <pre></pre>
-                    </div>
                 </div>
             </div>
             <!-- Modal footer -->
