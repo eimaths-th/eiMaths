@@ -57,7 +57,7 @@
         $(document).scannerDetection({
             timeBeforeScanTest: 200, // wait for the next character for upto 200ms
             avgTimeByChar: 40, // it's not a barcode if a character takes longer than 100ms
-            preventDefault: true,
+            preventDefault: false,
             endChar: [13],
         });
 
@@ -109,8 +109,8 @@
                     });
 
                     if (stockt == 1) {
-                        let centre = $('#RmCentre').val();
-                        let student = $('#s_student').val();
+                        let centre = $('#RmCentre').val()[0];
+                        let student = $('#s_student').val()[0];
                         if (centre.length == 0 || student.length == 0) {
                             const prom = ezBSAlert({
                                 headerText: "Alert",
@@ -132,6 +132,8 @@
                                         method: 'PUT',
                                         data: {
                                             amount: 1,
+                                            centre: centre,
+                                            student: student
                                         },
 
                                         success: function(result) {
@@ -345,6 +347,58 @@
             "responsive": true,
         });
 
+        $(document).on('click', '.btn-log', function() {
+
+            var Id = $(this).data('id');
+            var url = '{{ route('products.stock') }}?id=' + Id;
+
+            $('#users-table').DataTable().destroy();
+            $('#users-table').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: url,
+                aaSorting: [
+                    [0, "desc"]
+                ],
+                columns: [{
+                        data: 'created_date',
+                        name: 'created_date'
+                    },
+                    {
+                        data: 'centre_name',
+                        name: 'centre_name'
+                    },
+                    {
+                        data: 'student_name',
+                        name: 'student_name'
+                    },
+                    {
+                        data: 'product_name',
+                        name: 'product_name'
+                    },
+                    {
+                        data: 'add_stock',
+                        name: 'add_stock'
+                    },
+                    {
+                        data: 'rm_stock',
+                        name: 'rm_stock'
+                    },
+                    {
+                        data: 'in_stock',
+                        name: 'in_stock'
+                    },
+                    {
+                        data: 'user_name',
+                        name: 'user_name'
+                    }
+                ]
+            });
+
+            $('#userModal').modal('show');
+        });
+
+
 
         $("#AddCentre").change(function() {
             let centre = $('#AddCentre').val();
@@ -433,6 +487,7 @@
                     $('#AddCode').val(res.running);
                 }
             });
+
             $('#CreateModal').modal('show');
         });
 

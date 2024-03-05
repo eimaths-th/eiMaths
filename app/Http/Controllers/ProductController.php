@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\Stock;
 use App\Models\ProductRunningNumber;
 use App\Models\Department;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
@@ -14,6 +16,7 @@ use Illuminate\Validation\Rule;
 
 use Milon\Barcode\DNS1D;
 use Milon\Barcode\DNS2D;
+use Yajra\DataTables\DataTables;
 
 class ProductController extends Controller
 {
@@ -56,15 +59,20 @@ class ProductController extends Controller
                 })
                 ->addColumn('action', function ($row) {
                     if (Gate::allows('product-edit')) {
-                        $html = '<button type="button" class="btn btn-sm btn-info btn-barcode" data-id="' . $row->id . '"><i class="fa-solid fa-barcode"></i> Barcode</button> ';
+                        $html = '<button type="button" class="btn btn-sm btn-success btn-log" data-id="' . $row->id . '"><i class="fa-solid fa-eye"></i> Log</button> ';
                     } else {
-                        $html = '<button type="button" class="btn btn-sm btn-info disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa-solid fa-barcode"></i> Barcode</button> ';
+                        $html = '<button type="button" class="btn btn-sm btn-success disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa-solid fa-eye"></i> Log</button> ';
+                    }
+                    if (Gate::allows('product-edit')) {
+                        $html .= '<button type="button" class="btn btn-sm btn-info btn-barcode" data-id="' . $row->id . '"><i class="fa-solid fa-barcode"></i> Bar</button> ';
+                    } else {
+                        $html .= '<button type="button" class="btn btn-sm btn-info disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa-solid fa-barcode"></i> Bar</button> ';
                     }
 
                     if (Gate::allows('product-edit')) {
-                        $html .= '<button type="button" class="btn btn-sm btn-info btn-qbarcode" data-id="' . $row->id . '"><i class="fa-solid fa-qrcode"></i> QRcode</button> ';
+                        $html .= '<button type="button" class="btn btn-sm btn-info btn-qbarcode" data-id="' . $row->id . '"><i class="fa-solid fa-qrcode"></i> QR</button> ';
                     } else {
-                        $html .= '<button type="button" class="btn btn-sm btn-info disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa-solid fa-qrcode"></i> Barcode</button> ';
+                        $html .= '<button type="button" class="btn btn-sm btn-info disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa-solid fa-qrcode"></i> QR</button> ';
                     }
 
                     if (Gate::allows('product-edit')) {
@@ -103,6 +111,30 @@ class ProductController extends Controller
         return response()->json(['product' =>  $product]);
     }
 
+    public function getStock(Request $request)
+    {
+        // Retrieve the parameter from the request
+        $Id = $request->input('id');
+
+        $product = Stock::select(
+            'stocks.*',
+            DB::raw("DATE_FORMAT(stocks.created_at, '%Y-%m-%d %H:%i:%s') AS created_date"),
+            'users.name as user_name', // Include the user_name column from the users table
+            "departments.name as centre_name",
+            "products.name as product_name",
+            "contacts.name as student_name",
+        )
+            ->join('users', 'stocks.user_id', '=', 'users.id')
+            ->join("departments", "stocks.centre", "=", "departments.id")
+            ->join("products", "stocks.product_id", "=", "products.id")
+            ->leftjoin("contacts", "stocks.student_id", "=", "contacts.id")
+
+            ->where('stocks.product_id', $Id);
+
+        $product = $product->orderBy("stocks.id", "desc")->get();
+
+        return DataTables::of($product)->make(true);
+    }
     /**
      * Show the form for creating a new resource.
      */
@@ -279,6 +311,17 @@ class ProductController extends Controller
 
         $update->update(['amount' => $newAmount]);
 
+        $Stock = Stock::create([
+            'product_id' => $id,
+            'centre' => auth()->user()->department->id,
+            'add_stock' => $request->input('amount'),
+            'in_stock' => $newAmount,
+            'user_id' => auth()->user()->id,
+
+
+        ]);
+
+
         return response()->json(['success' => 'The Acceseries has been successfully update.']);
     }
 
@@ -312,6 +355,18 @@ class ProductController extends Controller
         $newAmount = $update->amount - $request->input('amount');
 
         $update->update(['amount' => $newAmount]);
+
+        $Stock = Stock::create([
+            'product_id' => $id,
+            'student_id' => $request->input('student'),
+            'centre' => $request->input('centre'),
+            'rm_stock' => $request->input('amount'),
+            'in_stock' => $newAmount,
+            'user_id' => auth()->user()->id,
+
+
+        ]);
+
 
         return response()->json(['success' => 'The Acceseries has been successfully update.', 'product' => $update]);
     }

@@ -85,6 +85,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::put('/products/rm_stock/{id}', [App\Http\Controllers\ProductController::class, 'rm_stock'])->name('products.rm_stock');
     Route::delete('/products/destroy', [App\Http\Controllers\ProductController::class, 'destroy'])->name('products.destroy');
     Route::post('/products/destroy_all', [App\Http\Controllers\ProductController::class, 'destroy_all'])->name('products.destroy_all');
+    Route::get('/products/stock', [App\Http\Controllers\ProductController::class, 'getStock'])->name('products.stock');
 
     Route::get('/level/find/{type}/{level}', [App\Http\Controllers\ContactController::class, 'lfind'])->name('level.find');
     Route::get('/term/find/{type}/{level}/{term}', [App\Http\Controllers\ContactController::class, 'tfind'])->name('term.find');

@@ -1,6 +1,11 @@
 @extends('layouts.app')
 
 @section('style')
+    <style>
+        .modal-xxl {
+            max-width: 1300px !important;
+        }
+    </style>
 @endsection
 
 @section('content')
@@ -9,7 +14,7 @@
             <div class="row">
                 <div class="col-12">
 
-                  {{--   <div class="row">
+                    {{--   <div class="row">
                         @foreach ($data as $rr)
                             <div class="col-md-6 col-sm-6 col-lg-6 col-xl-3 col-12">
                                 <div class="info-box">
@@ -161,6 +166,35 @@
 
     </section>
 
+    <div class="modal fade" id="userModal" tabindex="-1" role="dialog" aria-labelledby="userModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-xxl" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <h5 class="modal-title" id="userModalLabel"> <i class="fas fa-cubes"></i> Stock History</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <table id="users-table" class="table">
+                        <thead>
+                            <tr>
+                                <th>วันที่ทำรายการ</th>
+                                <th>สาขา</th>
+                                <th>นักเรียน</th>
+                                <th>Accessories</th>
+                                <th>รับเข้า</th>
+                                <th>จ่ายออก</th>
+                                <th>คงเหลือ</th>
+                                <th>ผู้ทำรายการ</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 
     @include('products.create')
 
