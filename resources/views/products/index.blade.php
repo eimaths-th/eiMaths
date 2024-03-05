@@ -36,7 +36,7 @@
                         {{-- <li class="breadcrumb-item"><a href="#">Home</a></li>
                         <li class="breadcrumb-item active">Users Management</li> --}}
 
-                        @can('product-create')
+                        @can('product-edit')
                             <button type="button" class="btn btn-success" id="AddStock">
                                 <i class="fa-solid fa-plus"></i> รับเข้า Stock
                             </button>
@@ -171,6 +171,8 @@
     @include('products.qrcode')
 
     @include('products.plus')
+
+    @include('products.rm')
 
     {{--  {!! $data->render() !!} --}}
 @endsection

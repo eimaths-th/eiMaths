@@ -282,6 +282,40 @@ class ProductController extends Controller
         return response()->json(['success' => 'The Acceseries has been successfully update.']);
     }
 
+
+    public function rm_stock(Request $request, $id)
+    {
+        $rules = [
+            'amount' => 'required|numeric|min:1', // Added numeric rule to ensure 'amount' is a number
+        ];
+
+        $messages = [
+            'amount.required' => 'Amount must not be blank!',
+            'amount.numeric' => 'Amount must be a number!',
+            'amount.min' => 'Amount must be greater than or equal to 1!',
+        ];
+
+        $validator = Validator::make($request->all(), $rules, $messages);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()->all()]);
+        }
+
+
+
+        $update = Product::find($id);
+
+        if ($update->amount <= 0) {
+            return response()->json(['errors' => 'สินค้านี้หมดสต็อกแล้ว.', 'product' => $update]);
+        }
+
+        $newAmount = $update->amount - $request->input('amount');
+
+        $update->update(['amount' => $newAmount]);
+
+        return response()->json(['success' => 'The Acceseries has been successfully update.', 'product' => $update]);
+    }
+
     /**
      * Remove the specified resource from storage.
      */

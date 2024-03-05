@@ -82,6 +82,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/products/qbarcode/{id}', [App\Http\Controllers\ProductController::class, 'qbarcode'])->name('products.qbarcode');
     Route::put('/products/save/{id}', [App\Http\Controllers\ProductController::class, 'update'])->name('products.save');
     Route::put('/products/add_stock/{id}', [App\Http\Controllers\ProductController::class, 'add_stock'])->name('products.add_stock');
+    Route::put('/products/rm_stock/{id}', [App\Http\Controllers\ProductController::class, 'rm_stock'])->name('products.rm_stock');
     Route::delete('/products/destroy', [App\Http\Controllers\ProductController::class, 'destroy'])->name('products.destroy');
     Route::post('/products/destroy_all', [App\Http\Controllers\ProductController::class, 'destroy_all'])->name('products.destroy_all');
 

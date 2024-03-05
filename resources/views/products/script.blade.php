@@ -32,9 +32,14 @@
         $('#PlusCodeh').val('');
         $('#PlusName').val('');
         $('#PlusUnit').val('');
-        $('#PlusUnit').val('');
+        $('#RmCode').val('');
+        $('#RmCodeh').val('');
+        $('#RmName').val('');
+        $('#RmUnit').val('');
         $('#istock').html('');
+        $('#istock2').html('');
     }
+
 
     $(window).ready(function() {
 
@@ -71,7 +76,10 @@
                     });
                 } else {
                     $("#PlusCode").val(data.string);
+                    $("#RmCode").val(data.string);
                     var pcode = $('#PlusCode').val();
+                    var stockt = $('#Stockt').val();
+
                     await $.ajax({
                         url: "products/find/" + pcode,
                         method: 'GET',
@@ -81,7 +89,13 @@
                                 $('#PlusName').val(res.product.name);
                                 $('#PlusUnit').val(res.product.unit);
                                 $('#PlusDetail').val(res.product.detail);
+                                $('#RmCodeh').val(res.product.id);
+                                $('#RmName').val(res.product.name);
+                                $('#RmUnit').val(res.product.unit);
+                                $('#RmDetail').val(res.product.detail);
                                 $('#istock').html('คงเหลือ ' + res.product.amount + ' ' +
+                                    res.product.unit);
+                                $('#istock2').html('คงเหลือ ' + res.product.amount + ' ' +
                                     res.product.unit);
                             } else {
                                 showAlert(res.message);
@@ -93,6 +107,65 @@
                             clearFields();
                         }
                     });
+
+                    if (stockt == 1) {
+                        let centre = $('#RmCentre').val();
+                        let student = $('#s_student').val();
+                        if (centre.length == 0 || student.length == 0) {
+                            const prom = ezBSAlert({
+                                headerText: "Alert",
+                                messageText: "กรุณาระบุสาขาและนักเรียน",
+                                alertType: "danger",
+                            });
+                        } else {
+                            ezBSAlert({
+                                type: "confirm",
+                                headerText: "Confirm",
+                                messageText: "ยืนยันการจ่ายออก?",
+                                alertType: "danger",
+                            }).done(function(r) {
+                                if (r == true) {
+                                    id = $('#RmCodeh').val();
+
+                                    $.ajax({
+                                        url: "products/rm_stock/" + id,
+                                        method: 'PUT',
+                                        data: {
+                                            amount: 1,
+                                        },
+
+                                        success: function(result) {
+                                            //console.log(result);
+                                            if (result.errors) {
+                                                const prom = ezBSAlert({
+                                                    headerText: "Alert",
+                                                    messageText: result
+                                                        .errors,
+                                                    alertType: "danger",
+                                                });
+
+                                            } else {
+
+                                                toastr.success(result.success, {
+                                                    timeOut: 5000
+                                                });
+                                                clearFields();
+                                                $('#istock2').html('คงเหลือ ' +
+                                                    parseFloat(result.product
+                                                        .amount).toFixed(2) +
+                                                    ' ' +
+                                                    result.product.unit);
+
+                                                $('#Listview').DataTable().ajax
+                                                    .reload();
+                                            }
+                                        }
+                                    });
+                                }
+                            });
+                        }
+
+                    }
                 }
 
             })
@@ -289,6 +362,21 @@
             }
         })
 
+        $("#RmCentre").change(function() {
+            let centre = $('#RmCentre').val();
+            if (centre.length !== 0) {
+                $.ajax({
+                    method: "GET",
+                    url: "histories/running/" + centre,
+                    async: false,
+                    success: function(res) {
+                        //$('#AddCode').prop('readonly', false);
+                        $('#s_student').html(res.html_std);
+                    }
+                });
+            }
+        })
+
         $(document).on('click', '#AddStock', async function(e) {
             e.preventDefault();
             $('.alert-danger').html('');
@@ -296,7 +384,37 @@
             $('.alert-success').html('');
             $('.alert-success').hide();
 
+            clearFields();
+            $('#Stockt').val('0');
             $('#PlusModal').modal('show');
+        });
+
+        $(document).on('click', '#RmStock', async function(e) {
+            e.preventDefault();
+            $('.alert-danger').html('');
+            $('.alert-danger').hide();
+            $('.alert-success').html('');
+            $('.alert-success').hide();
+
+            $('#RmCentre').val(null).trigger("change");
+            $('#s_student').val(null).trigger("change");
+            clearFields();
+
+            let centre = $('#RmCentre').val();
+            if (centre.length !== 0) {
+                $.ajax({
+                    method: "GET",
+                    url: "histories/running/" + centre,
+                    async: false,
+                    success: function(res) {
+                        //$('#AddCode').prop('readonly', false);
+                        $('#s_student').html(res.html_std);
+                    }
+                });
+            }
+
+            $('#Stockt').val('1');
+            $('#RmModal').modal('show');
         });
 
         $(document).on('click', '#CreateButton', async function(e) {

@@ -42,6 +42,7 @@
                                     'autofocus' => true,
                                 ]) !!}
                                 {!! Form::hidden('pcodeh', null, ['id' => 'PlusCodeh']) !!}
+                                {!! Form::hidden('stockt', 0, ['id' => 'Stockt']) !!}
                             </div>
                         </div>
 
