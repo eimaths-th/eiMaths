@@ -36,8 +36,8 @@
         $('#RmCodeh').val('');
         $('#RmName').val('');
         $('#RmUnit').val('');
-        $('#istock').html('');
-        $('#istock2').html('');
+        $('#istock').html('กรุณาเปิดหน้านี้ และทำการสแกน บาร์โค้ด หรือ QRCode');
+        $('#istock2').html('กรุณาเปิดหน้านี้ และทำการสแกน บาร์โค้ด หรือ QRCode');
     }
 
 
