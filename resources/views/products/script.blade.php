@@ -126,14 +126,15 @@
                             }).done(function(r) {
                                 if (r == true) {
                                     id = $('#RmCodeh').val();
-
+                                    let centrev = $('#RmCentre').val();
+                                    let studentv = $('#s_student').val();
                                     $.ajax({
                                         url: "products/rm_stock/" + id,
                                         method: 'PUT',
                                         data: {
                                             amount: 1,
-                                            centre: centre,
-                                            student: student
+                                            centre: centrev,
+                                            student: studentv
                                         },
 
                                         success: function(result) {
