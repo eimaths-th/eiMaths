@@ -109,8 +109,8 @@
                     });
 
                     if (stockt == 1) {
-                        let centre = $('#RmCentre').val()[0];
-                        let student = $('#s_student').val()[0];
+                        let centre = $('#RmCentre').val();
+                        let student = $('#s_student').val();
                         if (centre.length == 0 || student.length == 0) {
                             const prom = ezBSAlert({
                                 headerText: "Alert",
