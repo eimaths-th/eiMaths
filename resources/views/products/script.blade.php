@@ -126,8 +126,8 @@
                             }).done(function(r) {
                                 if (r == true) {
                                     id = $('#RmCodeh').val();
-                                    let centrev = $('#RmCentre').val();
-                                    let studentv = $('#s_student').val();
+                                    let centrev = $('#RmCentre').val()[0];
+                                    let studentv = $('#s_student').val()[0];
                                     $.ajax({
                                         url: "products/rm_stock/" + id,
                                         method: 'PUT',
