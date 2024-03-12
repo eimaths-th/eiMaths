@@ -13,6 +13,7 @@ use App\Models\term;
 use App\Models\Sterm;
 use App\Models\Order;
 use App\Models\Receipt;
+use App\Models\Histrories;
 use App\Models\OrderDetail;
 use App\Models\OrderDetailList;
 use App\Models\OrderRunningNumber;
@@ -50,6 +51,20 @@ class ContactController extends Controller
     /**
      * Display a listing of the resource.
      */
+
+    public function checkEndDate($id)
+    {
+        $data = Histrories::where('student_id', $id)
+            ->orderBy('id', 'DESC')
+            ->first(); // Assuming you want to retrieve only one record, you can use 'first()' to get the latest record.
+
+        if ($data) {
+            return $data->end_date; // Assuming 'end_date' is the column you want to check.
+        } else {
+            return '-'; // or you can return some default value if no record is found.
+        }
+    }
+
     public function index(Request $request)
     {
         // dd($request);
@@ -105,6 +120,9 @@ class ContactController extends Controller
                 })
                 ->editColumn('nickname', function ($row) {
                     return $row->nickname !== null && $row->nickname !== '' ? $row->nickname : '-';
+                })
+                ->addColumn('end_date', function ($row) {
+                    return $this->checkEndDate($row->id);
                 })
                 ->editColumn('bookuse_name', function ($row) {
                     if (!empty($row->bookuse2_name)) {

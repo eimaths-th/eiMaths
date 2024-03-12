@@ -171,6 +171,7 @@
                                                     <th>Student Name</th>
                                                     <th>Student Nick Name</th>
                                                     <th>Start Date</th>
+                                                    <th>End Date</th>
                                                     <th>Level</th>
                                                     <th>BookUse </th>
                                                     {{-- <th>Start Term</th> --}}

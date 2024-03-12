@@ -431,6 +431,10 @@
                     name: 'start_date'
                 },
                 {
+                    data: 'end_date',
+                    name: 'end_date'
+                },
+                {
                     data: 'level_name',
                     name: 'level_name'
                 },
