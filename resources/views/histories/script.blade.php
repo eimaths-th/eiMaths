@@ -834,6 +834,8 @@
                     stime: $('#getStartTime').val(),
                     etime: $('#getEndTime').val(),
                     teacher_id: $('#eteacher').val(),
+                    start_date: $('#getStartDate').val(),
+                    end_date: $('#getEndDate').val(),
                     comment: $('#getComment').val(),
                 },
                 success: function(result) {
