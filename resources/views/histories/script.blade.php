@@ -399,10 +399,10 @@
                     data: 'start_date',
                     name: 'start_date'
                 },
-                {
+                /* {
                     data: 'end_date',
                     name: 'end_date'
-                },
+                }, */
                 // {
                 //     data: 'start_term_name',
                 //     name: 'start_term_name'

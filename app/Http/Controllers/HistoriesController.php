@@ -30,12 +30,43 @@ class HistoriesController extends Controller
     /**
      * Display a listing of the resource.
      */
+    public function formatDate($date)
+    {
+        return date('d-m-Y', strtotime($date));
+    }
+
+
+    public function checkStartEndDate($std_id, $term, $level_id)
+    {
+        $history = Histrories::where([
+            ['student_id', $std_id],
+            ['term', $term],
+            ['level_id', $level_id]
+        ])->get();
+        // dd( $history->count(),$std_id,$term,$level_id,$history,);
+        //$lastHistory = $history->sortByDesc('created_at')->first();
+        $firstHistory = $history->sortBy('date')->first();
+
+        //dd($firstHistory);
+
+        if ($firstHistory) {
+            $start_date = Carbon::parse($firstHistory->date);
+            $end_date = $start_date->copy()->addMonths(4);
+            $startDate = $this->formatDate($start_date);
+            $endDate = $this->formatDate($end_date);
+            return $startDate . ' - ' . $endDate;
+        } else {
+            return '-'; // or you can return some default value if no record is found.
+        }
+    }
+
+
     public function index(Request $request)
     {
 
         if ($request->ajax()) {
 
-            $datass = Histrories::orderBy('id', 'desc');
+            $datass = Histrories::orderBy('date', 'desc');
             if (!Gate::allows('all-centre')) {
                 $datass->where('centre', Auth::user()->department->id);
             }
@@ -86,6 +117,10 @@ class HistoriesController extends Controller
                     } else {
                         $code = 'N/A';
                     }
+                    return $code;
+                })
+                ->editColumn('start_date', function ($row) {
+                    $code = $this->checkStartEndDate($row->student_id, $row->term, $row->level_id);
                     return $code;
                 })
                 ->editColumn('name', function ($row) {

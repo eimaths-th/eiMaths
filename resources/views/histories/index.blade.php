@@ -171,11 +171,11 @@
                                                     <th>Book Use </th>
 
                                                     <th>Date</th>
-                                                    <th>Stat Time</th>
-                                                    <th>End Time</th>
+                                                    <th>Stat Time </th>
+                                                    <th> End Time</th>
                                                     <th width="1%">Remain</th>
-                                                    <th>Start Date</th>
-                                                    <th>End Date</th>
+                                                    <th>Start Date - End Date</th>
+                                                    {{-- <th></th> --}}
 
                                                     {{-- <th>Start Term</th> --}}
                                                     <th>Comment</th>
