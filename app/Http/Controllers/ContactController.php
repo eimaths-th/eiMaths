@@ -30,6 +30,7 @@ use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
+use Carbon\Carbon;
 
 class ContactController extends Controller
 {
@@ -61,14 +62,30 @@ class ContactController extends Controller
     {
         $data = Histrories::where('student_id', $id)
             ->orderBy('id', 'DESC')
-            ->first(); // Assuming you want to retrieve only one record, you can use 'first()' to get the latest record.
-
+            ->first();
         if ($data) {
-            $startDate = $this->formatDate($data->start_date);
-            $endDate = $this->formatDate($data->end_date);
-            return $startDate . ' - ' . $endDate;
+            $history = Histrories::where([
+                ['student_id', $data->student_id],
+                ['term', $data->term],
+                ['level_id', $data->level_id]
+            ])->get();
+            // dd( $history->count(),$std_id,$term,$level_id,$history,);
+            //$lastHistory = $history->sortByDesc('created_at')->first();
+            $firstHistory = $history->sortBy('date')->first();
+
+            //dd($firstHistory);
+
+            if ($firstHistory) {
+                $start_date = Carbon::parse($firstHistory->date);
+                $end_date = $start_date->copy()->addMonths(4);
+                $startDate = $this->formatDate($start_date);
+                $endDate = $this->formatDate($end_date);
+                return $startDate . ' - ' . $endDate;
+            } else {
+                return '-'; // or you can return some default value if no record is found.
+            }
         } else {
-            return '-'; // or you can return some default value if no record is found.
+            return '-';
         }
     }
 

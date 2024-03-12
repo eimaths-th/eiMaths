@@ -117,10 +117,7 @@
                                                     <option value="">Please Select</option>
                                                     <option value="1">Student Code</option>
                                                     <option value="2">Student Name</option>
-                                                    <option value="3">Father Name</option>
-                                                    <option value="4">Mother Name</option>
-                                                    <option value="5">Father Mobile</option>
-                                                    <option value="6">Mother Mobile</option>
+
                                                 </select>
                                             </div>
                                         </div>
@@ -163,6 +160,7 @@
                                                     <th width="5%">
                                                         <input type="checkbox" id="check-all" class="flat">
                                                     </th>
+                                                    <th>Date</th>
                                                     <th width="1%" class="text-center">Centre</th>
                                                     <th width="1%" class="text-center">Code</th>
                                                     <th>Student Name</th>
@@ -170,12 +168,12 @@
                                                     <th width="1%">Term</th>
                                                     <th>Book Use </th>
 
-                                                    <th>Date</th>
-                                                    <th>Stat Time</th>
-                                                    <th>End Time</th>
+
+                                                    <th>Stat Time </th>
+                                                    <th> End Time</th>
                                                     <th width="1%">Remain</th>
-                                                    <th>Start Date</th>
-                                                    <th>End Date</th>
+                                                    <th>Start Date - End Date</th>
+                                                    {{-- <th></th> --}}
 
                                                     {{-- <th>Start Term</th> --}}
                                                     <th>Comment</th>
