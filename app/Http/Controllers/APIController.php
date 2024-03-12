@@ -65,7 +65,7 @@ class APIController extends Controller
                 ]);
             } else {
                 // User doesn't exist, return error
-                return response()->json(['error' => 'User not found. Please sign up with your Google account.'], 404);
+                return response()->json(['error' => 'User ' . $response['email'] . ' not found. Please sign up with your Google account.'], 404);
             }
         } else {
             // Invalid Google token
