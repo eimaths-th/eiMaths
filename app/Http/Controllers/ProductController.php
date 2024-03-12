@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Models\Stock;
+use App\Models\Contact;
 use App\Models\ProductRunningNumber;
 use App\Models\Department;
 use App\Http\Controllers\Controller;
@@ -96,6 +97,34 @@ class ProductController extends Controller
         return view('products.index')->with([
             'centre' => $centre,
             'data' => $datas
+        ]);
+    }
+
+
+    public function getDes($centre, $type)
+    {
+        //
+        if ($centre == 0) {
+            $centre = Auth::user()->department->id;
+        }
+        if ($type == 1) {
+            $stds = Contact::where('centre', $centre)->get();
+        } else {
+            $stds = Department::where('id', '!=', $centre)->get();
+        }
+
+        $html_std = '';
+        $remaining = '';
+
+        foreach ($stds as $std) {
+            $id = $std->id;
+            $code = $std->code;
+            $name = $std->name;
+            $html_std .= '<option value="' . $id . '">' . $code . ' ' . $name . '</option>';
+        }
+
+        return response()->json([
+            'html_std' => $html_std
         ]);
     }
 
@@ -352,12 +381,20 @@ class ProductController extends Controller
             return response()->json(['errors' => 'สินค้านี้หมดสต็อกแล้ว.', 'product' => $update]);
         }
 
-        $newAmount = $update->amount - $request->input('amount');
+        if ($request->input('amount') > $update->amount) {
+            $rm_amount = $request->input('amount') - $update->amount;
+        } else {
+            $rm_amount = $request->input('amount');
+        }
+
+
+        $newAmount = $update->amount - $rm_amount;
 
         $update->update(['amount' => $newAmount]);
 
         $Stock = Stock::create([
             'product_id' => $id,
+            'type' => $request->input('type'),
             'student_id' => $request->input('student'),
             'centre' => $request->input('centre'),
             'rm_stock' => $request->input('amount'),

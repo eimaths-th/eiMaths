@@ -114,7 +114,7 @@
                         if (centre.length == 0 || student.length == 0) {
                             const prom = ezBSAlert({
                                 headerText: "Alert",
-                                messageText: "กรุณาระบุสาขาและนักเรียน",
+                                messageText: "กรุณาระบุสาขาและปลายทาง",
                                 alertType: "danger",
                             });
                         } else {
@@ -126,15 +126,18 @@
                             }).done(function(r) {
                                 if (r == true) {
                                     id = $('#RmCodeh').val();
+                                    alert(id);
                                     let centrev = $('#RmCentre').val()[0];
                                     let studentv = $('#s_student').val()[0];
+                                    let selectedValue = $('input[name="type"]:checked').val();
                                     $.ajax({
                                         url: "products/rm_stock/" + id,
                                         method: 'PUT',
                                         data: {
-                                            amount: 1,
+                                            amount: $('#RmAmount').val(),
                                             centre: centrev,
-                                            student: studentv
+                                            student: studentv,
+                                            type: selectedValue
                                         },
 
                                         success: function(result) {
@@ -419,10 +422,11 @@
 
         $("#RmCentre").change(function() {
             let centre = $('#RmCentre').val();
+            let selectedValue = $('input[name="type"]:checked').val();
             if (centre.length !== 0) {
                 $.ajax({
                     method: "GET",
-                    url: "histories/running/" + centre,
+                    url: "products/des/" + centre + "/" + selectedValue,
                     async: false,
                     success: function(res) {
                         //$('#AddCode').prop('readonly', false);
@@ -444,6 +448,16 @@
             $('#PlusModal').modal('show');
         });
 
+
+        $('.rtype').change(function() {
+            // Get the value of the checked radio button
+            var selectedValue = $('input[name="type"]:checked').val();
+            $('#RmCentre').val(null).trigger("change");
+            $('#s_student').val(null).trigger("change");
+            console.log(
+                selectedValue); // Do something with the value, for example, log it to the console
+        });
+
         $(document).on('click', '#RmStock', async function(e) {
             e.preventDefault();
             $('.alert-danger').html('');
@@ -453,13 +467,16 @@
 
             $('#RmCentre').val(null).trigger("change");
             $('#s_student').val(null).trigger("change");
+            $('input[name="type"][value="1"]').prop('checked', true);
             clearFields();
 
             let centre = $('#RmCentre').val();
+            let selectedValue = $('input[name="type"]:checked').val();
+
             if (centre.length !== 0) {
                 $.ajax({
                     method: "GET",
-                    url: "histories/running/" + centre,
+                    url: "products/des/" + centre + "/" + selectedValue,
                     async: false,
                     success: function(res) {
                         //$('#AddCode').prop('readonly', false);

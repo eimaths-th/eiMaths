@@ -160,7 +160,7 @@
                                                     <th width="5%">
                                                         <input type="checkbox" id="check-all" class="flat">
                                                     </th>
-                                                    <th>Date </th>
+                                                    <th>Study Date </th>
                                                     <th width="1%" class="text-center">Centre</th>
                                                     <th width="1%" class="text-center">Code</th>
                                                     <th>Student Name</th>
