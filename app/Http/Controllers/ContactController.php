@@ -59,7 +59,7 @@ class ContactController extends Controller
             ->first(); // Assuming you want to retrieve only one record, you can use 'first()' to get the latest record.
 
         if ($data) {
-            return $data->end_date; // Assuming 'end_date' is the column you want to check.
+            return $data->start_date . '-' . $data->end_date; // Assuming 'end_date' is the column you want to check.
         } else {
             return '-'; // or you can return some default value if no record is found.
         }

@@ -170,8 +170,8 @@
                                                     <th>Code</th>
                                                     <th>Student Name</th>
                                                     <th>Student Nick Name</th>
-                                                    <th>Start Date</th>
-                                                    <th>End Date</th>
+                                                    <th>Register Date</th>
+                                                    <th>Start Date - End Date</th>
                                                     <th>Level</th>
                                                     <th>BookUse </th>
                                                     {{-- <th>Start Term</th> --}}

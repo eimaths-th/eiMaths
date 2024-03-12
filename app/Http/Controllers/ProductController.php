@@ -371,6 +371,55 @@ class ProductController extends Controller
         return response()->json(['success' => 'The Acceseries has been successfully update.', 'product' => $update]);
     }
 
+
+    public function rm_stock_centre(Request $request, $id)
+    {
+        $rules = [
+            'amount' => 'required|numeric|min:1', // Added numeric rule to ensure 'amount' is a number
+        ];
+
+        $messages = [
+            'amount.required' => 'Amount must not be blank!',
+            'amount.numeric' => 'Amount must be a number!',
+            'amount.min' => 'Amount must be greater than or equal to 1!',
+        ];
+
+        $validator = Validator::make($request->all(), $rules, $messages);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()->all()]);
+        }
+
+
+
+        $update = Product::find($id);
+
+        if ($update->amount <= 0) {
+            return response()->json(['errors' => 'สินค้านี้หมดสต็อกแล้ว.', 'product' => $update]);
+        }
+
+        if ($request->input('amount') > $update->amount) {
+            $rm_amount = $request->input('amount') - $update->amount;
+        } else {
+            $rm_amount = $request->input('amount');
+        }
+
+        $newAmount = $update->amount - $rm_amount;
+
+        $update->update(['amount' => $newAmount]);
+
+        $Stock = Stock::create([
+            'product_id' => $id,
+            'centre' => $request->input('centre'),
+            'rm_stock' => $request->input('amount'),
+            'in_stock' => $newAmount,
+            'user_id' => auth()->user()->id,
+        ]);
+
+
+        return response()->json(['success' => 'The Acceseries has been successfully update.', 'product' => $update]);
+    }
+
     /**
      * Remove the specified resource from storage.
      */
