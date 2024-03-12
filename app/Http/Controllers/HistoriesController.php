@@ -564,6 +564,8 @@ class HistoriesController extends Controller
     public function edit($id)
     {
         //
+
+
         $history = Histrories::find($id);
         $teacher = User::where('id', $history->teacher_id)->first();
         if ($teacher !== null) {
@@ -706,6 +708,20 @@ class HistoriesController extends Controller
                                 <span class="text-danger" for="" >' . $historys->comment_old . '</span>
                             </div>
                         </div>
+                        <div class="col-xs-3 col-sm-3 col-md-3">
+                            <div class="form-group">
+                                <strong><i class="fas fa-code"></i> Start Date : </strong>
+                                <span class="text-danger" for="" >' . $historys->start_date_old . '</span>
+                            </div>
+                        </div>
+                        <div class="col-xs-3 col-sm-3 col-md-3">
+                            <div class="form-group">
+                                <strong><i class="fas fa-code"></i> End Date : </strong>
+                                <span class="text-danger" for="" >' . $historys->end_date_old . '</span>
+                            </div>
+                        </div>
+
+
                     </div>
 
                     <label for="" >New History</label>
@@ -765,9 +781,21 @@ class HistoriesController extends Controller
                                 <span class="text-success" for="" >' . $historys->comment_new . '</span>
                             </div>
                         </div>
+                        <div class="col-xs-3 col-sm-3 col-md-3">
+                            <div class="form-group">
+                                <strong><i class="fas fa-code"></i> Start Date : </strong>
+                                <span class="text-success" for="" >' . $historys->start_date_new . '</span>
+                            </div>
+                        </div>
+                        <div class="col-xs-3 col-sm-3 col-md-3">
+                            <div class="form-group">
+                                <strong><i class="fas fa-code"></i> End Date : </strong>
+                                <span class="text-success" for="" >' . $historys->end_date_new . '</span>
+                            </div>
+                        </div>
                     </div>
 
-                    <label for="" class="breadcrumb float-sm-right"> Approve By : ' . $histories->first()->approve_name . '</label> <br>
+                    <label for="" class="breadcrumb float-sm-right"> Approve By : ' . $historys->approve_name . '</label> <br>
 
                     <div class="modal-footer"></div>
                 ';
@@ -790,6 +818,7 @@ class HistoriesController extends Controller
         //
         $history = Histrories::find($id);
         $input = $request->all();
+        // dd($input,$history);
 
         $validator = Validator::make($request->all(), [
             'level_id' => 'required',
@@ -799,6 +828,8 @@ class HistoriesController extends Controller
             'date' => 'required',
             'stime' => 'required',
             'etime' => 'required',
+            'start_date' => 'required',
+            'end_date' => 'required',
             'comment' => 'required',
             // 'signature' => 'required',
         ], [
@@ -810,6 +841,8 @@ class HistoriesController extends Controller
             'level_id.required' => 'Please select a level.',
             'term.required' => 'Please select a term.',
             'bookuse.required' => 'Please specify book usage.',
+            'start_date.required' => 'Please provide start date.',
+            'end_date.required' => 'Please provide end date.',
         ]);
 
         if ($validator->fails()) {
@@ -844,13 +877,14 @@ class HistoriesController extends Controller
             'date_old' => $history->date,
             'stime_old' => $history->stime,
             'etime_old' => $history->etime,
+            'start_date_old' => $history->start_date,
+            'end_date_old' => $history->end_date,
             'comment_old' => $history->comment,
             'course_remaining_old' => $history->course_remaining,
             'approve_id' => auth()->user()->id,
             'approve_name' => auth()->user()->name,
 
         ]);
-
 
         $logHistory->update([
             'level_id_new' => $request->level_id,
@@ -860,6 +894,9 @@ class HistoriesController extends Controller
             'date_new' => $request->date,
             'stime_new' => $request->stime,
             'etime_new' => $request->etime,
+            'etime_new' => $request->etime,
+            'start_date_new' => $request->start_date,
+            'end_date_new' => $request->end_date,
             'comment_new' => $request->comment,
             'course_remaining_new' => $request->course_remaining,
             'approve_id' => auth()->user()->id,

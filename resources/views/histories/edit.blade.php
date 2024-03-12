@@ -249,7 +249,7 @@
 
                                                     </select> --}}
                                                     <input type="text" name="start_date" id="getStartDate"
-                                                        class="form-control" placeholder="getStartDate" disabled>
+                                                        class="form-control" placeholder="getStartDate">
 
                                                 </div>
                                             </div>
@@ -258,7 +258,7 @@
                                                 <div class="form-group">
                                                     <strong><i class="fas fa-code"></i>End Date</strong>
                                                     <input type="text" name="end_date" id="getEndDate"
-                                                        class="form-control" disabled>
+                                                        class="form-control">
 
                                                     {{-- <select name="course_remaining" id="AddCourseRemaining"class="select2 select2_single form-control"
                                                     multiple="multiple">
@@ -275,7 +275,7 @@
                                             <div class="col-xs-12 col-sm-12 col-md-12">
                                                 <div class="form-group">
                                                     <strong><i class="fas fa-calendar"></i> Signature:</strong>
-                                                   
+
                                                     <br>
                                                     <img src="" alt="Signature" id="getSignature"
                                                         class="img-fluid" style="width: 750px; height: 400px;">

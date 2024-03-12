@@ -18,6 +18,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $date_old
  * @property string $stime_old
  * @property string $etime_old
+ * @property string $start_date_old
+ * @property string $end_date_old
  * @property string $comment_old
  * @property integer $level_id_new
  * @property string $level_name_new
@@ -27,6 +29,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $date_new
  * @property string $stime_new
  * @property string $etime_new
+ * @property string $start_date_new
+ * @property string $end_date_new
  * @property string $comment_new
  * @property integer $approve_id
  * @property string $approve_name
@@ -45,12 +49,42 @@ class LogHistory extends Model
     /**
      * @var array
      */
-    protected $fillable = ['centre', 'history_id', 'student_id','status', 'level_id_old', 'level_name_old', 'term_old', 'bookuse_old', 'course_remaining_old', 'date_old', 'stime_old', 'etime_old', 'comment_old', 'level_id_new', 'level_name_new', 'term_new', 'bookuse_new', 'course_remaining_new', 'date_new', 'stime_new', 'etime_new', 'comment_new', 'approve_id','approve_name', 'created_at', 'updated_at'];
+    protected $fillable = [
+        'centre',
+        'history_id',
+        'student_id',
+        'status',
+        'level_id_old',
+        'level_name_old',
+        'term_old',
+        'bookuse_old',
+        'course_remaining_old',
+        'date_old',
+        'stime_old',
+        'etime_old',
+        'start_date_old',
+        'end_date_old',
+        'comment_old',
+        'level_id_new',
+        'level_name_new',
+        'term_new',
+        'bookuse_new',
+        'course_remaining_new',
+        'date_new',
+        'stime_new',
+        'etime_new',
+        'start_date_new',
+        'end_date_new',
+        'comment_new',
+        'approve_id',
+        'approve_name',
+        'created_at',
+        'updated_at'
+    ];
 
 
     public function history()
     {
         return $this->hasOne(Histrories::class, 'id', 'history_id');
     }
-
 }
