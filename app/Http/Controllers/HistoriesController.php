@@ -35,7 +35,7 @@ class HistoriesController extends Controller
 
         if ($request->ajax()) {
 
-            $datass = Histrories::orderBy('id', 'desc');
+            $datass = Histrories::orderBy('date', 'desc');
             if (!Gate::allows('all-centre')) {
                 $datass->where('centre', Auth::user()->department->id);
             }
