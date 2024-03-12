@@ -330,7 +330,7 @@
                 }
             },
             aaSorting: [
-                [0, "desc"]
+                [1, "desc"]
             ],
             //searching: false,
             iDisplayLength: 10,
@@ -358,6 +358,10 @@
                     searchable: false
                 },
                 {
+                    data: 'date',
+                    name: 'date'
+                },
+                {
                     data: 'centre',
                     name: 'centre'
                 },
@@ -376,14 +380,12 @@
                 {
                     data: 'term',
                     name: 'term'
-                }, {
+                },
+                {
                     data: 'bookuse',
                     name: 'bookuse'
                 },
-                {
-                    data: 'date',
-                    name: 'date'
-                },
+
                 {
                     data: 'stime',
                     name: 'stime'
@@ -437,17 +439,9 @@
 
                 // Apply the new search based on searchType and keyword
                 if (searchType === '1') {
-                    table.column(2).search(keyword).draw();
-                } else if (searchType === '2') {
                     table.column(3).search(keyword).draw();
-                } else if (searchType === '3') {
-                    table.column(14).search(keyword).draw();
-                } else if (searchType === '4') {
-                    table.column(15).search(keyword).draw();
-                } else if (searchType === '5') {
-                    table.column(10).search(keyword).draw();
-                } else if (searchType === '6') {
-                    table.column(11).search(keyword).draw();
+                } else if (searchType === '2') {
+                    table.column(4).search(keyword).draw();
                 }
             } else {
                 // Handle the case where searchType or keyword is empty

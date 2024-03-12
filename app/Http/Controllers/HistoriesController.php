@@ -120,7 +120,8 @@ class HistoriesController extends Controller
                     return $code;
                 })
                 ->editColumn('date', function ($row) {
-                    $code = $this->formatDate($row->date);
+                    //$code = $this->formatDate($row->date);
+                    $code = $row->date;
                     return $code;
                 })
                 ->editColumn('start_date', function ($row) {
