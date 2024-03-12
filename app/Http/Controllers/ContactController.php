@@ -52,6 +52,11 @@ class ContactController extends Controller
      * Display a listing of the resource.
      */
 
+    public function formatDate($date)
+    {
+        return date('d-m-Y', strtotime($date));
+    }
+
     public function checkEndDate($id)
     {
         $data = Histrories::where('student_id', $id)
@@ -59,7 +64,9 @@ class ContactController extends Controller
             ->first(); // Assuming you want to retrieve only one record, you can use 'first()' to get the latest record.
 
         if ($data) {
-            return $data->start_date . ' - ' . $data->end_date; // Assuming 'end_date' is the column you want to check.
+            $startDate = $this->formatDate($data->start_date);
+            $endDate = $this->formatDate($data->end_date);
+            return $startDate . ' - ' . $endDate;
         } else {
             return '-'; // or you can return some default value if no record is found.
         }
@@ -120,6 +127,9 @@ class ContactController extends Controller
                 })
                 ->editColumn('nickname', function ($row) {
                     return $row->nickname !== null && $row->nickname !== '' ? $row->nickname : '-';
+                })
+                ->editColumn('start_date', function ($row) {
+                    return $this->formatDate($row->start_date);
                 })
                 ->addColumn('end_date', function ($row) {
                     return $this->checkEndDate($row->id);
