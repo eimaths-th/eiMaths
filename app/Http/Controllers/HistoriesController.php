@@ -35,6 +35,10 @@ class HistoriesController extends Controller
         return date('d-m-Y', strtotime($date));
     }
 
+    public function sformatDate($date)
+    {
+        return date('Y-m-d', strtotime($date));
+    }
 
     public function checkStartEndDate($std_id, $term, $level_id)
     {
@@ -514,6 +518,18 @@ class HistoriesController extends Controller
         //
         //dd($id);
         $history = Histrories::find($id);
+
+        //start-end
+        $ste = $this->checkStartEndDate($history->student_id, $history->term, $history->level_id);
+        $stea = explode(' - ', $ste);
+
+        // Update start_date and end_date
+        $history->start_date = $this->sformatDate($stea[0]); // Assuming start date is the first element of $stea
+        $history->end_date = $this->sformatDate($stea[1]);   // Assuming end date is the second element of $stea
+
+        // Save changes
+        $history->save();
+
         $images = HistoryStudentImg::where('history_id', $id)->get();
         $centre = Department::where('id', $history->centre)->get();
         $teacher = User::where('id', $history->teacher_id)->first();
@@ -567,6 +583,18 @@ class HistoriesController extends Controller
 
 
         $history = Histrories::find($id);
+
+        //start-end
+        $ste = $this->checkStartEndDate($history->student_id, $history->term, $history->level_id);
+        $stea = explode(' - ', $ste);
+
+        // Update start_date and end_date
+        $history->start_date = $this->sformatDate($stea[0]); // Assuming start date is the first element of $stea
+        $history->end_date = $this->sformatDate($stea[1]);   // Assuming end date is the second element of $stea
+
+        // Save changes
+        $history->save();
+
         $teacher = User::where('id', $history->teacher_id)->first();
         if ($teacher !== null) {
             $teacher_name = $teacher->name;

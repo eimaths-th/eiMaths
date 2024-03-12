@@ -168,11 +168,11 @@
                                                     <th width="1%">Term</th>
                                                     <th>Book Use </th>
 
-
+                                                    <th>Start Date - End Date</th>
                                                     <th>Stat Time </th>
                                                     <th> End Time</th>
                                                     <th width="1%">Remain</th>
-                                                    <th>Start Date - End Date</th>
+
                                                     {{-- <th></th> --}}
 
                                                     {{-- <th>Start Term</th> --}}
