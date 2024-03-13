@@ -157,7 +157,7 @@ class ProductController extends Controller
             ->join("departments as stock_departments", "stocks.centre", "=", "stock_departments.id")
             ->where('stocks.product_id', $Id);
 
-        // Conditional join based on stocks.type
+        //ฝฝ Conditional join based on stocks.type
         $product->leftJoin("contacts", function ($join) {
             $join->on("stocks.student_id", "=", "contacts.id")
                 ->where("stocks.type", "=", 1)
