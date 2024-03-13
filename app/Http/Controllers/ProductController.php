@@ -134,7 +134,7 @@ class ProductController extends Controller
         $product = Product::where('code', $pid)->first();
 
         if (!$product) {
-            return response()->json(['message' => 'Product not found']);
+            return response()->json(['message' => 'ไม่พบสินค้านี้ในระบบ']);
         }
 
         return response()->json(['product' =>  $product]);
@@ -149,16 +149,32 @@ class ProductController extends Controller
             'stocks.*',
             DB::raw("DATE_FORMAT(stocks.created_at, '%Y-%m-%d %H:%i:%s') AS created_date"),
             'users.name as user_name', // Include the user_name column from the users table
-            "departments.name as centre_name",
+            "stock_departments.name as centre_name",
             "products.name as product_name",
-            "contacts.name as student_name",
         )
             ->join('users', 'stocks.user_id', '=', 'users.id')
-            ->join("departments", "stocks.centre", "=", "departments.id")
             ->join("products", "stocks.product_id", "=", "products.id")
-            ->leftjoin("contacts", "stocks.student_id", "=", "contacts.id")
-
+            ->join("departments as stock_departments", "stocks.centre", "=", "stock_departments.id")
             ->where('stocks.product_id', $Id);
+
+        // Conditional join based on stocks.type
+        $product->leftJoin("contacts", function ($join) {
+            $join->on("stocks.student_id", "=", "contacts.id")
+                ->where("stocks.type", "=", 1)
+                ->whereNotNull("stocks.student_id");
+        });
+        $product->leftJoin("departments", function ($join) {
+            $join->on("stocks.centre", "=", "departments.id")
+                ->where("stocks.type", "=", 2)
+                ->whereNotNull("stocks.student_id");
+        });
+
+        // Select appropriate column based on stocks.type
+        $product->addSelect(DB::raw("IF(stocks.type = 1 AND stocks.student_id IS NOT NULL, contacts.name, departments.name) as student_or_centre_name"));
+        $product->addSelect(DB::raw("IF(stocks.type = 1 AND stocks.student_id IS NOT NULL, 'Student', 'Centre') as student_or_centre_type"));
+
+        // You can add more conditions if needed
+
 
         $product = $product->orderBy("stocks.id", "desc")->get();
 

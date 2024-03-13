@@ -84,6 +84,7 @@
                         url: "products/find/" + pcode,
                         method: 'GET',
                         success: function(res) {
+                            console.log(res);
                             if (res.product) {
                                 $('#PlusCodeh').val(res.product.id);
                                 $('#PlusName').val(res.product.name);
@@ -97,6 +98,97 @@
                                     res.product.unit);
                                 $('#istock2').html('คงเหลือ ' + res.product.amount + ' ' +
                                     res.product.unit);
+
+                                if (stockt == 1) {
+                                    let centre = $('#RmCentre').val();
+                                    let student = $('#s_student').val();
+                                    if (centre.length == 0 || student.length == 0) {
+                                        const prom = ezBSAlert({
+                                            headerText: "Alert",
+                                            messageText: "กรุณาระบุสาขาและปลายทาง",
+                                            alertType: "danger",
+                                        });
+                                    } else {
+                                        ezBSAlert({
+                                            type: "confirm",
+                                            headerText: "Confirm",
+                                            messageText: "ยืนยันการจ่ายออก?",
+                                            alertType: "danger",
+                                        }).done(function(r) {
+                                            if (r == true) {
+                                                id = $('#RmCodeh').val();
+                                                let centrev = $('#RmCentre').val()[
+                                                    0];
+                                                let studentv = $('#s_student')
+                                                    .val()[0];
+                                                let selectedValue = $(
+                                                    'input[name="type"]:checked'
+                                                ).val();
+                                                $.ajax({
+                                                    url: "products/rm_stock/" +
+                                                        id,
+                                                    method: 'PUT',
+                                                    data: {
+                                                        amount: $(
+                                                                '#RmAmount')
+                                                            .val(),
+                                                        centre: centrev,
+                                                        student: studentv,
+                                                        type: selectedValue
+                                                    },
+
+                                                    success: function(
+                                                        result) {
+                                                        //console.log(result);
+                                                        if (result
+                                                            .errors) {
+                                                            const prom =
+                                                                ezBSAlert({
+                                                                    headerText: "Alert",
+                                                                    messageText: result
+                                                                        .errors,
+                                                                    alertType: "danger",
+                                                                });
+
+                                                        } else {
+
+                                                            toastr
+                                                                .success(
+                                                                    result
+                                                                    .success, {
+                                                                        timeOut: 5000
+                                                                    });
+                                                            clearFields
+                                                                ();
+                                                            $('#istock2')
+                                                                .html(
+                                                                    'คงเหลือ ' +
+                                                                    parseFloat(
+                                                                        result
+                                                                        .product
+                                                                        .amount
+                                                                    )
+                                                                    .toFixed(
+                                                                        2
+                                                                    ) +
+                                                                    ' ' +
+                                                                    result
+                                                                    .product
+                                                                    .unit
+                                                                );
+
+                                                            $('#Listview')
+                                                                .DataTable()
+                                                                .ajax
+                                                                .reload();
+                                                        }
+                                                    }
+                                                });
+                                            }
+                                        });
+                                    }
+
+                                }
                             } else {
                                 showAlert(res.message);
                                 clearFields();
@@ -108,70 +200,7 @@
                         }
                     });
 
-                    if (stockt == 1) {
-                        let centre = $('#RmCentre').val();
-                        let student = $('#s_student').val();
-                        if (centre.length == 0 || student.length == 0) {
-                            const prom = ezBSAlert({
-                                headerText: "Alert",
-                                messageText: "กรุณาระบุสาขาและปลายทาง",
-                                alertType: "danger",
-                            });
-                        } else {
-                            ezBSAlert({
-                                type: "confirm",
-                                headerText: "Confirm",
-                                messageText: "ยืนยันการจ่ายออก?",
-                                alertType: "danger",
-                            }).done(function(r) {
-                                if (r == true) {
-                                    id = $('#RmCodeh').val();
-                                    alert(id);
-                                    let centrev = $('#RmCentre').val()[0];
-                                    let studentv = $('#s_student').val()[0];
-                                    let selectedValue = $('input[name="type"]:checked').val();
-                                    $.ajax({
-                                        url: "products/rm_stock/" + id,
-                                        method: 'PUT',
-                                        data: {
-                                            amount: $('#RmAmount').val(),
-                                            centre: centrev,
-                                            student: studentv,
-                                            type: selectedValue
-                                        },
 
-                                        success: function(result) {
-                                            //console.log(result);
-                                            if (result.errors) {
-                                                const prom = ezBSAlert({
-                                                    headerText: "Alert",
-                                                    messageText: result
-                                                        .errors,
-                                                    alertType: "danger",
-                                                });
-
-                                            } else {
-
-                                                toastr.success(result.success, {
-                                                    timeOut: 5000
-                                                });
-                                                clearFields();
-                                                $('#istock2').html('คงเหลือ ' +
-                                                    parseFloat(result.product
-                                                        .amount).toFixed(2) +
-                                                    ' ' +
-                                                    result.product.unit);
-
-                                                $('#Listview').DataTable().ajax
-                                                    .reload();
-                                            }
-                                        }
-                                    });
-                                }
-                            });
-                        }
-
-                    }
                 }
 
             })
@@ -373,8 +402,12 @@
                         name: 'centre_name'
                     },
                     {
-                        data: 'student_name',
-                        name: 'student_name'
+                        data: 'student_or_centre_type',
+                        name: 'student_or_centre_type'
+                    },
+                    {
+                        data: 'student_or_centre_name',
+                        name: 'student_or_centre_name'
                     },
                     {
                         data: 'product_name',
@@ -761,19 +794,19 @@
 
 
         /*  $(document).on('keyup', function(e) {
-             // Check if the pressed key is a numeric key (key codes 48 to 57) or Enter key (key code 13)
-             if ((e.keyCode >= 48 && e.keyCode <= 57) || e.keyCode === 13) {
-                 // If so, focus on the barcodeInput field
-                 $('#barcodeInput').focus();
+                // Check if the pressed key is a numeric key (key codes 48 to 57) or Enter key (key code 13)
+                if ((e.keyCode >= 48 && e.keyCode <= 57) || e.keyCode === 13) {
+                    // If so, focus on the barcodeInput field
+                    $('#barcodeInput').focus();
 
-                 // Get the pressed key character
-                 var char = String.fromCharCode(e.keyCode);
+                    // Get the pressed key character
+                    var char = String.fromCharCode(e.keyCode);
 
-                 console.log(char);
-                 // Append the character to the barcodeInput value
-                 $('#barcodeInput').val(char);
-             }
-         }); */
+                    console.log(char);
+                    // Append the character to the barcodeInput value
+                    $('#barcodeInput').val(char);
+                }
+            }); */
 
 
         $(document).on('click', '.btn-delete', function() {
