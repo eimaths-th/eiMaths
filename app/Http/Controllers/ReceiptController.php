@@ -555,6 +555,7 @@ class ReceiptController extends Controller
         $book_price = $lbprice - $datas[0]->discount_book;
         $vat_price = ($lprice + $datas[0]->register_fee + $datas[0]->access_fee + $datas[0]->orther_fee + $datas[0]->refund) - $datas[0]->discount;
         $vat_val = $vat_price * 0.07;
+
         $net_price = $vat_price + $book_price;
 
         $customItem = [[
