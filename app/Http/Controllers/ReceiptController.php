@@ -485,7 +485,7 @@ class ReceiptController extends Controller
             DB::raw("SUBSTRING(order_detail_lists.level, 1, 1) as first_char"),
             DB::raw("COUNT(*) as row_count"),
             DB::raw("SUM(order_detail_lists.price) as total_price"),
-            DB::raw("SUM(eimatch.order_detail_lists.bprice) as total_bprice")
+            DB::raw("SUM(order_detail_lists.bprice) as total_bprice")
         )->where('order_id', $datas[0]->oid)
             ->groupBy(
                 // 'order_detail_lists.level',
@@ -541,7 +541,7 @@ class ReceiptController extends Controller
             $lbprice = $lbprice + $price_list->total_bprice;
         }
 
-        //dd($lbprice);
+
 
         // Data to pass to the view
         if ($datas_list[0]->first_char == "K") {

@@ -148,7 +148,7 @@ class ProductController extends Controller
         $product = Stock::select(
             'stocks.*',
             DB::raw("DATE_FORMAT(stocks.created_at, '%Y-%m-%d %H:%i:%s') AS created_date"),
-            'users.name as user_name', // Include the user_name column from the users table
+            'users.name as user_name',
             "stock_departments.name as centre_name",
             "products.name as product_name",
         )
@@ -157,7 +157,7 @@ class ProductController extends Controller
             ->join("departments as stock_departments", "stocks.centre", "=", "stock_departments.id")
             ->where('stocks.product_id', $Id);
 
-        //ฝฝ Conditional join based on stocks.type
+        //Conditional join based on stocks.type
         $product->leftJoin("contacts", function ($join) {
             $join->on("stocks.student_id", "=", "contacts.id")
                 ->where("stocks.type", "=", 1)
@@ -173,13 +173,12 @@ class ProductController extends Controller
         $product->addSelect(DB::raw("IF(stocks.type = 1 AND stocks.student_id IS NOT NULL, contacts.name, departments.name) as student_or_centre_name"));
         $product->addSelect(DB::raw("IF(stocks.type = 1 AND stocks.student_id IS NOT NULL, 'Student', 'Centre') as student_or_centre_type"));
 
-        // You can add more conditions if needed
-
 
         $product = $product->orderBy("stocks.id", "desc")->get();
 
         return DataTables::of($product)->make(true);
     }
+
     /**
      * Show the form for creating a new resource.
      */

@@ -25,13 +25,19 @@
                             <button type="button" class="btn btn-success" id="CreateButton"><i
                                     class="fas fa-graduation-cap"></i>
                                 New Student </button>
+                            &nbsp;<button type="button" class="btn btn-success" id="ReceiptButton"><i
+                                    class="fa-solid fa-file-invoice-dollar"></i>
+                                New Receipt </button>
                         @else
                             <span class="d-inline-block" tabindex="0" data-toggle="tooltip" data-placement="bottom"
                                 title="You Not Have Permission">
                                 <button type="button" class="btn btn-info" id="export_button"><i
                                         class="fa-solid fa-file-export"></i> Export Excel </button>
                                 <button type="button" class="btn btn-success disabled">
-                                    <i class="fas fa-graduation-cap"></i> Add Student </button>
+                                    <i class="fas fa-graduation-cap"></i> New Student </button>
+                                &nbsp;<button type="button" class="btn btn-success" disabled><i
+                                        class="fa-solid fa-file-invoice-dollar"></i>
+                                    New Receipt </button>
                             </span>
                         @endcan &nbsp;
 
@@ -205,6 +211,8 @@
     @include('contacts.create')
 
     @include('contacts.edit')
+
+    @include('contacts.receipt')
 
     {{--  {!! $data->render() !!} --}}
 @endsection

@@ -352,7 +352,129 @@
             }
         })
 
+        $(".rlevels").change(function() {
+            let level = $('#ReceiptLevel').val();
+            //console.log(product);
+            //alert(product);
+            $('#ReceiptTerm').html('');
+            $('#ReceiptBook').html('');
+            if (level.length !== 0) {
+                $.ajax({
+                    method: "GET",
+                    url: "level/find/add/" + level,
+                    success: function(res) {
+                        $('.rterms').html(res.html);
+                        //$('.terms').removeAttr('readonly');
+                        $('.rterms').prop('disabled', false);
+                    }
+                });
+            }
+        })
 
+
+        $(".rterms").change(function() {
+            let level = $('#ReceiptLevel').val();
+            let term = $('#ReceiptTerm').val();
+            $('#ReceiptBook').html('');
+            if (level.length !== 0 && term.length !== 0) {
+                $.ajax({
+                    method: "GET",
+                    url: "term/find/add/" + level + "/" + term,
+                    data: {
+                        level: $('#ReceiptLevel').val()[0],
+                        term: $('#ReceiptTerm').val()[0],
+                        level2: $('#ReceiptLevel2').val()[0],
+                        term2: $('#ReceiptTerm2').val()[0],
+                        _token: token,
+                    },
+                    async: false,
+                    success: function(res) {
+                        //console.log(res)
+                        $('.rscoin').val(res.scoin);
+
+                        $('.rbooks').html(res.html);
+                        $('.rbooks').prop('disabled', false);
+                    }
+                });
+            }
+        })
+
+        $(".rlevels2").change(function() {
+            let level = $('#ReceiptLevel2').val();
+            //console.log(product);
+            //alert(product);
+            $('#ReceiptTerm2').html('');
+            $('#ReceiptBook2').html('');
+            if (level.length !== 0) {
+                $.ajax({
+                    method: "GET",
+                    url: "level/find/add/" + level,
+                    success: function(res) {
+                        $('.rterms2').html(res.html);
+                        //$('.terms').removeAttr('readonly');
+                        $('.rterms2').prop('disabled', false);
+                    }
+                });
+            }
+        })
+
+
+        $(".rterms2").change(function() {
+            let level = $('#ReceiptLevel2').val();
+            let term = $('#ReceiptTerm2').val();
+            $('#ReceiptBook2').html('');
+            if (level.length !== 0 && term.length !== 0) {
+                $.ajax({
+                    method: "GET",
+                    url: "term/find/add/" + level + "/" + term,
+                    data: {
+                        level: $('#ReceiptLevel').val()[0],
+                        term: $('#ReceiptTerm').val()[0],
+                        level2: $('#ReceiptLevel2').val()[0],
+                        term2: $('#ReceiptTerm2').val()[0],
+                        _token: token,
+                    },
+                    async: false,
+                    success: function(res) {
+                        console.log(res)
+                        $('.rbooks2').html(res.html);
+                        $('.rscoin').val(res.scoin);
+                        $('.rbooks2').prop('disabled', false);
+                    }
+                });
+            }
+        })
+
+
+        $("#ReceiptCentre").change(function() {
+            let centre = $('#ReceiptCentre').val();
+            if (centre.length !== 0) {
+                $.ajax({
+                    method: "GET",
+                    url: "histories/running/" + centre,
+                    async: false,
+                    success: function(res) {
+                        //$('#AddCode').prop('readonly', false);
+                        $('#s_student').html(res.html_std);
+                    }
+                });
+            }
+        })
+
+        if ($("#ReceiptCentre").val() !== null) {
+            let centre = $('#ReceiptCentre').val();
+            if (centre.length !== 0) {
+                $.ajax({
+                    method: "GET",
+                    url: "histories/running/" + centre,
+                    async: false,
+                    success: function(res) {
+                        //$('#AddCode').prop('readonly', false);
+                        $('#s_student').html(res.html_std);
+                    }
+                });
+            }
+        }
 
         const table_option = {
             ajax: {
@@ -618,6 +740,26 @@
                 }
             });
             $('#CreateModal').modal('show');
+        });
+
+
+        $(document).on('click', '#ReceiptButton', async function(e) {
+            e.preventDefault();
+            $('.alert-danger').html('');
+            $('.alert-danger').hide();
+            $('.alert-success').html('');
+            $('.alert-success').hide();
+
+            $('#custom-tabs-one-home-tab-receipt').tab('show');
+            //$('#AddSTerm').val(null).trigger("change");
+            $('#AddBook').val(null).trigger("change");
+            $('#AddLevel').val(null).trigger("change");
+            $('#AddTerm').val(null).trigger("change");
+            $('#AddBook2').val(null).trigger("change");
+            $('#AddLevel2').val(null).trigger("change")
+            $('#AddTerm2').val(null).trigger("change");
+
+            $('#ReceiptModal').modal('show');
         });
 
 
@@ -901,6 +1043,87 @@
                             $('#Listview').DataTable().ajax.reload();
                         }
 
+                    }
+                }
+            });
+        });
+
+
+        // Create product Ajax request.
+        $('#ReceiptCreateForm').click(function(e) {
+            e.preventDefault();
+            $('.alert-danger').html('');
+            $('.alert-danger').hide();
+            $('.alert-success').html('');
+            $('.alert-success').hide();
+
+
+            var selectedValue1 = $('#ReceiptLevel').val()[0];
+            var selectedValue2 = $('#ReceiptLevel2').val()[0];
+
+            if (selectedValue1 && selectedValue1.trim() !== '') {
+                $("#ReceiptLevel").removeClass("is-invalid");
+                $("#ReceiptLevel").addClass("is-valid");
+            } else {
+                $("#ReceiptLevel").addClass("is-invalid");
+                $("#ReceiptLevel").removeClass("is-valid");
+                toastr.error('Please Select Start Level', {
+                    timeOut: 5000
+                });
+                return false;
+            }
+
+            if (selectedValue2 < selectedValue1) {
+                toastr.error("Cannot select 'To level' less than 'Start level'", {
+                    timeOut: 5000
+                });
+                return false;
+            }
+
+            $.ajax({
+                url: "{{ route('contacts.receipt') }}",
+                method: 'post',
+                data: {
+                    centre: $('#ReceiptCentre').val()[0],
+                    student: $('#s_student').val()[0],
+                    level: $('#ReceiptLevel').val()[0],
+                    term: $('#ReceiptTerm').val()[0],
+                    bookuse: $('#ReceiptBook').val()[0],
+                    level2: $('#ReceiptLevel2').val()[0],
+                    term2: $('#ReceiptTerm2').val()[0],
+                    bookuse2: $('#ReceiptBook2').val()[0],
+                    _token: token,
+                },
+                success: function(result) {
+                    console.log(result);
+                    if (result.errors) {
+                        $('.alert-danger').html('');
+                        $.each(result.errors, function(key, value) {
+                            $('.alert-danger').show();
+                            $('.alert-danger').append('<strong><li>' + value +
+                                '</li></strong>');
+                        });
+                    } else {
+                        $('.alert-danger').hide();
+                        $('.alert-success').show();
+                        $('.alert-success').append('<strong><li>' + result.success +
+                            '</li></strong>');
+                        toastr.success(result.success, {
+                            timeOut: 5000
+                        });
+                        $('#Listview').DataTable().ajax.reload();
+                        $('#ReceiptBook').val(null).trigger("change");
+                        $('#ReceiptLevel').val(null).trigger("change")
+                        $('#ReceiptTerm').val(null).trigger("change")
+                        $('.form').trigger('reset');
+                        $('#ReceiptModal').modal('hide');
+
+                        showOverlay();
+
+                        var oid = result.oid;
+                        var url = "{{ route('receipts_pending') }}?new=" +
+                            encodeURIComponent(oid);
+                        window.location.href = url;
                     }
                 }
             });

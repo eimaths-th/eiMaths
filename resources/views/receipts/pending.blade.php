@@ -29,7 +29,7 @@
                 <div class="col-12">
                     <div class="card card-primary">
                         <div class="card-header">
-                            <h3 class="card-title"><i class=" fa-solid fa-circle-pause"></i> New Student Pending
+                            <h3 class="card-title"><i class=" fa-solid fa-circle-pause"></i>  Pending Receipt
                             </h3>
                             <div class="card-tools">
                                 <button type="button" class="btn btn-tool" data-card-widget="maximize">

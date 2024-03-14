@@ -535,6 +535,236 @@ class ContactController extends Controller
 
 
     /**
+     * Store a newly created resource in storage.
+     */
+    public function receipt(Request $request)
+    {
+
+
+        //
+        $validator = Validator::make($request->all(), [
+            'centre' => 'required',
+            'student' => 'required',
+            'level' => 'required',
+            'term' => 'required',
+            'bookuse' => 'required',
+            'level2' => 'required',
+            'term2' => 'required',
+            'bookuse2' => 'required',
+        ], [
+            'centre.required' => 'Please select a centre.',
+            'student.required' => 'Please select a student.',
+            'level.required' => 'Please select a level.',
+            'term.required' => 'Please select a term.',
+            'bookuse.required' => 'Please specify book usage.',
+            'level2.required' => 'Please select to level.',
+            'term2.required' => 'Please select to term.',
+            'bookuse2.required' => 'Please specify to book usage.',
+        ]);
+
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()->all()]);
+        }
+
+        $bookq = bookuse::find($request->get('bookuse'));
+        $levelq = Level::find($request->get('level'));
+        $termq = Term::find($request->get('term'));
+
+        if ($bookq->type == 1) {
+            $mprice = $levelq->price;
+            $mbprice = $levelq->book_price;
+            $fprice = $levelq->price;
+        } elseif ($bookq->type == 2) {
+            $mprice = $levelq->half_price;
+            $mbprice = $levelq->book_half_price;
+            $fprice = $levelq->half_price;
+        }
+
+        if (!empty($request->get('level2'))) {
+
+            $bookq2 = bookuse::find($request->get('bookuse2'));
+            $levelq2 = Level::find($request->get('level2'));
+            $termq2 = Term::find($request->get('term2'));
+
+            $mprice = 0;
+            $mbprice = 0;
+            $coin = 0;
+            for ($i = $levelq->id; $i <= $levelq2->id; $i++) {
+                $sbook = 1;
+
+                if ($i == $levelq->id) {
+                    $sterm = $termq->name;
+                } else {
+                    $sterm = 1;
+                }
+
+                if ($i == $levelq2->id) {
+                    $eterm = $termq2->name;
+                } else {
+                    $eterm = 4;
+                }
+
+                for ($j = $sterm; $j <= $eterm; $j++) {
+                    if ($i == $levelq->id && $j == $sterm) {
+                        $sbook = $bookq->type;
+                    } else if ($i == $levelq2->id && $j == $eterm) {
+                        $sbook = $bookq->type;
+                    } else {
+                        $sbook = 1;
+                    }
+                    //echo $j . "<br>";
+                    /*  $books = bookuse::where('type', '=', $sbook)
+                        ->where('level_id', '=', $i)
+                        ->where('term_id', '=', $j)
+                        ->get(); */
+                    $books = bookuse::select(
+                        "bookuses.*",
+                        "bookuses.type as level_type",
+                        "levels.name as level_name",
+                        "levels.price as price",
+                        "levels.half_price as half_price",
+                        "levels.book_price as book_price",
+                        "levels.book_half_price as book_half_price",
+                        "terms.name as term_name",
+                    )
+                        ->join("terms", "terms.id", "=", "bookuses.term_id")
+                        ->join("levels", "levels.id", "=", "bookuses.level_id");
+
+                    if ($i == $levelq->id && $j == $sterm) {
+                        $books->where('bookuses.id', '=', $bookq->id);
+                    } else if ($i == $levelq2->id && $j == $eterm) {
+                        $books->where('bookuses.id', '=', $bookq2->id);
+                    } else {
+                        $books->where('type', '=', $sbook)->where('bookuses.level_id', '=', $i)
+                            ->where('bookuses.term_id', '=', $j);
+                    }
+                    $books = $books->get();
+                    $bookss[] = $books;
+
+                    if ($books[0]->level_type == 1) {
+                        $mprice = $mprice + $books[0]->price;
+                        $mbprice = $mbprice + $books[0]->book_price;
+                    } else {
+                        $mprice = $mprice + $books[0]->half_price;
+                        $mbprice = $mbprice + $books[0]->book_half_price;
+                    }
+
+                    $coin++;
+                }
+            }
+
+
+            if ($bookq2->type == 1) {
+                $fprice2 = $levelq2->price;
+            } elseif ($bookq2->type == 2) {
+                $fprice2 = $levelq2->half_price;
+            }
+        } else {
+            $books = bookuse::select(
+                "bookuses.*",
+                "bookuses.type as level_type",
+                "levels.name as level_name",
+                "levels.price as price",
+                "levels.half_price as half_price",
+                "levels.book_price as book_price",
+                "levels.book_half_price as book_half_price",
+                "terms.name as term_name",
+            )
+                ->join("terms", "terms.id", "=", "bookuses.term_id")
+                ->join("levels", "levels.id", "=", "bookuses.level_id")
+                ->where('bookuses.level_id', '=', $request->get('level'))
+                ->where('bookuses.term_id', '=', $request->get('term'))
+                ->where('bookuses.id', '=', $request->get('bookuse'))
+                ->get();
+            $bookss[] = $books;
+        }
+
+        // dd($coin);
+
+        $input = $request->all();
+        $input['level_name'] = $levelq->name;
+        $input['term_name'] = $termq->name;
+        $input['bookuse_name'] = $bookq->name;
+
+        if (!empty($request->get('level2'))) {
+            $input['level2_name'] = $levelq2->name;
+            $input['term2_name'] = $termq2->name;
+            $input['bookuse2_name'] = $bookq2->name;
+        }
+
+
+        $input_order['centre'] = $request->get('centre');
+        $input_order['cid'] = $request->get('student');
+        $input_order['order_number'] = OrderRunningNumber::generate($request->get('centre'));
+        $input_order['total_price'] = $mprice + $mbprice;
+        $order = Order::create($input_order);
+
+        foreach ($bookss as $dresult) {
+            foreach ($dresult as $book) {
+                if ($book->level_type == 1) {
+                    $tprice = $book->price;
+                    $bprice = $book->book_price;
+                } elseif ($book->level_type == 2) {
+                    $tprice = $book->half_price;
+                    $bprice = $book->book_half_price;
+                }
+                OrderDetailList::create([
+                    'order_id' => $order->id,
+                    'level' => $book->level_name,
+                    'term' => $book->term_name,
+                    'book' => $book->name,
+                    'price' => $tprice,
+                    'bprice' => $bprice,
+                ]);
+            }
+        }
+
+        $contact = Contact::where('id', $request->get('student'))->first();
+        $contact->order = $order->id;
+        $contact->level = $request->get('level');
+        $contact->term = $request->get('term');
+        $contact->bookuse = $request->get('bookuse');
+        $contact->level_name = $levelq->name;
+        $contact->term_name = $termq->name;
+        $contact->bookuse_name = $bookq->name;
+        $contact->level2 = $request->get('level2');
+        $contact->term2 = $request->get('term2');
+        $contact->bookuse2 = $request->get('bookuse2');
+        $contact->level2_name = $levelq2->name;
+        $contact->term2_name = $termq2->name;
+        $contact->bookuse2_name = $bookq2->name;
+        $contact->save();
+
+        $input_order_detail['order_id'] = $order->id;
+        $input_order_detail['product_id'] = $bookq->id;
+        $input_order_detail['pname'] = $bookq->name;
+        $input_order_detail['punit'] = $bookq->unit;
+        $input_order_detail['quantity'] = 1;
+        $input_order_detail['price'] = $fprice;
+        $order_detail = OrderDetail::create($input_order_detail);
+
+        if (!empty($request->get('level2'))) {
+            $input_order_detail2['order_id'] = $order->id;
+            $input_order_detail2['product_id'] = $bookq2->id;
+            $input_order_detail2['pname'] = $bookq2->name;
+            $input_order_detail2['punit'] = $bookq2->unit;
+            $input_order_detail2['quantity'] = 1;
+            $input_order_detail2['price'] = $fprice2;
+            $order_detail2 = OrderDetail::create($input_order_detail2);
+        }
+
+        $select_list_contact = '<option value="' . $contact->id . '" > ' . $contact->name . '</option>';
+        return response()->json([
+            'success' => 'Added Receipt successfully.',
+            'contact' => $select_list_contact, 'cid' => $contact->id, 'oid' => $order->id,
+            'coin' => $coin,
+        ]);
+    }
+
+
+
+    /**
      * Show the form for editing the specified resource.
      *
      * @param  int  $id
@@ -545,16 +775,16 @@ class ContactController extends Controller
 
     public function edit($id)
     {
-        //$data = Contact::find($id);
-        $data = Order::select(
+        $data = Contact::find($id);
+        /*  $data = Order::select(
             "contacts.*",
             "orders.status as order_status",
             "departments.name as centre_name",
         )
             ->join("contacts", "contacts.id", "=", "orders.cid")
             ->join("departments", "contacts.centre", "=", "departments.id")
-            ->where('cid', $id)
-            ->orderBy("id", "desc")->first();
+            ->where('orders.cid', $datac->id)
+            ->orderBy("orders.id", "desc")->first(); */
         // dd($data);
         $datas = OrderDetail::select(
             "order_details.*",
@@ -564,7 +794,7 @@ class ContactController extends Controller
             ->join("bookuses", "bookuses.id", "=", "order_details.product_id")
             ->join("terms", "terms.id", "=", "bookuses.term_id")
             ->join("levels", "levels.id", "=", "bookuses.level_id")
-            ->where('order_id', $data->id)->orderBy("id", "asc")->get();
+            ->where('order_id', $data->order)->orderBy("id", "asc")->get();
         return response()->json(['data' => $data, 'datas' => $datas]);
     }
 
@@ -783,7 +1013,7 @@ class ContactController extends Controller
                 }
 
                 OrderDetailList::create([
-                    'order_id' => $id,
+                    'order_id' => $contact->order,
                     'level' => $book->level_name,
                     'term' => $book->term_name,
                     'book' => $book->name,
