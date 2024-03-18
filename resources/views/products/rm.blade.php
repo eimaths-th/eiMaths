@@ -31,8 +31,28 @@
                     {!! Form::open(['method' => 'POST', 'class' => 'form']) !!}
                     <div class="row">
                         <div class="col-xs-6 col-sm-6 col-md-6">
+                            <div class="form-group clearfix">
+                                <strong><i class="fas fa-code"></i> นำจ่ายให้:</strong>
+                                <div class="form-group ">
+                                    <div class="icheck-success d-inline">
+                                        <input type="radio" class="rtype" name="type" value="1" checked
+                                            id="radioSuccess1">
+                                        <label for="radioSuccess1">Student
+                                        </label>
+                                    </div>
+                                    <div class="icheck-success d-inline">
+                                        <input type="radio" class="rtype" name="type" value="2"
+                                            id="radioSuccess2">
+                                        <label for="radioSuccess2">Centre
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-6 col-sm-6 col-md-6">
                             <div class="form-group">
                                 <strong><i class="fas fa-code"></i> Centre Code:</strong>
+
                                 <select style="width: 100%;" class="productl select2 select2_single form-control"
                                     id="RmCentre" name="rcentre" multiple="multiple"
                                     @cannot('all-centre') disabled @endcannot>
@@ -50,9 +70,12 @@
                             </div>
                         </div>
                         {{-- ต่อหน้า create view history --}}
+
+                    </div>
+                    <div class="row">
                         <div class="col-xs-6 col-sm-6 col-md-6">
                             <div class="form-group">
-                                <strong><i class="fas fa-code"></i> Student No.</strong>
+                                <strong><i class="fas fa-code"></i> Destination No.</strong>
                                 {{-- {!! Form::text('code', null, [
                                             'id' => 'AddCode',
                                             'placeholder' => 'Code',
@@ -66,6 +89,17 @@
 
                                 </select>
                                 {{-- <input type="text" placeholder="Code" class="form-control" id="AddCode" name="code" readonly="ture"> --}}
+                            </div>
+                        </div>
+                        <div class="col-xs-6 col-sm-6 col-md-6">
+                            <div class="form-group">
+                                <strong>Quantity:</strong>
+                                {!! Form::input('number', 'ramount', 1, [
+                                    'id' => 'RmAmount',
+                                    'placeholder' => 'Quantity',
+                                    'class' => 'form-control auto_decimal',
+                                    'step' => '1.00',
+                                ]) !!}
                             </div>
                         </div>
                     </div>
@@ -123,6 +157,7 @@
                                     'readonly' => true,
                                 ]) !!}
                             </div>
+
                         </div>
                     </div>
 

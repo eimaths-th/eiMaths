@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Models\Stock;
+use App\Models\Contact;
 use App\Models\ProductRunningNumber;
 use App\Models\Department;
 use App\Http\Controllers\Controller;
@@ -100,12 +101,40 @@ class ProductController extends Controller
     }
 
 
+    public function getDes($centre, $type)
+    {
+        //
+        if ($centre == 0) {
+            $centre = Auth::user()->department->id;
+        }
+        if ($type == 1) {
+            $stds = Contact::where('centre', $centre)->get();
+        } else {
+            $stds = Department::where('id', '!=', $centre)->get();
+        }
+
+        $html_std = '';
+        $remaining = '';
+
+        foreach ($stds as $std) {
+            $id = $std->id;
+            $code = $std->code;
+            $name = $std->name;
+            $html_std .= '<option value="' . $id . '">' . $code . ' ' . $name . '</option>';
+        }
+
+        return response()->json([
+            'html_std' => $html_std
+        ]);
+    }
+
+
     public function pfind($pid)
     {
         $product = Product::where('code', $pid)->first();
 
         if (!$product) {
-            return response()->json(['message' => 'Product not found']);
+            return response()->json(['message' => 'ไม่พบสินค้านี้ในระบบ']);
         }
 
         return response()->json(['product' =>  $product]);
@@ -119,22 +148,37 @@ class ProductController extends Controller
         $product = Stock::select(
             'stocks.*',
             DB::raw("DATE_FORMAT(stocks.created_at, '%Y-%m-%d %H:%i:%s') AS created_date"),
-            'users.name as user_name', // Include the user_name column from the users table
-            "departments.name as centre_name",
+            'users.name as user_name',
+            "stock_departments.name as centre_name",
             "products.name as product_name",
-            "contacts.name as student_name",
         )
             ->join('users', 'stocks.user_id', '=', 'users.id')
-            ->join("departments", "stocks.centre", "=", "departments.id")
             ->join("products", "stocks.product_id", "=", "products.id")
-            ->leftjoin("contacts", "stocks.student_id", "=", "contacts.id")
-
+            ->join("departments as stock_departments", "stocks.centre", "=", "stock_departments.id")
             ->where('stocks.product_id', $Id);
+
+        //Conditional join based on stocks.type
+        $product->leftJoin("contacts", function ($join) {
+            $join->on("stocks.student_id", "=", "contacts.id")
+                ->where("stocks.type", "=", 1)
+                ->whereNotNull("stocks.student_id");
+        });
+        $product->leftJoin("departments", function ($join) {
+            $join->on("stocks.centre", "=", "departments.id")
+                ->where("stocks.type", "=", 2)
+                ->whereNotNull("stocks.student_id");
+        });
+
+        // Select appropriate column based on stocks.type
+        $product->addSelect(DB::raw("IF(stocks.type = 1 AND stocks.student_id IS NOT NULL, contacts.name, departments.name) as student_or_centre_name"));
+        $product->addSelect(DB::raw("IF(stocks.type = 1 AND stocks.student_id IS NOT NULL, 'Student', 'Centre') as student_or_centre_type"));
+
 
         $product = $product->orderBy("stocks.id", "desc")->get();
 
         return DataTables::of($product)->make(true);
     }
+
     /**
      * Show the form for creating a new resource.
      */
@@ -352,12 +396,20 @@ class ProductController extends Controller
             return response()->json(['errors' => 'สินค้านี้หมดสต็อกแล้ว.', 'product' => $update]);
         }
 
-        $newAmount = $update->amount - $request->input('amount');
+        if ($request->input('amount') > $update->amount) {
+            $rm_amount = $request->input('amount') - $update->amount;
+        } else {
+            $rm_amount = $request->input('amount');
+        }
+
+
+        $newAmount = $update->amount - $rm_amount;
 
         $update->update(['amount' => $newAmount]);
 
         $Stock = Stock::create([
             'product_id' => $id,
+            'type' => $request->input('type'),
             'student_id' => $request->input('student'),
             'centre' => $request->input('centre'),
             'rm_stock' => $request->input('amount'),

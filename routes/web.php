@@ -40,6 +40,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/graduated', [App\Http\Controllers\ContactController::class, 'graduated'])->name('contacts.graduated');
     Route::get('/contacts/running/{centre}', [App\Http\Controllers\ContactController::class, 'create'])->name('contacts.running');
     Route::post('/contacts/store', [App\Http\Controllers\ContactController::class, 'store'])->name('contacts.store');
+    Route::post('/contacts/receipt', [App\Http\Controllers\ContactController::class, 'receipt'])->name('contacts.receipt');
     Route::get('/contacts/edit/{id}', [App\Http\Controllers\ContactController::class, 'edit'])->name('contacts.edit');
     Route::put('/contacts/save/{id}', [App\Http\Controllers\ContactController::class, 'update'])->name('contacts.save');
     Route::delete('/contacts/destroy', [App\Http\Controllers\ContactController::class, 'destroy'])->name('contacts.destroy');
@@ -86,6 +87,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::delete('/products/destroy', [App\Http\Controllers\ProductController::class, 'destroy'])->name('products.destroy');
     Route::post('/products/destroy_all', [App\Http\Controllers\ProductController::class, 'destroy_all'])->name('products.destroy_all');
     Route::get('/products/stock', [App\Http\Controllers\ProductController::class, 'getStock'])->name('products.stock');
+    Route::get('/products/des/{centre}/{type}', [App\Http\Controllers\ProductController::class, 'getDes'])->name('products.des');
 
     Route::get('/level/find/{type}/{level}', [App\Http\Controllers\ContactController::class, 'lfind'])->name('level.find');
     Route::get('/term/find/{type}/{level}/{term}', [App\Http\Controllers\ContactController::class, 'tfind'])->name('term.find');

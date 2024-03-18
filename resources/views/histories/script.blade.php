@@ -385,7 +385,10 @@
                     data: 'bookuse',
                     name: 'bookuse'
                 },
-
+                {
+                    data: 'start_date',
+                    name: 'start_date'
+                },
                 {
                     data: 'stime',
                     name: 'stime'
@@ -397,10 +400,7 @@
                     name: 'course_remaining'
                 },
 
-                {
-                    data: 'start_date',
-                    name: 'start_date'
-                },
+
                 /* {
                     data: 'end_date',
                     name: 'end_date'
