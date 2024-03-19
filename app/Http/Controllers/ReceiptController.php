@@ -450,7 +450,7 @@ class ReceiptController extends Controller
             "orders.access_fee as access_fee",
             "orders.orther_fee as orther_fee",
             "orders.discount as discount",
-            "orders.payment as payment",
+            "receipts.payment as payment",
             "orders.discount_book as discount_book",
             //"first_detail.price as price"
             DB::raw("CASE
