@@ -346,7 +346,7 @@
                                 <td width="67%" class="grey">มูลค่าที่คำนวนภาษี/Pre-Vat Amount</td>
 
                                 <td width="15%" align="right"> <b>
-                                        {{ number_format($vat_price, 2, '.') }}</b></td>
+                                        {{ number_format($vat_price - $vat_val, 2, '.') }}</b></td>
                                 <td width="8%"></td>
 
                             </tr>
