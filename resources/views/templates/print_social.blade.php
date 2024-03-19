@@ -378,6 +378,7 @@
                     <td align="center"><b>{{ $price_text }}</b><br><b>{{ $price_texten }}</b></td>
                     <td align="center"><b>{{ number_format($net_price, 2, '.') }}</b></td>
                     <td align="left"></td>
+                    <td align="left"></td>
                     <td align="right" class="grey">บาท<br>Baht</td>
                 </tr>
                 {{--  <tr class="active">
