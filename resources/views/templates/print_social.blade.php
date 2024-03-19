@@ -375,10 +375,9 @@
                 <tr class="active">
                     <td width="37%" align="center" class="grey">รวมทั้งสิ้น<br>Grand Total</td>
                     <td align="left"></td>
-                    <td align="left"></td>
                     <td align="center"><b>{{ $price_text }}</b><br><b>{{ $price_texten }}</b></td>
                     <td align="center"><b>{{ number_format($net_price, 2, '.') }}</b></td>
-
+                    <td align="left"></td>
                     <td align="right" class="grey">บาท<br>Baht</td>
                 </tr>
                 {{--  <tr class="active">
