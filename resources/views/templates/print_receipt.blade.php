@@ -284,7 +284,7 @@
                             <tr>
                                 <td></td>
                                 <td colspan="2" style="padding-left:50px;" class="  grey">
-                                    การชำระเงิน/Payment{{ $data->payment }}</td>
+                                    การชำระเงิน/Payment{{-- {{ $data->payment }} --}}</td>
 
                             </tr>
                             <tr>
@@ -326,8 +326,8 @@
                         </table>
                     </td>
                     @php
-                        $vatRate = 0.07;
-                        $vat_val = $vat_price * $vatRate;
+                        $vatRate = 7;
+                        $vat_val = ($vat_price * $vatRate) / 107;
                         //$vat_price_val = $total - $vat_val;
                     @endphp
                     <td colspan="6" class="activetop activeleft">
