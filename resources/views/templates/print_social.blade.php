@@ -325,8 +325,8 @@
                         </table>
                     </td>
                     @php
-                        $vatRate = 0.07;
-                        $vat_val = $vat_price * $vatRate;
+                        $vatRate = 7;
+                        $vat_val = ($vat_price * $vatRate) / 107;
                         //$vat_price_val = $total - $vat_val;
                     @endphp
                     <td colspan="6" class="activetop activeleft">
@@ -452,4 +452,3 @@
         </table>
         {{-- </div> --}}
 </body>
-
