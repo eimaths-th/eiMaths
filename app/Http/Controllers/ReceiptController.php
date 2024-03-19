@@ -527,7 +527,7 @@ class ReceiptController extends Controller
         $price_text = $this->MoneyConvertService->baht_text($datas[0]->total_fee);
         $price_texten = $this->MoneyConvertService->convertNumber($datas[0]->total_fee);
 
-        $formattedDate = $datas[0]->created_at->format('Y-m-d');
+        $formattedDate = $datas[0]->payment_date->format('Y-m-d');
 
         $qty = 0;
         $lprice = 0;
