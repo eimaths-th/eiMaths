@@ -362,6 +362,13 @@
                     name: 'date'
                 },
                 {
+                    data: 'stime',
+                    name: 'stime'
+                }, {
+                    data: 'etime',
+                    name: 'etime'
+                },
+                {
                     data: 'centre',
                     name: 'centre'
                 },
@@ -390,12 +397,6 @@
                     name: 'start_date'
                 },
                 {
-                    data: 'stime',
-                    name: 'stime'
-                }, {
-                    data: 'etime',
-                    name: 'etime'
-                }, {
                     data: 'course_remaining',
                     name: 'course_remaining'
                 },
