@@ -166,7 +166,7 @@
                                                 <div class="form-group">
                                                     <strong><i class="fas fa-code"></i>Course Remaining</strong>
                                                     <input type="text" name="course_remaining"
-                                                        id="getCourseRemaining" class="form-control">
+                                                        id="getCourseRemaining" class="form-control" readonly>
 
                                                     {{-- <select name="course_remaining" id="AddCourseRemaining"class="select2 select2_single form-control"
                                                     multiple="multiple">
@@ -181,7 +181,7 @@
                                         <div class="row">
                                             <div class="col-xs-6 col-sm-6 col-md-6">
                                                 <div class="form-group">
-                                                    <strong><i class="fas fa-calendar"></i> Date:</strong>
+                                                    <strong><i class="fas fa-calendar"></i>Study Date:</strong>
                                                     <input type="text" name="date" id="getDate"
                                                         class="getDate AddDate form-control" placeholder="getDate">
                                                     {{-- {!! Form::text('date', null, [
@@ -196,7 +196,7 @@
                                                 <div class="row">
                                                     <div class="col-lg-6">
                                                         <div class="form-group">
-                                                            <strong><i class="fas fa-calendar"></i> Start
+                                                            <strong><i class="fas fa-calendar"></i>Study Start
                                                                 Time:</strong>
 
                                                             <div class="row">
@@ -212,7 +212,7 @@
                                                     <div class="col-lg-6">
 
                                                         <div class="form-group">
-                                                            <strong><i class="fas fa-calendar"></i> End Time:</strong>
+                                                            <strong><i class="fas fa-calendar"></i>Study End Time:</strong>
                                                             <div class="row">
                                                                 <input type="text" id="getEndTime"
                                                                     class="form-control col-sm-10 timepicker"
@@ -237,7 +237,7 @@
                                         <div class="row">
                                             <div class="col-xs-6 col-sm-6 col-md-6">
                                                 <div class="form-group">
-                                                    <strong><i class="fas fa-code"></i>Start Date</strong>
+                                                    <strong><i class="fas fa-code"></i>Course Start Date</strong>
                                                     {{-- <select style="width: 100%;"
                                                         class="books select2 select2_single form-control" id="AddBook"
                                                         name="bookuse" multiple="multiple"
@@ -249,16 +249,16 @@
 
                                                     </select> --}}
                                                     <input type="text" name="start_date" id="getStartDate"
-                                                        class="form-control AddDate" placeholder="getStartDate">
+                                                        class="form-control AddDate" placeholder="getStartDate" readonly>
 
                                                 </div>
                                             </div>
                                             {{-- ต่อหน้า create view history --}}
                                             <div class="col-xs-6 col-sm-6 col-md-6">
                                                 <div class="form-group">
-                                                    <strong><i class="fas fa-code"></i>End Date</strong>
+                                                    <strong><i class="fas fa-code"></i>Course End Date</strong>
                                                     <input type="text" name="end_date" id="getEndDate"
-                                                        class="form-control AddDate">
+                                                        class="form-control AddDate" readonly>
 
                                                     {{-- <select name="course_remaining" id="AddCourseRemaining"class="select2 select2_single form-control"
                                                     multiple="multiple">

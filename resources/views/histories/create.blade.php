@@ -158,7 +158,7 @@
                                 <div class="row">
                                     <div class="col-xs-6 col-sm-6 col-md-6">
                                         <div class="form-group">
-                                            <strong><i class="fas fa-calendar"></i> Date:</strong>
+                                            <strong><i class="fas fa-calendar"></i>Study Date:</strong>
                                             <input type="text" name="date" id="AddDate"
                                                 class="AddDate form-control" data-target="#reservationdate"
                                                 autocomplete="off">
@@ -174,7 +174,7 @@
                                         <div class="row">
                                             <div class="col-lg-6">
                                                 <div class="form-group">
-                                                    <strong><i class="fas fa-calendar"></i> Start
+                                                    <strong><i class="fas fa-calendar"></i>Study Start
                                                         Time:</strong>
 
                                                     <div class="row">
@@ -189,7 +189,7 @@
                                             <div class="col-lg-6">
 
                                                 <div class="form-group">
-                                                    <strong><i class="fas fa-calendar"></i> End Time:</strong>
+                                                    <strong><i class="fas fa-calendar"></i>Study End Time:</strong>
                                                     <div class="row">
                                                         <input type="text" id="AddEndTime"
                                                             class="form-control col-sm-10 timepicker">
