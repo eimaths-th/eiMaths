@@ -70,7 +70,7 @@ class HistoriesController extends Controller
 
         if ($request->ajax()) {
 
-            $datass = Histrories::orderBy('date', 'desc');
+            $datass = Histrories::orderByRaw("CONCAT(date, ' ', stime) DESC");
             if (!Gate::allows('all-centre')) {
                 $datass->where('centre', Auth::user()->department->id);
             }
@@ -373,7 +373,7 @@ class HistoriesController extends Controller
             ['student_id', $std_id],
             ['term', $term],
             ['level_id', $level_id]
-        ])->orderBy('date', 'asc')->get();
+        ])->orderByRaw("CONCAT(date, ' ', stime) ASC")->get();
 
         $count = 9;
 

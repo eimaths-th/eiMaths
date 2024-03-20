@@ -9,7 +9,7 @@
             </div>
             <div class="modal-body">
 
-        
+
                 {{-- 'route' => 'users.store', --}}
                 {!! Form::open(['method' => 'POST', 'class' => 'form', 'id' => 'myForm']) !!}
 

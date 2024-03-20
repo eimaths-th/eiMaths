@@ -183,7 +183,7 @@
                                                 <div class="form-group">
                                                     <strong><i class="fas fa-calendar"></i> Date:</strong>
                                                     <input type="text" name="date" id="getDate"
-                                                        class="getDate form-control" placeholder="getDate">
+                                                        class="getDate AddDate form-control" placeholder="getDate">
                                                     {{-- {!! Form::text('date', null, [
                                                         'id' => 'AddDate',
                                                         'placeholder' => '',
@@ -201,7 +201,7 @@
 
                                                             <div class="row">
                                                                 <input type="text" id="getStartTime"
-                                                                    class="form-control col-sm-10"
+                                                                    class="form-control col-sm-10 timepicker"
                                                                     placeholder="getStartTime">
                                                                 <span class="input-group-text input-group-addon">
                                                                     <i class="fa fa-clock"></i>
@@ -215,7 +215,7 @@
                                                             <strong><i class="fas fa-calendar"></i> End Time:</strong>
                                                             <div class="row">
                                                                 <input type="text" id="getEndTime"
-                                                                    class="form-control col-sm-10"
+                                                                    class="form-control col-sm-10 timepicker"
                                                                     placeholder="getEndTime">
                                                                 <span class="input-group-text input-group-addon">
                                                                     <i class="fa fa-clock"></i>
@@ -249,7 +249,7 @@
 
                                                     </select> --}}
                                                     <input type="text" name="start_date" id="getStartDate"
-                                                        class="form-control" placeholder="getStartDate">
+                                                        class="form-control AddDate" placeholder="getStartDate">
 
                                                 </div>
                                             </div>
@@ -258,7 +258,7 @@
                                                 <div class="form-group">
                                                     <strong><i class="fas fa-code"></i>End Date</strong>
                                                     <input type="text" name="end_date" id="getEndDate"
-                                                        class="form-control">
+                                                        class="form-control AddDate">
 
                                                     {{-- <select name="course_remaining" id="AddCourseRemaining"class="select2 select2_single form-control"
                                                     multiple="multiple">

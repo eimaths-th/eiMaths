@@ -4,14 +4,14 @@
 
         $("#timepicker").timepicker();
         $(".timepicker").timepicker({
-            timeFormat: 'hh:mm tt', // Display format
+            timeFormat: 'HH:mm:ss', // Display format
             // dateFormat: 'yy-mm-dd', // Date format
             showButtonPanel: true, // Show the "Now" and "Done" buttons
             controlType: 'select'
         });
 
         $('#datetimepicker').timepicker({
-            timeFormat: 'hh:mm tt', // Display format
+            timeFormat: 'HH:mm:ss', // Display format
             // dateFormat: 'yy-mm-dd', // Date format
             showButtonPanel: true, // Show the "Now" and "Done" buttons
             controlType: 'select' // Use select menus for hours and minutes

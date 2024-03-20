@@ -154,7 +154,7 @@ class APIController extends Controller
             ['student_id', $std_id],
             ['term', $term],
             ['level_id', $level_id]
-        ])->orderBy('date', 'asc')->get();
+        ])->orderByRaw("CONCAT(date, ' ', stime) ASC")->get();
 
         $count = 9;
 
