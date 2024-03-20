@@ -986,6 +986,8 @@ class HistoriesController extends Controller
         }
 
 
+        //reorder remain
+        $this->reorder_remain($history->student_id, $request->term, $request->level_id);
         // dd($input,$history,$logHistory);
 
         return ['success' => 'Updated history successfully'];
