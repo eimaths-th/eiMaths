@@ -365,6 +365,32 @@ class HistoriesController extends Controller
     //         echo 'เกินกำหนดของเทอมนี้แล้ว';
     //     }
     // }
+
+
+    public function reorder_remain($std_id, $term, $level_id)
+    {
+        $histories = Histrories::where([
+            ['student_id', $std_id],
+            ['term', $term],
+            ['level_id', $level_id]
+        ])->orderBy('date', 'asc')->get();
+
+        $count = 9;
+
+        foreach ($histories as $history) {
+            // Update course_remaining
+            $history->update(['course_remaining' => $count]);
+
+            // Decrement count for next record
+            $count--;
+
+            // Ensure count doesn't go below 0
+            if ($count < 0) {
+                $count = 0;
+            }
+        }
+    }
+
     public function store(Request $request)
     {
         // dd($request);
@@ -427,9 +453,10 @@ class HistoriesController extends Controller
             $end_date = $start_date->copy()->addMonths(4);
             $course_remaining = 9;
         } elseif ($history->count() < 10) {
-            $lastHistory = $history->sortByDesc('created_at')->first();
-            $firstHistory = $history->sortBy('created_at')->first();
+            $lastHistory = $history->sortByDesc('date')->first();
+            $firstHistory = $history->sortBy('date')->first();
             $course_remaining = $lastHistory->course_remaining - 1;
+            //$course_remaining = 9 - $history->count();
             $start_date = $firstHistory->start_date;
             $end_date = $firstHistory->end_date;
 
@@ -501,7 +528,8 @@ class HistoriesController extends Controller
             }
         }
 
-
+        //reorder remain
+        $this->reorder_remain($std_id, $term, $level_id);
 
 
         // dd($request);

@@ -158,6 +158,8 @@ Route::group(['middleware' => ['auth']], function () {
     })->name('file.get');
 
 
+
+
     /* Route::get('/', [App\Http\Controllers\ContactController::class, 'index']);
     Route::get('/home', [App\Http\Controllers\ContactController::class, 'index'])->name('home'); */
     Route::get('/', [App\Http\Controllers\HomeController::class, 'index']);
@@ -166,7 +168,9 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/reciept/export', [ReceiptController::class, 'exportReciept'])->name('reciept.export');
 });
 
-
+Route::get('/teacher', function () {
+    return redirect()->to('https://teacher.eimaths-th.com/');
+});
 
 Auth::routes();
 Route::get('/auth/google', [App\Http\Controllers\GoogleController::class, 'loginWithGoogle'])->name('google.login');
