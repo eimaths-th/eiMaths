@@ -427,6 +427,7 @@
                 }
             ]
         };
+
         var table = $('#Listview').DataTable(table_option);
 
         $('#SearchButtons').on('click', function() {
@@ -440,9 +441,9 @@
 
                 // Apply the new search based on searchType and keyword
                 if (searchType === '1') {
-                    table.column(3).search(keyword).draw();
+                    table.column(5).search(keyword).draw();
                 } else if (searchType === '2') {
-                    table.column(4).search(keyword).draw();
+                    table.column(6).search(keyword).draw();
                 }
             } else {
                 // Handle the case where searchType or keyword is empty
