@@ -1055,7 +1055,7 @@ class HistoriesController extends Controller
         // Reorder remaining histories
         $this->reorder_remain($stu_id, $stu_term, $stu_level);
 
-        return true; // Return true if successful
+        return true;
     }
 
     public function destroy_all(Request $request)
