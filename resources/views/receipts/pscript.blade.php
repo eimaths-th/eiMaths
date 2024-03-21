@@ -257,7 +257,8 @@
         });
 
 
-        $("#EditOrtherFee,#EditRegisterFee,#EditAccessFee,#EditRefund,#EditDiscountTerm,#EditDiscountBook").on("keyup input",
+        $("#EditOrtherFee,#EditRegisterFee,#EditAccessFee,#EditRefund,#EditDiscountTerm,#EditDiscountBook").on(
+            "keyup input",
             function() {
                 let fee = $("#EditRegisterFee").val() || 0;
                 let access_fee = $("#EditAccessFee").val() || 0;
@@ -455,7 +456,7 @@
             "footerCallback": function(row, data, start, end, display) {
                 var api = this.api();
 
-                sum=0;
+                sum = 0;
                 // Calculate the sum of values in column 8 for all pages
                 var sum = api
                     .column(7)

@@ -528,7 +528,7 @@ class ReceiptController extends Controller
         $price_texten = $this->MoneyConvertService->convertNumber($datas[0]->total_fee);
 
         //$formattedDate = $datas[0]->created_at->format('Y-m-d');
-        $formattedDate =$datas[0]->payment_date;
+        $formattedDate = $datas[0]->payment_date;
 
         $qty = 0;
         $lprice = 0;
@@ -554,10 +554,11 @@ class ReceiptController extends Controller
         $maxPrice = $datas_list->max('oprice');
         $maxBPrice = $datas_list->max('obprice');
         $book_price = $lbprice - $datas[0]->discount_book;
-        $vat_price = ($lprice + $datas[0]->register_fee + $datas[0]->access_fee + $datas[0]->orther_fee + $datas[0]->refund) - $datas[0]->discount;
+        //+ $datas[0]->orther_fee
+        $vat_price = ($lprice + $datas[0]->register_fee + $datas[0]->access_fee  + $datas[0]->refund) - $datas[0]->discount;
         $vat_val = ($vat_price * 7) / 107;
 
-        $net_price = $vat_price + $book_price;
+        $net_price = $vat_price + $book_price + $datas[0]->orther_fee;
 
         $customItem = [[
             'pname' => 'ค่าคอร์สเรียน ' . $ccname,
@@ -618,7 +619,7 @@ class ReceiptController extends Controller
         };
 
 
-        if ($datas[0]->orther_fee !== null && $datas[0]->orther_fee !== "0.00") {
+        /*  if ($datas[0]->orther_fee !== null && $datas[0]->orther_fee !== "0.00") {
             $accessItem = [
                 [
                     'pname' => 'รายได้อื่นๆ',
@@ -629,7 +630,7 @@ class ReceiptController extends Controller
                 ]
             ];
             $customItem = array_merge($customItem, $accessItem);
-        }
+        } */
 
 
 
@@ -638,6 +639,7 @@ class ReceiptController extends Controller
             'book_price' => $book_price,
             'vat_price' => $vat_price,
             'net_price' => $net_price,
+            'orther_fee' => $datas[0]->orther_fee,
             'price_text' => $price_text,
             'price_texten' => $price_texten,
             //'etype' => "ค่าสมัครเรียน / Application Fee",

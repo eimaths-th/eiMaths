@@ -191,12 +191,12 @@
                                              </div>
                                              <div class="col-xs-6 col-sm-6 col-md-6">
                                                 <div class="form-group">
-                                                    <strong><i class="fas fa-dollar-sign"></i> รายได้อื่นๆ
+                                                    <strong><i class="fas fa-dollar-sign"></i> ค่าธรรมเนียมบัตรเครดิต / Service Charge
                                                         :</strong>
                                                     {!! Form::number('orther_fee', '0.00', [
                                                         'id' => 'EditOrtherFee',
                                                         'step' => '0.50',
-                                                        'placeholder' => 'รายได้อื่นๆ',
+                                                        'placeholder' => 'ค่าธรรมเนียมบัตรเครดิต / Service Charge',
                                                         'class' => 'auto_decimal form-control',
                                                         'readonly' => false,
                                                     ]) !!}
