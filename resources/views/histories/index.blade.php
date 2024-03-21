@@ -161,8 +161,8 @@
                                                         <input type="checkbox" id="check-all" class="flat">
                                                     </th>
                                                     <th>Study Date </th>
-                                                    <th>Study Stat Time </th>
-                                                    <th>Study Time</th>
+                                                    <th>Study Start Time </th>
+                                                    <th>Study End Time</th>
                                                     <th width="1%" class="text-center">Centre</th>
                                                     <th width="1%" class="text-center">Code</th>
                                                     <th>Student Name</th>
