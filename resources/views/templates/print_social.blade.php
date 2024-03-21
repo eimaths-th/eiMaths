@@ -368,6 +368,15 @@
                                 <td width="8%"></td>
 
                             </tr>
+                            <tr>
+                                <td width="10%"></td>
+                                <!-- <td width="20%"></td> -->
+                                <td width="67%" class="grey">ค่าธรรมเนียมบัตรเครดิต / Service Charge</td>
+                                <td width="15%" align="right"><b>{{ number_format($orther_fee, 2, '.') }}</b>
+                                </td>
+                                <td width="8%"></td>
+
+                            </tr>
                         </table>
                     </td>
 
