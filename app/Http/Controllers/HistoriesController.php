@@ -993,79 +993,17 @@ class HistoriesController extends Controller
         return ['success' => 'Updated history successfully'];
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy_all(Request $request)
+
+    public function destroy_func($id)
     {
-        //
-        $his_id = $request->get('table_records');
-
-        $loghistories = Histrories::whereIn('id', $his_id)->get();
-        $histories = Histrories::whereIn('id', $his_id);
-
-        foreach ($loghistories as $history) {
-
-            $filePath = public_path('file_upload/' . $history->signature);
-
-            // Delete the file if it exists
-            if (file_exists($filePath)) {
-                unlink($filePath);
-            }
-
-            $dataimg = HistoryStudentImg::where([
-                'history_id' => $history->id,
-            ])->get();
-
-            // Delete the found records
-            if (!$dataimg->isEmpty()) {
-                $dataimg->each(function ($item) {
-                    $filename = $item->img;
-
-                    // Build the full path to the file within the 'public/file_store' directory
-                    $filePath = public_path('file_upload/' . $filename);
-
-                    // Delete the file if it exists
-                    if (file_exists($filePath)) {
-                        unlink($filePath);
-                    }
-                    $item->delete();
-                });
-            }
-
-            LogHistory::create([
-                'history_id' => $history->id,
-                'centre' => $history->centre,
-                'student_id' => $history->student_id,
-                'status' => 'delete',
-                'level_id_old' => $history->level_id,
-                'level_name_old' => $history->level_name,
-                'term_old' => $history->term,
-                'bookuse_old' => $history->bookuse,
-                'date_old' => $history->date,
-                'stime_old' => $history->stime,
-                'etime_old' => $history->etime,
-                'comment_old' => $history->comment,
-                'course_remaining_old' => $history->course_remaining,
-                'approve_id' => auth()->user()->id,
-                'approve_name' => auth()->user()->name,
-            ]);
-        }
-        if ($histories) {
-
-            $histories->delete();
-            return redirect()->route('histories.index')->with('success', 'Deleted Histrories to select successfully');
-
-            return ['success' => true, 'message' => 'Deleted Histrories successfully'];
-        } else {
-            return ['success' => false, 'message' => 'Histrories not found'];
-        }
-    }
-    public function destroy(Request $request)
-    {
-        //
-        $id = $request->get('id');
         $history = Histrories::find($id);
+        if (!$history) {
+            return false; // Return false if history not found
+        }
+
+        $stu_id = $history->student_id;
+        $stu_term = $history->term;
+        $stu_level = $history->level_id;
 
         $filePath = public_path('file_upload/' . $history->signature);
 
@@ -1074,9 +1012,7 @@ class HistoriesController extends Controller
             unlink($filePath);
         }
 
-        $dataimg = HistoryStudentImg::where([
-            'history_id' => $id,
-        ])->get();
+        $dataimg = HistoryStudentImg::where('history_id', $id)->get();
 
         // Delete the found records
         if (!$dataimg->isEmpty()) {
@@ -1094,8 +1030,8 @@ class HistoriesController extends Controller
             });
         }
 
-
-        $logHistory = LogHistory::create([
+        // Create log history
+        LogHistory::create([
             'history_id' => $history->id,
             'centre' => $history->centre,
             'student_id' => $history->student_id,
@@ -1113,12 +1049,35 @@ class HistoriesController extends Controller
             'approve_name' => auth()->user()->name,
         ]);
 
+        // Delete the history
+        $history->delete();
 
-        if ($history) {
-            $history->delete();
-            return ['success' => true, 'message' => 'Deleted Histrories successfully'];
+        // Reorder remaining histories
+        $this->reorder_remain($stu_id, $stu_term, $stu_level);
+
+        return true; // Return true if successful
+    }
+
+    public function destroy_all(Request $request)
+    {
+        $his_id = $request->get('table_records');
+
+        foreach ($his_id as $id) {
+            $this->destroy_func($id);
+        }
+
+        return redirect()->route('histories.index')->with('success', 'Deleted Histories successfully');
+    }
+
+    public function destroy(Request $request)
+    {
+        $id = $request->get('id');
+        $de = $this->destroy_func($id);
+
+        if ($de) {
+            return ['success' => true, 'message' => 'Deleted History successfully'];
         } else {
-            return ['success' => false, 'message' => 'Histrories not found'];
+            return ['success' => false, 'message' => 'History not found'];
         }
     }
 }
