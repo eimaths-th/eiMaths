@@ -128,6 +128,11 @@ class HistoriesController extends Controller
                     $code = $row->date;
                     return $code;
                 })
+                ->addColumn('setime', function ($row) {
+                    //$code = $this->formatDate($row->date);
+                    $code = $row->stime . ' - ' . $row->etime;
+                    return $code;
+                })
                 ->editColumn('start_date', function ($row) {
                     $code = $this->checkStartEndDate($row->student_id, $row->term, $row->level_id);
                     return $code;

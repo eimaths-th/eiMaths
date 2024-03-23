@@ -362,12 +362,13 @@
                     name: 'date'
                 },
                 {
-                    data: 'stime',
-                    name: 'stime'
-                }, {
-                    data: 'etime',
-                    name: 'etime'
+                    data: 'setime',
+                    name: 'setime'
                 },
+                /* {
+                                   data: 'etime',
+                                   name: 'etime'
+                               }, */
                 {
                     data: 'centre',
                     name: 'centre'
@@ -392,15 +393,15 @@
                     data: 'bookuse',
                     name: 'bookuse'
                 },
-                {
-                    data: 'start_date',
-                    name: 'start_date'
-                },
+
                 {
                     data: 'course_remaining',
                     name: 'course_remaining'
                 },
-
+                {
+                    data: 'start_date',
+                    name: 'start_date'
+                },
 
                 /* {
                     data: 'end_date',
