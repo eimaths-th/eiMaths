@@ -256,7 +256,7 @@ class ReceiptController extends Controller
 
             return datatables()->of($datas)
                 ->editColumn('checkbox', function ($row) {
-                    $this->gen_receipt_data($row->id);
+                    //$this->gen_receipt_data($row->id);
                     return '<input type="checkbox" id="' . $row->id . '" class="flat" name="table_records[]" value="' . $row->id . '" >';
                 })
                 ->addColumn('more', function ($row) {
