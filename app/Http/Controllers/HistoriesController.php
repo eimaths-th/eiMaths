@@ -273,7 +273,7 @@ class HistoriesController extends Controller
     {
         $select_list = "";
         if ($type == 'add') {
-            $student = Contact::find($std_id);
+            //$student = Contact::find($std_id);
             $order = Order::where('cid', $std_id)->get();
             $order_detail = OrderDetailList::select('level', DB::raw('(SELECT id FROM levels WHERE levels.name = order_detail_lists.level) as level_id'))
                 ->whereIn('order_id', $order->pluck('id'))

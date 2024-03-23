@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\DB;
 use App\Models\level;
 use App\Models\User;
 use App\Models\Contact;
@@ -16,6 +17,9 @@ use App\Models\term;
 use App\Models\bookuse;
 use App\Models\Histrories;
 use App\Models\HistoryStudentImg;
+use App\Models\Order;
+use App\Models\OrderDetail;
+use App\Models\OrderDetailList;
 use Carbon\Carbon;
 
 class APIController extends Controller
@@ -98,14 +102,22 @@ class APIController extends Controller
     {
         //$query = $request->query('query');
 
-        $student = Contact::find($request->get('std'));
+        //$student = Contact::find($std_id);
+        $order = Order::where('cid', $request->get('std'))->get();
+        $order_detail = OrderDetailList::select('level as name', DB::raw('(SELECT id FROM levels WHERE levels.name = order_detail_lists.level) as id'))
+            ->whereIn('order_id', $order->pluck('id'))
+            ->groupBy('name')->get();
+
+        $levels = $order_detail;
+
+        /* $student = Contact::find($request->get('std'));
         if ($student) {
             $lv1 = $student->level;
             $lv2 = $student->level2;
             $levels = level::whereBetween('id', [$lv1, $lv2])->get();
         } else {
             $levels = [];
-        }
+        } */
 
 
         return response()->json($levels);
