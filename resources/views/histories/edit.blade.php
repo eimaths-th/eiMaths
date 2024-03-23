@@ -110,35 +110,31 @@
                                                 <div class="form-group">
                                                     <strong><i class="fas fa-code"></i> Level</strong>
                                                     {{-- <select style="width: 100%;" class="select2 select2_single form-control" id="AddLevel"  name="level" multiple="multiple"> --}}
-                                                    {{-- <select name="level_id" id="AddLevel" class="level_id select2 select2_single form-control" multiple="multiple">
+                                                    <select name="elevel_id" id="EditLevel"
+                                                        class="elevel_id select2 select2_single form-control"
+                                                        multiple="multiple">
                                                         <option value="">Select Level</option>
 
                                                         <option value="1">1</option>
                                                         <option value="2">2</option>
                                                         <option value="3">3</option>
 
-                                                    </select> --}}
-                                                    <input type="text" name="level_name" id="getLevelName"
-                                                        class="form-control" placeholder="Level student">
-                                                    <input type="hidden" name="level_id" id="getLevelId">
-
+                                                    </select>
                                                 </div>
                                             </div>
                                             {{-- ต่อหน้า create view history --}}
                                             <div class="col-xs-6 col-sm-6 col-md-6">
                                                 <div class="form-group">
                                                     <strong><i class="fas fa-code"></i>Term</strong>
-                                                    {{-- <select name="term"
-                                                        id="AddTerm"class="terms select2 select2_single form-control"
+                                                    <select name="eterm"
+                                                        id="EditTerm"class="eterms select2 select2_single form-control"
                                                         multiple="multiple">
                                                         <option value="">select Term</option>
                                                         <option value="1">1</option>
                                                         <option value="2">2</option>
                                                         <option value="3">3</option>
-                                                    </select> --}}
-                                                    <input type="text" name="term" id="getTerm"
-                                                        class="form-control" placeholder="Term student">
-
+                                                        <option value="4">4</option>
+                                                    </select>
                                                 </div>
                                             </div>
                                         </div>

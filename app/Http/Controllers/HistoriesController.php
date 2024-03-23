@@ -272,22 +272,24 @@ class HistoriesController extends Controller
     public function stdfind($type, $std_id)
     {
         $select_list = "";
+        //$student = Contact::find($std_id);
+        $order = Order::where('cid', $std_id)->get();
+        $order_detail = OrderDetailList::select('level', DB::raw('(SELECT id FROM levels WHERE levels.name = order_detail_lists.level) as level_id'))
+            ->whereIn('order_id', $order->pluck('id'))
+            ->groupBy('level')->get();
+        /*  $lv1 = $student->level;
+        $lv2 = $student->level2;
+        $levels = level::whereBetween('id', [$lv1, $lv2])->get(); */
+        foreach ($order_detail as $level) {
+            $select_list .= '<option value="' . $level->level_id . '" >' . $level->level . '</option>';
+        }
         if ($type == 'add') {
-            //$student = Contact::find($std_id);
-            $order = Order::where('cid', $std_id)->get();
-            $order_detail = OrderDetailList::select('level', DB::raw('(SELECT id FROM levels WHERE levels.name = order_detail_lists.level) as level_id'))
-                ->whereIn('order_id', $order->pluck('id'))
-                ->groupBy('level')->get();
-            /*  $lv1 = $student->level;
-            $lv2 = $student->level2;
-            $levels = level::whereBetween('id', [$lv1, $lv2])->get(); */
-            foreach ($order_detail as $level) {
-                $select_list .= '<option value="' . $level->level_id . '" >' . $level->level . '</option>';
-            }
 
             return response()->json([
                 'html' =>  $select_list
             ]);
+        } else {
+            return $select_list;
         }
     }
     /**
@@ -643,6 +645,7 @@ class HistoriesController extends Controller
             $teacher_id = '';
         }
 
+        $level_list = $this->stdfind('edit', $history->student_id);
 
         $data = [
             'id'                    => $history->id,
@@ -666,6 +669,7 @@ class HistoriesController extends Controller
         // dd($data,$history, $id, );
         return response()->json([
             'history' => $history,
+            'level' => $level_list,
             'data' => $data,
             // 'datas' => $datas
 

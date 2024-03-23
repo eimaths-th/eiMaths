@@ -746,6 +746,9 @@
                     $('#getStartDate').val(res.data.start_date);
                     $('#getEndDate').val(res.data.end_date);
                     $('#getComment').val(res.data.comment);
+                    $('#EditLevel').html(res.level);
+                    $('#EditLevel').val(res.history.level_id).trigger("change");
+                    $('#EditTerm').val(res.data.term).trigger("change");
                     // $('#getSignature').val(res.data.signature);
                     if (res.data.signature !== null) {
                         /* $('#getSignature').attr('src', '{{ asset('file_upload/') }}/' + res
@@ -822,9 +825,11 @@
                 data: {
                     img: values,
                     signature: esignatureData,
-                    level_id: $('#getLevelId').val(),
-                    level_name: $('#getLevelName').val(),
-                    term: $('#getTerm').val(),
+                    /* level_id: $('#getLevelId').val(),
+                    level_name: $('#getLevelName').val(), */
+                    level_id: $('#EditLevel').val()[0],
+                    /* term: $('#getTerm').val(), */
+                    term: $('#EditTerm').val()[0],
                     bookuse: $('#getBookuse').val(),
                     course_remaining: $('#getCourseRemaining').val(),
                     date: $('#getDate').val(),
