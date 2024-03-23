@@ -357,8 +357,8 @@
 
                                 <td width="15%" align="right"> <b>
                                     </b>
-                                    <input type="text" class="form-control auto_decimal" id="vat"
-                                        name="vat" value="{{ number_format($vat_price - $vat_val, 2, '.') }}">
+                                    <input type="text" class="form-control auto_decimal" id="vatp"
+                                        name="vatp" value="{{ number_format($vat_price - $vat_val, 2, '.') }}">
                                 </td>
                                 <td width="8%"></td>
 
@@ -368,7 +368,9 @@
                                 <!-- <td width="20%"></td> -->
                                 <td width="67%" class="grey">ส่วนลด/Discout</td>
                                 <td width="15%" align="right">
-                                    {{ number_format($vat_price - $vat_val, 2, '.') }}
+                                    <input type="text" class="form-control auto_decimal" id="dis"
+                                        name="dis" value="{{ number_format($discount_val, 2, '.') }}">
+
                                 </td>
                                 <td width="8%"></td>
 
@@ -378,7 +380,10 @@
                                 <td width="10%"></td>
                                 <!-- <td width="20%"></td> -->
                                 <td width="67%" class="grey">ภาษีมูลค่าเพิ่ม 7% / Vat 7%</td>
-                                <td width="15%" align="right"><b>{{ number_format($vat_val, 2, '.') }}</b></td>
+                                <td width="15%" align="right">
+                                    <input type="text" class="form-control auto_decimal" id="vat"
+                                        name="vat" value="{{ number_format($vat_val, 2, '.') }}">
+                                </td>
                                 <td width="8%"></td>
 
                             </tr>

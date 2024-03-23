@@ -17,7 +17,7 @@
         } */
         @font-face {
             font-family: 'THSarabunNew';
-            font-size: 8px;
+            font-size: 6px;
             font-style: normal;
             font-weight: normal;
             src: url("{{ asset('fonts/THSarabunNew.ttf') }}") format("truetype");
@@ -26,7 +26,7 @@
 
         @font-face {
             font-family: 'THSarabunNew Bold';
-            font-size: 6px;
+            font-size: 4px;
             font-style: normal;
             font-weight: bold;
             src: url("{{ asset('fonts/THSarabunNew Bold') }}") format("truetype");
@@ -34,7 +34,7 @@
 
         body {
             font-family: 'sarabun', 'Roboto';
-            font-size: 12px;
+            font-size: 10px;
         }
 
         table td.grey {
