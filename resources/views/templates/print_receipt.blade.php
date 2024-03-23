@@ -227,27 +227,21 @@
                     <td bgcolor="#FF6900" align="center" class="whiteh">ส่วนลด <br>Discount</td>
                     <td bgcolor="#FF6900" align="center" class="whiteh">จำนวนเงิน <br>Amount</td>
                 </tr>
-                @php
-                    $total = 0; // Initialize the total variable
-                    $discount_val = 0;
-                @endphp
-                @foreach ($items['customItem'] as $x => $receipt_detail)
+                @foreach ($items as $x => $receipt_detail)
                     <tr>
                         <td align="center" style="vertical-align: top;">{{ (int) $x + 1 }}</td>
-                        <td align="center"> {!! $receipt_detail['pname'] !!}</td>
+                        <td align="center"> {!! $receipt_detail['des'] !!}</td>
                         <td align="center">{{ $receipt_detail['quantity'] }}</td>
-                        <td align="center">{{-- {{ $receipt_detail['unit'] }} --}}</td>
+                        <td align="center">{{ $receipt_detail['unit'] }}</td>
                         <td align="center" style="padding-right:20px;">
-                            {{ number_format($receipt_detail['uprice'], 2, '.') }}</td>
+                            {{ number_format($receipt_detail['price'], 2, '.') }}</td>
                         <td align="center">{{ $receipt_detail['discount'] }}</td>
                         <td align="center" style="vertical-align: top; padding-right:20px;">
-                            {{ number_format($receipt_detail['price'], 2, '.') }}</td>
+                            {{ number_format($receipt_detail['price'] * $receipt_detail['quantity'] - $receipt_detail['discount'], 2, '.') }}
+                        </td>
                     </tr>
-                    @php
-                        $total += $receipt_detail['price'] - (int) $receipt_detail['discount']; // Accumulate the total
-                        $discount_val += (int) $receipt_detail['discount'];
-                    @endphp
                 @endforeach
+
                 <tr>
                     <td align="center" style="vertical-align: top;"></td>
                     <td align="left"></td>
@@ -325,11 +319,6 @@
                             </tr>
                         </table>
                     </td>
-                    @php
-                        $vatRate = 7;
-                        $vat_val = ($vat_price * $vatRate) / 107;
-                        //$vat_price_val = $total - $vat_val;
-                    @endphp
                     <td colspan="6" class="activetop activeleft">
                         <table width="100%" cellpadding="0" cellspacing="0">
                             <tr>
@@ -373,7 +362,8 @@
                                 <td width="10%"></td>
                                 <!-- <td width="20%"></td> -->
                                 <td width="67%" class="grey">ค่าธรรมเนียมบัตรเครดิต / Service Charge</td>
-                                <td width="15%" align="right"><b>{{ number_format($orther_fee, 2, '.') }}</b></td>
+                                <td width="15%" align="right"><b>{{ number_format($orther_fee, 2, '.') }}</b>
+                                </td>
                                 <td width="8%"></td>
 
                             </tr>

@@ -135,6 +135,7 @@ class ReceiptController extends Controller
         $receipt_detail->quantity = $qty;
         $receipt_detail->price = $maxPrice;
         $receipt_detail->discount = $datas[0]->discount;
+        $receipt_detail->tax = 1;
         $receipt_detail->save();
 
         $receipt_detail = new receipt_details();
@@ -144,6 +145,7 @@ class ReceiptController extends Controller
         $receipt_detail->quantity = $qty;
         $receipt_detail->price = $maxBPrice;
         $receipt_detail->discount = $datas[0]->discount_book;
+        $receipt_detail->tax = 0;
         $receipt_detail->save();
 
         if ($datas[0]->refund !== "" and $datas[0]->refund !== "0.00") {
@@ -154,6 +156,7 @@ class ReceiptController extends Controller
             $receipt_detail->quantity = 1;
             $receipt_detail->price = $datas[0]->refund;
             $receipt_detail->discount = '0.00';
+            $receipt_detail->tax = 1;
             $receipt_detail->save();
         };
 
@@ -165,6 +168,7 @@ class ReceiptController extends Controller
             $receipt_detail->quantity = 1;
             $receipt_detail->price = $datas[0]->register_fee;
             $receipt_detail->discount = '0.00';
+            $receipt_detail->tax = 1;
             $receipt_detail->save();
         };
 
@@ -176,6 +180,7 @@ class ReceiptController extends Controller
             $receipt_detail->quantity = 1;
             $receipt_detail->price = $datas[0]->access_fee;
             $receipt_detail->discount = '0.00';
+            $receipt_detail->tax = 1;
             $receipt_detail->save();
         };
     }
@@ -272,10 +277,15 @@ class ReceiptController extends Controller
                 })
                 ->addColumn('action', function ($row) {
                     $html = '';
-                    if (Gate::allows('order-show')) {
-                        $html = '<button type="button" class="btn btn-sm btn-success btn-print" id="getPrintData" data-id="' . $row->id . '"><i class="fa fa-print"></i> Print</button> ';
+                    if (Gate::allows('receipt-edit')) {
+                        $html = '<button type="button" class="btn btn-sm btn-success btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit</button> ';
                     } else {
-                        $html = '<button type="button" class="btn btn-sm btn-success btn-print disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-print"></i> Print</button> ';
+                        $html = '<button type="button" class="btn btn-sm btn-success btn-edit disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> Edit</button> ';
+                    }
+                    if (Gate::allows('order-show')) {
+                        $html .= '<button type="button" class="btn btn-sm btn-success btn-print" id="getPrintData" data-id="' . $row->id . '"><i class="fa fa-print"></i> Print</button> ';
+                    } else {
+                        $html .= '<button type="button" class="btn btn-sm btn-success btn-print disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-print"></i> Print</button> ';
                     }
                     if (Gate::allows('order-show')) {
                         $html .= '<button type="button" class="btn btn-sm btn-danger btn-share" id="getShareData" data-id="' . $row->id . '"><i class="fa-solid fa-file-pdf"></i> PDF</button> ';
@@ -613,179 +623,59 @@ class ReceiptController extends Controller
 
         //dd($datas);
 
-        $datas_list = OrderDetailList::select(
-            //"order_detail_lists.*",
-            "order_detail_lists.id as id",
-            "order_detail_lists.price as oprice",
-            "order_detail_lists.bprice as obprice",
-            DB::raw("SUBSTRING(order_detail_lists.level, 1, 1) as first_char"),
-            DB::raw("COUNT(*) as row_count"),
-            DB::raw("SUM(order_detail_lists.price) as total_price"),
-            DB::raw("SUM(order_detail_lists.bprice) as total_bprice")
-        )->where('order_id', $datas[0]->oid)
-            ->groupBy(
-                // 'order_detail_lists.level',
-                'first_char',
-                'order_detail_lists.price',
-                'order_detail_lists.bprice',
-                'order_detail_lists.id',
-                // 'order_detail_lists.order_id',
-                // 'eimatch.order_detail_lists.term',
-                // 'order_detail_lists.book',
-                // 'order_detail_lists.price',
-                // 'eimatch.order_detail_lists.bprice',
-                // 'eimatch.order_detail_lists.created_at',
-                // 'eimatch.order_detail_lists.updated_at'
-            )
-            //->orderBy("id", "asc")
-            ->get();
 
-        //dd($datas_list);
-        // dd(
-        //     $id,
-        //     $datas,
-        //     $datas_list,
-
-        // );
-
-        $datasf = $this->getfileattprint($datas[0]->oid);
-
-        // Check if the data exists before proceeding
         if ($datas->isEmpty()) {
             return redirect()->back()->with('error', 'Receipt data not found.');
         }
 
-        // Load the template file from the 'templates' subdirectory
+        $receipt_detail = receipt_details::where("receipt_id", $id)->orderby('id')->get();
+        $datasf = $this->getfileattprint($datas[0]->oid);
+
         $template = 'templates.print_receipt';
+        $templatee = 'templates.edit_receipt';
         $templates = 'templates.print_social';
 
-        $ctype = "";
-        $price_text = $this->MoneyConvertService->baht_text($datas[0]->total_fee);
-        $price_texten = $this->MoneyConvertService->convertNumber($datas[0]->total_fee);
+        $total = 0;
+        $discount_val = 0;
+        $vat_price = 0;
+        $book_price = 0;
+        foreach ($receipt_detail as $price_list) {
+            $total +=
+                $price_list->price * $price_list->quantity - (int) $price_list->discount;
+            $discount_val += (int) $price_list->discount;
 
-        //$formattedDate = $datas[0]->created_at->format('Y-m-d');
-        $formattedDate = $datas[0]->payment_date;
-
-        $qty = 0;
-        $lprice = 0;
-        $lbprice = 0;
-        foreach ($datas_list as $price_list) {
-            $ccname = $price_list->first_char;
-            $qty = $qty + $price_list->row_count;
-            $oprice = $price_list->oprice;
-            $obprice = $price_list->obprice;
-            $lprice = $lprice + $price_list->total_price;
-            $lbprice = $lbprice + $price_list->total_bprice;
+            if ($price_list->tax == 0) {
+                $book_price +=
+                    $price_list->price * $price_list->quantity -
+                    (int) $price_list->discount;
+            }
         }
-
-
-
-        // Data to pass to the view
-        if ($datas_list[0]->first_char == "K") {
-            $ccname = "Kindergarten";
-        } else if ($datas_list[0]->first_char == "P") {
-            $ccname = "Primary school";
-        }
-
-        $maxPrice = $datas_list->max('oprice');
-        $maxBPrice = $datas_list->max('obprice');
-        $book_price = $lbprice - $datas[0]->discount_book;
-        //+ $datas[0]->orther_fee
-        $vat_price = ($lprice + $datas[0]->register_fee + $datas[0]->access_fee  + $datas[0]->refund) - $datas[0]->discount;
-        $vat_val = ($vat_price * 7) / 107;
-
+        $vat_price = $total - $book_price;
+        $vatRate = 7;
+        $vat_val = ($vat_price * $vatRate) / 107;
         $net_price = $vat_price + $book_price + $datas[0]->orther_fee;
 
-        $customItem = [[
-            'pname' => 'ค่าคอร์สเรียน ' . $ccname,
-            'quantity' => $qty,
-            'uprice' => $maxPrice,
-            'price' => $lprice - $datas[0]->discount,
-            'discount' => $datas[0]->discount,
-            // Add other properties as needed
-        ], [
-            'pname' => 'ค่าหนังสือ',
-            'quantity' => $qty,
-            'uprice' => $maxBPrice,
-            'price' => $lbprice - $datas[0]->discount_book,
-            'discount' => $datas[0]->discount_book,
-            // Add other properties as needed
-        ]];
-
-        if ($datas[0]->refund !== "" and $datas[0]->refund !== "0.00") {
-            $refundItem = [
-                [
-                    'pname' => 'ค่ามัดจำ',
-                    'quantity' => 1,
-                    'uprice' => $datas[0]->refund,
-                    'price' => $datas[0]->refund * 1,
-                    'discount' => '0.00',
-
-                ]
-            ];
-            $customItem = array_merge($customItem, $refundItem);
-        };
-
-        if ($datas[0]->register_fee !== "" and $datas[0]->register_fee !== "0.00") {
-            $regisItem = [
-                [
-                    'pname' => 'ค่าลงทะเบียนแรกเข้า',
-                    'quantity' => 1,
-                    'uprice' => $datas[0]->register_fee * 1,
-                    'price' => $datas[0]->register_fee,
-                    'discount' => '0.00',
-
-                ]
-            ];
-            $customItem = array_merge($customItem, $regisItem);
-        };
-
-        if ($datas[0]->access_fee !== "" and $datas[0]->access_fee !== "0.00") {
-            $accessItem = [
-                [
-                    'pname' => 'ค่าอุปกรณ์การเรียน',
-                    'quantity' => 1,
-                    'uprice' => $datas[0]->access_fee * 1,
-                    'price' => $datas[0]->access_fee,
-                    'discount' => '0.00',
-
-                ]
-            ];
-            $customItem = array_merge($customItem, $accessItem);
-        };
-
-
-        /*  if ($datas[0]->orther_fee !== null && $datas[0]->orther_fee !== "0.00") {
-            $accessItem = [
-                [
-                    'pname' => 'รายได้อื่นๆ',
-                    'quantity' => 1,
-                    'uprice' => $datas[0]->orther_fee * 1,
-                    'price' => $datas[0]->orther_fee,
-                    'discount' => '0.00',
-                ]
-            ];
-            $customItem = array_merge($customItem, $accessItem);
-        } */
-
-
+        $ctype = "";
+        //$formattedDate = $datas[0]->created_at->format('Y-m-d');
+        $formattedDate = $datas[0]->payment_date;
+        $price_text = $this->MoneyConvertService->baht_text($net_price);
+        $price_texten = $this->MoneyConvertService->convertNumber($net_price);
 
         $data = [
             'ctype' => $ctype,
-            'book_price' => $book_price,
-            'vat_price' => $vat_price,
-            'net_price' => $net_price,
             'orther_fee' => $datas[0]->orther_fee,
             'price_text' => $price_text,
             'price_texten' => $price_texten,
-            //'etype' => "ค่าสมัครเรียน / Application Fee",
+            'vat_price' => $vat_price,
+            'vat_val' => $vat_val,
+            'book_price' => $book_price,
+            'net_price' => $net_price,
+            'discount_val' => $discount_val,
             'date' => $formattedDate,
             'data' => $datas->first(),
-            'items' => compact('customItem'),
+            'items' => $receipt_detail,
             'file_att' => $datasf,
         ];
-
-        //dd($data);
 
 
         if ($social == 1) {
@@ -809,6 +699,13 @@ class ReceiptController extends Controller
             return response(file_get_contents($pdfPath), 200, [
                 'Content-Type' => 'application/pdf',
                 'Content-Disposition' => 'inline; filename="' . $pdfFileName . '"',
+            ]);
+        } else  if ($social == 2) {
+            // Render the view with the data and get the HTML content
+            $htmlContent = View::make($templatee, $data)->render();
+            //return new Response($htmlContent, 200, ['Content-Type' => 'text/html']);
+            return response()->json([
+                'html' =>  $htmlContent
             ]);
         } else {
             // Render the view with the data and get the HTML content

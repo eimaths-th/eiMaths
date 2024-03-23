@@ -16,10 +16,10 @@ return new class extends Migration
             $table->unsignedBigInteger('receipt_id')->default(0);
             $table->string('des')->nullable();
             $table->string('unit')->nullable();
-            $table->decimal('quantity', 12, 2);
-            $table->decimal('price', 12, 2);
-            $table->decimal('discount', 12, 2);
-            $table->decimal('service_charge', 12, 2);
+            $table->decimal('quantity', 12, 2)->nullable();
+            $table->decimal('price', 12, 2)->nullable();
+            $table->decimal('discount', 12, 2)->nullable();
+            $table->integer('tax')->nullable();
             $table->timestamps();
 
             // Define foreign key constraints

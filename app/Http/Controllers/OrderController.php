@@ -767,6 +767,7 @@ class OrderController extends Controller
             $receipt_detail->quantity = $qty;
             $receipt_detail->price = $maxPrice;
             $receipt_detail->discount = $datas[0]->discount;
+            $receipt_detail->tax = 1;
             $receipt_detail->save();
 
             $receipt_detail = new receipt_details();
@@ -776,6 +777,7 @@ class OrderController extends Controller
             $receipt_detail->quantity = $qty;
             $receipt_detail->price = $maxBPrice;
             $receipt_detail->discount = $datas[0]->discount_book;
+            $receipt_detail->tax = 0;
             $receipt_detail->save();
 
             if ($datas[0]->refund !== "" and $datas[0]->refund !== "0.00") {
@@ -786,6 +788,7 @@ class OrderController extends Controller
                 $receipt_detail->quantity = 1;
                 $receipt_detail->price = $datas[0]->refund;
                 $receipt_detail->discount = '0.00';
+                $receipt_detail->tax = 1;
                 $receipt_detail->save();
             };
 
@@ -797,6 +800,7 @@ class OrderController extends Controller
                 $receipt_detail->quantity = 1;
                 $receipt_detail->price = $datas[0]->register_fee;
                 $receipt_detail->discount = '0.00';
+                $receipt_detail->tax = 1;
                 $receipt_detail->save();
             };
 
@@ -808,6 +812,7 @@ class OrderController extends Controller
                 $receipt_detail->quantity = 1;
                 $receipt_detail->price = $datas[0]->access_fee;
                 $receipt_detail->discount = '0.00';
+                $receipt_detail->tax = 1;
                 $receipt_detail->save();
             };
         }

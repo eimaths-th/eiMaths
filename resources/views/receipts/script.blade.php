@@ -32,18 +32,18 @@
         $(':checkbox.flat').prop('checked', this.checked);
     });
     $(".export_button").click(function() {
-            var len = $('input[name="table_records[]"]:checked').length;
-            if (len > 0) {
-                if (confirm("Click OK to Export?")) {
-                    $('form#delete_all').attr('action',
-                        '{{ route('reciept.export') }}'); //this fails silently
-                    $('form#delete_all').submit();
-                }
-            } else {
-                alert("Please Select Record For Export");
+        var len = $('input[name="table_records[]"]:checked').length;
+        if (len > 0) {
+            if (confirm("Click OK to Export?")) {
+                $('form#delete_all').attr('action',
+                    '{{ route('reciept.export') }}'); //this fails silently
+                $('form#delete_all').submit();
             }
+        } else {
+            alert("Please Select Record For Export");
+        }
 
-        });
+    });
 
     $(document).ready(function() {
         let id;
@@ -333,6 +333,28 @@
 
         })
 
+        $(document).on('click', '.btn-edit', function(e) {
+            e.preventDefault();
+
+
+            $('.alert-danger').html('');
+            $('.alert-danger').hide();
+            $('.alert-success').html('');
+            $('.alert-success').hide();
+
+
+            pid = $(this).data('id');
+            $.ajax({
+                url: "receipts/show/" + pid + '/2',
+                method: 'GET',
+                success: function(res) {
+                    $('#print_data').html(res.html);
+                    $('#PrintModal').modal('show');
+                }
+            });
+
+        })
+
 
         let lid;
         $(document).on('click', '#getLogData', function(e) {
@@ -350,6 +372,117 @@
 
         })
 
+
+    });
+
+
+    //auto decimal
+    $(document).on('change', '.auto_decimal', function() {
+        const inputValue = parseFloat(this.value);
+        const formattedValue = inputValue.toFixed(2);
+        this.value = formattedValue;
+    });
+
+
+    function calculateTotal(row) {
+        var quantity = parseFloat(row.find("input[name='quantity[]']").val()) || 0;
+        var price = parseFloat(row.find("input[name='price[]']").val()) || 0;
+        var discount = parseFloat(row.find("input[name='discount[]']").val()) || 0;
+        var total = (quantity * price) - discount;
+        row.find("input[name='total[]']").val(total.toFixed(2));
+    }
+
+    let summary_total = () => {
+        let total = 0;
+        let btotal = 0;
+        let dtotal = 0;
+        let vat = 0;
+        let vatp = 0;
+
+        // Iterate through each row
+        $("table tbody tr").each(function() {
+            calculateTotal($(this));
+
+            let rowTotal = parseFloat($(this).find("input[name='total[]']").val()) || 0;
+            if ($(this).find("input[name='tax[]']").is(":checked")) {
+                total += rowTotal;
+            } else {
+                total += 0;
+            }
+            if (!$(this).find("input[name='tax[]']").is(":checked")) {
+                btotal += rowTotal;
+            } else {
+                btotal += 0;
+            }
+            dtotal += parseFloat($(this).find("input[name='discount[]']").val()) || 0;
+            vat = (total * 7) / 107;
+            vatp = total - vat;
+
+        });
+
+        console.log(btotal.toFixed(2));
+        console.log(dtotal.toFixed(2));
+        console.log(vat.toFixed(2));
+        console.log(vatp.toFixed(2));
+        // Update summary fields
+        /* $("#total").text(total.toFixed(2));
+        $("#btotal").text(btotal.toFixed(2));
+        $("#dtotal").text(dtotal.toFixed(2)); */
+    }
+
+
+    $(document).on('input', 'input[name="quantity[]"], input[name="price[]"], input[name="discount[]"]',
+        async function() {
+            var row = $(this).closest('tr');
+            await calculateTotal(row);
+            summary_total();
+        });
+
+    $(document).on('click', "input[name='tax[]']", function() {
+        summary_total();
+    });
+
+    $(function() {
+
+        $(document).on('click', '#addRow', function() {
+            var clonedRow = $(".firstTr:eq(0)").clone(true);
+            var lastNo = parseInt($(".firstTr").last().find("input[name='no[]']").val()) || 0;
+            clonedRow.find("input").val("");
+            clonedRow.find("input[name='no[]']").val(lastNo + 1);
+            clonedRow.find("select").prop('selectedIndex', 0);
+            clonedRow.appendTo($("#myTbl"));
+            efatotal();
+        });
+        $(document).on('click', '#removeRow', function() {
+            if ($("#myTbl tr").length > 2) { // จะลบรายการได้ อย่างน้อย ต้องมี 1 รายการ
+                $("#myTbl tr:last").remove(); // ลบรายการสุดท้าย
+                efatotal();
+            } else {
+                // เหลือ 1 รายการลบไม่ได้
+                if ($("#myTbl tr").length > 1) {
+                    //alert("ต้องมีรายการข้อมูลอย่างน้อย 1 รายการ");
+                    toastr.success('ต้องมีรายการข้อมูลอย่างน้อย 1 รายการ', {
+                        timeOut: 5000
+                    });
+                }
+            }
+        });
+        $(document).on('click', '.btnRemoveg', function() {
+            if ($("#myTbl tr").length > 2) {
+                $(this).closest("tr").remove();
+                efatotal();
+            } else {
+                // เหลือ 1 รายการลบไม่ได้
+                if ($("#myTbl tr").length > 1) {
+                    //alert("ต้องมีรายการข้อมูลอย่างน้อย 1 รายการ");
+                    toastr.success('ต้องมีรายการข้อมูลอย่างน้อย 1 รายการ', {
+                        timeOut: 5000
+                    });
+                }
+            }
+        });
+
+        $(this).closest(".abcd").remove();
 
     });
 
