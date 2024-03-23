@@ -446,7 +446,7 @@
         <!-- Your table with a class for styling -->
         <table class="print-table" width="100%" cellpadding="0" cellspacing="0">
             <tr>
-                <td align="center"><img src="{{ asset('images/banner.png') }}" alt="..."
+                <td align="center"><img width="90%" src="{{ asset('images/banner.png') }}" alt="..."
                         style="padding-bottom: 5px; display: block; margin: 0 auto;"></td>
             </tr>
         </table>
