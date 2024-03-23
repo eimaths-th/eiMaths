@@ -13,6 +13,7 @@ use App\Models\level;
 use App\Models\LogHistory;
 use App\Models\Order;
 use App\Models\OrderDetail;
+use App\Models\OrderDetailList;
 use App\Models\Sterm;
 use App\Models\studentRunningNumber;
 use App\Models\term;
@@ -24,6 +25,7 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\DB;
 
 class HistoriesController extends Controller
 {
@@ -272,11 +274,15 @@ class HistoriesController extends Controller
         $select_list = "";
         if ($type == 'add') {
             $student = Contact::find($std_id);
-            $lv1 = $student->level;
+            $order = Order::where('cid', $std_id)->get();
+            $order_detail = OrderDetailList::select('level', DB::raw('(SELECT id FROM levels WHERE levels.name = order_detail_lists.level) as level_id'))
+                ->whereIn('order_id', $order->pluck('id'))
+                ->groupBy('level')->get();
+            /*  $lv1 = $student->level;
             $lv2 = $student->level2;
-            $levels = level::whereBetween('id', [$lv1, $lv2])->get();
-            foreach ($levels as $level) {
-                $select_list .= '<option value="' . $level->id . '" >' . $level->name . '</option>';
+            $levels = level::whereBetween('id', [$lv1, $lv2])->get(); */
+            foreach ($order_detail as $level) {
+                $select_list .= '<option value="' . $level->level_id . '" >' . $level->level . '</option>';
             }
 
             return response()->json([
