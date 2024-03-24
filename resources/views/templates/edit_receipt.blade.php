@@ -232,7 +232,7 @@
                     </td>
                     <td bgcolor="#FF6900" align="center" class="whiteh" width="10%">ส่วนลด <br>Discount</td>
                     <td bgcolor="#FF6900" align="center" class="whiteh" width="15%">จำนวนเงิน <br>Amount</td>
-                    <td bgcolor="#FF6900" align="center" class="whiteh">Tax</td>
+                    <td bgcolor="#FF6900" align="center" class="whiteh">Vat</td>
                 </tr>
                 @foreach ($items as $x => $receipt_detail)
                     <tr class="firstTr">
