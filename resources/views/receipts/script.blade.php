@@ -561,8 +561,6 @@
                 _token: token
             };
 
-console.log(formData);
-
             $.ajax({
                 url: "receipts/save/" + pid,
                 method: 'PUT',
@@ -724,7 +722,7 @@ console.log(formData);
                 }
             }
         });
-        $(document).on('click', '.btnRemoveg', function() {
+       /*  $(document).on('click', '.btnRemoveg', function() {
             if ($("#myTbl tr").length > 2) {
                 $(this).closest("tr").remove();
                 summary_total();
@@ -739,7 +737,7 @@ console.log(formData);
             }
         });
 
-        $(this).closest(".abcd").remove();
+        $(this).closest(".abcd").remove(); */
 
     });
 
