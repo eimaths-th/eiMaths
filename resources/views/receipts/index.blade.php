@@ -181,8 +181,10 @@
 
     </section>
     @include('receipts.print')
+    @include('receipts.edit_receipt')
 @endsection
 
 @section('script')
     @include('receipts.script')
+    @include('receipts.dropzone')
 @endsection

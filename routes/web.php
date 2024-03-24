@@ -102,13 +102,16 @@ Route::group(['middleware' => ['auth']], function () {
     Route::delete('/orders/destroy', [App\Http\Controllers\OrderController::class, 'destroy'])->name('orders.destroy');
     Route::post('/orders/destroy_all', [App\Http\Controllers\OrderController::class, 'destroy_all'])->name('orders.destroy_all');
     Route::put('/orders/delete/img/{rid}/{rid2}', [App\Http\Controllers\OrderController::class, 'deleteImg'])->name('orders.deleteimg');
-    Route::get('/orders/show/{id}/{param}', [App\Http\Controllers\OrderController::class, 'show'])->name('orders.show');
+    Route::get('/orders/show/{id}/{param}', [App\Http\Controllers\OrderController::class, 'show'])->name('orsders.show');
 
     Route::get('/receipts', [App\Http\Controllers\ReceiptController::class, 'index'])->name('receipts');
     Route::get('/receipts/show/{id}/{param}', [App\Http\Controllers\ReceiptController::class, 'show'])->name('receipts.show');
+    Route::get('/receipts/price_text/{price}', [App\Http\Controllers\ReceiptController::class, 'price_text'])->name('receipts.price_text');
+    Route::put('/receipts/save/{id}', [App\Http\Controllers\ReceiptController::class, 'update'])->name('receipts.save');
     Route::get('/receipts_pending', [App\Http\Controllers\ReceiptController::class, 'pending'])->name('receipts_pending');
     Route::get('/receipts_pending_term', [App\Http\Controllers\ReceiptController::class, 'pending_term'])->name('receipts_pending_term');
     Route::put('/receipts/generate', [App\Http\Controllers\ReceiptController::class, 'generate'])->name('receipts.generate');
+    Route::put('/receipts/delete/img/{rid}/{rid2}', [App\Http\Controllers\ReceiptController::class, 'deleteImg'])->name('receipts.deleteimg');
 
     Route::get('/invoices', [App\Http\Controllers\InvoiceController::class, 'index'])->name('invoices');
     Route::get('/invoices/show/{id}/{param}', [App\Http\Controllers\InvoiceController::class, 'show'])->name('invoices.show');

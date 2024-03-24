@@ -115,6 +115,7 @@
 </head>
 
 <body>
+
     <div class="row" id="reportPrinting" style="width: 90%;margin: 0 auto;">
 
         <table align="center" width="99%" cellpadding="0" cellspacing="0">
@@ -172,7 +173,10 @@
                 <td width="5%" style="padding-left:12px;">
                 </td>
                 <td width="30%" align="right" class="grey">เลขที่ / Document No. </td>
-                <td width="30%" style="padding-left:5px;"> <b> {{ $data->doc_number }} </b></td>
+                <td width="30%" style="padding-left:5px;">
+                    <input type="text" class="form-control" id="rnumber" name="rnumber"
+                        value="{{ $data->doc_number }} " required>
+                </td>
             </tr>
             <tr>
                 <td>
@@ -184,7 +188,8 @@
                 <td align="left" style="padding-left:12px;"> <b>
                         {{-- {{ $etype }} --}}</b></td>
                 <td align="right" class="grey">วันที่ / Date</td>
-                <td style="padding-left:5px;"> <b>{{ $date }}</b></td>
+                <td style="padding-left:5px;"> <input type="text" class="form-control AddDate" id="rdate"
+                        name="rdate" value="{{ $date }} " required></td>
             </tr>
             <tr>
                 <td>
@@ -240,7 +245,7 @@
                                 value="{{ $receipt_detail['des'] }}">
                         </td>
                         <td align="center">
-                            <input type="text" class="form-control auto_decimal" name="quantity[]"
+                            <input type="number" step="1.0" class="form-control auto_decimal" name="quantity[]"
                                 value="{{ $receipt_detail['quantity'] }}">
                         </td>
                         <td align="center">
@@ -248,11 +253,11 @@
                                 value="{{ $receipt_detail['unit'] }}">
                         </td>
                         <td align="center">
-                            <input type="text" class="form-control auto_decimal" name="price[]"
+                            <input type="number" step="1.0" class="form-control auto_decimal" name="price[]"
                                 value="{{ $receipt_detail['price'] }}">
                         </td>
                         <td align="center">
-                            <input type="text" class="form-control auto_decimal" name="discount[]"
+                            <input type="number" step="1.0" class="form-control auto_decimal" name="discount[]"
                                 value="{{ $receipt_detail['discount'] }}">
                         </td>
 
@@ -301,114 +306,116 @@
                             </tr>
                             <tr>
                                 <td class="active activebottom activetop activeleft" width="10%" align="center">
-                                    @if ($data->payment == 1)
-                                        <img src="{{ asset('images/check.png') }}" alt="..." height="18"
-                                            style="padding-bottom: 1px">
-                                    @endif
+                                    <input type="radio" name="payment" id="payment" value="1"
+                                        {{ $data->payment == 1 ? 'checked' : '' }}>
                                 </td>
-                                <td style="padding-left:30px;" class="  grey">1.เงินสด/Cash</td>
-                                <td class="  grey"></td>
+                    </td>
+                    <td style="padding-left:30px;" class="  grey">1.เงินสด/Cash</td>
+                    <td class="  grey"></td>
 
-                            </tr>
-                            <tr>
-                                <td class="active_twin activebottom activeleft" width="10%" align="center">
-                                    @if ($data->payment == 2)
-                                        <img src="{{ asset('images/check.png') }}" alt="..." height="18"
-                                            style="padding-bottom: 1px">
-                                    @endif
-                                </td>
+                </tr>
+                <tr>
+                    <td class="active_twin activebottom activeleft" width="10%" align="center">
+                        <input type="radio" name="payment" id="payment" value="2"
+                            {{ $data->payment == 2 ? 'checked' : '' }}>
+                    </td>
 
-                                <!-- <td class="active activebottom activeleft" width="10%" align="center"><i
+                    <!-- <td class="active activebottom activeleft" width="10%" align="center"><i
                                                 style="font-size: 1.8em; color:red" class="fa fa-close"></i></td> -->
-                                <td style="padding-left:30px;" class=" grey">2.โอนเงิน/Transfer</td>
-                                <td class="  grey"></td>
-
-                            </tr>
-                            <tr>
-                                <td class="active activebottom activeleft" width="10%" align="center">
-                                    @if ($data->payment == 3)
-                                        <img src="{{ asset('images/check.png') }}" alt="..." height="18"
-                                            style="padding-bottom: 1px">
-                                    @endif
-                                </td>
-                                <td style="padding-left:30px;" class=" grey">3.บัตรเครดิต/Credit Card</td>
-                                <td class="  grey"></td>
-
-                            </tr>
-                        </table>
-                    </td>
-                    <td colspan="6" class="activetop activeleft">
-                        <table width="100%" cellpadding="0" cellspacing="0">
-                            <tr>
-                                <td width="10%"></td>
-                                <td width="67%" class="grey">มูลค่าที่ยกเว้นภาษี/Non-Vat Amount</td>
-                                <!-- <td width="20%"></td> -->
-                                <td width="15%" align="right">
-                                    <input type="text" class="form-control auto_decimal" id="nonv"
-                                        name="nonv" value="{{ number_format($book_price, 2, '.') }}">
-                                </td>
-                                <td width="8%"></td>
-
-
-                            </tr>
-                            <tr>
-                                <td width="10%"></td>
-                                <td width="67%" class="grey">มูลค่าที่คำนวนภาษี/Pre-Vat Amount</td>
-
-                                <td width="15%" align="right"> <b>
-                                    </b>
-                                    <input type="text" class="form-control auto_decimal" id="vatp"
-                                        name="vatp" value="{{ number_format($vat_price - $vat_val, 2, '.') }}">
-                                </td>
-                                <td width="8%"></td>
-
-                            </tr>
-                            <tr>
-                                <td width="10%"></td>
-                                <!-- <td width="20%"></td> -->
-                                <td width="67%" class="grey">ส่วนลด/Discout</td>
-                                <td width="15%" align="right">
-                                    <input type="text" class="form-control auto_decimal" id="dis"
-                                        name="dis" value="{{ number_format($discount_val, 2, '.') }}">
-
-                                </td>
-                                <td width="8%"></td>
-
-                            </tr>
-
-                            <tr>
-                                <td width="10%"></td>
-                                <!-- <td width="20%"></td> -->
-                                <td width="67%" class="grey">ภาษีมูลค่าเพิ่ม 7% / Vat 7%</td>
-                                <td width="15%" align="right">
-                                    <input type="text" class="form-control auto_decimal" id="vat"
-                                        name="vat" value="{{ number_format($vat_val, 2, '.') }}">
-                                </td>
-                                <td width="8%"></td>
-
-                            </tr>
-                            <tr>
-                                <td width="10%"></td>
-                                <!-- <td width="20%"></td> -->
-                                <td width="67%" class="grey">ค่าธรรมเนียมบัตรเครดิต / Service Charge</td>
-                                <td width="15%" align="right"><b>{{ number_format($orther_fee, 2, '.') }}</b>
-                                </td>
-                                <td width="8%"></td>
-
-                            </tr>
-                        </table>
-                    </td>
+                    <td style="padding-left:30px;" class=" grey">2.โอนเงิน/Transfer</td>
+                    <td class="  grey"></td>
 
                 </tr>
-                <tr class="active">
-                    <td align="center" class="grey">รวมทั้งสิ้น<br>Grand Total</td>
-                    <td align="left"></td>
-                    <td align="center"><b>{{ $price_text }}</b><br><b>{{ $price_texten }}</b></td>
-                    <td align="center"><b>{{ number_format($net_price, 2, '.') }}</b></td>
+                <tr>
+                    <td class="active activebottom activeleft" width="10%" align="center">
+                        <input type="radio" name="payment" id="payment" value="3"
+                            {{ $data->payment == 3 ? 'checked' : '' }}>
+                    </td>
+                    <td style="padding-left:30px;" class=" grey">3.บัตรเครดิต/Credit Card</td>
+                    <td class="  grey"></td>
 
-                    <td align="right" class="grey">บาท<br>Baht</td>
                 </tr>
-                {{--  <tr class="active">
+            </table>
+            </td>
+            <td colspan="6" class="activetop activeleft">
+                <table width="100%" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td width="10%"></td>
+                        <td width="67%" class="grey">มูลค่าที่ยกเว้นภาษี/Non-Vat Amount</td>
+                        <!-- <td width="20%"></td> -->
+                        <td width="15%" align="right">
+                            <input type="text" class="form-control auto_decimal" id="nonv" name="nonv"
+                                value="{{ number_format($book_price, 2, '.') }}" readonly>
+                        </td>
+                        <td width="8%"></td>
+
+
+                    </tr>
+                    <tr>
+                        <td width="10%"></td>
+                        <td width="67%" class="grey">มูลค่าที่คำนวนภาษี/Pre-Vat Amount</td>
+
+                        <td width="15%" align="right"> <b>
+                            </b>
+                            <input type="text" class="form-control auto_decimal" id="vatp" name="vatp"
+                                value="{{ number_format($vat_price - $vat_val, 2, '.') }}" readonly>
+                        </td>
+                        <td width="8%"></td>
+
+                    </tr>
+                    <tr>
+                        <td width="10%"></td>
+                        <!-- <td width="20%"></td> -->
+                        <td width="67%" class="grey">ส่วนลด/Discout</td>
+                        <td width="15%" align="right">
+                            <input type="text" class="form-control auto_decimal" id="dis" name="dis"
+                                value="{{ number_format($discount_val, 2, '.') }}" readonly>
+
+                        </td>
+                        <td width="8%"></td>
+
+                    </tr>
+
+                    <tr>
+                        <td width="10%"></td>
+                        <!-- <td width="20%"></td> -->
+                        <td width="67%" class="grey">ภาษีมูลค่าเพิ่ม 7% / Vat 7%</td>
+                        <td width="15%" align="right">
+                            <input type="text" class="form-control auto_decimal" id="vat" name="vat"
+                                value="{{ number_format($vat_val, 2, '.') }}" readonly>
+                        </td>
+                        <td width="8%"></td>
+
+                    </tr>
+                    <tr>
+                        <td width="10%"></td>
+                        <!-- <td width="20%"></td> -->
+                        <td width="67%" class="grey">ค่าธรรมเนียมบัตรเครดิต / Service Charge</td>
+                        <td width="15%" align="right">
+                            <input type="number" step="1.0" class="form-control auto_decimal" id="charge"
+                                name="charge" value="{{ number_format($orther_fee, 2, '.') }}">
+
+                        </td>
+                        <td width="8%"></td>
+
+                    </tr>
+                </table>
+            </td>
+
+            </tr>
+            <tr class="active">
+                <td align="center" class="grey">รวมทั้งสิ้น<br>Grand Total</td>
+                <td align="left"></td>
+                <td align="center"><b id="text_th">{{ $price_text }}</b><br><b
+                        id="text_en">{{ $price_texten }}</b></td>
+                <td align="center">
+                    <input type="number" class="form-control auto_decimal" id="netp" name="netp"
+                        value="{{ number_format($net_price, 2, '.', '') }}" readonly>
+                </td>
+
+                <td align="right" class="grey">บาท<br>Baht</td>
+            </tr>
+            {{--  <tr class="active">
                     <td width="20%" align="center" class="grey">รวมทั้งสิ้น<br>Grand Total</td>
                     <td colspan="4" width="40%" align="left">
                         <b>{{ $price_text }}</b><br><b>{{ $price_texten }}</b>
@@ -440,7 +447,7 @@
                 </tr>
                 <tr>
                     <td align="center">.........................<br>Received by<br>ผู้รับบริการ</td>
-                    <td align="center">{!! $file_att !!}</td>
+                    <td align="center" id="imgs">{!! $file_att !!}</td>
                     <td align="center">.........................<br>ผู้จัดการ<br>Manager</td>
                 </tr>
                 <tr>
@@ -472,11 +479,12 @@
         </div>
         {{--  <div style="position: relative;"> --}}
         <!-- Your table with a class for styling -->
-        <table class="print-table" width="100%" cellpadding="0" cellspacing="0">
+        {{--   <table class="print-table" width="100%" cellpadding="0" cellspacing="0">
             <tr>
                 <td align="center"><img src="{{ asset('images/banner.png') }}" alt="..."
                         style="padding-bottom: 5px; display: block; margin: 0 auto;"></td>
             </tr>
-        </table>
+        </table> --}}
         {{-- </div> --}}
+
 </body>

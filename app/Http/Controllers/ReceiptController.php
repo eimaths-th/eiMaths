@@ -15,10 +15,12 @@ use App\Models\Department;
 use App\Models\level;
 use App\Models\term;
 use App\Models\Sterm;
+use App\Models\FileUpload;
 use App\Models\FileStore;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\DB;
 use App\Interfaces\MoneyConvertServiceInterface;
 use Maatwebsite\Excel\Facades\Excel;
@@ -278,9 +280,9 @@ class ReceiptController extends Controller
                 ->addColumn('action', function ($row) {
                     $html = '';
                     if (Gate::allows('receipt-edit')) {
-                        $html = '<button type="button" class="btn btn-sm btn-success btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit</button> ';
+                        $html = '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit</button> ';
                     } else {
-                        $html = '<button type="button" class="btn btn-sm btn-success btn-edit disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> Edit</button> ';
+                        $html = '<button type="button" class="btn btn-sm btn-warning btn-edit disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> Edit</button> ';
                     }
                     if (Gate::allows('order-show')) {
                         $html .= '<button type="button" class="btn btn-sm btn-success btn-print" id="getPrintData" data-id="' . $row->id . '"><i class="fa fa-print"></i> Print</button> ';
@@ -575,7 +577,16 @@ class ReceiptController extends Controller
             ->with(['new' => $new]);
     }
 
+    public function price_text($price)
+    {
+        $price_text = $this->MoneyConvertService->baht_text($price);
+        $price_texten = $this->MoneyConvertService->convertNumber($price);
 
+        return response()->json([
+            'th' => $price_text,
+            'en' => $price_texten,
+        ]);
+    }
     /**
      * Display the specified resource.
      */
@@ -629,7 +640,7 @@ class ReceiptController extends Controller
         }
 
         $receipt_detail = receipt_details::where("receipt_id", $id)->orderby('id')->get();
-        $datasf = $this->getfileattprint($datas[0]->oid);
+
 
         $template = 'templates.print_receipt';
         $templatee = 'templates.edit_receipt';
@@ -674,12 +685,12 @@ class ReceiptController extends Controller
             'date' => $formattedDate,
             'data' => $datas->first(),
             'items' => $receipt_detail,
-            'file_att' => $datasf,
         ];
 
 
         if ($social == 1) {
             // Render the view with the data and get the HTML content
+            $data['file_att'] =  $this->getfileattprint($datas[0]->oid);
             $htmlContents = View::make($templates, $data)->render();
 
             // Generate the PDF
@@ -701,6 +712,7 @@ class ReceiptController extends Controller
                 'Content-Disposition' => 'inline; filename="' . $pdfFileName . '"',
             ]);
         } else  if ($social == 2) {
+            $data['file_att'] =  $this->getfileatt($datas[0]->oid);
             // Render the view with the data and get the HTML content
             $htmlContent = View::make($templatee, $data)->render();
             //return new Response($htmlContent, 200, ['Content-Type' => 'text/html']);
@@ -709,6 +721,7 @@ class ReceiptController extends Controller
             ]);
         } else {
             // Render the view with the data and get the HTML content
+            $data['file_att'] = $this->getfileattprint($datas[0]->oid);
             $htmlContent = View::make($template, $data)->render();
             //return new Response($htmlContent, 200, ['Content-Type' => 'text/html']);
             return response()->json([
@@ -716,6 +729,48 @@ class ReceiptController extends Controller
             ]);
         }
     }
+
+    public function getfileatt($id)
+    {
+        $filestore = FileStore::where([['module', 'orders']])
+            ->where([['module_id', $id]])
+            ->orderBy("id", "asc")->get();
+
+        $img = "";
+        if (!$filestore->isEmpty()) {
+            foreach ($filestore as $pics) {
+                $imgf = url('/') . '/file_store/' . $pics->filename;
+                $img .= "<div id='img_" . $pics->id . "' class='col-md-4 text-center mb-3'><img src=\"" . $imgf . "\" height=\"150\"><br>
+                <a class='btn btn-sm btn-info btn-view' href=\"" . urldecode($imgf) . "\" target=\"blank\"><i class='fa fa-search'></i></a>
+                <a href='#' class='btn btn-sm btn-danger btn-edit' id='getDeleteData' data-id2='" . $pics->id . "' data-id='" . $id . "'><i class='fa fa-trash'></i></a>
+                </div>
+                <br><br>";
+            }
+        } else {
+            $img = "";
+        }
+
+        return $img;
+    }
+
+    public function deleteImg($id, $id2)
+    {
+        $file = FileStore::find($id2);
+
+        if ($file) {
+            // Get the file path
+            $filePath = public_path('file_store/' . $file->filename);
+            //if (file_exists($filePath)) {
+            //unlink($filePath);
+            $file->delete();
+            //}
+        }
+
+        $html = $this->getfileatt($id);
+
+        return response()->json(['imgs' => $html]);
+    }
+
 
     public function getfileattprint($id)
     {
@@ -735,6 +790,81 @@ class ReceiptController extends Controller
 
         return $img;
     }
+
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, $id)
+    {
+
+        $datao = [
+            'orther_fee' => $request->get('charge'),
+            'updated_by' => Auth::id()
+        ];
+
+
+
+        $data = [
+            'receipt_number' => $request->get('receipt_number'),
+            'payment_date' => $request->get('receipt_date'),
+            'payment' => $request->get('payment'),
+            'total_fee' => (float) $request->get('total'),
+            'updated_by' => Auth::id()
+        ];
+
+        $receipt = Receipt::find($id);
+        $receipt->update($data);
+
+        Order::find($receipt->oid)->update($datao);
+        receipt_details::where('receipt_id', $id)->delete();
+
+        $amounts = $request->input('amount');
+        $prices = $request->input('price');
+        $des = $request->input('des');
+        $unit = $request->input('unit');
+        $discount = $request->input('discount');
+        $tax = $request->input('tax');
+
+
+        if (is_array($amounts) && is_array($prices) && count($amounts) === count($prices)) {
+            foreach ($amounts as $index => $amount) {
+                if (isset($amounts[$index])) { // Check if the index exists in $sids array
+                    $rDetail = new receipt_details();
+                    $rDetail->receipt_id = $id;
+                    $rDetail->quantity = $amount;
+                    $rDetail->price = $prices[$index];
+                    $rDetail->des = $des[$index];
+                    $rDetail->unit = $unit[$index];
+                    $rDetail->discount = $discount[$index];
+                    $rDetail->tax = $tax[$index];
+                    $rDetail->save();
+                }
+            }
+        }
+
+        //file att
+
+        $filesa = $request->get('img');
+
+        if (!empty($filesa)) {
+            foreach ($filesa as $filea) {
+                //echo $filea;
+                $oldfile = FileUpload::where('oldname', $filea)->get();
+                $filestore = new FileStore();
+                $filestore->module = 'orders';
+                $filestore->module_id = $receipt->oid;
+                $filestore->filename = $oldfile[0]->filename;
+                $filestore->save();
+
+                File::move(public_path() . '/file_upload/' . $oldfile[0]->filename, public_path() . '/file_store/' . $oldfile[0]->filename);
+                FileUpload::where('filename', $oldfile[0]->filename)->delete();
+            }
+        }
+
+        return response()->json(['success' => 'แก้ไข ใบเสร็จรับเงิน เรียบร้อยแล้ว']);
+    }
+
 
     /**
      * Update the specified resource in storage.

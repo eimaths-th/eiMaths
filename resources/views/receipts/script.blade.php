@@ -2,32 +2,6 @@
     $detect = new Detection\MobileDetect();
 @endphp
 <script>
-    var $eventLog = $(".js-event-log");
-
-    let log = (name, evt) => {
-        if (!evt) {
-            var args = "{}";
-        } else {
-            var args = JSON.stringify(evt.params, function(key, value) {
-                if (value && value.nodeName) return "[DOM node]";
-                if (value instanceof $.Event) return "[$.Event]";
-                return value;
-            });
-        }
-        var $e = $("<li>" + name + " -> " + args + "</li>");
-        $eventLog.append($e);
-        $e.animate({
-            opacity: 1
-        }, 10000, 'linear', function() {
-            $e.animate({
-                opacity: 0
-            }, 2000, 'linear', function() {
-                $e.remove();
-            });
-        });
-    }
-
-
     $('#check-all').click(function() {
         $(':checkbox.flat').prop('checked', this.checked);
     });
@@ -44,6 +18,19 @@
         }
 
     });
+
+    function clearDropzonePreviews() {
+        $('input[name="imgFiles[]"]').remove();
+        $('#dropzone_preview').html('');
+        $('#dropzone_preview').css("display", "none");
+    }
+
+    function clearDropzonePreviews2() {
+        $('input[name="imgFiles2[]"]').remove();
+        $('#dropzone_preview2').html('');
+        $('#dropzone_preview2').css("display", "none");
+    }
+
 
     $(document).ready(function() {
         let id;
@@ -230,6 +217,7 @@
                     2)); // Adjust the decimal places as needed
             }
         };
+
         var table = $('#Listview').DataTable(table_option);
 
         $('#SearchButtons').on('click', function() {
@@ -348,8 +336,14 @@
                 url: "receipts/show/" + pid + '/2',
                 method: 'GET',
                 success: function(res) {
-                    $('#print_data').html(res.html);
-                    $('#PrintModal').modal('show');
+                    $('#edit_data').html(res.html);
+                    $("#rdate").datepicker({
+                        dateFormat: 'yy-mm-dd',
+                        changeMonth: true,
+                        changeYear: true,
+                        yearRange: '1980:2050'
+                    });
+                    $('#EditRModal').modal('show');
                 }
             });
 
@@ -372,8 +366,246 @@
 
         })
 
+        let rid;
+        let rid2;
+        $(document).on('click', '#getDeleteData', function(e) {
+            e.preventDefault();
+            $('.alert-danger').html('');
+            $('.alert-danger').hide();
+            $('.alert-success').html('');
+            $('.alert-success').hide();
+            rid = $(this).data('id');
+            rid2 = $(this).data('id2');
+            if (confirm("Click OK to Delete?")) {
+                $.ajax({
+                    url: "receipts/delete/img/" + rid + "/" + rid2,
+                    method: 'PUT',
+                    // async : false,
+                    success: function(res) {
+                        toastr.success('ลบไฟล์เรียบร้อยแล้ว', {
+                            timeOut: 5000
+                        });
+                        $('#imgs').html(res.imgs);
+
+                    }
+                })
+            }
+        })
+
+        $(document).on('click', '#SaveReceipt', function(e) {
+            e.preventDefault();
+            $('.alert-danger').html('');
+            $('.alert-danger').hide();
+            $('.alert-success').html('');
+            $('.alert-success').hide();
+
+            var amountValues = [];
+            var priceValues = [];
+            var desValues = [];
+            var unitValues = [];
+            var disValues = [];
+            var taxValues = [];
+            var isValid = true;
+
+
+            var rnmtInput = $('#rnumber'); // Get the input field element itself
+            var rnmtValue = rnmtInput.val(); // Get the value of the input field
+            if (rnmtValue.trim() === '') {
+                // Invalid input
+                rnmtInput.addClass("is-invalid");
+                rnmtInput.removeClass("is-valid");
+                rnmtInput.siblings(".error-message").text("กรุณาระบุหมายเลขใบเสร็จ");
+                toastr.error('กรุณาระบุหมายเลขใบเสร็จ', {
+                    timeOut: 5000
+                });
+                isValid = false;
+            } else {
+                // Valid input
+                rnmtInput.removeClass("is-invalid");
+                rnmtInput.addClass("is-valid");
+            }
+
+            var rdInput = $('#rdate'); // Get the input field element itself
+            var rdValue = rdInput.val(); // Get the value of the input field
+            if (rdValue.trim() === '') {
+                // Invalid input
+                rdInput.addClass("is-invalid");
+                rdInput.removeClass("is-valid");
+                rdInput.siblings(".error-message").text("กรุณาวันที่รับเงิน");
+                toastr.error('กรุณาวันที่รับเงิน', {
+                    timeOut: 5000
+                });
+                isValid = false;
+            } else {
+                // Valid input
+                rdInput.removeClass("is-invalid");
+                rdInput.addClass("is-valid");
+            }
+
+            $("input[name='description[]']").each(function() {
+                var desInput = $(this);
+                var inputValue = desInput.val(); // Get the value of the input field
+                if (inputValue.trim() === '') {
+                    // Invalid input
+                    desInput.addClass("is-invalid");
+                    desInput.removeClass("is-valid");
+                    desInput.siblings(".error-message").text("กรุณาระบุรายละเอียด");
+                    toastr.error('กรุณาระบุรายละเอียด', {
+                        timeOut: 5000
+                    });
+                    isValid = false;
+                } else {
+                    // Valid input
+                    desInput.removeClass("is-invalid");
+                    desInput.addClass("is-valid");
+                    desValues.push(inputValue); // Store the value if needed
+                }
+            });
+
+
+
+            $("input[name='quantity[]']").each(function() {
+                var amountInput = $(this);
+                var value = parseFloat(amountInput.val());
+
+                if (isNaN(value) || value % 0.5 !== 0) {
+                    // Invalid amount input
+                    amountInput.addClass("is-invalid");
+                    amountInput.removeClass("is-valid");
+                    amountInput.siblings(".error-message").text(
+                        "กรุณาระบุจำนวน");
+                    toastr.error('กรุณาระบุจำนวน', {
+                        timeOut: 5000
+                    });
+                    isValid = false;
+                } else {
+                    // Valid amount input
+                    amountInput.removeClass("is-invalid");
+                    amountInput.addClass("is-valid");
+                    amountValues.push(value);
+                }
+            });
+
+
+            // Collect price values and validate
+            $("input[name='price[]']").each(function() {
+                var priceInput = $(this);
+                var value = parseFloat(priceInput.val());
+
+                if (isNaN(value) || value <= 0) {
+                    // Invalid price input
+                    priceInput.addClass("is-invalid");
+                    priceInput.removeClass("is-valid");
+                    priceInput.siblings(".error-message").text(
+                        "กรุณาระบุราคาต่อหน่วย");
+                    toastr.error('กรุณาระบุราคาต่อหน่วย', {
+                        timeOut: 5000
+                    });
+                    isValid = false;
+                } else {
+                    // Valid price input
+                    priceInput.removeClass("is-invalid");
+                    priceInput.addClass("is-valid");
+                    priceValues.push(value);
+                }
+            });
+
+            /*  if (!document.getElementsByName('imgFiles[]').length) {
+                 toastr.error('กรุณาแนบหลักฐานการชำระเงิน', {
+                     timeOut: 5000
+                 });
+                 isValid = false;
+             } */
+
+            if (!isValid) {
+                return false;
+            }
+
+            $("input[name='unit[]']").each(function() {
+                var desInput = $(this);
+                var inputValue = desInput.val();
+                unitValues.push(inputValue);
+            });
+
+            $("input[name='discount[]']").each(function() {
+                var desInput = $(this);
+                var inputValue = desInput.val();
+                disValues.push(inputValue);
+            });
+
+            $("input[name='tax[]']").each(function() {
+                var desInput = $(this);
+                var inputValue = desInput.prop('checked') ? desInput.val() : '0';
+                taxValues.push(inputValue);
+            });
+
+            var values = $("input[name='imgFiles2[]']")
+                .map(function() {
+                    return $(this).val();
+                }).get();
+
+
+            var formData = {
+                receipt_number: rnmtValue,
+                receipt_date: rdValue,
+                charge: $('#charge').val(),
+                payment: $("input[name='payment']:checked").val(),
+                des: desValues,
+                amount: amountValues,
+                price: priceValues,
+                unit: unitValues,
+                discount: disValues,
+                tax: taxValues,
+                total: parseFloat($('#netp').val()),
+                img: values,
+                _token: token
+            };
+
+console.log(formData);
+
+            $.ajax({
+                url: "receipts/save/" + pid,
+                method: 'PUT',
+                data: formData,
+
+                success: function(result) {
+                    //console.log(result);
+                    if (result.errors) {
+                        $('.alert-danger').html('');
+                        $.each(result.errors, function(key, value) {
+                            $('.alert-danger').show();
+                            $('.alert-danger').append('<strong><li>' + value +
+                                '</li></strong>');
+                        });
+                    } else {
+                        $('.alert-danger').hide();
+                        $('.alert-success').show();
+                        $('.alert-success').append('<strong><li>' + result.success +
+                            '</li></strong>');
+                        $('#EditRModal').modal('hide');
+                        toastr.success(result.success, {
+                            timeOut: 5000
+                        });
+                        clearDropzonePreviews2();
+                        $('#Listview').DataTable().ajax.reload();
+
+
+                    }
+                }
+            });
+        });
+
 
     });
+
+    var token = ''
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
+
 
 
     //auto decimal
@@ -381,6 +613,16 @@
         const inputValue = parseFloat(this.value);
         const formattedValue = inputValue.toFixed(2);
         this.value = formattedValue;
+    });
+
+    $(".AddDate").datepicker({
+        /*  onSelect: function() {
+             table.draw();
+         }, */
+        dateFormat: 'yy-mm-dd',
+        changeMonth: true,
+        changeYear: true,
+        yearRange: '1980:2050'
     });
 
 
@@ -394,16 +636,19 @@
 
     let summary_total = () => {
         let total = 0;
+        let net = 0;
+        let netc = 0;
         let btotal = 0;
         let dtotal = 0;
         let vat = 0;
         let vatp = 0;
 
-        // Iterate through each row
+
         $("table tbody tr").each(function() {
             calculateTotal($(this));
 
             let rowTotal = parseFloat($(this).find("input[name='total[]']").val()) || 0;
+            net += rowTotal;
             if ($(this).find("input[name='tax[]']").is(":checked")) {
                 total += rowTotal;
             } else {
@@ -420,23 +665,35 @@
 
         });
 
-        console.log(btotal.toFixed(2));
-        console.log(dtotal.toFixed(2));
-        console.log(vat.toFixed(2));
-        console.log(vatp.toFixed(2));
-        // Update summary fields
-        /* $("#total").text(total.toFixed(2));
-        $("#btotal").text(btotal.toFixed(2));
-        $("#dtotal").text(dtotal.toFixed(2)); */
+        netc = net + parseInt($("#charge").val());
+        $("#nonv").val(btotal.toFixed(2));
+        $("#vatp").val(vatp.toFixed(2));
+        $("#dis").val(dtotal.toFixed(2));
+        $("#vat").val(vat.toFixed(2));
+        $("#netp").val(netc.toFixed(2));
+
+        $.ajax({
+            url: "receipts/price_text/" + netc,
+            method: 'GET',
+            success: function(res) {
+                $('#text_th').html(res.th);
+                $('#text_en').html(res.en);
+            }
+        });
     }
 
 
-    $(document).on('input', 'input[name="quantity[]"], input[name="price[]"], input[name="discount[]"]',
+    $(document).on('input', 'input[name="quantity[]"], input[name="price[]"], input[name="discount[]"],#charge',
         async function() {
+            var value = $(this).val().trim();
+            if (value === '') {
+                $(this).val(0);
+            }
             var row = $(this).closest('tr');
             await calculateTotal(row);
             summary_total();
         });
+
 
     $(document).on('click', "input[name='tax[]']", function() {
         summary_total();
@@ -451,12 +708,12 @@
             clonedRow.find("input[name='no[]']").val(lastNo + 1);
             clonedRow.find("select").prop('selectedIndex', 0);
             clonedRow.appendTo($("#myTbl"));
-            efatotal();
+            summary_total();
         });
         $(document).on('click', '#removeRow', function() {
             if ($("#myTbl tr").length > 2) { // จะลบรายการได้ อย่างน้อย ต้องมี 1 รายการ
                 $("#myTbl tr:last").remove(); // ลบรายการสุดท้าย
-                efatotal();
+                summary_total();
             } else {
                 // เหลือ 1 รายการลบไม่ได้
                 if ($("#myTbl tr").length > 1) {
@@ -470,7 +727,7 @@
         $(document).on('click', '.btnRemoveg', function() {
             if ($("#myTbl tr").length > 2) {
                 $(this).closest("tr").remove();
-                efatotal();
+                summary_total();
             } else {
                 // เหลือ 1 รายการลบไม่ได้
                 if ($("#myTbl tr").length > 1) {
