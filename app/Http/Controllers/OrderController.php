@@ -820,6 +820,103 @@ class OrderController extends Controller
         return response()->json(['success' => 'Save Data completed', 'status' => $order->status]);
     }
 
+
+    public function cancle($id)
+    {
+
+        $order = Order::find($id);
+        $contact = $order->cid;
+        if ($order) {
+            $order->delete();
+
+            OrderDetail::where('order_id', $id)->delete();
+            OrderDetailList::where('order_id', $id)->delete();
+
+            $filestore = FileStore::where([
+                ['module', 'orders'],
+                ['module_id', $id],
+            ])->get();
+
+            if (!$filestore->isEmpty()) {
+                foreach ($filestore as $file) {
+                    $filePath = public_path('file_store/' . $file->filename);
+                    if (file_exists($filePath)) {
+                        unlink($filePath);
+                    }
+                    $file->delete();
+                }
+            }
+        }
+
+        $last_order = Order::where('cid', $contact)
+            ->orderBy('id', 'DESC')
+            ->first();
+        $last_order_detail = OrderDetailList::where('order_id', $last_order->id)
+            ->orderBy('id', 'ASC')
+            ->get();
+
+        $rowCount = $last_order_detail->count();
+        if ($rowCount == 2) {
+            $level1 = $last_order_detail[0]->level;
+            $term1 = $last_order_detail[0]->term;
+            $book1 = $last_order_detail[0]->book;
+
+            $level2 = $last_order_detail[1]->level;
+            $term2 = $last_order_detail[1]->term;
+            $book2 = $last_order_detail[1]->book;
+
+            $book1 = bookuse::where('name', $book1)->get();
+            $level1_id = $book1->level_id;
+            $term1_id = $book1->term_id;
+            $book1_id = $book1->id;
+
+            $book2 = bookuse::where('name', $book2)->get();
+            $level2_id = $book2->level_id;
+            $term2_id = $book2->term_id;
+            $book2_id = $book2->id;
+        } else {
+            $level1 = $last_order_detail[0]->level;
+            $term1 = $last_order_detail[0]->term;
+            $book1 = $last_order_detail[0]->book;
+
+            $level2 = $last_order_detail[0]->level;
+            $term2 = $last_order_detail[0]->term;
+            $book2 = $last_order_detail[0]->book;
+
+
+            $book1 = bookuse::where('name', $book1)->get();
+            $level1_id = $book1->level_id;
+            $term1_id = $book1->term_id;
+            $book1_id = $book1->id;
+
+            $level2_id = $book1->level_id;
+            $term2_id = $book1->term_id;
+            $book2_id = $book1->id;
+        }
+
+        $student = Contact::find($contact);
+
+        $data = [
+            'order' => $last_order->id,
+            'level' => $level1_id,
+            'term' => $term1_id,
+            'bookuse' => $book1_id,
+            'level_name' => $level1,
+            'term_name' => $term1,
+            'bookuse_name' => $book1,
+            'level2' => $level2_id,
+            'term2' => $term2_id,
+            'bookuse2' => $book2_id,
+            'level2_name' => $level2,
+            'term2_name' => $term2,
+            'bookuse2_name' => $book2,
+        ];
+
+        $student->update($data);
+
+        return response()->json(['success' => 'Cancle Order completed']);
+    }
+
     /**
      * Update the specified resource in storage.
      */

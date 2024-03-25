@@ -97,6 +97,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/orders/store', [App\Http\Controllers\OrderController::class, 'store'])->name('orders.store');
     Route::get('/orders/log/{id}', [App\Http\Controllers\OrderController::class, 'log'])->name('orders.log');
     Route::get('orders/edit/{id}', [App\Http\Controllers\OrderController::class, 'edit'])->name('orders.edit');
+    Route::get('orders/cancle/{id}', [App\Http\Controllers\OrderController::class, 'cancle'])->name('orders.cancle');
     Route::put('orders/confirm', [App\Http\Controllers\OrderController::class, 'confirm'])->name('orders.confirm');
     Route::put('/orders/save/{id}', [App\Http\Controllers\OrderController::class, 'update'])->name('orders.save');
     Route::delete('/orders/destroy', [App\Http\Controllers\OrderController::class, 'destroy'])->name('orders.destroy');

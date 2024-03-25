@@ -651,6 +651,19 @@
 
         })
 
+
+        $(document).on('click', '.btn-delete', function(e) {
+            e.preventDefault();
+
+            id = $(this).data('id');
+            $.ajax({
+                url: "orders/cancle/" + id,
+                method: 'GET',
+                success: function(res) {}
+            });
+
+        })
+
         function getDataFunction(urlParams) {
             $('.alert-danger').html('');
             $('.alert-danger').hide();

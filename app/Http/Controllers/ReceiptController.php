@@ -49,6 +49,11 @@ class ReceiptController extends Controller
         $this->MoneyConvertService = $MoneyConvertService;
     }
 
+    public function update_name($name, $id)
+    {
+        $receipt = Receipt::find($id);
+        $receipt->update(['student_name' => $name]);
+    }
 
     public function gen_receipt_data($id)
     {
@@ -259,6 +264,7 @@ class ReceiptController extends Controller
             return datatables()->of($datas)
                 ->editColumn('checkbox', function ($row) {
                     //$this->gen_receipt_data($row->id);
+                    $this->update_name($row->contact_name, $row->id);
                     return '<input type="checkbox" id="' . $row->id . '" class="flat" name="table_records[]" value="' . $row->id . '" >';
                 })
                 ->addColumn('more', function ($row) {
@@ -540,6 +546,12 @@ class ReceiptController extends Controller
                     } else {
                         $html .= '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i>Create Receipt</button> ';
                     }
+                    if (Gate::allows('order-delete')) {
+
+                        $html .= '<button type="button" class="btn btn-sm btn-danger btn-delete" data-id="' . $row->id . '"><i class="fa-solid fa-ban"></i> Cancle</button> ';
+                    } else {
+                        $html .= '<button type="button" class="btn btn-sm btn-danger disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa-solid fa-ban"></i> Cancle</button> ';
+                    }
                     return "<div class='col-sm-2 col-md-2 col-xl-2'>" . $html . "</div>";
                 })->rawColumns(['checkbox', 'action', 'total_cost'])->toJson();
         }
@@ -760,10 +772,10 @@ class ReceiptController extends Controller
         if ($file) {
             // Get the file path
             $filePath = public_path('file_store/' . $file->filename);
-            //if (file_exists($filePath)) {
-            //unlink($filePath);
-            $file->delete();
-            //}
+            if (file_exists($filePath)) {
+                unlink($filePath);
+                $file->delete();
+            }
         }
 
         $html = $this->getfileatt($id);
