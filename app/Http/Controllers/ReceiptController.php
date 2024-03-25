@@ -274,7 +274,8 @@ class ReceiptController extends Controller
                 })
                 ->editColumn('contact_name', function ($row) {
                     $nic = $row->contact_nickname !== null && $row->contact_nickname !== '' ? '(' . $row->contact_nickname . ')' : '';
-                    return $row->contact_name . ' ' . $nic;
+                    //return $row->contact_name . ' ' . $nic;
+                    return $row->contact_name;
                 })
                 ->editColumn('book_use', function (Receipt $datas) {
 
