@@ -264,7 +264,7 @@ class ReceiptController extends Controller
             return datatables()->of($datas)
                 ->editColumn('checkbox', function ($row) {
                     //$this->gen_receipt_data($row->id);
-                    $this->update_name($row->contact_name, $row->id);
+                    //$this->update_name($row->contact_name, $row->id);
                     return '<input type="checkbox" id="' . $row->id . '" class="flat" name="table_records[]" value="' . $row->id . '" >';
                 })
                 ->addColumn('more', function ($row) {
@@ -608,7 +608,8 @@ class ReceiptController extends Controller
         $datas = Receipt::select(
             "receipts.*",
             "receipts.receipt_number as doc_number",
-            "contacts.name as cname",
+            //"contacts.name as cname",
+            "receipts.student_name as cname",
             "contacts.telephone as ctelephone",
             "contacts.code as ccode",
             "contacts.bookuse_name as book",
