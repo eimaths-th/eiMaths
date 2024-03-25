@@ -254,7 +254,8 @@ class ReceiptController extends Controller
                 'receipts.receipt_number',
                 'receipts.total_fee',
                 'receipts.payment_date',
-                'contacts.name',
+                //'contacts.name',
+                'receipts.student_name',
                 'contacts.nickname',
                 'contacts.code',
                 'departments.name'
