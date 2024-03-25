@@ -865,15 +865,15 @@ class OrderController extends Controller
             $term2 = $last_order_detail[1]->term;
             $book2 = $last_order_detail[1]->book;
 
-            $book1 = bookuse::where('name', $book1)->get();
-            $level1_id = $book1->level_id;
-            $term1_id = $book1->term_id;
-            $book1_id = $book1->id;
+            $book1i = bookuse::where('name', $book1)->first();
+            $level1_id = $book1i->level_id;
+            $term1_id = $book1i->term_id;
+            $book1_id = $book1i->id;
 
-            $book2 = bookuse::where('name', $book2)->get();
-            $level2_id = $book2->level_id;
-            $term2_id = $book2->term_id;
-            $book2_id = $book2->id;
+            $book2i = bookuse::where('name', $book2)->first();
+            $level2_id = $book2i->level_id;
+            $term2_id = $book2i->term_id;
+            $book2_id = $book2i->id;
         } else {
             $level1 = $last_order_detail[0]->level;
             $term1 = $last_order_detail[0]->term;
@@ -883,15 +883,14 @@ class OrderController extends Controller
             $term2 = $last_order_detail[0]->term;
             $book2 = $last_order_detail[0]->book;
 
+            $book1i = bookuse::where('name', $book1)->first();
+            $level1_id = $book1i->level_id;
+            $term1_id = $book1i->term_id;
+            $book1_id = $book1i->id;
 
-            $book1 = bookuse::where('name', $book1)->get();
-            $level1_id = $book1->level_id;
-            $term1_id = $book1->term_id;
-            $book1_id = $book1->id;
-
-            $level2_id = $book1->level_id;
-            $term2_id = $book1->term_id;
-            $book2_id = $book1->id;
+            $level2_id = $book1i->level_id;
+            $term2_id = $book1i->term_id;
+            $book2_id = $book1i->id;
         }
 
         $student = Contact::find($contact);

@@ -655,11 +655,19 @@
         $(document).on('click', '.btn-delete', function(e) {
             e.preventDefault();
 
+            if (!confirm("ยืนยันการทำรายการ ?")) return;
+            e.preventDefault();
+
             id = $(this).data('id');
             $.ajax({
                 url: "orders/cancle/" + id,
                 method: 'GET',
-                success: function(res) {}
+                success: function(res) {
+                    toastr.success(res.success, {
+                        timeOut: 5000
+                    });
+                    $('#Listview').DataTable().ajax.reload();
+                }
             });
 
         })
