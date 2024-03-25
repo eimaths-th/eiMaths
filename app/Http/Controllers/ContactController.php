@@ -66,18 +66,22 @@ class ContactController extends Controller
         if ($data) {
             $history = Histrories::where([
                 ['student_id', $data->student_id],
-                ['term', $data->term],
-                ['level_id', $data->level_id]
+                /* ['term', $data->term], */
+                /* ['level_id', $data->level_id] */
             ])->get();
             // dd( $history->count(),$std_id,$term,$level_id,$history,);
             //$lastHistory = $history->sortByDesc('created_at')->first();
-            $firstHistory = $history->sortBy('date')->first();
+
+            ///$firstHistory = $history->sortBy('date')->first();
+            $firstHistory = $history->sortByDesc('date')->first();
 
             //dd($firstHistory);
 
             if ($firstHistory) {
-                $start_date = Carbon::parse($firstHistory->date);
-                $end_date = $start_date->copy()->addMonths(4);
+                /*  $start_date = Carbon::parse($firstHistory->date);
+                $end_date = $start_date->copy()->addMonths(4); */
+                $start_date = $firstHistory->start_date;
+                $end_date = $firstHistory->end_date;
                 $startDate = $this->formatDate($start_date);
                 $endDate = $this->formatDate($end_date);
                 return $startDate . ' - ' . $endDate;

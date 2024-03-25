@@ -136,7 +136,8 @@ class HistoriesController extends Controller
                     return $code;
                 })
                 ->editColumn('start_date', function ($row) {
-                    $code = $this->checkStartEndDate($row->student_id, $row->term, $row->level_id);
+                    //$code = $this->checkStartEndDate($row->student_id, $row->term, $row->level_id);
+                    $code = $row->start_date.' - '.$row->end_date;
                     return $code;
                 })
                 ->editColumn('name', function ($row) {
