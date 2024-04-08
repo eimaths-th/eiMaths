@@ -818,13 +818,13 @@
                 .map(function() {
                     return $(this).val();
                 }).get();
-            //var esignatureData = esignaturePad.toDataURL();
+            var esignatureData = esignaturePad.toDataURL();
             $.ajax({
                 url: "history/update/" + id,
                 method: 'PUT',
                 data: {
                     img: values,
-                    //signature: esignatureData,
+                    signature: esignatureData,
                     /* level_id: $('#getLevelId').val(),
                     level_name: $('#getLevelName').val(), */
                     level_id: $('#EditLevel').val()[0],
