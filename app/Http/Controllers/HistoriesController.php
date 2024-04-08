@@ -137,7 +137,7 @@ class HistoriesController extends Controller
                 })
                 ->editColumn('start_date', function ($row) {
                     //$code = $this->checkStartEndDate($row->student_id, $row->term, $row->level_id);
-                    $code = $row->start_date.' - '.$row->end_date;
+                    $code = $row->start_date . ' - ' . $row->end_date;
                     return $code;
                 })
                 ->editColumn('name', function ($row) {
@@ -380,6 +380,16 @@ class HistoriesController extends Controller
     //     }
     // }
 
+    public function get_product_id($std_id)
+    {
+        $orders = Order::where('cid', $std_id)->orderBy('id', 'asc')->get();
+        $orderIds = $orders->pluck('id');
+        $orderDetails = OrderDetail::whereIn('order_id', $orderIds)->get();
+        $productIds = $orderDetails->pluck('product_id');
+        $bookuses = bookUse::whereIn('id', $productIds)->get();
+
+        return $bookuses;
+    }
 
     public function reorder_remain($std_id, $term, $level_id)
     {
@@ -389,18 +399,47 @@ class HistoriesController extends Controller
             ['level_id', $level_id]
         ])->orderByRaw("CONCAT(date, ' ', stime) ASC")->get();
 
-        $count = 9;
 
-        foreach ($histories as $history) {
-            // Update course_remaining
-            $history->update(['course_remaining' => $count]);
+        $book_id = null;
+        $matchingBookUses = [];
+        foreach ($this->get_product_id($std_id) as $bookuse) {
+            if ($bookuse->term_id == $term && $bookuse->level_id == $level_id) {
+                $book_id = $bookuse->id;
+                $matchingBookUses[$bookuse->id] = $bookuse->qty;
+                break;
+            }
+        }
 
-            // Decrement count for next record
-            $count--;
 
-            // Ensure count doesn't go below 0
-            if ($count < 0) {
-                $count = 0;
+        if ($book_id === null) {
+            exit();
+        } else {
+            //last record term
+            $lasthistoriesCount = Histrories::where([
+                ['student_id', $std_id],
+                ['level_id', $level_id],
+                ['term', '<', $term],
+            ])->orderByRaw("CONCAT(date, ' ', stime) ASC")->count();
+
+            //dd($lasthistoriesCount);
+
+            if ($matchingBookUses[$book_id] < 10 && $lasthistoriesCount !== 0) {
+                $count = 4;
+            } else {
+                $count = 9;
+            }
+
+            foreach ($histories as $history) {
+                // Update course_remaining
+                $history->update(['course_remaining' => $count]);
+
+                // Decrement count for next record
+                $count--;
+
+                // Ensure count doesn't go below 0
+                if ($count < 0) {
+                    $count = 0;
+                }
             }
         }
     }
@@ -461,12 +500,26 @@ class HistoriesController extends Controller
             ['term', $term],
             ['level_id', $level_id]
         ])->get();
+
+        $qty = null;
+        //term qty
+        foreach ($this->get_product_id($std_id) as $bookused) {
+            if ($bookused->term_id == $term && $bookused->level_id == $level_id) {
+                $qty = $bookused->qty;
+                break;
+            }
+        }
+
+        if ($qty === null) {
+            return response()->json(['success' => false, 'message' => 'นักเรียนไม่ได้ลงเรียน Level หรือ Term นี้ ']);
+        }
+
         // dd( $history->count(),$std_id,$term,$level_id,$history,);
         if ($history->isEmpty()) {
             $start_date = Carbon::parse($request->input('date'));
             $end_date = $start_date->copy()->addMonths(4);
             $course_remaining = 9;
-        } elseif ($history->count() < 10) {
+        } elseif ($history->count() < $qty) {
             $lastHistory = $history->sortByDesc('date')->first();
             $firstHistory = $history->sortBy('date')->first();
             $course_remaining = $lastHistory->course_remaining - 1;
@@ -920,6 +973,21 @@ class HistoriesController extends Controller
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()->all()]);
         }
+
+
+        $qty = null;
+        //term qty
+        foreach ($this->get_product_id($history->student_id) as $bookused) {
+            if ($bookused->term_id == $request->term && $bookused->level_id == $request->level_id) {
+                $qty = $bookused->qty;
+                break;
+            }
+        }
+
+        if ($qty === null) {
+            return ['success' => 'นักเรียนไม่ได้ลงเรียน Level หรือ Term นี้ '];
+        }
+
 
 
         if (!empty($history->signature)) {
