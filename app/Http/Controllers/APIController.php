@@ -262,7 +262,7 @@ class APIController extends Controller
         }
 
         if ($qty === null) {
-            return response()->json(['success' => false, 'message' => 'Study Not Register This Level Or This Term '], 400);
+            return response()->json(['success' => false, 'message' => 'Student Not Register This Level Or This Term '], 400);
         }
 
         if ($history->isEmpty()) {
