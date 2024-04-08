@@ -382,11 +382,39 @@ class HistoriesController extends Controller
 
     public function get_product_id($std_id)
     {
+        // Retrieve orders for the given student ID
         $orders = Order::where('cid', $std_id)->orderBy('id', 'asc')->get();
+
+        // Extract order IDs from the orders
         $orderIds = $orders->pluck('id');
-        $orderDetails = OrderDetail::whereIn('order_id', $orderIds)->get();
-        $productIds = $orderDetails->pluck('product_id');
-        $bookuses = bookUse::whereIn('id', $productIds)->get();
+
+        // Retrieve order details and concatenate product IDs
+        $orderDetails = OrderDetail::whereIn('order_id', $orderIds)
+            ->selectRaw('order_id, GROUP_CONCAT(product_id) as product_ids')
+            ->groupBy('order_id')
+            ->get();
+
+        // Initialize an empty array to store book uses
+        $bookuses = [];
+
+        // Loop through each order detail to extract product IDs and retrieve book uses
+        foreach ($orderDetails as $orderDetail) {
+            // Explode the concatenated product IDs string
+            $productIdsArray = explode(',', $orderDetail->product_ids);
+
+            // Ensure $productIdsArray contains at least 2 elements before accessing
+            if (count($productIdsArray) >= 2) {
+                // Retrieve book uses where the id falls between the range specified in $productIdsArray
+                $bookuses[] = BookUse::whereBetween('id', [$productIdsArray[0], $productIdsArray[1]])->get()->toArray();
+            }
+        }
+
+        // Flatten the array of book uses and convert each element to object
+        $bookuses = collect(array_merge(...$bookuses))->map(function ($item) {
+            return (object) $item;
+        });
+
+        //dd($bookuses);
 
         return $bookuses;
     }
