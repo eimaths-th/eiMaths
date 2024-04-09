@@ -164,6 +164,7 @@
 
 
     {{--  {!! $data->render() !!} --}}
+    @include('discontinued.course')
 @endsection
 
 @section('script')

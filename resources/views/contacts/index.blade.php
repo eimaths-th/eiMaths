@@ -207,6 +207,7 @@
 
     </section>
 
+    @include('contacts.course')
 
     @include('contacts.create')
 

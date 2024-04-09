@@ -167,9 +167,14 @@ class ContactController extends Controller
                 })
                 ->addColumn('action', function ($row) {
                     if (Gate::allows('student-edit')) {
-                        $html = '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit</button> ';
+                        $html = '<button type="button" class="btn btn-sm btn-info btn-show" id="getCourseData" data-id="' . $row->id . '"><i class="fa fa-search"></i> View Course</button> ';
                     } else {
-                        $html = '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> Edit</button> ';
+                        $html = '<button type="button" class="btn btn-sm btn-info disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-search"></i>  View Course</button> ';
+                    }
+                    if (Gate::allows('student-edit')) {
+                        $html .= '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit</button> ';
+                    } else {
+                        $html .= '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> Edit</button> ';
                     }
                     if (Gate::allows('student-delete')) {
                         $html .= '<button type="button" data-rowid="' . $row->id . '" class="btn btn-sm btn-danger btn-delete"><i class="fa fa-trash"></i> Delete</button>';
@@ -294,6 +299,33 @@ class ContactController extends Controller
             'level' => $level
         ]);
     }
+
+
+    public function get_course($std_id)
+    {
+        $orders = Order::where('cid', $std_id)->orderBy('id', 'asc')->get();
+        $orderIds = $orders->pluck('id');
+
+        $orderDetails = OrderDetailList::whereIn('order_id', $orderIds)
+            ->get();
+
+        $html = '';
+        $i = 1;
+
+        foreach ($orderDetails as $orderDetail) {
+            $html .= '<tr>';
+            $html .= '<td>' . $i . '</td>';
+            $html .= '<td>' . $orderDetail->level . '</td>';
+            $html .= '<td>' . $orderDetail->term . '</td>';
+            $html .= '<td><span class="tag tag-success">' . $orderDetail->book . '</span></td>';
+            $html .= '<td>' . $orderDetail->created_at . '</td>';
+            $html .= '</tr>';
+            $i++;
+        }
+
+        return $html;
+    }
+
 
     /**
      * Show the form for creating a new resource.
