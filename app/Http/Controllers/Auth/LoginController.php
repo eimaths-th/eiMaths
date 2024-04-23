@@ -70,6 +70,7 @@ class LoginController extends Controller
     {
         $googleUser = Socialite::driver('google')->user();
 
+        dd($googleUser);
         // Check if the user exists in your database
         $user = User::where('email', $googleUser->getEmail())->first();
 
