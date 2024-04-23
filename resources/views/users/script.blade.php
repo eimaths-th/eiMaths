@@ -165,6 +165,10 @@
                     name: 'role'
                 },
                 {
+                    data: 'disable',
+                    name: 'disable'
+                },
+                {
                     data: 'action',
                     name: 'action'
                 },

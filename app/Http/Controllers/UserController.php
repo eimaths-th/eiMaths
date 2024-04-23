@@ -64,6 +64,9 @@ class UserController extends Controller
 
                     return $urole;
                 })
+                ->editColumn('disable', function ($row) {
+                    return $row->disable == 1 ? "Yes" : "No";
+                })
                 ->editColumn('department', function ($row) {
                     return $row->department->name;
                 })
