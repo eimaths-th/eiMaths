@@ -68,28 +68,12 @@ class LoginController extends Controller
 
     public function handleGoogleCallback()
     {
-        $googleUser = Socialite::driver('google')->user();
+        $user = Socialite::driver('google')->user();
 
-        dd($googleUser);
-        // Check if the user exists in your database
-        $user = User::where('email', $googleUser->getEmail())->first();
-
-        if (!$user) {
-            // Handle user not found
-            return redirect()->route('login')
-                ->with('login_error', 'User not found.');
-        }
-
-        // Check if the user is disabled
-        if ($user->disable == 1) {
-            auth()->logout();
-            return redirect()->route('login')
-                ->with('login_error', 'Please contact the administrator.')
-                ->withErrors(['email' => 'Please contact the administrator.']);
-        }
-
-        // Authenticate the user
-        Auth::login($user);
+        // You can now create or authenticate the user using $user information.
+        // For example:
+        // $authUser = User::firstOrCreate(['email' => $user->getEmail()]);
+        // Auth::login($authUser);
 
         return redirect('/home'); // Redirect to the desired page after login.
     }
