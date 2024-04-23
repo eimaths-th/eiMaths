@@ -285,7 +285,7 @@ class APIController extends Controller
         foreach ($this->get_product_id($std_id) as $bookused) {
             if ($bookused->term_id == $term && $bookused->level_id == $level_id) {
                 $qty = $bookused->qty;
-                break;
+                //break;
             }
         }
 

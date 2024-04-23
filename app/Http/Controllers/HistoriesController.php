@@ -434,11 +434,11 @@ class HistoriesController extends Controller
             if ($bookuse->term_id == $term && $bookuse->level_id == $level_id) {
                 $book_id = $bookuse->id;
                 $matchingBookUses[$bookuse->id] = $bookuse->qty;
-                break;
+                //break;
             }
         }
 
-
+        //dd($book_id);
         if ($book_id === null) {
             exit();
         } else {
@@ -534,7 +534,7 @@ class HistoriesController extends Controller
         foreach ($this->get_product_id($std_id) as $bookused) {
             if ($bookused->term_id == $term && $bookused->level_id == $level_id) {
                 $qty = $bookused->qty;
-                break;
+                //break;
             }
         }
 
@@ -1008,7 +1008,7 @@ class HistoriesController extends Controller
         foreach ($this->get_product_id($history->student_id) as $bookused) {
             if ($bookused->term_id == $request->term && $bookused->level_id == $request->level_id) {
                 $qty = $bookused->qty;
-                break;
+                //break;
             }
         }
 
