@@ -274,6 +274,11 @@
                 method: 'GET',
                 success: function(res) {
                     console.log(res)
+                    if (res.data.disable == 1) {
+                        $('#ecustomCheckbox1').prop('checked', true);
+                    } else {
+                        $('#ecustomCheckbox1').prop('checked', false);
+                    }
                     //$('#EditModalBody').html(res.html);
                     $('#editName').val(res.data.name);
                     $('#editEmail').val(res.data.email);
@@ -296,6 +301,11 @@
             $('.alert-success').html('');
             $('.alert-success').hide();
 
+            if ($('#ecustomCheckbox1').is(":checked")) {
+                esstatus = 1;
+            } else {
+                esstatus = 0;
+            }
 
             $.ajax({
                 url: "users/save/" + id,
@@ -308,6 +318,8 @@
                     role: $('#editRole').val(),
                     department: $("#EditDepartment").val()[0],
                     position: $("#EditPosition").val()[0],
+                    disable: esstatus
+
                 },
 
                 success: function(result) {

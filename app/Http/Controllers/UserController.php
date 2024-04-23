@@ -290,6 +290,7 @@ class UserController extends Controller
             'role' => $request->get('role'),
             'department_id' => $request->get('department'),
             'position_id' => $request->get('position'),
+            'disable' => $request->get('disable'),
             //'password' => Hash::make($request->get('password')),
         ];
 

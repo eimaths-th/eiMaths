@@ -39,34 +39,34 @@
                                  </div>
                              </div>
                              <div class="col-xs-6 col-sm-6 col-md-6">
-                                <div class="form-group">
-                                    <strong><i class="fas fa-list-ol"></i> Centre:</strong>
-                                    <select style="width: 100%;"
-                                        class="departmente select2 select2_single form-control" id="EditDepartment"
-                                        name="edepartment" multiple="multiple">
-                                        @foreach ($department as $key2)
-                                            <option value="{{ $key2->id }}">{{ $key2->name }}
-                                            </option>
-                                        @endforeach
+                                 <div class="form-group">
+                                     <strong><i class="fas fa-list-ol"></i> Centre:</strong>
+                                     <select style="width: 100%;"
+                                         class="departmente select2 select2_single form-control" id="EditDepartment"
+                                         name="edepartment" multiple="multiple">
+                                         @foreach ($department as $key2)
+                                             <option value="{{ $key2->id }}">{{ $key2->name }}
+                                             </option>
+                                         @endforeach
 
 
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-xs-6 col-sm-6 col-md-6">
-                                <div class="form-group">
-                                    <strong><i class="fas fa-list-ol"></i> Department:</strong>
-                                    <select style="width: 100%;" class="positions select2 select2_single form-control"
-                                        id="EditPosition" name="eposition" multiple="multiple">
-                                       {{--  @foreach ($position as $key)
+                                     </select>
+                                 </div>
+                             </div>
+                             <div class="col-xs-6 col-sm-6 col-md-6">
+                                 <div class="form-group">
+                                     <strong><i class="fas fa-list-ol"></i> Department:</strong>
+                                     <select style="width: 100%;" class="positions select2 select2_single form-control"
+                                         id="EditPosition" name="eposition" multiple="multiple">
+                                         {{--  @foreach ($position as $key)
                                             <option value="{{ $key->id }}">{{ $key->name }}
                                             </option>
                                         @endforeach
 --}}
 
-                                    </select>
-                                </div>
-                            </div>
+                                     </select>
+                                 </div>
+                             </div>
                              <div class="col-xs-12 col-sm-12 col-md-12">
                                  <div class="form-group">
                                      <label for="Name"><i class="fas fa-key"></i> Password:</label>
@@ -89,14 +89,32 @@
                                      </select>
                                  </div>
                              </div>
+
+                             <div class="col-xs-6 col-sm-6 col-md-6">
+                                 <div class="form-group">
+                                     <strong><i class="fas fa-eye"></i> Disable:</strong>
+                                     <br />
+                                     <div class="custom-control custom-switch">
+                                         {{ Form::checkbox('status', '1', false, ['id' => 'ecustomCheckbox1', 'class' => 'custom-control-input name']) }}
+                                         <label for="ecustomCheckbox1" class="custom-control-label">
+                                             Yes</label>
+                                     </div>
+
+                                 </div>
+                             </div>
+
+
+
                          </div>
 
                      </div>
                  </div>
                  <!-- Modal footer -->
                  <div class="modal-footer">
-                     <button type="button" class="btn btn-success" id="SubmitEditForm"><i class="fas fa-download"></i> Save</button>
-                     <button type="button" class="btn btn-danger modelClose" data-dismiss="modal"><i class="fas fa-door-closed"></i> Close</button>
+                     <button type="button" class="btn btn-success" id="SubmitEditForm"><i
+                             class="fas fa-download"></i> Save</button>
+                     <button type="button" class="btn btn-danger modelClose" data-dismiss="modal"><i
+                             class="fas fa-door-closed"></i> Close</button>
                  </div>
              </div>
          </form>

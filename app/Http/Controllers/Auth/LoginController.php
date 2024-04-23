@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Laravel\Socialite\Facades\Socialite;
+use Illuminate\Http\Request;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
@@ -39,6 +42,25 @@ class LoginController extends Controller
         $this->middleware('guest')->except('logout');
     }
 
+    public function login(Request $request)
+    {
+        $login = $this->attemptLogin($request);
+
+        if ($login) {
+            $user = Auth::user();
+            if ($user->disable == 1) {
+                auth()->logout();
+                return redirect()->route('login')
+                    ->with('login_error', 'Please contact the administrator.')
+                    ->withErrors(['email' => 'Please contact the administrator.']);
+            }
+            return $this->sendLoginResponse($request);
+        }
+
+        // Authentication failed
+        return $this->sendFailedLoginResponse($request);
+    }
+
     public function redirectToGoogle()
     {
         return Socialite::driver('google')->redirect();
@@ -46,12 +68,27 @@ class LoginController extends Controller
 
     public function handleGoogleCallback()
     {
-        $user = Socialite::driver('google')->user();
+        $googleUser = Socialite::driver('google')->user();
 
-        // You can now create or authenticate the user using $user information.
-        // For example:
-        // $authUser = User::firstOrCreate(['email' => $user->getEmail()]);
-        // Auth::login($authUser);
+        // Check if the user exists in your database
+        $user = User::where('email', $googleUser->getEmail())->first();
+
+        if (!$user) {
+            // Handle user not found
+            return redirect()->route('login')
+                ->with('login_error', 'User not found.');
+        }
+
+        // Check if the user is disabled
+        if ($user->disable == 1) {
+            auth()->logout();
+            return redirect()->route('login')
+                ->with('login_error', 'Please contact the administrator.')
+                ->withErrors(['email' => 'Please contact the administrator.']);
+        }
+
+        // Authenticate the user
+        Auth::login($user);
 
         return redirect('/home'); // Redirect to the desired page after login.
     }
