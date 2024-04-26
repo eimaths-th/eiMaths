@@ -96,9 +96,9 @@ class DashboardController extends Controller
             ->join('departments', 'contacts.centre', '=', 'departments.id') // Adjust the join condition based on your actual schema
             ->where('contacts.centre', '!=', 1);
 
-        /*
+        if (!Gate::allows('all-centre')) {
             $results->where('contacts.centre', $dcentreValue);
-        } */
+        }
 
         $results->groupBy('contacts.centre', 'departments.name'); // Group by both centre columns
         $datas = $results->get();
@@ -119,11 +119,12 @@ class DashboardController extends Controller
             $totalStudent = $datas->sum('count');
         }
 
-
+        $totalCentres = count($dataCounts);
 
         ksort($dataCounts);
         return response()->json([
             'total_student' => $totalStudent,
+            'total_centre' => $totalCentres,
             'centre_data' => $dataCounts,
             'max_data' => $maxData,
         ]);
@@ -200,7 +201,7 @@ class DashboardController extends Controller
             //->where('users.department_id', '!=', 1);
             ->where('histrories.date', date("Y-m-d"));
         if (!Gate::allows('all-centre')) {
-            $results->where('users.department_id', $dcentreValue);
+            $results->where('histrories.centre', $dcentreValue);
         }
 
 
@@ -282,9 +283,12 @@ class DashboardController extends Controller
     public function dashboard_student_status(Request $request)
     {
 
+        $dcentreValue = $request->input('dcentre');
         $reservationValue = $request->input('reservation');
 
         $results = Contact::select(
+            //'contacts.*',
+            'contacts.centre as centre_id',
             'departments.name as centre_name',
             DB::raw('COUNT(CASE WHEN discontinued = 0 THEN 1 ELSE NULL END) as count'),
             DB::raw('COUNT(CASE WHEN discontinued = 1 THEN 1 ELSE NULL END) as count_dis'),
@@ -293,8 +297,14 @@ class DashboardController extends Controller
 
             ->join('departments', 'contacts.centre', '=', 'departments.id');
 
-        $results->groupBy('centre_name');
+        if (!Gate::allows('all-centre')) {
+            $results->where('contacts.centre', $dcentreValue);
+        }
+
+        $results->groupBy(['centre_name', 'contacts.centre']);
         $datas = $results->get();
+
+        //dd($datas);
 
         // Modify the code to find max data directly from the database query
         $totalTransactionsSum = $datas->sum('count');

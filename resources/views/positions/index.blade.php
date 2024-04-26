@@ -15,7 +15,7 @@
                         {{-- <li class="breadcrumb-item"><a href="#">Home</a></li>
                         <li class="breadcrumb-item active">Users Management</li> --}}
 
-                        @can('centre-create')
+                        @can('department-create')
                             <button type="button" class="btn btn-success" id="CreateButton">
                                 <i class="fas fa-list-ol"></i> Add Department </a> </button>
                         @else
@@ -26,7 +26,7 @@
                             </span>
                         @endcan &nbsp;
 
-                        @can('centre-delete')
+                        @can('department-delete')
                             <button type="button" class="btn btn-danger delete_all_button"><i class="fa fa-trash"></i> Delete All</button>
                         @else
                             <span class="d-inline-block" tabindex="0" data-toggle="tooltip" data-placement="bottom"

@@ -39,7 +39,11 @@ class DepartmentController extends Controller
         if ($request->ajax()) {
             //sleep(2);
 
-            $datas = Department::orderBy("id", "desc")->get();
+            $datas = Department::orderBy("id", "desc");
+            if (!Gate::allows('all-centre')) {
+                $datas->where('id', Auth::user()->department->id);
+            }
+            $datas->get();
             $state_text = array('Discontinued', 'Active');
             return datatables()->of($datas)
                 ->editColumn('checkbox', function ($row) {

@@ -183,6 +183,22 @@
 <script src="dist/js/adminlte.min.js?v=3.2.0"></script>
 <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
 <script>
+    var loadingDiv = document.createElement('div');
+    loadingDiv.id = 'loadingi';
+    loadingDiv.style.display = 'block';
+    loadingDiv.style.position = 'fixed';
+    loadingDiv.style.top = '0';
+    loadingDiv.style.left = '0';
+    loadingDiv.style.width = '100%';
+    loadingDiv.style.height = '100%';
+    loadingDiv.style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
+    loadingDiv.style.zIndex = '9999';
+    loadingDiv.style.backgroundImage = 'url("https://linkme.vip2541.co/images/loading.gif")';
+    loadingDiv.style.backgroundRepeat = 'no-repeat';
+    loadingDiv.style.backgroundPosition = 'center';
+    loadingDiv.style.backgroundSize = '50px';
+    document.body.appendChild(loadingDiv);
+
     function updateDigitalClock() {
         const now = new Date();
         const hours = String(now.getHours()).padStart(2, '0');
@@ -548,6 +564,16 @@
         "showMethod": "fadeIn",
         "hideMethod": "fadeOut"
     }
+
+    window.onload = function() {
+        var loadingElement = document.getElementById('loadingi');
+        if (loadingElement) {
+            setTimeout(function() {
+                loadingElement.style.display = 'none';
+            }, 1500);
+
+        }
+    };
 </script>
 @yield('script')
 

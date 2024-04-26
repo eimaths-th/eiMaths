@@ -56,8 +56,8 @@
         localStorage.removeItem('searchCentre');
 
         // Set field values to empty
-        $('#dcentre').val('1');
-        localStorage.setItem('searchCentre', 1);
+        $('#dcentre').val('{{ Auth::user()->department->id }}');
+        localStorage.setItem('searchCentre', {{ Auth::user()->department->id }});
 
         // Set the date range back to its default
         datesearch();
@@ -274,6 +274,7 @@
             });
 
             $('#tstudent').html(response.total_student)
+            $('#tcentre').html(response.total_centre)
             // Process the response as needed
             return response.centre_data;
         } catch (error) {
@@ -678,7 +679,7 @@
 
     const student_status = async () => {
         try {
-
+            const dcentreValue = $('#dcentre').val();
             const reservationValue = $('#reservation').val();
 
             const response = await $.ajax({
@@ -686,6 +687,7 @@
                 method: 'POST',
                 data: {
                     _token: token,
+                    dcentre: dcentreValue,
                     reservation: reservationValue,
                 },
             });
@@ -780,6 +782,7 @@
     const handle_student_stutus = async () => {
         try {
             const datas = await student_status();
+            console.log(datas);
 
             const options = student_status_chart_data(datas);
             var chart_data = echarts.init(document.getElementById("student_status"));

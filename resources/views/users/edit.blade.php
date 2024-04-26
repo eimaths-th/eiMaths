@@ -44,10 +44,21 @@
                                      <select style="width: 100%;"
                                          class="departmente select2 select2_single form-control" id="EditDepartment"
                                          name="edepartment" multiple="multiple">
-                                         @foreach ($department as $key2)
-                                             <option value="{{ $key2->id }}">{{ $key2->name }}
-                                             </option>
-                                         @endforeach
+                                         @can('all-centre')
+                                             @foreach ($department as $key2)
+                                                 <option value="{{ $key2->id }}">{{ $key2->name }}
+                                                 </option>
+                                             @endforeach
+                                         @else
+                                             @foreach ($department as $key2)
+                                                 @if (Auth::user()->department->id == (int) $key2->id)
+                                                     <option value="{{ $key2->id }}">
+                                                         {{-- {{ $key2->code }} --}}
+                                                         {{ $key2->name }}
+                                                     </option>
+                                                 @endif
+                                             @endforeach
+                                         @endcan
 
 
                                      </select>
