@@ -427,14 +427,23 @@ class HistoriesController extends Controller
             ['level_id', $level_id]
         ])->orderByRaw("CONCAT(date, ' ', stime) ASC")->get();
 
+        $contact = Contact::where('id', $std_id)->first();
+        $orderlist = OrderDetailList::where('order_id', $contact->order)->get();
+
+
 
         $book_id = null;
         $matchingBookUses = [];
         foreach ($this->get_product_id($std_id) as $bookuse) {
             if ($bookuse->term_id == $term && $bookuse->level_id == $level_id) {
-                $book_id = $bookuse->id;
+
                 $matchingBookUses[$bookuse->id] = $bookuse->qty;
                 //break;
+                foreach ($orderlist as $order) {
+                    if ($order->book == $bookuse->name) {
+                        $book_id = $bookuse->id;
+                    }
+                }
             }
         }
 
@@ -449,7 +458,7 @@ class HistoriesController extends Controller
                 ['term', '<', $term],
             ])->orderByRaw("CONCAT(date, ' ', stime) ASC")->count();
 
-            //dd($lasthistoriesCount);
+            //dd($matchingBookUses);
 
             if ($matchingBookUses[$book_id] < 10 && $lasthistoriesCount !== 0) {
                 $count = 4;

@@ -209,11 +209,30 @@ class APIController extends Controller
         ])->orderByRaw("CONCAT(date, ' ', stime) ASC")->get();
 
 
-        $matchingBookUses = [];
+        /*  $matchingBookUses = [];
         foreach ($this->get_product_id($std_id) as $bookuse) {
             if ($bookuse->term_id == $term && $bookuse->level_id == $level_id) {
                 $book_id = $bookuse->id;
                 $matchingBookUses[$bookuse->id] = $bookuse->qty;
+            }
+        } */
+        $contact = Contact::where('id', $std_id)->first();
+        $orderlist = OrderDetailList::where('order_id', $contact->order)->get();
+
+
+
+        $book_id = null;
+        $matchingBookUses = [];
+        foreach ($this->get_product_id($std_id) as $bookuse) {
+            if ($bookuse->term_id == $term && $bookuse->level_id == $level_id) {
+
+                $matchingBookUses[$bookuse->id] = $bookuse->qty;
+                //break;
+                foreach ($orderlist as $order) {
+                    if ($order->book == $bookuse->name) {
+                        $book_id = $bookuse->id;
+                    }
+                }
             }
         }
 
