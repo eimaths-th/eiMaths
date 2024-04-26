@@ -48,6 +48,8 @@ class UserController extends Controller
             ->with('roles', $roles); */
         if (!Gate::allows('all-centre')) {
             $roles = Role::pluck('name', 'id')->except([1, 4])->all();
+        } else {
+            $roles = Role::pluck('name', 'name')->all();
         }
 
         if ($request->ajax()) {
@@ -227,7 +229,10 @@ class UserController extends Controller
         $data = User::find($id);
         if (!Gate::allows('all-centre')) {
             $roles = Role::pluck('name', 'id')->except([1, 4])->all();
+        } else {
+            $roles = Role::pluck('name', 'name')->all();
         }
+
         //$userRole = $data->roles->pluck('name', 'name')->all();
         //dd($roles);
         //dd($userRole);
