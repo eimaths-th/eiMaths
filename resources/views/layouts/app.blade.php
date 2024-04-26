@@ -123,10 +123,33 @@
             color: white;
             border-radius: 0.2em;
         }
+
+        #loadingi {
+            display: block;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 9999;
+            background-image: url('https://linkme.vip2541.co/images/loading.gif');
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 50px;
+            overflow: hidden;
+            /* Disable scrollbar */
+        }
+
+        body {
+            overflow-x: hidden;
+            /* Disable horizontal scrollbar */
+        }
     </style>
     @yield('style')
 
 <body class="hold-transition sidebar-mini layout-fixed layout-footer-fixed">
+    <div id="loadingi"></div>
     <div class="wrapper">
         <!-- Main Header -->
         @include('layouts.header')
@@ -183,7 +206,7 @@
 <script src="dist/js/adminlte.min.js?v=3.2.0"></script>
 <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
 <script>
-    var loadingDiv = document.createElement('div');
+    /* var loadingDiv = document.createElement('div');
     loadingDiv.id = 'loadingi';
     loadingDiv.style.display = 'block';
     loadingDiv.style.position = 'fixed';
@@ -191,13 +214,13 @@
     loadingDiv.style.left = '0';
     loadingDiv.style.width = '100%';
     loadingDiv.style.height = '100%';
-    loadingDiv.style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
+    loadingDiv.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
     loadingDiv.style.zIndex = '9999';
     loadingDiv.style.backgroundImage = 'url("https://linkme.vip2541.co/images/loading.gif")';
     loadingDiv.style.backgroundRepeat = 'no-repeat';
     loadingDiv.style.backgroundPosition = 'center';
     loadingDiv.style.backgroundSize = '50px';
-    document.body.appendChild(loadingDiv);
+    document.body.insertBefore(loadingDiv, document.body.firstChild); */
 
     function updateDigitalClock() {
         const now = new Date();
