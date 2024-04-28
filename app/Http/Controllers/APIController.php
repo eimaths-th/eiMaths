@@ -298,15 +298,33 @@ class APIController extends Controller
             ['level_id', $level_id]
         ])->get();
 
+        $contact = Contact::where('id', $std_id)->first();
+        $orderlist = OrderDetailList::where('order_id', $contact->order)->get();
 
+        $book_id = null;
         $qty = null;
-        //term qty
+        $matchingBookUses = [];
         foreach ($this->get_product_id($std_id) as $bookused) {
+            if ($bookused->term_id == $term && $bookused->level_id == $level_id) {
+
+                $matchingBookUses[$bookused->id] = $bookused->qty;
+                //break;
+                foreach ($orderlist as $order) {
+                    if ($order->book == $bookused->name) {
+                        $book_id = $bookused->id;
+                        $qty = $bookused->qty;
+                    }
+                }
+            }
+        }
+
+        //term qty
+       /*  foreach ($this->get_product_id($std_id) as $bookused) {
             if ($bookused->term_id == $term && $bookused->level_id == $level_id) {
                 $qty = $bookused->qty;
                 //break;
             }
-        }
+        } */
 
         if ($qty === null) {
             return response()->json(['success' => false, 'message' => 'Student Not Register This Level Or This Term '], 400);
