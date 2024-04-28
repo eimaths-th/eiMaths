@@ -539,8 +539,13 @@ class HistoriesController extends Controller
         ])->get();
 
 
-        $contact = Contact::where('id', $std_id)->first();
-        $orderlist = OrderDetailList::where('order_id', $contact->order)->get();
+        //$contact = Contact::where('id', $std_id)->first();
+        //$orderlist = OrderDetailList::where('order_id', $contact->order)->get();
+        $orders = Order::where('cid', $std_id)->orderBy('id', 'asc')->get();
+        $orderIds = $orders->pluck('id');
+
+        $orderlist = OrderDetailList::whereIn('order_id', $orderIds)
+            ->get();
 
         $book_id = null;
         $qty = null;
@@ -1035,8 +1040,15 @@ class HistoriesController extends Controller
 
 
 
-        $contact = Contact::where('id', $history->student_id)->first();
-        $orderlist = OrderDetailList::where('order_id', $contact->order)->get();
+        //$contact = Contact::where('id', $history->student_id)->first();
+
+        $orders = Order::where('cid', $history->student_id)->orderBy('id', 'asc')->get();
+        $orderIds = $orders->pluck('id');
+
+        $orderlist = OrderDetailList::whereIn('order_id', $orderIds)
+            ->get();
+
+        //$orderlist = OrderDetailList::where('order_id', $contact->order)->get();
 
         $book_id = null;
         $qty = null;
