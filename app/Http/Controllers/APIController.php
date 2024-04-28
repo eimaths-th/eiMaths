@@ -216,8 +216,13 @@ class APIController extends Controller
                 $matchingBookUses[$bookuse->id] = $bookuse->qty;
             }
         } */
-        $contact = Contact::where('id', $std_id)->first();
-        $orderlist = OrderDetailList::where('order_id', $contact->order)->get();
+        //$contact = Contact::where('id', $std_id)->first();
+        // $orderlist = OrderDetailList::where('order_id', $contact->order)->get();
+        $orders = Order::where('cid', $std_id)->orderBy('id', 'asc')->get();
+        $orderIds = $orders->pluck('id');
+
+        $orderlist = OrderDetailList::whereIn('order_id', $orderIds)
+            ->get();
 
 
 
@@ -324,7 +329,7 @@ class APIController extends Controller
         }
 
         //term qty
-       /*  foreach ($this->get_product_id($std_id) as $bookused) {
+        /*  foreach ($this->get_product_id($std_id) as $bookused) {
             if ($bookused->term_id == $term && $bookused->level_id == $level_id) {
                 $qty = $bookused->qty;
                 //break;
