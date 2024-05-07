@@ -17,7 +17,6 @@ return new class extends Migration
             $table->string('name')->nullable();
             $table->integer('status')->default(0);
             $table->timestamps();
-
             $table->foreign('department_id')->references('id')->on('departments')->onDelete('cascade');
         });
     }
