@@ -48,10 +48,12 @@ class APIController extends Controller
     public function googleLogin(Request $request)
     {
         // Verify Google token
-        dd($request->idToken);
+
         $response = Http::get('https://www.googleapis.com/oauth2/v3/tokeninfo', [
             'id_token' => $request->idToken,
         ]);
+
+        dd($response);
 
         if ($response->status() === 200 && $response['aud'] === env('GOOGLE_CLIENT_ID')) {
             // Google token is valid, find user by email
