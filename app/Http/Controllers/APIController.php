@@ -53,9 +53,9 @@ class APIController extends Controller
             'id_token' => $request->idToken,
         ]);
 
-        dd($response);
-
-        if ($response->status() === 200 && $response['aud'] === env('GOOGLE_CLIENT_ID')) {
+        //dd($response);
+//&& $response['aud'] === env('GOOGLE_CLIENT_ID')
+        if ($response->status() === 200) {
             // Google token is valid, find user by email
             $user = User::where('email', $response['email'])->first();
 
