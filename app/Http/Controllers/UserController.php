@@ -46,11 +46,23 @@ class UserController extends Controller
         return view('users.index', compact('data'))
             ->with('i', ($request->input('page', 1) - 1) * 5)
             ->with('roles', $roles); */
-        $roles = Role::pluck('name', 'name')->all();
+        if (!Gate::allows('all-centre')) {
+            $roles = Role::pluck('name', 'id')->except([1, 4])->all();
+        } else {
+            $roles = Role::pluck('name', 'name')->all();
+        }
+
         if ($request->ajax()) {
             //sleep(2);
 
-            $datas = User::with('department', 'position')->orderBy("id", "desc")->get();
+            $datas = User::with('department', 'position');
+            if (!Gate::allows('all-centre')) {
+                $datas->whereHas('department', function ($query) {
+                    $query->where('id', Auth::user()->department->id);
+                });
+            }
+
+            $datas->orderBy("id", "desc")->get();
             return datatables()->of($datas)
                 ->editColumn('role', function (User $datas) {
                     if (!empty($datas->getRoleNames())) {
@@ -63,6 +75,9 @@ class UserController extends Controller
                     }
 
                     return $urole;
+                })
+                ->editColumn('disable', function ($row) {
+                    return $row->disable == 1 ? "Yes" : "No";
                 })
                 ->editColumn('department', function ($row) {
                     return $row->department->name;
@@ -212,7 +227,12 @@ class UserController extends Controller
         //
 
         $data = User::find($id);
-        $roles = Role::pluck('name', 'name')->all();
+        if (!Gate::allows('all-centre')) {
+            $roles = Role::pluck('name', 'id')->except([1, 4])->all();
+        } else {
+            $roles = Role::pluck('name', 'name')->all();
+        }
+
         //$userRole = $data->roles->pluck('name', 'name')->all();
         //dd($roles);
         //dd($userRole);
@@ -290,6 +310,7 @@ class UserController extends Controller
             'role' => $request->get('role'),
             'department_id' => $request->get('department'),
             'position_id' => $request->get('position'),
+            'disable' => $request->get('disable'),
             //'password' => Hash::make($request->get('password')),
         ];
 

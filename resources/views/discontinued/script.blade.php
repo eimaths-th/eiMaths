@@ -19,7 +19,7 @@
         var startDate;
         var endDate;
 
-       
+
         function datesearch() {
             var currentDate = moment();
             // Set the start date to 7 days before today
@@ -245,6 +245,32 @@
         $('#keyword').on('input', storeFieldValues);
 
 
+        let id;
+        $(document).on('click', '.btn-show', function(e) {
+            e.preventDefault();
+
+
+            $('.alert-danger').html('');
+            $('.alert-danger').hide();
+            $('.alert-success').html('');
+            $('.alert-success').hide();
+
+            $('#custom-tabs-one-homee-tab').tab('show');
+            id = $(this).data('id');
+
+
+            $.ajax({
+                url: "contacts/course/" + id,
+                method: 'GET',
+                success: function(res) {
+
+                    console.log(res);
+                    $('#CourseTable').html(res);
+                    $('#CourseModal').modal('show');
+                }
+            });
+
+        })
 
         $(document).on('click', '#getEditData', function() {
             if (!confirm("Confirm the Restart action?")) return;

@@ -173,6 +173,7 @@
                     <p>Department</p>
                 </a>
             </li>
+            @can('all-centre')
             <li class="nav-item">
                 <a href="{{ route('termfee') }}" class="nav-link {{ Request::is('termfee') ? 'active' : '' }}">
                     <i class="nav-icon fa-solid fa-comment-dots"></i>
@@ -185,6 +186,7 @@
                     <p>Parameter Setting </p>
                 </a>
             </li>
+            @endcan
             {{-- <li class="nav-item" >
             <a href="{{ route('persons') }}" class="nav-link {{ Request::is('persons') ? 'active' : '' }}">
                 <i class="fas fa-user-tie nav-icon"></i>

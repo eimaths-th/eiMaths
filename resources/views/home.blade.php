@@ -32,6 +32,7 @@
                                     </option>
                                 @endforeach
                             </select>
+                            {{-- {{ dd((int) $key2->id) }} --}}
                         </div>
 
                     </div>
@@ -77,7 +78,7 @@
                                 <span class="info-box-icon bg-warning"><i class="fa-solid fa-building"></i></span>
                                 <div class="info-box-content">
                                     <span class="info-box-text">Total Centre</span>
-                                    <span class="info-box-number" id="tcentre">2</span>
+                                    <span class="info-box-number" id="tcentre">0</span>
                                 </div>
 
                             </div>
@@ -229,7 +230,7 @@
 
                             </div>
                         </div>
-                        
+
 
                         <div class="col-md-8">
 

@@ -46,11 +46,12 @@
                         <div class="form-group">
                             <strong>Centre:</strong>
                             <select style="width: 100%;" class="select2 select2_single form-control"
-                                id="AddDepartment" name="department" multiple="multiple">
-                                <!-- <option value="" selected>Select Student</option>
-                                                                                                                                                                                                                                                                                                                                                                                    <option value="" selected>Select Parent</option>-->
+                                id="AddDepartment" name="department" multiple="multiple"
+                                @cannot('all-centre') disabled @endcannot>
                                 @foreach ($department as $key2)
-                                    <option value="{{ $key2->id }}">{{ $key2->name }}
+                                    <option value="{{ $key2->id }}" @if (Auth::user()->department->id == (int) $key2->id) selected @endif>
+                                        {{-- {{ $key2->code }} --}}
+                                        {{ $key2->name }}
                                     </option>
                                 @endforeach
 

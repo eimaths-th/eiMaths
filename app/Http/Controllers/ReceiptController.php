@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Exports\ExportReciept;
 use Illuminate\Http\Request;
 use App\Models\Receipt;
+use App\Models\receipt_details;
 use App\Models\ReceiptRunningNumber;
 use App\Models\Order;
 use App\Models\OrderDetailList;
@@ -14,10 +15,12 @@ use App\Models\Department;
 use App\Models\level;
 use App\Models\term;
 use App\Models\Sterm;
+use App\Models\FileUpload;
 use App\Models\FileStore;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\DB;
 use App\Interfaces\MoneyConvertServiceInterface;
 use Maatwebsite\Excel\Facades\Excel;
@@ -45,6 +48,150 @@ class ReceiptController extends Controller
 
         $this->MoneyConvertService = $MoneyConvertService;
     }
+
+    public function update_name($name, $id)
+    {
+        $receipt = Receipt::find($id);
+        $receipt->update(['student_name' => $name]);
+    }
+
+    public function gen_receipt_data($id)
+    {
+        $datas = Receipt::select(
+            "receipts.*",
+            "receipts.receipt_number as doc_number",
+            "contacts.name as cname",
+            "contacts.telephone as ctelephone",
+            "contacts.code as ccode",
+            "contacts.bookuse_name as book",
+            "departments.name as centre_name",
+            "orders.total_price as totalp",
+            "orders.refund as refund",
+            "orders.register_fee as register_fee",
+            "orders.access_fee as access_fee",
+            "orders.orther_fee as orther_fee",
+            "orders.discount as discount",
+            "receipts.payment as payment",
+            "orders.discount_book as discount_book",
+            DB::raw("CASE
+        WHEN contacts.father_name IS NOT NULL AND contacts.father_name != '' THEN contacts.father_name
+        WHEN contacts.mother_name IS NOT NULL AND contacts.mother_name != '' THEN contacts.mother_name
+        ELSE NULL
+    END AS parent_name"),
+            DB::raw("CASE
+        WHEN contacts.father_name IS NOT NULL AND contacts.father_name != '' THEN contacts.father_mobile
+        WHEN contacts.mother_name IS NOT NULL AND contacts.mother_name != '' THEN contacts.mother_mobile
+        ELSE NULL
+    END AS parent_mobile")
+
+        )
+            ->join("contacts", "contacts.id", "=", "receipts.cid")
+            ->join("orders", "orders.id", "=", "receipts.oid")
+            ->join("departments", "contacts.centre", "=", "departments.id")
+            ->where("receipts.id", $id)
+            ->get();
+
+        $datas_list = OrderDetailList::select(
+            "order_detail_lists.id as id",
+            "order_detail_lists.price as oprice",
+            "order_detail_lists.bprice as obprice",
+            DB::raw("SUBSTRING(order_detail_lists.level, 1, 1) as first_char"),
+            DB::raw("COUNT(*) as row_count"),
+            DB::raw("SUM(order_detail_lists.price) as total_price"),
+            DB::raw("SUM(order_detail_lists.bprice) as total_bprice")
+        )->where('order_id', $datas[0]->oid)
+            ->groupBy(
+                'first_char',
+                'order_detail_lists.price',
+                'order_detail_lists.bprice',
+                'order_detail_lists.id',
+
+            )->get();
+
+
+
+        // Check if the data exists before proceeding
+        if ($datas->isEmpty()) {
+            return redirect()->back()->with('error', 'Receipt data not found.');
+        }
+
+
+        $qty = 0;
+        foreach ($datas_list as $price_list) {
+            $ccname = $price_list->first_char;
+            $qty = $qty + $price_list->row_count;
+        }
+
+
+        // Data to pass to the view
+        if ($datas_list[0]->first_char == "K") {
+            $ccname = "Kindergarten";
+        } else if ($datas_list[0]->first_char == "P") {
+            $ccname = "Primary school";
+        }
+
+        $maxPrice = $datas_list->max('oprice');
+        $maxBPrice = $datas_list->max('obprice');
+
+        receipt_details::where('receipt_id', $id)->delete();
+
+        $receipt_detail = new receipt_details();
+        $receipt_detail->receipt_id = $id;
+        $receipt_detail->des = 'ค่าคอร์สเรียน ' . $ccname;
+        $receipt_detail->unit = '';
+        $receipt_detail->quantity = $qty;
+        $receipt_detail->price = $maxPrice;
+        $receipt_detail->discount = $datas[0]->discount;
+        $receipt_detail->tax = 1;
+        $receipt_detail->save();
+
+        $receipt_detail = new receipt_details();
+        $receipt_detail->receipt_id = $id;
+        $receipt_detail->des = 'ค่าหนังสือ';
+        $receipt_detail->unit = '';
+        $receipt_detail->quantity = $qty;
+        $receipt_detail->price = $maxBPrice;
+        $receipt_detail->discount = $datas[0]->discount_book;
+        $receipt_detail->tax = 0;
+        $receipt_detail->save();
+
+        if ($datas[0]->refund !== "" and $datas[0]->refund !== "0.00") {
+            $receipt_detail = new receipt_details();
+            $receipt_detail->receipt_id = $id;
+            $receipt_detail->des = 'ค่ามัดจำ';
+            $receipt_detail->unit = '';
+            $receipt_detail->quantity = 1;
+            $receipt_detail->price = $datas[0]->refund;
+            $receipt_detail->discount = '0.00';
+            $receipt_detail->tax = 1;
+            $receipt_detail->save();
+        };
+
+        if ($datas[0]->register_fee !== "" and $datas[0]->register_fee !== "0.00") {
+            $receipt_detail = new receipt_details();
+            $receipt_detail->receipt_id = $id;
+            $receipt_detail->des = 'ค่าลงทะเบียนแรกเข้า';
+            $receipt_detail->unit = '';
+            $receipt_detail->quantity = 1;
+            $receipt_detail->price = $datas[0]->register_fee;
+            $receipt_detail->discount = '0.00';
+            $receipt_detail->tax = 1;
+            $receipt_detail->save();
+        };
+
+        if ($datas[0]->access_fee !== "" and $datas[0]->access_fee !== "0.00") {
+            $receipt_detail = new receipt_details();
+            $receipt_detail->receipt_id = $id;
+            $receipt_detail->des = 'ค่าอุปกรณ์การเรียน';
+            $receipt_detail->unit = '';
+            $receipt_detail->quantity = 1;
+            $receipt_detail->price = $datas[0]->access_fee;
+            $receipt_detail->discount = '0.00';
+            $receipt_detail->tax = 1;
+            $receipt_detail->save();
+        };
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -68,7 +215,8 @@ class ReceiptController extends Controller
                 "receipts.payment_date as payment_date",
                 //"receipts.level as level",
                 //"receipts.status as order_status",
-                "contacts.name as contact_name",
+                //"contacts.name as contact_name",
+                "receipts.student_name as contact_name",
                 "contacts.nickname as contact_nickname",
                 "contacts.code as contact_code",
                 //"contacts.start_term as start_term",
@@ -106,7 +254,8 @@ class ReceiptController extends Controller
                 'receipts.receipt_number',
                 'receipts.total_fee',
                 'receipts.payment_date',
-                'contacts.name',
+                //'contacts.name',
+                'receipts.student_name',
                 'contacts.nickname',
                 'contacts.code',
                 'departments.name'
@@ -116,6 +265,8 @@ class ReceiptController extends Controller
 
             return datatables()->of($datas)
                 ->editColumn('checkbox', function ($row) {
+                    //$this->gen_receipt_data($row->id);
+                    //$this->update_name($row->contact_name, $row->id);
                     return '<input type="checkbox" id="' . $row->id . '" class="flat" name="table_records[]" value="' . $row->id . '" >';
                 })
                 ->addColumn('more', function ($row) {
@@ -123,7 +274,8 @@ class ReceiptController extends Controller
                 })
                 ->editColumn('contact_name', function ($row) {
                     $nic = $row->contact_nickname !== null && $row->contact_nickname !== '' ? '(' . $row->contact_nickname . ')' : '';
-                    return $row->contact_name . ' ' . $nic;
+                    //return $row->contact_name . ' ' . $nic;
+                    return $row->contact_name;
                 })
                 ->editColumn('book_use', function (Receipt $datas) {
 
@@ -136,10 +288,15 @@ class ReceiptController extends Controller
                 })
                 ->addColumn('action', function ($row) {
                     $html = '';
-                    if (Gate::allows('order-show')) {
-                        $html = '<button type="button" class="btn btn-sm btn-success btn-print" id="getPrintData" data-id="' . $row->id . '"><i class="fa fa-print"></i> Print</button> ';
+                    if (Gate::allows('receipt-edit')) {
+                        $html = '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit</button> ';
                     } else {
-                        $html = '<button type="button" class="btn btn-sm btn-success btn-print disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-print"></i> Print</button> ';
+                        $html = '<button type="button" class="btn btn-sm btn-warning btn-edit disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> Edit</button> ';
+                    }
+                    if (Gate::allows('order-show')) {
+                        $html .= '<button type="button" class="btn btn-sm btn-success btn-print" id="getPrintData" data-id="' . $row->id . '"><i class="fa fa-print"></i> Print</button> ';
+                    } else {
+                        $html .= '<button type="button" class="btn btn-sm btn-success btn-print disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-print"></i> Print</button> ';
                     }
                     if (Gate::allows('order-show')) {
                         $html .= '<button type="button" class="btn btn-sm btn-danger btn-share" id="getShareData" data-id="' . $row->id . '"><i class="fa-solid fa-file-pdf"></i> PDF</button> ';
@@ -392,6 +549,12 @@ class ReceiptController extends Controller
                     } else {
                         $html .= '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i>Create Receipt</button> ';
                     }
+                    if (Gate::allows('order-delete')) {
+
+                        $html .= '<button type="button" class="btn btn-sm btn-danger btn-delete" data-id="' . $row->id . '"><i class="fa-solid fa-ban"></i> Cancle</button> ';
+                    } else {
+                        $html .= '<button type="button" class="btn btn-sm btn-danger disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa-solid fa-ban"></i> Cancle</button> ';
+                    }
                     return "<div class='col-sm-2 col-md-2 col-xl-2'>" . $html . "</div>";
                 })->rawColumns(['checkbox', 'action', 'total_cost'])->toJson();
         }
@@ -429,7 +592,16 @@ class ReceiptController extends Controller
             ->with(['new' => $new]);
     }
 
+    public function price_text($price)
+    {
+        $price_text = $this->MoneyConvertService->baht_text($price);
+        $price_texten = $this->MoneyConvertService->convertNumber($price);
 
+        return response()->json([
+            'th' => $price_text,
+            'en' => $price_texten,
+        ]);
+    }
     /**
      * Display the specified resource.
      */
@@ -439,7 +611,8 @@ class ReceiptController extends Controller
         $datas = Receipt::select(
             "receipts.*",
             "receipts.receipt_number as doc_number",
-            "contacts.name as cname",
+            //"contacts.name as cname",
+            "receipts.student_name as cname",
             "contacts.telephone as ctelephone",
             "contacts.code as ccode",
             "contacts.bookuse_name as book",
@@ -450,7 +623,7 @@ class ReceiptController extends Controller
             "orders.access_fee as access_fee",
             "orders.orther_fee as orther_fee",
             "orders.discount as discount",
-            "orders.payment as payment",
+            "receipts.payment as payment",
             "orders.discount_book as discount_book",
             //"first_detail.price as price"
             DB::raw("CASE
@@ -477,180 +650,63 @@ class ReceiptController extends Controller
 
         //dd($datas);
 
-        $datas_list = OrderDetailList::select(
-            //"order_detail_lists.*",
-            "order_detail_lists.id as id",
-            "order_detail_lists.price as oprice",
-            "order_detail_lists.bprice as obprice",
-            DB::raw("SUBSTRING(order_detail_lists.level, 1, 1) as first_char"),
-            DB::raw("COUNT(*) as row_count"),
-            DB::raw("SUM(order_detail_lists.price) as total_price"),
-            DB::raw("SUM(order_detail_lists.bprice) as total_bprice")
-        )->where('order_id', $datas[0]->oid)
-            ->groupBy(
-                // 'order_detail_lists.level',
-                'first_char',
-                'order_detail_lists.price',
-                'order_detail_lists.bprice',
-                'order_detail_lists.id',
-                // 'order_detail_lists.order_id',
-                // 'eimatch.order_detail_lists.term',
-                // 'order_detail_lists.book',
-                // 'order_detail_lists.price',
-                // 'eimatch.order_detail_lists.bprice',
-                // 'eimatch.order_detail_lists.created_at',
-                // 'eimatch.order_detail_lists.updated_at'
-            )
-            //->orderBy("id", "asc")
-            ->get();
 
-        //dd($datas_list);
-        // dd(
-        //     $id,
-        //     $datas,
-        //     $datas_list,
-
-        // );
-
-        $datasf = $this->getfileattprint($datas[0]->oid);
-
-        // Check if the data exists before proceeding
         if ($datas->isEmpty()) {
             return redirect()->back()->with('error', 'Receipt data not found.');
         }
 
-        // Load the template file from the 'templates' subdirectory
+        $receipt_detail = receipt_details::where("receipt_id", $id)->orderby('id')->get();
+
+
         $template = 'templates.print_receipt';
+        $templatee = 'templates.edit_receipt';
         $templates = 'templates.print_social';
 
+        $total = 0;
+        $discount_val = 0;
+        $vat_price = 0;
+        $book_price = 0;
+        foreach ($receipt_detail as $price_list) {
+            $total +=
+                $price_list->price * $price_list->quantity - (int) $price_list->discount;
+            $discount_val += (int) $price_list->discount;
+
+            if ($price_list->tax == 0) {
+                $book_price +=
+                    $price_list->price * $price_list->quantity -
+                    (int) $price_list->discount;
+            }
+        }
+        $vat_price = $total - $book_price;
+        $vatRate = 7;
+        $vat_val = ($vat_price * $vatRate) / 107;
+        $net_price = $vat_price + $book_price + $datas[0]->orther_fee;
+
         $ctype = "";
-        $price_text = $this->MoneyConvertService->baht_text($datas[0]->total_fee);
-        $price_texten = $this->MoneyConvertService->convertNumber($datas[0]->total_fee);
-
-        $formattedDate = $datas[0]->created_at->format('Y-m-d');
-
-        $qty = 0;
-        $lprice = 0;
-        $lbprice = 0;
-        foreach ($datas_list as $price_list) {
-            $ccname = $price_list->first_char;
-            $qty = $qty + $price_list->row_count;
-            $oprice = $price_list->oprice;
-            $obprice = $price_list->obprice;
-            $lprice = $lprice + $price_list->total_price;
-            $lbprice = $lbprice + $price_list->total_bprice;
-        }
-
-
-
-        // Data to pass to the view
-        if ($datas_list[0]->first_char == "K") {
-            $ccname = "Kindergarten";
-        } else if ($datas_list[0]->first_char == "P") {
-            $ccname = "Primary school";
-        }
-
-        $maxPrice = $datas_list->max('oprice');
-        $maxBPrice = $datas_list->max('obprice');
-        $book_price = $lbprice - $datas[0]->discount_book;
-        $vat_price = ($lprice + $datas[0]->register_fee + $datas[0]->access_fee + $datas[0]->orther_fee + $datas[0]->refund) - $datas[0]->discount;
-        $vat_val = $vat_price * 0.07;
-
-        $net_price = $vat_price + $book_price;
-
-        $customItem = [[
-            'pname' => 'ค่าคอร์สเรียน ' . $ccname,
-            'quantity' => $qty,
-            'uprice' => $maxPrice,
-            'price' => $lprice - $datas[0]->discount,
-            'discount' => $datas[0]->discount,
-            // Add other properties as needed
-        ], [
-            'pname' => 'ค่าหนังสือ',
-            'quantity' => $qty,
-            'uprice' => $maxBPrice,
-            'price' => $lbprice - $datas[0]->discount_book,
-            'discount' => $datas[0]->discount_book,
-            // Add other properties as needed
-        ]];
-
-        if ($datas[0]->refund !== "" and $datas[0]->refund !== "0.00") {
-            $refundItem = [
-                [
-                    'pname' => 'ค่ามัดจำ',
-                    'quantity' => 1,
-                    'uprice' => $datas[0]->refund,
-                    'price' => $datas[0]->refund * 1,
-                    'discount' => '0.00',
-
-                ]
-            ];
-            $customItem = array_merge($customItem, $refundItem);
-        };
-
-        if ($datas[0]->register_fee !== "" and $datas[0]->register_fee !== "0.00") {
-            $regisItem = [
-                [
-                    'pname' => 'ค่าลงทะเบียนแรกเข้า',
-                    'quantity' => 1,
-                    'uprice' => $datas[0]->register_fee * 1,
-                    'price' => $datas[0]->register_fee,
-                    'discount' => '0.00',
-
-                ]
-            ];
-            $customItem = array_merge($customItem, $regisItem);
-        };
-
-        if ($datas[0]->access_fee !== "" and $datas[0]->access_fee !== "0.00") {
-            $accessItem = [
-                [
-                    'pname' => 'ค่าอุปกรณ์การเรียน',
-                    'quantity' => 1,
-                    'uprice' => $datas[0]->access_fee * 1,
-                    'price' => $datas[0]->access_fee,
-                    'discount' => '0.00',
-
-                ]
-            ];
-            $customItem = array_merge($customItem, $accessItem);
-        };
-
-
-        if ($datas[0]->orther_fee !== null && $datas[0]->orther_fee !== "0.00") {
-            $accessItem = [
-                [
-                    'pname' => 'รายได้อื่นๆ',
-                    'quantity' => 1,
-                    'uprice' => $datas[0]->orther_fee * 1,
-                    'price' => $datas[0]->orther_fee,
-                    'discount' => '0.00',
-                ]
-            ];
-            $customItem = array_merge($customItem, $accessItem);
-        }
-
-
+        //$formattedDate = $datas[0]->created_at->format('Y-m-d');
+        $formattedDate = $datas[0]->payment_date;
+        $price_text = $this->MoneyConvertService->baht_text($net_price);
+        $price_texten = $this->MoneyConvertService->convertNumber($net_price);
 
         $data = [
             'ctype' => $ctype,
-            'book_price' => $book_price,
-            'vat_price' => $vat_price,
-            'net_price' => $net_price,
+            'orther_fee' => $datas[0]->orther_fee,
             'price_text' => $price_text,
             'price_texten' => $price_texten,
-            //'etype' => "ค่าสมัครเรียน / Application Fee",
+            'vat_price' => $vat_price,
+            'vat_val' => $vat_val,
+            'book_price' => $book_price,
+            'net_price' => $net_price,
+            'discount_val' => $discount_val,
             'date' => $formattedDate,
             'data' => $datas->first(),
-            'items' => compact('customItem'),
-            'file_att' => $datasf,
+            'items' => $receipt_detail,
         ];
-
-        //dd($data);
 
 
         if ($social == 1) {
             // Render the view with the data and get the HTML content
+            $data['file_att'] =  $this->getfileattprint($datas[0]->oid);
             $htmlContents = View::make($templates, $data)->render();
 
             // Generate the PDF
@@ -671,8 +727,17 @@ class ReceiptController extends Controller
                 'Content-Type' => 'application/pdf',
                 'Content-Disposition' => 'inline; filename="' . $pdfFileName . '"',
             ]);
+        } else  if ($social == 2) {
+            $data['file_att'] =  $this->getfileatt($datas[0]->oid);
+            // Render the view with the data and get the HTML content
+            $htmlContent = View::make($templatee, $data)->render();
+            //return new Response($htmlContent, 200, ['Content-Type' => 'text/html']);
+            return response()->json([
+                'html' =>  $htmlContent
+            ]);
         } else {
             // Render the view with the data and get the HTML content
+            $data['file_att'] = $this->getfileattprint($datas[0]->oid);
             $htmlContent = View::make($template, $data)->render();
             //return new Response($htmlContent, 200, ['Content-Type' => 'text/html']);
             return response()->json([
@@ -680,6 +745,48 @@ class ReceiptController extends Controller
             ]);
         }
     }
+
+    public function getfileatt($id)
+    {
+        $filestore = FileStore::where([['module', 'orders']])
+            ->where([['module_id', $id]])
+            ->orderBy("id", "asc")->get();
+
+        $img = "";
+        if (!$filestore->isEmpty()) {
+            foreach ($filestore as $pics) {
+                $imgf = url('/') . '/file_store/' . $pics->filename;
+                $img .= "<div id='img_" . $pics->id . "' class='col-md-4 text-center mb-3'><img src=\"" . $imgf . "\" height=\"150\"><br>
+                <a class='btn btn-sm btn-info btn-view' href=\"" . urldecode($imgf) . "\" target=\"blank\"><i class='fa fa-search'></i></a>
+                <a href='#' class='btn btn-sm btn-danger btn-edit' id='getDeleteData' data-id2='" . $pics->id . "' data-id='" . $id . "'><i class='fa fa-trash'></i></a>
+                </div>
+                <br><br>";
+            }
+        } else {
+            $img = "";
+        }
+
+        return $img;
+    }
+
+    public function deleteImg($id, $id2)
+    {
+        $file = FileStore::find($id2);
+
+        if ($file) {
+            // Get the file path
+            $filePath = public_path('file_store/' . $file->filename);
+            if (file_exists($filePath)) {
+                unlink($filePath);
+                $file->delete();
+            }
+        }
+
+        $html = $this->getfileatt($id);
+
+        return response()->json(['imgs' => $html]);
+    }
+
 
     public function getfileattprint($id)
     {
@@ -699,6 +806,81 @@ class ReceiptController extends Controller
 
         return $img;
     }
+
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, $id)
+    {
+
+        $datao = [
+            'orther_fee' => $request->get('charge'),
+            'updated_by' => Auth::id()
+        ];
+
+
+
+        $data = [
+            'receipt_number' => $request->get('receipt_number'),
+            'payment_date' => $request->get('receipt_date'),
+            'payment' => $request->get('payment'),
+            'total_fee' => (float) $request->get('total'),
+            'updated_by' => Auth::id()
+        ];
+
+        $receipt = Receipt::find($id);
+        $receipt->update($data);
+
+        Order::find($receipt->oid)->update($datao);
+        receipt_details::where('receipt_id', $id)->delete();
+
+        $amounts = $request->input('amount');
+        $prices = $request->input('price');
+        $des = $request->input('des');
+        $unit = $request->input('unit');
+        $discount = $request->input('discount');
+        $tax = $request->input('tax');
+
+
+        if (is_array($amounts) && is_array($prices) && count($amounts) === count($prices)) {
+            foreach ($amounts as $index => $amount) {
+                if (isset($amounts[$index])) { // Check if the index exists in $sids array
+                    $rDetail = new receipt_details();
+                    $rDetail->receipt_id = $id;
+                    $rDetail->quantity = $amount;
+                    $rDetail->price = $prices[$index];
+                    $rDetail->des = $des[$index];
+                    $rDetail->unit = $unit[$index];
+                    $rDetail->discount = $discount[$index];
+                    $rDetail->tax = $tax[$index];
+                    $rDetail->save();
+                }
+            }
+        }
+
+        //file att
+
+        $filesa = $request->get('img');
+
+        if (!empty($filesa)) {
+            foreach ($filesa as $filea) {
+                //echo $filea;
+                $oldfile = FileUpload::where('oldname', $filea)->get();
+                $filestore = new FileStore();
+                $filestore->module = 'orders';
+                $filestore->module_id = $receipt->oid;
+                $filestore->filename = $oldfile[0]->filename;
+                $filestore->save();
+
+                File::move(public_path() . '/file_upload/' . $oldfile[0]->filename, public_path() . '/file_store/' . $oldfile[0]->filename);
+                FileUpload::where('filename', $oldfile[0]->filename)->delete();
+            }
+        }
+
+        return response()->json(['success' => 'แก้ไข ใบเสร็จรับเงิน เรียบร้อยแล้ว']);
+    }
+
 
     /**
      * Update the specified resource in storage.

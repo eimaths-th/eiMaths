@@ -16,6 +16,7 @@ use App\Models\term;
 use App\Models\Sterm;
 use App\Models\bookuse;
 use App\Models\Receipt;
+use App\Models\receipt_details;
 use App\Models\Invoice;
 
 //use App\Models\LogActivity;
@@ -681,9 +682,238 @@ class OrderController extends Controller
             $receipt->total_fee = $order->total_price;
             $receipt->start_term = $order->contact->start_term;
             $receipt->save();
+
+
+            $datas = Receipt::select(
+                "receipts.*",
+                "receipts.receipt_number as doc_number",
+                "contacts.name as cname",
+                "contacts.telephone as ctelephone",
+                "contacts.code as ccode",
+                "contacts.bookuse_name as book",
+                "departments.name as centre_name",
+                "orders.total_price as totalp",
+                "orders.refund as refund",
+                "orders.register_fee as register_fee",
+                "orders.access_fee as access_fee",
+                "orders.orther_fee as orther_fee",
+                "orders.discount as discount",
+                "receipts.payment as payment",
+                "orders.discount_book as discount_book",
+                DB::raw("CASE
+            WHEN contacts.father_name IS NOT NULL AND contacts.father_name != '' THEN contacts.father_name
+            WHEN contacts.mother_name IS NOT NULL AND contacts.mother_name != '' THEN contacts.mother_name
+            ELSE NULL
+        END AS parent_name"),
+                DB::raw("CASE
+            WHEN contacts.father_name IS NOT NULL AND contacts.father_name != '' THEN contacts.father_mobile
+            WHEN contacts.mother_name IS NOT NULL AND contacts.mother_name != '' THEN contacts.mother_mobile
+            ELSE NULL
+        END AS parent_mobile")
+
+            )
+                ->join("contacts", "contacts.id", "=", "receipts.cid")
+                ->join("orders", "orders.id", "=", "receipts.oid")
+                ->join("departments", "contacts.centre", "=", "departments.id")
+                ->where("receipts.id", $receipt->id)
+                ->get();
+
+            $datas_list = OrderDetailList::select(
+                "order_detail_lists.id as id",
+                "order_detail_lists.price as oprice",
+                "order_detail_lists.bprice as obprice",
+                DB::raw("SUBSTRING(order_detail_lists.level, 1, 1) as first_char"),
+                DB::raw("COUNT(*) as row_count"),
+                DB::raw("SUM(order_detail_lists.price) as total_price"),
+                DB::raw("SUM(order_detail_lists.bprice) as total_bprice")
+            )->where('order_id', $datas[0]->oid)
+                ->groupBy(
+                    'first_char',
+                    'order_detail_lists.price',
+                    'order_detail_lists.bprice',
+                    'order_detail_lists.id',
+
+                )->get();
+
+
+
+            // Check if the data exists before proceeding
+            if ($datas->isEmpty()) {
+                return redirect()->back()->with('error', 'Receipt data not found.');
+            }
+
+
+            $qty = 0;
+            foreach ($datas_list as $price_list) {
+                $ccname = $price_list->first_char;
+                $qty = $qty + $price_list->row_count;
+            }
+
+
+            // Data to pass to the view
+            if ($datas_list[0]->first_char == "K") {
+                $ccname = "Kindergarten";
+            } else if ($datas_list[0]->first_char == "P") {
+                $ccname = "Primary school";
+            }
+
+            $maxPrice = $datas_list->max('oprice');
+            $maxBPrice = $datas_list->max('obprice');
+
+            $receipt_detail = new receipt_details();
+            $receipt_detail->receipt_id = $receipt->id;
+            $receipt_detail->des = 'ค่าคอร์สเรียน ' . $ccname;
+            $receipt_detail->unit = '';
+            $receipt_detail->quantity = $qty;
+            $receipt_detail->price = $maxPrice;
+            $receipt_detail->discount = $datas[0]->discount;
+            $receipt_detail->tax = 1;
+            $receipt_detail->save();
+
+            $receipt_detail = new receipt_details();
+            $receipt_detail->receipt_id = $receipt->id;
+            $receipt_detail->des = 'ค่าหนังสือ';
+            $receipt_detail->unit = '';
+            $receipt_detail->quantity = $qty;
+            $receipt_detail->price = $maxBPrice;
+            $receipt_detail->discount = $datas[0]->discount_book;
+            $receipt_detail->tax = 0;
+            $receipt_detail->save();
+
+            if ($datas[0]->refund !== "" and $datas[0]->refund !== "0.00") {
+                $receipt_detail = new receipt_details();
+                $receipt_detail->receipt_id = $receipt->id;
+                $receipt_detail->des = 'ค่ามัดจำ';
+                $receipt_detail->unit = '';
+                $receipt_detail->quantity = 1;
+                $receipt_detail->price = $datas[0]->refund;
+                $receipt_detail->discount = '0.00';
+                $receipt_detail->tax = 1;
+                $receipt_detail->save();
+            };
+
+            if ($datas[0]->register_fee !== "" and $datas[0]->register_fee !== "0.00") {
+                $receipt_detail = new receipt_details();
+                $receipt_detail->receipt_id = $receipt->id;
+                $receipt_detail->des = 'ค่าลงทะเบียนแรกเข้า';
+                $receipt_detail->unit = '';
+                $receipt_detail->quantity = 1;
+                $receipt_detail->price = $datas[0]->register_fee;
+                $receipt_detail->discount = '0.00';
+                $receipt_detail->tax = 1;
+                $receipt_detail->save();
+            };
+
+            if ($datas[0]->access_fee !== "" and $datas[0]->access_fee !== "0.00") {
+                $receipt_detail = new receipt_details();
+                $receipt_detail->receipt_id = $receipt->id;
+                $receipt_detail->des = 'ค่าอุปกรณ์การเรียน';
+                $receipt_detail->unit = '';
+                $receipt_detail->quantity = 1;
+                $receipt_detail->price = $datas[0]->access_fee;
+                $receipt_detail->discount = '0.00';
+                $receipt_detail->tax = 1;
+                $receipt_detail->save();
+            };
         }
 
         return response()->json(['success' => 'Save Data completed', 'status' => $order->status]);
+    }
+
+
+    public function cancle($id)
+    {
+
+        $order = Order::find($id);
+        $contact = $order->cid;
+        if ($order) {
+            $order->delete();
+
+            OrderDetail::where('order_id', $id)->delete();
+            OrderDetailList::where('order_id', $id)->delete();
+
+            $filestore = FileStore::where([
+                ['module', 'orders'],
+                ['module_id', $id],
+            ])->get();
+
+            if (!$filestore->isEmpty()) {
+                foreach ($filestore as $file) {
+                    $filePath = public_path('file_store/' . $file->filename);
+                    if (file_exists($filePath)) {
+                        unlink($filePath);
+                    }
+                    $file->delete();
+                }
+            }
+        }
+
+        $last_order = Order::where('cid', $contact)
+            ->orderBy('id', 'DESC')
+            ->first();
+        $last_order_detail = OrderDetailList::where('order_id', $last_order->id)
+            ->orderBy('id', 'ASC')
+            ->get();
+
+        $rowCount = $last_order_detail->count();
+        if ($rowCount == 2) {
+            $level1 = $last_order_detail[0]->level;
+            $term1 = $last_order_detail[0]->term;
+            $book1 = $last_order_detail[0]->book;
+
+            $level2 = $last_order_detail[1]->level;
+            $term2 = $last_order_detail[1]->term;
+            $book2 = $last_order_detail[1]->book;
+
+            $book1i = bookuse::where('name', $book1)->first();
+            $level1_id = $book1i->level_id;
+            $term1_id = $book1i->term_id;
+            $book1_id = $book1i->id;
+
+            $book2i = bookuse::where('name', $book2)->first();
+            $level2_id = $book2i->level_id;
+            $term2_id = $book2i->term_id;
+            $book2_id = $book2i->id;
+        } else {
+            $level1 = $last_order_detail[0]->level;
+            $term1 = $last_order_detail[0]->term;
+            $book1 = $last_order_detail[0]->book;
+
+            $level2 = $last_order_detail[0]->level;
+            $term2 = $last_order_detail[0]->term;
+            $book2 = $last_order_detail[0]->book;
+
+            $book1i = bookuse::where('name', $book1)->first();
+            $level1_id = $book1i->level_id;
+            $term1_id = $book1i->term_id;
+            $book1_id = $book1i->id;
+
+            $level2_id = $book1i->level_id;
+            $term2_id = $book1i->term_id;
+            $book2_id = $book1i->id;
+        }
+
+        $student = Contact::find($contact);
+
+        $data = [
+            'order' => $last_order->id,
+            'level' => $level1_id,
+            'term' => $term1_id,
+            'bookuse' => $book1_id,
+            'level_name' => $level1,
+            'term_name' => $term1,
+            'bookuse_name' => $book1,
+            'level2' => $level2_id,
+            'term2' => $term2_id,
+            'bookuse2' => $book2_id,
+            'level2_name' => $level2,
+            'term2_name' => $term2,
+            'bookuse2_name' => $book2,
+        ];
+
+        $student->update($data);
+
+        return response()->json(['success' => 'Cancle Order completed']);
     }
 
     /**

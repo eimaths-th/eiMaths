@@ -134,6 +134,8 @@
         </div>
         <!-- /.login-box -->
 </body>
-
+<script>
+    localStorage.clear();
+</script>
 </html>
 {{-- </x-laravel-ui-adminlte::adminlte-layout> --}}

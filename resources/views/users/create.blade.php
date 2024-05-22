@@ -49,15 +49,23 @@
                     <div class="col-xs-6 col-sm-6 col-md-6">
                         <div class="form-group">
                             <strong><i class="fas fa-list-ol"></i> Centre:</strong>
-                            <select style="width: 100%;" class="departmentl select2 select2_single form-control" id="AddDepartment"
-                                name="department" multiple="multiple">
-                                <!-- <option value="" selected>Select Student</option>
-                                                                                                                                                                                                                                                                                                                                                                                        <option value="" selected>Select Parent</option>-->
-                                @foreach ($department as $key2)
-                                    <option value="{{ $key2->id }}">{{ $key2->name }}
-                                    </option>
-                                @endforeach
-
+                            <select style="width: 100%;" class="departmentl select2 select2_single form-control"
+                                id="AddDepartment" name="department" multiple="multiple">
+                                @can('all-centre')
+                                    @foreach ($department as $key2)
+                                        <option value="{{ $key2->id }}">{{ $key2->name }}
+                                        </option>
+                                    @endforeach
+                                @else
+                                    @foreach ($department as $key2)
+                                        @if (Auth::user()->department->id == (int) $key2->id)
+                                            <option value="{{ $key2->id }}">
+                                                {{-- {{ $key2->code }} --}}
+                                                {{ $key2->name }}
+                                            </option>
+                                        @endif
+                                    @endforeach
+                                @endcan
                             </select>
                         </div>
                     </div>
@@ -97,7 +105,7 @@
 
                     <div class="col-xs-12 col-sm-12 col-md-12">
                         <div class="form-group">
-                            <strong><i class="fas fa-user-lock"></i>  Role:</strong>
+                            <strong><i class="fas fa-user-lock"></i> Role:</strong>
                             {!! Form::select('roles', $roles, [], ['id' => 'AddRole', 'class' => 'form-control', 'single']) !!}
                         </div>
                     </div>
@@ -108,8 +116,10 @@
                 {!! Form::close() !!}
             </div>
             <div class="modal-footer {{-- justify-content-between --}}">
-                <button type="button" class="btn btn-success" id="SubmitCreateForm"><i class="fas fa-download"></i> Save</button>
-                <button type="button" class="btn btn-danger modelClose" data-dismiss="modal"><i class="fas fa-door-closed"></i> Close</button>
+                <button type="button" class="btn btn-success" id="SubmitCreateForm"><i class="fas fa-download"></i>
+                    Save</button>
+                <button type="button" class="btn btn-danger modelClose" data-dismiss="modal"><i
+                        class="fas fa-door-closed"></i> Close</button>
             </div>
         </div>
     </div>

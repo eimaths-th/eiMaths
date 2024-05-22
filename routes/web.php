@@ -42,6 +42,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/contacts/store', [App\Http\Controllers\ContactController::class, 'store'])->name('contacts.store');
     Route::post('/contacts/receipt', [App\Http\Controllers\ContactController::class, 'receipt'])->name('contacts.receipt');
     Route::get('/contacts/edit/{id}', [App\Http\Controllers\ContactController::class, 'edit'])->name('contacts.edit');
+    Route::get('/contacts/course/{id}', [App\Http\Controllers\ContactController::class, 'get_course'])->name('contacts.course');
     Route::put('/contacts/save/{id}', [App\Http\Controllers\ContactController::class, 'update'])->name('contacts.save');
     Route::delete('/contacts/destroy', [App\Http\Controllers\ContactController::class, 'destroy'])->name('contacts.destroy');
     Route::post('/contacts/destroy_all', [App\Http\Controllers\ContactController::class, 'destroy_all'])->name('contacts.destroy_all');
@@ -97,18 +98,22 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/orders/store', [App\Http\Controllers\OrderController::class, 'store'])->name('orders.store');
     Route::get('/orders/log/{id}', [App\Http\Controllers\OrderController::class, 'log'])->name('orders.log');
     Route::get('orders/edit/{id}', [App\Http\Controllers\OrderController::class, 'edit'])->name('orders.edit');
+    Route::get('orders/cancle/{id}', [App\Http\Controllers\OrderController::class, 'cancle'])->name('orders.cancle');
     Route::put('orders/confirm', [App\Http\Controllers\OrderController::class, 'confirm'])->name('orders.confirm');
     Route::put('/orders/save/{id}', [App\Http\Controllers\OrderController::class, 'update'])->name('orders.save');
     Route::delete('/orders/destroy', [App\Http\Controllers\OrderController::class, 'destroy'])->name('orders.destroy');
     Route::post('/orders/destroy_all', [App\Http\Controllers\OrderController::class, 'destroy_all'])->name('orders.destroy_all');
     Route::put('/orders/delete/img/{rid}/{rid2}', [App\Http\Controllers\OrderController::class, 'deleteImg'])->name('orders.deleteimg');
-    Route::get('/orders/show/{id}/{param}', [App\Http\Controllers\OrderController::class, 'show'])->name('orders.show');
+    Route::get('/orders/show/{id}/{param}', [App\Http\Controllers\OrderController::class, 'show'])->name('orsders.show');
 
     Route::get('/receipts', [App\Http\Controllers\ReceiptController::class, 'index'])->name('receipts');
     Route::get('/receipts/show/{id}/{param}', [App\Http\Controllers\ReceiptController::class, 'show'])->name('receipts.show');
+    Route::get('/receipts/price_text/{price}', [App\Http\Controllers\ReceiptController::class, 'price_text'])->name('receipts.price_text');
+    Route::put('/receipts/save/{id}', [App\Http\Controllers\ReceiptController::class, 'update'])->name('receipts.save');
     Route::get('/receipts_pending', [App\Http\Controllers\ReceiptController::class, 'pending'])->name('receipts_pending');
     Route::get('/receipts_pending_term', [App\Http\Controllers\ReceiptController::class, 'pending_term'])->name('receipts_pending_term');
     Route::put('/receipts/generate', [App\Http\Controllers\ReceiptController::class, 'generate'])->name('receipts.generate');
+    Route::put('/receipts/delete/img/{rid}/{rid2}', [App\Http\Controllers\ReceiptController::class, 'deleteImg'])->name('receipts.deleteimg');
 
     Route::get('/invoices', [App\Http\Controllers\InvoiceController::class, 'index'])->name('invoices');
     Route::get('/invoices/show/{id}/{param}', [App\Http\Controllers\InvoiceController::class, 'show'])->name('invoices.show');
@@ -158,6 +163,8 @@ Route::group(['middleware' => ['auth']], function () {
     })->name('file.get');
 
 
+
+
     /* Route::get('/', [App\Http\Controllers\ContactController::class, 'index']);
     Route::get('/home', [App\Http\Controllers\ContactController::class, 'index'])->name('home'); */
     Route::get('/', [App\Http\Controllers\HomeController::class, 'index']);
@@ -166,7 +173,9 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/reciept/export', [ReceiptController::class, 'exportReciept'])->name('reciept.export');
 });
 
-
+Route::get('/teacher', function () {
+    return redirect()->to('https://teacher.eimaths-th.com/');
+});
 
 Auth::routes();
 Route::get('/auth/google', [App\Http\Controllers\GoogleController::class, 'loginWithGoogle'])->name('google.login');

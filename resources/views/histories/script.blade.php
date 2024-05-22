@@ -4,14 +4,14 @@
 
         $("#timepicker").timepicker();
         $(".timepicker").timepicker({
-            timeFormat: 'hh:mm tt', // Display format
+            timeFormat: 'HH:mm:ss', // Display format
             // dateFormat: 'yy-mm-dd', // Date format
             showButtonPanel: true, // Show the "Now" and "Done" buttons
             controlType: 'select'
         });
 
         $('#datetimepicker').timepicker({
-            timeFormat: 'hh:mm tt', // Display format
+            timeFormat: 'HH:mm:ss', // Display format
             // dateFormat: 'yy-mm-dd', // Date format
             showButtonPanel: true, // Show the "Now" and "Done" buttons
             controlType: 'select' // Use select menus for hours and minutes
@@ -362,6 +362,14 @@
                     name: 'date'
                 },
                 {
+                    data: 'setime',
+                    name: 'setime'
+                },
+                /* {
+                                   data: 'etime',
+                                   name: 'etime'
+                               }, */
+                {
                     data: 'centre',
                     name: 'centre'
                 },
@@ -385,21 +393,15 @@
                     data: 'bookuse',
                     name: 'bookuse'
                 },
+
+                {
+                    data: 'course_remaining',
+                    name: 'course_remaining'
+                },
                 {
                     data: 'start_date',
                     name: 'start_date'
                 },
-                {
-                    data: 'stime',
-                    name: 'stime'
-                }, {
-                    data: 'etime',
-                    name: 'etime'
-                }, {
-                    data: 'course_remaining',
-                    name: 'course_remaining'
-                },
-
 
                 /* {
                     data: 'end_date',
@@ -426,6 +428,7 @@
                 }
             ]
         };
+
         var table = $('#Listview').DataTable(table_option);
 
         $('#SearchButtons').on('click', function() {
@@ -439,9 +442,9 @@
 
                 // Apply the new search based on searchType and keyword
                 if (searchType === '1') {
-                    table.column(3).search(keyword).draw();
-                } else if (searchType === '2') {
                     table.column(4).search(keyword).draw();
+                } else if (searchType === '2') {
+                    table.column(5).search(keyword).draw();
                 }
             } else {
                 // Handle the case where searchType or keyword is empty
@@ -743,6 +746,9 @@
                     $('#getStartDate').val(res.data.start_date);
                     $('#getEndDate').val(res.data.end_date);
                     $('#getComment').val(res.data.comment);
+                    $('#EditLevel').html(res.level);
+                    $('#EditLevel').val(res.history.level_id).trigger("change");
+                    $('#EditTerm').val(res.data.term).trigger("change");
                     // $('#getSignature').val(res.data.signature);
                     if (res.data.signature !== null) {
                         /* $('#getSignature').attr('src', '{{ asset('file_upload/') }}/' + res
@@ -819,9 +825,11 @@
                 data: {
                     img: values,
                     signature: esignatureData,
-                    level_id: $('#getLevelId').val(),
-                    level_name: $('#getLevelName').val(),
-                    term: $('#getTerm').val(),
+                    /* level_id: $('#getLevelId').val(),
+                    level_name: $('#getLevelName').val(), */
+                    level_id: $('#EditLevel').val()[0],
+                    /* term: $('#getTerm').val(), */
+                    term: $('#EditTerm').val()[0],
                     bookuse: $('#getBookuse').val(),
                     course_remaining: $('#getCourseRemaining').val(),
                     date: $('#getDate').val(),

@@ -24,10 +24,10 @@ class PositionController extends Controller
     public function __construct()
     {
         //$this->middleware('auth');
-        $this->middleware('permission:centre-list|centre-create|centre-edit|centre-delete', ['only' => ['index', 'show']]);
-        $this->middleware('permission:centre-create', ['only' => ['create', 'store']]);
-        $this->middleware('permission:centre-edit', ['only' => ['edit', 'update']]);
-        $this->middleware('permission:centre-delete', ['only' => ['destroy']]);
+        $this->middleware('permission:department-list|department-create|department-edit|department-delete', ['only' => ['index', 'show']]);
+        $this->middleware('permission:department-create', ['only' => ['create', 'store']]);
+        $this->middleware('permission:department-edit', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:department-delete', ['only' => ['destroy']]);
     }
 
     /**
@@ -43,8 +43,12 @@ class PositionController extends Controller
                 "positions.*",
                 "departments.name as dname",
             )
-            ->join("departments", "departments.id", "=", "positions.department_id")
-            ->orderBy("positions.id", "desc")->get();
+                ->join("departments", "departments.id", "=", "positions.department_id");
+            if (!Gate::allows('all-centre')) {
+                $datas->where('department_id', Auth::user()->department->id);
+            }
+
+            $datas->orderBy("positions.id", "desc")->get();
             $state_text = array('Disable', 'Enable');
             return datatables()->of($datas)
                 ->editColumn('checkbox', function ($row) {
@@ -55,12 +59,12 @@ class PositionController extends Controller
                     return $state;
                 })
                 ->addColumn('action', function ($row) {
-                    if (Gate::allows('centre-edit')) {
+                    if (Gate::allows('department-edit')) {
                         $html = '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit</button> ';
                     } else {
                         $html = '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> Edit</button> ';
                     }
-                    if (Gate::allows('centre-delete')) {
+                    if (Gate::allows('department-delete')) {
                         $html .= '<button type="button" data-rowid="' . $row->id . '" class="btn btn-sm btn-danger btn-delete"><i class="fa fa-trash"></i> Delete</button>';
                     } else {
                         $html .= '<button type="button" class="btn btn-sm btn-danger disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-trash"></i> Delete</button> ';
@@ -96,7 +100,7 @@ class PositionController extends Controller
             'address' => 'required|string|max:255',
             'postcode' => 'required|string|max:10',
             'telephone' => 'required|string|max:20',*/
-        ],[
+        ], [
             'name.required' => 'The department name must not be blank!',
             'name.unique' => 'This department name already exists in the database!',
             'department_id.required' => 'Please select a government department!',

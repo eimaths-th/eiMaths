@@ -13,6 +13,7 @@ use App\Models\level;
 use App\Models\LogHistory;
 use App\Models\Order;
 use App\Models\OrderDetail;
+use App\Models\OrderDetailList;
 use App\Models\Sterm;
 use App\Models\studentRunningNumber;
 use App\Models\term;
@@ -24,6 +25,7 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\DB;
 
 class HistoriesController extends Controller
 {
@@ -70,7 +72,7 @@ class HistoriesController extends Controller
 
         if ($request->ajax()) {
 
-            $datass = Histrories::orderBy('id', 'desc');
+            $datass = Histrories::orderByRaw("CONCAT(date, ' ', stime) DESC");
             if (!Gate::allows('all-centre')) {
                 $datass->where('centre', Auth::user()->department->id);
             }
@@ -128,8 +130,14 @@ class HistoriesController extends Controller
                     $code = $row->date;
                     return $code;
                 })
+                ->addColumn('setime', function ($row) {
+                    //$code = $this->formatDate($row->date);
+                    $code = $row->stime . ' - ' . $row->etime;
+                    return $code;
+                })
                 ->editColumn('start_date', function ($row) {
-                    $code = $this->checkStartEndDate($row->student_id, $row->term, $row->level_id);
+                    //$code = $this->checkStartEndDate($row->student_id, $row->term, $row->level_id);
+                    $code = $row->start_date . ' - ' . $row->end_date;
                     return $code;
                 })
                 ->editColumn('name', function ($row) {
@@ -265,18 +273,24 @@ class HistoriesController extends Controller
     public function stdfind($type, $std_id)
     {
         $select_list = "";
+        //$student = Contact::find($std_id);
+        $order = Order::where('cid', $std_id)->get();
+        $order_detail = OrderDetailList::select('level', DB::raw('(SELECT id FROM levels WHERE levels.name = order_detail_lists.level) as level_id'))
+            ->whereIn('order_id', $order->pluck('id'))
+            ->groupBy('level')->get();
+        /*  $lv1 = $student->level;
+        $lv2 = $student->level2;
+        $levels = level::whereBetween('id', [$lv1, $lv2])->get(); */
+        foreach ($order_detail as $level) {
+            $select_list .= '<option value="' . $level->level_id . '" >' . $level->level . '</option>';
+        }
         if ($type == 'add') {
-            $student = Contact::find($std_id);
-            $lv1 = $student->level;
-            $lv2 = $student->level2;
-            $levels = level::whereBetween('id', [$lv1, $lv2])->get();
-            foreach ($levels as $level) {
-                $select_list .= '<option value="' . $level->id . '" >' . $level->name . '</option>';
-            }
 
             return response()->json([
                 'html' =>  $select_list
             ]);
+        } else {
+            return $select_list;
         }
     }
     /**
@@ -365,6 +379,114 @@ class HistoriesController extends Controller
     //         echo 'เกินกำหนดของเทอมนี้แล้ว';
     //     }
     // }
+
+    public function get_product_id($std_id)
+    {
+        // Retrieve orders for the given student ID
+        $orders = Order::where('cid', $std_id)->orderBy('id', 'asc')->get();
+
+        // Extract order IDs from the orders
+        $orderIds = $orders->pluck('id');
+
+        // Retrieve order details and concatenate product IDs
+        $orderDetails = OrderDetail::whereIn('order_id', $orderIds)
+            ->selectRaw('order_id, GROUP_CONCAT(product_id) as product_ids')
+            ->groupBy('order_id')
+            ->get();
+
+        // Initialize an empty array to store book uses
+        $bookuses = [];
+
+        // Loop through each order detail to extract product IDs and retrieve book uses
+        foreach ($orderDetails as $orderDetail) {
+            // Explode the concatenated product IDs string
+            $productIdsArray = explode(',', $orderDetail->product_ids);
+
+            // Ensure $productIdsArray contains at least 2 elements before accessing
+            if (count($productIdsArray) >= 2) {
+                // Retrieve book uses where the id falls between the range specified in $productIdsArray
+                $bookuses[] = BookUse::whereBetween('id', [$productIdsArray[0], $productIdsArray[1]])->get()->toArray();
+            }
+        }
+
+        // Flatten the array of book uses and convert each element to object
+        $bookuses = collect(array_merge(...$bookuses))->map(function ($item) {
+            return (object) $item;
+        });
+
+        //dd($bookuses);
+
+        return $bookuses;
+    }
+
+    public function reorder_remain($std_id, $term, $level_id)
+    {
+        $histories = Histrories::where([
+            ['student_id', $std_id],
+            ['term', $term],
+            ['level_id', $level_id]
+        ])->orderByRaw("CONCAT(date, ' ', stime) ASC")->get();
+
+        //$contact = Contact::where('id', $std_id)->first();
+        //$orderlist = OrderDetailList::where('order_id', $contact->order)->get();
+
+        $orders = Order::where('cid', $std_id)->orderBy('id', 'asc')->get();
+        $orderIds = $orders->pluck('id');
+
+        $orderlist = OrderDetailList::whereIn('order_id', $orderIds)
+            ->get();
+
+
+
+        $book_id = null;
+        $matchingBookUses = [];
+        foreach ($this->get_product_id($std_id) as $bookuse) {
+            if ($bookuse->term_id == $term && $bookuse->level_id == $level_id) {
+
+                $matchingBookUses[$bookuse->id] = $bookuse->qty;
+                //break;
+                foreach ($orderlist as $order) {
+                    if ($order->book == $bookuse->name) {
+                        $book_id = $bookuse->id;
+                    }
+                }
+            }
+        }
+
+        //dd($book_id);
+        if ($book_id === null) {
+            exit();
+        } else {
+            //last record term
+            $lasthistoriesCount = Histrories::where([
+                ['student_id', $std_id],
+                ['level_id', $level_id],
+                ['term', '<', $term],
+            ])->orderByRaw("CONCAT(date, ' ', stime) ASC")->count();
+
+            //dd($matchingBookUses);
+
+            if ($matchingBookUses[$book_id] < 10 && $lasthistoriesCount !== 0) {
+                $count = 4;
+            } else {
+                $count = 9;
+            }
+
+            foreach ($histories as $history) {
+                // Update course_remaining
+                $history->update(['course_remaining' => $count]);
+
+                // Decrement count for next record
+                $count--;
+
+                // Ensure count doesn't go below 0
+                if ($count < 0) {
+                    $count = 0;
+                }
+            }
+        }
+    }
+
     public function store(Request $request)
     {
         // dd($request);
@@ -421,15 +543,57 @@ class HistoriesController extends Controller
             ['term', $term],
             ['level_id', $level_id]
         ])->get();
-        // dd( $history->count(),$std_id,$term,$level_id,$history,);
+
+
+        //$contact = Contact::where('id', $std_id)->first();
+        //$orderlist = OrderDetailList::where('order_id', $contact->order)->get();
+        $orders = Order::where('cid', $std_id)->orderBy('id', 'asc')->get();
+        $orderIds = $orders->pluck('id');
+
+        $orderlist = OrderDetailList::whereIn('order_id', $orderIds)
+            ->get();
+
+        $book_id = null;
+        $qty = null;
+        $matchingBookUses = [];
+        foreach ($this->get_product_id($std_id) as $bookused) {
+            if ($bookused->term_id == $term && $bookused->level_id == $level_id) {
+
+                $matchingBookUses[$bookused->id] = $bookused->qty;
+                //break;
+                foreach ($orderlist as $order) {
+                    if ($order->book == $bookused->name) {
+                        $book_id = $bookused->id;
+                        $qty = $bookused->qty;
+                    }
+                }
+            }
+        }
+
+
+
+        //term qty
+        /* foreach ($this->get_product_id($std_id) as $bookused) {
+            if ($bookused->term_id == $term && $bookused->level_id == $level_id) {
+                $qty = $bookused->qty;
+                //break;
+            }
+        } */
+
+        if ($qty === null) {
+            return response()->json(['success' => false, 'message' => 'นักเรียนไม่ได้ลงเรียน Level หรือ Term นี้ ']);
+        }
+
+        //dd( $history->count(),$std_id,$term,$level_id,$history,$qty);
         if ($history->isEmpty()) {
             $start_date = Carbon::parse($request->input('date'));
             $end_date = $start_date->copy()->addMonths(4);
             $course_remaining = 9;
-        } elseif ($history->count() < 10) {
-            $lastHistory = $history->sortByDesc('created_at')->first();
-            $firstHistory = $history->sortBy('created_at')->first();
+        } elseif ($history->count() < $qty) {
+            $lastHistory = $history->sortByDesc('date')->first();
+            $firstHistory = $history->sortBy('date')->first();
             $course_remaining = $lastHistory->course_remaining - 1;
+            //$course_remaining = 9 - $history->count();
             $start_date = $firstHistory->start_date;
             $end_date = $firstHistory->end_date;
 
@@ -501,7 +665,8 @@ class HistoriesController extends Controller
             }
         }
 
-
+        //reorder remain
+        $this->reorder_remain($std_id, $term, $level_id);
 
 
         // dd($request);
@@ -604,6 +769,7 @@ class HistoriesController extends Controller
             $teacher_id = '';
         }
 
+        $level_list = $this->stdfind('edit', $history->student_id);
 
         $data = [
             'id'                    => $history->id,
@@ -627,6 +793,7 @@ class HistoriesController extends Controller
         // dd($data,$history, $id, );
         return response()->json([
             'history' => $history,
+            'level' => $level_list,
             'data' => $data,
             // 'datas' => $datas
 
@@ -878,6 +1045,47 @@ class HistoriesController extends Controller
         }
 
 
+
+        //$contact = Contact::where('id', $history->student_id)->first();
+
+        $orders = Order::where('cid', $history->student_id)->orderBy('id', 'asc')->get();
+        $orderIds = $orders->pluck('id');
+
+        $orderlist = OrderDetailList::whereIn('order_id', $orderIds)
+            ->get();
+
+        //$orderlist = OrderDetailList::where('order_id', $contact->order)->get();
+
+        $book_id = null;
+        $qty = null;
+        $matchingBookUses = [];
+        foreach ($this->get_product_id($history->student_id) as $bookused) {
+            if ($bookused->term_id == $request->term && $bookused->level_id == $request->level_id) {
+
+                $matchingBookUses[$bookused->id] = $bookused->qty;
+                //break;
+                foreach ($orderlist as $order) {
+                    if ($order->book == $bookused->name) {
+                        $book_id = $bookused->id;
+                        $qty = $bookused->qty;
+                    }
+                }
+            }
+        }
+        //term qty
+       /*  foreach ($this->get_product_id($history->student_id) as $bookused) {
+            if ($bookused->term_id == $request->term && $bookused->level_id == $request->level_id) {
+                $qty = $bookused->qty;
+                //break;
+            }
+        }
+ */
+        if ($qty === null) {
+            return ['success' => 'นักเรียนไม่ได้ลงเรียน Level หรือ Term นี้ '];
+        }
+
+
+
         if (!empty($history->signature)) {
             $fileToDelete = public_path() .  '/file_upload/'  . $history->signature;
             if (file_exists($fileToDelete)) {
@@ -958,84 +1166,24 @@ class HistoriesController extends Controller
         }
 
 
+        //reorder remain
+        $this->reorder_remain($history->student_id, $request->term, $request->level_id);
         // dd($input,$history,$logHistory);
 
         return ['success' => 'Updated history successfully'];
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy_all(Request $request)
+
+    public function destroy_func($id)
     {
-        //
-        $his_id = $request->get('table_records');
-
-        $loghistories = Histrories::whereIn('id', $his_id)->get();
-        $histories = Histrories::whereIn('id', $his_id);
-
-        foreach ($loghistories as $history) {
-
-            $filePath = public_path('file_upload/' . $history->signature);
-
-            // Delete the file if it exists
-            if (file_exists($filePath)) {
-                unlink($filePath);
-            }
-
-            $dataimg = HistoryStudentImg::where([
-                'history_id' => $history->id,
-            ])->get();
-
-            // Delete the found records
-            if (!$dataimg->isEmpty()) {
-                $dataimg->each(function ($item) {
-                    $filename = $item->img;
-
-                    // Build the full path to the file within the 'public/file_store' directory
-                    $filePath = public_path('file_upload/' . $filename);
-
-                    // Delete the file if it exists
-                    if (file_exists($filePath)) {
-                        unlink($filePath);
-                    }
-                    $item->delete();
-                });
-            }
-
-            LogHistory::create([
-                'history_id' => $history->id,
-                'centre' => $history->centre,
-                'student_id' => $history->student_id,
-                'status' => 'delete',
-                'level_id_old' => $history->level_id,
-                'level_name_old' => $history->level_name,
-                'term_old' => $history->term,
-                'bookuse_old' => $history->bookuse,
-                'date_old' => $history->date,
-                'stime_old' => $history->stime,
-                'etime_old' => $history->etime,
-                'comment_old' => $history->comment,
-                'course_remaining_old' => $history->course_remaining,
-                'approve_id' => auth()->user()->id,
-                'approve_name' => auth()->user()->name,
-            ]);
-        }
-        if ($histories) {
-
-            $histories->delete();
-            return redirect()->route('histories.index')->with('success', 'Deleted Histrories to select successfully');
-
-            return ['success' => true, 'message' => 'Deleted Histrories successfully'];
-        } else {
-            return ['success' => false, 'message' => 'Histrories not found'];
-        }
-    }
-    public function destroy(Request $request)
-    {
-        //
-        $id = $request->get('id');
         $history = Histrories::find($id);
+        if (!$history) {
+            return false; // Return false if history not found
+        }
+
+        $stu_id = $history->student_id;
+        $stu_term = $history->term;
+        $stu_level = $history->level_id;
 
         $filePath = public_path('file_upload/' . $history->signature);
 
@@ -1044,9 +1192,7 @@ class HistoriesController extends Controller
             unlink($filePath);
         }
 
-        $dataimg = HistoryStudentImg::where([
-            'history_id' => $id,
-        ])->get();
+        $dataimg = HistoryStudentImg::where('history_id', $id)->get();
 
         // Delete the found records
         if (!$dataimg->isEmpty()) {
@@ -1064,8 +1210,8 @@ class HistoriesController extends Controller
             });
         }
 
-
-        $logHistory = LogHistory::create([
+        // Create log history
+        LogHistory::create([
             'history_id' => $history->id,
             'centre' => $history->centre,
             'student_id' => $history->student_id,
@@ -1083,12 +1229,35 @@ class HistoriesController extends Controller
             'approve_name' => auth()->user()->name,
         ]);
 
+        // Delete the history
+        $history->delete();
 
-        if ($history) {
-            $history->delete();
-            return ['success' => true, 'message' => 'Deleted Histrories successfully'];
+        // Reorder remaining histories
+        $this->reorder_remain($stu_id, $stu_term, $stu_level);
+
+        return true;
+    }
+
+    public function destroy_all(Request $request)
+    {
+        $his_id = $request->get('table_records');
+
+        foreach ($his_id as $id) {
+            $this->destroy_func($id);
+        }
+
+        return redirect()->route('histories.index')->with('success', 'Deleted Histories successfully');
+    }
+
+    public function destroy(Request $request)
+    {
+        $id = $request->get('id');
+        $de = $this->destroy_func($id);
+
+        if ($de) {
+            return ['success' => true, 'message' => 'Deleted History successfully'];
         } else {
-            return ['success' => false, 'message' => 'Histrories not found'];
+            return ['success' => false, 'message' => 'History not found'];
         }
     }
 }

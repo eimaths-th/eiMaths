@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Laravel\Socialite\Facades\Socialite;
+use Illuminate\Http\Request;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
@@ -37,6 +40,25 @@ class LoginController extends Controller
     public function __construct()
     {
         $this->middleware('guest')->except('logout');
+    }
+
+    public function login(Request $request)
+    {
+        $login = $this->attemptLogin($request);
+
+        if ($login) {
+            $user = Auth::user();
+            if ($user->disable == 1) {
+                auth()->logout();
+                return redirect()->route('login')
+                    ->with('login_error', 'Please contact the administrator.')
+                    ->withErrors(['email' => 'Please contact the administrator.']);
+            }
+            return $this->sendLoginResponse($request);
+        }
+
+        // Authentication failed
+        return $this->sendFailedLoginResponse($request);
     }
 
     public function redirectToGoogle()

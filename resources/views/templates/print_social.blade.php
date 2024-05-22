@@ -17,7 +17,7 @@
         } */
         @font-face {
             font-family: 'THSarabunNew';
-            font-size: 8px;
+            font-size: 4px;
             font-style: normal;
             font-weight: normal;
             src: url("{{ asset('fonts/THSarabunNew.ttf') }}") format("truetype");
@@ -26,7 +26,7 @@
 
         @font-face {
             font-family: 'THSarabunNew Bold';
-            font-size: 6px;
+            font-size: 4px;
             font-style: normal;
             font-weight: bold;
             src: url("{{ asset('fonts/THSarabunNew Bold') }}") format("truetype");
@@ -34,7 +34,7 @@
 
         body {
             font-family: 'sarabun', 'Roboto';
-            font-size: 12px;
+            font-size: 8px;
         }
 
         table td.grey {
@@ -226,26 +226,19 @@
                     <td bgcolor="#FF6900" align="center" class="whiteh">ส่วนลด <br>Discount</td>
                     <td bgcolor="#FF6900" align="center" class="whiteh">จำนวนเงิน <br>Amount</td>
                 </tr>
-                @php
-                    $total = 0; // Initialize the total variable
-                    $discount_val = 0;
-                @endphp
-                @foreach ($items['customItem'] as $x => $receipt_detail)
+                @foreach ($items as $x => $receipt_detail)
                     <tr>
                         <td align="center" style="vertical-align: top;">{{ (int) $x + 1 }}</td>
-                        <td align="center"> {!! $receipt_detail['pname'] !!}</td>
+                        <td align="center"> {!! $receipt_detail['des'] !!}</td>
                         <td align="center">{{ $receipt_detail['quantity'] }}</td>
-                        <td align="center">{{-- {{ $receipt_detail['unit'] }} --}}</td>
+                        <td align="center">{{ $receipt_detail['unit'] }}</td>
                         <td align="center" style="padding-right:20px;">
-                            {{ number_format($receipt_detail['uprice'], 2, '.') }}</td>
+                            {{ number_format($receipt_detail['price'], 2, '.') }}</td>
                         <td align="center">{{ $receipt_detail['discount'] }}</td>
                         <td align="center" style="vertical-align: top; padding-right:20px;">
-                            {{ number_format($receipt_detail['price'], 2, '.') }}</td>
+                            {{ number_format($receipt_detail['price'] * $receipt_detail['quantity'] - $receipt_detail['discount'], 2, '.') }}
+                        </td>
                     </tr>
-                    @php
-                        $total += $receipt_detail['price'] - (int) $receipt_detail['discount']; // Accumulate the total
-                        $discount_val += (int) $receipt_detail['discount'];
-                    @endphp
                 @endforeach
                 <tr>
                     <td align="center" style="vertical-align: top;"></td>
@@ -324,11 +317,7 @@
                             </tr>
                         </table>
                     </td>
-                    @php
-                        $vatRate = 0.07;
-                        $vat_val = $vat_price * $vatRate;
-                        //$vat_price_val = $total - $vat_val;
-                    @endphp
+
                     <td colspan="6" class="activetop activeleft">
                         <table width="100%" cellpadding="0" cellspacing="0">
                             <tr>
@@ -346,7 +335,7 @@
                                 <td width="67%" class="grey">มูลค่าที่คำนวนภาษี/Pre-Vat Amount</td>
 
                                 <td width="15%" align="right"> <b>
-                                        {{ number_format($vat_price, 2, '.') }}</b></td>
+                                        {{ number_format($vat_price - $vat_val, 2, '.') }}</b></td>
                                 <td width="8%"></td>
 
                             </tr>
@@ -368,16 +357,27 @@
                                 <td width="8%"></td>
 
                             </tr>
+                            <tr>
+                                <td width="10%"></td>
+                                <!-- <td width="20%"></td> -->
+                                <td width="67%" class="grey">ค่าธรรมเนียมบัตรเครดิต / Service Charge</td>
+                                <td width="15%" align="right"><b>{{ number_format($orther_fee, 2, '.') }}</b>
+                                </td>
+                                <td width="8%"></td>
+
+                            </tr>
                         </table>
                     </td>
 
                 </tr>
                 <tr class="active">
-                    <td align="center" class="grey">รวมทั้งสิ้น<br>Grand Total</td>
+                    <td width="37%" align="center" class="grey">รวมทั้งสิ้น<br>Grand Total</td>
                     <td align="left"></td>
                     <td align="center"><b>{{ $price_text }}</b><br><b>{{ $price_texten }}</b></td>
+                    <td align="left"></td>
                     <td align="center"><b>{{ number_format($net_price, 2, '.') }}</b></td>
 
+                    <td align="left"></td>
                     <td align="right" class="grey">บาท<br>Baht</td>
                 </tr>
                 {{--  <tr class="active">
@@ -446,10 +446,9 @@
         <!-- Your table with a class for styling -->
         <table class="print-table" width="100%" cellpadding="0" cellspacing="0">
             <tr>
-                <td align="center"><img src="{{ asset('images/banner.png') }}" alt="..."
+                <td align="center"><img width="90%" src="{{ asset('images/banner.png') }}" alt="..."
                         style="padding-bottom: 5px; display: block; margin: 0 auto;"></td>
             </tr>
         </table>
         {{-- </div> --}}
 </body>
-

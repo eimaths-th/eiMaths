@@ -160,7 +160,8 @@
                                                     <th width="5%">
                                                         <input type="checkbox" id="check-all" class="flat">
                                                     </th>
-                                                    <th>Study Date </th>
+                                                    <th>Date </th>
+                                                    <th>Start-End Time </th>
                                                     <th width="1%" class="text-center">Centre</th>
                                                     <th width="1%" class="text-center">Code</th>
                                                     <th>Student Name</th>
@@ -168,11 +169,10 @@
                                                     <th width="1%">Term</th>
                                                     <th>Book Use </th>
 
-                                                    <th>Start Date - End Date</th>
-                                                    <th>Stat Time </th>
-                                                    <th> End Time</th>
-                                                    <th width="1%">Remain</th>
 
+
+                                                    <th width="1%">Remain</th>
+                                                    <th>Course Start-End Date</th>
                                                     {{-- <th></th> --}}
 
                                                     {{-- <th>Start Term</th> --}}

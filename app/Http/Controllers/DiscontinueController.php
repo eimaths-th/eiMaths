@@ -74,9 +74,14 @@ class DiscontinueController extends Controller
                 })
                 ->addColumn('action', function ($row) {
                     if (Gate::allows('student-edit')) {
-                        $html = '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-rowid="' . $row->id . '"><i class="fa-solid fa-retweet"></i> Restart</button> ';
+                        $html = '<button type="button" class="btn btn-sm btn-info btn-show" id="getCourseData" data-id="' . $row->id . '"><i class="fa fa-search"></i> View Course</button> ';
                     } else {
-                        $html = '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa-solid fa-retweet"></i> Restart</button> ';
+                        $html = '<button type="button" class="btn btn-sm btn-info disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-search"></i>  View Course</button> ';
+                    }
+                    if (Gate::allows('student-edit')) {
+                        $html .= '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-rowid="' . $row->id . '"><i class="fa-solid fa-retweet"></i> Restart</button> ';
+                    } else {
+                        $html .= '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa-solid fa-retweet"></i> Restart</button> ';
                     }
                     return $html;
                 })->rawColumns(['checkbox', 'action', 'more'])->toJson();
