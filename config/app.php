@@ -215,6 +215,7 @@ return [
         Barryvdh\DomPDF\ServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
         Krlove\EloquentModelGenerator\Provider\GeneratorServiceProvider::class,
+        Livewire\LivewireServiceProvider::class,
 
         // App\Providers\BroadcastServiceProvider::class,
         // Laravel\Socialite\SocialiteServiceProvider::class,
@@ -242,6 +243,7 @@ return [
         'DataTables' => Yajra\DataTables\Facades\DataTables::class,
         'PDF' => Barryvdh\DomPDF\Facade::class,
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
+        'Livewire' => Livewire\Livewire::class,
     ])->toArray(),
 
 ];

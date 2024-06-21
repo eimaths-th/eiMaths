@@ -220,7 +220,62 @@
                         <p>Roles</p>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a href="{{ route('permission.index') }}" class="nav-link {{ Request::is('permission.index') ? 'active' : '' }}">
+                        <i class="nav-icon fa-solid fa-comment-dots"></i>
+                        <p>Premissions</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('generate') }}" class="nav-link {{ Request::is('generate') ? 'active' : '' }}">
+                        <i class="nav-icon fa-solid fa-comment-dots"></i>
+                        <p>Generate Passworld</p>
+                    </a>
+                </li>
             @endcan
+        </ul>
+    </li>
+@endcan
+@can('quiz-manage')
+    <li class="nav-item {{ in_array(Request::route()->getName(), ['questions', 'quizzes']) ? 'menu-open' : '' }}">
+        <a href="#"
+            class="nav-link {{ in_array(Request::route()->getName(), ['questions', 'quizzes']) ? 'active' : '' }}">
+            <i class="nav-icon fas fa-user-gear"></i>
+            <p>Quiz Management</p>
+            <i class="fas fa-angle-left right"></i>
+        </a>
+        <ul class="nav nav-treeview">
+            {{-- @can('user-list') --}}
+                <li class="nav-item">
+                    <a href="{{ route('home3') }}" target="_black" class="nav-link {{ Request::is('home3') ? 'active' : '' }}">
+                        <i class="nav-icon fa-solid fa-comment-dots"></i>
+                        <p>Home</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('questions') }}"  class="nav-link {{ Request::is('questions') ? 'active' : '' }}">
+                        <i class="nav-icon fa-solid fa-comment-dots"></i>
+                        <p>Questions</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('quizzes') }}" class="nav-link {{ Request::is('quizzes') ? 'active' : '' }}">
+                        <i class="nav-icon fa-solid fa-comment-dots"></i>
+                        <p>Quizzes</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('tests') }}" class="nav-link {{ Request::is('permission.index') ? 'active' : '' }}">
+                        <i class="nav-icon fa-solid fa-comment-dots"></i>
+                        <p>Tests</p>
+                    </a>
+                </li>
+
+
+            {{-- @endcan
+            @can('role-list') --}}
+
+            {{-- @endcan --}}
         </ul>
     </li>
 @endcan

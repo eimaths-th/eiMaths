@@ -2,8 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Answer;
 use App\Models\Department;
+use App\Models\Option;
+use App\Models\Position;
 use Illuminate\Http\Request;
+use App\Models\Quiz;
+use App\Models\Test;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
+use Spatie\Permission\Models\Role;
+
 
 class HomeController extends Controller
 {
@@ -29,6 +40,169 @@ class HomeController extends Controller
 
         return view('home', [
             'centre' => $centre,
+        ]);
+    }
+
+    public function index2()
+    {
+        $query = Quiz::whereHas('questions')
+            ->withCount('questions')
+            ->when(auth()->guest() || !auth()->user()->is_admin, function ($query) {
+                return $query->where('published', 1);
+            })
+            ->get();
+
+        $public_quizzes = $query->where('public', 1);
+        $registered_only_quizzes = $query->where('public', 0);
+
+        return view('home2', compact('public_quizzes', 'registered_only_quizzes'));
+    }
+
+    public function show(Quiz $quiz)
+    {
+        return view('front.quizzes.show', compact('quiz'));
+    }
+
+    public function generate()
+    {
+        return view('users.generate');
+    }
+
+    public function generate_save(Request $request)
+    {
+        $validator =  Validator::make($request->all(), [
+
+            'password' => 'required',
+
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()->all()]);
+        }
+        $input = $request->all();
+        $password = Hash::make($input['password']);
+        return response()->json(['success' => 'Password Generated Success', 'generated' => $password]);
+    }
+
+    public function home3()
+    {
+
+        $public_quizzes = Quiz::whereHas('questions')->where('public', true)->orderBy('id', 'desc')->withCount('questions')->get();
+        $registered_only_quizzes = Quiz::whereHas('questions')->where('published', true)->orderBy('id', 'desc')->withCount('questions')->get();
+
+        // $query = Quiz::whereHas('questions')
+        //     ->withCount('questions')
+        //     ->when(auth()->guest() || !auth()->user()->is_admin, function ($query) {
+        //         return $query->where('published', 1);
+        //     })
+        //     ->get();
+
+        // $public_quizzes = $query->where('public', 1);
+        // $registered_only_quizzes = $query->where('public', 0);
+
+        $header = 'eiMaths Quiz';
+
+        return view('home.home', compact('public_quizzes', 'registered_only_quizzes','header'));
+    }
+
+    public function leaderboard(Request $request, $quiz_slug = '0')
+    {
+        
+        $header = 'Leaderboard';
+        $quizzes = Quiz::all();
+        $quizId = 0;
+
+        if ($quiz_slug != '0') {
+            $quiz = Quiz::where('slug', $quiz_slug)->first();
+            if ($quiz) {
+                $quizId = $quiz->id;
+            }
+        }
+
+        $tests = Test::query()
+            ->whereHas('user')
+            ->with(['user' => function ($query) {
+                $query->select('id', 'name');
+            }, 'quiz' => function ($query) {
+                $query->select('id', 'title');
+                $query->withCount('questions');
+            }])
+            ->when($quizId > 0, function ($query) use ($quizId) {
+                $query->where('quiz_id', $quizId);
+            })
+            ->orderBy('result', 'desc')
+            ->orderBy('time_spent')
+            ->get();
+
+        return view('home.leaderboard', compact('header', 'quizzes', 'tests', 'quiz_slug'));
+    }
+
+    public function submitLeaderboard(Request $request)
+    {
+        $route = $request->route;
+        // dd($request,$route);
+        $request->validate([
+            'quiz_slug' => 'required',
+        ]);
+
+        $quizSlug = $request->input('quiz_slug');
+
+        if ($quizSlug == '0') {
+            return redirect()->route($route);
+        }
+
+        return redirect()->route($route, ['quiz_slug' => $quizSlug]);
+    }
+    public function myResult()
+    {
+        $tests = Test::select('id', 'result', 'time_spent', 'user_id', 'quiz_id', 'created_at')
+            ->where('user_id', auth()->id())
+            ->with(['quiz' => function ($query) {
+                $query->select('id', 'title', 'description');
+                $query->withCount('questions');
+            }])->orderBy('id', 'desc')
+            ->paginate();
+        $header = "My Results";
+
+        return view('home.result-list', [
+            'tests' => $tests,
+            'header' => $header,
+
+        ]);
+    }
+    public function tests(Request $request, $quiz_slug = '0')
+    {
+        $quizzes = Quiz::all();
+        $header = 'Tests';
+        $quizId = 0;
+
+        if ($quiz_slug != '0') {
+            $quiz = Quiz::where('slug', $quiz_slug)->first();
+            if ($quiz) {
+                $quizId = $quiz->id;
+            }
+        }
+
+        $tests = Test::query()
+            ->whereHas('user')
+            ->with(['user' => function ($query) {
+                $query->select('id', 'name');
+            }, 'quiz' => function ($query) {
+                $query->select('id', 'title');
+            }])
+            ->when($quizId > 0, function ($query) use ($quizId) {
+                $query->where('quiz_id', $quizId);
+            })
+            ->withCount('questions')
+            // ->orderBy('result', 'desc')
+            // ->orderBy('time_spent')
+            ->latest()
+            ->get();
+        return view('home.tests', [
+            'tests' => $tests,
+            'quizzes' => $quizzes,
+            'quiz_slug' => $quiz_slug,
+            'header' => $header,
+
         ]);
     }
 }

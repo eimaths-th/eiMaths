@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ParentController;
+use App\Http\Controllers\PermissionsController;
 use App\Http\Controllers\ReceiptController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
@@ -35,6 +36,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/users/destroy_all', [UserController::class, 'destroy_all'])->name('users.destroy_all');
     Route::get('/users/find/{type}/{position}', [UserController::class, 'find'])->name('users.find');
     Route::resource('roles', RoleController::class);
+    Route::resource('permission', PermissionsController::class);
 
     Route::get('/contacts', [App\Http\Controllers\ContactController::class, 'index'])->name('contacts');
     Route::get('/graduated', [App\Http\Controllers\ContactController::class, 'graduated'])->name('contacts.graduated');
@@ -161,9 +163,6 @@ Route::group(['middleware' => ['auth']], function () {
         $result = FileUploadService::fileGetName($request);
         return $result;
     })->name('file.get');
-
-
-
 
     /* Route::get('/', [App\Http\Controllers\ContactController::class, 'index']);
     Route::get('/home', [App\Http\Controllers\ContactController::class, 'index'])->name('home'); */

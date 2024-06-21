@@ -70,6 +70,8 @@
                                     });
                                 </script>
                             @endif
+                            {{-- <livewire:counter /> --}}
+                            {{-- <livewire:example-component /> --}}
                             <form method="post" action="{{ route('roles.destroy_all') }}" name="delete_all"
                                 id="delete_all">
                                 @csrf

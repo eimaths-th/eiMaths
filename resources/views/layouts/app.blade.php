@@ -147,6 +147,7 @@
         }
     </style>
     @yield('style')
+</head>
 
 <body class="hold-transition sidebar-mini layout-fixed layout-footer-fixed">
     <div id="loadingi"></div>
