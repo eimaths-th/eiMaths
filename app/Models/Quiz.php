@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property integer $id
  * @property string $title
  * @property string $slug
+ * @property string $level
+ * @property string $term
  * @property string $description
  * @property boolean $published
  * @property boolean $public

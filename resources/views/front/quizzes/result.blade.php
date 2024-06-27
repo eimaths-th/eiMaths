@@ -21,7 +21,7 @@
                                     class="border border-solid bg-gray-100 px-6 py-3 text-left text-sm font-semibold uppercase text-slate-600">
                                     Date</th>
                                 <td class="border border-solid px-6 py-3">
-                                    {{ $test->created_at->format('D m/Y, h:m A') ?? '' }}</td>
+                                    {{ $test->created_at->format('D m/Y, h:i A') ?? '' }}</td>
                             </tr>
                             <tr class="w-28">
                                 <th

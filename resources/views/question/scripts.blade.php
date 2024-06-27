@@ -1,66 +1,8 @@
 <script>
     $(document).ready(function() {
+        // $('.wrtiten_type').hide();
+        // $('.options_type').hide();
         var token = '{{ csrf_token() }}';
-        // $('.delete-button').on('click', function() {
-        //     var questionId = $(this).data('id');
-        //     var url = '{{ route('questions.destroy', ':id') }}';
-        //     url = url.replace(':id', questionId);
-        //     console.log(questionId);
-        //     if (confirm('Are you sure you want to delete this question?')) {
-        //         $.ajax({
-        //             url: url,
-        //             type: 'DELETE',
-        //             data: {
-        //                 _token: '{{ csrf_token() }}'
-        //             },
-        //             success: function(result) {
-        //                 // alert('Question deleted successfully!');
-        //                 // Optionally, you can remove the deleted item from the DOM or refresh the page
-        //                 toastr.success(result.success, {
-        //                     timeOut: 5000
-        //                 });
-        //                 // location.reload();
-
-        //             },
-        //             error: function(err) {
-        //                 alert('Something went wrong. Please try again.');
-        //             }
-        //         });
-        //     }
-        // });
-
-        var optionIndex = 0;
-
-        function addOption(text = '', correct = 0) {
-            $('#options-container').append(`
-            <div class="option-item mt-2 form-row align-items-center">
-                <div class="col-xs-10 col-sm-10 col-md-10 text-center">
-                    <input type="text" class="form-control" name="options[${optionIndex}][text]" value="${text}" autocomplete="off" />
-                </div>
-                <div class="col-auto text-nowrap">
-                    <input type="hidden" name="options[${optionIndex}][correct]" value="0">
-                    <input type="checkbox" class="text-left" name="options[${optionIndex}][correct]" value="1" ${correct ? 'checked' : ''}> Correct&nbsp
-                    <button type="button" class="btn btn-danger btn-sm remove-option">&nbsp&nbsp<i class="fa fa-trash"></i>&nbsp&nbsp</button>
-                </div>
-            </div>
-        `);
-            optionIndex++;
-        }
-
-        $('#add-option').on('click', function() {
-            addOption();
-        });
-
-        $(document).on('click', '.remove-option', function() {
-            $(this).closest('.option-item').remove();
-        });
-
-        // var token = ''
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
-        });
 
         var table = $('#Listview').DataTable({
             ajax: '',
@@ -114,13 +56,17 @@
                     name: 'text'
                 },
                 {
+                    data: 'type',
+                    name: 'type'
+                },
+                {
                     data: 'option',
                     name: 'option'
                 },
-                {
-                    data: 'type_option',
-                    name: 'type_option'
-                },
+                // {
+                //     data: 'type_option',
+                //     name: 'type_option'
+                // },
                 // {
                 //     data: 'term',
                 //     name: 'term'
@@ -139,6 +85,51 @@
                 // Sequential numbering
                 var info = table.page.info();
                 $('td:eq(0)', row).html(info.start + dataIndex + 1);
+            }
+        });
+
+        function addOption(text = '', correct = 0) {
+            $('#options-container').append(`
+            <div class="option-item mt-2 form-row align-items-center">
+                <div class="col-xs-10 col-sm-10 col-md-10 text-center">
+                    <input type="text" class="form-control" name="options[${optionIndex}][text]" value="${text}" autocomplete="off" />
+                </div>
+                <div class="col-auto text-nowrap">
+                    <input type="hidden" name="options[${optionIndex}][correct]" value="0">
+                    <input type="checkbox" class="text-left" name="options[${optionIndex}][correct]" value="1" ${correct ? 'checked' : ''}> Correct&nbsp
+                    <button type="button" class="btn btn-danger btn-sm remove-option">&nbsp&nbsp<i class="fa fa-trash"></i>&nbsp&nbsp</button>
+                </div>
+            </div>
+        `);
+            optionIndex++;
+        }
+
+        $('#add-option').on('click', function() {
+            addOption();
+        });
+
+        $(document).on('change', '#type', function() {
+            var selectedType = $(this).val();
+            if (selectedType === 'written') {
+                $('.written_type').show();
+                $('.options_type').hide();
+            } else if (selectedType === 'options') {
+                $('.written_type').hide();
+                $('.options_type').show();
+            } else {
+                $('.written_type').hide();
+                $('.options_type').hide();
+            }
+        });
+
+        $(document).on('click', '.remove-option', function() {
+            $(this).closest('.option-item').remove();
+        });
+
+        // var token = ''
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
         });
 
@@ -192,67 +183,62 @@
 
             $('#CreateModal').modal('show');
         });
+
         $(document).on('click', '#SubmitCreateForm', function(e) {
-            // $('#SubmitCreateForm').click(function(e) {
-            // console.log('work');
             e.preventDefault();
-            $('.alert-danger').html('');
-            $('.alert-danger').hide();
-            $('.alert-success').html('');
-            $('.alert-success').hide();
+            $('.alert-danger').html('').hide();
+            $('.alert-success').html('').hide();
 
-            var options = [];
-            $('#options-container .option-item').each(function(index, element) {
-                var optionText = $(element).find('input[type="text"]').val();
-                var isCorrect = $(element).find('input[type="checkbox"]').is(':checked') ? 1 :
-                    0;
-                options.push({
-                    text: optionText,
-                    correct: isCorrect
+            var formData = {
+                text: $('#text').val(),
+                code_snippet: $('#code_snippet').val(),
+                answer_explanation: $('#answer_explanation').val(),
+                more_info_link: $("#more_info_link").val(),
+                _token: token
+            };
+
+            var written = $('#written').val();
+            var selectedType = $('#type').val();
+
+            console.log(written);
+            if (selectedType === 'written') {
+                formData['type'] = 'written';
+                formData['written_answer'] = written;
+            } else if (selectedType === 'options') {
+                formData['type'] = 'options';
+                var options = [];
+                $('#options-container .option-item').each(function(index, element) {
+                    var optionText = $(element).find('input[type="text"]').val();
+                    var isCorrect = $(element).find('input[type="checkbox"]').is(':checked') ?
+                        1 : 0;
+                    options.push({
+                        text: optionText,
+                        correct: isCorrect
+                    });
                 });
-            });
+                formData['options'] = options;
+            }
 
-            // console.log(options);
             $.ajax({
                 url: "{{ route('questions.store') }}",
                 method: 'post',
-                data: {
-                    text: $('#text').val(),
-                    options: options,
-                    code_snippet: $('#code_snippet').val(),
-                    answer_explanation: $('#answer_explanation').val(),
-                    more_info_link: $("#more_info_link").val(),
-
-                    _token: token,
-                },
+                data: formData,
                 success: function(result) {
-                    // console.log(result);
                     if (result.errors) {
-                        $('.alert-danger').html('');
-                        $('.alert-danger').show();
-                        $('.alert-danger').append('<strong><li>' + result.errors +
-                            '</li></strong>');
-                        // $.each(result.errors, function(key, value) {
-                        //     console.log(value + 'test');
-
-                        //     $('.alert-danger').show();
-                        //     $('.alert-danger').append('<strong><li>' + value +
-                        //         '</li></strong>');
-                        // });
+                        $('.alert-danger').html('').show().append('<strong><li>' + result
+                            .errors.join('</li><li>') + '</li></strong>');
                     } else {
                         $('.alert-danger').hide();
-                        $('.alert-success').show();
-                        $('.alert-success').append('<strong><li>' + result.success +
+                        $('.alert-success').show().append('<strong><li>' + result.success +
                             '</li></strong>');
                         toastr.success(result.success, {
                             timeOut: 5000
                         });
                         $('#Listview').DataTable().ajax.reload();
-                        $("#AddDepartment").val(null).trigger("change")
-                        $("#AddPosition").val(null).trigger("change")
+                        $("#AddDepartment").val(null).trigger("change");
+                        $("#AddPosition").val(null).trigger("change");
                         $('.form').trigger('reset');
                         $('#CreateModal').modal('hide');
-
                     }
                 },
                 error: function(xhr) {
@@ -263,33 +249,80 @@
                             errorList += '<li>' + value + '</li>';
                         });
                         $('.alert-danger').show().html('<strong>' + errorList +
-                            '</strong>');
+                        '</strong>');
                     }
                 }
             });
         });
-        // $(document).on('click', '#getEditData', function(e) {
+
+        // $(document).on('click', '#SubmitCreateForm', function(e) {
+        //     // $('#SubmitCreateForm').click(function(e) {
+        //     // console.log('work');
         //     e.preventDefault();
         //     $('.alert-danger').html('');
         //     $('.alert-danger').hide();
         //     $('.alert-success').html('');
         //     $('.alert-success').hide();
-
-        //     var questionId = $(this).data('id');
-        //     var url = '{{ route('questions.edit', ':id') }}';
-        //     url = url.replace(':id', questionId);
-
+        //     var options = [];
+        //     $('#options-container .option-item').each(function(index, element) {
+        //         var optionText = $(element).find('input[type="text"]').val();
+        //         var isCorrect = $(element).find('input[type="checkbox"]').is(':checked') ? 1 :
+        //             0;
+        //         options.push({
+        //             text: optionText,
+        //             correct: isCorrect
+        //         });
+        //     });
         //     $.ajax({
-        //         url: url,
-        //         method: 'GET',
-        //         success: function(res) {
-        //             console.log(res)
+        //         url: "{{ route('questions.store') }}",
+        //         method: 'post',
+        //         data: {
+        //             text: $('#text').val(),
+        //             options: options,
+        //             code_snippet: $('#code_snippet').val(),
+        //             answer_explanation: $('#answer_explanation').val(),
+        //             more_info_link: $("#more_info_link").val(),
 
-        //             $('#CreateModal').modal('show');
+        //             _token: token,
+        //         },
+        //         success: function(result) {
+        //             // console.log(result);
+        //             if (result.errors) {
+        //                 $('.alert-danger').html('');
+        //                 $('.alert-danger').show();
+        //                 $('.alert-danger').append('<strong><li>' + result.errors +
+        //                     '</li></strong>');
+
+        //             } else {
+        //                 $('.alert-danger').hide();
+        //                 $('.alert-success').show();
+        //                 $('.alert-success').append('<strong><li>' + result.success +
+        //                     '</li></strong>');
+        //                 toastr.success(result.success, {
+        //                     timeOut: 5000
+        //                 });
+        //                 $('#Listview').DataTable().ajax.reload();
+        //                 $("#AddDepartment").val(null).trigger("change")
+        //                 $("#AddPosition").val(null).trigger("change")
+        //                 $('.form').trigger('reset');
+        //                 $('#CreateModal').modal('hide');
+
+        //             }
+        //         },
+        //         error: function(xhr) {
+        //             if (xhr.status === 422 || xhr.status === 400) {
+        //                 var errors = xhr.responseJSON.errors || [xhr.responseJSON.errors];
+        //                 var errorList = '';
+        //                 $.each(errors, function(key, value) {
+        //                     errorList += '<li>' + value + '</li>';
+        //                 });
+        //                 $('.alert-danger').show().html('<strong>' + errorList +
+        //                     '</strong>');
+        //             }
         //         }
         //     });
+        // });
 
-        // })
         let id
         let questionId
         $(document).on('click', '#getEditData', function(e) {

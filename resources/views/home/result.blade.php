@@ -29,7 +29,9 @@
                                     class="border border-solid bg-gray-100 px-6 py-3 text-left text-sm font-semibold uppercase text-slate-600">
                                     Date</th>
                                 <td class="border border-solid px-6 py-3">
-                                    {{ $test->created_at->format('D d/m/Y, h:m A') ?? '' }}</td>
+                                    {{ $test->created_at->format('D d/m/Y, h:i A') ?? '' }}
+                                    {{-- {{ $test->created_at ?? '' }} --}}
+                                </td>
                             </tr>
                             <tr class="w-28">
                                 <th
@@ -43,7 +45,9 @@
                                         $minutes = intdiv($test->time_spent, 60);
                                         $seconds = $test->time_spent % 60;
                                     @endphp
-                                    ( time:  {{ sprintf('%02d', $hour) }}:{{ sprintf('%02d', $minutes) }}:{{ sprintf('%02d', $seconds) }} )
+                                    ( time:
+                                    {{ sprintf('%02d', $hour) }}:{{ sprintf('%02d', $minutes) }}:{{ sprintf('%02d', $seconds) }}
+                                    )
                                     {{-- @endif --}}
                                 </td>
                             </tr>
@@ -94,25 +98,49 @@
                                     <td>{!! nl2br($result->question->text) !!}</td>
                                 </tr>
                                 <tr>
-                                    <td>Options</td>
+                                    @php
+                                        $title = '';
+                                        $type = $result->question->type;
+                                        if ($type === 'options') {
+                                            # code...
+                                            $title = 'Options';
+                                        } elseif ($type === 'written') {
+                                            # code...
+                                            $title = 'Written';
+                                        } else {
+                                            # code...
+                                            $title = 'Title is not found';
+                                        }
+                                    @endphp
+                                    <td>{{ $title }}</td>
+
                                     <td>
-                                        @foreach ($result->question->options as $option)
-                                            <li @class([
-                                                'underline' => $result->option_id == $option->id,
-                                                'font-bold text-orange-500' => $option->correct == 1,
-                                            ])>
-                                                {{ $option->text }}
-                                                @if ($option->correct == 1)
-                                                    <span class="italic">(correct answer)</span>
-                                                @endif
-                                                @if ($result->option_id == $option->id)
-                                                    <span class="italic">(your answer)</span>
-                                                @endif
-                                            </li>
-                                        @endforeach
-                                        @if (is_null($result->option_id))
+                                        @if ($type === 'options')
+                                            @foreach ($result->question->options as $option)
+                                                <li @class([ 'underline' => $result->option_id == $option->id, 'font-bold text-orange-500' => $option->correct == 1, ])>
+                                                    {{ $option->text }}
+                                                    @if ($option->correct == 1)
+                                                        <span class="italic">(correct answer)</span>
+                                                    @endif
+                                                    @if ($result->option_id == $option->id)
+                                                        <span class="italic">(your answer)</span>
+                                                    @endif
+                                                </li>
+                                            @endforeach
+                                            @if (is_null($result->option_id))
+                                                <span class="font-bold italic">Question unanswered.</span>
+                                            @endif
+                                        @elseif ($type === 'written')
+                                        <li @class([ 'underline' => $result->correct != 1, 'font-bold text-orange-500' => $result->correct == 1, ])>
+                                            {{ $result->written_answer }} (your answer)
+                                        </li>
+                                        <li class="font-bold text-orange-500">
+                                            {{ $result->question->written_answer }} (correct answer)
+                                        </li>
+                                        @else
                                             <span class="font-bold italic">Question unanswered.</span>
                                         @endif
+
                                     </td>
                                 </tr>
                                 @if ($result->question->answer_explanation || $result->question->more_info_link)

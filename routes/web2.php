@@ -92,6 +92,8 @@ Route::group(['middleware' => ['auth']], function () {
     // Route::get('questions/list', [QuizzesController::class, 'list'])->name('questions.list');
     ###################################################################################################
     Route::get('quiz-home', [HomeController::class, 'home3'])->name('home3');
+    Route::get('quiz-home/{level}', [HomeController::class, 'homeLevel'])->name('home.level');
+    Route::get('quiz-home/{level}/{term}', [HomeController::class, 'homeTerm'])->name('home.term');
     // Route::post('/quiz-submit', [HomeController::class, 'submit'])->name('quiz.submit');
     // Route::post('/quiz/{quiz}/next', [QuizController::class, 'nextQuestion'])->name('quiz.next');
     Route::post('quiz/{quiz}/submit', [QuizController::class, 'submit'])->name('quiz.submit');

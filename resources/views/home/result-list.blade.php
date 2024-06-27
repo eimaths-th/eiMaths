@@ -74,7 +74,7 @@
                                             Time: {{ sprintf('%02d', $hour) }}:{{ sprintf('%02d', $minutes) }}:{{ sprintf('%02d', $seconds) }}
                                         </td>
                                         <td class="px-6 py-4 text-sm leading-5 text-gray-900 whitespace-no-wrap">
-                                            {{ $test->created_at->format('d/m/Y h:m A') }}
+                                            {{ $test->created_at->format('d/m/Y h:i A') }}
                                         </td>
                                         <td>
                                             <a href="{{ route('results.show', $test) }}"

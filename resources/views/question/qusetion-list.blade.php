@@ -125,8 +125,8 @@
                                         <th> # </th>
                                         <th> Code </th>
                                         <th> Text </th>
-                                        <th> Options </th>
                                         <th> Type Option </th>
+                                        <th> Options </th>
                                         {{-- <th> Level </th>
                                         <th> Term </th> --}}
                                         <th> </th>

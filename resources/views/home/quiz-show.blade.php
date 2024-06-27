@@ -42,23 +42,72 @@
                                 <pre class="mb-4 border-2 border-solid bg-gray-50 p-2">{{ $currentQuestion->code_snippet }}</pre>
                             @endif
 
+                            {{-- <form id="quiz-form" action="{{ route('quiz.next', ['quiz' => $quiz, 'currentQuestionIndex' => $currentQuestionIndex]) }}"
+                                method="POST">
+                                @csrf
+                                <input type="hidden" name="startTimeInSeconds" id="startTimeInSeconds"
+                                    value="{{ $secondsPerQuestion }}">
+                                <input type="hidden" name="currentQuestionIndex" value="{{ $currentQuestionIndex }}">
+                                @if ($currentQuestion->type === 'written')
+                                    <div><input type="text" name="answerOfWritten[{{ $currentQuestion->id }}]" class="form-control" placeholder="Enter answer" autocomplete="off">
+                                    </div>
+                                @elseif ($currentQuestion->type === 'options')
+                                    @foreach ($currentQuestion->options as $option)
+                                        <div>
+                                            <label for="option-{{ $option->id }}">
+                                                <input type="radio" id="option-{{ $option->id }}"
+                                                    name="answerOfQuestion[{{ $currentQuestionIndex }}]"
+                                                    value="{{ $option->id }}">
+                                                {{ $option->text }}
+                                            </label>
+                                        </div>
+                                    @endforeach
+                                @else
+                                @endif
+
+
+                                <div class="mt-4">
+                                    @if ($currentQuestionIndex < $questionsCount - 1)
+                                        <button type="submit"
+                                            class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md font-semibold text-xs uppercase tracking-widest shadow-sm focus:outline-none disabled:opacity-25 transition ease-in-out duration-150">
+                                            Next question
+                                        </button>
+                                    @else
+                                        <button type="submit"
+                                            class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest transition ease-in-out duration-150">
+                                            Submit
+                                        </button>
+                                    @endif
+                                </div>
+                            </form> --}}
                             <form id="quiz-form"
                                 action="{{ route('quiz.next', ['quiz' => $quiz, 'currentQuestionIndex' => $currentQuestionIndex]) }}"
                                 method="POST">
                                 @csrf
-                                <input type="hidden" name="startTimeInSeconds" id="startTimeInSeconds" value="{{ $secondsPerQuestion }}">
+                                <input type="hidden" name="startTimeInSeconds" id="startTimeInSeconds"
+                                    value="{{ $secondsPerQuestion }}">
                                 <input type="hidden" name="currentQuestionIndex" value="{{ $currentQuestionIndex }}">
+                                <input type="hidden" name="currentQuestionId" value="{{ $currentQuestion->id }}">
+                                <input type="hidden" name="currentQuestionType" value="{{ $currentQuestion->type }}">
 
-                                @foreach ($currentQuestion->options as $option)
+                                @if ($currentQuestion->type === 'written')
                                     <div>
-                                        <label for="option-{{ $option->id }}">
-                                            <input type="radio" id="option-{{ $option->id }}"
-                                                name="answerOfQuestion[{{ $currentQuestionIndex }}]"
-                                                value="{{ $option->id }}">
-                                            {{ $option->text }}
-                                        </label>
+                                        <input type="text" name="answerOfQuestion[{{ $currentQuestionIndex }}]"
+                                            class="form-control" placeholder="Enter answer" autocomplete="off">
                                     </div>
-                                @endforeach
+                                @elseif ($currentQuestion->type === 'options')
+                                    @foreach ($currentQuestion->options as $option)
+                                        <div>
+                                            <label for="option-{{ $option->id }}">
+                                                <input type="radio" id="option-{{ $option->id }}"
+                                                    name="answerOfQuestion[{{ $currentQuestionIndex }}]"
+                                                    {{-- name="answerOfQuestion[{{ $currentQuestion->id }}]" --}}
+                                                    value="{{ $option->id }}">
+                                                {{ $option->text }}
+                                            </label>
+                                        </div>
+                                    @endforeach
+                                @endif
 
                                 <div class="mt-4">
                                     @if ($currentQuestionIndex < $questionsCount - 1)

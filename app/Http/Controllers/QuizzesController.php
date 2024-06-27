@@ -144,6 +144,7 @@ class QuizzesController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        // dd($request);
         $request->validate([
             'title' => 'required|string|max:255',
             'slug' => 'required|string|max:255|unique:quizzes,slug,' . $id,
@@ -162,6 +163,8 @@ class QuizzesController extends Controller
         $quiz->update([
             'title' => $request->input('title'),
             'slug' => $request->input('slug'),
+            'level' => $request->input('level'),
+            'term' => $request->input('term'),
             'description' => $request->input('description'),
             'published' => $request->boolean('published'),
             'public' => $request->boolean('public'),

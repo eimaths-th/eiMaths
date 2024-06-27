@@ -90,7 +90,7 @@
                                         {{ $test->ip_address }}
                                     </td>
                                     <td class="px-6 py-4 text-sm leading-5 text-center text-gray-900 whitespace-no-wrap">
-                                        {{ $test->created_at->format('D d/m/Y, h:m A') ?? '' }}
+                                        {{ $test->created_at->format('D d/m/Y, h:i A') ?? '' }}
                                     </td>
                                     <td class="px-6 py-4 text-sm leading-5 text-gray-900  whitespace-no-wrap text-nowrap">
 

@@ -23,6 +23,9 @@ class HomeController extends Controller
      *
      * @return void
      */
+
+    public $level = ['K1', 'K2', 'P1', 'P2', 'P3', 'P4', 'P5', 'P6',];
+    public $term = ['1', '2', '3', '4'];
     public function __construct()
     {
         $this->middleware('auth');
@@ -85,10 +88,13 @@ class HomeController extends Controller
 
     public function home3()
     {
-
+        // dd($this->level);
+        $levels = $this->level;
+        $public_quizzes_level = Quiz::whereHas('questions')->where('public', true)->orderBy('level', 'asc')->orderBy('id', 'Desc')->withCount('questions')->get()->groupBy('level');
         $public_quizzes = Quiz::whereHas('questions')->where('public', true)->orderBy('id', 'desc')->withCount('questions')->get();
-        $registered_only_quizzes = Quiz::whereHas('questions')->where('published', true)->orderBy('id', 'desc')->withCount('questions')->get();
-
+        // $registered_only_quizzes = Quiz::whereHas('questions')->where('published', true)->orderBy('id', 'desc')->withCount('questions')->get();
+        $registered_only_quizzes = Quiz::whereHas('questions')->where('published', true)->orderBy('level', 'asc')->orderBy('id', 'Desc')->withCount('questions')->get()->groupBy('level');
+        $levelCheck = 0;
         // $query = Quiz::whereHas('questions')
         //     ->withCount('questions')
         //     ->when(auth()->guest() || !auth()->user()->is_admin, function ($query) {
@@ -100,13 +106,63 @@ class HomeController extends Controller
         // $registered_only_quizzes = $query->where('public', 0);
 
         $header = 'eiMaths Quiz';
+        // dd($public_quizzes_level);
 
-        return view('home.home', compact('public_quizzes', 'registered_only_quizzes','header'));
+        return view('home.home', compact('public_quizzes', 'registered_only_quizzes', 'header', 'levels', 'public_quizzes_level', 'levelCheck'));
     }
+    public function homeLevel($level)
+    {
+
+        $public_quizzes = Quiz::whereHas('questions')->where('public', true)->orderBy('id', 'desc')->withCount('questions')->get();
+        $public_quizzes_term = Quiz::whereHas('questions')
+            ->where(['public' => true, 'level' => $level])
+            ->orderBy('term', 'asc')
+            ->orderBy('id', 'Desc')
+            ->withCount('questions')
+            ->get()
+            ->groupBy('term');
+        $registered_only_quizzes = Quiz::whereHas('questions')
+            ->where(['published' => true, 'level' => $level])
+            ->orderBy('term', 'asc')
+            ->orderBy('id', 'Desc')
+            ->withCount('questions')
+            ->get()
+            ->groupBy('term');
+        $levelCheck = 1;
+        $header = 'eiMaths Quiz Level ' . $level;
+        // dd($public_quizzes_term);
+
+        return view('home.home', compact('public_quizzes', 'registered_only_quizzes', 'header', 'public_quizzes_term', 'levelCheck', 'level'));
+    }
+    public function homeTerm($level, $term)
+    {
+
+        $public_quizzes = Quiz::whereHas('questions')->where('public', true)->orderBy('id', 'desc')->withCount('questions')->get();
+        $public_quizzes_term = Quiz::whereHas('questions')
+            ->where(['public' => true, 'level' => $level, 'term' => $term])
+            // ->orderBy('term', 'asc')
+            ->orderBy('id', 'Desc')
+            ->withCount('questions')
+            ->get();
+            // ->groupBy('term');
+        $registered_only_quizzes = Quiz::whereHas('questions')
+            ->where(['published' => true, 'level' => $level, 'term' => $term])
+            // ->orderBy('term', 'asc')
+            ->orderBy('id', 'Desc')
+            ->withCount('questions')
+            ->get();
+            // ->groupBy('term');
+        $levelCheck = 2;
+        $header = 'eiMaths Quiz Level ' . $level .' Term ' . $term;
+        // dd($public_quizzes_term);
+
+        return view('home.home', compact('public_quizzes', 'registered_only_quizzes', 'header', 'public_quizzes_term', 'levelCheck', 'level','term'));
+    }
+
 
     public function leaderboard(Request $request, $quiz_slug = '0')
     {
-        
+
         $header = 'Leaderboard';
         $quizzes = Quiz::all();
         $quizId = 0;

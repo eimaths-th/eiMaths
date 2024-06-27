@@ -14,6 +14,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string $code_snippet
  * @property string $answer_explanation
  * @property string $more_info_link
+ * @property string $written_answer
+ * @property string $type
  * @property string $created_at
  * @property string $updated_at
  * @property string $deleted_at
@@ -27,7 +29,7 @@ class Question extends Model
     /**
      * @var array
      */
-    protected $fillable = ['code','question_text', 'code_snippet', 'answer_explanation', 'more_info_link', 'created_at', 'updated_at', 'deleted_at'];
+    protected $fillable = ['code','question_text', 'code_snippet', 'answer_explanation', 'more_info_link','written_answer','type', 'created_at', 'updated_at', 'deleted_at'];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany

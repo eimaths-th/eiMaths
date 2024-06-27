@@ -286,6 +286,8 @@
                     $('#description').val(res.quiz.description);
 
                     $('#questions').html(res.html_questions_select);
+                    $('#level').val(res.quiz.level);
+                    $('#term').val(res.quiz.term);
 
                     $('#published').prop('checked', res.quiz.published);
                     $('#public').prop('checked', res.quiz.public);
@@ -312,6 +314,8 @@
                     title: $('#title').val(),
                     slug: $('#slug').val(),
                     description: $('#description').val(),
+                    level: $('#level').val(),
+                    term: $('#term').val(),
                     questions: $('#questions').val(), // No need to add [] here
                     published: $('#published').is(':checked') ? 1 : 0,
                     public: $('#public').is(':checked') ? 1 : 0,
