@@ -325,6 +325,9 @@
                             <div class="text-danger mt-2">{{ $message }}</div>
                         @enderror
                     </div>
+                    @php
+                        // dd($question);
+                    @endphp
                     <div class="mb-3">
                         <select name="type" id="type" class="form-control">
                             <option value="">Select type answer</option>
@@ -333,7 +336,7 @@
                         </select>
                     </div>
 
-                    <div class="mb-3 wrtiten_type">
+                    <div class="mb-3 written_type">
                         <label for="written" class="form-label">Question Written</label>
                         <br>
                         <div class="wrtiten-container">

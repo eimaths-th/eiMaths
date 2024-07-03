@@ -1,7 +1,26 @@
 <script>
     $(document).ready(function() {
-        // $('.wrtiten_type').hide();
-        // $('.options_type').hide();
+        function toggleTypeFields(selectedType, res) {
+            if (selectedType === 'written') {
+                $('.options_type').hide();
+                $('.written_type').show();
+                if (res) {
+                    $('#written').val(res.question.written_answer); // Set written answer if applicable
+
+                }
+            } else if (selectedType === 'options') {
+                $('.written_type').hide();
+                $('.options_type').show();
+            } else {
+                $('.written_type').hide();
+                $('.options_type').hide();
+            }
+        }
+
+        // Hide type-specific fields initially
+        $('.written_type').hide();
+        $('.options_type').hide();
+
         var token = '{{ csrf_token() }}';
 
         var table = $('#Listview').DataTable({
@@ -110,16 +129,7 @@
 
         $(document).on('change', '#type', function() {
             var selectedType = $(this).val();
-            if (selectedType === 'written') {
-                $('.written_type').show();
-                $('.options_type').hide();
-            } else if (selectedType === 'options') {
-                $('.written_type').hide();
-                $('.options_type').show();
-            } else {
-                $('.written_type').hide();
-                $('.options_type').hide();
-            }
+            toggleTypeFields(selectedType);
         });
 
         $(document).on('click', '.remove-option', function() {
@@ -249,7 +259,7 @@
                             errorList += '<li>' + value + '</li>';
                         });
                         $('.alert-danger').show().html('<strong>' + errorList +
-                        '</strong>');
+                            '</strong>');
                     }
                 }
             });
@@ -344,17 +354,21 @@
                 url: url,
                 method: 'GET',
                 success: function(res) {
+                    console.log(res);
                     $('#text').val(res.question.text);
                     $('#code_snippet').val(res.question.code_snippet);
                     $('#answer_explanation').val(res.question.answer_explanation);
                     $('#more_info_link').val(res.question.more_info_link);
+                    $('#type').val(res.question.type);
+
+                    toggleTypeFields(res.question.type, res);
+
                     $('#options-container').html('');
                     optionIndex = 0;
 
                     res.options.forEach(function(option) {
                         addOption(option.text, option.correct);
                     });
-
                     // $('#questionForm').attr('action','{{ route('questions.update', ':id') }}'.replace(':id',questionId));
                     // $('#questionForm').attr('method', 'POST');
                     // $('#questionForm').append('<input type="hidden" name="_method" value="PUT">');
