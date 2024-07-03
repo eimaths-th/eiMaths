@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property integer $test_id
  * @property integer $question_id
  * @property integer $option_id
+ * @property string $type_user
  * @property string $written_answer
  * @property boolean $correct
  * @property string $created_at
@@ -25,7 +26,7 @@ class Answer extends Model
     /**
      * @var array
      */
-    protected $fillable = ['user_id', 'test_id', 'question_id', 'option_id','written_answer', 'correct', 'created_at', 'updated_at', 'deleted_at'];
+    protected $fillable = ['user_id', 'test_id', 'question_id','type_user', 'option_id','written_answer', 'correct', 'created_at', 'updated_at', 'deleted_at'];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo

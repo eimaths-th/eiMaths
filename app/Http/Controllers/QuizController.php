@@ -8,6 +8,7 @@ use App\Models\Question;
 use App\Models\Quiz;
 use App\Models\Test;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class QuizController extends Controller
 {
@@ -90,13 +91,22 @@ class QuizController extends Controller
         $time_spent = now()->timestamp - $startTimeInSeconds;
         $result = 0;
 
-        // Create a new test record
+        if (Auth::guard('student')->check()) {
+            $user_id = Auth::guard('student')->id();
+            $type_user = 'student';
+        } elseif (Auth::check()) {
+            $user_id = Auth::id();
+            $type_user = 'user';
+        } else {
+        }
+
         $test = Test::create([
-            'user_id' => auth()->id(),
+            'user_id' => $user_id,
             'quiz_id' => $quiz->id,
             'result' => 0,
             'ip_address' => request()->ip(),
-            'time_spent' => $time_spent
+            'time_spent' => $time_spent,
+            'type_user' => $type_user,
         ]);
 
         // Process multiple-choice answers
@@ -119,12 +129,14 @@ class QuizController extends Controller
             }
 
             Answer::create([
-                'user_id' => auth()->id(),
+                'user_id' => $user_id,
                 'test_id' => $test->id,
                 'question_id' => $question->id,
                 'option_id' => $answerData['type'] === 'options' ? $answer : null,
                 'written_answer' => $answerData['type'] === 'written' ? $answer : null,
-                'correct' => $correct ? 1 : 0
+                'correct' => $correct ? 1 : 0,
+                'type_user' => $type_user,
+
             ]);
         }
         // foreach ($answersOfQuestions as $key => $optionId) {

@@ -49,48 +49,48 @@
 @endcan
 @can('order-list')
     <!--<li class="nav-item {{ in_array(Request::route()->getName(), ['orders']) ? 'menu-open' : '' }}">
-        <a href="#" class="nav-link {{ in_array(Request::route()->getName(), ['orders']) ? 'active' : '' }}">
-            <i class="nav-icon fas fa-cart-shopping"></i>
-            <p>Orders Management</p>
-            <i class="fas fa-angle-left right"></i>
-        </a>
-        <ul class="nav nav-treeview">
-
-            <li class="nav-item">
-                {{-- <a href="{{ route('orders', ['status' => '1']) }}" --}}
-                <a href="{{ route('orders') }}" {{-- class="nav-link {{ Request::is('orders') && Request::input('status') === '1' ? 'active' : '' }}"> --}}
-                    class="nav-link {{ Request::is('orders') ? 'active' : '' }}">
-                    <i class="nav-icon fa-solid fa-comment-dots"></i>
-                    <p>New Student Orders</p>
+                <a href="#" class="nav-link {{ in_array(Request::route()->getName(), ['orders']) ? 'active' : '' }}">
+                    <i class="nav-icon fas fa-cart-shopping"></i>
+                    <p>Orders Management</p>
+                    <i class="fas fa-angle-left right"></i>
                 </a>
-            </li>
-        </ul>
-    </li>-->
+                <ul class="nav nav-treeview">
+
+                    <li class="nav-item">
+                        {{-- <a href="{{ route('orders', ['status' => '1']) }}" --}}
+                        <a href="{{ route('orders') }}" {{-- class="nav-link {{ Request::is('orders') && Request::input('status') === '1' ? 'active' : '' }}"> --}}
+                            class="nav-link {{ Request::is('orders') ? 'active' : '' }}">
+                            <i class="nav-icon fa-solid fa-comment-dots"></i>
+                            <p>New Student Orders</p>
+                        </a>
+                    </li>
+                </ul>
+            </li>-->
 @endcan
 @can('invoice-list')
     <!--<li class="nav-item {{ in_array(Request::route()->getName(), ['invoices', 'invoices_pending']) ? 'menu-open' : '' }}">
-        <a href="#"
-            class="nav-link {{ in_array(Request::route()->getName(), ['invoices', 'invoices_pending']) ? 'active' : '' }}">
-            <i class="nav-icon fas fa-file-invoice-dollar"></i>
-            <p>Invoice Management</p>
-            <i class="fas fa-angle-left right"></i>
-        </a>
-        <ul class="nav nav-treeview">
-            <li class="nav-item">
-                <a href="{{ route('invoices_pending') }}"
-                    class="nav-link {{ Request::is('invoices_pending') ? 'active' : '' }}">
-                    <i class="nav-icon fa-solid fa-comment-dots"></i>
-                    <p>Generate Invoice</p>
+                <a href="#"
+                    class="nav-link {{ in_array(Request::route()->getName(), ['invoices', 'invoices_pending']) ? 'active' : '' }}">
+                    <i class="nav-icon fas fa-file-invoice-dollar"></i>
+                    <p>Invoice Management</p>
+                    <i class="fas fa-angle-left right"></i>
                 </a>
-            </li>
-            <li class="nav-item">
-                <a href="{{ route('invoices') }}" class="nav-link {{ Request::is('invoices') ? 'active' : '' }}">
-                    <i class="nav-icon fa-solid fa-comment-dots"></i>
-                    <p>View Invoice</p>
-                </a>
-            </li>
-        </ul>
-    </li>-->
+                <ul class="nav nav-treeview">
+                    <li class="nav-item">
+                        <a href="{{ route('invoices_pending') }}"
+                            class="nav-link {{ Request::is('invoices_pending') ? 'active' : '' }}">
+                            <i class="nav-icon fa-solid fa-comment-dots"></i>
+                            <p>Generate Invoice</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ route('invoices') }}" class="nav-link {{ Request::is('invoices') ? 'active' : '' }}">
+                            <i class="nav-icon fa-solid fa-comment-dots"></i>
+                            <p>View Invoice</p>
+                        </a>
+                    </li>
+                </ul>
+            </li>-->
 @endcan
 @can('receipt-list')
     <li class="nav-item {{ in_array(Request::route()->getName(), ['receipts', 'receipts_pending']) ? 'menu-open' : '' }}">
@@ -122,7 +122,7 @@
                     <p>Payment Receipt</p>
                 </a>
             </li>
-           {{--  <li class="nav-item">
+            {{--  <li class="nav-item">
                 <a href="{{ route('receipts', ['type' => 1]) }}"
                     class="nav-link {{ Route::currentRouteName() == 'receipts' && request('type') == 1 ? 'active' : '' }}">
                     <i class="nav-icon fa-solid fa-comment-dots"></i>
@@ -134,16 +134,14 @@
 @endcan
 @can('product-list')
     <li class="nav-item {{ in_array(Request::route()->getName(), ['products']) ? 'menu-open' : '' }}">
-        <a href="#"
-            class="nav-link {{ in_array(Request::route()->getName(), ['products']) ? 'active' : '' }}">
+        <a href="#" class="nav-link {{ in_array(Request::route()->getName(), ['products']) ? 'active' : '' }}">
             <i class="nav-icon fa-solid fa-cubes"></i>
             <p>Stock Management</p>
             <i class="fas fa-angle-left right"></i>
         </a>
         <ul class="nav nav-treeview">
             <li class="nav-item">
-                <a href="{{ route('products') }}"
-                    class="nav-link {{ Request::is('products') ? 'active' : '' }}">
+                <a href="{{ route('products') }}" class="nav-link {{ Request::is('products') ? 'active' : '' }}">
                     <i class="nav-icon fa-solid fa-comment-dots"></i>
                     <p> Education Acceseries</p>
                 </a>
@@ -174,18 +172,18 @@
                 </a>
             </li>
             @can('all-centre')
-            <li class="nav-item">
-                <a href="{{ route('termfee') }}" class="nav-link {{ Request::is('termfee') ? 'active' : '' }}">
-                    <i class="nav-icon fa-solid fa-comment-dots"></i>
-                    <p>Term Fee & Book Price </p>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="{{ route('parameter') }}" class="nav-link {{ Request::is('parameter') ? 'active' : '' }}">
-                    <i class="nav-icon fa-solid fa-comment-dots"></i>
-                    <p>Parameter Setting </p>
-                </a>
-            </li>
+                <li class="nav-item">
+                    <a href="{{ route('termfee') }}" class="nav-link {{ Request::is('termfee') ? 'active' : '' }}">
+                        <i class="nav-icon fa-solid fa-comment-dots"></i>
+                        <p>Term Fee & Book Price </p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('parameter') }}" class="nav-link {{ Request::is('parameter') ? 'active' : '' }}">
+                        <i class="nav-icon fa-solid fa-comment-dots"></i>
+                        <p>Parameter Setting </p>
+                    </a>
+                </li>
             @endcan
             {{-- <li class="nav-item" >
             <a href="{{ route('persons') }}" class="nav-link {{ Request::is('persons') ? 'active' : '' }}">
@@ -197,9 +195,8 @@
     </li>
 @endcan
 @can('user-list')
-    <li class="nav-item {{ in_array(Request::route()->getName(), ['users.index', 'roles.index']) ? 'menu-open' : '' }}">
-        <a href="#"
-            class="nav-link {{ in_array(Request::route()->getName(), ['users.index', 'roles.index']) ? 'active' : '' }}">
+    <li class="nav-item {{ in_array(Request::route()->getName(), ['users.index', 'roles.index', 'generate.system','generate.student', 'permission.index']) ? 'menu-open' : '' }}">
+        <a href="#" class="nav-link {{ in_array(Request::route()->getName(), ['users.index', 'roles.index', 'generate.system','generate.student', 'permission.index']) ? 'active' : '' }}">
             <i class="nav-icon fas fa-user-gear"></i>
             <p>User Management</p>
             <i class="fas fa-angle-left right"></i>
@@ -221,20 +218,105 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ route('permission.index') }}" class="nav-link {{ Request::is('permission.index') ? 'active' : '' }}">
+                    <a href="{{ route('permission.index') }}"
+                        class="nav-link {{ Request::is('permission.index') ? 'active' : '' }}">
                         <i class="nav-icon fa-solid fa-comment-dots"></i>
                         <p>Premissions</p>
                     </a>
                 </li>
+
+            @endcan
+            <li class="nav-item {{ in_array(Request::route()->getName(), ['users.index', 'roles.index', 'generate.system','generate.student', 'permission.index']) ? 'menu-open' : '' }}">
+                <a href="#"
+                    class="nav-link {{ in_array(Request::route()->getName(), ['users.index', 'roles.index', 'generate.system','generate.student', 'permission.index']) ? 'active' : '' }}">
+                    <i class="nav-icon fas fa-user-gear"></i>
+                    <p>Generate Passworld</p>
+                    <i class="fas fa-angle-left right"></i>
+                </a>
+                <ul class="nav nav-treeview">
+                    <li class="nav-item">
+                        <a href="{{ route('generate.system') }}" class="nav-link {{ Request::is('generate.system') ? 'active' : '' }}">
+                            <i class="nav-icon fa-solid fa-comment-dots"></i>
+                            <p>System</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ route('generate.student') }}" class="nav-link {{ Request::is('generate.student') ? 'active' : '' }}">
+                            <i class="nav-icon fa-solid fa-comment-dots"></i>
+                            <p>Student</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ route('student.login') }}" class="nav-link {{ Request::is('student.login') ? 'active' : '' }}">
+                            <i class="nav-icon fa-solid fa-comment-dots"></i>
+                            <p>Student Login</p>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </li>
+    {{-- <li
+        class="nav-item {{ in_array(Request::route()->getName(), ['users.index', 'roles.index', 'generate', 'permission.index']) ? 'menu-open' : '' }}">
+        <a href="#"
+            class="nav-link {{ in_array(Request::route()->getName(), ['users.index', 'roles.index', 'generate', 'permission.index']) ? 'active' : '' }}">
+            <i class="nav-icon fas fa-user-gear"></i>
+            <p>User Management</p>
+            <i class="fas fa-angle-left right"></i>
+        </a>
+        <ul class="nav nav-treeview">
+            @can('user-list')
                 <li class="nav-item">
-                    <a href="{{ route('generate') }}" class="nav-link {{ Request::is('generate') ? 'active' : '' }}">
+                    <a href="{{ route('users.index') }}" class="nav-link {{ Request::is('users.index') ? 'active' : '' }}">
                         <i class="nav-icon fa-solid fa-comment-dots"></i>
-                        <p>Generate Passworld</p>
+                        <p>Users</p>
                     </a>
                 </li>
             @endcan
+            @can('role-list')
+                <li class="nav-item">
+                    <a href="{{ route('roles.index') }}" class="nav-link {{ Request::is('roles.index') ? 'active' : '' }}">
+                        <i class="nav-icon fa-solid fa-comment-dots"></i>
+                        <p>Roles</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('permission.index') }}"
+                        class="nav-link {{ Request::is('permission.index') ? 'active' : '' }}">
+                        <i class="nav-icon fa-solid fa-comment-dots"></i>
+                        <p>Permissions</p>
+                    </a>
+                </li>
+            @endcan
+            <li
+                class="nav-item {{ in_array(Request::route()->getName(), ['generate.system', 'generate.student']) ? 'menu-open' : '' }}">
+                <a href="#"
+                    class="nav-link {{ in_array(Request::route()->getName(), ['generate.system', 'generate.student']) ? 'active' : '' }}">
+                    <i class="nav-icon fas fa-user-gear"></i>
+                    <p>Generate Password</p>
+                    <i class="fas fa-angle-left right"></i>
+                </a>
+                <ul class="nav nav-treeview">
+                    <li class="nav-item">
+                        <a href="{{ route('generate.system') }}"
+                            class="nav-link {{ Request::is('generate.system') ? 'active' : '' }}">
+
+                            <i class="nav-icon fa-solid fa-comment-dots"></i>
+                            <p>System</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ route('generate.student') }}"
+                            class="nav-link {{ Request::is('/generate-password/student') ? 'active' : '' }}">
+                            <i class="nav-icon fa-solid fa-comment-dots"></i>
+                            <p>Student</p>
+                        </a>
+                    </li>
+                </ul>
+            </li>
         </ul>
-    </li>
+    </li> --}}
+
 @endcan
 @can('quiz-manage')
     <li class="nav-item {{ in_array(Request::route()->getName(), ['questions', 'quizzes']) ? 'menu-open' : '' }}">
@@ -246,30 +328,31 @@
         </a>
         <ul class="nav nav-treeview">
             {{-- @can('user-list') --}}
-                <li class="nav-item">
-                    <a href="{{ route('home3') }}" target="_black" class="nav-link {{ Request::is('home3') ? 'active' : '' }}">
-                        <i class="nav-icon fa-solid fa-comment-dots"></i>
-                        <p>Home</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ route('questions') }}"  class="nav-link {{ Request::is('questions') ? 'active' : '' }}">
-                        <i class="nav-icon fa-solid fa-comment-dots"></i>
-                        <p>Questions</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ route('quizzes') }}" class="nav-link {{ Request::is('quizzes') ? 'active' : '' }}">
-                        <i class="nav-icon fa-solid fa-comment-dots"></i>
-                        <p>Quizzes</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ route('tests') }}" class="nav-link {{ Request::is('permission.index') ? 'active' : '' }}">
-                        <i class="nav-icon fa-solid fa-comment-dots"></i>
-                        <p>Tests</p>
-                    </a>
-                </li>
+            <li class="nav-item">
+                <a href="{{ route('home3') }}" target="_black"
+                    class="nav-link {{ Request::is('home3') ? 'active' : '' }}">
+                    <i class="nav-icon fa-solid fa-comment-dots"></i>
+                    <p>Home</p>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{{ route('questions') }}" class="nav-link {{ Request::is('questions') ? 'active' : '' }}">
+                    <i class="nav-icon fa-solid fa-comment-dots"></i>
+                    <p>Questions</p>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{{ route('quizzes') }}" class="nav-link {{ Request::is('quizzes') ? 'active' : '' }}">
+                    <i class="nav-icon fa-solid fa-comment-dots"></i>
+                    <p>Quizzes</p>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{{ route('tests') }}" class="nav-link {{ Request::is('permission.index') ? 'active' : '' }}">
+                    <i class="nav-icon fa-solid fa-comment-dots"></i>
+                    <p>Tests</p>
+                </a>
+            </li>
 
 
             {{-- @endcan

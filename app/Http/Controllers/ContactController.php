@@ -30,6 +30,8 @@ use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Str;
+
 use Carbon\Carbon;
 
 class ContactController extends Controller
@@ -798,7 +800,79 @@ class ContactController extends Controller
         ]);
     }
 
+    public function gennerateStudent()
+    {
+        $students = Contact::orderBy('id')->get();
 
+        return view('contacts.gennerate_student', ['students' => $students]);
+        // dd($students);
+    }
+    public function gennerateStudentSave(Request $request)
+    {
+
+        // dd($request->all());
+        $student_id = $request->student_id;
+        if (!$student_id) {
+            return response()->json(['errors' => ['Pls select student']]);
+        }
+        $pass = $request->password;
+        $student = Contact::find($student_id);
+        $action = $request->action;
+        $text = 'eiMaths_';
+
+        if ($action === 'generate') {
+            $password = $request->password;
+        } elseif ($action === 'random') {
+            # code...
+            $ranPass = Str::random(4);
+            $password = $student->code . '_' . $ranPass;
+            return response()->json(['success' => 'Random generate student password success !!', 'password' => $password]);
+        } elseif ($action === 'update') {
+            # code...
+        } else {
+            return response()->json(['error' => ['There is no action.']]);
+        }
+
+        $passwordHash = Hash::make($password);
+        $student->update(['password' => $passwordHash]);
+
+        return response()->json(['success' => 'Generate student password success !!', 'password' => $password]);
+    }
+
+    public function studentsLogin()
+    {
+
+        return view('contacts.login');
+    }
+    public function studentsCheckLogin(Request $request)
+    {
+        $request->validate([
+            'code' => 'required',
+            'password' => 'required',
+        ]);
+
+        $student = Contact::where('code', $request->code)->first();
+
+        if ($student && Hash::check($request->password, $student->password)) {
+            Auth::guard('student')->login($student);
+            $student = Auth::guard('student')->user();
+            // dd($student); 
+            return redirect()->route('home3');
+        } else {
+            return back()->withErrors(['error' => 'Invalid student code or password.']);
+        }
+
+        // if ($student && Hash::check($request->password, $student->password)) {
+
+        //     Session::put('student_id', $student->id);
+        //     Session::put('student_code', $student->code);
+
+        //     return redirect()->route('home3');
+        // } else {
+
+        //     return back()->withErrors(['error' => 'Invalid student code or password.']);
+        // }
+    }
 
     /**
      * Show the form for editing the specified resource.

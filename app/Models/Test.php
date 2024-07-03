@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property integer $user_id
  * @property integer $quiz_id
  * @property integer $result
+ * @property integer $type_user
  * @property string $ip_address
  * @property integer $time_spent
  * @property string $created_at
@@ -23,7 +24,7 @@ class Test extends Model
     /**
      * @var array
      */
-    protected $fillable = ['user_id', 'quiz_id', 'result', 'ip_address', 'time_spent', 'created_at', 'updated_at', 'deleted_at'];
+    protected $fillable = ['user_id', 'quiz_id', 'result', 'type_user', 'ip_address', 'time_spent', 'created_at', 'updated_at', 'deleted_at'];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
@@ -40,6 +41,11 @@ class Test extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function student()
+    {
+        return $this->belongsTo(Contact::class, 'user_id');
     }
 
     public function quiz()

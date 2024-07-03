@@ -6,6 +6,10 @@ use Illuminate\Support\ServiceProvider;
 use App\Services\FileUploadService;
 use App\Services\MoneyConvertService;
 use App\Interfaces\MoneyConvertServiceInterface;
+use App\Models\Contact;
+use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Auth;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -25,6 +29,17 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        view()->composer('*', function ($view) {
+            // Check if a student is authenticated
+            if (Auth::guard('student')->check()) {
+                $student = Contact::find(Auth::guard('student')->user()->id);
+                $view->with('student', $student);
+            }
+            // Check if a regular user is authenticated
+            elseif (Auth::check()) {
+                $user = Auth::user();
+                $view->with('user', $user);
+            }
+        });
     }
 }

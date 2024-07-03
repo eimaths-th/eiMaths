@@ -20,7 +20,7 @@
 
             <!-- Settings Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ml-6">
-                @auth
+                @if (Auth::guard('student')->check() || Auth::check())
                     @php
                         // Helper function to generate classes based on the active route
                         function navLinkClasses($routeName)
@@ -38,13 +38,21 @@
                     --}}
                     <a href="{{ route('home3') }}" class="{{ navLinkClasses('home3') }}"> Home </a>
                     <a href="{{ route('leaderboard') }}" class="{{ navLinkClasses('leaderboard') }}"> Leaderboard </a>
-                    <a href="{{ route('myresults') }}"  class="{{ navLinkClasses('myresults') }}">{{ __('My Results') }}</a>
+                    <a href="{{ route('myresults') }}" class="{{ navLinkClasses('myresults') }}">{{ __('My Results') }}</a>
 
                     <!-- User Dropdown -->
                     <div class="relative">
                         <button
                             class="dropdown-button inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
-                            <div>{{ Auth::user()->name }}</div>
+                            <div>
+                                @if (isset($user))
+                                    {{ $user->name }}
+                                @elseif(isset($student))
+                                    {{ $student->nickname }}
+                                @else
+                                    Guest
+                                @endif
+                            </div>
                             <div class="ml-1">
                                 <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd"
@@ -65,29 +73,8 @@
                         </div>
                     </div>
 
-                    <!-- Manage Dropdown -->
-                    {{-- <!-- <div class="relative">
-                            <button
-                                class="manage-dropdown-button inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
-                                <div>Manage</div>
-                                <div class="ml-1">
-                                    <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd"
-                                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                            clip-rule="evenodd" />
-                                    </svg>
-                                </div>
-                            </button>
-                            <div
-                                class="manage-dropdown-menu hidden absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg py-1">
-                                <a href="{{ route('admins') }}" class="block px-4 py-2 text-sm text-gray-700">Admins</a>
-                                <a href="{{ route('questions') }}" class="block px-4 py-2 text-sm text-gray-700">Questions</a>
-                                <a href="{{ route('quizzes') }}" class="block px-4 py-2 text-sm text-gray-700">Quizzes</a>
-                                <a href="{{ route('tests') }}" class="block px-4 py-2 text-sm text-gray-700">Tests</a>
-                            </div>
-                        </div> --> --}}
                 @else
-                    <a href="{{ route('login') }}" class="text-gray-700 hover:text-gray-800">Log In</a>
+                    <a href="{{ route('student.login') }}" class="text-gray-700 hover:text-gray-800">Log In</a>
                     {{-- <a href="{{ route('register') }}" class="ml-4 text-gray-700 hover:text-gray-800">Register</a> --}}
                 @endauth
             </div>

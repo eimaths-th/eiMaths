@@ -173,7 +173,7 @@
             $('.alert-success').html('');
             $('.alert-success').hide();
             $.ajax({
-                url: "{{ route('generate.save') }}",
+                url: "{{ route('generate.system.save') }}",
                 method: 'post',
                 data: {
                     password: $('#AddPassword').val(),

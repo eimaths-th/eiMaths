@@ -29,6 +29,7 @@ class HomeController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
+        // $this->middleware();
     }
 
     /**
@@ -45,6 +46,28 @@ class HomeController extends Controller
             'centre' => $centre,
         ]);
     }
+    public function generate()
+    {
+        return view('users.generate');
+    }
+
+    public function generate_save(Request $request)
+    {
+        $validator =  Validator::make($request->all(), [
+
+            'password' => 'required',
+
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()->all()]);
+        }
+        $input = $request->all();
+        $password = Hash::make($input['password']);
+        return response()->json(['success' => 'Password Generated Success', 'generated' => $password]);
+    }
+
+
+
 
     public function index2()
     {
@@ -66,25 +89,7 @@ class HomeController extends Controller
         return view('front.quizzes.show', compact('quiz'));
     }
 
-    public function generate()
-    {
-        return view('users.generate');
-    }
 
-    public function generate_save(Request $request)
-    {
-        $validator =  Validator::make($request->all(), [
-
-            'password' => 'required',
-
-        ]);
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()->all()]);
-        }
-        $input = $request->all();
-        $password = Hash::make($input['password']);
-        return response()->json(['success' => 'Password Generated Success', 'generated' => $password]);
-    }
 
     public function home3()
     {

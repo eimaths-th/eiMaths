@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\eLeanController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QuestionController;
@@ -43,8 +44,12 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/daily_study', [App\Http\Controllers\DashboardController::class, 'daily_study'])->name('dashboard.daily_study');
 
 
-    Route::get('/generate-password', [App\Http\Controllers\HomeController::class, 'generate'])->name('generate');
-    Route::post('/generate-save', [App\Http\Controllers\HomeController::class, 'generate_save'])->name('generate.save');
+    Route::get('/generate-password-system', [App\Http\Controllers\HomeController::class, 'generate'])->name('generate.system');
+    Route::post('/generate-save', [App\Http\Controllers\HomeController::class, 'generate_save'])->name('generate.system.save');
+    Route::get('/generate-password-student', [App\Http\Controllers\ContactController::class, 'gennerateStudent'])->name('generate.student');
+    Route::post('/generate-password-student-save', [App\Http\Controllers\ContactController::class, 'gennerateStudentSave'])->name('generate.student.save');
+
+
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -85,29 +90,41 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('quizzes/edit/{question}', [QuizzesController::class, 'edit'])->name('quizzes.edit');
     Route::put('quizzes/update/{question}', [QuizzesController::class, 'update'])->name('quizzes.update');
     Route::delete('quizzes/{id}', [QuizzesController::class, 'destroy'])->name('quizzes.destroy');
-    Route::get('quiz/{quiz}', [QuizController::class, 'show'])->name('quiz.show');
-    Route::post('quiz/{quiz}/next/{currentQuestionIndex}', [QuizController::class, 'nextQuestion'])->name('quiz.next');
+    // Route::get('quiz/{quiz}', [QuizController::class, 'show'])->name('quiz.show');
+    // Route::post('quiz/{quiz}/next/{currentQuestionIndex}', [QuizController::class, 'nextQuestion'])->name('quiz.next');
 
-    // Route::get('questions/list', [QuizzesController::class, 'list'])->name('questions.list');
-    // Route::get('questions/list', [QuizzesController::class, 'list'])->name('questions.list');
     ###################################################################################################
-    Route::get('quiz-home', [HomeController::class, 'home3'])->name('home3');
-    Route::get('quiz-home/{level}', [HomeController::class, 'homeLevel'])->name('home.level');
-    Route::get('quiz-home/{level}/{term}', [HomeController::class, 'homeTerm'])->name('home.term');
-    // Route::post('/quiz-submit', [HomeController::class, 'submit'])->name('quiz.submit');
-    // Route::post('/quiz/{quiz}/next', [QuizController::class, 'nextQuestion'])->name('quiz.next');
-    Route::post('quiz/{quiz}/submit', [QuizController::class, 'submit'])->name('quiz.submit');
+    // Route::get('quiz-home', [HomeController::class, 'home3'])->name('home3');
+    // Route::get('quiz-home/{level}', [HomeController::class, 'homeLevel'])->name('home.level');
+    // Route::get('quiz-home/{level}/{term}', [HomeController::class, 'homeTerm'])->name('home.term');
+    // Route::post('quiz/{quiz}/submit', [QuizController::class, 'submit'])->name('quiz.submit');
 
-    Route::get('results/{test}', [ResultController::class, 'show'])->name('results.show');
-    Route::get('leaderboard/{quiz_slug?}', [HomeController::class, 'leaderboard'])->name('leaderboard');
-    Route::post('submit-leaderboard', [HomeController::class, 'submitLeaderboard'])->name('submit.leaderboard');
-    Route::get('myresults',[HomeController::class, 'myResult'])->name('myresults');
-    Route::get('tests/{quiz_slug?}', [HomeController::class, 'tests'])->name('tests');
+
 
     // Route::get('quiz/{quiz}', [HomeController::class, 'show'])->name('quiz.show');
 
 
 });
+
+Route::group(['middleware' => ['auth.userOrStudent']], function () {
+    Route::get('quiz-home', [eLeanController::class, 'home'])->name('home3');
+    Route::get('quiz-home/{level}', [eLeanController::class, 'homeLevel'])->name('home.level');
+    Route::get('quiz-home/{level}/{term}', [eLeanController::class, 'homeTerm'])->name('home.term');
+    Route::get('quiz/{quiz}', [QuizController::class, 'show'])->name('quiz.show');
+    Route::post('quiz/{quiz}/next/{currentQuestionIndex}', [QuizController::class, 'nextQuestion'])->name('quiz.next');
+    Route::post('quiz/{quiz}/submit', [QuizController::class, 'submit'])->name('quiz.submit');
+    Route::get('results/{test}', [ResultController::class, 'show'])->name('results.show');
+    Route::get('myresults', [eLeanController::class, 'myResult'])->name('myresults');
+    Route::get('leaderboard/{quiz_slug?}', [eLeanController::class, 'leaderboard'])->name('leaderboard');
+    Route::post('submit-leaderboard', [eLeanController::class, 'submitLeaderboard'])->name('submit.leaderboard');
+    Route::get('tests/{quiz_slug?}', [eLeanController::class, 'tests'])->name('tests');
+});
+
+// Route::group(['middleware' => ['auth','student.auth']], function () {
+//     Route::get('quiz-home', [eLeanController::class, 'home'])->name('home3');
+// });
+Route::get('/students-login', [App\Http\Controllers\ContactController::class, 'studentsLogin'])->name('student.login');
+Route::post('/students-login-check', [App\Http\Controllers\ContactController::class, 'studentsCheckLogin'])->name('student.check');
 
 
 Route::get('manon', function (Request $request) {

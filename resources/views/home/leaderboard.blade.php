@@ -55,12 +55,33 @@
                         </thead>
                         <tbody>
                             @forelse ($tests as $test)
-
                                 <tr class="bg-gray-100">
-                                    <td class="px-6 py-4 text-sm leading-5 text-gray-900 whitespace-no-wrap">{{ $loop->iteration }}</td>
-                                    <td class="px-6 py-4 text-sm leading-5 text-gray-900 whitespace-no-wrap">{{ $test->user->name }}</td>
-                                    <td class="px-6 py-4 text-sm leading-5 text-center text-gray-900 whitespace-no-wrap text-nowrap">{{ $test->quiz->title }}</td>
-                                    <td class="px-6 py-4 text-sm leading-5 text-center text-gray-900 whitespace-no-wrap">{{ $test->created_at->format('D d/m/Y, h:i A') ?? '' }}</td>
+                                    <td class="px-6 py-4 text-sm leading-5 text-gray-900 whitespace-no-wrap">
+                                        {{ $loop->iteration }}</td>
+                                    <td class="px-6 py-4 text-sm leading-5 text-gray-900 whitespace-no-wrap">
+                                        @php
+                                            if ($test->type_user === 'user' && $test->user) {
+                                                $testUser = $test->user;
+                                            } elseif ($test->type_user === 'student' && $test->student) {
+                                                $testUser = $test->student;
+                                            } else {
+                                                $testUser = null;
+                                            }
+                                        @endphp
+                                        @if ($testUser)
+                                            {{ $testUser->nickname ?? $testUser->name }}
+                                            ({{ $testUser->email ?? $testUser->name }})
+                                        @else
+                                            {{ $test->user->name }}
+                                            
+                                        @endif
+
+                                    </td>
+                                    <td
+                                        class="px-6 py-4 text-sm leading-5 text-center text-gray-900 whitespace-no-wrap text-nowrap">
+                                        {{ $test->quiz->title }}</td>
+                                    <td class="px-6 py-4 text-sm leading-5 text-center text-gray-900 whitespace-no-wrap">
+                                        {{ $test->created_at->format('D d/m/Y, h:i A') ?? '' }}</td>
                                     <td class="px-6 py-4 text-sm leading-5 text-gray-900 whitespace-no-wrap text-nowrap">
                                         {{ $test->result }} / {{ $test->quiz->questions_count }}
                                         @php
@@ -68,7 +89,8 @@
                                             $minutes = intdiv($test->time_spent % 3600, 60);
                                             $seconds = $test->time_spent % 60;
                                         @endphp
-                                        (time: {{ sprintf('%02d', $hour) }}:{{ sprintf('%02d', $minutes) }}:{{ sprintf('%02d', $seconds) }})
+                                        (time:
+                                        {{ sprintf('%02d', $hour) }}:{{ sprintf('%02d', $minutes) }}:{{ sprintf('%02d', $seconds) }})
                                     </td>
                                 </tr>
                             @empty

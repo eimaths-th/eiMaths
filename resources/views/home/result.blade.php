@@ -20,8 +20,23 @@
                                 <th
                                     class="border border-solid bg-gray-100 px-6 py-3 text-left text-sm font-semibold uppercase text-slate-600">
                                     User</th>
-                                <td class="border border-solid px-6 py-3">{{ $test->user->name ?? '' }}
-                                    ({{ $test->user->email ?? '' }})</td>
+                                <td class="border border-solid px-6 py-3">
+                                    @php
+                                        if ($test->type_user === 'user' && $test->user) {
+                                            $testUser = $test->user;
+                                        } elseif ($test->type_user === 'student' && $test->student) {
+                                            $testUser = $test->student;
+                                        } else {
+                                            $testUser = null;
+                                        }
+                                    @endphp
+                                    @if ($testUser)
+                                        {{ $testUser->nickname ?? $testUser->name }}
+                                        ({{ $testUser->email ?? $testUser->name }})
+                                    @else
+                                        User not found
+                                    @endif
+                                </td>
                             </tr>
                             {{-- @endif --}}
                             <tr class="w-28">
@@ -117,7 +132,10 @@
                                     <td>
                                         @if ($type === 'options')
                                             @foreach ($result->question->options as $option)
-                                                <li @class([ 'underline' => $result->option_id == $option->id, 'font-bold text-orange-500' => $option->correct == 1, ])>
+                                                <li @class([
+                                                    'underline' => $result->option_id == $option->id,
+                                                    'font-bold text-orange-500' => $option->correct == 1,
+                                                ])>
                                                     {{ $option->text }}
                                                     @if ($option->correct == 1)
                                                         <span class="italic">(correct answer)</span>
@@ -131,12 +149,15 @@
                                                 <span class="font-bold italic">Question unanswered.</span>
                                             @endif
                                         @elseif ($type === 'written')
-                                        <li @class([ 'underline' => $result->correct != 1, 'font-bold text-orange-500' => $result->correct == 1, ])>
-                                            {{ $result->written_answer }} (your answer)
-                                        </li>
-                                        <li class="font-bold text-orange-500">
-                                            {{ $result->question->written_answer }} (correct answer)
-                                        </li>
+                                            <li @class([
+                                                'underline' => $result->correct != 1,
+                                                'font-bold text-orange-500' => $result->correct == 1,
+                                            ])>
+                                                {{ $result->written_answer }} (your answer)
+                                            </li>
+                                            <li class="font-bold text-orange-500">
+                                                {{ $result->question->written_answer }} (correct answer)
+                                            </li>
                                         @else
                                             <span class="font-bold italic">Question unanswered.</span>
                                         @endif

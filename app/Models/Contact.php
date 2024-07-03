@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
+use Illuminate\Auth\Authenticatable;
 
 /**
  * @property integer $id
@@ -17,6 +19,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $school
  * @property integer $gender
  * @property string $birth_date
+ * @property string $password
  * @property string $address
  * @property string $postcode
  * @property string $telephone
@@ -47,8 +50,9 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $updated_at
  * @property ParentStudent[] $parentStudents
  */
-class Contact extends Model
+class Contact extends Model implements AuthenticatableContract
 {
+    use Authenticatable;
     /**
      * The table associated with the model.
      *
@@ -59,7 +63,7 @@ class Contact extends Model
     /**
      * @var array
      */
-    protected $fillable = ['ctype', 'order', 'centre', 'code', 'start_date', 'start_term', 'name', 'nickname', 'school', 'gender', 'birth_date', 'address', 'postcode', 'telephone', 'father_name', 'father_email', 'father_mobile', 'mother_name', 'mother_email', 'mother_mobile', 'level', 'term', 'bookuse', 'level_name', 'term_name', 'bookuse_name', 'level2', 'term2', 'bookuse2', 'level2_name', 'term2_name', 'bookuse2_name', 'discontinued', 'discontinued_date', 'discontinued_reason', 'created_by', 'updated_by', 'created_at', 'updated_at'];
+    protected $fillable = ['ctype', 'order', 'centre', 'code', 'start_date', 'start_term', 'name', 'nickname', 'school', 'gender', 'birth_date', 'password','address', 'postcode', 'telephone', 'father_name', 'father_email', 'father_mobile', 'mother_name', 'mother_email', 'mother_mobile', 'level', 'term', 'bookuse', 'level_name', 'term_name', 'bookuse_name', 'level2', 'term2', 'bookuse2', 'level2_name', 'term2_name', 'bookuse2_name', 'discontinued', 'discontinued_date', 'discontinued_reason', 'created_by', 'updated_by', 'created_at', 'updated_at'];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
