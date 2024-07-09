@@ -63,14 +63,32 @@
                                 </svg>
                             </div>
                         </button>
-                        <div class="dropdown-menu hidden absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg py-1">
+                        <div
+                            class="dropdown-menu hidden absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg py-1">
                             {{-- <a href="{{ route('profile.edit') }}"
                                 class="block px-4 py-2 text-sm text-gray-700">{{ __('Profile') }}</a> --}}
-                            <form method="POST" action="{{ route('student.logout') }}">
+                            @if (isset($user))
+                                {{-- {{ $user->name }} --}}
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-gray-700"
+                                        onclick="event.preventDefault(); this.closest('form').submit();">{{ __('Log Out') }}</button>
+                                </form>
+                            @elseif(isset($student))
+                                {{-- {{ $student->nickname }} --}}
+                                <form method="POST" action="{{ route('student.logout') }}">
+                                    @csrf
+                                    <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-gray-700"
+                                        onclick="event.preventDefault(); this.closest('form').submit();">{{ __('Log Out') }}</button>
+                                </form>
+                            @else
+                                Guest
+                            @endif
+                            {{-- <form method="POST" action="{{ route('student.logout') }}">
                                 @csrf
                                 <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-gray-700"
                                     onclick="event.preventDefault(); this.closest('form').submit();">{{ __('Log Out') }}</button>
-                            </form>
+                            </form> --}}
                         </div>
                     </div>
                 @else
