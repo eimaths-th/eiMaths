@@ -856,22 +856,18 @@ class ContactController extends Controller
         if ($student && Hash::check($request->password, $student->password)) {
             Auth::guard('student')->login($student);
             $student = Auth::guard('student')->user();
-            // dd($student); 
+            // dd($student);
             return redirect()->route('home3');
         } else {
             return back()->withErrors(['error' => 'Invalid student code or password.']);
         }
+    }
+    public function studentsLogout()
+    {
 
-        // if ($student && Hash::check($request->password, $student->password)) {
-
-        //     Session::put('student_id', $student->id);
-        //     Session::put('student_code', $student->code);
-
-        //     return redirect()->route('home3');
-        // } else {
-
-        //     return back()->withErrors(['error' => 'Invalid student code or password.']);
-        // }
+        Auth::guard('student')->logout();
+        Session::flush();
+        return redirect()->route('student.login');
     }
 
     /**
