@@ -110,6 +110,7 @@ Route::group(['middleware' => ['auth.userOrStudent']], function () {
     Route::get('quiz-home', [eLeanController::class, 'home'])->name('home3');
     Route::get('quiz-home/{level}', [eLeanController::class, 'homeLevel'])->name('home.level');
     Route::get('quiz-home/{level}/{term}', [eLeanController::class, 'homeTerm'])->name('home.term');
+    Route::get('quiz-home/{level}/{term}/{section}', [eLeanController::class, 'homeSection'])->name('home.section');
     Route::get('quiz/{quiz}', [QuizController::class, 'show'])->name('quiz.show');
     Route::post('quiz/{quiz}/next/{currentQuestionIndex}', [QuizController::class, 'nextQuestion'])->name('quiz.next');
     Route::post('quiz/{quiz}/submit', [QuizController::class, 'submit'])->name('quiz.submit');

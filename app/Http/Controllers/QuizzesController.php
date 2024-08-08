@@ -84,6 +84,7 @@ class QuizzesController extends Controller
             'slug' => 'required|string|max:255|unique:quizzes,slug',
             'level' => 'required',
             'term' => 'required',
+            'section' => 'required',
             'description' => 'nullable|string',
             'questions' => 'required|array',
             'questions.*' => 'exists:questions,id',
@@ -91,19 +92,20 @@ class QuizzesController extends Controller
             'public' => 'boolean',
         ]);
 
+        // dd($request->all());
 
         $quiz = Quiz::create([
             'title' => $validated['title'],
             'slug' => $validated['slug'],
             'level' => $validated['level'],
             'term' => $validated['term'],
+            'section' => $validated['section'],
             'description' => $validated['description'],
             'published' => $validated['published'] ?? 0,
             'public' => $validated['public'] ?? 0,
         ]);
 
         $quiz->questions()->attach($validated['questions']);
-        // dd($request);
 
         return response()->json(['success' => 'Quiz created successfully!']);
     }
@@ -150,6 +152,7 @@ class QuizzesController extends Controller
             'slug' => 'required|string|max:255|unique:quizzes,slug,' . $id,
             'level' => 'required',
             'term' => 'required',
+            'section' => 'required',
             'description' => 'nullable|string',
             'questions' => 'array',
             'questions.*' => 'integer|exists:questions,id',
@@ -165,6 +168,7 @@ class QuizzesController extends Controller
             'slug' => $request->input('slug'),
             'level' => $request->input('level'),
             'term' => $request->input('term'),
+            'section' => $request->input('section'),
             'description' => $request->input('description'),
             'published' => $request->boolean('published'),
             'public' => $request->boolean('public'),

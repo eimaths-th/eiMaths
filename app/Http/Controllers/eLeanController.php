@@ -58,7 +58,7 @@ class eLeanController extends Controller
             ->get()
             ->groupBy('term');
         $levelCheck = 1;
-        $header = 'eiMaths Quiz Level ' . $level;
+        $header = 'eiMaths Quiz Grade ' . $level;
         // dd($public_quizzes_term);
 
         return view('home.home', compact('public_quizzes', 'registered_only_quizzes', 'header', 'public_quizzes_term', 'levelCheck', 'level'));
@@ -70,22 +70,51 @@ class eLeanController extends Controller
         $public_quizzes_term = Quiz::whereHas('questions')
             ->where(['public' => true, 'level' => $level, 'term' => $term])
             // ->orderBy('term', 'asc')
+            // ->orderBy('term', 'asc')
             ->orderBy('id', 'Desc')
             ->withCount('questions')
-            ->get();
+            ->get()
+            ->groupBy('section');
         // ->groupBy('term');
         $registered_only_quizzes = Quiz::whereHas('questions')
             ->where(['published' => true, 'level' => $level, 'term' => $term])
             // ->orderBy('term', 'asc')
             ->orderBy('id', 'Desc')
             ->withCount('questions')
-            ->get();
+            ->get()
+            ->groupBy('section');
+
         // ->groupBy('term');
         $levelCheck = 2;
-        $header = 'eiMaths Quiz Level ' . $level . ' Term ' . $term;
+        $header = 'eiMaths Quiz Grade ' . $level . ' Term ' . $term;
         // dd($public_quizzes_term);
 
         return view('home.home', compact('public_quizzes', 'registered_only_quizzes', 'header', 'public_quizzes_term', 'levelCheck', 'level', 'term'));
+    }
+
+    public function homeSection($level, $term, $section)
+    {
+
+        $public_quizzes = Quiz::whereHas('questions')->where('public', true)->orderBy('id', 'desc')->withCount('questions')->get();
+        $public_quizzes_term = Quiz::whereHas('questions')
+            ->where(['public' => true, 'level' => $level, 'term' => $term, 'section' => $section])
+            // ->orderBy('term', 'asc')
+            ->orderBy('id', 'Desc')
+            ->withCount('questions')
+            ->get();
+        // ->groupBy('term');
+        $registered_only_quizzes = Quiz::whereHas('questions')
+            ->where(['published' => true, 'level' => $level, 'term' => $term, 'section' => $section])
+            // ->orderBy('term', 'asc')
+            ->orderBy('id', 'Desc')
+            ->withCount('questions')
+            ->get();
+        // ->groupBy('term');
+        $levelCheck = 3;
+        $header = 'eiMaths Quiz Grade ' . $level . ' Term ' . $term .' Level-' . $section;
+        // dd($public_quizzes_term);
+
+        return view('home.home', compact('public_quizzes', 'registered_only_quizzes', 'header', 'public_quizzes_term', 'levelCheck', 'level', 'term','section'));
     }
 
     public function leaderboard(Request $request, $quiz_slug = '0')
