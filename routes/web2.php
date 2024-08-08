@@ -130,3 +130,4 @@ Route::post('/students-logout', [App\Http\Controllers\ContactController::class, 
 Route::get('manon', function (Request $request) {
     return $request;
 });
+

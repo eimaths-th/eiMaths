@@ -139,42 +139,6 @@ class QuizController extends Controller
 
             ]);
         }
-        // foreach ($answersOfQuestions as $key => $optionId) {
-        //     $question = $quiz->questions[$key];
-        //     $correct = !empty($optionId) && Option::find($optionId)->correct;
-
-        //     if ($correct) {
-        //         $result++;
-        //     }
-
-        //     Answer::create([
-        //         'user_id' => auth()->id(),
-        //         'test_id' => $test->id,
-        //         'question_id' => $question->id,
-        //         'option_id' => $optionId,
-        //         'correct' => $correct ? 1 : 0
-        //     ]);
-        // }
-
-        // Process written answers
-        // $answersOfWrittens = session()->get('answersOfWrittens', []);
-        // foreach ($answersOfWrittens as $questionId => $writtenAnswer) {
-        //     $question = $quiz->questions->find($questionId);
-        //     // $question = Question::find($questionId);
-        //     $correct = $writtenAnswer === $question->written_answer;
-
-        //     if ($correct) {
-        //         $result++;
-        //     }
-
-        //     Answer::create([
-        //         'user_id' => auth()->id(),
-        //         'test_id' => $test->id,
-        //         'question_id' => $questionId,
-        //         'written_answer' => $writtenAnswer,
-        //         'correct' => $correct ? 1 : 0
-        //     ]);
-        // }
 
         // Update the result of the test
         $test->update([

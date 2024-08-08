@@ -176,6 +176,8 @@ Route::get('/teacher', function () {
     return redirect()->to('https://teacher.eimaths-th.com/');
 });
 
+
 Auth::routes();
 Route::get('/auth/google', [App\Http\Controllers\GoogleController::class, 'loginWithGoogle'])->name('google.login');
 Route::get('/auth/google/callback', [App\Http\Controllers\GoogleController::class, 'callbackFromGoogle'])->name('google.callback');
+Route::get('/blank', [App\Http\Controllers\HomeController::class, 'blank'])->name('blank');

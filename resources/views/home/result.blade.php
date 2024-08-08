@@ -17,26 +17,36 @@
                         <tbody class="bg-white">
                             {{-- @if (auth()->user()?->is_admin) --}}
                             <tr class="w-28">
+                            <tr class="w-28">
                                 <th
                                     class="border border-solid bg-gray-100 px-6 py-3 text-left text-sm font-semibold uppercase text-slate-600">
-                                    User</th>
+                                    Quiz
+                                </th>
                                 <td class="border border-solid px-6 py-3">
-                                    @php
-                                        if ($test->type_user === 'user' && $test->user) {
-                                            $testUser = $test->user;
-                                        } elseif ($test->type_user === 'student' && $test->student) {
-                                            $testUser = $test->student;
-                                        } else {
-                                            $testUser = null;
-                                        }
-                                    @endphp
-                                    @if ($testUser)
-                                        {{ $testUser->nickname ?? $testUser->name }}
-                                        ({{ $testUser->email ?? $testUser->name }})
-                                    @else
-                                        User not found
-                                    @endif
+                                    {{ $test->quiz->title }}
+                                    {{-- @endif --}}
                                 </td>
+                            </tr>
+                            <th
+                                class="border border-solid bg-gray-100 px-6 py-3 text-left text-sm font-semibold uppercase text-slate-600">
+                                User</th>
+                            <td class="border border-solid px-6 py-3">
+                                @php
+                                    if ($test->type_user === 'user' && $test->user) {
+                                        $testUser = $test->user;
+                                    } elseif ($test->type_user === 'student' && $test->student) {
+                                        $testUser = $test->student;
+                                    } else {
+                                        $testUser = null;
+                                    }
+                                @endphp
+                                @if ($testUser)
+                                    {{ $testUser->nickname ?? $testUser->name }}
+                                    ({{ $testUser->email ?? $testUser->name }})
+                                @else
+                                    User not found
+                                @endif
+                            </td>
                             </tr>
                             {{-- @endif --}}
                             <tr class="w-28">
@@ -66,6 +76,7 @@
                                     {{-- @endif --}}
                                 </td>
                             </tr>
+
                         </tbody>
                     </table>
                 </div>
@@ -199,5 +210,14 @@
         </div>
     </div>
 @endsection
-@push('script')
+@push('scripts')
+    <script>
+        window.addEventListener('popstate', function(event) {
+            // Redirect to the home page
+            window.location.href = '/quiz/{{ $test->quiz->slug }}'; // Change '/' to the URL of your home page if it's different
+        });
+
+        // Push a new state to make sure the popstate event is triggered
+        history.pushState(null, null, window.location.href);
+    </script>
 @endpush
