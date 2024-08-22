@@ -146,6 +146,10 @@
                     name: 'term'
                 },
                 {
+                    data: 'section',
+                    name: 'section'
+                },
+                {
                     data: 'action',
                     name: 'action',
                     orderable: false,
