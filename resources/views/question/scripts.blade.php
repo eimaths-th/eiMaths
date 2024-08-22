@@ -210,7 +210,7 @@
             var written = $('#written').val();
             var selectedType = $('#type').val();
 
-            console.log(written);
+            // console.log(written);
             if (selectedType === 'written') {
                 formData['type'] = 'written';
                 formData['written_answer'] = written;
@@ -235,6 +235,8 @@
                 data: formData,
                 success: function(result) {
                     if (result.errors) {
+                        console.log(result.errors);
+
                         $('.alert-danger').html('').show().append('<strong><li>' + result
                             .errors.join('</li><li>') + '</li></strong>');
                     } else {

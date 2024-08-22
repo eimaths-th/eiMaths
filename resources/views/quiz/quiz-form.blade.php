@@ -105,7 +105,7 @@
                         @enderror
                     </div>
 
-                    <div class="mt-4 form-check">
+                    {{-- <div class="mt-4 form-check">
                         <div class="flex items-center">
                             <label for="published" class="form-label">Published</label>
                             <input type="checkbox" id="published" class="form-check-input ml-2" name="published"
@@ -114,7 +114,7 @@
                         @error('published')
                             <span class="text-red-600 text-sm mt-2">{{ $message }}</span>
                         @enderror
-                    </div>
+                    </div> --}}
 
                     <div class="mt-4 form-check">
                         <div class="flex items-center">

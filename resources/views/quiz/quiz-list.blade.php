@@ -60,10 +60,12 @@
                                         <th> SLUG </th>
                                         <th> DESCRIPTION </th>
                                         <th> QUESTIONS </th>
-                                        <th> PUBLISHED </th>
+                                        {{-- <th> PUBLISHED </th> --}}
                                         <th> PUBLIC </th>
-                                        <th> Level</th>
+                                        <th> Grade</th>
                                         <th> Term</th>
+                                        <th> Level</th>
+
                                         <th> </th>
                                     </tr>
                                 </thead>

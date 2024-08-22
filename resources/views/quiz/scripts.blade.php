@@ -123,13 +123,13 @@
                         $(td).addClass('text-nowrap').css('width', '1%');
                     }
                 },
-                {
-                    data: 'published',
-                    name: 'published',
-                    createdCell: function(td, cellData, rowData, row, col) {
-                        $(td).addClass('text-nowrap').css('width', '1%');
-                    }
-                },
+                // {
+                //     data: 'published',
+                //     name: 'published',
+                //     createdCell: function(td, cellData, rowData, row, col) {
+                //         $(td).addClass('text-nowrap').css('width', '1%');
+                //     }
+                // },
                 {
                     data: 'public',
                     name: 'public',
@@ -224,7 +224,7 @@
                     term: $('#term').val(),
                     section: $('#section').val(),
                     questions: $('#questions').val(),
-                    published: $('#published').is(':checked') ? 1 : 0,
+                    // published: $('#published').is(':checked') ? 1 : 0,
                     public: $('#public').is(':checked') ? 1 : 0,
                     _token: token,
                 },
@@ -291,7 +291,7 @@
                     $('#term').val(res.quiz.term);
                     $('#section').val(res.quiz.section);
 
-                    $('#published').prop('checked', res.quiz.published);
+                    // $('#published').prop('checked', res.quiz.published);
                     $('#public').prop('checked', res.quiz.public);
 
                     $('#CreateModal').modal('show');
@@ -320,7 +320,7 @@
                     term: $('#term').val(),
                     section: $('#section').val(),
                     questions: $('#questions').val(), // No need to add [] here
-                    published: $('#published').is(':checked') ? 1 : 0,
+                    // published: $('#published').is(':checked') ? 1 : 0,
                     public: $('#public').is(':checked') ? 1 : 0,
                     _token: token,
                 },

@@ -319,9 +319,9 @@
 
 @endcan
 @can('quiz-manage')
-    <li class="nav-item {{ in_array(Request::route()->getName(), ['questions', 'quizzes']) ? 'menu-open' : '' }}">
+    <li class="nav-item {{ in_array(Request::route()->getName(), ['questions', 'quizzes','questions-quizzes.create']) ? 'menu-open' : '' }}">
         <a href="#"
-            class="nav-link {{ in_array(Request::route()->getName(), ['questions', 'quizzes']) ? 'active' : '' }}">
+            class="nav-link {{ in_array(Request::route()->getName(), ['questions', 'quizzes','questions-quizzes.create']) ? 'active' : '' }}">
             <i class="nav-icon fas fa-user-gear"></i>
             <p>Quiz Management</p>
             <i class="fas fa-angle-left right"></i>
@@ -345,6 +345,12 @@
                 <a href="{{ route('quizzes') }}" class="nav-link {{ Request::is('quizzes') ? 'active' : '' }}">
                     <i class="nav-icon fa-solid fa-comment-dots"></i>
                     <p>Quizzes</p>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{{ route('questions-quizzes.create') }}" class="nav-link {{ Request::is('questions-quizzes.create') ? 'active' : '' }}">
+                    <i class="nav-icon fa-solid fa-comment-dots"></i>
+                    <p>Questions&Quizzes</p>
                 </a>
             </li>
             <li class="nav-item">

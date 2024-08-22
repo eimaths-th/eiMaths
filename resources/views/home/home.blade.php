@@ -11,7 +11,7 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg border border-orange-500">
                 <div class="p-6 text-gray-900">
-                    <h6 class="text-xl font-bold mb-5">Public quizzes</h6>
+                    <h6 class="text-xl font-bold mb-5"> Quiz for student</h6>
                     <div class="flex flex-wrap">
                         @switch($levelCheck)
                             @case(1)
@@ -27,7 +27,8 @@
                                                     <span class="text-lg font-bold">
                                                         Term {{ $term }}
                                                     </span>
-                                                    <p class="text-sm">Levels: <span>{{ $quiz_term->groupBy('section')->count() }}</span>
+                                                    <p class="text-sm">Levels:
+                                                        <span>{{ $quiz_term->groupBy('section')->count() }}</span>
                                                     </p>
                                                 </div>
                                             </div>
@@ -71,7 +72,10 @@
                                             <div
                                                 class="flex relative flex-col mb-6 min-w-0 break-words bg-white rounded shadow-lg xl:mb-0 border-2 border-orange-500">
                                                 <div class="flex-auto p-4">
-                                                    {{ $quiz->title }}
+                                                    <span class="text-lg font-bold">
+                                                        {{ $quiz->title }}
+
+                                                    </span>
                                                     <p class="text-sm">Questions: <span>{{ $quiz->questions_count }}</span></p>
 
                                                     </p>
@@ -111,7 +115,7 @@
             </div>
         </div>
 
-        <div class="py-12">
+        {{-- <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg border border-orange-500">
                     <div class="p-6 text-gray-900">
@@ -139,9 +143,6 @@
 
                                 @case(2)
                                     @forelse($registered_only_quizzes as $section => $quiz_section)
-                                        {{-- @php
-                                        dd($public_quizzes_term , $section , $quiz);
-                                    @endphp --}}
                                         <div class="px-4 py-2 w-full lg:w-6/12 xl:w-3/12">
                                             <a href="{{ route('home.section', [$level, $term, $section]) }}">
                                                 <div
@@ -168,7 +169,6 @@
                                                     class="flex relative flex-col mb-6 min-w-0 break-words bg-white rounded shadow-lg xl:mb-0 border-2 border-orange-500">
                                                     <div class="flex-auto p-4">
                                                         {{ $quiz->title }}
-                                                        {{-- <p class="text-sm">quizzes count: <span>{{ $quiz_term->count() }}</span> --}}
                                                         <p class="text-sm">Questions2: <span>{{ $quiz->questions_count }}</span></p>
 
                                                         </p>
@@ -204,9 +204,11 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> --}}
 
 
-        @endsection
-        @push('script')
-        @endpush
+
+    @endsection
+
+    @push('script')
+    @endpush

@@ -96,7 +96,7 @@ class QuestionController extends Controller
             }
 
             if ($countCorrect == 0) {
-                return response()->json(['errors' => 'Please add at least one correct option'], 422);
+                return response()->json(['errors' => ['Please add at least one correct option']], 422);
             }
         } else if ($validated['type'] === 'written') {
             $validatedWritten = $request->validate([
