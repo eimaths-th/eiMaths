@@ -4,6 +4,7 @@ use App\Http\Controllers\eLeanController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QuestionController;
+use App\Http\Controllers\QuestionQuizzesController;
 use App\Http\Controllers\QuizController;
 use App\Http\Controllers\QuizzesController;
 use App\Http\Controllers\ResultController;
@@ -90,6 +91,22 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('quizzes/edit/{question}', [QuizzesController::class, 'edit'])->name('quizzes.edit');
     Route::put('quizzes/update/{question}', [QuizzesController::class, 'update'])->name('quizzes.update');
     Route::delete('quizzes/{id}', [QuizzesController::class, 'destroy'])->name('quizzes.destroy');
+
+    // Route::get('questions-quizzes', [QuestionQuizzesController::class, 'index'])->name('questions-quizzes');
+    // Route::get('questions-quizzes/create', [QuestionQuizzesController::class, 'create'])->name('questions-quizzes.create');
+    Route::resource('questions-quizzes', QuestionQuizzesController::class)->names([
+        'index' => 'questions-quizzes.index',
+        'create' => 'questions-quizzes.create',
+        'store' => 'questions-quizzes.store',
+        'show' => 'questions-quizzes.show',
+        'edit' => 'questions-quizzes.edit',
+        'update' => 'questions-quizzes.update',
+        'destroy' => 'questions-quizzes.destroy',
+        // 'selected' => 'questions-quizzes.selected',
+    ]);
+    Route::get('questions-quizzes/selected/{id}', [QuestionQuizzesController::class, 'selectedQuestions'])->name('questions-quizzes.selected');
+
+
     // Route::get('quiz/{quiz}', [QuizController::class, 'show'])->name('quiz.show');
     // Route::post('quiz/{quiz}/next/{currentQuestionIndex}', [QuizController::class, 'nextQuestion'])->name('quiz.next');
 
@@ -110,6 +127,7 @@ Route::group(['middleware' => ['auth.userOrStudent']], function () {
     Route::get('quiz-home', [eLeanController::class, 'home'])->name('home3');
     Route::get('quiz-home/{level}', [eLeanController::class, 'homeLevel'])->name('home.level');
     Route::get('quiz-home/{level}/{term}', [eLeanController::class, 'homeTerm'])->name('home.term');
+    Route::get('quiz-home/{level}/{term}/{section}', [eLeanController::class, 'homeSection'])->name('home.section');
     Route::get('quiz/{quiz}', [QuizController::class, 'show'])->name('quiz.show');
     Route::post('quiz/{quiz}/next/{currentQuestionIndex}', [QuizController::class, 'nextQuestion'])->name('quiz.next');
     Route::post('quiz/{quiz}/submit', [QuizController::class, 'submit'])->name('quiz.submit');
@@ -125,8 +143,9 @@ Route::group(['middleware' => ['auth.userOrStudent']], function () {
 // });
 Route::get('/students-login', [App\Http\Controllers\ContactController::class, 'studentsLogin'])->name('student.login');
 Route::post('/students-login-check', [App\Http\Controllers\ContactController::class, 'studentsCheckLogin'])->name('student.check');
-
+Route::post('/students-logout', [App\Http\Controllers\ContactController::class, 'studentsLogout'])->name('student.logout');
 
 Route::get('manon', function (Request $request) {
     return $request;
 });
+

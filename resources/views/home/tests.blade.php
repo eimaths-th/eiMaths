@@ -78,7 +78,23 @@
                                         {{ $test->id }}
                                     </td>
                                     <td class="px-6 py-4 text-sm leading-5 text-gray-900 whitespace-no-wrap">
-                                        {{ $test->user->name ?? 'Guest' }}
+                                        {{-- {{ $test->user->name ?? 'Guest' }} --}}
+                                        @php
+                                            if ($test->type_user === 'user' && $test->user) {
+                                                $testUser = $test->user;
+                                            } elseif ($test->type_user === 'student' && $test->student) {
+                                                $testUser = $test->student;
+                                            } else {
+                                                $testUser = null;
+                                            }
+                                        @endphp
+                                        @if ($testUser)
+                                            {{ $testUser->nickname ?? $testUser->name }}
+                                            ({{ $testUser->email ?? $testUser->name }})
+                                        @else
+                                            {{ $test->user->name }}
+
+                                        @endif
                                     </td>
                                     <td class="px-6 py-4 text-sm leading-5 text-center text-gray-900 whitespace-no-wrap">
                                         {{ $test->quiz->title }}

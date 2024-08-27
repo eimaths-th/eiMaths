@@ -32,13 +32,13 @@ class QuizzesController extends Controller
                 ->editColumn('term', function ($row) {
                     return $row->term;
                 })
-                ->editColumn('published', function ($row) {
-                    $class = $row->published ? 'success' : 'danger';
-                    $text = $row->published ? 'Yes' : 'No';
-                    // $html = '<input class="disabled:opacity-50 disabled:cursor-not-allowed" type="checkbox" disabled ' . $checked . '>';
-                    $html = '<span class="badge border border-' . $class . ' text-' . $class . ' px-2 pt-5px pb-5px rounded fs-12px d-inline-flex align-items-center"><i class="fa fa-circle fs-9px fa-fw me-5px"></i>&nbsp' . $text . '</span>';
-                    return $html;
-                })
+                // ->editColumn('published', function ($row) {
+                //     $class = $row->published ? 'success' : 'danger';
+                //     $text = $row->published ? 'Yes' : 'No';
+                //     // $html = '<input class="disabled:opacity-50 disabled:cursor-not-allowed" type="checkbox" disabled ' . $checked . '>';
+                //     $html = '<span class="badge border border-' . $class . ' text-' . $class . ' px-2 pt-5px pb-5px rounded fs-12px d-inline-flex align-items-center"><i class="fa fa-circle fs-9px fa-fw me-5px"></i>&nbsp' . $text . '</span>';
+                //     return $html;
+                // })
                 ->editColumn('public', function ($row) {
                     $class = $row->public ? 'success' : 'danger';
                     $text = $row->public ? 'Yes' : 'No';
@@ -84,26 +84,28 @@ class QuizzesController extends Controller
             'slug' => 'required|string|max:255|unique:quizzes,slug',
             'level' => 'required',
             'term' => 'required',
+            'section' => 'required',
             'description' => 'nullable|string',
             'questions' => 'required|array',
             'questions.*' => 'exists:questions,id',
-            'published' => 'boolean',
+            // 'published' => 'boolean',
             'public' => 'boolean',
         ]);
 
+        // dd($request->all());
 
         $quiz = Quiz::create([
             'title' => $validated['title'],
             'slug' => $validated['slug'],
             'level' => $validated['level'],
             'term' => $validated['term'],
+            'section' => $validated['section'],
             'description' => $validated['description'],
-            'published' => $validated['published'] ?? 0,
+            'published' => 0,
             'public' => $validated['public'] ?? 0,
         ]);
 
         $quiz->questions()->attach($validated['questions']);
-        // dd($request);
 
         return response()->json(['success' => 'Quiz created successfully!']);
     }
@@ -150,10 +152,11 @@ class QuizzesController extends Controller
             'slug' => 'required|string|max:255|unique:quizzes,slug,' . $id,
             'level' => 'required',
             'term' => 'required',
+            'section' => 'required',
             'description' => 'nullable|string',
             'questions' => 'array',
             'questions.*' => 'integer|exists:questions,id',
-            'published' => 'boolean',
+            // 'published' => 'boolean',
             'public' => 'boolean',
         ]);
 
@@ -165,8 +168,9 @@ class QuizzesController extends Controller
             'slug' => $request->input('slug'),
             'level' => $request->input('level'),
             'term' => $request->input('term'),
+            'section' => $request->input('section'),
             'description' => $request->input('description'),
-            'published' => $request->boolean('published'),
+            'published' => 0,
             'public' => $request->boolean('public'),
         ]);
 

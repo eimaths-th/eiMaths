@@ -52,9 +52,9 @@
                         @enderror
                     </div>
                     <div class="row">
-                        <div class="col-lg-6">
+                        <div class="col-lg-4">
                             <div class="mt-4">
-                                <label for="level" class=" form-label">Level</label>
+                                <label for="level" class=" form-label">Grade</label>
                                 <select id="level" name="level" class="form-control">
                                     <option value="" disabled selected>Select term</option>
                                     <option value="K1">K1</option>
@@ -69,7 +69,7 @@
 
                             </div>
                         </div>
-                        <div class="col-lg-6">
+                        <div class="col-lg-4">
                             <div class="mt-4">
                                 <label for="term" class=" form-label">Term</label>
                                 <select id="term" name="term" class="form-control">
@@ -78,6 +78,19 @@
                                     <option value="2">2</option>
                                     <option value="3">3</option>
                                     <option value="4">4</option>
+                                </select>
+
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="mt-4">
+                                <label for="section" class=" form-label">Level</label>
+                                <select id="section" name="section" class="form-control">
+                                    <option value="" disabled selected>Select Level</option>
+                                    @for ($i = 1; $i <= 20; $i++)
+                                        <option value="{{ $i }}">{{ $i }}</option>
+                                    @endfor
+
                                 </select>
 
                             </div>
@@ -92,7 +105,7 @@
                         @enderror
                     </div>
 
-                    <div class="mt-4 form-check">
+                    {{-- <div class="mt-4 form-check">
                         <div class="flex items-center">
                             <label for="published" class="form-label">Published</label>
                             <input type="checkbox" id="published" class="form-check-input ml-2" name="published"
@@ -101,7 +114,7 @@
                         @error('published')
                             <span class="text-red-600 text-sm mt-2">{{ $message }}</span>
                         @enderror
-                    </div>
+                    </div> --}}
 
                     <div class="mt-4 form-check">
                         <div class="flex items-center">
