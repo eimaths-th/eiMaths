@@ -26,6 +26,9 @@ class QuestionController extends Controller
                     if ($row->type === 'written') {
                         # code...
                         return $row->written_answer;
+                    } elseif ($row->type === 'image') {
+                        # code...
+                        return $row->images()->count();
                     } else {
 
                         return $row->options()->count();
@@ -58,14 +61,15 @@ class QuestionController extends Controller
      */
     public function store(Request $request)
     {
+        // dd($request->img_name);
 
-        // dd($request);
         $validated = $request->validate([
             'text' => 'required|string',
-            'type' => 'required|in:written,options',
+            'img_name' => 'nullable|image|file|mimes:jpg,png,jpeg|max:2048',
+            'type' => 'required|in:written,options,image',
             'code_snippet' => 'nullable|string',
             'answer_explanation' => 'nullable|string',
-            'more_info_link' => 'nullable|url'
+            'more_info_link' => 'nullable|url',
         ], [
             'text.required' => 'Please add Question text',
             'type.required' => 'Please select the type of answer',
@@ -73,6 +77,9 @@ class QuestionController extends Controller
             'code_snippet.required' => 'Please add Code snippet',
             'answer_explanation.required' => 'Please add Answer Explanation',
             'more_info_link.required' => 'Please add More info link',
+            'img_name.image' => 'The file must be an image',
+            'img_name.mimes' => 'The image must be a file of type: jpg, png, jpeg',
+            'img_name.max' => 'The image may not be greater than 2MB',
         ]);
 
         if ($validated['type'] === 'options') {
@@ -104,12 +111,31 @@ class QuestionController extends Controller
             ], [
                 'written_answer.required' => 'Please provide the written answer',
             ]);
+        } elseif ($validated['type'] === 'image') {
+            $validatedImageOptions = $request->validate([
+                'imgOptions' => 'required|array',
+                'imgOptions.*.file' => 'required|file|mimes:jpg,png,jpeg|max:1024', // 1 MB = 1024 KB
+                'imgOptions.*.correct' => 'required|in:0,1',
+            ], [
+                'imgOptions.required' => 'Please add Image Options',
+                'imgOptions.*.file.required' => 'Please upload an image file',
+                'imgOptions.*.file.mimes' => 'Only jpg, png, and jpeg files are allowed',
+                'imgOptions.*.file.max' => 'Each image must not exceed 1 MB in size',
+                'imgOptions.*.correct.required' => 'Please specify if the image option is correct',
+                'imgOptions.*.correct.in' => 'The selected option correctness is invalid',
+            ]);
+            $validateCorrects = $request->imgOptions;
+            $countCorrect = 0;
+            foreach ($validateCorrects as $validateCorrect) {
+                if (isset($validateCorrect['correct']) && $validateCorrect['correct'] == 1) {
+                    $countCorrect++;
+                }
+            }
+
+            if ($countCorrect == 0) {
+                return response()->json(['errors' => ['Please add at least one correct option']], 422);
+            }
         }
-
-        // if ($countCorrect == 0) {
-        //     return response()->json(['errors' => 'Please add at least one correct option',]);
-        // }
-
         $question = new Question();
         $question->text = $validated['text'];
         $question->type = $validated['type'];
@@ -121,6 +147,16 @@ class QuestionController extends Controller
         $code = str_pad($question->id, 6, '0', STR_PAD_LEFT);
         $question->update(['code' => $code]);
 
+        if ($request->hasFile('img_name')) {
+            $imgName = $request->file('img_name');
+            if ($imgName instanceof \Illuminate\Http\UploadedFile) {
+                $fileName = time() . '_' . uniqid() . '.' . $imgName->getClientOriginalExtension();
+                $imgName->move(public_path('img_questions'), $fileName);
+                $question->update(['img_name' => $fileName]);
+            }
+        }
+
+
         if ($validated['type'] === 'options') {
             $question->options()->delete();
             foreach ($validatedOptions['options'] as $option) {
@@ -129,8 +165,24 @@ class QuestionController extends Controller
                     'correct' => $option['correct'],
                 ]);
             }
-        }
+        } elseif ($validated['type'] === 'image') {
 
+            $question->images()->delete();
+
+            foreach ($validatedImageOptions['imgOptions'] as $imgOption) {
+                if (isset($imgOption['file']) && $imgOption['file'] instanceof \Illuminate\Http\UploadedFile) {
+
+                    $fileName = time() . '_' . uniqid() . '.' . $imgOption['file']->getClientOriginalExtension();
+
+                    $filePath = $imgOption['file']->move(public_path('images_options'), $fileName);
+
+                    $question->images()->create([
+                        'img_name' => $fileName,
+                        'correct' => $imgOption['correct'],
+                    ]);
+                }
+            }
+        }
         return response()->json(['success' => 'Question created successfully!']);
     }
 
@@ -155,8 +207,20 @@ class QuestionController extends Controller
     {
         $question = Question::findOrFail($id);
         $options = $question->options; // Assuming you have a relationship defined
+        $image_options = $question->images; // Assuming you have a relationship defined
 
-        return response()->json(['question' => $question, 'options' => $options]);
+        return response()->json([
+            'question' => $question,
+            'options' => $options,
+            'image_options' => $image_options->map(function ($image) {
+                return [
+                    'file_id' => $image->id,
+                    'file_name' => $image->img_name,
+                    'file_path' => asset('images_options/' . $image->img_name),
+                    'correct' => $image->correct,
+                ];
+            }),
+        ]);
     }
 
     /**
@@ -164,62 +228,180 @@ class QuestionController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'text' => 'required|string',
-            'options' => 'required|array',
-            'options.*.text' => 'required|string',
-            'options.*.correct' => 'required|in:0,1',
-            'code_snippet' => 'required|string',
-            'answer_explanation' => 'required|string',
-            'more_info_link' => 'required|url'
+        // dd($request->all());
+        $validated = $request->validate([
+            'text' => 'required',
+            'type' => 'required|in:written,options,image',
+            'img_name' => 'nullable|image|file|mimes:jpg,png,jpeg|max:2048',
+            'code_snippet' => 'nullable',
+            'answer_explanation' => 'nullable',
+            'more_info_link' => 'nullable|url'
         ], [
             'text.required' => 'Please add Question text',
-            'options.required' => 'Please add Options',
-            'options.*.text.required' => 'Please add Options Text',
+            'type.required' => 'Please select the type of answer',
+            'type.in' => 'The selected type is invalid',
             'code_snippet.required' => 'Please add Code snippet',
             'answer_explanation.required' => 'Please add Answer Explanation',
             'more_info_link.required' => 'Please add More info link',
-
+            'img_name.image' => 'The file must be an image',
+            'img_name.mimes' => 'The image must be a file of type: jpg, png, jpeg',
+            'img_name.max' => 'The image may not be greater than 2MB',
         ]);
 
-        $validateCorrects = $request->options;
-        $countCorrect = 0;
-        foreach ($validateCorrects as $validateCorrect) {
-            if (isset($validateCorrect['correct']) && $validateCorrect['correct'] == 1) {
-                $countCorrect++;
+        if ($validated['type'] === 'options') {
+            $validatedOptions = $request->validate([
+                'options' => 'required|array',
+                'options.*.text' => 'required|string',
+                'options.*.correct' => 'required|in:0,1',
+            ], [
+                'options.required' => 'Please add Options',
+                'options.*.text.required' => 'Please add Options Text',
+                'options.*.correct.required' => 'Please specify if the option is correct',
+                'options.*.correct.in' => 'The selected option correctness is invalid',
+            ]);
+
+            $validateCorrects = $request->options;
+            $countCorrect = 0;
+            foreach ($validateCorrects as $validateCorrect) {
+                if (isset($validateCorrect['correct']) && $validateCorrect['correct'] == 1) {
+                    $countCorrect++;
+                }
             }
-        }
-        if ($countCorrect == 0) {
-            return response()->json(['errors' => 'Please add at least one correct option',]);
+
+            if ($countCorrect == 0) {
+                return response()->json(['errors' => ['Please add at least one correct option']], 422);
+            }
+        } else if ($validated['type'] === 'written') {
+            $validatedWritten = $request->validate([
+                'written_answer' => 'required',
+            ], [
+                'written_answer.required' => 'Please provide the written answer',
+            ]);
+        } elseif ($validated['type'] === 'image') {
+            if ($request->has('imgOptions')) {
+                // Validate when 'imgOptions' is present
+                $validatedImageOptions = $request->validate([
+                    'imgOptions' => 'required|array',
+                    'imgOptions.*.file' => 'required|file|mimes:jpg,png,jpeg|max:1024', // 1 MB = 1024 KB
+                    'imgOptions.*.correct' => 'required|in:0,1',
+                    'imgOptionsShow.*.correct' => 'required|in:0,1',
+                ], [
+                    'imgOptions.required' => 'Please add Image Options',
+                    'imgOptions.*.file.required' => 'Please upload an image file',
+                    'imgOptions.*.file.mimes' => 'Only jpg, png, and jpeg files are allowed',
+                    'imgOptions.*.file.max' => 'Each image must not exceed 1 MB in size',
+                    'imgOptions.*.correct.required' => 'Please specify if the image option is correct',
+                    'imgOptions.*.correct.in' => 'The selected option correctness is invalid',
+
+                    'imgOptionsShow.*.correct.required' => 'Please specify if the image option is correct',
+                    'imgOptionsShow.*.correct.in' => 'The selected option correctness is invalid',
+                ]);
+            } else {
+                // Validate when 'imgOptions' is not present
+                $validatedImageOptions = $request->validate([
+                    'imgOptionsShow' => 'required|array',
+                    // 'imgOptionsShow.*.file_id' => 'required|integer|exists:image_options,id', // Ensure file_id exists
+                    'imgOptionsShow.*.correct' => 'required|in:0,1',
+                ], [
+
+                    'imgOptionsShow.*.correct.required' => 'Please specify if the image option is correct',
+                    'imgOptionsShow.*.correct.in' => 'The selected option correctness is invalid',
+                ]);
+            }
+
+            $validateCorrects = array_merge($request->imgOptions ?? [], $request->imgOptionsShow ?? []);
+            $countCorrect = 0;
+
+            foreach ($validateCorrects as $validateCorrect) {
+                if (isset($validateCorrect['correct']) && $validateCorrect['correct'] == 1) {
+                    $countCorrect++;
+                }
+            }
+
+            if ($countCorrect == 0) {
+                return response()->json(['errors' => ['Please add at least one correct option']], 422);
+            }
         }
 
         $question = Question::findOrFail($id);
+
 
         $question->update([
             'text' => $request->input('text'),
             'code_snippet' => $request->input('code_snippet'),
             'answer_explanation' => $request->input('answer_explanation'),
             'more_info_link' => $request->input('more_info_link'),
+            'type' => $validated['type'],
+            'written_answer' => $validated['type'] === 'written' ? $validatedWritten['written_answer'] : null,
         ]);
+        if ($request->hasFile('img_name')) {
+            // Retrieve the existing image file name from the database
+            $oldImageName = $question->img_name;
 
-        // $question->text = $request->input('text');
-        // $question->code_snippet = $request->input('code_snippet');
-        // $question->answer_explanation = $request->input('answer_explanation');
-        // $question->more_info_link = $request->input('more_info_link');
-        // $question->save();
+            // Check if the old image exists and delete it
+            if ($oldImageName && file_exists(public_path('img_questions/' . $oldImageName))) {
+                unlink(public_path('img_questions/' . $oldImageName));
+            }
 
-        $options = $request->options;
-        $question->options()->delete();
-
-        foreach ($options as $option) {
-            $question->options()->create([
-                'text' => $option['text'],
-                'correct' => isset($option['correct']) ? $option['correct'] : 0,
-            ]);
+            // Upload the new image
+            $imgName = $request->file('img_name');
+            if ($imgName instanceof \Illuminate\Http\UploadedFile) {
+                $fileName = time() . '_' . uniqid() . '.' . $imgName->getClientOriginalExtension();
+                $imgName->move(public_path('img_questions'), $fileName);
+                $question->update(['img_name' => $fileName]);
+            }
         }
 
+        if ($validated['type'] === 'options') {
+            $question->images()->delete();
+            $question->options()->delete();
+            foreach ($validatedOptions['options'] as $option) {
+                $question->options()->create([
+                    'text' => $option['text'],
+                    'correct' => $option['correct'],
+                ]);
+            }
+        } elseif ($validated['type'] === 'written') {
+            $question->options()->delete();
+            $question->images()->delete();
+        } elseif ($validated['type'] === 'image') {
+            $question->options()->delete();
+
+            $fileIds = collect($request->input('imgOptionsShow', []))->pluck('file_id')->toArray();
+
+            $imagesToDelete = $question->images()->whereNotIn('id', $fileIds)->get();
+
+            foreach ($imagesToDelete as $image) {
+                $filePath = public_path('images_options/' . $image->img_name);
+                if (file_exists($filePath)) {
+                    unlink($filePath);
+                }
+            }
+
+            $question->images()->whereNotIn('id', $fileIds)->delete();
+
+            foreach ($request->input('imgOptionsShow', []) as $imgOption) {
+                if (isset($imgOption['file_id'])) {
+                    $question->images()->where('id', $imgOption['file_id'])->update(['correct' => $imgOption['correct']]);
+                }
+            }
+
+            if ($request->has('imgOptions')) {
+                foreach ($validatedImageOptions['imgOptions'] as $imgOption) {
+                    if (isset($imgOption['file']) && $imgOption['file'] instanceof \Illuminate\Http\UploadedFile) {
+                        $fileName = time() . '_' . uniqid() . '.' . $imgOption['file']->getClientOriginalExtension();
+                        $filePath = $imgOption['file']->move(public_path('images_options'), $fileName);
+
+                        $question->images()->create([
+                            'img_name' => $fileName,
+                            'correct' => $imgOption['correct'],
+                        ]);
+                    }
+                }
+            }
+        }
         // return redirect()->route('questions')->with('success', 'Question updated successfully!');
-        return response()->json(['success' => 'Question created successfully!']);
+        return response()->json(['success' => 'Question updated successfully!']);
     }
 
     /**
@@ -227,8 +409,24 @@ class QuestionController extends Controller
      */
     public function destroy($id)
     {
-        $question = Question::find($id);
-        $question->options()->delete();
+        // Retrieve the question or fail
+        $question = Question::findOrFail($id);
+
+        // Delete related data based on the type of the question
+        if ($question->type === 'options') {
+            $question->options()->delete();
+        } elseif ($question->type === 'image') {
+            $images = $question->images()->get();
+            foreach ($images as $image) {
+                $filePath = public_path('images_options/' . $image->img_name);
+                if (file_exists($filePath)) {
+                    unlink($filePath);
+                }
+            }
+            $question->images()->delete();
+        }
+
+        // Delete the question itself
         $question->delete();
 
         return response()->json(['success' => true, 'message' => 'Delete Question Success']);

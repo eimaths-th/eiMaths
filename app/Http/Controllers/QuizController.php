@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Answer;
+use App\Models\ImageOption;
 use App\Models\Option;
 use App\Models\Question;
 use App\Models\Quiz;
@@ -78,7 +79,11 @@ class QuizController extends Controller
         }
 
         $nextQuestionIndex = $currentQuestionIndex + 1;
-
+        // dd([
+        //     'request' => $request->all(),
+        //     // 'answersOfQuestions' => $answersOfQuestions,
+        //     // 'answersOfWrittens' => $answersOfWrittens
+        // ]);
         return redirect()->route('quiz.show', [
             'quiz' => $quiz,
             'currentQuestionIndex' => $nextQuestionIndex,
@@ -87,6 +92,12 @@ class QuizController extends Controller
 
     public function submit(Request $request, Quiz $quiz)
     {
+        // dd([
+        //     'request' => $request->all(),
+        //     $quiz,
+        //     // 'answersOfQuestions' => $answersOfQuestions,
+        //     // 'answersOfWrittens' => $answersOfWrittens
+        // ]);
         $startTimeInSeconds = session('startTimeInSeconds');
         $time_spent = now()->timestamp - $startTimeInSeconds;
         $result = 0;
@@ -122,6 +133,10 @@ class QuizController extends Controller
             } elseif ($answerData['type'] === 'written') {
                 // Check if the written answer matches the correct answer
                 $correct = !empty($answer) && strtolower($answer) === strtolower($question->written_answer);
+            } elseif ($answerData['type'] === 'image') {
+                # code...
+                $option = ImageOption::find($answer);
+                $correct = !empty($option) && $option->correct;
             }
 
             if ($correct) {
@@ -133,6 +148,7 @@ class QuizController extends Controller
                 'test_id' => $test->id,
                 'question_id' => $question->id,
                 'option_id' => $answerData['type'] === 'options' ? $answer : null,
+                'image_id' => $answerData['type'] === 'image' ? $answer : null,
                 'written_answer' => $answerData['type'] === 'written' ? $answer : null,
                 'correct' => $correct ? 1 : 0,
                 'type_user' => $type_user,

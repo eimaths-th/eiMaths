@@ -71,7 +71,7 @@
                                 <div class="mb-3">
                                     <label for="selectquiz" class=" form-label">Select Quiz</label>
                                     <select id="SelectQuiz" name="SelectQuiz" class="form-control" required>
-                                        <option value="" disabled selected>Select Quiz</option>
+                                        <option value="" selected>Select Quiz</option>
                                         <option value="create">Create Quiz</option>
                                         @foreach ($quizzes as $quizze)
                                             <option value="{{ $quizze->id }}">{{ $quizze->title }}</option>
@@ -155,19 +155,19 @@
                                             </div>
                                         </div>
                                         <!--
-                                        <div class="mt-4">
-                                            <label for="questions" class="form-label">Questions</label>
-                                            <select id="questions" name="questions[]" class="select2 form-control"
-                                                multiple>
-                                            </select>
-                                            @error('questions')
-                                                <span class="text-red-600 text-sm mt-2">{{ $message }}</span>
-                                            @enderror
-                                        </div>
-                                        -->
-                                        <div class="mt-4 form-check">
+                                                        <div class="mt-4">
+                                                            <label for="questions" class="form-label">Questions</label>
+                                                            <select id="questions" name="questions[]" class="select2 form-control"
+                                                                multiple>
+                                                            </select>
+                                                            @error('questions')
+        <span class="text-red-600 text-sm mt-2">{{ $message }}</span>
+    @enderror
+                                                        </div>
+                                                        -->
+                                        {{-- <div class="mt-4 form-check">
                                             <div class="flex items-center">
-                                                 <label for="published" class="form-label">Published</label>
+                                                <label for="published" class="form-label">Published</label>
                                                 <input type="checkbox" id="published" class="form-check-input ml-2"
                                                     name="published"
                                                     {{ old('published', $quiz->published ?? false) ? 'checked' : '' }}>
@@ -175,7 +175,7 @@
                                             @error('published')
                                                 <span class="text-red-600 text-sm mt-2">{{ $message }}</span>
                                             @enderror
-                                        </div>
+                                        </div> --}}
 
                                         <div class="mt-4 form-check">
                                             <div class="flex items-center">
@@ -195,7 +195,8 @@
 
                                     <div class="my-4">
                                         <label for="questions_id" class="form-label">Select Questions</label>
-                                        <select id="questions_id" name="questions_id[]" class="select2 form-control" multiple>
+                                        <select id="questions_id" name="questions_id[]" class="select2 form-control"
+                                            multiple>
                                         </select>
                                         @error('questions_id')
                                             <span class="text-red-600 text-sm mt-2">{{ $message }}</span>
@@ -216,14 +217,27 @@
                                                         <div class="text-danger mt-2">{{ $message }}</div>
                                                     @enderror
                                                 </div>
+                                                <div class="mb-3">
+                                                    <label for="text" class="form-label">Question Image</label>
+                                                    <div id="add-image-question-container">
+                                                        <input type="file" id="imageQuestion" name="imageQuestion"
+                                                            class="form-control">
+
+                                                    </div>
+
+                                                    @error('text')
+                                                        <div class="text-danger mt-2">{{ $message }}</div>
+                                                    @enderror
+                                                </div>
                                                 @php
                                                     // dd($question);
                                                 @endphp
                                                 <div class="mb-3">
-                                                    <select name="type" id="type" class="form-control">
+                                                    <select name="type" id="SelectType" class="form-control">
                                                         <option value="">Select type answer</option>
                                                         <option value="options">Options</option>
                                                         <option value="written">Written</option>
+                                                        <option value="image">Image</option>
                                                     </select>
                                                 </div>
 
@@ -240,7 +254,7 @@
                                                     <label for="options" class="form-label">Question options</label>
                                                     <br>
                                                     <button type="button" class="btn btn-sm btn-primary mt-2 addOption2"
-                                                        id="add-option-2">Add</button>
+                                                        id="addOption2">Add</button>
                                                     <div id="options-container">
                                                         @if (old('options', $options ?? []))
                                                             @foreach (old('options', $options ?? []) as $index => $option)
@@ -275,6 +289,22 @@
                                                         <div class="text-danger mt-2">{{ $message }}</div>
                                                     @enderror
                                                 </div>
+                                                <div class="mb-3 image_type">
+                                                    <label for="image" class="form-label">Question Image
+                                                        Options</label>
+                                                    <br>
+                                                    <button type="button" class="btn btn-sm btn-primary mt-2"
+                                                        id="addOptionImg">Add</button>
+
+                                                    <div id="image-options-container">
+
+
+                                                    </div>
+                                                    @error('image_options')
+                                                        <div class="text-danger mt-2">{{ $message }}</div>
+                                                    @enderror
+                                                </div>
+
 
                                                 <div class="mb-3">
                                                     <label for="code_snippet" class="form-label">Hint</label>
@@ -316,7 +346,8 @@
                                 </form>
                                 <div class="mt-3">
                                     <button id="AddQuestionForm" class="btn btn-info">Add Question</button>
-                                    <button id="SubmitQuestionForm" type="submit" class="btn btn-success">Submit</button>
+                                    <button id="SubmitQuestionForm" type="submit"
+                                        class="btn btn-success">Submit</button>
 
                                 </div>
 
