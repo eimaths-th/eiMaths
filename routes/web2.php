@@ -81,7 +81,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('questions/create', [QuestionController::class, 'create'])->name('questions.create');
     Route::post('questions/store', [QuestionController::class, 'store'])->name('questions.store');
     Route::get('questions/edit/{question}', [QuestionController::class, 'edit'])->name('questions.edit');
-    Route::PUT('questions/update/{question}', [QuestionController::class, 'update'])->name('questions.update');
+    // Route::PUT('questions/update/{question}', [QuestionController::class, 'update'])->name('questions.update');
     Route::post('questions/update/{question}', [QuestionController::class, 'update'])->name('questions.update');
     Route::delete('questions/{id}', [QuestionController::class, 'destroy'])->name('questions.destroy');
     Route::get('questions/list', [QuizzesController::class, 'rec'])->name('questions.list');
