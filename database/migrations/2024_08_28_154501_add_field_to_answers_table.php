@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::table('answers', function (Blueprint $table) {
             // $table->foreignId('image_id')->nullable()->constrained('img_options')->onDelete('set null');
 
-            $table->string('image_id')->nullable()->after('options_id');
+            $table->string('image_id')->nullable()->after('option_id');
 
         });
     }
