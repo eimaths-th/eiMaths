@@ -64,7 +64,7 @@ class QuestionController extends Controller
         // dd($request->img_name);
 
         $validated = $request->validate([
-            'text' => 'required|string',
+            'text' => 'nullable|string',
             'img_name' => 'nullable|image|file|mimes:jpg,png,jpeg|max:2048',
             'type' => 'required|in:written,options,image',
             'code_snippet' => 'nullable|string',

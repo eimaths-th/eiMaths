@@ -473,7 +473,7 @@
                 formData1.append('img_name', file);
             }
             formData1.append('_token', token);
-            formData1.append('_method', 'PUT');
+            // formData1.append('_method', 'PUT');
 
             var selectedType = $('#type').val();
 

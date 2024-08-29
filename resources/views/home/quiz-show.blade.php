@@ -104,7 +104,7 @@
 
                             <span class="text-bold">Question {{ $currentQuestionIndex + 1 }} of
                                 {{ $questionsCount }}:</span>
-                            <h2 class="mb-4 text-2xl">{{ $currentQuestion->text }}</h2>
+                            <h2 class="mb-4 text-2xl">{{ $currentQuestion->text ?? ''}}</h2>
                             @if ($currentQuestion->img_name)
                                 <div class="img-container mb-4">
                                     <img class="img-custom" src="{{ asset('img_questions/' . $currentQuestion->img_name) }}"

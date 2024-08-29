@@ -171,7 +171,7 @@ class QuestionQuizzesController extends Controller
         $commonRules = [
             'type' => 'required',
             'questions' => 'required|array',
-            'questions.*.text' => 'required|string',
+            'questions.*.text' => 'nullable|string',
             'questions.*.type' => 'required|string|in:options,written,image',
             'questions.*.code_snippet' => 'nullable|string',
             'questions.*.answer_explanation' => 'nullable|string',
