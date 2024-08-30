@@ -153,19 +153,19 @@ class HomeController extends Controller
             ->orderBy('id', 'Desc')
             ->withCount('questions')
             ->get();
-            // ->groupBy('term');
+        // ->groupBy('term');
         $registered_only_quizzes = Quiz::whereHas('questions')
             ->where(['published' => true, 'level' => $level, 'term' => $term])
             // ->orderBy('term', 'asc')
             ->orderBy('id', 'Desc')
             ->withCount('questions')
             ->get();
-            // ->groupBy('term');
+        // ->groupBy('term');
         $levelCheck = 2;
-        $header = 'eiMaths Quiz Level ' . $level .' Term ' . $term;
+        $header = 'eiMaths Quiz Level ' . $level . ' Term ' . $term;
         // dd($public_quizzes_term);
 
-        return view('home.home', compact('public_quizzes', 'registered_only_quizzes', 'header', 'public_quizzes_term', 'levelCheck', 'level','term'));
+        return view('home.home', compact('public_quizzes', 'registered_only_quizzes', 'header', 'public_quizzes_term', 'levelCheck', 'level', 'term'));
     }
 
 
@@ -269,5 +269,39 @@ class HomeController extends Controller
             'header' => $header,
 
         ]);
+    }
+
+    function normalizeNumber($number)
+    {
+        $digits = str_split($number);
+        sort($digits);
+        return implode('', $digits);
+    }
+
+    function normalizeNumber1()
+    {
+        $uniqueNumbers = array();
+
+        for ($i = 0; $i < 1000; $i++) {
+            $number = str_pad($i, 3, '0', STR_PAD_LEFT);
+            $normalized = $this->normalizeNumber($number); // Use method call with $this
+            $uniqueNumbers[$normalized] = true;
+        }
+
+        // Get the array keys to show results
+        $uniqueNumbers = array_keys($uniqueNumbers);
+        sort($uniqueNumbers); // Sort numbers
+
+        // Show results
+        foreach ($uniqueNumbers as $key => $uniqueNumber) {
+            // Print each unique number followed by a new line
+            echo '[' . $key . '] = ' . $uniqueNumber . PHP_EOL ;
+        }
+        echo '<br> <br><br><br>';
+        foreach ($uniqueNumbers as $key => $uniqueNumber1) {
+            // Print each unique number followed by a new line
+            echo $uniqueNumber1 . PHP_EOL ;
+        }
+        // print_r($uniqueNumbers);
     }
 }

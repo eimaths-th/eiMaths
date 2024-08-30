@@ -230,7 +230,7 @@ class QuestionController extends Controller
     {
         // dd($request->all());
         $validated = $request->validate([
-            'text' => 'required',
+            'text' => 'nullable|string',
             'type' => 'required|in:written,options,image',
             'img_name' => 'nullable|image|file|mimes:jpg,png,jpeg|max:2048',
             'code_snippet' => 'nullable',
