@@ -71,6 +71,64 @@
 
 @section('style')
     @include('users.style')
+    <style>
+        .custom-file-input {
+            position: relative;
+            display: inline-block;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .custom-file-input input[type="file"] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            cursor: pointer;
+            height: 100%;
+            width: 100%;
+        }
+
+        .custom-file-input .btn-custom-file {
+            background-color: #007bff;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            border: 1px solid transparent;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        .custom-file-input .btn-custom-file:hover {
+            background-color: #0056b3;
+        }
+
+        .custom-file-input .file-name {
+            margin-left: 10px;
+            vertical-align: middle;
+            font-size: 14px;
+        }
+
+        .img-thumbnail {
+            max-width: auto;
+            /* Adjust size as needed */
+            height: 100px;
+            /* Maintain aspect ratio */
+        }
+
+        .image-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .image-item {
+            /* flex: 1 1 calc(50% - 10px); */
+            /* Two items per row with a gap */
+            box-sizing: border-box;
+            /* text-align: center; */
+        }
+    </style>
 @endsection
 
 @section('content')

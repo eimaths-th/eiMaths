@@ -4,6 +4,8 @@
             if (selectedType === 'written') {
                 $('.options_type').hide();
                 $('.written_type').show();
+                $('.image_type').hide();
+
                 if (res) {
                     $('#written').val(res.question.written_answer); // Set written answer if applicable
 
@@ -11,15 +13,25 @@
             } else if (selectedType === 'options') {
                 $('.written_type').hide();
                 $('.options_type').show();
+                $('.image_type').hide();
+
+            } else if (selectedType === 'image') {
+                $('.written_type').hide();
+                $('.options_type').hide();
+                $('.image_type').show();
+
             } else {
                 $('.written_type').hide();
                 $('.options_type').hide();
+                $('.image_type').hide();
+
             }
         }
 
         // Hide type-specific fields initially
         $('.written_type').hide();
         $('.options_type').hide();
+        $('.image_type').hide();
 
         var token = '{{ csrf_token() }}';
 
@@ -123,9 +135,26 @@
             optionIndex++;
         }
 
+        $(document).on('change', 'input[type="file"]', function() {
+            var fileName = $(this).val().split('\\').pop();
+            $(this).siblings('.file-name').text(fileName);
+        });
+
+
+
+        $(document).on('click', '.remove-option-img', function() {
+            $(this).closest('.img-option-item').remove();
+        });
+        $(document).on('click', '.remove-option-img-show', function() {
+            $(this).closest('.show-img-option-item').remove();
+        });
+
+
+
         $('#add-option').on('click', function() {
             addOption();
         });
+
 
         $(document).on('change', '#type', function() {
             var selectedType = $(this).val();
@@ -194,49 +223,72 @@
             $('#CreateModal').modal('show');
         });
 
+        //for img
+
         $(document).on('click', '#SubmitCreateForm', function(e) {
             e.preventDefault();
             $('.alert-danger').html('').hide();
             $('.alert-success').html('').hide();
 
-            var formData = {
-                text: $('#text').val(),
-                code_snippet: $('#code_snippet').val(),
-                answer_explanation: $('#answer_explanation').val(),
-                more_info_link: $("#more_info_link").val(),
-                _token: token
-            };
+            // Initialize formData as a FormData object
+            var formData = new FormData();
+
+            formData.append('text', $('#text').val());
+            formData.append('code_snippet', $('#code_snippet').val());
+            formData.append('answer_explanation', $('#answer_explanation').val());
+            formData.append('more_info_link', $("#more_info_link").val());
+            formData.append('_token', token);
+
+            var fileInput = document.getElementById('imageQuestion');
+            var file = fileInput.files[0]; // Get the first file (if multiple, you can loop)
+
+            // Append the file to FormData
+            if (file) {
+                formData.append('img_name', file);
+            }
 
             var written = $('#written').val();
             var selectedType = $('#type').val();
 
-            // console.log(written);
             if (selectedType === 'written') {
-                formData['type'] = 'written';
-                formData['written_answer'] = written;
+                formData.append('type', 'written');
+                formData.append('written_answer', written);
             } else if (selectedType === 'options') {
-                formData['type'] = 'options';
-                var options = [];
+                formData.append('type', 'options');
                 $('#options-container .option-item').each(function(index, element) {
                     var optionText = $(element).find('input[type="text"]').val();
                     var isCorrect = $(element).find('input[type="checkbox"]').is(':checked') ?
                         1 : 0;
-                    options.push({
-                        text: optionText,
-                        correct: isCorrect
-                    });
+                    formData.append('options[' + index + '][text]', optionText);
+                    formData.append('options[' + index + '][correct]', isCorrect);
                 });
-                formData['options'] = options;
+            } else if (selectedType === 'image') {
+                formData.append('type', 'image');
+                $('#image-options-container .img-option-item').each(function(index, element) {
+                    var imgFileInput = $(element).find('input[type="file"]')[0];
+                    var imgOptionFile = imgFileInput.files[0];
+                    var isCorrect = $(element).find('input[type="checkbox"]').is(':checked') ?
+                        1 : 0;
+
+                    if (imgOptionFile) {
+                        formData.append('imgOptions[' + index + '][file]', imgOptionFile);
+                    }
+                    formData.append('imgOptions[' + index + '][correct]', isCorrect);
+                });
             }
+            $('#loadingi').show();
 
             $.ajax({
                 url: "{{ route('questions.store') }}",
                 method: 'post',
                 data: formData,
+                processData: false, // Important for sending FormData
+                contentType: false, // Important for sending FormData
                 success: function(result) {
+                    $('#loadingi').hide();
+
                     if (result.errors) {
                         console.log(result.errors);
-
                         $('.alert-danger').html('').show().append('<strong><li>' + result
                             .errors.join('</li><li>') + '</li></strong>');
                     } else {
@@ -254,86 +306,25 @@
                     }
                 },
                 error: function(xhr) {
-                    if (xhr.status === 422 || xhr.status === 400) {
-                        var errors = xhr.responseJSON.errors || [xhr.responseJSON.errors];
-                        var errorList = '';
-                        $.each(errors, function(key, value) {
-                            errorList += '<li>' + value + '</li>';
-                        });
-                        $('.alert-danger').show().html('<strong>' + errorList +
-                            '</strong>');
-                    }
+                    $('#loadingi').hide();
+
+                    // if (xhr.status === 422 || xhr.status === 400) {
+                    var errors = xhr.responseJSON.errors || [xhr.responseJSON.errors];
+                    var errorList = '';
+                    $.each(errors, function(key, value) {
+                        errorList += '<li>' + value + '</li>';
+                    });
+                    $('.alert-danger').show().html('<strong>' + errorList +
+                        '</strong>');
+                    toastr.error(errorList, {
+                        timeOut: 5000
+                    });
+                    // }
                 }
             });
+            // $('#loadingi').hide();
+
         });
-
-        // $(document).on('click', '#SubmitCreateForm', function(e) {
-        //     // $('#SubmitCreateForm').click(function(e) {
-        //     // console.log('work');
-        //     e.preventDefault();
-        //     $('.alert-danger').html('');
-        //     $('.alert-danger').hide();
-        //     $('.alert-success').html('');
-        //     $('.alert-success').hide();
-        //     var options = [];
-        //     $('#options-container .option-item').each(function(index, element) {
-        //         var optionText = $(element).find('input[type="text"]').val();
-        //         var isCorrect = $(element).find('input[type="checkbox"]').is(':checked') ? 1 :
-        //             0;
-        //         options.push({
-        //             text: optionText,
-        //             correct: isCorrect
-        //         });
-        //     });
-        //     $.ajax({
-        //         url: "{{ route('questions.store') }}",
-        //         method: 'post',
-        //         data: {
-        //             text: $('#text').val(),
-        //             options: options,
-        //             code_snippet: $('#code_snippet').val(),
-        //             answer_explanation: $('#answer_explanation').val(),
-        //             more_info_link: $("#more_info_link").val(),
-
-        //             _token: token,
-        //         },
-        //         success: function(result) {
-        //             // console.log(result);
-        //             if (result.errors) {
-        //                 $('.alert-danger').html('');
-        //                 $('.alert-danger').show();
-        //                 $('.alert-danger').append('<strong><li>' + result.errors +
-        //                     '</li></strong>');
-
-        //             } else {
-        //                 $('.alert-danger').hide();
-        //                 $('.alert-success').show();
-        //                 $('.alert-success').append('<strong><li>' + result.success +
-        //                     '</li></strong>');
-        //                 toastr.success(result.success, {
-        //                     timeOut: 5000
-        //                 });
-        //                 $('#Listview').DataTable().ajax.reload();
-        //                 $("#AddDepartment").val(null).trigger("change")
-        //                 $("#AddPosition").val(null).trigger("change")
-        //                 $('.form').trigger('reset');
-        //                 $('#CreateModal').modal('hide');
-
-        //             }
-        //         },
-        //         error: function(xhr) {
-        //             if (xhr.status === 422 || xhr.status === 400) {
-        //                 var errors = xhr.responseJSON.errors || [xhr.responseJSON.errors];
-        //                 var errorList = '';
-        //                 $.each(errors, function(key, value) {
-        //                     errorList += '<li>' + value + '</li>';
-        //                 });
-        //                 $('.alert-danger').show().html('<strong>' + errorList +
-        //                     '</strong>');
-        //             }
-        //         }
-        //     });
-        // });
 
         let id
         let questionId
@@ -371,6 +362,24 @@
                     res.options.forEach(function(option) {
                         addOption(option.text, option.correct);
                     });
+
+
+                    if (res.question.img_name === null) {
+                        $('#show-image-question-container').hide()
+                        $('#add-image-question-container').show()
+                    } else {
+                        $('#add-image-question-container').hide()
+
+                        $('#show-image-question-container').show()
+                        showImg1(res.question.img_name);
+                    }
+
+
+                    $('#image-options-container').html('');
+                    res.image_options.forEach(function(imgOption) {
+                        showImg2(imgOption);
+                    });
+
                     // $('#questionForm').attr('action','{{ route('questions.update', ':id') }}'.replace(':id',questionId));
                     // $('#questionForm').attr('method', 'POST');
                     // $('#questionForm').append('<input type="hidden" name="_method" value="PUT">');
@@ -379,79 +388,186 @@
             });
         });
 
+        function showImg1(imgName) {
+            var imgUrl = '/img_questions/' + imgName;
+            var imgElement = `
+                    <div class="col-xs-2 col-sm-2 col-md-2">
+                        <img src="` + imgUrl + `" alt="Question Image" class="img-thumbnail">
+                    </div>
+                    <div class="col-auto text-nowrap">
+                        <button type="button" class="btn btn-danger btn-sm" id="remove-show-image-question-container">
+                            <i class="fa fa-trash"></i>
+                        </button>
+                    </div>
+
+            `;
+
+            $('#show-image-question-container').html(imgElement);
+        }
+
+        $(document).on('click', '#remove-show-image-question-container', function() {
+            $('#show-image-question-container').empty(); // Clear the image container
+            $('#add-image-question-container').show();
+
+        });
+
+        $('#add-option-img').on('click', function() {
+            addOptionImg();
+        });
+
+        function addOptionImg(file = '', correct = 0) {
+            $('#image-options-container').append(`
+                <div class="img-option-item mt-2 form-row align-items-center">
+                    <div class="col-xs-10 col-sm-10 col-md-10 text-center">
+                        <input  class="form-control" type="file"  name="image_options[${optionIndex}][file]" value="${file}" autocomplete="off" />
+                    </div>
+                    <div class="col-auto text-nowrap">
+                        <input type="hidden" name="image_options[${optionIndex}][correct]" value="0">
+                        <input type="checkbox" class="text-left" name="image_options[${optionIndex}][correct]" value="1" ${correct ? 'checked' : ''}> Correct&nbsp
+                        <button type="button" class="btn btn-danger btn-sm remove-option-img">&nbsp&nbsp<i class="fa fa-trash"></i>&nbsp&nbsp</button>
+                    </div>
+                </div>
+        `);
+            optionIndex++;
+        }
+        var assetUrl = "{{ asset('images_options/') }}";
+
+        function showImg2(imgOption) {
+            var index = $('.show-img-option-item').length; // Generate unique index
+            var html = '<div class="show-img-option-item mt-2 form-row align-items-center">';
+            html += '<div class="col-xs-2 col-sm-2 col-md-2">';
+            html += '<img src="' + imgOption.file_path + '" class="img-thumbnail" alt="Image option" />';
+            html += '<input type="hidden" name="image_options[' + index + '][file_id]" value="' + imgOption
+                .file_id + '" />'; // Storing file_id
+            html += '<input type="hidden" name="image_options[' + index + '][file_path]" value="' + imgOption
+                .file_path + '" />';
+            html += '</div>';
+            html += '<div class="col-auto text-nowrap">';
+            html += '<input type="hidden" name="image_options[' + index + '][correct]" value="' + (imgOption
+                .correct ? '1' : '0') + '">';
+            html += '<input type="checkbox" class="text-left" name="image_options[' + index +
+                '][correct]" value="1" ' + (imgOption.correct ? 'checked' : '') + '> Correct&nbsp;';
+            html +=
+                '<button type="button" class="btn btn-danger btn-sm remove-option-img-show">&nbsp;&nbsp;<i class="fa fa-trash"></i>&nbsp;&nbsp;</button>';
+            html += '</div>';
+            html += '</div>';
+
+            $('#image-options-container').append(html);
+        }
 
         $(document).on('click', '#SubmitEditForm', function(e) {
             e.preventDefault();
-            $('.alert-danger').html('');
-            $('.alert-danger').hide();
-            $('.alert-success').html('');
-            $('.alert-success').hide();
+            $('.alert-danger').html('').hide();
+            $('.alert-success').html('').hide();
 
-            var options = [];
-            $('#options-container .option-item').each(function(index, element) {
-                var optionText = $(element).find('input[type="text"]').val();
-                var isCorrect = $(element).find('input[type="checkbox"]').is(':checked') ? 1 :
-                    0;
-                options.push({
-                    text: optionText,
-                    correct: isCorrect
+            var formData1 = new FormData();
+            formData1.append('text', $('#text').val());
+            formData1.append('code_snippet', $('#code_snippet').val());
+            formData1.append('answer_explanation', $('#answer_explanation').val());
+            formData1.append('more_info_link', $("#more_info_link").val());
+            var fileInput = document.getElementById('imageQuestion');
+            var file = fileInput.files[0]; // Get the first file (if multiple, you can loop)
+
+            // Append the file to FormData
+            if (file) {
+                formData1.append('img_name', file);
+            }
+            formData1.append('_token', token);
+            // formData1.append('_method', 'PUT');
+
+            var selectedType = $('#type').val();
+
+            if (selectedType === 'written') {
+                formData1.append('type', 'written');
+                formData1.append('written_answer', $('#written').val());
+            } else if (selectedType === 'options') {
+                formData1.append('type', 'options');
+                $('#options-container .option-item').each(function(index, element) {
+                    var optionText = $(element).find('input[type="text"]').val();
+                    var isCorrect = $(element).find('input[type="checkbox"]').is(':checked') ?
+                        1 : 0;
+                    formData1.append('options[' + index + '][text]', optionText);
+                    formData1.append('options[' + index + '][correct]', isCorrect);
                 });
-            });
+            } else if (selectedType === 'image') {
+                formData1.append('type', 'image');
+                $('#image-options-container .img-option-item').each(function(index, element) {
+                    var fileInput = $(element).find('input[type="file"]')[0];
+                    var isCorrect = $(element).find('input[type="checkbox"]').is(':checked') ?
+                        1 : 0;
+                    formData1.append('imgOptions[' + index + '][file]', fileInput.files[0]);
+                    formData1.append('imgOptions[' + index + '][correct]', isCorrect);
+                });
+                $('#image-options-container .show-img-option-item').each(function(index, element) {
+                    var fileId = $(element).find('input[name$="[file_id]"]').val();
+                    var filePath = $(element).find('input[name$="[file_path]"]').val();
+                    var isCorrect = $(element).find('input[type="checkbox"]').is(':checked') ?
+                        1 : 0;
+                    formData1.append('imgOptionsShow[' + index + '][file_id]', fileId);
+                    formData1.append('imgOptionsShow[' + index + '][file_path]', filePath);
+                    formData1.append('imgOptionsShow[' + index + '][correct]', isCorrect);
+                });
+            }
 
-            // var questionId = $(this).data('id');
             var url = '{{ route('questions.update', ':id') }}';
             url = url.replace(':id', questionId);
-            console.log(questionId);
-            console.log(id);
+            $('#loadingi').show();
             $.ajax({
                 url: url,
-                method: 'PUT',
-                data: {
-                    text: $('#text').val(),
-                    options: options,
-                    code_snippet: $('#code_snippet').val(),
-                    answer_explanation: $('#answer_explanation').val(),
-                    more_info_link: $("#more_info_link").val(),
-
-                    _token: token,
-                },
+                method: 'POST',
+                data: formData1,
+                processData: false,
+                contentType: false,
                 success: function(result) {
-                    // console.log(result);
+                    $('#loadingi').hide();
                     if (result.errors) {
-                        $('.alert-danger').html('');
-                        $('.alert-danger').show();
-                        $('.alert-danger').append('<strong><li>' + result.errors +
-                            '</li></strong>');
-
+                        var errorMessages = Array.isArray(result.errors) ? result.errors
+                            .join('<br>') : result.errors;
+                        $('.alert-danger').html('').show().append('<strong><li>' +
+                            errorMessages + '</li></strong>');
+                        toastr.error(errorMessages, {
+                            timeOut: 5000
+                        });
                     } else {
                         $('.alert-danger').hide();
-                        $('.alert-success').show();
-                        $('.alert-success').append('<strong><li>' + result.success +
+                        $('.alert-success').show().append('<strong><li>' + result.success +
                             '</li></strong>');
                         toastr.success(result.success, {
                             timeOut: 5000
                         });
                         $('#Listview').DataTable().ajax.reload();
-                        $("#AddDepartment").val(null).trigger("change")
-                        $("#AddPosition").val(null).trigger("change")
                         $('.form').trigger('reset');
                         $('#CreateModal').modal('hide');
-
                     }
                 },
                 error: function(xhr) {
-                    if (xhr.status === 422 || xhr.status === 400) {
-                        var errors = xhr.responseJSON.errors || [xhr.responseJSON.errors];
-                        var errorList = '';
-                        $.each(errors, function(key, value) {
-                            errorList += '<li>' + value + '</li>';
-                        });
-                        $('.alert-danger').show().html('<strong>' + errorList +
-                            '</strong>');
-                    }
+                    // if (xhr.status === 422 || xhr.status === 400) {
+                    var errors = xhr.responseJSON.errors || [];
+                    var errorMessages = '';
+
+                    $.each(errors, function(key, value) {
+                        errorMessages += '<li>' + value + '</li>';
+                    });
+
+                    $('.alert-danger').show().html('<strong>' + errorMessages +
+                        '</strong>');
+                    toastr.error(errorMessages, {
+                        timeOut: 5000
+                    });
+                    // }
+                    // else {
+                    //     toastr.error('An unexpected error occurred.', {
+                    //         timeOut: 5000
+                    //     });
+                    // }
+                    $('#loadingi').hide();
+
                 }
             });
         });
+
+
+
 
         // $('#SubmitEditForm').click(function(e) {
         //     if (!confirm("Confirm Save ?")) return;

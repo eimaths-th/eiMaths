@@ -26,9 +26,23 @@
         $('#quizCrate').hide();
         $('.written_type').hide();
         $('.options_type').hide();
+        $('.image_type').hide();
         var token = '{{ csrf_token() }}';
         let FormIndex = 1;
-        let SelectQuiz;
+        let SelectQuiz = '';
+        let levelQuiz = '';
+        let termQuiz = '';
+        let sectionQuiz = '';
+        // console.log(SelectQuiz);
+        $(document).on('change', '#level', function() {
+            levelQuiz = $(this).val(); // Get selected quiz ID
+        });
+        $(document).on('change', '#section', function() {
+            sectionQuiz = $(this).val(); // Get selected quiz ID
+        });
+        $(document).on('change', '#term', function() {
+            termQuiz = $(this).val(); // Get selected quiz ID
+        });
 
 
         $(document).on('keyup', '#title', function(e) {
@@ -91,16 +105,30 @@
             if (selectedType === 'written') {
                 $('.options_type').hide();
                 $('.written_type').show();
+                $('.image_type').hide();
+
                 if (res) {
                     $('#written').val(res.question.written_answer); // Set written answer if applicable
-
                 }
             } else if (selectedType === 'options') {
                 $('.written_type').hide();
                 $('.options_type').show();
+                $('.image_type').hide();
+                $('#image-options-container').html('');
+
+
+            } else if (selectedType === 'image') {
+                $('.written_type').hide();
+                $('.options_type').hide();
+                $('.image_type').show();
+                $('#options-container').html('');
+
+
             } else {
                 $('.written_type').hide();
                 $('.options_type').hide();
+                $('.image_type').hide();
+
             }
         }
 
@@ -126,8 +154,9 @@
             addOption2();
         });
 
-        $(document).on('change', '#type', function() {
+        $(document).on('change', '#SelectType', function() {
             var selectedType = $(this).val();
+
             toggleTypeFields(selectedType);
         });
 
@@ -146,6 +175,8 @@
             addForm2();
             $(`.options_type_${FormIndex}`).hide();
             $(`.written_type_${FormIndex}`).hide();
+            $(`.image_type_${FormIndex}`).hide();
+
         });
 
         function addForm2() {
@@ -159,11 +190,20 @@
                         <label for="text_${FormIndex}" class="form-label">Question text</label>
                         <textarea id="text_${FormIndex}" class="form-control" name="text_${FormIndex}"></textarea>
                     </div>
+
                     <div class="mb-3">
-                        <select name="type-${FormIndex}" id="type-${FormIndex}" class="form-control">
+                        <label for="imageQuestion_${FormIndex}" class="form-label">Question Image</label>
+                        <div id="add-image-question-container_${FormIndex}">
+                            <input type="file" id="imageQuestion_${FormIndex}" name="imageQuestion_${FormIndex}" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <select name="type-${FormIndex}" id="2-type-${FormIndex}" class="form-control">
                             <option value="">Select type answer</option>
                             <option value="options">Options</option>
                             <option value="written">Written</option>
+                            <option value="image">Image</option>
                         </select>
                     </div>
                     <div class="mb-3 written_type_${FormIndex}">
@@ -179,6 +219,14 @@
                             <!-- Options will be added here -->
                         </div>
                     </div>
+                    <div class="mb-3 image_type_${FormIndex}">
+                        <label for="image_${FormIndex}" class="form-label">Question Image Options</label> <br>
+                        <button type="button" class="btn btn-sm btn-primary mt-2" id="add-img-option-${FormIndex}">Add</button>
+                        <div id="image-options-container-${FormIndex}">
+
+                        </div>
+                    </div>
+
                     <div class="mb-3">
                         <label for="code_snippet_${FormIndex}" class="form-label">Hint</label>
                         <textarea id="code_snippet_${FormIndex}" class="form-control" name="code_snippet_${FormIndex}"></textarea>
@@ -202,44 +250,50 @@
 
             $('#questionCreate').append(newForm);
         }
-
-        $(`#type-${FormIndex}`).on('change', function() {
-
-            var selectedType = $(this).val();
-            toggleTypeFields2(selectedType);
-        });
-        $(`#type-${FormIndex}`).change(function() {
-            var selectedType = $(this).val();
-            toggleTypeFields2(selectedType);
-        });
-
-        $(document).on('change', `#type-${FormIndex}`, function() {
-            var selectedType = $(this).val();
-            toggleTypeFields2(selectedType);
-        });
+        let optionFormIndex = 0; // Initialize optionIndex
 
         $(document).on('change', function(event) {
-            if (event.target.id.startsWith('type-')) {
+            optionFormIndex = 0;
+            if (event.target.id.startsWith('2-type-')) {
                 let formIndex = event.target.id.split('-').pop(); // Get the index from the ID
                 var selectedType = $(event.target).val(); // Use event.target instead of this
+
                 toggleTypeFields2(selectedType, formIndex); // Pass formIndex if needed
+
             }
+
         });
 
         function toggleTypeFields2(selectedType) {
             if (selectedType === 'written') {
                 $(`.options_type_${FormIndex}`).hide();
                 $(`.written_type_${FormIndex}`).show();
+                $(`.image_type_${FormIndex}`).hide();
+                $(`#image-options-container-${FormIndex}`).html('');
+                $(`#options-container-${FormIndex}`).html('');
+
             } else if (selectedType === 'options') {
                 $(`.options_type_${FormIndex}`).show();
                 $(`.written_type_${FormIndex}`).hide();
+                $(`.image_type_${FormIndex}`).hide();
+                $(`#image-options-container-${FormIndex}`).html('');
+                $(`#written_${FormIndex}`).html('');
+
+            } else if (selectedType === 'image') {
+                $(`.options_type_${FormIndex}`).hide();
+                $(`.written_type_${FormIndex}`).hide();
+                $(`.image_type_${FormIndex}`).show();
+                $(`#options-container-${FormIndex}`).html('');
+                $(`#written_${FormIndex}`).html('');
+
+
             } else {
                 $(`.options_type_${FormIndex}`).hide();
                 $(`.written_type_${FormIndex}`).hide();
+                $(`.image_type_${FormIndex}`).hide();
             }
         }
 
-        let optionFormIndex = 0; // Initialize optionIndex
 
         function addOption3(formIndex, optionFormIndex, text = '', correct = 0) {
             $(`#options-container-${formIndex}`).append(`
@@ -256,14 +310,62 @@
             `);
         }
 
+        function addOptionImg2(formIndex, optionFormIndex, file = '', correct = 0) {
+            $(`#image-options-container-${formIndex}`).append(`
+                <div class="img-option-item mt-2 form-row align-items-center">
+                    <div class="col-xs-10 col-sm-10 col-md-10 text-center">
+                        <input  class="form-control" type="file"  name="image_options[${optionIndex}][file]" value="${file}" autocomplete="off" />
+                    </div>
+                    <div class="col-auto text-nowrap">
+                        <input type="hidden" name="image_options[${optionIndex}][correct]" value="0">
+                        <input type="checkbox" class="text-left" name="image_options[${optionIndex}][correct]" value="1" ${correct ? 'checked' : ''}> Correct&nbsp
+                        <button type="button" class="btn btn-danger btn-sm remove-option-img">&nbsp&nbsp<i class="fa fa-trash"></i>&nbsp&nbsp</button>
+                    </div>
+                </div>
+        `);
+        }
         $(document).on('click', function(event) {
             if (event.target.id.startsWith('add-option-')) {
                 let formIndex = event.target.id.split('-').pop();
                 optionFormIndex++;
                 addOption3(formIndex, optionFormIndex);
+                // console.log(optionFormIndex + ' : opt');
+
+
+            }
+        });
+        $(document).on('click', function(event) {
+            if (event.target.id.startsWith('add-img-option-')) {
+                let formIndex = event.target.id.split('-').pop();
+                optionFormIndex++;
+                addOptionImg2(formIndex, optionFormIndex);
+                // console.log(optionFormIndex + ' : img');
+
             }
         });
 
+        $('#addOptionImg').on('click', function() {
+            addOptionImg();
+        });
+
+        function addOptionImg(file = '', correct = 0) {
+            $('#image-options-container').append(`
+                <div class="img-option-item mt-2 form-row align-items-center">
+                    <div class="col-xs-10 col-sm-10 col-md-10 text-center">
+                        <input  class="form-control" type="file"  name="image_options[${optionIndex}][file]" value="${file}" autocomplete="off" />
+                    </div>
+                    <div class="col-auto text-nowrap">
+                        <input type="hidden" name="image_options[${optionIndex}][correct]" value="0">
+                        <input type="checkbox" class="text-left" name="image_options[${optionIndex}][correct]" value="1" ${correct ? 'checked' : ''}> Correct&nbsp
+                        <button type="button" class="btn btn-danger btn-sm remove-option-img">&nbsp&nbsp<i class="fa fa-trash"></i>&nbsp&nbsp</button>
+                    </div>
+                </div>
+        `);
+            optionIndex++;
+        }
+        $(document).on('click', '.remove-option-img', function() {
+            $(this).closest('.img-option-item').remove();
+        });
         $(document).on('click', '.DeleteQuestionForm', function() {
             FormIndex--;
             $(this).closest('.question-form').remove();
@@ -274,78 +376,94 @@
             e.preventDefault();
             $('.alert-danger').html('').hide();
             $('.alert-success').html('').hide();
-            console.log(SelectQuiz);
+            // console.log(SelectQuiz);
 
             var confirmed = confirm("Are you sure you want to submit the form?");
 
             if (confirmed) {
-                if (SelectQuiz === 'create') {
-                    var quizData = {
-                        type: '1',
-                        title: $('#title').val(),
-                        slug: $('#slug').val(),
-                        description: $('#description').val(),
-                        level: $('#level').val(),
-                        term: $("#term").val(),
-                        section: $("#section").val(),
-                        published: $('#published').is(':checked') ? 1 : 0,
-                        public: $('#public').is(':checked') ? 1 : 0,
-                        _token: token
-                    };
-                } else {
-                    var quizData = {
-                        type: '0',
-                        quiz_id: SelectQuiz,
-                        _token: token
-                    };
-                }
-                var questions = [];
+                var quizData = new FormData();
 
+                // Add basic quiz information to quizData
+                quizData.append('type', SelectQuiz);
+                quizData.append('quiz_id', SelectQuiz === 'create' ? null : SelectQuiz);
+
+                quizData.append('title', $('#title').val());
+                quizData.append('slug', $('#slug').val());
+                quizData.append('description', $('#description').val());
+                quizData.append('level', levelQuiz);
+                quizData.append('term', termQuiz);
+                quizData.append('section', sectionQuiz);
+                quizData.append('public', $('#public').is(':checked') ? 1 : 0);
+
+                // Add question data to quizData
                 $('.question-form .question-form-index').each(function(index, element) {
                     var formIndex = index + 1;
                     var prefix = formIndex > 1 ? `_${formIndex}` : '';
                     var prefixType = formIndex > 1 ? `-${formIndex}` : '';
+                    var fileInput = document.getElementById('imageQuestion');
+                    var file = fileInput.files[
+                        0]; // Get the first file (if multiple, you can loop)
 
-                    var questionText = $(element).find(`textarea[name="text${prefix}"]`).val();
+                    // Append the file to FormData
+
+                    // Append question text, type, and other fields to FormData
+                    quizData.append('questions[' + index + '][text]', $(element).find(
+                        `textarea[name="text${prefix}"]`).val());
+                    quizData.append('questions[' + index + '][type]', $(element).find(
+                        `select[name="type${prefixType}"]`).val());
+                    quizData.append('questions[' + index + '][written]', $(element).find(
+                        `input[name="written${prefix}"]`).val());
+                    if (file) {
+                        quizData.append('questions[' + index + '][img_name]', file);
+
+                    }
+                    // Handle options or images
                     var questionType = $(element).find(`select[name="type${prefixType}"]`)
                         .val();
-                    var writtenAnswer = $(element).find(`input[name="written${prefix}"]`).val();
-                    var options = [];
-
-                    $(element).find(`.option-item`).each(function(optIndex, optElement) {
-                        var optionText = $(optElement).find('input[type="text"]').val();
-                        var isCorrect = $(optElement).find('input[type="checkbox"]').is(
-                            ':checked') ? 1 : 0;
-                        options.push({
-                            text: optionText,
-                            correct: isCorrect
+                    if (questionType === 'options') {
+                        $(element).find(`.option-item`).each(function(optIndex, optElement) {
+                            quizData.append('questions[' + index + '][options][' +
+                                optIndex + '][text]', $(optElement).find(
+                                    'input[type="text"]').val());
+                            quizData.append('questions[' + index + '][options][' +
+                                optIndex + '][correct]', $(optElement).find(
+                                    'input[type="checkbox"]').is(':checked') ? 1 : 0
+                            );
                         });
-                    });
+                    } else if (questionType === 'image') {
+                        $(element).find(`.img-option-item`).each(function(optIndex,
+                            optElement) {
+                            var imgFileInput = $(optElement).find('input[type="file"]')[
+                                0];
+                            var imgOptionFile = imgFileInput.files[0];
+                            if (imgOptionFile) {
+                                quizData.append('questions[' + index +
+                                    '][imgOptions][' + optIndex + '][file]',
+                                    imgOptionFile);
+                            }
+                            quizData.append('questions[' + index + '][imgOptions][' +
+                                optIndex + '][correct]',
+                                $(optElement).find('input[type="checkbox"]').is(
+                                    ':checked') ? 1 : 0
+                            );
+                        });
+                    }
 
-                    questions.push({
-                        text: questionText,
-                        type: questionType,
-                        written: writtenAnswer,
-                        options: options,
-                        code_snippet: $(element).find(
-                            `textarea[name="code_snippet${prefix}"]`).val(),
-                        answer_explanation: $(element).find(
-                            `textarea[name="answer_explanation${prefix}"]`).val(),
-                        more_info_link: $(element).find(
-                            `input[name="more_info_link${prefix}"]`).val()
-                    });
+                    quizData.append('questions[' + index + '][code_snippet]', $(element).find(
+                        `textarea[name="code_snippet${prefix}"]`).val());
+                    quizData.append('questions[' + index + '][answer_explanation]', $(element)
+                        .find(`textarea[name="answer_explanation${prefix}"]`).val());
+                    quizData.append('questions[' + index + '][more_info_link]', $(element).find(
+                        `input[name="more_info_link${prefix}"]`).val());
                 });
 
-                var questions_id = $('#questions_id').val();
-
-                quizData['questions'] = questions;
-                quizData['questions_id'] = questions_id;
-                console.log(quizData);
 
                 $.ajax({
                     url: "{{ route('questions-quizzes.store') }}",
                     method: 'post',
                     data: quizData,
+                    processData: false, // Prevent jQuery from processing the data
+                    contentType: false, // Prevent jQuery from setting the content type
                     success: function(result) {
                         console.log(result);
 
@@ -365,23 +483,22 @@
                         }
                     },
                     error: function(xhr) {
-                        if (xhr.status === 422 || xhr.status === 400) {
-                            var errors = xhr.responseJSON.errors || [xhr.responseJSON
-                                .errors
-                            ];
-                            var errorList = '';
-                            $.each(errors, function(key, value) {
-                                errorList += '<li>' + value + '</li>';
+                        var errors = xhr.responseJSON.errors;
+                        var errorList = '';
+                        $.each(errors, function(key, messages) {
+                            $.each(messages, function(index, message) {
+                                errorList += '<li>' + message + '</li>';
                             });
-                            $('.alert-danger').show().html('<strong>' + errorList +
-                                '</strong>');
-                        }
+                        });
+                        $('.alert-danger').show().html('<strong>' + errorList +
+                        '</strong>');
+                        toastr.error(errorList, {
+                            timeOut: 5000
+                        });
                     }
                 });
             }
         });
-
-
 
     });
 </script>

@@ -63,14 +63,116 @@ class QuestionQuizzesController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+    // public function store(Request $request)
+    // {
+    //     dd($request->all());
+
+    //     $type = $request->type;
+    //     $commonRules = [
+    //         'questions' => 'required|array',
+    //         'questions.*.text' => 'required|string',
+    //         'questions.*.type' => 'required|string|in:options,written',
+    //         'questions.*.code_snippet' => 'nullable|string',
+    //         'questions.*.answer_explanation' => 'nullable|string',
+    //         'questions.*.more_info_link' => 'nullable|string',
+    //         'questions.*.written' => 'nullable|string',
+    //         'questions.*.options' => 'nullable|array',
+    //         'questions.*.options.*.text' => 'nullable|string',
+    //         'questions.*.options.*.correct' => 'nullable|boolean',
+    //         'questions_id' => 'nullable|array',
+    //         'questions_id.*' => 'integer',
+    //         'type' => 'required|integer',
+    //     ];
+
+    //     if ($type === "1") {
+    //         $request->validate(array_merge($commonRules, [
+    //             'title' => 'required|string',
+    //             'slug' => 'required|string',
+    //             'level' => 'required|string',
+    //             'term' => 'required|integer',
+    //             'section' => 'required|integer',
+    //             'description' => 'nullable|string',
+    //             // 'published' => 'nullable|boolean',
+    //             'public' => 'nullable|boolean',
+    //         ]));
+    //     } else {
+    //         $request->validate($commonRules);
+    //     }
+
+
+    //     $quiz_id = $request->quiz_id;
+    //     $questions = $request->questions;
+
+    //     $questions_ids = $request->questions_id ?? [];
+    //     $questions_create_id = [];
+
+    //     foreach ($questions as $questionn) {
+
+    //         $question = new Question();
+    //         $question->text = $questionn['text'];
+    //         $question->type = $questionn['type'];
+    //         $question->code_snippet = $questionn['code_snippet'] ?? null;
+    //         $question->answer_explanation = $questionn['answer_explanation'] ?? null;
+    //         $question->more_info_link = $questionn['more_info_link'] ?? null;
+    //         $question->written_answer = $questionn['type'] === 'written' ? $questionn['written'] : null;
+    //         $question->save();
+    //         $code = str_pad($question->id, 6, '0', STR_PAD_LEFT);
+    //         $question->update(['code' => $code]);
+
+    //         if ($questionn['type'] === 'options') {
+    //             $question->options()->delete();
+    //             foreach ($questionn['options'] as $option) {
+    //                 $question->options()->create([
+    //                     'text' => $option['text'],
+    //                     'correct' => $option['correct'],
+    //                 ]);
+    //             }
+    //         }
+
+    //         $questions_create_id[] = $question->id;
+    //     }
+
+    //     $questions_ids = array_merge($questions_ids, $questions_create_id);
+
+    //     // dd(
+    //     //     $request->all(),
+    //     //     $quiz_id,
+    //     // );
+    //     if ($type === "1") {
+
+    //         $quiz = Quiz::create([
+    //             'title' => $request['title'],
+    //             'slug' => $request['slug'],
+    //             'level' => $request['level'],
+    //             'term' => $request['term'],
+    //             'section' => $request['section'],
+    //             'description' => $request['description'],
+    //             'published' => 0,
+    //             'public' => $request['public'] ?? 0,
+    //         ]);
+    //     } else {
+
+    //         $quiz = Quiz::find($quiz_id);
+    //         if (!$quiz) {
+    //             return response()->json(['error' => 'Quiz not found'], 404);
+    //         }
+    //     }
+
+    //     $quiz->questions()->sync($questions_ids);
+    //     // dd($request->all());
+
+    //     return response()->json(['success' => 'Quiz created successfully!']);
+    // }
+
     public function store(Request $request)
     {
+        // Validate the incoming request
         $type = $request->type;
-
         $commonRules = [
+            'type' => 'required',
             'questions' => 'required|array',
-            'questions.*.text' => 'required|string',
-            'questions.*.type' => 'required|string|in:options,written',
+            'questions.*.text' => 'nullable|string',
+            'questions.*.type' => 'required|string|in:options,written,image',
             'questions.*.code_snippet' => 'nullable|string',
             'questions.*.answer_explanation' => 'nullable|string',
             'questions.*.more_info_link' => 'nullable|string',
@@ -78,35 +180,43 @@ class QuestionQuizzesController extends Controller
             'questions.*.options' => 'nullable|array',
             'questions.*.options.*.text' => 'nullable|string',
             'questions.*.options.*.correct' => 'nullable|boolean',
+            'questions.*.imgOptions' => 'nullable|array',
+            'questions.*.imgOptions.*.file' => 'nullable|image',
+            'questions.*.imgOptions.*.correct' => 'nullable|boolean',
             'questions_id' => 'nullable|array',
             'questions_id.*' => 'integer',
-            'type' => 'required|integer',
         ];
 
-        if ($type === "1") {
+        $customMessages = [
+            'type.required' => 'Please select quiz',
+            'questions.*.text.required' => 'Please add Question text',
+            'questions.*.type.required' => 'Please select type answers for Question',
+            'level.required' => 'Please select Grade',
+            'term.required' => 'Please select term',
+            'section.required' => 'Please select Level',
+        ];
+
+        if ($type === "create") {
             $request->validate(array_merge($commonRules, [
                 'title' => 'required|string',
                 'slug' => 'required|string',
-                'level' => 'required|string',
-                'term' => 'required|integer',
-                'section' => 'required|integer',
+                'level' => 'required',
+                'term' => 'required',
+                'section' => 'required',
                 'description' => 'nullable|string',
-                'published' => 'nullable|boolean',
                 'public' => 'nullable|boolean',
-            ]));
+            ]), $customMessages);
         } else {
-            $request->validate($commonRules);
+            $request->validate($commonRules, $customMessages);
         }
 
-
         $quiz_id = $request->quiz_id;
-        $questions = $request->questions;
-
         $questions_ids = $request->questions_id ?? [];
         $questions_create_id = [];
+        // dd($request->all());
+        $questions = $request->questions;
 
         foreach ($questions as $questionn) {
-
             $question = new Question();
             $question->text = $questionn['text'];
             $question->type = $questionn['type'];
@@ -115,9 +225,17 @@ class QuestionQuizzesController extends Controller
             $question->more_info_link = $questionn['more_info_link'] ?? null;
             $question->written_answer = $questionn['type'] === 'written' ? $questionn['written'] : null;
             $question->save();
-
             $code = str_pad($question->id, 6, '0', STR_PAD_LEFT);
             $question->update(['code' => $code]);
+
+            if (isset($questionn['img_name']) && $questionn['img_name'] instanceof \Illuminate\Http\UploadedFile) {
+                $imgName = $questionn['img_name'];
+                if ($imgName instanceof \Illuminate\Http\UploadedFile) {
+                    $fileName = time() . '_' . uniqid() . '.' . $imgName->getClientOriginalExtension();
+                    $imgName->move(public_path('img_questions'), $fileName);
+                    $question->update(['img_name' => $fileName]);
+                }
+            }
 
             if ($questionn['type'] === 'options') {
                 $question->options()->delete();
@@ -127,6 +245,22 @@ class QuestionQuizzesController extends Controller
                         'correct' => $option['correct'],
                     ]);
                 }
+            } elseif ($questionn['type'] === 'image') {
+                $question->images()->delete();
+                foreach ($questionn['imgOptions'] as $index => $imgOption) {
+                    $path = null;
+                    if (isset($imgOption['file']) && $imgOption['file'] instanceof \Illuminate\Http\UploadedFile) {
+
+                        $fileName = time() . '_' . uniqid() . '.' . $imgOption['file']->getClientOriginalExtension();
+
+                        $filePath = $imgOption['file']->move(public_path('images_options'), $fileName);
+
+                        $question->images()->create([
+                            'img_name' => $fileName,
+                            'correct' => $imgOption['correct'],
+                        ]);
+                    }
+                }
             }
 
             $questions_create_id[] = $question->id;
@@ -134,12 +268,7 @@ class QuestionQuizzesController extends Controller
 
         $questions_ids = array_merge($questions_ids, $questions_create_id);
 
-        // dd(
-        //     $request->all(),
-        //     $quiz_id,
-        // );
-        if ($type === "1") {
-
+        if ($type === "create") {
             $quiz = Quiz::create([
                 'title' => $request['title'],
                 'slug' => $request['slug'],
@@ -147,19 +276,17 @@ class QuestionQuizzesController extends Controller
                 'term' => $request['term'],
                 'section' => $request['section'],
                 'description' => $request['description'],
-                'published' => $request['published'] ?? 0,
+                'published' => 0,
                 'public' => $request['public'] ?? 0,
             ]);
         } else {
-
             $quiz = Quiz::find($quiz_id);
             if (!$quiz) {
-                return response()->json(['error' => 'Quiz not found'], 404);
+                return response()->json(['errors' => 'Quiz not found'], 404);
             }
         }
 
         $quiz->questions()->sync($questions_ids);
-        // dd($request->all());
 
         return response()->json(['success' => 'Quiz created successfully!']);
     }

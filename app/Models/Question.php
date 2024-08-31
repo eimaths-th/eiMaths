@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string $more_info_link
  * @property string $written_answer
  * @property string $type
+ * @property string $img_name
  * @property string $created_at
  * @property string $updated_at
  * @property string $deleted_at
@@ -29,7 +30,7 @@ class Question extends Model
     /**
      * @var array
      */
-    protected $fillable = ['code','question_text', 'code_snippet', 'answer_explanation', 'more_info_link','written_answer','type', 'created_at', 'updated_at', 'deleted_at'];
+    protected $fillable = ['code', 'text', 'code_snippet', 'answer_explanation', 'more_info_link', 'written_answer', 'type','img_name', 'created_at', 'updated_at', 'deleted_at'];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
@@ -58,6 +59,11 @@ class Question extends Model
     public function options(): HasMany
     {
         return $this->hasMany(Option::class)->inRandomOrder();
+    }
+
+    public function images(): HasMany
+    {
+        return $this->hasMany(ImageOption::class)->inRandomOrder();
     }
 
     public function quizzes()

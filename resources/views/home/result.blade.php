@@ -2,7 +2,38 @@
 
 @section('title', 'Home Page')
 
-@push('CSS')
+@push('css')
+    <style>
+        .img-container {
+            display: flex;
+            justify-content: left;
+            /* Center horizontally */
+            align-items: left;
+            /* Center vertically */
+            width: 100%;
+            /* Ensure the container takes up available width */
+            height: auto;
+            /* Ensure the container adjusts to the content's height */
+        }
+
+        .img-custom {
+            max-height: 75px;
+            max-width: 100%;
+            height: auto;
+            width: auto;
+            display: inline-block;
+            /* Ensures the image stays on the same line */
+            vertical-align: middle;
+            /* Aligns the image vertically in the middle of the text */
+        }
+
+        li span {
+            display: inline-block;
+            /* Ensures the text stays on the same line */
+            vertical-align: middle;
+            /* Aligns the text vertically in the middle of the image */
+        }
+    </style>
 @endpush
 @push('script')
 @endpush
@@ -127,7 +158,7 @@
                                     @php
                                         $title = '';
                                         $type = $result->question->type;
-                                        if ($type === 'options') {
+                                        if ($type === 'options' || $type === 'image') {
                                             # code...
                                             $title = 'Options';
                                         } elseif ($type === 'written') {
@@ -157,6 +188,30 @@
                                                 </li>
                                             @endforeach
                                             @if (is_null($result->option_id))
+                                                <span class="font-bold italic">Question unanswered.</span>
+                                            @endif
+                                        @elseif ($type === 'image')
+                                            @foreach ($result->question->images as $image)
+                                                <li @class([
+                                                    'underline' => $result->image_id == $image->id,
+                                                    'font-bold text-orange-500' => $image->correct == 1,
+                                                ])>
+                                                    @if ($image->img_name)
+                                                        <img class="img-custom"
+                                                            src="{{ asset('images_options/' . $image->img_name) }}"
+                                                            alt="Image option">
+                                                    @endif
+
+                                                    @if ($image->correct == 1)
+                                                        <span class="italic">(correct answer)</span>
+                                                    @endif
+
+                                                    @if ($result->image_id == $image->id)
+                                                        <span class="italic">(your answer)</span>
+                                                    @endif
+                                                </li>
+                                            @endforeach
+                                            @if (is_null($result->image_id))
                                                 <span class="font-bold italic">Question unanswered.</span>
                                             @endif
                                         @elseif ($type === 'written')
@@ -214,7 +269,8 @@
     <script>
         window.addEventListener('popstate', function(event) {
             // Redirect to the home page
-            window.location.href = '/quiz/{{ $test->quiz->slug }}'; // Change '/' to the URL of your home page if it's different
+            window.location.href =
+                '/quiz/{{ $test->quiz->slug }}'; // Change '/' to the URL of your home page if it's different
         });
 
         // Push a new state to make sure the popstate event is triggered
