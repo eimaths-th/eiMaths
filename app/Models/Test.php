@@ -24,6 +24,8 @@ class Test extends Model
     /**
      * @var array
      */
+    protected $table = 'tests';
+
     protected $fillable = ['user_id', 'quiz_id', 'result', 'type_user', 'ip_address', 'time_spent', 'created_at', 'updated_at', 'deleted_at'];
 
     /**

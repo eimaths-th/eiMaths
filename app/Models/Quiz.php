@@ -21,6 +21,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Quiz extends Model
 {
+    protected $table = 'quizzes';
+
     protected $fillable = ['title', 'slug', 'level', 'term','section','description', 'published', 'public', 'created_at', 'updated_at', 'deleted_at'];
 
     public function tests()
