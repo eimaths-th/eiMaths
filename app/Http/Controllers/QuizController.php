@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Answer;
+use App\Models\Contact;
 use App\Models\ImageOption;
 use App\Models\Option;
 use App\Models\Question;
@@ -10,6 +11,7 @@ use App\Models\Quiz;
 use App\Models\Test;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
 
 class QuizController extends Controller
 {
@@ -22,6 +24,8 @@ class QuizController extends Controller
         $questionsCount = $quiz->questions()->count();
         $currentQuestion = $quiz->questions()->skip($currentQuestionIndex)->first();
 
+        // dd($currentQuestion);
+
         // Store start time in session if it's not already set
         if (!session()->has('startTimeInSeconds')) {
             session(['startTimeInSeconds' => now()->timestamp]);
@@ -30,6 +34,19 @@ class QuizController extends Controller
 
         if (!$currentQuestion) {
             abort(404, 'No questions found for this quiz');
+        }
+
+        $correctAnswer = '';
+        // $currentQuestion = Question::find($currentQuestionId);
+
+        if ($currentQuestion->type === 'options') {
+            $correctAnswers = $currentQuestion->options()->where('correct', true)->first();
+            $correctAnswer = $correctAnswers->id;
+        } elseif ($currentQuestion->type === 'image') {
+            $correctAnswers = $currentQuestion->images()->where('correct', true)->first();
+            $correctAnswer = $correctAnswers->id;
+        } elseif ($currentQuestion->type === 'written') {
+            $correctAnswer = $currentQuestion->written_answer;
         }
 
         $header = 'Quiz: ' . $quiz->title;
@@ -42,6 +59,8 @@ class QuizController extends Controller
             'startTimeInSeconds' => $startTimeInSeconds,
             'answersOfQuestions' => $this->answersOfQuestions,
             // 'answersOfWrittens' => $this->answersOfWrittens,
+            'correctAnswer' => $correctAnswer,
+
             'header' => $header,
         ]);
     }
@@ -71,8 +90,21 @@ class QuizController extends Controller
         // $answersOfWrittens = session()->get('answersOfWrittens', []);
         // $answersOfWrittens[$currentQuestionId] = $answerOfWritten;
         // session()->put('answersOfWrittens', $answersOfWrittens);
+        $correctAnswer = '';
+        $currentQuestion = Question::find($currentQuestionId);
 
+        if ($currentQuestionType === 'options') {
 
+            $correctAnswers = $currentQuestion->options()->where('correct', true)->first();
+            $correctAnswer = $correctAnswers->id;
+        } elseif ($currentQuestionType === 'image') {
+
+            $correctAnswers = $currentQuestion->images()->where('correct', true)->first();
+            $correctAnswer = $correctAnswers->id;
+        } elseif ($currentQuestionType === 'written') {
+
+            $correctAnswer = $currentQuestion->written_answer;
+        }
 
         if ($currentQuestionIndex >= $questionsCount - 1) {
             return $this->submit($request, $quiz);
@@ -87,6 +119,7 @@ class QuizController extends Controller
         return redirect()->route('quiz.show', [
             'quiz' => $quiz,
             'currentQuestionIndex' => $nextQuestionIndex,
+            'correctAnswer' => $correctAnswer,
         ])->withInput($request->except('_token'));
     }
 
@@ -102,14 +135,28 @@ class QuizController extends Controller
         $time_spent = now()->timestamp - $startTimeInSeconds;
         $result = 0;
 
+        $type_return = '';
         if (Auth::guard('student')->check()) {
             $user_id = Auth::guard('student')->id();
             $type_user = 'student';
+            $checkTypeStd = Contact::find($user_id);
+            if ($checkTypeStd && $checkTypeStd->type === 'demo') {
+                $type_return = 0;
+            } else {
+                $type_return = 1;
+            }
         } elseif (Auth::check()) {
             $user_id = Auth::id();
             $type_user = 'user';
+            $type_return = 1;
         } else {
         }
+
+        // dd(
+        //     $user_id, //its 112
+        //     $type_user, //its student demo
+        //     $type_return, //its student demo
+        // );
 
         $test = Test::create([
             'user_id' => $user_id,
@@ -166,7 +213,13 @@ class QuizController extends Controller
         session()->forget('answersOfQuestions');
         session()->forget('answersOfWrittens');
 
-        return redirect()->route('results.show', ['test' => $test]);
+        if ($type_return == 0) {
+            # code...
+            return redirect()->route('demo.thank_you');
+        } else {
+            # code...
+            return redirect()->route('results.show', ['test' => $test]);
+        }
     }
 
 

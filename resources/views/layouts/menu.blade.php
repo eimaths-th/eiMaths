@@ -21,6 +21,12 @@
                 </a>
             </li>
             <li class="nav-item">
+                <a href="{{ route('demo.list') }}" class="nav-link {{ Request::is('demo.list') ? 'active' : '' }}">
+                    <i class="nav-icon fa-solid fa-comment-dots"></i>
+                    <p>Demo Students List</p>
+                </a>
+            </li>
+            <li class="nav-item">
                 <a href="{{ route('discontinued') }}" class="nav-link {{ Request::is('discontinued') ? 'active' : '' }}">
                     <i class="nav-icon fa-solid fa-comment-dots"></i>
                     <p>Discontinued Student</p>

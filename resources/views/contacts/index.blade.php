@@ -24,7 +24,10 @@
                         @can('student-create')
                             <button type="button" class="btn btn-success" id="CreateButton"><i
                                     class="fas fa-graduation-cap"></i>
-                                New Student </button>
+                                New Student </button> &nbsp;
+                            <button type="button" class="btn btn-success" id="CreateDemoButton"><i
+                                    class="fas fa-graduation-cap"></i>
+                                New Demo Student </button>
                             &nbsp;<button type="button" class="btn btn-success" id="ReceiptButton"><i
                                     class="fa-solid fa-file-invoice-dollar"></i>
                                 New Receipt </button>
@@ -210,6 +213,8 @@
     @include('contacts.course')
 
     @include('contacts.create')
+    
+    @include('contacts.create_demo')
 
     @include('contacts.edit')
 
