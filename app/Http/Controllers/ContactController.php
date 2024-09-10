@@ -129,7 +129,7 @@ class ContactController extends Controller
                     }
                 }
             }
-
+            $query->where("contacts.type", "student");
             $query->orderBy("contacts.id", "desc");
 
             //$sqlQuery = $query->toSql();
@@ -199,8 +199,7 @@ class ContactController extends Controller
                 }) */
         }
 
-        $centre = Department::where([['status', '1']])
-            ->orderBy("name", "asc")->get();
+        $centre = Department::where([['status', '1']])->orderBy("name", "asc")->get();
         $term = term::where([['status', '1']])
             ->orderBy("name", "asc")->get();
         $sterm = Sterm::where([['status', '1']])
@@ -347,6 +346,163 @@ class ContactController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+
+    public function demo_list(Request $request)
+    {
+
+        if ($request->ajax()) {
+            $query = Contact::where('type', 'demo');
+
+            if (!empty($request->get('sdate'))) {
+                $dateRange = $request->input('sdate');
+                if ($dateRange) {
+                    $dateRangeArray = explode(' - ', $dateRange);
+
+                    if (!empty($dateRangeArray) && count($dateRangeArray) == 2) {
+                        $startDate = $dateRangeArray[0];
+                        $endDate = $dateRangeArray[1];
+                        $query->whereBetween('start_date', [$startDate, $endDate]);
+                    }
+                }
+            }
+            $query->orderBy("id", "desc");
+
+            $datas = $query->get();
+
+            return datatables()->of($datas)
+                ->editColumn('checkbox', function ($row) {
+                    return '<input type="checkbox" id="' . $row->id . '" class="flat" name="table_records[]" value="' . $row->id . '" >';
+                })
+                ->editColumn('level_name', function ($row) {
+                    if (!empty($row->level2_name)) {
+                        return $row->level_name . ' - ' . $row->level2_name;
+                    } else {
+                        return $row->level_name;
+                    }
+                })
+                ->editColumn('nickname', function ($row) {
+                    return $row->nickname !== null && $row->nickname !== '' ? $row->nickname : '-';
+                })
+                ->editColumn('centre_name', function ($row) {
+                    return '-';
+                })
+                ->editColumn('start_date', function ($row) {
+                    return $this->formatDate($row->start_date);
+                })
+                ->addColumn('end_date', function ($row) {
+                    return $this->checkEndDate($row->id);
+                })
+                ->editColumn('bookuse_name', function ($row) {
+                    if (!empty($row->bookuse2_name)) {
+                        return ' ( ' . $row->bookuse_name . ') - (' . $row->bookuse2_name . ')';
+                    } else {
+                        return $row->bookuse_name;
+                    }
+                })
+                ->addColumn('more', function ($row) {
+                    return '';
+                })
+                ->addColumn('action', function ($row) {
+                    $html = '';
+
+
+                    if (Gate::allows('student-delete')) {
+                        $html .= '<button type="button" data-rowid="' . $row->id . '" class="btn btn-sm btn-danger btn-delete"><i class="fa fa-trash"></i> Delete</button>';
+                    } else {
+                        $html .= '<button type="button" class="btn btn-sm btn-danger disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-trash"></i> Delete</button> ';
+                    }
+                    return $html;
+                })->rawColumns(['checkbox', 'action', 'more'])->toJson();
+            /* ->filter(function ($instance) use ($request) {
+                    if ($request->get('approved') == '0' || $request->get('approved') == '1') {
+                        $instance->where('contacts.code', $request->get('approved'));
+                    }
+                    if (!empty($request->get('search'))) {
+                        $instance->where(function ($w) use ($request) {
+                            $search = $request->get('search');
+                            $w->orWhere('name', 'LIKE', "%$search%")
+                                ->orWhere('email', 'LIKE', "%$search%");
+                        });
+                    }
+                }) */
+        }
+        $centre =  (object) ['id' => 1, 'name' => 'demo'];
+        $term = ['demo'];
+        $sterm = ['demo'];
+        $bookuse = ['demo'];
+        $level = ['demo'];
+        $centre1 = Department::where([['status', '1']])->orderBy("name", "asc")->get();
+
+        // dd(
+        //     $centre,
+        //     $centre->id,
+        //     $centre1,
+        //     $term,
+        //     $sterm,
+        //     $bookuse,
+        //     $level,
+        // );
+
+        return view('contacts.demo_index')->with(
+            ['centre' => $centre]
+        )
+            ->with(['bookuse' => $bookuse])
+            ->with(['level' => $level])
+            ->with(['term' => $term])
+            ->with(['sterm' => $sterm]);
+    }
+
+    public function demo_store(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'code' => 'required|string|max:255',
+            'school' => 'required|string|max:255',
+            'name' => 'required|string|max:255',
+            'nickname' => 'nullable|string|max:255',
+            'password' => 'required|min:6|confirmed',
+        ]);
+
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()->all()]);
+        }
+
+        $demo = Contact::create([
+            'code' => $request->code,
+            'school' => $request->school,
+            'name' => $request->name,
+            'nickname' => $request->nickname,
+            'start_date' => date('Y-m-d'),
+            'password' =>  bcrypt($request->password),
+            'type' =>  'demo',
+        ]);
+
+        // Return a success response
+        return response()->json(['success' => 'Demo user created successfully!']);
+    }
+
+    public function demo_code()
+    {
+        $latestContact = Contact::where('type', 'demo')->latest('id')->first();
+
+        if (is_null($latestContact)) {
+            $latestCodeNumber = 0;
+        } else {
+            $latestCodeNumber = (int) str_replace('DEMO', '', $latestContact->code);
+        }
+
+        // Increment the code and format it as 'DEMOXXXX' (e.g., 'DEMO0002')
+        $newDemoCode = 'DEMO' . str_pad($latestCodeNumber + 1, 4, '0', STR_PAD_LEFT);
+
+        return response()->json([
+            'demoCode' => $newDemoCode,
+        ]);
+    }
+    public function thank_you()
+    {
+        return view('home.thankq');
+    }
+
     public function store(Request $request)
     {
 
@@ -507,6 +663,7 @@ class ContactController extends Controller
         $input['level_name'] = $levelq->name;
         $input['term_name'] = $termq->name;
         $input['bookuse_name'] = $bookq->name;
+        $input['type'] = 'student';
 
         if (!empty($request->get('level2'))) {
             $input['level2_name'] = $levelq2->name;
@@ -566,7 +723,9 @@ class ContactController extends Controller
         $select_list_contact = '<option value="' . $contact->id . '" > ' . $contact->name . '</option>';
         return response()->json([
             'success' => 'Added student information successfully.',
-            'contact' => $select_list_contact, 'cid' => $contact->id, 'oid' => $order->id,
+            'contact' => $select_list_contact,
+            'cid' => $contact->id,
+            'oid' => $order->id,
             'coin' => $coin,
         ]);
     }
@@ -795,7 +954,9 @@ class ContactController extends Controller
         $select_list_contact = '<option value="' . $contact->id . '" > ' . $contact->name . '</option>';
         return response()->json([
             'success' => 'Added Receipt successfully.',
-            'contact' => $select_list_contact, 'cid' => $contact->id, 'oid' => $order->id,
+            'contact' => $select_list_contact,
+            'cid' => $contact->id,
+            'oid' => $order->id,
             'coin' => $coin,
         ]);
     }
@@ -856,8 +1017,13 @@ class ContactController extends Controller
         if ($student && Hash::check($request->password, $student->password)) {
             Auth::guard('student')->login($student);
             $student = Auth::guard('student')->user();
-            // dd($student);
-            return redirect()->route('home3');
+            if ($student->type === 'demo') {
+                # code...
+                return redirect()->route('home.section', ['P6', '4', '20']);
+            } else {
+                # code...
+                return redirect()->route('home3');
+            }
         } else {
             return back()->withErrors(['error' => 'Invalid student code or password.']);
         }

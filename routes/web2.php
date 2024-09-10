@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\eLeanController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
@@ -18,6 +19,7 @@ use App\Http\Livewire\Question\QuestionForm;
 use App\Http\Livewire\Question\QuestionList;
 use App\Http\Livewire\Quiz\QuizForm;
 use App\Http\Livewire\Quiz\QuizList;
+use App\Models\Contact;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
@@ -107,6 +109,9 @@ Route::group(['middleware' => ['auth']], function () {
     ]);
     Route::get('questions-quizzes/selected/{id}', [QuestionQuizzesController::class, 'selectedQuestions'])->name('questions-quizzes.selected');
 
+    Route::get('demo', [ContactController::class, 'demo_list'])->name('demo.list');
+    Route::get('demo/code', [ContactController::class, 'demo_code'])->name('demo.code');
+    Route::post('demo/store', [ContactController::class, 'demo_store'])->name('demo.store');
 
     // Route::get('quiz/{quiz}', [QuizController::class, 'show'])->name('quiz.show');
     // Route::post('quiz/{quiz}/next/{currentQuestionIndex}', [QuizController::class, 'nextQuestion'])->name('quiz.next');
@@ -137,6 +142,7 @@ Route::group(['middleware' => ['auth.userOrStudent']], function () {
     Route::get('leaderboard/{quiz_slug?}', [eLeanController::class, 'leaderboard'])->name('leaderboard');
     Route::post('submit-leaderboard', [eLeanController::class, 'submitLeaderboard'])->name('submit.leaderboard');
     Route::get('tests/{quiz_slug?}', [eLeanController::class, 'tests'])->name('tests');
+    Route::post('check-answer', [eLeanController::class, 'checkAnswer'])->name('check.answer');
 });
 
 // Route::group(['middleware' => ['auth','student.auth']], function () {
@@ -146,6 +152,7 @@ Route::get('/students-login', [App\Http\Controllers\ContactController::class, 's
 Route::post('/students-login-check', [App\Http\Controllers\ContactController::class, 'studentsCheckLogin'])->name('student.check');
 Route::post('/students-logout', [App\Http\Controllers\ContactController::class, 'studentsLogout'])->name('student.logout');
 Route::get('/normalize', [App\Http\Controllers\HomeController::class, 'normalizeNumber1'])->name('normalize');
+Route::get('thank-you', [ContactController::class, 'thank_you'])->name('demo.thank_you');
 
 Route::get('manon', function (Request $request) {
     return $request;

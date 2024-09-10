@@ -92,8 +92,7 @@
                                 @forelse($public_quizzes_level as $level => $quiz_level)
                                     <div class="px-4 py-2 w-full lg:w-6/12 xl:w-3/12">
                                         <a href="{{ route('home.level', $level) }}">
-                                            <div
-                                                class="flex relative flex-col mb-6 min-w-0 break-words bg-white rounded shadow-lg xl:mb-0 border-2 border-orange-500">
+                                            <div class="flex relative flex-col mb-6 min-w-0 break-words bg-white rounded shadow-lg xl:mb-0 border-2 border-orange-500">
                                                 <div class="flex-auto p-4">
                                                     <p><span class="text-lg font-bold">{{ $level }}</span></p>
                                                     <p class="text-base">term:
@@ -107,15 +106,18 @@
                                 @empty
                                     <div class="mt-2">No public quizzes found.</div>
                                 @endforelse
-                            @endswitch
+                            @break
 
-                        </div>
+                        @endswitch
+
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 
-        {{-- <div class="py-12">
+
+    {{-- <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg border border-orange-500">
                     <div class="p-6 text-gray-900">
@@ -208,7 +210,7 @@
 
 
 
-    @endsection
+@endsection
 
-    @push('script')
-    @endpush
+@push('script')
+@endpush

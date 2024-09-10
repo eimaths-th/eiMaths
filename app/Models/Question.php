@@ -30,6 +30,7 @@ class Question extends Model
     /**
      * @var array
      */
+    protected $table = 'questions';
     protected $fillable = ['code', 'text', 'code_snippet', 'answer_explanation', 'more_info_link', 'written_answer', 'type','img_name', 'created_at', 'updated_at', 'deleted_at'];
 
     /**

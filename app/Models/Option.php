@@ -24,6 +24,8 @@ class Option extends Model
     /**
      * @var array
      */
+    protected $table = 'options';
+
     protected $fillable = ['question_id', 'text', 'correct', 'created_at', 'updated_at', 'deleted_at'];
 
     /**

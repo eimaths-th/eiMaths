@@ -612,6 +612,7 @@
         };
 
         var table = $('#Listview').DataTable(table_option);
+        // var table = $('#Listview1').DataTable(table_option);
 
         $('#SearchButtons').on('click', function() {
             var searchType = $('#search_type').val();
@@ -708,6 +709,82 @@
             }
         })
 
+
+        $(document).on('click', '#CreateDemoButton', async function(e) {
+            e.preventDefault();
+            $('.alert-danger').html('');
+            $('.alert-danger').hide();
+            $('.alert-success').html('');
+            $('.alert-success').hide();
+
+            $('#custom-tabs-one-home-tab').tab('show');
+            //$('#AddSTerm').val(null).trigger("change");
+            var addCentre = $('#AddCentre').val();
+            var url = '{{ route('demo.code') }}';
+
+            await $.ajax({
+                method: "GET",
+                url: url,
+                success: function(res) {
+                    console.log(res);
+                    $('#AddDemoCode').val(res.demoCode);
+                    $('#AddDemoSchool').val('eiMaths');
+                    $('#AddDemoName').val(res.demoCode);
+                    $('#AddDemoNickname').val(res.demoCode);
+
+                }
+            });
+            $('#CreateDemoModal').modal('show');
+        });
+
+        $('#SubmitDemoCreateForm').click(function(e) {
+            e.preventDefault();
+            $('.alert-danger').html('');
+            $('.alert-danger').hide();
+            $('.alert-success').html('');
+            $('.alert-success').hide();
+
+            var url = "{{ route('demo.store') }}";
+            $.ajax({
+                url: url,
+                method: 'post',
+                data: {
+                    code: $('#AddDemoCode').val(),
+                    school: $('#AddDemoSchool').val(),
+                    name: $('#AddDemoName').val(),
+                    nickname: $('#AddDemoNickname').val(),
+                    password: $('#AddDemoPassword').val(),
+                    password_confirmation: $('#AddDemoConfPassword').val(),
+                    _token: token,
+                },
+                success: function(result) {
+                    console.log(result);
+                    if (result.errors) {
+                        $('.alert-danger').html('');
+                        $.each(result.errors, function(key, value) {
+                            $('.alert-danger').show();
+                            $('.alert-danger').append('<strong><li>' + value +
+                                '</li></strong>');
+                        });
+                    } else {
+                        $('.alert-danger').hide();
+                        $('.alert-success').show();
+                        $('.alert-success').append('<strong><li>' + result.success +
+                            '</li></strong>');
+                        toastr.success(result.success, {
+                            timeOut: 5000
+                        });
+                        $('#Listview').DataTable().ajax.reload();
+
+                        $('.form').trigger('reset');
+                        $('#CreateDemoModal').modal('hide');
+
+                        // showOverlay();
+
+                    }
+                }
+            });
+        });
 
         $(document).on('click', '#CreateButton', async function(e) {
             e.preventDefault();

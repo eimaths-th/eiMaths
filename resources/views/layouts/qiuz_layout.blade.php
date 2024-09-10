@@ -5,7 +5,7 @@
     @include('layouts.qiuz_css')
 </head>
 
-<body class="font-sans antialiased">
+<body class="font-sans antialiased" style="display: flex; flex-direction: column; min-height: 100vh; margin: 0;">
     <div class="min-h-screen bg-gray-100">
         @include('layouts.nav-bar')
 
@@ -23,12 +23,24 @@
         <!-- Page Content -->
         <main>
             @yield('content')
+
         </main>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+
+        {{--
+        @livewire('footer') --}}
+        @include('home.footer')
+
     </div>
 
 
-    @include('layouts.qiuz_script')
 
+    @include('layouts.qiuz_script')
+    @livewireScripts
 </body>
 
 </html>

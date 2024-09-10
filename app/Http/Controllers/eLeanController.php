@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ImageOption;
+use App\Models\Option;
 use App\Models\Quiz;
 use App\Models\Test;
 use Illuminate\Http\Request;
@@ -111,10 +113,10 @@ class eLeanController extends Controller
             ->get();
         // ->groupBy('term');
         $levelCheck = 3;
-        $header = 'eiMaths Quiz Grade ' . $level . ' Term ' . $term .' Level-' . $section;
+        $header = 'eiMaths Quiz Grade ' . $level . ' Term ' . $term . ' Level-' . $section;
         // dd($public_quizzes_term);
 
-        return view('home.home', compact('public_quizzes', 'registered_only_quizzes', 'header', 'public_quizzes_term', 'levelCheck', 'level', 'term','section'));
+        return view('home.home', compact('public_quizzes', 'registered_only_quizzes', 'header', 'public_quizzes_term', 'levelCheck', 'level', 'term', 'section'));
     }
 
     public function leaderboard(Request $request, $quiz_slug = '0')
@@ -228,6 +230,56 @@ class eLeanController extends Controller
         ]);
     }
 
+    public function checkAnswer(Request $request)
+    {
+        $request->validate([
+            'userAnswer' => 'required',
+            'type' => 'required|string',
+            'correctAnswer' => 'required',
+        ]);
+
+        $userAnswer = $request->userAnswer;
+        $type = $request->type;
+        $correctAnswer = $request->correctAnswer;
+        $answerUser = '';
+        $answerCorrect = '';
+        $result = '';
+        $checkCorrect = '';
+        $imageUrl = '';
+
+        if ($type === 'options') {
+            $answerUser = Option::find($userAnswer)->text ?? '';
+            $answerCorrect = Option::find($correctAnswer)->text ?? '';
+        } elseif ($type === 'image') {
+            $answerUser = ImageOption::find($userAnswer)->img_name ?? '';
+            $answerCorrect = ImageOption::find($correctAnswer)->img_name ?? '';
+            $imageUrl = asset('images_options/' . $answerCorrect);
+
+        } elseif ($type === 'written') {
+            $answerUser = $userAnswer;
+            $answerCorrect = $correctAnswer;
+        }
+
+        if ($answerUser === $answerCorrect) {
+            $result = 'Correct! : ';
+            $checkCorrect = 1;
+        } else {
+            $result = 'Incorrect. The correct answer is : ';
+            $checkCorrect = 0;
+
+        }
+
+        return response()->json([
+            'success' => true,
+            'result' => $result,
+            'answerCorrect' => $answerCorrect,
+            'answerUser' => $answerUser,
+            'type' => $type,
+            'checkCorrect' => $checkCorrect,
+            'imageUrl' => $imageUrl,
+        ]);
+    }
+
 
     public function index()
     {
@@ -249,6 +301,7 @@ class eLeanController extends Controller
     {
         //
     }
+
 
     /**
      * Display the specified resource.
