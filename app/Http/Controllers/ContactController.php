@@ -1017,8 +1017,13 @@ class ContactController extends Controller
         if ($student && Hash::check($request->password, $student->password)) {
             Auth::guard('student')->login($student);
             $student = Auth::guard('student')->user();
-            // dd($student);
-            return redirect()->route('home3');
+            if ($student->type === 'demo') {
+                # code...
+                return redirect()->route('home.section', ['P6', '4', '20']);
+            } else {
+                # code...
+                return redirect()->route('home3');
+            }
         } else {
             return back()->withErrors(['error' => 'Invalid student code or password.']);
         }

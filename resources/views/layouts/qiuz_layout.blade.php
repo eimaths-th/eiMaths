@@ -30,11 +30,7 @@
         <br>
         <br>
         <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
+
         {{--
         @livewire('footer') --}}
         @include('home.footer')
