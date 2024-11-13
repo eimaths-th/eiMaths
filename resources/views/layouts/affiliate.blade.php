@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en" >
+
+<head>
+    {{-- @laravelPWA --}}
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}" />
+
+    <meta property="og:url" content="{{ url()->current() }}" />
+    <meta property="og:type" content="website" />
+    {{-- <meta property="og:title" content="{{ Settings('site_title') }}" /> --}}
+    {{-- <meta property="og:description" content="{{ Settings('footer_about_description') }}" /> --}}
+    <meta property="og:image" content="@yield('og_image')" />
+
+    <meta name="title" content="Affiliate">
+    {{-- <meta name="description" content="{{ Settings('meta_description') }}"> --}}
+    {{-- <meta name="keywords" content="{{ Settings('meta_keywords') }}"> --}}
+
+    <title>Affiliate</title>
+    {{-- <link rel="icon" href="{{ asset(Settings('favicon')) }}{{ assetVersion() }}" type="image/png" /> --}}
+
+    {{-- frontend-dynamic-style-color --}}
+    {{-- <x-frontend-dynamic-style-color />
+    <x-backend-dynamic-color /> --}}
+
+    {{-- <link rel="stylesheet" href="{{ asset('backend/css/themify-icons.css') }}{{ assetVersion() }}" /> --}}
+
+
+    <link rel="stylesheet" href="{{ asset('Modules/AoraPageBuilder/Resources/assets/css/fontawesome.css') }}"
+        data-type="aoraeditor-style" />
+
+    <link rel="stylesheet" href="{{ asset('Modules/AoraPageBuilder/Resources/assets/css/aoraeditor.css') }}"
+        data-type="aoraeditor-style" />
+    <link rel="stylesheet" href="{{ asset('Modules/AoraPageBuilder/Resources/assets/css/aoraeditor-components.css') }}"
+        data-type="aoraeditor-style" />
+
+
+    <link rel="stylesheet" type="text/css" data-type="aoraeditor-style"
+        href="{{ asset('Modules/AoraPageBuilder/Resources/assets/css/style.css') }}">
+
+       <link rel="stylesheet" type="text/css" data-type="aoraeditor-style"
+             href="{{ asset('Modules/AoraPageBuilder/Resources/assets/css')}}/style1.css">
+    @php
+        $currentTheme = "infixlmstheme";
+        //      $default =[
+        //          "/affiliate"
+        //];
+        //        if (in_array($row->slug,$default)){
+        //            $currentTheme ='infixlmstheme';
+        //
+        //        }
+    @endphp
+    @if ($currentTheme == 'infixlmstheme')
+        {{-- @if (isRtl())
+            <link rel="stylesheet"
+                href="{{ asset('Modules/AoraPageBuilder/Resources/assets/css/bootstrap.rtl.min.css') }}{{ assetVersion() }}"
+                data-type="aoraeditor-style" />
+        @else
+            <link rel="stylesheet"
+                href="{{ asset('Modules/AoraPageBuilder/Resources/assets/css/bootstrap.min.css') }}{{ assetVersion() }}"
+                data-type="aoraeditor-style" />
+        @endif
+        <link rel="stylesheet" href="{{ asset('frontend/infixlmstheme') }}/css/fontawesome.css{{ assetVersion() }} "
+            data-type="aoraeditor-style">
+
+        <link rel="stylesheet" href="{{ asset('frontend/infixlmstheme/css/app.css') . assetVersion() }}"
+            data-type="aoraeditor-style">
+
+        @if (isRtl())
+            <link rel="stylesheet" type="text/css" data-type="aoraeditor-style"
+                href="{{ asset('frontend/infixlmstheme/css/frontend_style_rtl.css') . assetVersion() }}">
+        @else
+            <link rel="stylesheet" type="text/css" data-type="aoraeditor-style"
+                href="{{ asset('frontend/infixlmstheme/css/frontend_style.css') . assetVersion() }}">
+        @endif --}}
+
+        <link rel="stylesheet" href="{{ asset('frontend/infixlmstheme/css/mega_menu.css') }}">
+
+        <link rel="stylesheet" href="{{ asset('frontend/infixlmstheme/css/sections/base.css') }}"
+              data-type="aoraeditor-style">
+
+
+        <link rel="stylesheet" href="{{ asset('css/preloader.css') }}" />
+        <link rel="stylesheet" href="{{ asset('frontend/infixlmstheme/css/custom.css') }}">
+    @elseif($currentTheme == 'edume')
+        @if (isRtl())
+            <link rel="stylesheet" href="{{ asset('public') }}/css/bootstrap.rtl.min.css">
+        @else
+            <link rel="stylesheet" href="{{ asset('public') }}/css/bootstrap.min.css">
+        @endif
+        {{-- <link rel="stylesheet" type="text/css" data-type="aoraeditor-style"
+            href="{{ asset('frontend/infixlmstheme/css/frontend_style.css') . assetVersion() }}"> --}}
+
+        <link rel="stylesheet" href="{{ asset('frontend/edume') }}/css/nice-select.css">
+        <link rel="stylesheet" href="{{ asset('frontend/edume') }}/css/zeynep.min.css">
+               <link rel="stylesheet" href="{{ asset('frontend/edume') }}/css/slick.css">
+
+        <link rel="stylesheet" href="{{ asset('frontend/edume') }}/css/slicknav.css">
+
+        <link rel="stylesheet" href="{{ asset('frontend/edume') }}/css/style.css" />
+        <link rel="stylesheet" href="{{ asset('frontend/edume') }}/css/dynamic_page.css" />
+    @elseif($currentTheme == 'kidslms')
+        <link rel="stylesheet" href="{{ themeAsset('css') }}/bootstrap.min.css">
+        <link rel="stylesheet" href="{{ themeAsset('plugins/magnific') }}/magnific-popup.css">
+        <link rel="stylesheet" href="{{ themeAsset('plugins/select2') }}/select2.min.css">
+        <link rel="stylesheet" href="{{ themeAsset('css') }}/frontend_style.css">
+        
+        <link rel="stylesheet" href="{{themeAsset('plugins/carousel')}}/owl.carousel.min.css">
+        <link rel="stylesheet" href="{{themeAsset('css')}}/fontawesome.css">
+    @endif
+
+
+    @yield('styles')
+    <style>
+
+    </style>
+    <script src="{{ asset('js/common.js') }}"></script>
+
+    <script type="text/javascript" src="{{ asset('frontend/infixlmstheme/js/jquery.lazy.min.js') }}"></script>
+
+
+    <link rel="stylesheet" href="{{ asset('css/preloader.css') }}" />
+
+
+</head>
+
+<body>
+    {{-- @include('preloader') --}}
+    @if (str_contains(request()->url(), 'chat'))
+        <link rel="stylesheet" href="{{ asset('backend/css/jquery-ui.css') }}{{ assetVersion() }}" />
+        <link rel="stylesheet" href="{{ asset('backend/vendors/select2/select2.css') }}{{ assetVersion() }}" />
+        <link rel="stylesheet" href="{{ asset('chat/css/style-student.css') }}{{ assetVersion() }}">
+    @endif
+
+    @if (auth()->check() && auth()->user()->role_id == 3 && !str_contains(request()->url(), 'chat'))
+        <link rel="stylesheet" href="{{ asset('chat/css/notification.css') }}{{ assetVersion() }}">
+    @endif
+
+    {{-- @if (isModuleActive('WhatsappSupport'))
+        <link rel="stylesheet" href="{{ asset('whatsapp-support/style.css') }}{{ assetVersion() }}">
+    @endif --}}
+
+    <script>
+        window.Laravel = {
+            "baseUrl": '{{ url('/') }}' + '/',
+            "current_path_without_domain": '{{ request()->path() }}',
+            "csrfToken": '{{ csrf_token() }}',
+        }
+    </script>
+
+
+    <script>
+        window._locale = '{{ app()->getLocale() }}';
+        window._translations = {!! $jsonLang ?? '' !!}
+        window.jsLang = function(key, replace) {
+            let translation = true
+
+            let json_file = window._translations;
+            translation = json_file[key] ?
+                json_file[key] :
+                key
+            $.each(replace, (value, key) => {
+                translation = translation.replace(':' + key, value)
+            })
+            return translation
+        }
+    </script>
+
+
+    {{-- @if (!empty(Settings('facebook_pixel')))
+        <!-- Facebook Pixel Code -->
+        <script>
+            ! function(f, b, e, v, n, t, s) {
+                if (f.fbq) return;
+                n = f.fbq = function() {
+                    n.callMethod ?
+                        n.callMethod.apply(n, arguments) : n.queue.push(arguments)
+                };
+                if (!f._fbq) f._fbq = n;
+                n.push = n;
+                n.loaded = !0;
+                n.version = '2.0';
+                n.queue = [];
+                t = b.createElement(e);
+                t.async = !0;
+                t.src = v;
+                s = b.getElementsByTagName(e)[0];
+                s.parentNode.insertBefore(t, s)
+            }(window, document, 'script',
+                'https://connect.facebook.net/en_US/fbevents.js');
+            fbq('init', {{ Settings('facebook_pixel') }});
+            fbq('track', 'PageView');
+        </script>
+        <noscript>
+            <img height="1" width="1" style="display:none"
+                src="https://www.facebook.com/tr?id={{ Settings('facebook_pixel') }}/&ev=PageView&noscript=1" />
+        </noscript>
+        <!-- End Facebook Pixel Code -->
+    @endif --}}
+
+    <input type="hidden" id="url" value="{{ url('/') }}">
+    {{-- <input type="hidden" name="lat" class="lat" value="{{ Settings('lat') }}"> --}}
+    {{-- <input type="hidden" name="lng" class="lng" value="{{ Settings('lng') }}"> --}}
+    {{-- <input type="hidden" name="zoom" class="zoom" value="{{ Settings('zoom_level') }}"> --}}
+    {{-- <input type="hidden" name="slider_transition_time" id="slider_transition_time"
+        value="{{ Settings('slider_transition_time') ? Settings('slider_transition_time') : 5 }}"> --}}
+    <input type="hidden" name="base_url" class="base_url" value="{{ url('/') }}">
+    <input type="hidden" name="csrf_token" class="csrf_token" value="{{ csrf_token() }}">
+    @if (auth()->check())
+        <input type="hidden" name="balance" class="user_balance" value="{{ auth()->user()->balance }}">
+    @endif
+    {{-- <input type="hidden" name="currency_symbol" class="currency_symbol" value="{{ Settings('currency_symbol') }}"> --}}
+    <input type="hidden" name="app_debug" class="app_debug" value="{{ env('APP_DEBUG') }}">
+    <div data-aoraeditor="html">
+        {{-- @if (!Settings('mobile_app_only_mode'))
+            @include(theme('partials._menu'))
+        @endif --}}
+        <div id="content-area">
+            @yield('content')
+        </div>
+        {{-- @if (!Settings('mobile_app_only_mode'))
+            @include(theme('partials._footer'))
+        @endif --}}
+    </div>
+
+
+    <script type="text/javascript" src="{{ asset('Modules/AoraPageBuilder/Resources/assets/js/bootstrap.min.js') }}">
+    </script>
+    <script type="text/javascript" src="{{ asset('Modules/AoraPageBuilder/Resources/assets/js/jquery-ui.min.js') }}">
+    </script>
+    <script type="text/javascript" src="{{ asset('Modules/AoraPageBuilder/Resources/assets/js/ckeditor.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('Modules/AoraPageBuilder/Resources/assets/js/form-builder.min.js') }}">
+    </script>
+    <script type="text/javascript" src="{{ asset('Modules/AoraPageBuilder/Resources/assets/js/form-render.min.js') }}">
+    </script>
+    <script type="text/javascript" src="{{ asset('Modules/AoraPageBuilder/Resources/assets/js/aoraeditor.js') }}"></script>
+
+    <script type="text/javascript"
+        src="{{ asset('Modules/AoraPageBuilder/Resources/assets/js/aoraeditor-components.js') }}"></script>
+
+
+    @yield('scripts')
+
+
+    <script type="text/javascript" data-aoraeditor="script">
+        $(function() {
+            // $('.dynamicData').each(function (i, obj) {
+            //     aoraEditor.loadDynamicContent($(this));
+            // });
+
+
+        });
+        // $(function () {
+        //     if ($.isFunction($.fn.lazy)) {
+        //         $('.lazy').lazy();
+        //     }
+        // });
+
+        setTimeout(function() {
+            $('.preloader').fadeOut('hide', function() {
+                // $(this).remove();
+
+            });
+        }, 0);
+    </script>
+</body>
+
+{{-- <input type="hidden" name="lat" class="lat" value="{{ Settings('lat') }}">
+<input type="hidden" name="lng" class="lng" value="{{ Settings('lng') }}">
+<input type="hidden" name="zoom" class="zoom" value="{{ Settings('zoom_level') }}"> --}}
+
+
+</html>

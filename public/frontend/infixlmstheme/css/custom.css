@@ -1,0 +1,74 @@
+.modal.modal-message .modal-dialog {
+    width: 100%;
+    max-width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+
+}
+
+.modal.modal-message .modal-content {
+    border-radius: 0;
+
+}
+
+.modal.modal-message .modal-dialog.modal-message-centered {
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100% - 1rem);
+}
+
+.modal.modal-message .modal-body,
+.modal.modal-message .modal-header,
+.modal.modal-message .modal-footer {
+    width: 60%;
+    border: none;
+    margin: 0 auto;
+}
+
+@media (max-width: 575.98px) {
+
+    .modal.modal-message .modal-body,
+    .modal.modal-message .modal-header,
+    .modal.modal-message .modal-footer {
+        width: 90%;
+    }
+}
+
+
+
+/* .modal.modal-message .modal-dialog {
+    max-width: 100%;
+    width: 100%;
+
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.modal.modal-message .modal-dialog.modal-message-centered {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100% - 1rem);
+}
+
+.modal.modal-message .modal-content {
+    border-radius: 0;
+
+}
+
+.modal.modal-message .modal-body,
+.modal.modal-message .modal-header,
+.modal.modal-message .modal-footer {
+    width: 60%;
+    margin: 0 auto;
+}
+
+@media (max-width: 575.98px) {
+    .modal.modal-message .modal-body,
+    .modal.modal-message .modal-header,
+    .modal.modal-message .modal-footer {
+        width: 90%;
+    }
+} */
