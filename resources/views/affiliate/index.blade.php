@@ -10,13 +10,16 @@
     <!-- Add to homescreen for Chrome on Android -->
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="application-name" content="eiMaths ecommerce">
-    <link rel="icon" sizes="512x512" href="public/images/icons/icon-512x512.png">
+    {{-- <link rel="icon" sizes="512x512" href="{{ asset('images/icons/icon-512x512.png') }}"> --}}
+
+    <link rel="icon" href="{{ asset('images/cropped-footer-logo-32x32.png') }}{{ assetVersion() }}"
+        type="image/png" />
+
 
     <!-- Add to homescreen for Safari on iOS -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="apple-mobile-web-app-title" content="eiMaths ecommerce">
-    <link rel="apple-touch-icon" href="public/images/icons/icon-512x512.png">
 
 
     <link href="public/images/icons/splash-640x1136.png"
@@ -71,17 +74,14 @@
     <meta property="og:type" content="website" />
     <meta property="og:title" content="eiMaths ecommerce" />
     <meta property="og:description" content="" />
-    <meta property="og:image"
-        content="https://ecommerce.eimaths-th.com/public/uploads/main/files/08-08-2024/logo-eimath.png" />
+    <meta property="og:image" content="{{ asset('images/cropped-footer-logo-32x32.png') }}" />
 
     <meta name="title" content="eiMaths ecommerce | Affiliate">
     <meta name="description" content="">
     <meta name="keywords" content="">
 
     <title>eiMaths ecommerce | Affiliate</title>
-    <link rel="icon"
-        href="https://ecommerce.eimaths-th.com/public/uploads/main/files/09-08-2024/cropped-footer-logo-32x32.png?v=7002"
-        type="image/png" />
+    <link rel="icon" href="{{ asset('images/cropped-footer-logo-32x32.png') }}" type="image/png" />
 
     <div>
         <style data-type="aoraeditor-style">
@@ -590,9 +590,8 @@
                                     <!-- header__left__start  -->
                                     <div class="header__left d-flex align-items-center gap-20 ">
                                         <div class="">
-                                            <a class="logo_img" href="https://ecommerce.eimaths-th.com">
-                                                <img class="p-2"
-                                                    src="https://ecommerce.eimaths-th.com/public/uploads/main/files/08-08-2024/logo-eimath.png"
+                                            <a class="logo_img" href="{{ route('affiliate.index') }}">
+                                                <img class="p-2" src="{{ asset('images/logo.png') }}"
                                                     width="150" alt="eiMaths ecommerce">
                                             </a>
                                         </div>
@@ -602,7 +601,8 @@
                                         </div>
 
                                         <div class="category_search d-flex category_box_iner">
-                                            <form action="https://ecommerce.eimaths-th.com/search">
+                                            {{-- <form action="https://ecommerce.eimaths-th.com/search"> --}}
+                                            <form action="#">
                                                 <div class="input-group theme_search_field">
                                                     <div class="input-group-prepend">
                                                         <button class="btn" type="button" id="button-addon1"><i
@@ -627,12 +627,16 @@
                                             <div class="menu_dropdown">
                                                 <ul>
                                                     <li class="mega_menu_dropdown active_menu_item">
-                                                        <a href="https://ecommerce.eimaths-th.com/courses?category=2">Upper
-                                                            Primary</a>
+                                                        {{-- <a href="https://ecommerce.eimaths-th.com/courses?category=2"> --}}
+                                                        <a href="#">
+                                                            Upper Primary
+                                                        </a>
                                                     </li>
                                                     <li class="mega_menu_dropdown active_menu_item">
-                                                        <a href="https://ecommerce.eimaths-th.com/courses?category=1">Lower
-                                                            Primary</a>
+                                                        {{-- <a href="https://ecommerce.eimaths-th.com/courses?category=1"> --}}
+                                                        <a href="#">
+                                                            Lower Primary
+                                                        </a>
                                                     </li>
                                                 </ul>
                                             </div>
@@ -642,24 +646,33 @@
 
 
                                                 <li class="  ">
-                                                    <a href="https://ecommerce.eimaths-th.com/">Home</a>
+                                                    {{-- <a href="https://ecommerce.eimaths-th.com/"> --}}
+                                                    <a href="#"> Home </a>
                                                 </li>
 
                                                 <li class="  ">
-                                                    <a href="https://ecommerce.eimaths-th.com/courses">Courses</a>
+                                                    {{-- <a href="https://ecommerce.eimaths-th.com/courses"> --}}
+                                                    <a href="#"> Courses </a>
                                                 </li>
 
                                                 <li class="  ">
-                                                    <a href="https://ecommerce.eimaths-th.com/classes">Classes</a>
+                                                    {{-- <a href="https://ecommerce.eimaths-th.com/classes"> --}}
+                                                    <a href="#">
+
+                                                        Classes</a>
                                                 </li>
 
                                                 <li class="  ">
-                                                    <a href="https://ecommerce.eimaths-th.com/affiliate">Affiliate</a>
+                                                    {{-- <a href="https://ecommerce.eimaths-th.com/affiliate"> --}}
+                                                    <a href="#">
+
+                                                        Affiliate</a>
                                                 </li>
 
                                                 <li class="  ">
-                                                    <a href="https://ecommerce.eimaths-th.com/contact-us">Contact
-                                                        Us</a>
+                                                    {{-- <a href="https://ecommerce.eimaths-th.com/contact-us"> --}}
+                                                    <a href="#">
+                                                        Contact Us</a>
                                                 </li>
 
                                                 <li><a href="#"></a></li>
@@ -699,9 +712,8 @@
 
             <a href="#" class="float notification_wrapper cart_icon">
                 <div class="notify_icon cart_store" style="padding-top: 7px">
-                    <img style="max-width: 30px;"
-                        src="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/img/svg/cart_white.svg"
-                        alt="">
+                    <img style="max-width: 30px;" src="{{ asset('frontend/infixlmstheme/img/svg/cart_white.svg') }}"
+                        {{-- src="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/img/svg/cart_white.svg" --}} alt="">
                 </div>
                 <span class="notify_count">0</span>
             </a>
@@ -712,7 +724,7 @@
                 <div class="row">
                     <div class="col-sm-12 ui-resizable" data-type="container-content">
                         <div data-aoraeditor-categories="Affiliate Page" data-aoraeditor-title="Affiliate Title"
-                            data-preview="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/img/snippets/preview/affiliate/title.png"
+                            data-preview="{{ asset('frontend/infixlmstheme/img/snippets/preview/affiliate/title.png') }}"
                             data-type="component-text">
                             <div class="affiliate_bradcam_area">
                                 <div class="container">
@@ -724,9 +736,9 @@
                                                 <h4><strong>เป็นส่วนหนึ่งของความสำเร็จของเรา รับค่าคอมมิชชั่นสูงสุด 20%
                                                         จากการแนะนำ</strong></h4>
                                                 <p>เรามีค่าคอมมิชชั่นที่น่าสนใจสำหรับแต่ละการแนะนำที่ประสบความสำเร็จ</p>
-                                                <a class="theme_btn"
-                                                    href="https://ecommerce.eimaths-th.com/affiliate/registration">เข้าร่วมเป็นครอบครัว
-                                                    Affiliate</a>
+                                                <a class="theme_btn" href="#">
+                                                    {{-- <a class="theme_btn" href="https://ecommerce.eimaths-th.com/affiliate/registration"> --}}
+                                                    เข้าร่วมเป็นครอบครัว Affiliate</a>
                                             </div>
                                         </div>
                                     </div>
@@ -738,23 +750,25 @@
                 <div class="row">
                     <div class="col-sm-12 ui-resizable" data-type="container-content">
                         <div data-aoraeditor-categories="Affiliate Page" data-aoraeditor-title="Affiliate Commission"
-                            data-preview="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/img/snippets/preview/affiliate/commission_section.png"
-                            data-type="component-text">
+                            data-preview="{{ asset('frontend/infixlmstheme/img/snippets/preview/affiliate/commission_section.png') }}"
+                            {{-- data-preview="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/img/snippets/preview/affiliate/commission_section.png" --}} data-type="component-text">
                             <div class="lms_section">
                                 <div class="container">
                                     <div class="row justify-content-center">
                                         <div class="col-xl-10">
                                             <div class="commision_box">
                                                 <div alt=""
-                                                    class="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/img/snippets/preview/affiliate/round.svg">
+                                                    class="{{ asset('frontend/infixlmstheme/img/snippets/preview/affiliate/round.svg') }}">
+                                                    {{-- class="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/img/snippets/preview/affiliate/round.svg"> --}}
                                                     &nbsp;</div>
                                                 <div class="commision_left">
                                                     <h4>อัตราค่าคอมมิชชั่น</h4>
                                                     <p class="rate_text">ช่วยกำหนดอนาคตของการค้า</p>
                                                     <h3>20%</h3>
                                                     <p class="Sale_text">For the First Sale</p><a
-                                                        class="theme_btn small_btn2"
-                                                        href="https://ecommerce.eimaths-th.com/my-affiliate">&nbsp;สร้าง
+                                                        class="theme_btn small_btn2" {{-- href="https://ecommerce.eimaths-th.com/my-affiliate"> --}}
+                                                        href="#">
+                                                        &nbsp;สร้าง
                                                         Affiliate ลิงค์</a>
                                                     <p class="discription_text">เสนอค่าคอมมิชชั่น 20%
                                                         สำหรับการขายครั้งแรกที่แนะนำ
@@ -765,7 +779,8 @@
                                                     <div class="commision_payment_lists">
                                                         <div class="commision_payment_list">
                                                             <div class="thumb"><img alt=""
-                                                                    src="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/img/snippets/preview/affiliate/wallet_1.svg">
+                                                                    src="{{ asset('frontend/infixlmstheme/img/snippets/preview/affiliate/wallet_1.svg') }}">
+                                                                {{-- src="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/img/snippets/preview/affiliate/wallet_1.svg"> --}}
                                                             </div>
                                                             <div class="comission_payment_text">
                                                                 <h4>วิธีและกำหนดการจ่ายเงิน</h4>
@@ -775,7 +790,8 @@
                                                         </div>
                                                         <div class="commision_payment_list">
                                                             <div class="thumb"><img alt=""
-                                                                    src="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/img/snippets/preview/affiliate/wallet_2.svg">
+                                                                    src="{{ asset('frontend/infixlmstheme/img/snippets/preview/affiliate/wallet_2.svg') }}">
+                                                                {{-- src="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/img/snippets/preview/affiliate/wallet_2.svg"> --}}
                                                             </div>
                                                             <div class="comission_payment_text">
                                                                 <h4>อัตราค่าคอมมิชชั่น</h4>
@@ -786,7 +802,8 @@
                                                         </div>
                                                         <div class="commision_payment_list">
                                                             <div class="thumb"><img alt=""
-                                                                    src="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/img/snippets/preview/affiliate/wallet_3.svg">
+                                                                    src="{{ asset('frontend/infixlmstheme/img/snippets/preview/affiliate/wallet_3.svg') }}">
+                                                                {{-- src="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/img/snippets/preview/affiliate/wallet_3.svg"> --}}
                                                             </div>
                                                             <div class="comission_payment_text">
                                                                 <h4>กำหนดเวลาการจ่ายเงิน</h4>
@@ -1243,8 +1260,8 @@
                             <div class="col-sm-12 ui-resizable" data-type="container-content">
                                 <div class="text-center" data-type="component-text">
                                     <div class="photo-panel"><img class="w-60 h-60 img-cover"
-                                            src="https://ecommerce.eimaths-th.com/public/uploads/main/images/15-09-2024/66e7009b50afa.png"
-                                            style="height: 80%; width: 80%;"></div>
+                                            src="{{ asset('uploads/main/images/15-09-2024/66e7009b50afa.png') }}"
+                                            {{-- src="https://ecommerce.eimaths-th.com/public/uploads/main/images/15-09-2024/66e7009b50afa.png" --}} style="height: 80%; width: 80%;"></div>
                                 </div>
                             </div>
                         </div>
@@ -1317,8 +1334,8 @@
                     <div class="col-sm-12 ui-resizable" data-type="container-content">
                         <div data-aoraeditor-categories="Affiliate Page"
                             data-aoraeditor-title="Affiliate How Does Work Section"
-                            data-preview="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/img/snippets/preview/affiliate/how_work_section.png"
-                            data-type="component-text">
+                            data-preview="{{ asset('frontend/infixlmstheme/img/snippets/preview/affiliate/how_work_section.png') }}"
+                            {{-- data-preview="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/img/snippets/preview/affiliate/how_work_section.png" --}} data-type="component-text">
                             <div class="lms_section section_padding2 pb-0">
                                 <div class="container">
                                     <div class="row justify-content-center">
@@ -1347,7 +1364,8 @@
                                                 <div class="col-xl-4 col-lg-4 col-md-6">
                                                     <div class="process_widget_box text-center mb_30">
                                                         <div class="icon"><img alt=""
-                                                                src="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/img/snippets/preview/affiliate/process_icon_1.svg">
+                                                                src="{{ asset('frontend/infixlmstheme/img/snippets/preview/affiliate/process_icon_1.svg') }}">
+                                                            {{-- src="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/img/snippets/preview/affiliate/process_icon_1.svg"> --}}
                                                         </div>
                                                         <h4>ลงทะเบียนกับเรา</h4>
                                                         <p>สมัครเป็น Partner
@@ -1359,7 +1377,8 @@
                                                 <div class="col-xl-4 col-lg-4 col-md-6">
                                                     <div class="process_widget_box text-center mb_30">
                                                         <div class="icon"><img alt=""
-                                                                src="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/img/snippets/preview/affiliate/process_icon_2.svg">
+                                                                src="{{ asset('frontend/infixlmstheme/img/snippets/preview/affiliate/process_icon_2.svg') }}">
+                                                            {{-- src="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/img/snippets/preview/affiliate/process_icon_2.svg"> --}}
                                                         </div>
                                                         <h4>ยืนยัน Email</h4>
                                                         <p>ย่าลืมยืนยันอีเมลของคุณผ่านลิงก์ที่เราส่งไปยังกล่องจดหมายของคุณ
@@ -1370,7 +1389,8 @@
                                                 <div class="col-xl-4 col-lg-4 col-md-6">
                                                     <div class="process_widget_box text-center mb_30">
                                                         <div class="icon"><img alt=""
-                                                                src="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/img/snippets/preview/affiliate/process_icon_3.svg">
+                                                                src="{{ asset('frontend/infixlmstheme/img/snippets/preview/affiliate/process_icon_3.svg') }}">
+                                                            {{-- src="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/img/snippets/preview/affiliate/process_icon_3.svg"> --}}
                                                         </div>
                                                         <h4>สร้างAffiliateของคุณ</h4>
                                                         <p>สร้างบัญชี Affiliate
@@ -1391,8 +1411,8 @@
                     <div class="col-sm-12 ui-resizable" data-type="container-content">
                         <div data-aoraeditor-categories="Affiliate Page"
                             data-aoraeditor-title="Affiliate Rules & Requirement Section"
-                            data-preview="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/img/snippets/preview/affiliate/rules_section.png"
-                            data-type="component-text">
+                            data-preview="{{ asset('frontend/infixlmstheme/img/snippets/preview/affiliate/rules_section.png') }}"
+                            {{-- data-preview="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/img/snippets/preview/affiliate/rules_section.png" --}} data-type="component-text">
                             <div class="lms_section section_padding2 affiliate_bg">
                                 <div class="container">
                                     <div class="row justify-content-center">
@@ -1415,35 +1435,40 @@
                                                         <ul>
                                                             <li>
                                                                 <div class="icon"><img alt=""
-                                                                        src="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/img/snippets/preview/affiliate/green_check.svg">
+                                                                        src="{{ asset('frontend/infixlmstheme/img/snippets/preview/affiliate/green_check.svg') }}">
+                                                                    {{-- src="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/img/snippets/preview/affiliate/green_check.svg"> --}}
                                                                 </div>
                                                                 <p>มีส่วนร่วมกับชุมชน Facebook Tiktok IG&nbsp;
                                                                     และแนะนำโซลูชันของเราในกระทู้ที่เกี่ยวข้อง</p>
                                                             </li>
                                                             <li>
                                                                 <div class="icon"><img alt=""
-                                                                        src="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/img/snippets/preview/affiliate/green_check.svg">
+                                                                        src="{{ asset('frontend/infixlmstheme/img/snippets/preview/affiliate/green_check.svg') }}">
+                                                                    {{-- src="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/img/snippets/preview/affiliate/green_check.svg"> --}}
                                                                 </div>
                                                                 <p>เขียนรีวิวและบทความในบล็อก
                                                                     เกี่ยวกับผลิตภัณฑ์และโซลูชันของเรา</p>
                                                             </li>
                                                             <li>
                                                                 <div class="icon"><img alt=""
-                                                                        src="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/img/snippets/preview/affiliate/green_check.svg">
+                                                                        src="{{ asset('frontend/infixlmstheme/img/snippets/preview/affiliate/green_check.svg') }}">
+                                                                    {{-- src="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/img/snippets/preview/affiliate/green_check.svg"> --}}
                                                                 </div>
                                                                 <p>เผยแพร่ข้อมูลเชิงบวกเกี่ยวกับผลิตภัณฑ์และคุณสมบัติต่าง
                                                                     ๆ ผ่านช่องทางโซเชียล</p>
                                                             </li>
                                                             <li>
                                                                 <div class="icon"><img alt=""
-                                                                        src="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/img/snippets/preview/affiliate/green_check.svg">
+                                                                        src="{{ asset('frontend/infixlmstheme/img/snippets/preview/affiliate/green_check.svg') }}">
+                                                                    {{-- src="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/img/snippets/preview/affiliate/green_check.svg"> --}}
                                                                 </div>
                                                                 <p>เผยแพร่การเปรียบเทียบผลิตภัณฑ์, white papers,
                                                                     อินโฟกราฟิก, รูปภาพ และ กรณีศึกษา</p>
                                                             </li>
                                                             <li>
                                                                 <div class="icon"><img alt=""
-                                                                        src="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/img/snippets/preview/affiliate/green_check.svg">
+                                                                        src="{{ asset('frontend/infixlmstheme/img/snippets/preview/affiliate/green_check.svg') }}">
+                                                                    {{-- src="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/img/snippets/preview/affiliate/green_check.svg"> --}}
                                                                 </div>
                                                                 <p>สร้างวิดีโอสาธิตและบล็อกวิดีโอเกี่ยวกับผลิตภัณฑ์ของเรา
                                                                     บนช่องทางของคุณเอง</p>
@@ -1459,7 +1484,8 @@
                                                         <ul>
                                                             <li>
                                                                 <div class="icon"><img alt=""
-                                                                        src="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/img/snippets/preview/affiliate/red_cross.svg">
+                                                                        src="{{ asset('frontend/infixlmstheme/img/snippets/preview/affiliate/red_cross.svg') }}">
+                                                                    {{-- src="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/img/snippets/preview/affiliate/red_cross.svg"> --}}
                                                                 </div>
                                                                 <p>ไม่ควรสแปมลิงก์
                                                                     โดยไม่มีการสนทนาที่มีความหมายและในกระทู้ที่ไม่เกี่ยวข้อง
@@ -1467,7 +1493,8 @@
                                                             </li>
                                                             <li>
                                                                 <div class="icon"><img alt=""
-                                                                        src="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/img/snippets/preview/affiliate/red_cross.svg">
+                                                                        src="{{ asset('frontend/infixlmstheme/img/snippets/preview/affiliate/red_cross.svg') }}">
+                                                                    {{-- src="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/img/snippets/preview/affiliate/red_cross.svg"> --}}
                                                                 </div>
                                                                 <p>ห้ามใช้วิธีการ Blackhat
                                                                     และวิธีการที่ไม่ถูกต้องตามจริยธรรมในการจัดการกับเครื่องมือค้นหา
@@ -1484,8 +1511,9 @@
                                                 </div>
                                             </div>
                                             <div class="apply_btn text-center mb_30"><a
-                                                    class="theme_btn min_windth_200 text-center"
-                                                    href="https://ecommerce.eimaths-th.com/affiliate/registration">สมัครเลย!!</a>
+                                                    class="theme_btn min_windth_200 text-center" {{-- href="https://ecommerce.eimaths-th.com/affiliate/registration"> --}}
+                                                    href="#">
+                                                    สมัครเลย!!</a>
                                             </div>
                                         </div>
                                     </div>
@@ -1500,7 +1528,8 @@
                             <div class="breadcrumb_area bradcam_bg_1 position-relative">
                                 <div class="breadcrumb_img w-100 h-100 position-absolute bottom-0 left-0 "><img
                                         alt="" class="w-100 h-100 img-cover"
-                                        src="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/img/banner/bradcam_bg_1.jpg">
+                                        src="{{ asset('frontend/infixlmstheme/img/banner/bradcam_bg_1.jpg') }}">
+                                    {{-- src="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/img/banner/bradcam_bg_1.jpg"> --}}
                                 </div>
                                 <div class="container">
                                     <div class="row">
@@ -1893,8 +1922,8 @@
                     <div class="col-sm-12 ui-resizable" data-type="container-content">
                         <div data-aoraeditor-categories="Affiliate Page"
                             data-aoraeditor-title="Affiliate Frequently Asked Questions Section"
-                            data-preview="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/img/snippets/preview/affiliate/frequntlya_ask_section.png"
-                            data-type="component-text">
+                            data-preview="{{ asset('frontend/infixlmstheme/img/snippets/preview/affiliate/frequntlya_ask_section.png') }}"
+                            {{-- data-preview="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/img/snippets/preview/affiliate/frequntlya_ask_section.png" --}} data-type="component-text">
                             <div class="affliate_faq-section">
                                 <div class="container">
                                     <div class="row justify-content-center">
@@ -1980,6 +2009,7 @@
         <div class="aoraeditor-skip aoraeditor-footer">
             <div>
             </div>
+
             <footer class="">
                 <div>
                     <div class="footer_top_area">
@@ -1988,8 +2018,8 @@
                                 <div class="col-lg-6">
                                     <div class="footer__cta">
                                         <div class="thumb">
-                                            <img src="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/img/book.png"
-                                                alt="" class="w-100">
+                                            <img src="{{ asset('frontend/infixlmstheme/img/book.png') }}"
+                                                {{-- <img src="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/img/book.png" --}} alt="" class="w-100">
                                         </div>
                                         <div class="cta_content">
                                             <h3>ติดตามข่าวสาร — รับการอัปเดตทางอีเมล</h3>
@@ -2000,7 +2030,7 @@
                                 <div class="col-lg-6">
 
                                     <div class="subcribe-form theme_mailChimp">
-                                        <form action="https://ecommerce.eimaths-th.com/subscribe" method="POST"
+                                        <form action="#" method="POST" {{-- <form action="https://ecommerce.eimaths-th.com/subscribe" method="POST" --}}
                                             class="subscription relative"><input type="hidden" name="_token"
                                                 value="UXqxMUzO3NAybCH6WduKA4cNN4PbjD0GdofYpyEl"> <input
                                                 name="email" class="form-control" placeholder="กรอกที่อยู่อีเมล"
@@ -2027,15 +2057,15 @@
                                 <div class="footer_widget">
                                     <div class="footer_logo">
                                         <a href="#">
-                                            <img src="https://ecommerce.eimaths-th.com/public/uploads/main/files/08-08-2024/logo-eimath.png"
-                                                alt="" style="width: 108px">
+                                            <img src="{{ asset('uploads/main/files/08-08-2024/logo-eimath.png') }}"
+                                                {{-- <img src="https://ecommerce.eimaths-th.com/public/uploads/main/files/08-08-2024/logo-eimath.png" --}} alt="" style="width: 108px">
                                         </a>
                                     </div>
                                     <p></p>
                                     <div class="copyright_text">
                                         <p>Copyright © 2024 eiMaths. All rights reserved | Made By <a
-                                                href="https://aorasoft.com" target="_blank"><span
-                                                    style="color:#D12053">CodeThemes</span></a></p>
+                                                href="https://eimaths-th.com" target="_blank"><span
+                                                    style="color:#D12053">eiMaths</span></a></p>
                                     </div>
 
                                     <style>
@@ -2062,16 +2092,33 @@
                                                 <h3>Support Zone</h3>
                                             </div>
                                             <ul class="footer_links">
-                                                <li><a href="https://ecommerce.eimaths-th.com/unlock-your-potential">Unlock
-                                                        Your Potential </a></li>
-                                                <li><a
-                                                        href="https://ecommerce.eimaths-th.com/privacy-policy-and-cookie-policy">Privacy
-                                                        policy and cookie policy </a></li>
-                                                <li><a href="https://ecommerce.eimaths-th.com/sitemap">Sitemap </a>
+                                                <li>
+                                                    <a href="#">
+                                                        {{-- <a href="https://ecommerce.eimaths-th.com/unlock-your-potential"> --}}
+                                                        Unlock Your Potential </a>
                                                 </li>
-                                                <li><a href="https://ecommerce.eimaths-th.com/featured-courses">Featured
-                                                        courses </a></li>
-                                                <li><a href="https://ecommerce.eimaths-th.com/join-us">Join Us </a>
+                                                <li>
+                                                    {{-- <a href="https://ecommerce.eimaths-th.com/privacy-policy-and-cookie-policy"> --}}
+                                                    <a href="#">
+
+                                                        Privacy
+                                                        policy and cookie policy </a>
+                                                </li>
+                                                <li><a href="#">Sitemap </a>
+                                                    {{-- <li><a href="https://ecommerce.eimaths-th.com/sitemap">Sitemap </a> --}}
+                                                </li>
+                                                <li>
+                                                    {{-- <a href="https://ecommerce.eimaths-th.com/featured-courses"> --}}
+                                                    <a href="#">
+
+                                                        Featured courses
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    {{-- <a href="https://ecommerce.eimaths-th.com/join-us"> --}}
+                                                    <a href="#">
+
+                                                        Join Us </a>
                                                 </li>
                                             </ul>
 
@@ -2084,15 +2131,34 @@
                                             </div>
                                             <ul class="footer_links">
 
-                                                <li><a href="https://ecommerce.eimaths-th.com/infixedu-for-business">eiMaths
-                                                        for Business </a></li>
-                                                <li><a href="https://ecommerce.eimaths-th.com/teach-on-infixedu">Teach
-                                                        on eiMaths </a></li>
-                                                <li><a href="https://ecommerce.eimaths-th.com/get-the-app">Get the app
+                                                <li>
+                                                    <a href="#">
+
+                                                    {{-- <a href="https://ecommerce.eimaths-th.com/infixedu-for-business"> --}}
+                                                        eiMathsfor Business 
+                                                    </a>
+                                                    </li>
+                                                <li>
+                                                    <a href="#">
+
+                                                    {{-- <a href="https://ecommerce.eimaths-th.com/teach-on-infixedu"> --}}
+                                                        Teach on eiMaths </a></li>
+                                                <li>
+                                                    {{-- <a href="https://ecommerce.eimaths-th.com/get-the-app"> --}}
+                                                    <a href="#">
+
+                                                        Get the app
                                                     </a></li>
-                                                <li><a href="https://ecommerce.eimaths-th.com/about-us">About us </a>
+                                                <li>
+                                                    {{-- <a href="https://ecommerce.eimaths-th.com/about-us"> --}}
+                                                        <a href="#">
+                                                            About us </a>
                                                 </li>
-                                                <li><a href="https://ecommerce.eimaths-th.com/contact-us">Contact us
+                                                <li>
+                                                    {{-- <a href="https://ecommerce.eimaths-th.com/contact-us"> --}}
+                                                        <a href="#">
+                                                    
+                                                        Contact us
                                                     </a></li>
 
                                             </ul>
@@ -2104,16 +2170,40 @@
                                                 <h3>Explore Services</h3>
                                             </div>
                                             <ul class="footer_links">
-                                                <li><a href="https://ecommerce.eimaths-th.com/careers">Careers </a>
+                                                <li>
+                                                    {{-- <a href="https://ecommerce.eimaths-th.com/careers"> --}}
+                                                    <a href="#">
+                                                        
+                                                        Careers </a>
                                                 </li>
-                                                <li><a href="https://ecommerce.eimaths-th.com/blog">Blog </a></li>
-                                                <li><a href="https://ecommerce.eimaths-th.com/help-and-support">Help
-                                                        and Support </a></li>
-                                                <li><a href="https://ecommerce.eimaths-th.com/terms">Terms </a></li>
-                                                <li><a
-                                                        href="https://ecommerce.eimaths-th.com/certificate-verification">Certificate
-                                                        Verification </a></li>
-                                                <li><a href="https://ecommerce.eimaths-th.com/free-course">Free Course
+                                                <li>
+                                                    <a href="#">
+
+                                                    {{-- <a href="https://ecommerce.eimaths-th.com/blog"> --}}
+                                                        Blog </a></li>
+                                                <li>
+                                                    {{-- <a href="https://ecommerce.eimaths-th.com/help-and-support"> --}}
+                                                    <a href="#">
+                                                        
+                                                        Help and Support 
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="#">
+
+                                                    {{-- <a href="https://ecommerce.eimaths-th.com/terms"> --}}
+                                                        Terms </a></li>
+                                                <li>
+                                                    {{-- <a href="https://ecommerce.eimaths-th.com/certificate-verification"> --}}
+                                                    <a href="#">
+
+                                                        Certificate Verification </a>
+                                                    </li>
+                                                <li>
+                                                    <a href="#">
+
+                                                    {{-- <a href="https://ecommerce.eimaths-th.com/free-course"> --}}
+                                                        Free Course
                                                     </a></li>
                                             </ul>
                                         </div>
@@ -2126,6 +2216,8 @@
                     </div>
                 </div>
             </footer>
+
+            {{-- ต่อพรุ่งนี้ --}}
 
             <div class="shoping_wrapper">
                 <div class="dark_overlay"></div>
