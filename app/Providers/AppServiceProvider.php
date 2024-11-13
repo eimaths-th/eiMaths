@@ -29,6 +29,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Blade::component('frontend.infixlmstheme.pages.ebook-plan-checkout-page-section', 'ebook-plan-checkout-page-section');
         view()->composer('*', function ($view) {
             // Check if a student is authenticated
             if (Auth::guard('student')->check()) {
