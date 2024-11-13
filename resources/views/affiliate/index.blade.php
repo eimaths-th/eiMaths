@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html dir="" class="" lang="en" itemscope itemtype="https://ecommerce.eimaths-th.com">
+<html dir="" class="" lang="en" itemscope itemtype="{{ url('/') }}">
 
 <head>
     <!-- Web Application Manifest -->
-    {{-- <link rel="manifest" href="https://ecommerce.eimaths-th.com/manifest.json"> --}}
+    <link rel="manifest" href="https://ecommerce.eimaths-th.com/manifest.json">
     <!-- Chrome for Android theme color -->
     <meta name="theme-color" content="#000000">
 
@@ -57,23 +57,17 @@
     <script type="text/javascript">
         // Initialize the service worker
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('https://ecommerce.eimaths-th.com/serviceworker.js', {
-                scope: '.'
-            }).then(function(registration) {
-                // Registration was successful
-                console.log('Laravel PWA: ServiceWorker registration successful with scope: ', registration.scope);
-            }, function(err) {
-                // registration failed :(
-                console.log('Laravel PWA: ServiceWorker registration failed: ', err);
-            });
+            navigator.serviceWorker.register('/serviceworker.js', {
+                scope: '/'
+            })
         }
     </script>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="csrf-token" content="UXqxMUzO3NAybCH6WduKA4cNN4PbjD0GdofYpyEl" />
+    <meta name="csrf-token" content="{{ csrf_token() }}" />
 
-    <meta property="og:url" content="https://ecommerce.eimaths-th.com/affiliate" />
+    <meta property="og:url" content="{{ url()->current() }}" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content="eiMaths ecommerce" />
     <meta property="og:description" content="" />
@@ -254,10 +248,9 @@
         }
     </style>
 
-    <link rel="stylesheet" href="https://ecommerce.eimaths-th.com/public/backend/css/themify-icons.css?v=7024" />
+    {{-- <link rel="stylesheet" href="https://ecommerce.eimaths-th.com/public/backend/css/themify-icons.css?v=7024" /> --}}
 
-
-    <link rel="stylesheet"
+    {{-- <link rel="stylesheet"
         href="https://ecommerce.eimaths-th.com/Modules/AoraPageBuilder/Resources/assets/css/fontawesome.css"
         data-type="aoraeditor-style" />
 
@@ -270,11 +263,20 @@
 
 
     <link rel="stylesheet" type="text/css" data-type="aoraeditor-style"
-        href="https://ecommerce.eimaths-th.com/Modules/AoraPageBuilder/Resources/assets/css/style.css">
+        href="https://ecommerce.eimaths-th.com/Modules/AoraPageBuilder/Resources/assets/css/style.css"> --}}
 
+    <link rel="stylesheet" href="{{ asset('backend/css/themify-icons.css') }}{{ assetVersion() }}" />
+    <link rel="stylesheet" href="{{ asset('Modules/AoraPageBuilder/Resources/assets/css/fontawesome.css') }}"
+        data-type="aoraeditor-style" />
 
+    <link rel="stylesheet" href="{{ asset('Modules/AoraPageBuilder/Resources/assets/css/aoraeditor.css') }}"
+        data-type="aoraeditor-style" />
+    <link rel="stylesheet" href="{{ asset('Modules/AoraPageBuilder/Resources/assets/css/aoraeditor-components.css') }}"
+        data-type="aoraeditor-style" />
+    <link rel="stylesheet" type="text/css" data-type="aoraeditor-style"
+        href="{{ asset('Modules/AoraPageBuilder/Resources/assets/css/style.css') }}">
 
-    <link rel="stylesheet"
+    {{-- <link rel="stylesheet"
         href="https://ecommerce.eimaths-th.com/Modules/AoraPageBuilder/Resources/assets/css/bootstrap.min.css?v=7259"
         data-type="aoraeditor-style" />
     <link rel="stylesheet"
@@ -287,39 +289,55 @@
     <link rel="stylesheet" type="text/css" data-type="aoraeditor-style"
         href="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/css/frontend_style.css?v=4092">
 
-    <link rel="stylesheet" href="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/css/mega_menu.css">
-
+    <link rel="stylesheet" href="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/css/mega_menu.css"> --}}
+    <link rel="stylesheet"
+        href="{{ asset('Modules/AoraPageBuilder/Resources/assets/css/bootstrap.min.css') }}{{ assetVersion() }}"
+        data-type="aoraeditor-style" />
+    <link rel="stylesheet" href="{{ asset('frontend/infixlmstheme') }}/css/fontawesome.css{{ assetVersion() }} "
+        data-type="aoraeditor-style">
+    <link rel="stylesheet" type="text/css" data-type="aoraeditor-style"
+        href="{{ asset('frontend/infixlmstheme/css/frontend_style.css') . assetVersion() }}">
+    <link rel="stylesheet" href="{{ asset('frontend/infixlmstheme/css/app.css') . assetVersion() }}"
+        data-type="aoraeditor-style">
+    <link rel="stylesheet" href="{{ asset('frontend/infixlmstheme/css/mega_menu.css') }}">
 
 
 
     {{-- <link rel="stylesheet" href="https://ecommerce.eimaths-th.com/public/css/preloader.css" /> --}}
-    <link rel="stylesheet" href="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/css/custom.css">
-
+    {{-- <link rel="stylesheet" href="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/css/custom.css"> --}}
+    <link rel="stylesheet" href="{{ asset('css/preloader.css') }}" />
+    <link rel="stylesheet" href="{{ asset('frontend/infixlmstheme/css/custom.css') }}">
 
 
     <style>
 
     </style>
-    <script src="https://ecommerce.eimaths-th.com/public/js/common.js"></script>
+    {{-- <script src="https://ecommerce.eimaths-th.com/public/js/common.js"></script>
 
     <script type="text/javascript"
-        src="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/js/jquery.lazy.min.js"></script>
-
+        src="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/js/jquery.lazy.min.js"></script> --}}
 
     {{-- <link rel="stylesheet" href="https://ecommerce.eimaths-th.com/public/css/preloader.css" /> --}}
 
+    <script src="{{ asset('js/common.js') }}"></script>
 
-    <link rel='stylesheet' type='text/css' property='stylesheet'
+    <script type="text/javascript" src="{{ asset('frontend/infixlmstheme/js/jquery.lazy.min.js') }}"></script>
+
+    {{-- <link rel="stylesheet" href="{{ asset('css/preloader.css') }}" /> --}}
+
+
+    {{-- <link rel='stylesheet' type='text/css' property='stylesheet'
         href='//ecommerce.eimaths-th.com/_debugbar/assets/stylesheets?v=1676989262&theme=auto'
         data-turbolinks-eval='false' data-turbo-eval='false'>
     <script src='//ecommerce.eimaths-th.com/_debugbar/assets/javascript?v=1676989262' data-turbolinks-eval='false'
         data-turbo-eval='false'></script>
     <script data-turbo-eval="false">
         jQuery.noConflict(true);
-    </script>
+    </script> --}}
 </head>
 
 <body>
+    {{-- preloader --}}
     {{-- <div class="preloader" dir="ltr">
         <div class="dot dot2 d21"></div>
         <div class="dot dot2 d22"></div>
@@ -330,14 +348,14 @@
 
     <script>
         window.Laravel = {
-            "baseUrl": 'https://ecommerce.eimaths-th.com' + '/',
-            "current_path_without_domain": 'affiliate',
-            "csrfToken": 'UXqxMUzO3NAybCH6WduKA4cNN4PbjD0GdofYpyEl',
+            "baseUrl": '{{ url('/') }}' + '/',
+            "current_path_without_domain": '{{ request()->path() }}',
+            "csrfToken": '{{ csrf_token() }}',
         }
     </script>
 
 
-    <script>
+    {{-- <script>
         window._locale = 'th';
         window._translations = {
             "data_success": "\u0e2a\u0e33\u0e40\u0e23\u0e47\u0e08",
@@ -504,19 +522,39 @@
             })
             return translation
         }
+    </script> --}}
+
+    <script>
+        window._locale = '{{ app()->getLocale() }}';
+        window._translations = {!! $jsonLang ?? '' !!}
+        window.jsLang = function(key, replace) {
+            let translation = true
+
+            let json_file = window._translations;
+            translation = json_file[key] ?
+                json_file[key] :
+                key
+            $.each(replace, (value, key) => {
+                translation = translation.replace(':' + key, value)
+            })
+            return translation
+        }
     </script>
 
 
 
-    <input type="hidden" id="url" value="https://ecommerce.eimaths-th.com">
+    <input type="hidden" id="url" value="{{ url('/') }}">
     <input type="hidden" name="lat" class="lat" value="13.809561">
     <input type="hidden" name="lng" class="lng" value="-619.551604">
     <input type="hidden" name="zoom" class="zoom" value="18">
     <input type="hidden" name="slider_transition_time" id="slider_transition_time" value="5">
-    <input type="hidden" name="base_url" class="base_url" value="https://ecommerce.eimaths-th.com">
-    <input type="hidden" name="csrf_token" class="csrf_token" value="UXqxMUzO3NAybCH6WduKA4cNN4PbjD0GdofYpyEl">
+    <input type="hidden" name="base_url" class="base_url" value="{{ url('/') }}">
+    <input type="hidden" name="csrf_token" class="csrf_token" value="{{ csrf_token() }}">
     <input type="hidden" name="currency_symbol" class="currency_symbol" value="฿">
     <input type="hidden" name="app_debug" class="app_debug" value="1">
+    @if (auth()->check())
+        <input type="hidden" name="balance" class="user_balance" value="{{ auth()->user()->balance }}">
+    @endif
     <div data-aoraeditor="html">
         <div class="aoraeditor-skip aoraeditor-header">
             <style>
@@ -1941,10 +1979,6 @@
         </div>
         <div class="aoraeditor-skip aoraeditor-footer">
             <div>
-
-
-
-
             </div>
             <footer class="">
                 <div>
@@ -2544,7 +2578,7 @@
                     };
                     body.html(
                         '<div class="d-flex align-items-center justify-content-center py-3"><i class="fas fa-spinner  fa-spin"></i></div>'
-                        )
+                    )
 
 
                     $.ajax({
@@ -2630,6 +2664,7 @@
                 $(".razorpay-payment-button").hide();
             </script>
         </div>
+    </div>
 </body>
 
 </html>
@@ -2837,114 +2872,115 @@
         "views": {
             "nb_templates": 13,
             "templates": [{
-                "name": "aorapagebuilder::pages.show (Modules\/AoraPageBuilder\/Resources\/views\/pages\/show.blade.php)",
-                "param_count": 3,
-                "params": ["row", "details", "jsonLang"],
-                "type": "blade",
-                "editorLink": "phpstorm:\/\/open?file=\/var\/www\/html\/ecommerce\/Modules\/AoraPageBuilder\/Resources\/views\/pages\/show.blade.php&line=0"
-            }, {
-                "name": "aorapagebuilder::layouts.master (Modules\/AoraPageBuilder\/Resources\/views\/layouts\/master.blade.php)",
-                "param_count": 7,
-                "params": ["__env", "app", "errors", "row", "details", "jsonLang", "route"],
-                "type": "blade",
-                "editorLink": "phpstorm:\/\/open?file=\/var\/www\/html\/ecommerce\/Modules\/AoraPageBuilder\/Resources\/views\/layouts\/master.blade.php&line=0"
-            }, {
-                "name": "laravelpwa::meta (resources\/views\/vendor\/laravelpwa\/meta.blade.php)",
-                "param_count": 2,
-                "params": ["config", "jsonLang"],
-                "type": "blade",
-                "editorLink": "phpstorm:\/\/open?file=\/var\/www\/html\/ecommerce\/resources\/views\/vendor\/laravelpwa\/meta.blade.php&line=0"
-            }, {
-                "name": "frontend.infixlmstheme.components.frontend-dynamic-style-color (resources\/views\/frontend\/infixlmstheme\/components\/frontend-dynamic-style-color.blade.php)",
-                "param_count": 12,
-                "params": ["color", "componentName", "attributes", "resolve", "slot", "__laravel_slots",
-                    "homeContent", "frontendContent", "about_page", "become_instructor",
-                    "work_progress", "jsonLang"
-                ],
-                "type": "blade",
-                "editorLink": "phpstorm:\/\/open?file=\/var\/www\/html\/ecommerce\/resources\/views\/frontend\/infixlmstheme\/components\/frontend-dynamic-style-color.blade.php&line=0"
-            }, {
-                "name": "backend.components.dynamic-color (resources\/views\/backend\/components\/dynamic-color.blade.php)",
-                "param_count": 6,
-                "params": ["componentName", "attributes", "resolve", "slot", "__laravel_slots",
-                    "jsonLang"
-                ],
-                "type": "blade",
-                "editorLink": "phpstorm:\/\/open?file=\/var\/www\/html\/ecommerce\/resources\/views\/backend\/components\/dynamic-color.blade.php&line=0"
-            }, 
-            // {
-            //     "name": "preloader (resources\/views\/preloader.blade.php)",
-            //     "param_count": 10,
-            //     "params": ["__env", "app", "errors", "row", "details", "jsonLang", "route", "config",
-            //         "component", "currentTheme"
-            //     ],
-            //     "type": "blade",
-            //     "editorLink": "phpstorm:\/\/open?file=\/var\/www\/html\/ecommerce\/resources\/views\/preloader.blade.php&line=0"
-            // }, 
-            {
-                "name": "frontend.infixlmstheme.partials._menu (resources\/views\/frontend\/infixlmstheme\/partials\/_menu.blade.php)",
-                "param_count": 18,
-                "params": ["__env", "app", "errors", "row", "details", "jsonLang", "route", "config",
-                    "component", "currentTheme", "categories", "languages", "menus", "homeContent",
-                    "frontendContent", "about_page", "become_instructor", "work_progress"
-                ],
-                "type": "blade",
-                "editorLink": "phpstorm:\/\/open?file=\/var\/www\/html\/ecommerce\/resources\/views\/frontend\/infixlmstheme\/partials\/_menu.blade.php&line=0"
-            }, {
-                "name": "frontend.infixlmstheme.partials._footer (resources\/views\/frontend\/infixlmstheme\/partials\/_footer.blade.php)",
-                "param_count": 15,
-                "params": ["__env", "app", "errors", "row", "details", "jsonLang", "route", "config",
-                    "component", "currentTheme", "homeContent", "frontendContent", "about_page",
-                    "become_instructor", "work_progress"
-                ],
-                "type": "blade",
-                "editorLink": "phpstorm:\/\/open?file=\/var\/www\/html\/ecommerce\/resources\/views\/frontend\/infixlmstheme\/partials\/_footer.blade.php&line=0"
-            }, {
-                "name": "frontend.infixlmstheme.components.popup-content (resources\/views\/frontend\/infixlmstheme\/components\/popup-content.blade.php)",
-                "param_count": 13,
-                "params": ["popup", "modal", "componentName", "attributes", "resolve", "slot",
-                    "__laravel_slots", "homeContent", "frontendContent", "about_page",
-                    "become_instructor", "work_progress", "jsonLang"
-                ],
-                "type": "blade",
-                "editorLink": "phpstorm:\/\/open?file=\/var\/www\/html\/ecommerce\/resources\/views\/frontend\/infixlmstheme\/components\/popup-content.blade.php&line=0"
-            }, {
-                "name": "frontend.infixlmstheme.components.footer-news-letter (resources\/views\/frontend\/infixlmstheme\/components\/footer-news-letter.blade.php)",
-                "param_count": 12,
-                "params": ["newsletterSetting", "componentName", "attributes", "resolve", "slot",
-                    "__laravel_slots", "homeContent", "frontendContent", "about_page",
-                    "become_instructor", "work_progress", "jsonLang"
-                ],
-                "type": "blade",
-                "editorLink": "phpstorm:\/\/open?file=\/var\/www\/html\/ecommerce\/resources\/views\/frontend\/infixlmstheme\/components\/footer-news-letter.blade.php&line=0"
-            }, {
-                "name": "frontend.infixlmstheme.components.footer-social-links (resources\/views\/frontend\/infixlmstheme\/components\/footer-social-links.blade.php)",
-                "param_count": 13,
-                "params": ["social_links", "componentName", "attributes", "resolve", "institute",
-                    "slot", "__laravel_slots", "homeContent", "frontendContent", "about_page",
-                    "become_instructor", "work_progress", "jsonLang"
-                ],
-                "type": "blade",
-                "editorLink": "phpstorm:\/\/open?file=\/var\/www\/html\/ecommerce\/resources\/views\/frontend\/infixlmstheme\/components\/footer-social-links.blade.php&line=0"
-            }, {
-                "name": "frontend.infixlmstheme.components.footer-section-widgets (resources\/views\/frontend\/infixlmstheme\/components\/footer-section-widgets.blade.php)",
-                "param_count": 12,
-                "params": ["sectionWidgets", "componentName", "attributes", "resolve", "slot",
-                    "__laravel_slots", "homeContent", "frontendContent", "about_page",
-                    "become_instructor", "work_progress", "jsonLang"
-                ],
-                "type": "blade",
-                "editorLink": "phpstorm:\/\/open?file=\/var\/www\/html\/ecommerce\/resources\/views\/frontend\/infixlmstheme\/components\/footer-section-widgets.blade.php&line=0"
-            }, {
-                "name": "frontend.infixlmstheme.components.footer-cookie (resources\/views\/frontend\/infixlmstheme\/components\/footer-cookie.blade.php)",
-                "param_count": 12,
-                "params": ["cookie", "componentName", "attributes", "resolve", "slot",
-                    "__laravel_slots", "homeContent", "frontendContent", "about_page",
-                    "become_instructor", "work_progress", "jsonLang"
-                ],
-                "type": "blade",
-                "editorLink": "phpstorm:\/\/open?file=\/var\/www\/html\/ecommerce\/resources\/views\/frontend\/infixlmstheme\/components\/footer-cookie.blade.php&line=0"
-            }]
+                    "name": "aorapagebuilder::pages.show (Modules\/AoraPageBuilder\/Resources\/views\/pages\/show.blade.php)",
+                    "param_count": 3,
+                    "params": ["row", "details", "jsonLang"],
+                    "type": "blade",
+                    "editorLink": "phpstorm:\/\/open?file=\/var\/www\/html\/ecommerce\/Modules\/AoraPageBuilder\/Resources\/views\/pages\/show.blade.php&line=0"
+                }, {
+                    "name": "aorapagebuilder::layouts.master (Modules\/AoraPageBuilder\/Resources\/views\/layouts\/master.blade.php)",
+                    "param_count": 7,
+                    "params": ["__env", "app", "errors", "row", "details", "jsonLang", "route"],
+                    "type": "blade",
+                    "editorLink": "phpstorm:\/\/open?file=\/var\/www\/html\/ecommerce\/Modules\/AoraPageBuilder\/Resources\/views\/layouts\/master.blade.php&line=0"
+                }, {
+                    "name": "laravelpwa::meta (resources\/views\/vendor\/laravelpwa\/meta.blade.php)",
+                    "param_count": 2,
+                    "params": ["config", "jsonLang"],
+                    "type": "blade",
+                    "editorLink": "phpstorm:\/\/open?file=\/var\/www\/html\/ecommerce\/resources\/views\/vendor\/laravelpwa\/meta.blade.php&line=0"
+                }, {
+                    "name": "frontend.infixlmstheme.components.frontend-dynamic-style-color (resources\/views\/frontend\/infixlmstheme\/components\/frontend-dynamic-style-color.blade.php)",
+                    "param_count": 12,
+                    "params": ["color", "componentName", "attributes", "resolve", "slot", "__laravel_slots",
+                        "homeContent", "frontendContent", "about_page", "become_instructor",
+                        "work_progress", "jsonLang"
+                    ],
+                    "type": "blade",
+                    "editorLink": "phpstorm:\/\/open?file=\/var\/www\/html\/ecommerce\/resources\/views\/frontend\/infixlmstheme\/components\/frontend-dynamic-style-color.blade.php&line=0"
+                }, {
+                    "name": "backend.components.dynamic-color (resources\/views\/backend\/components\/dynamic-color.blade.php)",
+                    "param_count": 6,
+                    "params": ["componentName", "attributes", "resolve", "slot", "__laravel_slots",
+                        "jsonLang"
+                    ],
+                    "type": "blade",
+                    "editorLink": "phpstorm:\/\/open?file=\/var\/www\/html\/ecommerce\/resources\/views\/backend\/components\/dynamic-color.blade.php&line=0"
+                },
+                // {
+                //     "name": "preloader (resources\/views\/preloader.blade.php)",
+                //     "param_count": 10,
+                //     "params": ["__env", "app", "errors", "row", "details", "jsonLang", "route", "config",
+                //         "component", "currentTheme"
+                //     ],
+                //     "type": "blade",
+                //     "editorLink": "phpstorm:\/\/open?file=\/var\/www\/html\/ecommerce\/resources\/views\/preloader.blade.php&line=0"
+                // }, 
+                {
+                    "name": "frontend.infixlmstheme.partials._menu (resources\/views\/frontend\/infixlmstheme\/partials\/_menu.blade.php)",
+                    "param_count": 18,
+                    "params": ["__env", "app", "errors", "row", "details", "jsonLang", "route", "config",
+                        "component", "currentTheme", "categories", "languages", "menus", "homeContent",
+                        "frontendContent", "about_page", "become_instructor", "work_progress"
+                    ],
+                    "type": "blade",
+                    "editorLink": "phpstorm:\/\/open?file=\/var\/www\/html\/ecommerce\/resources\/views\/frontend\/infixlmstheme\/partials\/_menu.blade.php&line=0"
+                }, {
+                    "name": "frontend.infixlmstheme.partials._footer (resources\/views\/frontend\/infixlmstheme\/partials\/_footer.blade.php)",
+                    "param_count": 15,
+                    "params": ["__env", "app", "errors", "row", "details", "jsonLang", "route", "config",
+                        "component", "currentTheme", "homeContent", "frontendContent", "about_page",
+                        "become_instructor", "work_progress"
+                    ],
+                    "type": "blade",
+                    "editorLink": "phpstorm:\/\/open?file=\/var\/www\/html\/ecommerce\/resources\/views\/frontend\/infixlmstheme\/partials\/_footer.blade.php&line=0"
+                }, {
+                    "name": "frontend.infixlmstheme.components.popup-content (resources\/views\/frontend\/infixlmstheme\/components\/popup-content.blade.php)",
+                    "param_count": 13,
+                    "params": ["popup", "modal", "componentName", "attributes", "resolve", "slot",
+                        "__laravel_slots", "homeContent", "frontendContent", "about_page",
+                        "become_instructor", "work_progress", "jsonLang"
+                    ],
+                    "type": "blade",
+                    "editorLink": "phpstorm:\/\/open?file=\/var\/www\/html\/ecommerce\/resources\/views\/frontend\/infixlmstheme\/components\/popup-content.blade.php&line=0"
+                }, {
+                    "name": "frontend.infixlmstheme.components.footer-news-letter (resources\/views\/frontend\/infixlmstheme\/components\/footer-news-letter.blade.php)",
+                    "param_count": 12,
+                    "params": ["newsletterSetting", "componentName", "attributes", "resolve", "slot",
+                        "__laravel_slots", "homeContent", "frontendContent", "about_page",
+                        "become_instructor", "work_progress", "jsonLang"
+                    ],
+                    "type": "blade",
+                    "editorLink": "phpstorm:\/\/open?file=\/var\/www\/html\/ecommerce\/resources\/views\/frontend\/infixlmstheme\/components\/footer-news-letter.blade.php&line=0"
+                }, {
+                    "name": "frontend.infixlmstheme.components.footer-social-links (resources\/views\/frontend\/infixlmstheme\/components\/footer-social-links.blade.php)",
+                    "param_count": 13,
+                    "params": ["social_links", "componentName", "attributes", "resolve", "institute",
+                        "slot", "__laravel_slots", "homeContent", "frontendContent", "about_page",
+                        "become_instructor", "work_progress", "jsonLang"
+                    ],
+                    "type": "blade",
+                    "editorLink": "phpstorm:\/\/open?file=\/var\/www\/html\/ecommerce\/resources\/views\/frontend\/infixlmstheme\/components\/footer-social-links.blade.php&line=0"
+                }, {
+                    "name": "frontend.infixlmstheme.components.footer-section-widgets (resources\/views\/frontend\/infixlmstheme\/components\/footer-section-widgets.blade.php)",
+                    "param_count": 12,
+                    "params": ["sectionWidgets", "componentName", "attributes", "resolve", "slot",
+                        "__laravel_slots", "homeContent", "frontendContent", "about_page",
+                        "become_instructor", "work_progress", "jsonLang"
+                    ],
+                    "type": "blade",
+                    "editorLink": "phpstorm:\/\/open?file=\/var\/www\/html\/ecommerce\/resources\/views\/frontend\/infixlmstheme\/components\/footer-section-widgets.blade.php&line=0"
+                }, {
+                    "name": "frontend.infixlmstheme.components.footer-cookie (resources\/views\/frontend\/infixlmstheme\/components\/footer-cookie.blade.php)",
+                    "param_count": 12,
+                    "params": ["cookie", "componentName", "attributes", "resolve", "slot",
+                        "__laravel_slots", "homeContent", "frontendContent", "about_page",
+                        "become_instructor", "work_progress", "jsonLang"
+                    ],
+                    "type": "blade",
+                    "editorLink": "phpstorm:\/\/open?file=\/var\/www\/html\/ecommerce\/resources\/views\/frontend\/infixlmstheme\/components\/footer-cookie.blade.php&line=0"
+                }
+            ]
         },
         "route": {
             "uri": "GET affiliate",
