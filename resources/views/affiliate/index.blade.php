@@ -3,7 +3,7 @@
 
 <head>
     <!-- Web Application Manifest -->
-    <link rel="manifest" href="https://ecommerce.eimaths-th.com/manifest.json">
+    <link rel="manifest" href="{{ asset('vendor/livewire/manifest.json') }}">
     <!-- Chrome for Android theme color -->
     <meta name="theme-color" content="#000000">
 
@@ -2134,32 +2134,35 @@
                                                 <li>
                                                     <a href="#">
 
-                                                    {{-- <a href="https://ecommerce.eimaths-th.com/infixedu-for-business"> --}}
-                                                        eiMathsfor Business 
+                                                        {{-- <a href="https://ecommerce.eimaths-th.com/infixedu-for-business"> --}}
+                                                        eiMathsfor Business
                                                     </a>
-                                                    </li>
+                                                </li>
                                                 <li>
                                                     <a href="#">
 
-                                                    {{-- <a href="https://ecommerce.eimaths-th.com/teach-on-infixedu"> --}}
-                                                        Teach on eiMaths </a></li>
+                                                        {{-- <a href="https://ecommerce.eimaths-th.com/teach-on-infixedu"> --}}
+                                                        Teach on eiMaths </a>
+                                                </li>
                                                 <li>
                                                     {{-- <a href="https://ecommerce.eimaths-th.com/get-the-app"> --}}
                                                     <a href="#">
 
                                                         Get the app
-                                                    </a></li>
+                                                    </a>
+                                                </li>
                                                 <li>
                                                     {{-- <a href="https://ecommerce.eimaths-th.com/about-us"> --}}
-                                                        <a href="#">
-                                                            About us </a>
+                                                    <a href="#">
+                                                        About us </a>
                                                 </li>
                                                 <li>
                                                     {{-- <a href="https://ecommerce.eimaths-th.com/contact-us"> --}}
-                                                        <a href="#">
-                                                    
+                                                    <a href="#">
+
                                                         Contact us
-                                                    </a></li>
+                                                    </a>
+                                                </li>
 
                                             </ul>
                                         </div>
@@ -2173,38 +2176,41 @@
                                                 <li>
                                                     {{-- <a href="https://ecommerce.eimaths-th.com/careers"> --}}
                                                     <a href="#">
-                                                        
+
                                                         Careers </a>
                                                 </li>
                                                 <li>
                                                     <a href="#">
 
-                                                    {{-- <a href="https://ecommerce.eimaths-th.com/blog"> --}}
-                                                        Blog </a></li>
+                                                        {{-- <a href="https://ecommerce.eimaths-th.com/blog"> --}}
+                                                        Blog </a>
+                                                </li>
                                                 <li>
                                                     {{-- <a href="https://ecommerce.eimaths-th.com/help-and-support"> --}}
                                                     <a href="#">
-                                                        
-                                                        Help and Support 
+
+                                                        Help and Support
                                                     </a>
                                                 </li>
                                                 <li>
                                                     <a href="#">
 
-                                                    {{-- <a href="https://ecommerce.eimaths-th.com/terms"> --}}
-                                                        Terms </a></li>
+                                                        {{-- <a href="https://ecommerce.eimaths-th.com/terms"> --}}
+                                                        Terms </a>
+                                                </li>
                                                 <li>
                                                     {{-- <a href="https://ecommerce.eimaths-th.com/certificate-verification"> --}}
                                                     <a href="#">
 
                                                         Certificate Verification </a>
-                                                    </li>
+                                                </li>
                                                 <li>
                                                     <a href="#">
 
-                                                    {{-- <a href="https://ecommerce.eimaths-th.com/free-course"> --}}
+                                                        {{-- <a href="https://ecommerce.eimaths-th.com/free-course"> --}}
                                                         Free Course
-                                                    </a></li>
+                                                    </a>
+                                                </li>
                                             </ul>
                                         </div>
                                     </div>
@@ -2318,8 +2324,8 @@
                 <div class="theme_cookies" style="display: none">
                     <div class="theme_cookies_info flex-fill">
                         <div class="icon">
-                            <img src="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/img/icon/cookies_icon.svg"
-                                alt="">
+                            <img src="{{ asset('frontend/infixlmstheme/img/icon/cookies_icon.svg') }}"
+                                {{-- <img src="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/img/icon/cookies_icon.svg" --}} alt="">
                         </div>
                         <p>We collect and use cookies to give you the best and most relevant website experience. Kindly
                             accept the cookies.
@@ -2569,17 +2575,13 @@
                 </div>
             </div>
 
-            <script src="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/js/app.js?v=5896"></script>
+            <script src="{{ asset('frontend/infixlmstheme/js/app.js'.assetVersion())}}"></script>
 
-            <script src="https://ecommerce.eimaths-th.com/public/backend/js/summernote-bs4.min.js?v=6977"></script>
-            <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBq4zPuqxFWOoPVLs1qpXV0ZkeOhGe0JIg"></script>
-            <script src="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/js/map.js"></script>
-            <script src="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/js/contact.js?v=7552"></script>
+            <script src="{{ asset('backend/js/summernote-bs4.min.js')}}{{assetVersion()}}"></script>
+            <script src="{{ asset('frontend/infixlmstheme/js/map.js') }}"></script>
+            <script src="{{ asset('frontend/infixlmstheme/js/contact.js')}}{{assetVersion()}}"></script>
 
             <script type="text/javascript"></script>
-
-
-
 
             <script>
                 // setTimeout(function() {
@@ -2629,12 +2631,10 @@
                 }
             </script>
 
+            {{-- <script src="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/js/custom.js?v=1166"></script> --}}
+            <script src="{{ asset('frontend/infixlmstheme/js/custom.js') }}{{ assetVersion() }}"></script>
+            
 
-
-
-
-
-            <script src="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/js/custom.js?v=1166"></script>
             <script>
                 $(document).on("click", ".point_btn", function() {
                     let modal = $('#myLeaderBoard')
@@ -2763,25 +2763,22 @@
 </div>
 
 
-<script type="text/javascript"
-    src="https://ecommerce.eimaths-th.com/Modules/AoraPageBuilder/Resources/assets/js/bootstrap.min.js"></script>
-<script type="text/javascript"
-    src="https://ecommerce.eimaths-th.com/Modules/AoraPageBuilder/Resources/assets/js/jquery-ui.min.js"></script>
-<script type="text/javascript"
-    src="https://ecommerce.eimaths-th.com/Modules/AoraPageBuilder/Resources/assets/js/ckeditor.js"></script>
-<script type="text/javascript"
-    src="https://ecommerce.eimaths-th.com/Modules/AoraPageBuilder/Resources/assets/js/form-builder.min.js"></script>
-<script type="text/javascript"
-    src="https://ecommerce.eimaths-th.com/Modules/AoraPageBuilder/Resources/assets/js/form-render.min.js"></script>
-<script type="text/javascript"
-    src="https://ecommerce.eimaths-th.com/Modules/AoraPageBuilder/Resources/assets/js/aoraeditor.js"></script>
-
-<script type="text/javascript"
-    src="https://ecommerce.eimaths-th.com/Modules/AoraPageBuilder/Resources/assets/js/aoraeditor-components.js">
+<script type="text/javascript" src="{{ asset('Modules/AoraPageBuilder/Resources/assets/js/bootstrap.min.js') }}">
 </script>
+<script type="text/javascript" src="{{ asset('Modules/AoraPageBuilder/Resources/assets/js/jquery-ui.min.js') }}">
+</script>
+<script type="text/javascript" src="{{ asset('Modules/AoraPageBuilder/Resources/assets/js/ckeditor.js') }}"></script>
+<script type="text/javascript" src="{{ asset('Modules/AoraPageBuilder/Resources/assets/js/form-builder.min.js') }}">
+</script>
+<script type="text/javascript" src="{{ asset('Modules/AoraPageBuilder/Resources/assets/js/form-render.min.js') }}">
+</script>
+<script type="text/javascript" src="{{ asset('Modules/AoraPageBuilder/Resources/assets/js/aoraeditor.js') }}"></script>
+
+<script type="text/javascript"
+    src="{{ asset('Modules/AoraPageBuilder/Resources/assets/js/aoraeditor-components.js') }}"></script>
 
 
-<script src="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/js/courses.js"></script>
+<script src="{{ asset('frontend/infixlmstheme/js/courses.js')}}"></script>
 
 <script>
     $('.ui-resizable-resizer').remove()
