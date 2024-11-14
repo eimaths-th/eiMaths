@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AffiliateAuthController;
 use App\Http\Controllers\AffiliateController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\eLeanController;
@@ -154,10 +155,14 @@ Route::post('/students-login-check', [App\Http\Controllers\ContactController::cl
 Route::post('/students-logout', [App\Http\Controllers\ContactController::class, 'studentsLogout'])->name('student.logout');
 Route::get('/normalize', [App\Http\Controllers\HomeController::class, 'normalizeNumber1'])->name('normalize');
 Route::get('thank-you', [ContactController::class, 'thank_you'])->name('demo.thank_you');
+
+
 Route::get('/affiliate', [AffiliateController::class, 'index'])->name('affiliate.index');
+Route::get('/affiliate/registration', [AffiliateAuthController::class, 'showRegistrationFrom'])->name('affiliate.registration');
+Route::post('/affiliate/register',[AffiliateAuthController::class, 'register'] )->name('affiliate.register');
+
 // Route::get('thank-you', [ContactController::class, 'thank_you'])->name('demo.thank_you');
 
 Route::get('manon', function (Request $request) {
     return $request;
 });
-
