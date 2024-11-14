@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
+
 class LoginController extends Controller
 {
     /*
@@ -44,16 +45,26 @@ class LoginController extends Controller
 
     public function login(Request $request)
     {
+        // Attempt to login
         $login = $this->attemptLogin($request);
 
         if ($login) {
             $user = Auth::user();
+
+            // Check if user is disabled
             if ($user->disable == 1) {
                 auth()->logout();
                 return redirect()->route('login')
                     ->with('login_error', 'Please contact the administrator.')
                     ->withErrors(['email' => 'Please contact the administrator.']);
             }
+
+            // Check if user has the 'affiliate-user' role
+            if ($user->hasRole('Affiliate-user')) {
+                return redirect()->route('my_affiliate.index'); // Redirect to 'my_affiliate' route
+            }
+
+            // Proceed with the default login response
             return $this->sendLoginResponse($request);
         }
 

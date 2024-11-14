@@ -694,7 +694,7 @@
                                     <div class="header__right">
                                         <div class="contact_wrap d-flex align-items-center">
                                             <div class="contact_btn">
-                                                <a href="https://ecommerce.eimaths-th.com/login"
+                                                <a href="{{ route('affiliate.login') }}"
                                                     class="theme_btn small_btn2">เข้าสู่ระบบ </a>
                                             </div>
                                         </div>
@@ -2575,11 +2575,11 @@
                 </div>
             </div>
 
-            <script src="{{ asset('frontend/infixlmstheme/js/app.js'.assetVersion())}}"></script>
+            <script src="{{ asset('frontend/infixlmstheme/js/app.js' . assetVersion()) }}"></script>
 
-            <script src="{{ asset('backend/js/summernote-bs4.min.js')}}{{assetVersion()}}"></script>
+            <script src="{{ asset('backend/js/summernote-bs4.min.js') }}{{ assetVersion() }}"></script>
             <script src="{{ asset('frontend/infixlmstheme/js/map.js') }}"></script>
-            <script src="{{ asset('frontend/infixlmstheme/js/contact.js')}}{{assetVersion()}}"></script>
+            <script src="{{ asset('frontend/infixlmstheme/js/contact.js') }}{{ assetVersion() }}"></script>
 
             <script type="text/javascript"></script>
 
@@ -2633,7 +2633,7 @@
 
             {{-- <script src="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/js/custom.js?v=1166"></script> --}}
             <script src="{{ asset('frontend/infixlmstheme/js/custom.js') }}{{ assetVersion() }}"></script>
-            
+
 
             <script>
                 $(document).on("click", ".point_btn", function() {
@@ -2778,7 +2778,7 @@
     src="{{ asset('Modules/AoraPageBuilder/Resources/assets/js/aoraeditor-components.js') }}"></script>
 
 
-<script src="{{ asset('frontend/infixlmstheme/js/courses.js')}}"></script>
+<script src="{{ asset('frontend/infixlmstheme/js/courses.js') }}"></script>
 
 <script>
     $('.ui-resizable-resizer').remove()

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class AffiliateAuthController extends Controller
@@ -9,10 +10,13 @@ class AffiliateAuthController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function showRegistrationFrom()
+    public $page = [];
+    public $custom_field = [];
+
+    // Constructor or method to initialize the $page property
+    public function __construct()
     {
-        //
-        $page = [
+        $this->page = [
             "id" => 1,
             "title" => json_decode('{"en":"ยินดีต้อนรับสู่ระบบจัดการการเรียนรู้ eiMaths","th":"Welcome to Infix Learning Management System"}', true),
             "banner" => "",
@@ -33,7 +37,7 @@ class AffiliateAuthController extends Controller
             "forget_slogans3" => json_decode('{"en":"ความหลากหลาย.","th":"Excellence"}', true),
             "lms_id" => 1
         ];
-        $custom_field = [
+        $this->custom_field = [
             "id" => 1,
             "show_company" => 0,
             "show_gender" => 0,
@@ -66,7 +70,62 @@ class AffiliateAuthController extends Controller
             "required_institute" => 0,
             "editable_institute" => 1
         ];
+    }
+
+    public function showRegistrationFrom()
+    {
+        //
+        $page = $this->page;
+        $custom_field = $this->custom_field;
+        
         return view('affiliate.auth.registration', compact('page', 'custom_field'));
+    }
+    public function register(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        $user = User::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'department_id' => 5,
+            'position_id' => 13,
+            'password' => bcrypt($validated['password']),
+        ]);
+
+        $user->assignRole('Affiliate-user');
+
+        auth()->login($user);
+
+        // Redirect or return response
+        return redirect()->route('my_affiliate.index')->with('success', 'Registration successful!');
+    }
+    public function login()
+    {
+        // if (Storage::has('.app_resetting')) {
+        //     return new response(view('reset'));
+        // }
+        // $token = request('token');
+        // if ($token && Storage::exists($token)) {
+        //     $content = Storage::get($token);
+        //     $data = explode('|', $content);
+        //     if ($data && count($data) == 2) {
+        //         $email = $data[0];
+        //         $password = $data[1];
+        //         $user = User::where('email', $email)->where('lms_id', app('institute')->id)->first();
+
+        //         if ($user && Hash::check($password, $user->password)) {
+        //             Auth::login($user);
+        //             Storage::delete($token);
+        //             return redirect()->route('home');
+        //         }
+        //     }
+        // }
+        $page = $this->page;
+        return view('affiliate.auth.login', compact('page'));
     }
     public function index()
     {

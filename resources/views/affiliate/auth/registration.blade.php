@@ -12,118 +12,117 @@
             </div>
             <div class="login_wrapper_content">
                 <h4>เข้าร่วมโปรแกรม Affiliate ของเรา</h4>
-                <form action="{{route('affiliate.register')}}" method="POST" id="regForm">
+                <form action="{{ route('affiliate.register') }}" method="POST" id="regForm">
                     @csrf
                     <div class="row">
-                        @if($custom_field['show_name'])
+                        @if ($custom_field['show_name'])
                             <div class="col-12">
                                 <div class="input-group custom_group_field">
                                     <input type="text" class="form-control ps-0"
-                                           placeholder="กรอกชื่อ - นามสกุล {{ $custom_field['required_company'] ? '*' : ''}}"
-                                           {{ $custom_field['required_name'] ? 'required' : ''}} aria-label="Username"
-                                           name="name" value="{{old('name')}}">
+                                        placeholder="กรอกชื่อ - นามสกุล {{ $custom_field['required_company'] ? '*' : '' }}"
+                                        {{ $custom_field['required_name'] ? 'required' : '' }} aria-label="Username"
+                                        name="name" value="{{ old('name') }}">
                                 </div>
-                                <span class="text-danger" role="alert">{{$errors->first('name')}}</span>
+                                <span class="text-danger" role="alert">{{ $errors->first('name') }}</span>
                             </div>
                         @endif
                         <div class="col-12 mt_20">
                             <div class="input-group custom_group_field">
-                                <input type="email" class="form-control ps-0"
-                                       placeholder="กรอกอีเมล" aria-label="email" name="email"
-                                       value="{{old('email')}}">
+                                <input type="email" class="form-control ps-0" placeholder="กรอกอีเมล" aria-label="email"
+                                    name="email" value="{{ old('email') }}">
                             </div>
-                            <span class="text-danger" role="alert">{{$errors->first('email')}}</span>
+                            <span class="text-danger" role="alert">{{ $errors->first('email') }}</span>
                         </div>
 
-                        @if($custom_field['show_phone'])
+                        @if ($custom_field['show_phone'])
                             <div class="col-12 mt_20">
                                 <div class="input-group custom_group_field">
                                     <input type="text" class="form-control ps-0"
-                                           placeholder="กรอกหมายเลขโทรศัพท์ {{ $custom_field['required_phone'] ? '*' : ''}}"
-                                           {{ $custom_field['required_phone'] ? 'required' : ''}}
-                                           aria-label="phone" name="phone" value="{{old('phone')}}">
+                                        placeholder="กรอกหมายเลขโทรศัพท์ {{ $custom_field['required_phone'] ? '*' : '' }}"
+                                        {{ $custom_field['required_phone'] ? 'required' : '' }} aria-label="phone"
+                                        name="phone" value="{{ old('phone') }}">
                                 </div>
-                                <span class="text-danger" role="alert">{{$errors->first('phone')}}</span>
+                                <span class="text-danger" role="alert">{{ $errors->first('phone') }}</span>
                             </div>
                         @endif
                         <div class="col-12 mt_20">
                             <div class="input-group custom_group_field">
-                                <input type="password" class="form-control ps-0"
-                                       placeholder="กรอกยืนยันรหัสผ่าน"
-                                       aria-label="password" name="password">
+                                <input type="password" class="form-control ps-0" placeholder="กรอกยืนยันรหัสผ่าน"
+                                    aria-label="password" name="password">
                             </div>
-                            <span class="text-danger" role="alert">{{$errors->first('password')}}</span>
+                            <span class="text-danger" role="alert">{{ $errors->first('password') }}</span>
                         </div>
                         <div class="col-12 mt_20">
                             <div class="input-group custom_group_field">
-                                <input type="password" class="form-control ps-0"
-                                       placeholder="ยืนยันรหัสผ่าน"
-                                       name="password_confirmation" aria-label="password_confirmation">
+                                <input type="password" class="form-control ps-0" placeholder="ยืนยันรหัสผ่าน"
+                                    name="password_confirmation" aria-label="password_confirmation">
                             </div>
-                            <span class="text-danger" role="alert">{{$errors->first('password_confirmation')}}</span>
+                            <span class="text-danger" role="alert">{{ $errors->first('password_confirmation') }}</span>
                         </div>
 
-                        @if($custom_field['show_dob'])
+                        @if ($custom_field['show_dob'])
                             <div class="col-12 mt_20">
                                 <div class="input-group custom_group_field">
                                     <label for="dob">Date of Birth : </label>
-                                    <input id="dob" type="text" class="form-control ps-0 datepicker w-100" width="300"
-                                           placeholder="{{__('common.Date of Birth')}} {{ $custom_field['required_dob'] ? '*' : ''}}"
-                                           {{ $custom_field['required_dob'] ? 'required' : ''}} aria-label="Username"
-                                           name="dob" value="{{ old('dob') }}">
+                                    <input id="dob" type="text" class="form-control ps-0 datepicker w-100"
+                                        width="300"
+                                        placeholder="{{ __('common.Date of Birth') }} {{ $custom_field['required_dob'] ? '*' : '' }}"
+                                        {{ $custom_field['required_dob'] ? 'required' : '' }} aria-label="Username"
+                                        name="dob" value="{{ old('dob') }}">
                                 </div>
-                                <span class="text-danger" role="alert">{{$errors->first('name')}}</span>
+                                <span class="text-danger" role="alert">{{ $errors->first('name') }}</span>
                             </div>
                         @endif
 
-                        @if($custom_field['show_company'])
+                        @if ($custom_field['show_company'])
                             <div class="col-12 mt_20">
                                 <div class="input-group custom_group_field">
                                     <input type="text" class="form-control ps-0"
-                                           placeholder="{{__('common.Enter Company')}} {{ $custom_field['required_company'] ? '*' : ''}}"
-                                           {{ $custom_field['required_company'] ? 'required' : ''}} aria-label="email"
-                                           name="company" value="{{old('company')}}">
+                                        placeholder="{{ __('common.Enter Company') }} {{ $custom_field['required_company'] ? '*' : '' }}"
+                                        {{ $custom_field['required_company'] ? 'required' : '' }} aria-label="email"
+                                        name="company" value="{{ old('company') }}">
                                 </div>
-                                <span class="text-danger" role="alert">{{$errors->first('company')}}</span>
+                                <span class="text-danger" role="alert">{{ $errors->first('company') }}</span>
                             </div>
                         @endif
 
-                        @if($custom_field['show_identification_number'])
+                        @if ($custom_field['show_identification_number'])
                             <div class="col-12 mt_20">
                                 <div class="input-group custom_group_field">
                                     <input type="text" class="form-control ps-0"
-                                           placeholder="{{__('common.Enter Identification Number')}} {{ $custom_field['required_identification_number'] ? '*' : ''}}"
-                                           {{ $custom_field['required_identification_number'] ? 'required' : ''}}
-                                           aria-label="email" name="identification_number"
-                                           value="{{old('identification_number')}}">
+                                        placeholder="{{ __('common.Enter Identification Number') }} {{ $custom_field['required_identification_number'] ? '*' : '' }}"
+                                        {{ $custom_field['required_identification_number'] ? 'required' : '' }}
+                                        aria-label="email" name="identification_number"
+                                        value="{{ old('identification_number') }}">
                                 </div>
                                 <span class="text-danger"
-                                      role="alert">{{$errors->first('identification_number')}}</span>
+                                    role="alert">{{ $errors->first('identification_number') }}</span>
                             </div>
                         @endif
 
-                        @if($custom_field['show_job_title'])
+                        @if ($custom_field['show_job_title'])
                             <div class="col-12 mt_20">
                                 <div class="input-group custom_group_field">
                                     <input type="text" class="form-control ps-0"
-                                           placeholder="{{__('common.Enter Job Title')}} {{ $custom_field['required_job_title'] ? '*' : ''}}"
-                                           {{ $custom_field['required_job_title'] ? 'required' : ''}} aria-label="email"
-                                           name="job_title" value="{{old('job_title')}}">
+                                        placeholder="{{ __('common.Enter Job Title') }} {{ $custom_field['required_job_title'] ? '*' : '' }}"
+                                        {{ $custom_field['required_job_title'] ? 'required' : '' }} aria-label="email"
+                                        name="job_title" value="{{ old('job_title') }}">
                                 </div>
-                                <span class="text-danger" role="alert">{{$errors->first('job_title')}}</span>
+                                <span class="text-danger" role="alert">{{ $errors->first('job_title') }}</span>
                             </div>
                         @endif
 
-                        @if($custom_field['show_gender'])
+                        @if ($custom_field['show_gender'])
                             <div class="col-xl-12">
                                 <div class="short_select mt-3">
                                     <div class="row">
                                         <div class="col-xl-5">
-                                            <h5 class="mr_10 font_16 f_w_500 mb-0">{{ __('common.choose_gender') }} {{ $custom_field['required_gender'] ? '*' : '' }}</h5>
+                                            <h5 class="mr_10 font_16 f_w_500 mb-0">{{ __('common.choose_gender') }}
+                                                {{ $custom_field['required_gender'] ? '*' : '' }}</h5>
                                         </div>
                                         <div class="col-xl-7">
-                                            <select class="small_select w-100"
-                                                    name="gender" {{ $custom_field['required_gender'] ? 'selected' : '' }}>
+                                            <select class="small_select w-100" name="gender"
+                                                {{ $custom_field['required_gender'] ? 'selected' : '' }}>
                                                 <option value="" data-display="Choose">Choose</option>
                                                 <option value="male">Male</option>
                                                 <option value="female">Female</option>
@@ -132,28 +131,29 @@
 
                                         </div>
                                     </div>
-                                    <span class="text-danger" role="alert">{{$errors->first('gender')}}</span>
+                                    <span class="text-danger" role="alert">{{ $errors->first('gender') }}</span>
 
                                 </div>
                             </div>
                         @endif
 
-                        @if($custom_field['show_student_type'])
+                        @if ($custom_field['show_student_type'])
                             <div class="col-xl-12">
                                 <div class="short_select mt-3">
                                     <div class="row">
                                         <div class="col-xl-5">
-                                            <h5 class="mr_10 font_16 f_w_500 mb-0">{{ __('common.choose_student_type') }} {{ $custom_field['required_student_type'] ? '*' : '' }}</h5>
+                                            <h5 class="mr_10 font_16 f_w_500 mb-0">{{ __('common.choose_student_type') }}
+                                                {{ $custom_field['required_student_type'] ? '*' : '' }}</h5>
                                         </div>
                                         <div class="col-xl-7">
-                                            <select class="small_select w-100"
-                                                    name="student_type" {{ $custom_field['required_student_type'] ? 'selected' : '' }}>
+                                            <select class="small_select w-100" name="student_type"
+                                                {{ $custom_field['required_student_type'] ? 'selected' : '' }}>
                                                 <option value="personal">Personal</option>
                                                 <option value="corporate">Corporate</option>
                                             </select>
                                         </div>
                                     </div>
-                                    <span class="text-danger" role="alert">{{$errors->first('student_type')}}</span>
+                                    <span class="text-danger" role="alert">{{ $errors->first('student_type') }}</span>
 
                                 </div>
                             </div>
@@ -165,40 +165,38 @@
                                 <label class="primary_checkbox d-flex" for="checkbox">
                                     <input checked="" type="checkbox" id="checkbox" required>
                                     <span class="checkmark mr_15"></span>
-                                    <p>โดยการสมัครสมาชิก คุณตกลงที่จะ 
-                                        <a target="_blank" href="{{url('privacy')}}">
+                                    <p>โดยการสมัครสมาชิก คุณตกลงที่จะ
+                                        <a target="_blank" href="{{ url('privacy') }}">
                                             Terms of Service
-                                            </a> และ
-                                        <a target="_blank" href="{{url('privacy')}}">
+                                        </a> และ
+                                        <a target="_blank" href="{{ url('privacy') }}">
                                             นโยบายความเป็นส่วนตัว
                                         </a>
-                                        </p>
+                                    </p>
                                 </label>
 
                             </div>
                         </div>
                         <div class="col-12 mt_20">
-                            @if(saasEnv('NOCAPTCHA_FOR_REG')=='true')
-                                @if(saasEnv('NOCAPTCHA_IS_INVISIBLE')=="true")
-                                    {!! NoCaptcha::display(["data-size"=>"invisible"]) !!}
+                            @if (saasEnv('NOCAPTCHA_FOR_REG') == 'true')
+                                @if (saasEnv('NOCAPTCHA_IS_INVISIBLE') == 'true')
+                                    {!! NoCaptcha::display(['data-size' => 'invisible']) !!}
                                 @else
                                     {!! NoCaptcha::display() !!}
                                 @endif
 
                                 @if ($errors->has('g-recaptcha-response'))
                                     <span class="text-danger"
-                                          role="alert">{{$errors->first('g-recaptcha-response')}}</span>
+                                        role="alert">{{ $errors->first('g-recaptcha-response') }}</span>
                                 @endif
                             @endif
                         </div>
 
                         <div class="col-12 mt_20">
-                            @if(saasEnv('NOCAPTCHA_FOR_REG')=='true' && saasEnv('NOCAPTCHA_IS_INVISIBLE')=="true")
-
+                            @if (saasEnv('NOCAPTCHA_FOR_REG') == 'true' && saasEnv('NOCAPTCHA_IS_INVISIBLE') == 'true')
                                 <button type="button" class="g-recaptcha theme_btn text-center w-100"
-                                        data-sitekey="{{saasEnv('NOCAPTCHA_SITEKEY')}}" data-size="invisible"
-                                        data-callback="onSubmit"
-                                        class="theme_btn text-center w-100">   ลงทะเบียน</button>
+                                    data-sitekey="{{ saasEnv('NOCAPTCHA_SITEKEY') }}" data-size="invisible"
+                                    data-callback="onSubmit" class="theme_btn text-center w-100"> ลงทะเบียน</button>
                                 <script src="https://www.google.com/recaptcha/api.js" async defer></script>
                                 <script>
                                     function onSubmit(token) {
@@ -218,7 +216,7 @@
 
 
             <h5 class="shitch_text">
-                คุณมีบัญชีอยู่แล้ว? <a href="{{route('login')}}"> เข้าสู่ระบบ</a>
+                คุณมีบัญชีอยู่แล้ว? <a href="{{ route('login') }}"> เข้าสู่ระบบ</a>
 
             </h5>
         </div>
@@ -227,8 +225,8 @@
 
     </div>
     <script>
-        $(function () {
-            $('#checkbox').click(function () {
+        $(function() {
+            $('#checkbox').click(function() {
 
                 if ($(this).is(':checked')) {
                     $('#submitBtn').removeClass('disable_btn');

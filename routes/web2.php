@@ -159,7 +159,11 @@ Route::get('thank-you', [ContactController::class, 'thank_you'])->name('demo.tha
 
 Route::get('/affiliate', [AffiliateController::class, 'index'])->name('affiliate.index');
 Route::get('/affiliate/registration', [AffiliateAuthController::class, 'showRegistrationFrom'])->name('affiliate.registration');
-Route::post('/affiliate/register',[AffiliateAuthController::class, 'register'] )->name('affiliate.register');
+Route::post('/affiliate/register', [AffiliateAuthController::class, 'register'])->name('affiliate.register');
+Route::get('/affiliate/login', [AffiliateAuthController::class, 'login'])->name('affiliate.login');
+
+
+Route::get('/affiliate/my-affiliate', [AffiliateController::class, 'my_affiliate'])->name('my_affiliate.index');
 
 // Route::get('thank-you', [ContactController::class, 'thank_you'])->name('demo.thank_you');
 
