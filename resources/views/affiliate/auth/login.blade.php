@@ -11,7 +11,7 @@
                 </a>
             </div>
             <div class="login_wrapper_content">
-                <h4>{{ __('frontend.Welcome back. Please login') }} <br>{{ __('frontend.to your account') }} </h4>
+                <h4>ยินดีต้อนรับกลับ กรุณาเข้าสู่ระบบ<br>เข้าสู่บัญชีของคุณ </h4>
 
                 <div class="socail_links">
 
@@ -53,7 +53,7 @@
                                 </div>
                                 <input type="email" value="{{ old('email') }}"
                                     class="form-control {{ $errors->has('email') ? ' is-invalid' : '' }}"
-                                    placeholder="{{ __('common.Enter Email') }}" name="email" aria-label="Username"
+                                    placeholder="กรอกอีเมล" name="email" aria-label="Username"
                                     aria-describedby="basic-addon3">
                             </div>
                             @if ($errors->first('email'))
@@ -76,7 +76,7 @@
                                     </span>
                                 </div>
                                 <input type="password" name="password" class="form-control"
-                                    placeholder="{{ __('common.Enter Password') }}" aria-label="password"
+                                    placeholder="กรอกอีรหัสผ่าน" aria-label="password"
                                     aria-describedby="basic-addon4">
                             </div>
                             @if ($errors->first('password'))
@@ -103,7 +103,7 @@
                                     <input type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }}
                                         value="1">
                                     <span class="checkmark mr_15"></span>
-                                    <span class="label_name">{{ __('common.Remember Me') }}</span>
+                                    <span class="label_name">จดจำฉัน</span>
                                 </label>
                                 @if (Settings('allow_force_logout'))
                                     <label class="primary_checkbox d-flex">
@@ -114,7 +114,7 @@
                                     </label>
                                 @endif
                                 <a href="#" {{-- <a href="{{route('SendPasswordResetLink')}}" --}}
-                                    class="forgot_pass">{{ __('common.Forgot Password ?') }}</a>
+                                    class="forgot_pass">ลืมรหัสผ่าน?</a>
                             </div>
                         </div>
                         <div class="col-12">
@@ -123,7 +123,7 @@
                                 <button type="button" class="g-recaptcha theme_btn text-center w-100"
                                     data-sitekey="{{ saasEnv('NOCAPTCHA_SITEKEY') }}" data-size="invisible"
                                     data-callback="onSubmit" class="theme_btn text-center w-100">
-                                    {{ __('common.Login') }}</button>
+                                    เข้าสู่ระบบ</button>
                                 <script src="https://www.google.com/recaptcha/api.js" async defer></script>
                                 <script>
                                     function onSubmit(token) {
@@ -132,7 +132,7 @@
                                 </script>
                             @else
                                 <button type="submit" class="theme_btn text-center w-100">
-                                    {{ __('common.Login') }}</button>
+                                    เข้าสู่ระบบ</button>
                             @endif
                         </div>
                     </div>
