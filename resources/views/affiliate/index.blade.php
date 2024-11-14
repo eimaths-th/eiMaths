@@ -736,7 +736,7 @@
                                                 <h4><strong>เป็นส่วนหนึ่งของความสำเร็จของเรา รับค่าคอมมิชชั่นสูงสุด 20%
                                                         จากการแนะนำ</strong></h4>
                                                 <p>เรามีค่าคอมมิชชั่นที่น่าสนใจสำหรับแต่ละการแนะนำที่ประสบความสำเร็จ</p>
-                                                <a class="theme_btn" href="#">
+                                                <a class="theme_btn" href="{{ route('affiliate.registration') }}">
                                                     {{-- <a class="theme_btn" href="https://ecommerce.eimaths-th.com/affiliate/registration"> --}}
                                                     เข้าร่วมเป็นครอบครัว Affiliate</a>
                                             </div>
