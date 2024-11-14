@@ -2807,7 +2807,7 @@
     //     });
     // }, 0);
 </script>
-<script type="text/javascript">
+{{-- <script type="text/javascript">
     var phpdebugbar = new PhpDebugBar.DebugBar();
     phpdebugbar.addIndicator("php_version", new PhpDebugBar.DebugBar.Indicator({
         "icon": "code",
@@ -3194,7 +3194,7 @@
             "session_attributes": "<pre class=sf-dump id=sf-dump-178392542 data-indent-pad=\"  \"><span class=sf-dump-note>array:5<\/span> [<samp data-depth=1 class=sf-dump-expanded>\n  \"<span class=sf-dump-key>domain<\/span>\" => \"<span class=sf-dump-str title=\"4 characters\">main<\/span>\"\n  \"<span class=sf-dump-key>_token<\/span>\" => \"<span class=sf-dump-str title=\"40 characters\">UXqxMUzO3NAybCH6WduKA4cNN4PbjD0GdofYpyEl<\/span>\"\n  \"<span class=sf-dump-key>_previous<\/span>\" => <span class=sf-dump-note>array:1<\/span> [<samp data-depth=2 class=sf-dump-compact>\n    \"<span class=sf-dump-key>url<\/span>\" => \"<span class=sf-dump-str title=\"42 characters\">https:\/\/ecommerce.eimaths-th.com\/affiliate<\/span>\"\n  <\/samp>]\n  \"<span class=sf-dump-key>_flash<\/span>\" => <span class=sf-dump-note>array:2<\/span> [<samp data-depth=2 class=sf-dump-compact>\n    \"<span class=sf-dump-key>old<\/span>\" => []\n    \"<span class=sf-dump-key>new<\/span>\" => []\n  <\/samp>]\n  \"<span class=sf-dump-key>PHPDEBUGBAR_STACK_DATA<\/span>\" => []\n<\/samp>]\n<\/pre><script>Sfdump(\"sf-dump-178392542\", {\"maxDepth\":0})<\/script>\n"
         }
     }, "Xe03d2b2dd0d22ab32b2cee001983f83f");
-</script>
+</script> --}}
 
 </body>
 
