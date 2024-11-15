@@ -163,7 +163,7 @@ Route::post('/affiliate/register', [AffiliateAuthController::class, 'register'])
 Route::get('/affiliate/login', [AffiliateAuthController::class, 'login'])->name('affiliate.login');
 
 
-Route::get('/affiliate/my-affiliate', [AffiliateController::class, 'my_affiliate'])->name('my_affiliate.index');
+Route::get('/affiliate/my_affiliate', [AffiliateController::class, 'my_affiliate'])->name('my_affiliate.index');
 
 // Route::get('thank-you', [ContactController::class, 'thank_you'])->name('demo.thank_you');
 

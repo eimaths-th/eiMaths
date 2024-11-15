@@ -19,11 +19,15 @@ class AffiliateRepository
     public function all()
     {
         $user = Auth::user();
-        if($user->role->id == 3){
+        if($user->hasRole('Affiliate-user')){
+            // dd($user);
             return AffiliateLink::with(['owner','registerUser','payment'])->where('owner_id',Auth::id())->paginate(10);
+            // return 'true';
         }else{
 
             return AffiliateLink::with(['owner','registerUser','payment'])->where('owner_id',Auth::id())->get();
+            // return 'f';
+
         }
     }
     public function create(array $data)

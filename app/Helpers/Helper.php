@@ -4075,8 +4075,10 @@ if (!function_exists('generateBreadcrumb')) {
             if ($menu) {
                 $links = parentRoute($menu);
                 krsort($links);
-                return view('backend.partials.breadcrumb', compact('links', 'menu'));
+                return view('affiliate.auth.layouts.backend.partials.breadcrumb', compact('links', 'menu'));
             }
+            return view('affiliate.auth.layouts.backend.partials.breadcrumb', compact('links', 'menu'));
+
         } catch (Exception $e) {
             return '';
         }

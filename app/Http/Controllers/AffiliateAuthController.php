@@ -91,6 +91,7 @@ class AffiliateAuthController extends Controller
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
+            'affiliate_request' => 1,
             'department_id' => 5,
             'position_id' => 13,
             'password' => bcrypt($validated['password']),
