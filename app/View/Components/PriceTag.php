@@ -18,6 +18,6 @@ class PriceTag extends Component
 
     public function render()
     {
-        return view(theme('components.price-tag'));
+        return view('affiliate.components.price-tag');
     }
 }

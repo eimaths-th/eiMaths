@@ -47,6 +47,9 @@
                                 </div>
                             </div>
                         </div>
+                        @php
+                            // dd($courses);
+                        @endphp
                         @if(isset($courses))
                             @foreach ($courses as $course)
                                 <div class="col-lg-6 col-xl-4">
@@ -54,9 +57,11 @@
                                         <a href="{{courseDetailsUrl(@$course->id,@$course->type,@$course->slug)}}">
                                             <div class="thumb">
 
-                                                <div class="thumb_inner lazy"
-                                                     data-src="{{ getCourseImage($course->thumbnail) }}">
-                                                </div>
+                                                {{-- <div class="thumb_inner lazy"
+                                                     data-src="{{ asset($course->thumbnail) }}">
+                                                </div> --}}
+                                                <div class="thumb_inner lazy" data-src="{{ asset(str_replace('public/', '', $course->thumbnail)) }}"></div>
+
                                                 <x-price-tag :price="$course->price"
                                                              :discount="$course->discount_price"/>
                                             </div>
@@ -125,7 +130,7 @@
                         @endif
                     </div>
                     <div class="mt-4">
-                        {{ $courses->appends(Request::all())->links() }}
+                        {{-- {{ $courses->appends(Request::all())->links() }} --}}
                     </div>
                 </div>
             </div>

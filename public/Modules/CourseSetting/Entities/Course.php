@@ -4,8 +4,8 @@ namespace Modules\CourseSetting\Entities;
 
 use App\LessonComplete;
 use App\Models\LmsBadge;
+use App\Models\User;
 use App\Traits\Tenantable;
-use App\User;
 use Carbon\Carbon;
 use Cocur\Slugify\Slugify;
 use Illuminate\Database\Eloquent\Model;

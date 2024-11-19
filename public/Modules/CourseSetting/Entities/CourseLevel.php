@@ -41,9 +41,10 @@ class CourseLevel extends Model
 
     public static function getAllActiveData()
     {
-        return Cache::rememberForever('CourseLevel_' . app()->getLocale() . SaasDomain(), function () {
-            return CourseLevel::select('id', 'title')->where('status', 1)->get();
-        });
+        return CourseLevel::select('id', 'title')->where('status', 1)->get();
+        // return Cache::rememberForever('CourseLevel_' . app()->getLocale() . SaasDomain(), function () {
+        //     return CourseLevel::select('id', 'title')->where('status', 1)->get();
+        // });
     }
 
     public function totalCourse()

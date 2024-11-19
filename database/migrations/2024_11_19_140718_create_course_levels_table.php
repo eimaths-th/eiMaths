@@ -22,19 +22,19 @@ return new class extends Migration
         CourseLevel::withoutEvents(function () {
 
             CourseLevel::insert([
-                [
-                    'id' => 1,
-                    'title' => 'Beginner'
-                ], [
-                    'id' => 2,
-                    'title' => 'Intermediate'
-                ], [
-                    'id' => 3,
-                    'title' => 'Advance'
-                ], [
-                    'id' => 4,
-                    'title' => 'Pro'
-                ],
+                // [
+                //     'id' => 1,
+                //     'title' => 'Beginner'
+                // ], [
+                //     'id' => 2,
+                //     'title' => 'Intermediate'
+                // ], [
+                //     'id' => 3,
+                //     'title' => 'Advance'
+                // ], [
+                //     'id' => 4,
+                //     'title' => 'Pro'
+                // ],
             ]);
 
         });

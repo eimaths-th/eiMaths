@@ -21,7 +21,8 @@ class CoursePageSection extends Component
     public function render()
     {
         $query = Course::with('user', 'enrolls', 'comments', 'reviews', 'lessons', 'activeReviews', 'enrollUsers', 'cartUsers', 'courseLevel')->where('scope', 1);
-
+        // $query = Course::all();
+        // dd($query);
         $type = $this->request->type;
         if (empty($type)) {
             $type = '';
@@ -137,6 +138,7 @@ class CoursePageSection extends Component
             }
         }
 
+        // $courses = $query->get();
         $courses = $query->paginate(itemsGridSize());
         $total = $courses->total();
         $levels = CourseLevel::getAllActiveData();
