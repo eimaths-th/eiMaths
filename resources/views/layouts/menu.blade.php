@@ -230,6 +230,20 @@
                         <p>Premissions</p>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a href="{{ route('affiliate.index') }}"
+                        class="nav-link {{ Request::is('permission.index') ? 'active' : '' }}">
+                        <i class="nav-icon fa-solid fa-comment-dots"></i>
+                        <p>affiliate</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('affiliate.courses') }}"
+                        class="nav-link {{ Request::is('permission.index') ? 'active' : '' }}">
+                        <i class="nav-icon fa-solid fa-comment-dots"></i>
+                        <p>course</p>
+                    </a>
+                </li>
 
             @endcan
             <li class="nav-item {{ in_array(Request::route()->getName(), ['users.index', 'roles.index', 'generate.system','generate.student', 'permission.index']) ? 'menu-open' : '' }}">
