@@ -3,6 +3,7 @@
 use App\Http\Controllers\AffiliateAuthController;
 use App\Http\Controllers\AffiliateController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\CourseController;
 use App\Http\Controllers\eLeanController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
@@ -158,6 +159,9 @@ Route::get('thank-you', [ContactController::class, 'thank_you'])->name('demo.tha
 
 
 Route::get('/affiliate', [AffiliateController::class, 'fontend'])->name('affiliate.index');
+Route::get('/courses', [AffiliateController::class, 'courses'])->name('affiliate.courses');
+// Route::get('/courses', [CourseController::class, 'coursePageSection'])->name('courses.page.section');
+
 Route::get('/affiliate/registration', [AffiliateAuthController::class, 'showRegistrationFrom'])->name('affiliate.registration');
 Route::post('/affiliate/register', [AffiliateAuthController::class, 'register'])->name('affiliate.register');
 Route::get('/affiliate/login', [AffiliateAuthController::class, 'login'])->name('affiliate.login');

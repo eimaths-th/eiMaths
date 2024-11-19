@@ -11,6 +11,8 @@ use Brian2694\Toastr\Toastr;
 
 // use Brian2694\Toastr\Facades\Toastr;
 use Exception;
+use Modules\CourseSetting\Entities\Category;
+use Modules\Localization\Entities\Language;
 
 class AffiliateController extends Controller
 {
@@ -103,6 +105,16 @@ class AffiliateController extends Controller
     /**
      * Show the form for creating a new resource.
      */
+    public function courses(Request $request)
+    {
+        // Retrieve categories
+        $categories = Category::all();
+
+        // Retrieve languages (assuming you have a Language model or method to fetch languages)
+        $languages = Language::where('status', 1)->select('id', 'code', 'name', 'native', 'rtl')->get(); // Adjust this to your actual query for languages
+
+        return view('affiliate.courses', compact('request', 'categories', 'languages'));
+    }
     public function create()
     {
         //

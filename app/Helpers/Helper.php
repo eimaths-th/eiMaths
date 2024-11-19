@@ -3749,23 +3749,6 @@ if (!function_exists('ob_fresh')) {
         ob_start();
     }
 }
-if (!function_exists('clearAllLangCache')) {
-    function clearAllLangCache($key)
-    {
-        try {
-            $domain = SaasDomain();
-        } catch (Exception $e) {
-            $domain = 'main';
-        }
-        try {
-            $languages = getLanguageList();
-            foreach ($languages as $lang) {
-                Cache::forget($key . $lang->code . $domain);
-            }
-        } catch (Exception $exception) {
-        }
-    }
-}
 if (!function_exists('footerSettings')) {
     function footerSettings($key)
     {
@@ -4059,7 +4042,23 @@ if (!function_exists('dynamicContentAppend')) {
         }
     }
 }
-
+if (!function_exists('clearAllLangCache')) {
+    function clearAllLangCache($key)
+    {
+        try {
+            $domain = SaasDomain();
+        } catch (Exception $e) {
+            $domain = 'main';
+        }
+        try {
+            $languages = getLanguageList();
+            foreach ($languages as $lang) {
+                Cache::forget($key . $lang->code . $domain);
+            }
+        } catch (Exception $exception) {
+        }
+    }
+}
 if (!function_exists('generateBreadcrumb')) {
     function generateBreadcrumb($currentRoute = null)
     {

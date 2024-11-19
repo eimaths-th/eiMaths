@@ -86,4 +86,8 @@ class User extends Authenticatable
         return $this->hasMany(AffiliateReferralPayment::class, 'payment_to');
     }
 
+    public function isOrganization()
+    {
+        return $this->role_id == 5;
+    }
 }
