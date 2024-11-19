@@ -144,12 +144,14 @@
                                                     href="{{ routeIsExist('affiliate.users.request') ? route('affiliate.users.request') : '' }}">{{ __('frontend.Join Affiliate Program') }}</a>
                                             @endif
                                         @else
-                                            <a href="{{ route('dashboard') }}">{{ __('dashboard.Dashboard') }}</a>
-                                            <a
-                                                href="{{ auth()->user()->name ? route('profileUniqueUrl', auth()->user()->name) : '' }}">{{ __('frontendmanage.My Profile') }}</a>
+                                            {{-- <a href="{{ route('dashboard') }}">{{ __('dashboard.Dashboard') }}</a> --}}
+                                            <a href="#">Dashboard</a>
+                                            <a href="#">My Profile</a>
+                                            <a href="#">Account Settings</a>
+                                            
+                                            {{-- <a href="{{ auth()->user()->name ? route('profileUniqueUrl', auth()->user()->name) : '' }}">{{ __('frontendmanage.My Profile') }}</a> --}}
 
-                                            <a
-                                                href="{{ route('users.settings') }}">{{ __('frontend.Account Settings') }}</a>
+                                            {{-- <a href="{{ route('users.settings') }}">{{ __('frontend.Account Settings') }}</a> --}}
                                         @endif
                                         {{-- @if (isModuleActive('UserType'))
                                             @foreach (auth()->user()->userRoles as $role)
