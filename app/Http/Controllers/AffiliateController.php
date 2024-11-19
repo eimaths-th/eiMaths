@@ -52,6 +52,8 @@ class AffiliateController extends Controller
         $affiliate_wallet = $data['user']->affiliateWallet;
         if ($affiliate_wallet && $affiliate_wallet->paypal_account) {
             $data['paypal_account'] = $affiliate_wallet->paypal_account;
+        } else {
+            $data['paypal_account'] = ' ';
         }
         $data['data'] = $this->affiliateRepo->all();
         $affiliateTransactionRepo = new AffiliateTransactionRepository();
