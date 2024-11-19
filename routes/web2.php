@@ -157,13 +157,19 @@ Route::get('/normalize', [App\Http\Controllers\HomeController::class, 'normalize
 Route::get('thank-you', [ContactController::class, 'thank_you'])->name('demo.thank_you');
 
 
-Route::get('/affiliate', [AffiliateController::class, 'index'])->name('affiliate.index');
+Route::get('/affiliate', [AffiliateController::class, 'fontend'])->name('affiliate.index');
 Route::get('/affiliate/registration', [AffiliateAuthController::class, 'showRegistrationFrom'])->name('affiliate.registration');
 Route::post('/affiliate/register', [AffiliateAuthController::class, 'register'])->name('affiliate.register');
 Route::get('/affiliate/login', [AffiliateAuthController::class, 'login'])->name('affiliate.login');
 
+Route::post('/affiliate/logout', [AffiliateAuthController::class, 'logout'])->name('affiliate.logout');
 
-Route::get('/affiliate/my_affiliate', [AffiliateController::class, 'my_affiliate'])->name('my_affiliate.index');
+Route::post('/affiliate/my_affiliate/add-or-update-paypal-account', [AffiliateAuthController::class, 'addOrUpdatePaypalAccount'])->name('add_or_update_paypal_account');
+
+
+// Route::get('/affiliate/my_affiliate', )->name('my_affiliate.index');
+Route::resource('/affiliate/my_affiliate', AffiliateController::class)->except(['destroy']);
+
 
 // Route::get('thank-you', [ContactController::class, 'thank_you'])->name('demo.thank_you');
 

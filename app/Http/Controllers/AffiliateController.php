@@ -6,8 +6,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Modules\Affiliate\Repositories\AffiliateRepository;
 use Modules\Affiliate\Repositories\AffiliateTransactionRepository;
+use Modules\Affiliate\Http\Requests\AffiliateLinkRequest;
+use Brian2694\Toastr\Toastr;
 
-use Brian2694\Toastr\Facades\Toastr;
+// use Brian2694\Toastr\Facades\Toastr;
 use Exception;
 
 class AffiliateController extends Controller
@@ -21,12 +23,12 @@ class AffiliateController extends Controller
     {
         $this->affiliateRepo = $affiliateRepo;
     }
-    public function index()
+    public function fontend()
     {
         //
         return view('affiliate.index');
     }
-    public function my_affiliate(Request $request)
+    public function index(Request $request)
     {
         // echo "hi its dashboard";
         // dd($request);
@@ -60,6 +62,7 @@ class AffiliateController extends Controller
         // dd($data);
         return view('affiliate.backend.my_affiliate', [
             'data' => $data,
+            'paypal_account' => $data['paypal_account'],
             'start_date' => $data['start_date'],
             'end_date' => $data['end_date']
         ]);
@@ -108,9 +111,17 @@ class AffiliateController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(AffiliateLinkRequest $request)
     {
         //
+        try {
+            $this->affiliateRepo->create($request->validated());
+            Toastr::success(trans('affiliate.Affiliate Link Generated Successfully'));
+            return back();
+        } catch (Exception $e) {
+            Toastr::error($e->getMessage(), trans('common.Error'));
+            return response()->json(['error' => $e->getMessage()], 503);
+        }
     }
 
     /**

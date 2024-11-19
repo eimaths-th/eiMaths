@@ -2,8 +2,8 @@
 
 namespace Modules\Affiliate\Entities;
 
+use App\Models\User;
 use App\Traits\Tenantable;
-use App\User;
 use Illuminate\Database\Eloquent\Model;
 
 class AffiliateLink extends Model

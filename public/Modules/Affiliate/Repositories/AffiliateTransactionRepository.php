@@ -124,12 +124,12 @@ class AffiliateTransactionRepository
     public function userWiseWithdraw($startDate = null ,$endDate = null)
     {
        $user = Auth::user();
-       if($user->role_id == 3)
+       if($user->hasRole('Affiliate-user'))
        {
            if($startDate && $endDate){
-               return AffiliateWithdraw::with('user')->where('user_id',Auth::id())->whereBetween('request_date', [$startDate, $endDate])->orderBy('id','DESC')->paginate(10);
+               return AffiliateWithdraw::with('user')->where('user_id',Auth::id())->whereBetween('request_date', [$startDate, $endDate])->orderBy('id','DESC')->get();
            }else{
-               return AffiliateWithdraw::with('user')->where('user_id',Auth::id())->orderBy('id','DESC')->paginate(10);
+               return AffiliateWithdraw::with('user')->where('user_id',Auth::id())->orderBy('id','DESC')->get();
            }
        }else{
            if($startDate && $endDate){
@@ -144,16 +144,16 @@ class AffiliateTransactionRepository
     {
         $user = Auth::user();
 
-        if($user->role_id == 3)
+        if($user->hasRole('Affiliate-user'))
         {
             if($startDate && $endDate){
-                return AffiliateReferralPayment::with(['course','incomeFrom'])->where('payment_to',Auth::id())->whereBetween('date', [$startDate, $endDate])->orderBy('id','DESC')->paginate(10);
+                return AffiliateReferralPayment::with(['course','incomeFrom'])->where('payment_to',Auth::id())->whereBetween('date', [$startDate, $endDate])->orderBy('id','DESC')->get();
             }else{
-                return AffiliateReferralPayment::with(['course','incomeFrom'])->where('payment_to',Auth::id())->orderBy('id','DESC')->paginate();
+                return AffiliateReferralPayment::with(['course','incomeFrom'])->where('payment_to',Auth::id())->orderBy('id','DESC')->get();
             }
         }else{
             if($startDate && $endDate){
-                return AffiliateReferralPayment::with(['course','incomeFrom'])->where('payment_to',Auth::id())->whereBetween('date', [$startDate, $endDate])->orderBy('id','DESC')->get(10);
+                return AffiliateReferralPayment::with(['course','incomeFrom'])->where('payment_to',Auth::id())->whereBetween('date', [$startDate, $endDate])->orderBy('id','DESC')->get();
             }else{
                 return AffiliateReferralPayment::with(['course','incomeFrom'])->where('payment_to',Auth::id())->orderBy('id','DESC')->get();
             }

@@ -1,0 +1,46 @@
+<nav id="sidebar" class="sidebar  ">
+
+    <div class="sidebar-header update_sidebar">
+        <a class="large_logo" href="{{ url('/') }}">
+            <img src="{{ asset('uploads/main/files/08-08-2024/logo-eimath.png') }}" alt="">
+        </a>
+        <a class="mini_logo" href="{{ url('/') }}">
+            <img src="{{ asset('uploads/main/files/08-08-2024/logo-eimath.png') }}" alt="">
+        </a>
+        <a id="close_sidebar" class="d-lg-none">
+            <i class="ti-close"></i>
+        </a>
+    </div>
+    <div class="sidebar-user text-center">
+        <div class="sidebar-profile mx-auto">
+            <img src="https://ui-avatars.com/api/?background=random&amp;name=test1" alt="">
+        </div>
+        <h4>test1 </h4>
+
+        <div class="sidebar-badge">
+
+        </div>
+    </div>
+    <ul id="sidebar_menu">
+
+
+
+        <li class="mm-active">
+            <a href=" # " class="  has-arrow " aria-expanded="false">
+                <div class="nav_icon_small">
+                    <span class="fas fa-th"></span>
+                </div>
+                <div class="nav_title">
+                    <span>Affiliate</span>
+                </div>
+            </a>
+            <ul>
+                <li class="mm-active">
+                    <a href="{{ route('my_affiliate.index') }}">
+                        My Affiliate
+                    </a>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</nav>

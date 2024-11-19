@@ -19,13 +19,15 @@ class AffiliateRepository
     public function all()
     {
         $user = Auth::user();
-        if($user->hasRole('Affiliate-user')){
+        if ($user->hasRole('Affiliate-user')) {
             // dd($user);
-            return AffiliateLink::with(['owner','registerUser','payment'])->where('owner_id',Auth::id())->paginate(10);
+            // return AffiliateLink::with(['owner','registerUser','payment'])->where('owner_id',Auth::id())->paginate(10);
+            return AffiliateLink::with(['owner', 'registerUser', 'payment'])
+                ->where('owner_id', Auth::id())->get();
             // return 'true';
-        }else{
+        } else {
 
-            return AffiliateLink::with(['owner','registerUser','payment'])->where('owner_id',Auth::id())->get();
+            return AffiliateLink::with(['owner', 'registerUser', 'payment'])->where('owner_id', Auth::id())->get();
             // return 'f';
 
         }
@@ -33,33 +35,32 @@ class AffiliateRepository
     public function create(array $data)
     {
         return AffiliateLink::create([
-            'affiliate_link'=>$data['affiliate_link'],
-            'owner_id'=>Auth::id(),
+            'affiliate_link' => $data['affiliate_link'],
+            'owner_id' => Auth::id(),
         ]);
     }
 
     public function affiliateUser($userId)
     {
-        if($this->checkVisitRecord()){
+        if ($this->checkVisitRecord()) {
             return ReferralUser::create([
-                'user_id'=>$userId,
-                'affiliate_link_id'=>$this->checkVisitRecord()->affiliate_link_id,
-                'validity_start_date'=>$this->checkVisitRecord()->date,
+                'user_id' => $userId,
+                'affiliate_link_id' => $this->checkVisitRecord()->affiliate_link_id,
+                'validity_start_date' => $this->checkVisitRecord()->date,
             ]);
-        }else{
+        } else {
             return false;
         }
-
     }
 
     private function checkVisitRecord()
     {
         $ip = Request::ip();
-        $agent = Browser::browserFamily().'-'.Browser::platformName().'-'.Browser::deviceModel();
-        $row = AffiliateLinkVisitTrackUser::where('ip',$ip)->where('agent',$agent)->orderBy('id','DESC')->first();
-        if($row){
+        $agent = Browser::browserFamily() . '-' . Browser::platformName() . '-' . Browser::deviceModel();
+        $row = AffiliateLinkVisitTrackUser::where('ip', $ip)->where('agent', $agent)->orderBy('id', 'DESC')->first();
+        if ($row) {
             return $row;
-        }else{
+        } else {
             return false;
         }
     }
@@ -67,10 +68,10 @@ class AffiliateRepository
     public function configuration(array $data)
     {
         foreach ($data as $key => $value) {
-            $row = AffiliateConfiguration::where('key',$key)->first();
+            $row = AffiliateConfiguration::where('key', $key)->first();
             if ($row) {
                 $row->update(['value' => $value]);
-            }else {
+            } else {
                 AffiliateConfiguration::create([
                     'key' => $key,
                     'value' => $value,
@@ -84,11 +85,11 @@ class AffiliateRepository
         foreach (\Modules\Affiliate\Entities\AffiliateConfiguration::get() as  $setting) {
             $datas[$setting->key] = $setting->value;
         }
-        Cache::rememberForever('affiliate_config_' . SaasDomain(), function () use($datas) {
+        Cache::rememberForever('affiliate_config_' . SaasDomain(), function () use ($datas) {
             return $datas;
         });
 
-       return true;
+        return true;
     }
 
     public function addOrUpdatePaypalAccount(array $data)
@@ -102,5 +103,4 @@ class AffiliateRepository
             ]
         );
     }
-
 }

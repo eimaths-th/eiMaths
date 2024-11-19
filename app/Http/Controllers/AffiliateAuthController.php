@@ -4,6 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Exception;
+
+// use Brian2694\Toastr\Toastr;
+use Brian2694\Toastr\Facades\Toastr;
+
+use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Modules\Affiliate\Http\Requests\AffiliateConfigurationRequest;
+use Modules\Affiliate\Http\Requests\AffiliateLinkRequest;
+use Modules\Affiliate\Repositories\AffiliateRepository;
+use Modules\Affiliate\Repositories\AffiliateTransactionRepository;
+use Modules\FrontendManage\Entities\FrontPage;
 
 class AffiliateAuthController extends Controller
 {
@@ -12,9 +25,10 @@ class AffiliateAuthController extends Controller
      */
     public $page = [];
     public $custom_field = [];
+    protected $affiliateRepo;
 
     // Constructor or method to initialize the $page property
-    public function __construct()
+    public function __construct(AffiliateRepository $affiliateRepo)
     {
         $this->page = [
             "id" => 1,
@@ -70,6 +84,7 @@ class AffiliateAuthController extends Controller
             "required_institute" => 0,
             "editable_institute" => 1
         ];
+        $this->affiliateRepo = $affiliateRepo;
     }
 
     public function showRegistrationFrom()
@@ -136,9 +151,36 @@ class AffiliateAuthController extends Controller
     /**
      * Show the form for creating a new resource.
      */
+    public function addOrUpdatePaypalAccount(Request $request)
+    {
+        $validate_rules = [
+            'paypal_account' => 'required',
+        ];
+        $request->validate($validate_rules, validationMessage($validate_rules));
+        try {
+            $this->affiliateRepo->addOrUpdatePaypalAccount($request->all());
+            Toastr::success(trans('common.Operation successful'), trans('common.Success'));
+            return back();
+        } catch (Exception $e) {
+            Toastr::error($e->getMessage(), trans('common.Error'));
+            return response()->json(['error' => $e->getMessage()], 503);
+        }
+    }
+
     public function create()
     {
         //
+    }
+    public function logout(Request $request)
+    {
+        //
+        Auth::logout();
+
+        $request->session()->invalidate();
+        
+        $request->session()->regenerateToken();
+
+        return redirect()->route('affiliate.login')->with('success', 'You have successfully logged out.');
     }
 
     /**
