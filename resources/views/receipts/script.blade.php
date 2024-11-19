@@ -722,35 +722,42 @@
                 }
             }
         });
-       /*  $(document).on('click', '.btnRemoveg', function() {
-            if ($("#myTbl tr").length > 2) {
-                $(this).closest("tr").remove();
-                summary_total();
-            } else {
-                // เหลือ 1 รายการลบไม่ได้
-                if ($("#myTbl tr").length > 1) {
-                    //alert("ต้องมีรายการข้อมูลอย่างน้อย 1 รายการ");
-                    toastr.success('ต้องมีรายการข้อมูลอย่างน้อย 1 รายการ', {
-                        timeOut: 5000
-                    });
-                }
-            }
-        });
+        /*  $(document).on('click', '.btnRemoveg', function() {
+             if ($("#myTbl tr").length > 2) {
+                 $(this).closest("tr").remove();
+                 summary_total();
+             } else {
+                 // เหลือ 1 รายการลบไม่ได้
+                 if ($("#myTbl tr").length > 1) {
+                     //alert("ต้องมีรายการข้อมูลอย่างน้อย 1 รายการ");
+                     toastr.success('ต้องมีรายการข้อมูลอย่างน้อย 1 รายการ', {
+                         timeOut: 5000
+                     });
+                 }
+             }
+         });
 
-        $(this).closest(".abcd").remove(); */
+         $(this).closest(".abcd").remove(); */
 
     });
 
+</script> 
+<script>
     function printReport() {
         var prtContent = document.getElementById("reportPrinting").innerHTML;
-
+        // console.log(prtContent);
+        
         // Combine styles and content to create the final HTML for printing
         var htmlToPrint = '<!DOCTYPE html><html><head>';
 
         htmlToPrint +=
             '<link rel="stylesheet" href="dist/css/print.css"><link rel="stylesheet" href="dist/css/adminlte.css?v=3.2.0">';
-        htmlToPrint += '</head><body>' + prtContent + '</body></html>';
+        // console.log(text);
+        
+        htmlToPrint += '</head><body>' + prtContent;
         // 
+        console.log(htmlToPrint);
+        
         var WinPrint = window.open();
         WinPrint.document.write(htmlToPrint);
         WinPrint.document.close();
