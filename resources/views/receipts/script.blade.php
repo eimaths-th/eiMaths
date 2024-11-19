@@ -750,6 +750,7 @@
         htmlToPrint +=
             '<link rel="stylesheet" href="dist/css/print.css"><link rel="stylesheet" href="dist/css/adminlte.css?v=3.2.0">';
         htmlToPrint += '</head><body>' + prtContent + '</body></html>';
+        // 
         var WinPrint = window.open();
         WinPrint.document.write(htmlToPrint);
         WinPrint.document.close();
