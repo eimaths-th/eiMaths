@@ -5,7 +5,7 @@
     <div class="login_wrapper">
         <div class="login_wrapper_left">
             <div class="logo">
-                <a href="{{ url('/') }}">
+                <a href="{{ route('affiliate.index') }}">
                     {{-- <img style="width: 190px" src="{{ asset('images/cropped-footer-logo-32x32.png') }}{{ assetVersion() }}" alt=""> --}}
                     <img style="width: 190px" src="{{ asset('images/logo.png') }}" alt="">
                 </a>

@@ -604,8 +604,6 @@
     });
 
 
-
-
     //auto decimal
     $(document).on('change', '.auto_decimal', function() {
         const inputValue = parseFloat(this.value);
@@ -740,24 +738,21 @@
          $(this).closest(".abcd").remove(); */
 
     });
-
-</script> 
+</script>
 <script>
     function printReport() {
         var prtContent = document.getElementById("reportPrinting").innerHTML;
         // console.log(prtContent);
-        
+
         // Combine styles and content to create the final HTML for printing
         var htmlToPrint = '<!DOCTYPE html><html><head>';
-
         htmlToPrint +=
             '<link rel="stylesheet" href="dist/css/print.css"><link rel="stylesheet" href="dist/css/adminlte.css?v=3.2.0">';
         // console.log(text);
         
-        htmlToPrint += '</head><body>' + prtContent;
-        // 
-        console.log(htmlToPrint);
-        
+
+        htmlToPrint += '</head><body>' + prtContent ;
+
         var WinPrint = window.open();
         WinPrint.document.write(htmlToPrint);
         WinPrint.document.close();

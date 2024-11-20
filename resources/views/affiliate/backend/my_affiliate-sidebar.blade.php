@@ -1,10 +1,11 @@
 <nav id="sidebar" class="sidebar  ">
 
     <div class="sidebar-header update_sidebar">
-        <a class="large_logo" href="{{ url('/') }}">
+        <a class="large_logo" href="{{ route('my_affiliate.index') }}">
+        {{-- <a class="large_logo" href="{{ url('/') }}"> --}}
             <img src="{{ asset('uploads/main/files/08-08-2024/logo-eimath.png') }}" alt="">
         </a>
-        <a class="mini_logo" href="{{ url('/') }}">
+        <a class="mini_logo" href="{{ route('my_affiliate.index') }}">
             <img src="{{ asset('uploads/main/files/08-08-2024/logo-eimath.png') }}" alt="">
         </a>
         <a id="close_sidebar" class="d-lg-none">

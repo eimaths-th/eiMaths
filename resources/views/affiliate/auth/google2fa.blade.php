@@ -7,7 +7,8 @@
     <div class="login_wrapper">
         <div class="login_wrapper_left">
             <div class="logo">
-                <a href="{{ url('/') }}">
+                <a href="{{ route('affiliate.index') }}">
+                {{-- <a href="{{ url('/') }}"> --}}
                     <img style="width: 190px" src="{{asset(Settings('logo') )}} " alt="">
                 </a>
             </div>

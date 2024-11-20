@@ -185,6 +185,6 @@
 @endsection
 
 @section('script')
-    @include('receipts.script')
+    @include('receipts.sccd ..ript')
     @include('receipts.dropzone')
 @endsection

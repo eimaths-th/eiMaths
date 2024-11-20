@@ -34,7 +34,7 @@
                 <input type="hidden" id="logo_img" value="{{ base64_encode($logoData) }}">
                 <input type="hidden" id="logo_title" value="{{ Settings('company_name') }}">
                 <div class="small_logo_crm d-lg-none">
-                    <a href="{{ url('/') }}"> <img src="{{ asset(Settings('logo')) }}" alt=""></a>
+                    <a href="{{ route('affiliate.index') }}"> <img src="{{ asset(Settings('logo')) }}" alt=""></a>
                 </div>
                 <div id="sidebarCollapse" class="sidebar_icon  d-lg-none">
                     <i class="ti-menu"></i>
@@ -57,7 +57,7 @@
 
                 <div class="d-flex align-items-center">
                     @if ($user->sidebar != 1)
-                        <a class="large_logo   header_logo_area" href="{{ url('/') }}">
+                        <a class="large_logo   header_logo_area" href="{{ route('affiliate.index') }}">
                             <img src="{{ getLogoImage(Settings('logo')) }}" alt="">
                         </a>
                     @endif
@@ -109,7 +109,7 @@
 
                         <li class="nav-item" data-bs-toggle="tooltip" data-bs-placement="bottom"
                             title="{{ __('common.Visit Website') }}" data-bs-custom-class="tooltip-zindex">
-                            <a target="_blank" class="visit_website_btn" href="{{ url('/') }}">
+                            <a target="_blank" class="visit_website_btn" href="{{ route('affiliate.index') }}">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                     viewBox="0 0 24 24" fill="none">
                                     <path
