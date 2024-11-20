@@ -7,8 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Modules\Affiliate\Repositories\AffiliateRepository;
 use Modules\Affiliate\Repositories\AffiliateTransactionRepository;
 use Modules\Affiliate\Http\Requests\AffiliateLinkRequest;
-use Brian2694\Toastr\Toastr;
-
+use Brian2694\Toastr\Facades\Toastr;
 // use Brian2694\Toastr\Facades\Toastr;
 use Exception;
 use Modules\CourseSetting\Entities\Category;
@@ -127,9 +126,9 @@ class AffiliateController extends Controller
      */
     public function store(AffiliateLinkRequest $request)
     {
-        //
         try {
             $this->affiliateRepo->create($request->validated());
+
             Toastr::success(trans('affiliate.Affiliate Link Generated Successfully'));
             return back();
         } catch (Exception $e) {

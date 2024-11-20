@@ -479,56 +479,56 @@ if (!function_exists('showStatus')) {
 if (!function_exists('permissionCheck')) {
     function permissionCheck($route_name)
     {
-        if (auth()->check()) {
-            if (auth()->user()->role_id == 1) {
-                return TRUE;
-            } else {
+        // if (auth()->check()) {
+        //     if (auth()->user()->role_id == 1) {
+        //         return TRUE;
+        //     } else {
 
-                if (isModuleActive('OrgInstructorPolicy')) {
-                    if (auth()->user()->role_id == 2) {
-                        $roles = app('policy_permission_list');
-                        $role = $roles->where('id', auth()->user()->policy_id)->first();
-                        /*
-                                                    $allowRoutes = [
-                                                        'dashboard',
-                                                        'quiz',
-                            //                            'quiz.test-list',
-                            //                            'quiz.add-test',
-                            //                            'quiz.edit-test',
-                            //                            'quiz.delete-test',
-                                                        'quiz.mark-test',
-                                                        'quiz.supervisor',
-                                                        'quiz.supervisor.extraTime',
-                                                        'quiz.supervisor.warning',
-                                                        'quiz.supervisor.continueDoTest',
-                                                        'quiz.supervisor.comment',
-                                                        'set-quiz.mark-register',
-                                                        'quizReTest'
-                                                    ];
-                                                    if (in_array($route_name, $allowRoutes)) {
-                                                        return true;
-                                                    }*/
-                    } else {
-                        $roles = app('permission_list');
-                        $role = $roles->where('id', auth()->user()->role_id)->first();
-                    }
-                    if ($role != null && $role->permissions->contains('route', $route_name)) {
-                        return TRUE;
-                    } else {
-                        return FALSE;
-                    }
-                } else {
-                    $roles = app('permission_list');
-                    $role = $roles->where('id', auth()->user()->role_id)->first();
-                    if ($role != null && $role->permissions->contains('route', $route_name)) {
-                        return TRUE;
-                    } else {
-                        return FALSE;
-                    }
-                }
-            }
-        }
-        return FALSE;
+        //         if (isModuleActive('OrgInstructorPolicy')) {
+        //             if (auth()->user()->role_id == 2) {
+        //                 $roles = app('policy_permission_list');
+        //                 $role = $roles->where('id', auth()->user()->policy_id)->first();
+        //                 /*
+        //                                             $allowRoutes = [
+        //                                                 'dashboard',
+        //                                                 'quiz',
+        //                     //                            'quiz.test-list',
+        //                     //                            'quiz.add-test',
+        //                     //                            'quiz.edit-test',
+        //                     //                            'quiz.delete-test',
+        //                                                 'quiz.mark-test',
+        //                                                 'quiz.supervisor',
+        //                                                 'quiz.supervisor.extraTime',
+        //                                                 'quiz.supervisor.warning',
+        //                                                 'quiz.supervisor.continueDoTest',
+        //                                                 'quiz.supervisor.comment',
+        //                                                 'set-quiz.mark-register',
+        //                                                 'quizReTest'
+        //                                             ];
+        //                                             if (in_array($route_name, $allowRoutes)) {
+        //                                                 return true;
+        //                                             }*/
+        //             } else {
+        //                 $roles = app('permission_list');
+        //                 $role = $roles->where('id', auth()->user()->role_id)->first();
+        //             }
+        //             if ($role != null && $role->permissions->contains('route', $route_name)) {
+        //                 return TRUE;
+        //             } else {
+        //                 return FALSE;
+        //             }
+        //         } else {
+        //             $roles = app('permission_list');
+        //             $role = $roles->where('id', auth()->user()->role_id)->first();
+        //             if ($role != null && $role->permissions->contains('route', $route_name)) {
+        //                 return TRUE;
+        //             } else {
+        //                 return FALSE;
+        //             }
+        //         }
+        //     }
+        // }
+        return TRUE;
     }
 }
 
@@ -1752,18 +1752,17 @@ if (!function_exists('totalUnreadMessages')) {
 if (!function_exists('getLanguageList')) {
     function getLanguageList()
     {
-        if (isModuleActive('LmsSaas')) {
-            $domain = SaasDomain();
-        } else {
-            $domain = 'main';
-        }
-        return Cache::rememberForever('LanguageList_' . $domain, function () {
-            return DB::table('languages')
-                ->where('status', 1)
-                ->select('id', 'code', 'name', 'native')
-                ->where('lms_id', SaasInstitute()->id)
-                ->get();
-        });
+
+        $domain = 'main';
+
+        // return  $domain ;
+
+        return DB::table('languages')
+            ->where('status', 1)
+            ->select('id', 'code', 'name', 'native')
+            // ->where('lms_id', SaasInstitute()->id)
+            ->get();
+
     }
 }
 
@@ -3917,7 +3916,6 @@ if (!function_exists('hasDynamicPage')) {
         //     return true;
         // }
         return false;
-
     }
 }
 
@@ -4077,7 +4075,6 @@ if (!function_exists('generateBreadcrumb')) {
                 return view('affiliate.auth.layouts.backend.partials.breadcrumb', compact('links', 'menu'));
             }
             return view('affiliate.auth.layouts.backend.partials.breadcrumb', compact('links', 'menu'));
-
         } catch (Exception $e) {
             return '';
         }

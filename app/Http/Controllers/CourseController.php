@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use Modules\CourseSetting\Entities\Course;
 use Modules\CourseSetting\Entities\CourseLevel;
 use Modules\Localization\Entities\Language;
+use App\Models\CoursePending;
+use Modules\CourseSetting\Entities\Category;
+use Toastr;
 
 class CourseController extends Controller
 {
@@ -132,7 +135,7 @@ class CourseController extends Controller
         $total = $courses->total();
         $levels = CourseLevel::getAllActiveData();
 
-        return view('affiliate.courses',compact(
+        return view('affiliate.courses', compact(
             'levels',
             'mode',
             'category',
@@ -143,5 +146,72 @@ class CourseController extends Controller
             'total',
             'courses'
         ));
+    }
+    public function store(Request $request)
+    {
+        // Validate the incoming request
+
+        $validated = $request->validate([
+            'ref' => 'nullable|string|max:255',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'telp' => 'nullable|string|max:15',
+            'course_name' => 'nullable|string|max:255',
+            // 'course_id' => 'required|exists:courses,id', // Ensure the course exists
+        ]);
+        dd($request);
+
+        // try {
+        //     // Store the data in the courses_pending table
+        //     CoursePending::create([
+        //         'ref' => $validated['ref'],
+        //         'name' => $validated['name'],
+        //         'email' => $validated['email'],
+        //         'telp' => $validated['telp'],
+        //         'course_name' => $validated['course_name'],
+        //         'course_id' => $validated['course_id'],
+        //     ]);
+
+        //     // Flash a success message
+        //     Toastr::success('Your course request has been submitted successfully.');
+
+        //     // Redirect or close the modal
+        //     return back();
+        // } catch (\Exception $e) {
+        //     // Flash an error message in case of failure
+        //     Toastr::error('There was an error submitting your request.');
+
+        //     // Optionally return the error
+        //     return back()->withInput()->withErrors(['error' => $e->getMessage()]);
+        // }
+    }
+    public function categories()
+    {
+        $query = Category::query();
+
+        $categories = $query->with('parent')->orderBy('position_order', 'asc')->get();
+        $max_id = count($categories) + 1;
+
+        return view('course.category.category-list', compact('categories', 'max_id'));
+    }
+    public function categoriesStore(Request $request) {}
+    public function courselList() {}
+    public function courseLevel() {}
+    public function category_status_update(Request $request)
+    {
+        if (demoCheck()) {
+            return redirect()->back();
+        }
+        try {
+            $store = Category::find($request->id);
+            $store->status = $request->status;
+            $store->save();
+            return response()->json([
+                'message' => 'success'
+            ], 200);
+        } catch (\Exception $e) {
+            Log::info($e->getMessage());
+            return response()->json(['error' => $e->getMessage()]);
+        }
     }
 }

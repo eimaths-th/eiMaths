@@ -200,6 +200,47 @@
         </ul>
     </li>
 @endcan
+
+
+@can('course-manage')
+    <li class="nav-item {{ in_array(Request::route()->getName(), ['questions', 'quizzes','questions-quizzes.create']) ? 'menu-open' : '' }}">
+        <a href="#"
+            class="nav-link {{ in_array(Request::route()->getName(), ['questions', 'quizzes','questions-quizzes.create']) ? 'active' : '' }}">
+            {{-- <i class="nav-icon fas fa-user-gear"></i> --}}
+            <i class="nav-icon fas fa-book"></i> <!-- good -->
+            {{-- <i class="nav-icon fas fa-chalkboard-teacher"></i> --}}
+            {{-- <i class="nav-icon fas fa-graduation-cap"></i> --}}
+            {{-- <i class="nav-icon fas fa-chalkboard-teacher"></i> --}}
+            <p>Course Manage</p>
+            <i class="fas fa-angle-left right"></i>
+        </a>
+        <ul class="nav nav-treeview">
+            {{-- @can('user-list') --}}
+            <li class="nav-item">
+                <a href="#" class="nav-link {{ Request::is('home3') ? 'active' : '' }}">
+                    <i class="nav-icon fa-solid fa-comment-dots"></i>
+                    <p>Category List</p>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link {{ Request::is('questions') ? 'active' : '' }}">
+                    <i class="nav-icon fa-solid fa-comment-dots"></i>
+                    <p>All Courses</p>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link {{ Request::is('quizzes') ? 'active' : '' }}">
+                    <i class="nav-icon fa-solid fa-comment-dots"></i>
+                    <p>Course level</p>
+                </a>
+            </li>
+            {{-- @endcan
+            @can('role-list') --}}
+
+            {{-- @endcan --}}
+        </ul>
+    </li>
+@endcan
 @can('user-list')
     <li class="nav-item {{ in_array(Request::route()->getName(), ['users.index', 'roles.index', 'generate.system','generate.student', 'permission.index']) ? 'menu-open' : '' }}">
         <a href="#" class="nav-link {{ in_array(Request::route()->getName(), ['users.index', 'roles.index', 'generate.system','generate.student', 'permission.index']) ? 'active' : '' }}">
