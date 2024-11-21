@@ -5,6 +5,7 @@
         <p>Dashboard</p>
     </a>
 </li>
+{{--  --}}
 @can('student-list')
     <li class="nav-item {{ in_array(Request::route()->getName(), ['contacts', 'discontinued']) ? 'menu-open' : '' }}">
         <a href="#"
