@@ -304,6 +304,245 @@
             box-shadow: none
         }
     </style>
+    {{-- <style>
+        .CRM_dropdown.dropdown .dropdown-toggle {
+            background: transparent;
+            color: var(--theme-default-color);
+            font-size: 12px;
+            font-weight: 500;
+            border: 1px solid var(--backend-primary-color);
+            border-radius: 32px;
+            padding: 2px 40px 5px 23px;
+            text-transform: uppercase;
+            overflow: hidden;
+            transition: .3s;
+            height: 32px
+        }
+
+        @media only screen and (min-width:992px) and (max-width:1400px) {
+            .CRM_dropdown.dropdown .dropdown-toggle {
+                padding: 2px 30px 5px 23px
+            }
+        }
+
+        .CRM_dropdown.dropdown .dropdown-toggle:after {
+            content: "\E62A";
+            font-family: themify;
+            border: none;
+            border-top: 0;
+            font-size: 12px;
+            position: relative;
+            top: 3px;
+            left: 0;
+            font-weight: 400;
+            transition: .3s
+        }
+
+        .CRM_dropdown.dropdown .dropdown-toggle:focus,
+        .CRM_dropdown.dropdown .dropdown-toggle:hover {
+            color: #fff;
+            border: 1px solid transparent;
+            box-shadow: none !important
+        }
+
+        .CRM_dropdown.dropdown .dropdown-menu {
+            border-radius: 5px 5px 10px 10px;
+            border: 0;
+            padding: 15px 0;
+            box-shadow: var(--selector-shadow);
+            margin-top: 5px
+        }
+
+        .CRM_dropdown.dropdown .dropdown-menu.full_width {
+            min-width: 110px
+        }
+
+        .CRM_dropdown.dropdown .dropdown-menu .dropdown-item {
+            color: var(--dynamic-text-color);
+            text-align: right;
+            font-size: 12px;
+            padding: 4px 1.5rem;
+            text-transform: uppercase;
+            cursor: pointer
+        }
+
+        .CRM_dropdown.dropdown .dropdown-menu .dropdown-item:hover {
+            color: var(--theme-default-color)
+        }
+
+        .CRM_dropdown.dropdown .dropdown-menu .dropdown-item .active,
+        .CRM_dropdown.dropdown .dropdown-menu .dropdown-item:active {
+            color: var(--theme-default-color);
+            background-color: #f8f9fa
+        }
+
+        .CRM_dropdown.dropdown.CRM_dropdown_default button {
+            padding: 0 !important;
+            border: 0 !important;
+            text-transform: capitalize;
+            font-size: 13px;
+            text-align: left;
+            overflow: visible
+        }
+
+        .CRM_dropdown.dropdown.CRM_dropdown_default button:hover {
+            background: transparent;
+            color: var(--theme-default-color)
+        }
+
+        .CRM_dropdown.dropdown.CRM_dropdown_default button:focus,
+        .CRM_dropdown.dropdown.CRM_dropdown_default button:hover {
+            border: 0;
+            box-shadow: none !important;
+            background: transparent;
+            color: var(--theme-default-color)
+        }
+
+        .CRM_dropdown.dropdown.CRM_dropdown_default button:after {
+            content: "\F0D7";
+            font-family: Font Awesome\ 5 free;
+            border: none;
+            border-top: 0;
+            font-size: 12px;
+            position: relative;
+            top: 3px;
+            left: 0;
+            font-weight: 900;
+            transition: .3s;
+            position: absolute;
+            right: 0;
+            left: auto;
+            top: 4px
+        }
+
+        .CRM_dropdown.dropdown.CRM_dropdown_default .dropdown-item {
+            text-transform: capitalize !important;
+            text-align: left
+        }
+
+        .dropdown-menu.option_width_8 {
+            min-width: 150px
+        }
+    </style>
+    <style>
+        .dropdown-toggle {
+            white-space: nowrap;
+        }
+
+        .dropdown-toggle::after {
+            display: inline-block;
+            margin-left: 0.255em;
+            vertical-align: 0.255em;
+            content: "";
+            border-top: 0.3em solid;
+            border-right: 0.3em solid transparent;
+            border-bottom: 0;
+            border-left: 0.3em solid transparent;
+        }
+
+        .dropdown-toggle:empty::after {
+            margin-left: 0;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            z-index: 1000;
+            display: none;
+            float: left;
+            min-width: 10rem;
+            padding: 0.5rem 0;
+            margin: 0.125rem 0 0;
+            font-size: 1rem;
+            color: #212529;
+            text-align: left;
+            list-style: none;
+            background-color: #ffbb01;
+            background-clip: padding-box;
+            border: 1px solid rgba(0, 0, 0, 0.15);
+            border-radius: 0.25rem;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.175);
+        }
+
+        .dropdown-menu-left {
+            right: auto;
+            left: 0;
+        }
+
+        .dropdown-menu-right {
+            right: 0;
+            left: auto;
+        }
+    </style> --}}
+    <style>
+        /* line 402, G:/laragon/www/CRM_frontend/Admin_crm/public/frontend/scss/_predefine.scss */
+        .switch_toggle {
+            display: inline-block;
+            height: 20px;
+            position: relative;
+            width: 36px;
+            margin-bottom: 0;
+        }
+
+        /* line 409, G:/laragon/www/CRM_frontend/Admin_crm/public/frontend/scss/_predefine.scss */
+        .switch_toggle input {
+            opacity: 0;
+        }
+
+        /* line 412, G:/laragon/www/CRM_frontend/Admin_crm/public/frontend/scss/_predefine.scss */
+        .switch_toggle .slider:before {
+            bottom: 0px;
+            content: "";
+            height: 16px;
+            left: 0px;
+            left: 3px;
+            position: absolute;
+            -webkit-transition: .4s;
+            transition: .4s;
+            width: 16px;
+            background: #707DB7;
+            background: #fff;
+            top: 2px;
+        }
+
+        /* line 430, G:/laragon/www/CRM_frontend/Admin_crm/public/frontend/scss/_predefine.scss */
+        .switch_toggle input:checked+.slider {
+            background: #ffb515;
+        }
+
+        /* line 434, G:/laragon/www/CRM_frontend/Admin_crm/public/frontend/scss/_predefine.scss */
+        .switch_toggle input:checked+.slider:before {
+            transform: translateX(14px);
+        }
+
+        /* line 441, G:/laragon/www/CRM_frontend/Admin_crm/public/frontend/scss/_predefine.scss */
+        .switch_toggle .slider.round {
+            border-radius: 34px;
+        }
+
+        /* line 445, G:/laragon/www/CRM_frontend/Admin_crm/public/frontend/scss/_predefine.scss */
+        .switch_toggle .slider.round:before {
+            border-radius: 50%;
+        }
+
+        /* line 448, G:/laragon/www/CRM_frontend/Admin_crm/public/frontend/scss/_predefine.scss */
+        .switch_toggle .switch_toggle input {
+            display: none;
+        }
+
+        /* line 451, G:/laragon/www/CRM_frontend/Admin_crm/public/frontend/scss/_predefine.scss */
+        .switch_toggle .slider {
+            background-color: #292929;
+            bottom: 0;
+            cursor: pointer;
+            left: 0;
+            position: absolute;
+            right: 0;
+            top: 0;
+            transition: .4s;
+        }
+    </style>
 @endsection
 
 @php
@@ -339,7 +578,7 @@
     <section class="content">
         <div class="container-fluid">
             <div class="row">
-                
+
                 <div class="col-xl-3">
                     <div class="card card-primary">
                         <div class="card-header">
@@ -433,10 +672,9 @@
 
                                     <div class="col-xl-12 ">
                                         <div class="primary_input mb-3">
-                                            <label class="primary_input_label"
-                                                for="parent">{{ __('common.Parent') }}</label>
+                                            <label class="primary_input_label" for="parent">Parent</label>
                                             <select class="primary_select mb-25" name="parent" id="parent">
-                                                <option value="">{{ __('common.None') }}</option>
+                                                <option value="">None</option>
                                                 @foreach ($categories as $category)
                                                     @if (isset($edit) && $category->id == $edit->id)
                                                         @php
@@ -453,8 +691,7 @@
 
                                     <div class="col-xl-12">
                                         <div class="primary_input mb-3">
-                                            <label class="primary_input_label"
-                                                for="position_order">{{ __('courses.Position Order') }}</label>
+                                            <label class="primary_input_label" for="position_order">Position Order</label>
                                             <select class="primary_select mb-25" name="position_order" id="position_order">
                                                 @for ($i = 1; $i <= $max_id; $i++)
                                                     <option value="{{ $i }}"
@@ -472,63 +709,34 @@
                                             <select class="primary_select mb-25" name="status" id="status">
                                                 <option value="1"
                                                     {{ isset($edit) ? ($edit->status == 1 ? 'selected' : '') : '' }}>
-                                                    {{ __('common.Active') }}</option>
+                                                    Active
+                                                </option>
                                                 <option value="0"
                                                     {{ isset($edit) ? ($edit->status == 0 ? 'selected' : '') : '' }}>
-                                                    {{ __('common.Inactive') }}</option>
+                                                    Inactive
+                                                </option>
                                             </select>
                                         </div>
                                     </div>
 
-                                    <div class="col-lg-12 mt-10">
+                                    {{-- <div class="col-lg-12 mt-10">
                                         <div class="mb-15">
                                             <x-upload-file name="image" type="image"
                                                 media_id="{{ isset($edit) ? $edit->image_media?->media_id : '' }}"
                                                 label="{{ __('frontendmanage.Icon') }}"
                                                 note="{{ __('courses.Recommended size 200px x 200px') }}" />
                                         </div>
-                                    </div>
+                                    </div> --}}
 
-                                    <div class="col-lg-12">
+                                    {{-- <div class="col-lg-12">
                                         <div class="mb-15">
                                             <x-upload-file type="image" name="thumbnail"
                                                 media_id="{{ isset($edit) ? $edit->thumbnail_media?->media_id : '' }}"
                                                 label="{{ __('courses.Thumbnail Image') }} "
                                                 note="{{ __('courses.Recommended size 1140px x 300px') }}" />
                                         </div>
-                                        {{--                                                    <div class="primary_input mb-15"> --}}
-                                        {{--                                                        <label class="primary_input_label" --}}
-                                        {{--                                                               for="">{{ __('courses.Thumbnail Image') }}  </label> --}}
-                                        {{--                                                        <div class="primary_file_uploader"> --}}
-                                        {{--                                                            <input class="primary-input filePlaceholder courseLabel2" --}}
-                                        {{--                                                                   type="text" --}}
-                                        {{--                                                                   id=" " --}}
-                                        {{--                                                                   value="{{isset($edit)?$edit->thumbnail:''}}" --}}
-                                        {{--                                                                   placeholder="{{__('setting.Browse file')}}" --}}
-                                        {{--                                                                   readonly="" {{$errors->has('thumbnail') ? 'autofocus' : ''}}> --}}
-                                        {{--                                                            <div class="multi_btn"> --}}
-                                        {{--                                                                <button class="" type="button"> --}}
-                                        {{--                                                                    <label class="primary-btn small fix-gr-bg" --}}
-                                        {{--                                                                           for="document_file_2">{{ __('common.Browse') }}</label> --}}
-                                        {{--                                                                    <input type="file" --}}
-                                        {{--                                                                           class="d-none fileUpload courseLabel2" --}}
-                                        {{--                                                                           name="thumbnail" --}}
-                                        {{--                                                                           id="document_file_2"> --}}
-                                        {{--                                                                </button> --}}
-
-                                        {{--                                                                <button type="button" data-table="categories" --}}
-                                        {{--                                                                        data-name="thumbnail" --}}
-                                        {{--                                                                        data-id="{{isset($edit)?$edit->id:''}}" --}}
-                                        {{--                                                                        data-label=".courseLabel2" --}}
-                                        {{--                                                                        class="primary-btn small fix-gr-bg px-3 removeImage"> --}}
-                                        {{--                                                                    x --}}
-                                        {{--                                                                </button> --}}
-                                        {{--                                                            </div> --}}
-                                        {{--                                                        </div> --}}
-                                        {{--                                                        <p class="image_size">{{__('courses.Recommended size 1140px x 300px')}}</p> --}}
-                                        {{--                                                    </div> --}}
-
-                                    </div>
+                                    
+                                    </div> --}}
                                     @php
                                         $tooltip = '';
                                         if (permissionCheck('course.category.store')) {
@@ -543,9 +751,9 @@
                                                 title="{{ @$tooltip }}" id="save_button_parent">
                                                 <i class=" fa fa-check "></i>
                                                 @if (!isset($edit))
-                                                    {{ __('common.Save') }}
+                                                    Save
                                                 @else
-                                                    {{ __('common.Update') }}
+                                                    Update
                                                 @endif
                                             </button>
 
@@ -577,8 +785,8 @@
                                             <th scope="col">Parent</th>
                                             <th scope="col">Position ID</th>
                                             <th scope="col">Description</th>
-                                            <th scope="col">Icon</th>
-                                            <th scope="col">Thumbnail Image</th>
+                                            {{-- <th scope="col">Icon</th>
+                                            <th scope="col">Thumbnail Image</th> --}}
                                             <th scope="col">Status</th>
                                             <th scope="col">Action</th>
                                         </tr>
@@ -587,23 +795,25 @@
                                         @foreach ($categories as $key => $category)
                                             <tr>
                                                 <td>{{ ++$key }}</td>
-                                                <td> {{ checkParent($category) }} {{ @$category->name }}</td>
+                                                <td>
+                                                    {{ $category->name ?? 'Invalid JSON' }}
+                                                </td>
+
                                                 <td>{{ @$category->parent->name }}</td>
                                                 <td>{{ @$category->position_order }}</td>
                                                 <td>{{ @$category->description }}</td>
-                                                <td>
+                                                {{-- <td>
                                                     <div>
                                                         <img style="width: 70px !important;"
                                                             src="@if (isset($category->image)) {{ url(@$category->image) }} @endif"
                                                             alt="" class="img img-responsive m-2">
                                                     </div>
                                                 </td>
-
                                                 <td>
                                                     <img src="@if (isset($category->thumbnail)) {{ url(@$category->thumbnail) }} @endif"
                                                         alt="" class="img img-responsive m-2"
                                                         style="width: 70px !important; ">
-                                                </td>
+                                                </td> --}}
                                                 <td class="nowrap">
                                                     @php
                                                         if (isModuleActive('Organization')) {
@@ -611,14 +821,12 @@
                                                         } else {
                                                             $org_id = null;
                                                         }
-
                                                     @endphp
                                                     {{-- <x-status :org="$org_id" :id="$category->id" :status="$category->status"
                                                         :route="'course.category.status_update'"></x-status> --}}
-                                                    <x-backend.status :org="$org_id" :id="$category->id" :status="$category->status"
-                                                        :route="'category.status_update'" />
+                                                    <x-backend.status {{-- :org="$org_id"  --}} :id="$category->id"
+                                                        :status="$category->status" :route="'category.status_update'" />
                                                 </td>
-
                                                 <td>
                                                     @php
                                                         $hasPermission = true;
@@ -628,8 +836,8 @@
                                                         }
                                                     @endphp
                                                     <div class="dropdown CRM_dropdown">
-                                                        <button class="btn btn-secondary dropdown-toggle" type="button"
-                                                            id="dropdownMenu1{{ @$category->id }}"
+                                                        <button class="btn btn-outline-warning dropdown-toggle"
+                                                            type="button" id="dropdownMenu1{{ @$category->id }}"
                                                             data-bs-toggle="dropdown" aria-haspopup="true"
                                                             aria-expanded="false">
                                                             Select
@@ -661,22 +869,20 @@
                     </div>
                 </div>
             </div>
-
         </div>
 
     </section>
-
-
 
     <input type="hidden" name="status_route" class="status_route" value="#">
     {{-- <input type="hidden" name="status_route" class="status_route" value="{{ route('course.category.status_update') }}"> --}}
     @include('backend.partials.delete_modal')
 @endsection
 @section('script')
-    <script src="{{ asset('backend/js/category.js') }}{{ assetVersion() }}"></script>
+    {{-- <script src="{{ asset('backend/js/category.js') }}{{ assetVersion() }}"></script> --}}
+    {{-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script> --}}
+
     {{-- @include('affiliate.backend.my_affiliate-script') --}}
     <script>
-       
         $(document).ready(function() {
             // $('#lms_table1').DataTable({
             //     processing: true, // Shows loading indicator
@@ -720,6 +926,40 @@
                 }
             }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
 
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const checkboxes = document.querySelectorAll('.status_enable_disable');
+
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    const id = this.value;
+                    const status = this.checked ? 1 : 0;
+                    const route = "{{ route('category.status_update') }}";
+
+                    fetch(route, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            },
+                            body: JSON.stringify({
+                                id,
+                                status
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.message === 'success') {
+                                toastr.success('Status updated successfully!');
+                            } else {
+                                toastr.error('Failed to update status. Please try again.');
+                            }
+                        })
+                        .catch(error => console.error('Error:', error));
+                });
+            });
         });
     </script>
 @endsection

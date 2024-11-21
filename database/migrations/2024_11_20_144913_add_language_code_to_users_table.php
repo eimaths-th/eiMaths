@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             //language_code
-            $table->string('language_code')->nullable()->default('th')->after('affiliate_request'); // Email of the user
+            $table->string('language_code')->nullable()->default('en')->after('affiliate_request'); // Email of the user
 
         });
     }

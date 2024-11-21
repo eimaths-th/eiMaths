@@ -16,9 +16,9 @@
         @endif
     </label>
     <div class="primary_file_uploader" data-bs-toggle="infixUploader" data-multiple="{{$multiple}}" data-type="{{$type}}" data-name="{{$name}}">
-        <input class="primary-input file_amount" type="text" id="file_{{$name}}" placeholder="{{trans('common.Browse') }}" readonly="">
+        <input class="primary-input file_amount" type="text" id="file_{{$name}}" placeholder="Browse" readonly="">
         <button class="" type="button">
-            <label class="primary-btn small fix-gr-bg" for="file_{{$name}}" >{{__('common.Browse') }} </label>
+            {{-- <label class="primary-btn small fix-gr-bg" for="file_{{$name}}" >{{__('common.Browse') }} </label> --}}
             <input type="hidden" class="selected_files" value="{{@$media_id}}">
         </button>
     </div>

@@ -18,6 +18,6 @@ class Status extends Component
 
     public function render()
     {
-        return view(backendComponent('status'));
+        return view('backend.components.status');
     }
 }

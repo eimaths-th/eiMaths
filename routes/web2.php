@@ -135,7 +135,7 @@ Route::group(['middleware' => ['auth','affiliate.redirect']], function () {
     Route::post('/course/categories-store', [CourseController::class, 'categoriesStore'])->name('categories.store');
     Route::get('/course/list', [CourseController::class, 'courselList'])->name('course.list');
     Route::get('/course/course-level', [CourseController::class, 'courseLevel'])->name('course.level');
-    Route::post('categories/status-update', [CourseController::class, 'category_status_update'])->name('category.status_update');
+    Route::post('/categories/status-update', [CourseController::class, 'category_status_update'])->name('category.status_update');
 
 });
 

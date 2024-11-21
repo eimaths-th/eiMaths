@@ -16,7 +16,7 @@ class Category extends Model
     use Tenantable, Organization;
 
     public $translatable = ['name', 'description'];
-    protected $fillable = ['name', 'status', 'show_home', 'position_order', 'image', 'thumbnail', 'description'];
+    protected $fillable = ['name', 'status', 'show_home', 'position_order', 'image', 'thumbnail', 'description','color','parent_id'];
 
     use HasTranslations;
 

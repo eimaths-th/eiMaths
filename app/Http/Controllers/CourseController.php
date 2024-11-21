@@ -7,8 +7,13 @@ use Modules\CourseSetting\Entities\Course;
 use Modules\CourseSetting\Entities\CourseLevel;
 use Modules\Localization\Entities\Language;
 use App\Models\CoursePending;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Modules\CourseSetting\Entities\Category;
-use Toastr;
+use Brian2694\Toastr\Facades\Toastr;
+use Illuminate\Support\Facades\Auth;
+
+// use Toastr;
 
 class CourseController extends Controller
 {
@@ -192,13 +197,68 @@ class CourseController extends Controller
         $categories = $query->with('parent')->orderBy('position_order', 'asc')->get();
         $max_id = count($categories) + 1;
 
+        // dd($categories);
+
         return view('course.category.category-list', compact('categories', 'max_id'));
     }
-    public function categoriesStore(Request $request) {}
+    public function categoriesStore(Request $request)
+    {
+
+        $code = app()->getLocale();
+        // dd($code);
+        $rules = [
+            'name.' . $code => 'required|max:255',
+        ];
+        // dd($request, $code,$rules);
+
+        // $this->validate($request, $rules, validationMessage($rules));
+
+
+
+        DB::beginTransaction();
+
+        $check_position = Category::where('position_order', $request->position_order)->first();
+
+        if ($check_position != '') {
+            $old_categories = Category::where('position_order', '>=', $request->position_order)->get();
+
+            foreach ($old_categories as $old_category) {
+                $old_category->position_order = $old_category->position_order + 1;
+                $old_category->save();
+            }
+        }
+
+
+        $store = new Category;
+
+        foreach ($request->name as $key => $name) {
+            $store->setTranslation('name', $key, $name);
+        }
+        foreach ($request->description as $key => $description) {
+            $store->setTranslation('description', $key, $description);
+        }
+        $store->status = $request->status;
+        if (!empty($request->parent)) {
+            $store->parent_id = $request->parent;
+        } else {
+            $store->parent_id = null;
+        }
+        $store->position_order = $request->position_order;
+        $store->color = $request->color;
+
+        $store->user_id = Auth::id();
+        $store->save();
+
+        DB::commit();
+        Toastr::success(trans('common.Operation successful'), trans('common.Success'));
+        return redirect()->back();
+    }
     public function courselList() {}
     public function courseLevel() {}
+
     public function category_status_update(Request $request)
     {
+        // dd($request);
         if (demoCheck()) {
             return redirect()->back();
         }

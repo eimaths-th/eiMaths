@@ -29,6 +29,7 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'affiliate_request',
+        'language_code',
         'referral',
         'email',
         'email_verified_at',
