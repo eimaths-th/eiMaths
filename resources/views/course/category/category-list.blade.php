@@ -3,7 +3,7 @@
 @section('style')
     {{-- @include('affiliate.backend.my_affiliate-head') --}}
     {{-- <link rel="stylesheet" href="{{ asset('backend/css/backend_style.css') }}{{ assetVersion() }}" /> --}}
-
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
     <style>
         .sms-breadcrumb h1 {
             font-size: 18px;
@@ -581,18 +581,22 @@
 
                 <div class="col-xl-3">
                     <div class="card card-primary">
-                        <div class="card-header">
+                        <div class="card-header d-flex justify-content-between align-items-center">
                             <div class="card-title">
-                                <h3 class="card-title"><i class="fa fa-user"></i> Add New Category</h3>
+                                <h3 class="card-title">
 
-                                {{-- @if (isset($edit))
-                                    @if (permissionCheck('categories.store'))
-                                        <a href="{{ route('course.category') }}"
-                                            class="primary-btn small fix-gr-bg ml-4 d-flex justify-content-center align-items-center"
-                                            style="line-height: 25px;" title="{{ __('courses.Add New') }}">+</a>
+                                    @if (!isset($edit))
+                                        Add New Category
+                                    @else
+                                        Update Category
                                     @endif
-                                @endif --}}
+                                </h3>
+
                             </div>
+                            @if (isset($edit))
+                                <a class="" href="{{ route('categories.index') }}"
+                                    title="{{ __('courses.Add New') }}">+</a>
+                            @endif
                         </div>
 
                         {{-- <div class="row pt-0">
@@ -618,108 +622,117 @@
                                 });
                             </script>
                         @endif
-                        <form action="{{ route('categories.store') }}" method="POST" id="category-form"
-                            name="category-form" enctype="multipart/form-data">
-                            @csrf
+                        @if (isset($edit))
+                            <form action="{{ route('categories.update') }}" method="POST" id="category-form"
+                                name="category-form" enctype="multipart/form-data">
+                                <input type="hidden" name="id" value="{{ $edit->id }}">
+                            @else
+                                <form action="{{ route('categories.store') }}" method="POST" id="category-form"
+                                    name="category-form" enctype="multipart/form-data">
+                        @endif
+                        @csrf
 
-                            <div class="card-body">
-                                <div class="tab-content">
-                                    @foreach ($LanguageList as $key => $language)
-                                        <div role="tabpanel"
-                                            class="tab-pane fade @if (auth()->user()->language_code == $language->code) show active @endif"
-                                            id="element{{ $language->code }}">
+                        <div class="card-body">
+                            <div class="tab-content">
+                                @php
+                                    // dd($LanguageList);
+                                @endphp
+                                {{-- @foreach ($LanguageList as $key => $language)
+                                    <div role="tabpanel" class="tab-pane fade @if (auth()->user()->language_code == $language->code) show active @endif"
+                                        id="element{{ $language->code }}"> --}}
 
-                                            @php
-                                                $fields = [
-                                                    'name' => __('Name'),
-                                                    'description' => __('Description'),
-                                                ];
-                                            @endphp
+                                @php
+                                    // dd(auth()->user()->language_code);
 
-                                            @foreach ($fields as $fieldKey => $fieldLabel)
-                                                <div class="row">
-                                                    <div class="col-xl-12">
-                                                        <div class="primary_input mb-3">
-                                                            <label class="primary_input_label"
-                                                                for="{{ $fieldKey }}Input">
-                                                                {{ $fieldLabel }}
-                                                                @if ($fieldKey === 'name')
-                                                                    <strong class="text-danger">*</strong>
-                                                                @endif
-                                                            </label>
-                                                            <input name="{{ $fieldKey }}[{{ $language->code }}]"
-                                                                id="{{ $fieldKey }}Input"
-                                                                class="primary_input_field {{ $fieldKey }} {{ $errors->has($fieldKey) ? 'is-invalid' : '' }}"
-                                                                placeholder="{{ $fieldLabel }}" type="text"
-                                                                value="{{ isset($edit) ? $edit->getTranslation($fieldKey, $language->code) : old($fieldKey . '.' . $language->code) }}"
-                                                                @if ($errors->has($fieldKey)) autofocus @endif>
+                                    $fields = [
+                                        'name' => __('Name'),
+                                        'description' => __('Description'),
+                                    ];
+                                @endphp
 
-                                                            @if ($errors->has($fieldKey))
-                                                                <span class="invalid-feedback d-block mb-10" role="alert">
-                                                                    <strong>{{ $errors->first($fieldKey) }}</strong>
-                                                                </span>
-                                                            @endif
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            @endforeach
+                                @foreach ($fields as $fieldKey => $fieldLabel)
+                                    <div class="row">
+                                        <div class="col-xl-12">
+                                            <div class="primary_input mb-3">
+                                                <label class="primary_input_label" for="{{ $fieldKey }}Input">
+                                                    {{ $fieldLabel }}
+                                                    @if ($fieldKey === 'name')
+                                                        <strong class="text-danger">*</strong>
+                                                    @endif
+                                                </label>
+                                                <input name="{{ $fieldKey }}[{{ auth()->user()->language_code }}]"
+                                                    id="{{ $fieldKey }}Input"
+                                                    class="primary_input_field text-dark {{ $fieldKey }} {{ $errors->has($fieldKey) ? 'is-invalid' : '' }}"
+                                                    placeholder="{{ $fieldLabel }}" type="text"
+                                                    value="{{ isset($edit) ? $edit->getTranslation($fieldKey, auth()->user()->language_code) : old($fieldKey . '.' . auth()->user()->language_code) }}"
+                                                    @if ($errors->has($fieldKey)) autofocus @endif>
 
+                                                @if ($errors->has($fieldKey))
+                                                    <span class="invalid-feedback d-block mb-10" role="alert">
+                                                        <strong>{{ $errors->first($fieldKey) }}</strong>
+                                                    </span>
+                                                @endif
+                                            </div>
                                         </div>
-                                    @endforeach
+                                    </div>
+                                @endforeach
+
+                                {{-- </div>
+                                @endforeach --}}
+                            </div>
+
+                            <div class="row">
+
+                                <div class="col-xl-12 ">
+                                    <div class="primary_input mb-3">
+                                        <label class="primary_input_label" for="parent">Parent</label>
+                                        <select class="primary_select mb-25" name="parent" id="parent">
+                                            <option value="">None</option>
+                                            @foreach ($categories as $category)
+                                                @if (isset($edit) && $category->id == $edit->id)
+                                                    @php
+                                                        continue;
+                                                    @endphp
+                                                @endif
+                                                <option value="{{ $category->id }}"
+                                                    {{ isset($edit) ? ($edit->parent_id == $category->id ? 'selected' : old('parent')) : old('parent') }}>
+                                                    {{ $category->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
                                 </div>
 
-                                <div class="row">
-
-                                    <div class="col-xl-12 ">
-                                        <div class="primary_input mb-3">
-                                            <label class="primary_input_label" for="parent">Parent</label>
-                                            <select class="primary_select mb-25" name="parent" id="parent">
-                                                <option value="">None</option>
-                                                @foreach ($categories as $category)
-                                                    @if (isset($edit) && $category->id == $edit->id)
-                                                        @php
-                                                            continue;
-                                                        @endphp
-                                                    @endif
-                                                    <option value="{{ $category->id }}"
-                                                        {{ isset($edit) ? ($edit->parent_id == $category->id ? 'selected' : old('parent')) : old('parent') }}>
-                                                        {{ $category->name }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
+                                <div class="col-xl-12">
+                                    <div class="primary_input mb-3">
+                                        <label class="primary_input_label" for="position_order">Position Order</label>
+                                        <select class="primary_select mb-25" name="position_order" id="position_order">
+                                            @for ($i = 1; $i <= $max_id; $i++)
+                                                <option value="{{ $i }}"
+                                                    {{ isset($edit) ? ($edit->position_order == $i ? 'selected' : old('position_order')) : old('position_order') }}>
+                                                    {{ $i }}</option>
+                                            @endfor
+                                        </select>
                                     </div>
+                                </div>
 
-                                    <div class="col-xl-12">
-                                        <div class="primary_input mb-3">
-                                            <label class="primary_input_label" for="position_order">Position Order</label>
-                                            <select class="primary_select mb-25" name="position_order" id="position_order">
-                                                @for ($i = 1; $i <= $max_id; $i++)
-                                                    <option value="{{ $i }}"
-                                                        {{ isset($edit) ? ($edit->position_order == $i ? 'selected' : old('position_order')) : old('position_order') }}>
-                                                        {{ $i }}</option>
-                                                @endfor
-                                            </select>
-                                        </div>
+                                <div class="col-xl-12">
+                                    <div class="primary_input mb-3">
+                                        <label class="primary_input_label"
+                                            for="status">{{ __('courses.Status') }}</label>
+                                        <select class="primary_select mb-25" name="status" id="status">
+                                            <option value="1"
+                                                {{ isset($edit) ? ($edit->status == 1 ? 'selected' : '') : '' }}>
+                                                Active
+                                            </option>
+                                            <option value="0"
+                                                {{ isset($edit) ? ($edit->status == 0 ? 'selected' : '') : '' }}>
+                                                Inactive
+                                            </option>
+                                        </select>
                                     </div>
+                                </div>
 
-                                    <div class="col-xl-12">
-                                        <div class="primary_input mb-3">
-                                            <label class="primary_input_label"
-                                                for="status">{{ __('courses.Status') }}</label>
-                                            <select class="primary_select mb-25" name="status" id="status">
-                                                <option value="1"
-                                                    {{ isset($edit) ? ($edit->status == 1 ? 'selected' : '') : '' }}>
-                                                    Active
-                                                </option>
-                                                <option value="0"
-                                                    {{ isset($edit) ? ($edit->status == 0 ? 'selected' : '') : '' }}>
-                                                    Inactive
-                                                </option>
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    {{-- <div class="col-lg-12 mt-10">
+                                {{-- <div class="col-lg-12 mt-10">
                                         <div class="mb-15">
                                             <x-upload-file name="image" type="image"
                                                 media_id="{{ isset($edit) ? $edit->image_media?->media_id : '' }}"
@@ -728,7 +741,7 @@
                                         </div>
                                     </div> --}}
 
-                                    {{-- <div class="col-lg-12">
+                                {{-- <div class="col-lg-12">
                                         <div class="mb-15">
                                             <x-upload-file type="image" name="thumbnail"
                                                 media_id="{{ isset($edit) ? $edit->thumbnail_media?->media_id : '' }}"
@@ -737,31 +750,31 @@
                                         </div>
                                     
                                     </div> --}}
-                                    @php
+                                @php
+                                    $tooltip = '';
+                                    if (permissionCheck('course.category.store')) {
                                         $tooltip = '';
-                                        if (permissionCheck('course.category.store')) {
-                                            $tooltip = '';
-                                        } else {
-                                            $tooltip = trans('courses.You have no permission to add');
-                                        }
-                                    @endphp
-                                    <div class="col-lg-12 text-center">
-                                        <div class="d-flex justify-content-center pt_20">
-                                            <button type="submit" class="btn btn-primary" data-bs-toggle="tooltip"
-                                                title="{{ @$tooltip }}" id="save_button_parent">
-                                                <i class=" fa fa-check "></i>
-                                                @if (!isset($edit))
-                                                    Save
-                                                @else
-                                                    Update
-                                                @endif
-                                            </button>
+                                    } else {
+                                        $tooltip = trans('courses.You have no permission to add');
+                                    }
+                                @endphp
+                                <div class="col-lg-12 text-center">
+                                    <div class="d-flex justify-content-center pt_20">
+                                        <button type="submit" class="btn btn-primary" data-bs-toggle="tooltip"
+                                            title="{{ @$tooltip }}" id="save_button_parent">
+                                            <i class=" fa fa-check "></i>
+                                            @if (!isset($edit))
+                                                Save
+                                            @else
+                                                Update
+                                            @endif
+                                        </button>
 
 
-                                        </div>
                                     </div>
                                 </div>
                             </div>
+                        </div>
 
                         </form>
                     </div>
@@ -846,17 +859,19 @@
 
                                                         <div class="dropdown-menu dropdown-menu-right"
                                                             aria-labelledby="dropdownMenu1{{ @$category->id }}">
-                                                            {{-- @if (permissionCheck('course.category.edit') && orgPermission($category->organization_id) && $hasPermission) --}}
-                                                            {{-- <a class="dropdown-item edit_brand"  href="{{ route('course.category.edit', $category->id) }}">{{ __('common.Edit') }}</a> --}}
+                                                            <!-- Edit Option -->
                                                             <a class="dropdown-item edit_brand"
-                                                                href="#">{{ __('common.Edit') }}</a>
-                                                            {{-- @endif --}}
-                                                            {{-- @if (permissionCheck('course.category.delete') && orgPermission($category->organization_id) && $hasPermission) --}}
-                                                            {{-- <a onclick="confirm_modal('{{ route('course.category.delete', $category->id) }}');" class="dropdown-item edit_brand">{{ __('common.Delete') }}</a> --}}
-                                                            <a onclick="confirm_modal('#');"
-                                                                class="dropdown-item edit_brand">{{ __('common.Delete') }}</a>
-                                                            {{-- @endif --}}
+                                                                href="{{ route('categories.edit', $category->id) }}">
+                                                                {{ __('common.Edit') }}
+                                                            </a>
+
+                                                            <!-- Delete Option -->
+                                                            <a onclick="confirm_modal('{{ route('category.delete', $category->id) }}');"
+                                                                class="dropdown-item edit_brand">
+                                                                {{ __('common.Delete') }}
+                                                            </a>
                                                         </div>
+
                                                     </div>
 
                                                 </td>
@@ -880,8 +895,26 @@
 @section('script')
     {{-- <script src="{{ asset('backend/js/category.js') }}{{ assetVersion() }}"></script> --}}
     {{-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script> --}}
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     {{-- @include('affiliate.backend.my_affiliate-script') --}}
+    <script>
+        @if (Session::has('message'))
+            toastr.options = {
+                "closeButton": true,
+                "progressBar": true,
+                "positionClass": "toast-top-right",
+            }
+            @if (Session::get('alert-type') == 'success')
+                toastr.success("{{ Session::get('message') }}");
+            @elseif (Session::get('alert-type') == 'error')
+                toastr.error("{{ Session::get('message') }}");
+            @elseif (Session::get('alert-type') == 'warning')
+                toastr.warning("{{ Session::get('message') }}");
+            @elseif (Session::get('alert-type') == 'info')
+                toastr.info("{{ Session::get('message') }}");
+            @endif
+        @endif
+    </script>
     <script>
         $(document).ready(function() {
             // $('#lms_table1').DataTable({
@@ -961,5 +994,37 @@
                 });
             });
         });
+    </script>
+    <script>
+        function confirm_modal(deleteUrl) {
+            if (confirm("Are you sure you want to delete this category?")) {
+                fetch(deleteUrl, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        }
+                    })
+                    .then(response => response.json())
+                    // .then(data => {
+                    //     if (data.success) {
+                    //         alert(data.message);
+                    //         location.reload(); // Reload the page to reflect changes
+
+                    //     } else {
+                    //         alert(data.message);
+                    //     }
+                    // })
+                    .then(data => {
+                        if (data.success) {
+                            toastr.success(data.message);
+                            setTimeout(() => location.reload(),
+                                2000); // Optional: delay reload for a smoother experience
+                        } else {
+                            toastr.error(data.message);
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+            }
+        }
     </script>
 @endsection

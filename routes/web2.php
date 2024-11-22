@@ -40,7 +40,7 @@ use Illuminate\Support\Facades\Storage;
 */
 
 
-Route::group(['middleware' => ['auth','affiliate.redirect']], function () {
+Route::group(['middleware' => ['auth', 'affiliate.redirect']], function () {
     Route::post('/student_by_level', [App\Http\Controllers\DashboardController::class, 'dashboard_student_by_level'])->name('dashboard.student_by_level');
     Route::post('/student_by_centre', [App\Http\Controllers\DashboardController::class, 'dashboard_student_by_centre'])->name('dashboard.student_by_centre');
     Route::post('/teacher_by_centre', [App\Http\Controllers\DashboardController::class, 'dashboard_teacher_by_centre'])->name('dashboard.teacher_by_centre');
@@ -130,16 +130,21 @@ Route::group(['middleware' => ['auth','affiliate.redirect']], function () {
     // Route::get('quiz/{quiz}', [HomeController::class, 'show'])->name('quiz.show');
 
     //course list 
-    
+
     Route::get('/course/categories', [CourseController::class, 'categories'])->name('categories.index');
     Route::post('/course/categories-store', [CourseController::class, 'categoriesStore'])->name('categories.store');
+
+    Route::get('/course/categories/edit/{id}', [CourseController::class, 'categoriesEdit'])->name('categories.edit');
+    Route::delete('/course/categories/delete/{id}', [CourseController::class, 'categoriesDelete'])->name('category.delete');
+    Route::post('/course/categories/update', [CourseController::class, 'categoriesUpdate'])->name('categories.update');
+
+
     Route::get('/course/list', [CourseController::class, 'courselList'])->name('course.list');
     Route::get('/course/course-level', [CourseController::class, 'courseLevel'])->name('course.level');
     Route::post('/categories/status-update', [CourseController::class, 'category_status_update'])->name('category.status_update');
-
 });
 
-Route::group(['middleware' => ['auth.userOrStudent','affiliate.redirect']], function () {
+Route::group(['middleware' => ['auth.userOrStudent', 'affiliate.redirect']], function () {
     Route::get('quiz-home', [eLeanController::class, 'home'])->name('home3');
     Route::get('quiz-home/{level}', [eLeanController::class, 'homeLevel'])->name('home.level');
     Route::get('quiz-home/{level}/{term}', [eLeanController::class, 'homeTerm'])->name('home.term');

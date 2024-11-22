@@ -212,9 +212,6 @@ class CourseController extends Controller
         // dd($request, $code,$rules);
 
         // $this->validate($request, $rules, validationMessage($rules));
-
-
-
         DB::beginTransaction();
 
         $check_position = Category::where('position_order', $request->position_order)->first();
@@ -252,6 +249,93 @@ class CourseController extends Controller
         DB::commit();
         Toastr::success(trans('common.Operation successful'), trans('common.Success'));
         return redirect()->back();
+    }
+    public function categoriesEdit(Request $request, $id)
+    {
+        $edit = Category::find($id);
+        $query = Category::orderBy('position_order', 'ASC');
+
+        $categories = $query->with('parent')->orderBy('position_order', 'asc')->get();
+        $max_id = count($categories) + 1;
+        return view('course.category.category-list', compact('categories', 'edit', 'max_id'));
+    }
+    public function categoriesUpdate(Request $request)
+    {
+
+        // dd($request);
+        $code = auth()->user()->language_code;
+
+        $rules = [
+            'name.' . $code => 'required|max:255',
+        ];
+
+        $this->validate($request, $rules, validationMessage($rules));
+
+
+        $is_exist = Category::where('name', $request->name)->where('id', '!=', $request->id)->first();
+        if ($is_exist) {
+            Toastr::error(trans('frontend.This name has been already taken'), trans('common.Failed'));
+            return redirect()->back();
+        }
+
+        $check_position = Category::where('position_order', $request->position_order)->first();
+
+        if ($check_position != '') {
+            $old_categories = Category::where('position_order', '>=', $request->position_order)->get();
+
+            foreach ($old_categories as $old_category) {
+                $old_category->position_order = $old_category->position_order + 1;
+                $old_category->save();
+            }
+        }
+
+        $store = Category::find($request->id);
+        foreach ($request->name as $key => $name) {
+            $store->setTranslation('name', $key, $name);
+        }
+        foreach ($request->description as $key => $description) {
+            $store->setTranslation('description', $key, $description);
+        }
+        $store->status = $request->status;
+        $store->url = $request->url;
+        $store->title = $request->title;
+        $store->show_home = (int)$request->show_home;
+        $store->position_order = $request->position_order;
+        $store->color = $request->color;
+
+        if (!empty($request->parent)) {
+            $store->parent_id = $request->parent;
+        } else {
+            $store->parent_id = null;
+        }
+        $store->image = null;
+        $store->thumbnail = null;
+        $store->save();
+
+
+        // $category = Category::findOrFail($request->id);
+        // foreach ($request->name as $key => $value) {
+        //     $category->setTranslation('name', $key, $value);
+        // }
+        // foreach ($request->description as $key => $value) {
+        //     $category->setTranslation('description', $key, $value);
+        // }
+        // $category->status = $request->status;
+        // $category->save();
+
+        Toastr::success(trans('common.Operation successful'), trans('common.Success'));
+        return redirect()->route('categories.index');
+    }
+    public function categoriesDelete($id)
+    {
+        $category = Category::find($id);
+
+        if ($category) {
+            $category->delete(); // Deletes the category
+            return response()->json(['success' => true, 'message' => 'Category deleted successfully.']);
+        }
+
+        return response()->json(['success' => false, 'message' => 'Category not found.'], 404);
     }
     public function courselList() {}
     public function courseLevel() {}
