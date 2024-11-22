@@ -4,6 +4,11 @@
     {{-- @include('affiliate.backend.my_affiliate-head') --}}
     {{-- <link rel="stylesheet" href="{{ asset('backend/css/backend_style.css') }}{{ assetVersion() }}" /> --}}
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
+    {{-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> --}}
+
+    <!-- Toastr JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
     <style>
         .sms-breadcrumb h1 {
             font-size: 18px;
@@ -891,19 +896,14 @@
     <input type="hidden" name="status_route" class="status_route" value="#">
     {{-- <input type="hidden" name="status_route" class="status_route" value="{{ route('course.category.status_update') }}"> --}}
     @include('backend.partials.delete_modal')
-@endsection
-@section('script')
-    {{-- <script src="{{ asset('backend/js/category.js') }}{{ assetVersion() }}"></script> --}}
-    {{-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script> --}}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-    {{-- @include('affiliate.backend.my_affiliate-script') --}}
-    <script>
-        @if (Session::has('message'))
+
+    @if (Session::has('message'))
+        <script type="text/javascript">
             toastr.options = {
                 "closeButton": true,
                 "progressBar": true,
                 "positionClass": "toast-top-right",
-            }
+            };
             @if (Session::get('alert-type') == 'success')
                 toastr.success("{{ Session::get('message') }}");
             @elseif (Session::get('alert-type') == 'error')
@@ -913,8 +913,14 @@
             @elseif (Session::get('alert-type') == 'info')
                 toastr.info("{{ Session::get('message') }}");
             @endif
-        @endif
-    </script>
+        </script>
+    @endif
+@endsection
+@section('script')
+    {{-- <script src="{{ asset('backend/js/category.js') }}{{ assetVersion() }}"></script> --}}
+    {{-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script> --}}
+
+    {{-- @include('affiliate.backend.my_affiliate-script') --}}
     <script>
         $(document).ready(function() {
             // $('#lms_table1').DataTable({
@@ -940,24 +946,43 @@
             //         }
             //     }
             // });
+
+
+            // $("#lms_table1").DataTable({
+            //     buttons: [
+            //         'copy', 'csv', 'excel', 'pdf', 'print'
+            //     ],
+            //     pageLength: 10, // Default number of rows per page
+            //     order: [
+            //         [0, 'asc'] // Default sorting (by first column)
+            //     ],
+            //     columnDefs: [{
+            //         orderable: false,
+            //         targets: [5, 6, 8] // Disable sorting for specific columns
+            //     }],
+            //     language: {
+            //         search: "Filter records:", // Customize search box text
+            //         lengthMenu: "Show _MENU_ entries per page"
+            //     }
+            // }).buttons().container().appendTo('#lms_table1_wrapper .col-md-6:eq(0)');
+
             $("#lms_table1").DataTable({
-                buttons: [
-                    'copy', 'csv', 'excel', 'pdf', 'print'
-                ],
-                pageLength: 10, // Default number of rows per page
-                order: [
-                    [0, 'asc']
-                ], // Default sorting (by first column)
-                columnDefs: [{
-                        orderable: false,
-                        targets: [5, 6, 8]
-                    } // Disable sorting for specific columns
-                ],
-                language: {
-                    search: "Filter records:", // Customize search box text
-                    lengthMenu: "Show _MENU_ entries per page"
-                }
+                "pageLength": 10,
+                "responsive": true,
+                "lengthChange": true,
+                "autoWidth": false,
+                "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
             }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+
+            // $('#lms_table1').DataTable({
+            //     "paging": true,
+            //     "lengthChange": true,
+            //     "searching": true,
+            //     "ordering": true,
+            //     "info": true,
+            //     "autoWidth": false,
+            //     "responsive": true,
+            // });
 
         });
     </script>

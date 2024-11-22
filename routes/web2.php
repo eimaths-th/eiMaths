@@ -142,6 +142,10 @@ Route::group(['middleware' => ['auth', 'affiliate.redirect']], function () {
     Route::get('/course/list', [CourseController::class, 'courselList'])->name('course.list');
     Route::get('/course/course-level', [CourseController::class, 'courseLevel'])->name('course.level');
     Route::post('/categories/status-update', [CourseController::class, 'category_status_update'])->name('category.status_update');
+
+    // Route::get('/course/list', 'CourseSettingController@getAllCourse')->name('getAllCourse')->middleware('RoutePermissionCheck:getAllCourse');
+
+
 });
 
 Route::group(['middleware' => ['auth.userOrStudent', 'affiliate.redirect']], function () {

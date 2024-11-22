@@ -323,12 +323,22 @@ class CourseController extends Controller
         // $category->status = $request->status;
         // $category->save();
 
-        Toastr::success(trans('common.Operation successful'), trans('common.Success'));
+        Toastr::success('Operation successful', 'Success');
         return redirect()->route('categories.index');
     }
     public function categoriesDelete($id)
     {
         $category = Category::find($id);
+        $check_position = Category::where('position_order', $category->position_order)->first();
+
+        if ($check_position != '') {
+            $old_categories = Category::where('position_order', '>=', $category->position_order)->get();
+
+            foreach ($old_categories as $old_category) {
+                $old_category->position_order = $old_category->position_order - 1;
+                $old_category->save();
+            }
+        }
 
         if ($category) {
             $category->delete(); // Deletes the category
@@ -337,7 +347,47 @@ class CourseController extends Controller
 
         return response()->json(['success' => false, 'message' => 'Category not found.'], 404);
     }
-    public function courselList() {}
+    public function courselList(Request $request)
+    {
+        // dd($request);
+        $user = Auth::user();
+
+        $video_list = [];
+        $vdocipher_list = [];
+
+        $courses = [];
+        $query = Category::where('status', 1)->orderBy('position_order', 'ASC');
+        $categories = $query->with('childs')->get();
+
+        $languages = getLanguageList();
+        $levels = CourseLevel::where('status', 1)->get(['title', 'id']);
+        $title = 'All';
+
+
+        $data['category_search'] = $request->get('category', '');
+        $data['category_type'] = $request->get('type', '');
+        $data['category_instructor'] = $request->get('instructor', '');
+        $data['search_required_type'] = (int)$request->get('search_required_type', 0);
+        $data['search_delivery_mode'] = $request->get('search_delivery_mode', '');
+        $data['category_status'] = $request->get('search_status', '');
+
+
+        $sub_lists = '';
+
+        return view('course.course_list', $data, compact(
+            'sub_lists',
+            'levels',
+            'video_list',
+            'vdocipher_list',
+            'title',
+            // 'quizzes',
+            'courses',
+            'categories',
+            'languages',
+            // 'instructors'
+        ));
+    }
+
     public function courseLevel() {}
 
     public function category_status_update(Request $request)
