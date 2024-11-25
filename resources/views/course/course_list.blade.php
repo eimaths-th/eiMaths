@@ -309,177 +309,7 @@
             box-shadow: none
         }
     </style>
-    {{-- <style>
-        .CRM_dropdown.dropdown .dropdown-toggle {
-            background: transparent;
-            color: var(--theme-default-color);
-            font-size: 12px;
-            font-weight: 500;
-            border: 1px solid var(--backend-primary-color);
-            border-radius: 32px;
-            padding: 2px 40px 5px 23px;
-            text-transform: uppercase;
-            overflow: hidden;
-            transition: .3s;
-            height: 32px
-        }
 
-        @media only screen and (min-width:992px) and (max-width:1400px) {
-            .CRM_dropdown.dropdown .dropdown-toggle {
-                padding: 2px 30px 5px 23px
-            }
-        }
-
-        .CRM_dropdown.dropdown .dropdown-toggle:after {
-            content: "\E62A";
-            font-family: themify;
-            border: none;
-            border-top: 0;
-            font-size: 12px;
-            position: relative;
-            top: 3px;
-            left: 0;
-            font-weight: 400;
-            transition: .3s
-        }
-
-        .CRM_dropdown.dropdown .dropdown-toggle:focus,
-        .CRM_dropdown.dropdown .dropdown-toggle:hover {
-            color: #fff;
-            border: 1px solid transparent;
-            box-shadow: none !important
-        }
-
-        .CRM_dropdown.dropdown .dropdown-menu {
-            border-radius: 5px 5px 10px 10px;
-            border: 0;
-            padding: 15px 0;
-            box-shadow: var(--selector-shadow);
-            margin-top: 5px
-        }
-
-        .CRM_dropdown.dropdown .dropdown-menu.full_width {
-            min-width: 110px
-        }
-
-        .CRM_dropdown.dropdown .dropdown-menu .dropdown-item {
-            color: var(--dynamic-text-color);
-            text-align: right;
-            font-size: 12px;
-            padding: 4px 1.5rem;
-            text-transform: uppercase;
-            cursor: pointer
-        }
-
-        .CRM_dropdown.dropdown .dropdown-menu .dropdown-item:hover {
-            color: var(--theme-default-color)
-        }
-
-        .CRM_dropdown.dropdown .dropdown-menu .dropdown-item .active,
-        .CRM_dropdown.dropdown .dropdown-menu .dropdown-item:active {
-            color: var(--theme-default-color);
-            background-color: #f8f9fa
-        }
-
-        .CRM_dropdown.dropdown.CRM_dropdown_default button {
-            padding: 0 !important;
-            border: 0 !important;
-            text-transform: capitalize;
-            font-size: 13px;
-            text-align: left;
-            overflow: visible
-        }
-
-        .CRM_dropdown.dropdown.CRM_dropdown_default button:hover {
-            background: transparent;
-            color: var(--theme-default-color)
-        }
-
-        .CRM_dropdown.dropdown.CRM_dropdown_default button:focus,
-        .CRM_dropdown.dropdown.CRM_dropdown_default button:hover {
-            border: 0;
-            box-shadow: none !important;
-            background: transparent;
-            color: var(--theme-default-color)
-        }
-
-        .CRM_dropdown.dropdown.CRM_dropdown_default button:after {
-            content: "\F0D7";
-            font-family: Font Awesome\ 5 free;
-            border: none;
-            border-top: 0;
-            font-size: 12px;
-            position: relative;
-            top: 3px;
-            left: 0;
-            font-weight: 900;
-            transition: .3s;
-            position: absolute;
-            right: 0;
-            left: auto;
-            top: 4px
-        }
-
-        .CRM_dropdown.dropdown.CRM_dropdown_default .dropdown-item {
-            text-transform: capitalize !important;
-            text-align: left
-        }
-
-        .dropdown-menu.option_width_8 {
-            min-width: 150px
-        }
-    </style>
-    <style>
-        .dropdown-toggle {
-            white-space: nowrap;
-        }
-
-        .dropdown-toggle::after {
-            display: inline-block;
-            margin-left: 0.255em;
-            vertical-align: 0.255em;
-            content: "";
-            border-top: 0.3em solid;
-            border-right: 0.3em solid transparent;
-            border-bottom: 0;
-            border-left: 0.3em solid transparent;
-        }
-
-        .dropdown-toggle:empty::after {
-            margin-left: 0;
-        }
-
-        .dropdown-menu {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            z-index: 1000;
-            display: none;
-            float: left;
-            min-width: 10rem;
-            padding: 0.5rem 0;
-            margin: 0.125rem 0 0;
-            font-size: 1rem;
-            color: #212529;
-            text-align: left;
-            list-style: none;
-            background-color: #ffbb01;
-            background-clip: padding-box;
-            border: 1px solid rgba(0, 0, 0, 0.15);
-            border-radius: 0.25rem;
-            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.175);
-        }
-
-        .dropdown-menu-left {
-            right: auto;
-            left: 0;
-        }
-
-        .dropdown-menu-right {
-            right: 0;
-            left: auto;
-        }
-    </style> --}}
     <style>
         /* line 402, G:/laragon/www/CRM_frontend/Admin_crm/public/frontend/scss/_predefine.scss */
         .switch_toggle {
@@ -559,20 +389,20 @@
     $status = request()->get('search_status');
     $search_required_type = request()->get('search_required_type');
     $search_delivery_mode = request()->get('search_delivery_mode');
-    $url = '';
-    // route('getAllCourseData') .
-    // '?search_status=' .
-    // $status .
-    // '&category=' .
-    // $category .
-    // '&type=' .
-    // $type .
-    // '&instructor=' .
-    // $instructor .
-    // '&required_type=' .
-    // $search_required_type .
-    // '&mode_of_delivery=' .
-    // $search_delivery_mode
+    $url =
+        route('course.data') .
+        '?search_status=' .
+        $status .
+        '&category=' .
+        $category .
+        '&type=' .
+        $type .
+        '&instructor=' .
+        $instructor .
+        '&required_type=' .
+        $search_required_type .
+        '&mode_of_delivery=' .
+        $search_delivery_mode;
     $text = 'All';
 
 @endphp
@@ -756,18 +586,18 @@
                                     <div class="col-lg-12">
                                         <!-- table-responsive -->
                                         <div class="">
-                                            <table id="lms_table" class="table classList">
+                                            <table id="Listview" class="table classList">
                                                 <thead>
                                                     <tr>
                                                         <th scope="col"> SL</th>
                                                         <th scope="col"> Type</th>
-                                                        <th scope="col"> Required Type</th>
+                                                        {{-- <th scope="col"> Required Type</th> --}}
                                                         <th scope="col">CourseTitle</th>
                                                         <th scope="col">Delivery</th>
                                                         <th scope="col">Category</th>
                                                         <th scope="col">Instructor</th>
-                                                        <th scope="col">Lesson</th>
-                                                        <th scope="col">Enrolled</th>
+                                                        {{-- <th scope="col">Lesson</th> --}}
+                                                        {{-- <th scope="col">Enrolled</th> --}}
                                                         <th scope="col">Price</th>
                                                         <th scope="col">View Scope</th>
                                                         <th scope="col">Status</th>
@@ -1236,6 +1066,9 @@
         </div>
     </section>
     {{-- @include('backend.partials.delete_modal') --}}
+    @php
+        // dd($url);
+    @endphp
 @endsection
 @section('script')
     {{-- <script src="{{ asset('backend/js/category.js') }}{{ assetVersion() }}"></script> --}}
@@ -1247,77 +1080,201 @@
 
 
     <script>
-        dataTableOptions.serverSide = true
-        dataTableOptions.processing = true
-        dataTableOptions.ajax = '{!! $url !!}';
-        dataTableOptions.columns = [{
-                data: 'DT_RowIndex',
-                name: 'id'
-            },
-            {
-                data: 'type',
-                name: 'type'
-            },
-            @if (isModuleActive('Org'))
-                {
-                    data: 'required_type',
-                    name: 'required_type'
+        $(document).ready(function() {
+            var table = $('#Listview').DataTable({
+                ajax: '',
+                serverSide: true,
+                processing: true,
+                language: {
+                    loadingRecords: '&nbsp;',
+                    processing: `<div class="spinner-border text-primary"></div>`,
+                    "sProcessing": "Processcing...",
+                    "sLengthMenu": "Display_MENU_ Row",
+                    "sZeroRecords": "No Data Fount",
+                    "sInfo": "Display _START_ To _END_ From _TOTAL_ Records",
+                    "sInfoEmpty": "Display 0 To 0 From 0 Records",
+                    "sInfoFiltered": "(Filters _MAX_ Row)",
+                    "sInfoPostFix": "",
+                    "sSearch": "Search:",
+                    "sUrl": "",
+                    "oPaginate": {
+                        "sFirst": "First",
+                        "sPrevious": "Previous",
+                        "sNext": "Next",
+                        "sLast": "Last"
+                    }
                 },
-            @endif {
-                data: 'title',
-                name: 'title'
-            },
-            {
-                data: 'mode_of_delivery',
-                name: 'mode_of_delivery'
-            },
-            {
-                data: 'category',
-                name: 'category.name'
-            },
-            @if (!isModuleActive('Org'))
-                {
-                    data: 'quiz',
-                    name: 'quiz.title'
-                },
-            @endif {
-                data: 'user',
-                name: 'user.name'
-            },
-
-            {
-                data: 'lessons',
-                name: 'lessons'
-            },
-            {
-                data: 'enrolled_users',
-                name: 'enrolled_users'
-            },
-            @if (showEcommerce())
-                {
-                    data: 'price',
-                    name: 'price'
-                },
-            @endif {
-                data: 'scope',
-                name: 'scope'
-            },
-            {
-                data: 'status',
-                name: 'search_status',
-                orderable: false,
-                searchable: false
-            },
-            {
-                data: 'action',
-                name: 'action',
-                orderable: false
-            },
-
-        ];
-
-        let table = $('.classList').DataTable(dataTableOptions);
+                aaSorting: [
+                    [0, "desc"]
+                ],
+                iDisplayLength: 10,
+                lengthMenu: [10, 25, 50, 75, 100],
+                stateSave: true,
+                autoWidth: false,
+                responsive: true,
+                sPaginationType: "full_numbers",
+                dom: 'T<"clear">lfrtip',
+                columns: [{
+                        data: 'id',
+                        name: 'id',
+                        orderable: false,
+                        searchable: false
+                    }, // SL
+                    {
+                        data: 'type',
+                        name: 'type'
+                    }, // Type
+                    {
+                        data: 'title',
+                        name: 'title'
+                    }, // CourseTitle
+                    {
+                        data: 'mode_of_delivery',
+                        name: 'mode_of_delivery'
+                    }, // Delivery
+                    {
+                        data: 'category',
+                        name: 'category'
+                    }, // Category
+                    {
+                        data: 'user',
+                        name: 'user'
+                    }, // Instructor
+                    // {
+                    //     data: 'lessons',
+                    //     name: 'lessons',
+                    //     orderable: false,
+                    //     searchable: false
+                    // }, // Lesson
+                    // {
+                    //     data: 'enrolled_users',
+                    //     name: 'enrolled_users',
+                    //     orderable: false,
+                    //     searchable: false
+                    // }, // Enrolled
+                    {
+                        data: 'price',
+                        name: 'price',
+                        orderable: false,
+                        searchable: false
+                    }, // Price
+                    {
+                        data: 'scope',
+                        name: 'scope'
+                    }, // View Scope
+                    {
+                        data: 'status',
+                        name: 'status',
+                        orderable: false,
+                        searchable: false
+                    }, // Status
+                    {
+                        data: 'action',
+                        name: 'action',
+                        orderable: false,
+                        searchable: false
+                    } // Action
+                ],
+                createdRow: function(row, data, dataIndex) {
+                    // Sequential numbering
+                    var info = table.page.info();
+                    $('td:eq(0)', row).html(info.start + dataIndex + 1);
+                }
+            });
+        });
     </script>
+    <script>
+        $(document).on('change', '.status_enable_disable', function() {
+            let courseId = $(this).data('id');
+            let status = $(this).is(':checked') ? 1 : 0;
+
+            $.ajax({
+                url: '{{ route('courses.updateStatus') }}', // Update with your route
+                type: 'POST',
+                data: {
+                    id: courseId,
+                    status: status,
+                    _token: '{{ csrf_token() }}', // CSRF token for security
+                },
+                success: function(response) {
+                    if (response.success) {
+                        toastr.success('Status updated successfully.');
+                    } else {
+                        toastr.error('Failed to update status.');
+                    }
+                },
+                error: function(xhr) {
+                    console.error(xhr.responseText);
+                    toastr.error('An error occurred while updating the status.');
+                },
+            });
+        });
+    </script>
+
+    {{-- <script>
+        // dataTableOptions.serverSide = true
+        // dataTableOptions.processing = true
+        // dataTableOptions.ajax = '{!! $url !!}';
+        // dataTableOptions.columns = [{
+        //         data: 'DT_RowIndex',
+        //         name: 'id'
+        //     },
+        //     {
+        //         data: 'type',
+        //         name: 'type'
+        //     },
+
+        //     {
+        //         data: 'title',
+        //         name: 'title'
+        //     },
+        //     {
+        //         data: 'mode_of_delivery',
+        //         name: 'mode_of_delivery'
+        //     },
+        //     {
+        //         data: 'category',
+        //         name: 'category.name'
+        //     },
+
+        //     {
+        //         data: 'user',
+        //         name: 'user.name'
+        //     },
+
+        //     {
+        //         data: 'lessons',
+        //         name: 'lessons'
+        //     },
+        //     {
+        //         data: 'enrolled_users',
+        //         name: 'enrolled_users'
+        //     },
+
+        //     {
+        //         data: 'price',
+        //         name: 'price'
+        //     },
+        //     {
+        //         data: 'scope',
+        //         name: 'scope'
+        //     },
+        //     {
+        //         data: 'status',
+        //         name: 'search_status',
+        //         orderable: false,
+        //         searchable: false
+        //     },
+        //     {
+        //         data: 'action',
+        //         name: 'action',
+        //         orderable: false
+        //     },
+
+        // ];
+
+        // let table = $('.classList').DataTable(dataTableOptions);
+    </script> --}}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const checkboxes = document.querySelectorAll('.status_enable_disable');

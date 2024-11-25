@@ -57,48 +57,48 @@
 @endcan
 @can('order-list')
     <!--<li class="nav-item {{ in_array(Request::route()->getName(), ['orders']) ? 'menu-open' : '' }}">
-                    <a href="#" class="nav-link {{ in_array(Request::route()->getName(), ['orders']) ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-cart-shopping"></i>
-                        <p>Orders Management</p>
-                        <i class="fas fa-angle-left right"></i>
-                    </a>
-                    <ul class="nav nav-treeview">
+                        <a href="#" class="nav-link {{ in_array(Request::route()->getName(), ['orders']) ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-cart-shopping"></i>
+                            <p>Orders Management</p>
+                            <i class="fas fa-angle-left right"></i>
+                        </a>
+                        <ul class="nav nav-treeview">
 
-                        <li class="nav-item">
-                            {{-- <a href="{{ route('orders', ['status' => '1']) }}" --}}
-                            <a href="{{ route('orders') }}" {{-- class="nav-link {{ Request::is('orders') && Request::input('status') === '1' ? 'active' : '' }}"> --}}
-                                class="nav-link {{ Request::is('orders') ? 'active' : '' }}">
-                                <i class="nav-icon fa-solid fa-comment-dots"></i>
-                                <p>New Student Orders</p>
-                            </a>
-                        </li>
-                    </ul>
-                </li>-->
+                            <li class="nav-item">
+                                {{-- <a href="{{ route('orders', ['status' => '1']) }}" --}}
+                                <a href="{{ route('orders') }}" {{-- class="nav-link {{ Request::is('orders') && Request::input('status') === '1' ? 'active' : '' }}"> --}}
+                                    class="nav-link {{ Request::is('orders') ? 'active' : '' }}">
+                                    <i class="nav-icon fa-solid fa-comment-dots"></i>
+                                    <p>New Student Orders</p>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>-->
 @endcan
 @can('invoice-list')
     <!--<li class="nav-item {{ in_array(Request::route()->getName(), ['invoices', 'invoices_pending']) ? 'menu-open' : '' }}">
-                    <a href="#"
-                        class="nav-link {{ in_array(Request::route()->getName(), ['invoices', 'invoices_pending']) ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-file-invoice-dollar"></i>
-                        <p>Invoice Management</p>
-                        <i class="fas fa-angle-left right"></i>
-                    </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="{{ route('invoices_pending') }}"
-                                class="nav-link {{ Request::is('invoices_pending') ? 'active' : '' }}">
-                                <i class="nav-icon fa-solid fa-comment-dots"></i>
-                                <p>Generate Invoice</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('invoices') }}" class="nav-link {{ Request::is('invoices') ? 'active' : '' }}">
-                                <i class="nav-icon fa-solid fa-comment-dots"></i>
-                                <p>View Invoice</p>
-                            </a>
-                        </li>
-                    </ul>
-                </li>-->
+                        <a href="#"
+                            class="nav-link {{ in_array(Request::route()->getName(), ['invoices', 'invoices_pending']) ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-file-invoice-dollar"></i>
+                            <p>Invoice Management</p>
+                            <i class="fas fa-angle-left right"></i>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a href="{{ route('invoices_pending') }}"
+                                    class="nav-link {{ Request::is('invoices_pending') ? 'active' : '' }}">
+                                    <i class="nav-icon fa-solid fa-comment-dots"></i>
+                                    <p>Generate Invoice</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('invoices') }}" class="nav-link {{ Request::is('invoices') ? 'active' : '' }}">
+                                    <i class="nav-icon fa-solid fa-comment-dots"></i>
+                                    <p>View Invoice</p>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>-->
 @endcan
 @can('receipt-list')
     <li class="nav-item {{ in_array(Request::route()->getName(), ['receipts', 'receipts_pending']) ? 'menu-open' : '' }}">
@@ -206,9 +206,9 @@
 
 @can('course-manage')
     <li
-        class="nav-item {{ in_array(Request::route()->getName(), ['categories.index', 'quizzes', 'questions-quizzes.create']) ? 'menu-open' : '' }}">
+        class="nav-item {{ in_array(Request::route()->getName(), ['categories.index', 'course.list', 'questions-quizzes.create']) ? 'menu-open' : '' }}">
         <a href="#"
-            class="nav-link {{ in_array(Request::route()->getName(), ['categories.index', 'quizzes', 'questions-quizzes.create']) ? 'active' : '' }}">
+            class="nav-link {{ in_array(Request::route()->getName(), ['categories.index', 'course.list', 'questions-quizzes.create']) ? 'active' : '' }}">
             {{-- <i class="nav-icon fas fa-user-gear"></i> --}}
             <i class="nav-icon fas fa-book"></i> <!-- good -->
             {{-- <i class="nav-icon fas fa-chalkboard-teacher"></i> --}}
@@ -227,13 +227,13 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a href="#" class="nav-link {{ Request::is('questions') ? 'active' : '' }}">
+                <a href="{{ route('course.list') }}" class="nav-link {{ Request::is('course.list') ? 'active' : '' }}">
                     <i class="nav-icon fa-solid fa-comment-dots"></i>
                     <p>All Courses</p>
                 </a>
             </li>
             <li class="nav-item">
-                <a href="#" class="nav-link {{ Request::is('quizzes') ? 'active' : '' }}">
+                <a href="{{ route('course.list') }}" class="nav-link {{ Request::is('course.list') ? 'active' : '' }}">
                     <i class="nav-icon fa-solid fa-comment-dots"></i>
                     <p>Course level</p>
                 </a>

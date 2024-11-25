@@ -137,11 +137,13 @@ Route::group(['middleware' => ['auth', 'affiliate.redirect']], function () {
     Route::get('/course/categories/edit/{id}', [CourseController::class, 'categoriesEdit'])->name('categories.edit');
     Route::delete('/course/categories/delete/{id}', [CourseController::class, 'categoriesDelete'])->name('category.delete');
     Route::post('/course/categories/update', [CourseController::class, 'categoriesUpdate'])->name('categories.update');
+    Route::post('/categories/status-update', [CourseController::class, 'category_status_update'])->name('category.status_update');
 
 
     Route::get('/course/list', [CourseController::class, 'courselList'])->name('course.list');
+    Route::get('/course/list-data', [CourseController::class, 'getAllCourseData'])->name('course.data');
     Route::get('/course/course-level', [CourseController::class, 'courseLevel'])->name('course.level');
-    Route::post('/categories/status-update', [CourseController::class, 'category_status_update'])->name('category.status_update');
+    Route::post('/courses/update-status', [CourseController::class, 'updateStatus'])->name('courses.updateStatus');
 
     // Route::get('/course/list', 'CourseSettingController@getAllCourse')->name('getAllCourse')->middleware('RoutePermissionCheck:getAllCourse');
 
