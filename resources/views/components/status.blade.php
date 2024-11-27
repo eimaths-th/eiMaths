@@ -8,4 +8,5 @@
     {{-- @else --}}
     {{ $status == 1 ? trans('common.Active') : trans('common.Inactive') }}
     {{-- @endif --}}
+    
 </div>

@@ -11,8 +11,12 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Modules\CourseSetting\Entities\Category;
 use Brian2694\Toastr\Facades\Toastr;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Session;
+use Livewire\Attributes\Validate;
 
 // use Toastr;
 
@@ -153,19 +157,315 @@ class CourseController extends Controller
             'courses'
         ));
     }
+
+    public function courselList(Request $request)
+    {
+        $user = Auth::user();
+
+        $video_list = [];
+        $vdocipher_list = [];
+
+        $courses = [];
+        $query = Category::where('status', 1)->orderBy('position_order', 'ASC');
+        $categories = $query->with('childs')->get();
+
+        $languages = getLanguageList();
+        $levels = CourseLevel::where('status', 1)->get(['title', 'id']);
+        $title = 'All';
+
+
+        $data['category_search'] = $request->get('category', '');
+        $data['category_type'] = $request->get('type', '');
+        $data['category_instructor'] = $request->get('instructor', '');
+        $data['search_required_type'] = (int)$request->get('search_required_type', 0);
+        $data['search_delivery_mode'] = $request->get('search_delivery_mode', '');
+        $data['category_status'] = $request->get('search_status', '');
+
+
+        $sub_lists = [];
+
+        $query = Course::where('type', 1)->with('category', 'user');
+        // dd($request);
+
+        if ($request->course_status != "") {
+            if ($request->course_status == 1) {
+                $query->where('courses.status', 1);
+            } elseif ($request->course_status == 0) {
+                $query->where('courses.status', 0);
+            }
+        }
+
+        if ($request->category != "") {
+            $query->where('category_id', $request->category);
+        }
+        if ($request->type != "") {
+            $query->where('type', $request->type);
+        }
+        if ($request->instructor != "") {
+            $query->where('user_id', $request->instructor);
+        }
+        if ($request->search_status != "") {
+            $query->where('courses.status', $request->search_status == "Active" ? 1 : 0);
+        }
+        if ($request->required_type != "") {
+            $query->where('required_type', $request->required_type == 'Compulsory' ? 1 : 0);
+        }
+        if ($request->mode_of_delivery != "") {
+            $query->where('mode_of_delivery', $request->mode_of_delivery);
+        }
+        // dd($request);
+
+        if ($request->ajax()) {
+
+            $query->select('courses.*');
+
+            return DataTables::of($query)
+                ->addIndexColumn()
+                ->editColumn('title', function ($query) {
+                    return $query->title;
+                })
+                ->editColumn('required_type', function ($query) {
+                    return $query->required_type == 1 ? trans('courses.Compulsory') : trans('courses.Open');
+                })->editColumn('mode_of_delivery', function ($query) {
+                    if ($query->mode_of_delivery == 1) {
+                        // $title = trans('courses.Online');
+                        $title = 'Online';
+                    } elseif ($query->mode_of_delivery == 2) {
+                        $title = 'Distance Learning';
+
+                        // $title = trans('courses.Distance Learning');
+                    } else {
+                        if (isModuleActive('Org')) {
+                            $title = 'Offline';
+                        } else {
+                            $title = 'Face-to-Face';
+                        }
+                    }
+                    return $title;
+                })
+                ->addColumn('type', function ($query) {
+                    return $query->type == 1 ? 'Course' : 'Quiz';
+                })->addColumn('status', function ($query) {
+                    // return 1;
+
+                    return view('components._course_status_td', ['query' => $query]);
+                })
+                // ->addColumn('lessons', function ($query) {
+                //     return translatedNumber($query->lessons->count());
+                // })
+                ->editColumn('category', function ($query) {
+                    if ($query->category) {
+                        return $query->category->name;
+                    } else {
+                        return 'erro category';
+                    }
+                })
+                // ->editColumn('quiz', function ($query) {
+                //     if ($query->quiz) {
+                //         return $query->quiz->title;
+                //     } else {
+                //         return '';
+                //     }
+                // })
+                ->editColumn('user', function ($query) {
+                    if ($query->user) {
+                        return $query->user->name;
+                    } else {
+                        return 'erro user';
+                    }
+                })
+                // ->addColumn('enrolled_users', function ($query) {
+                //     return translatedNumber($query->enrollUsers->where('teach_via', 1)->count()) . "/" . translatedNumber($query->enrollUsers->where('teach_via', 2)->count());
+                // })
+                ->editColumn('scope', function ($query) {
+                    if ($query->scope == 1) {
+                        $scope = 'Public';
+                    } else {
+                        $scope = 'Private';
+                    }
+                    return $scope;
+                })->addColumn('price', function ($query) {
+                    return number_format($query->price) . ' ฿';
+                    // return view('coursesetting::components._course_price_td', ['query' => $query]);
+                })->addColumn('action', function ($query) {
+
+                    $html = '<a class="btn btn-warning edit-btn" data-id=" ' . $query->id . '">Edit</a> ';
+                    // return $html;
+                    return view('components._course_action_td', ['query' => $query]);
+
+                    // return '1';
+                })->rawColumns(['status', 'price', 'action', 'enrolled_users'])
+                ->make(true);
+        }
+        // dd(
+        //     $languages,
+        //     $categories,
+        // );
+        return view(
+            'course.course_list',
+            $data,
+            compact(
+                'sub_lists',
+                'levels',
+                // 'video_list',
+                // 'vdocipher_list',
+                'title',
+                // 'quizzes',
+                'courses',
+                'categories',
+                'languages',
+                // 'instructors'
+            )
+        );
+    }
+
     public function store(Request $request)
+    {
+        // dd($request);
+
+        $validated = $request->validate([
+            'title' => 'required|string',
+            'category_id' => 'required|exists:categories,id',
+            'mode_of_delivery' => 'required|integer',
+            'price' => 'required|numeric',
+            'status' => 'required|boolean',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        // Save the image
+        $today = Carbon::now()->format('d-m-Y');
+        $folderPath = "uploads/main/files/{$today}";
+        $imagePath = '';
+        // Store the uploaded image
+        if ($request->hasFile('image')) {
+            if (!file_exists(public_path($folderPath))) {
+                mkdir(public_path($folderPath), 0777, true);
+            }
+            $fileName = Str::random(10) . '-' . $request->file('image')->getClientOriginalName();
+            $request->file('image')->move(public_path($folderPath), $fileName);
+        }
+        // dd($folderPath, $request->all());
+        $imagePath = 'public/' . $folderPath . '/' . $fileName;
+
+        $addCourse = new Course;
+        $addCourse->category_id = $request->input('category_id');
+        $addCourse->user_id = Auth::id();
+        $addCourse->lang_id = $request->input('lang_id');
+        $addCourse->title = $request->input('title');
+        $addCourse->slug = $request->input('title');
+        $addCourse->image = $imagePath; // Path after storing the image
+        $addCourse->thumbnail = $imagePath; // Path after storing the image
+        $addCourse->price = $request->input('price');
+
+        $addCourse->publish = $request->input('publish'); // Assuming radio button values are 1 or 0
+        $addCourse->status = $request->input('status'); // Assuming radio button values are 1 or 0
+        $addCourse->level = $request->input('level'); // Assuming radio button values are 1 or 0
+        $addCourse->type = $request->input('type'); // Assuming radio button values are 1 or 0
+        $addCourse->scope = $request->input('scope'); // Assuming radio button values are 1 or 0
+        $addCourse->mode_of_delivery = $request->input('mode_of_delivery'); // Assuming radio button values are 1 or 0
+        $addCourse->show_mode_of_delivery = $request->input('show_mode_of_delivery'); // Assuming radio button values are 1 or 0
+
+
+
+        // Save the course
+        $addCourse->save();
+
+        return response()->json(['success' => true, 'message' => 'Course added successfully.']);
+    }
+
+    public function edit(Request $request, $id)
+    {
+        $course = Course::findOrFail($id);
+
+        return response()->json(['success' => true, 'course' => $course]);
+    }
+
+    public function destroy($id)
+    {
+        // Find the course by ID
+        $course = Course::findOrFail($id);
+
+        // Get the image path from the course model
+        $imagePath = asset(str_replace('public/', '', $course->image)); // Assuming the image path is stored in the `image` attribute of the course
+
+        // Delete the image file from the server (if it exists)
+        if (file_exists($imagePath)) {
+            unlink($imagePath); // Delete the image file
+        }
+
+        // Attempt to delete the course
+        if ($course->delete()) {
+            return response()->json(['success' => true, 'message' => 'Course and image deleted successfully.']);
+        } else {
+            return response()->json(['success' => false, 'message' => 'Error deleting the course and image.']);
+        }
+    }
+    public function update(Request $request, $id)
+    {
+
+        // dd($request->all());
+        $validated = $request->validate([
+            'title' => 'required|string',
+            'category_id' => 'required|exists:categories,id',
+            'mode_of_delivery' => 'required|integer',
+            'price' => 'required|numeric',
+            'status' => 'required|boolean',
+            // 'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // Add image validation
+        ]);
+        $course = Course::findOrFail($id);
+        $oldPath = $course->image;
+        $imagePath = $oldPath;
+        // Store the uploaded image
+        if ($request->hasFile('image')) {
+            if (file_exists(public_path($oldPath)) && $oldPath != 'default_image_path') {
+                unlink(public_path($oldPath));  // Delete old image file
+            }
+
+            $today = Carbon::now()->format('d-m-Y');
+            $folderPath = "uploads/main/files/{$today}";
+            if (!file_exists(public_path($folderPath))) {
+                mkdir(public_path($folderPath), 0777, true);
+            }
+            $fileName = Str::random(10) . '-' . $request->file('image')->getClientOriginalName();
+            $request->file('image')->move(public_path($folderPath), $fileName);
+            $imagePath = 'public/' . $folderPath . '/' . $fileName;
+        }
+
+        $course->category_id = $request->input('category_id');
+        $course->user_id = Auth::id();
+        $course->lang_id = $request->input('lang_id');
+        $course->title = $request->input('title');
+        $course->slug = $request->input('title');
+        $course->image = $imagePath;
+        $course->thumbnail = $imagePath;
+        $course->price = $request->input('price');
+        $course->publish = $request->input('publish');
+        $course->status = $request->input('status');
+        $course->level = $request->input('level');
+        $course->type = $request->input('type');
+        $course->scope = $request->input('scope');
+        $course->mode_of_delivery = $request->input('mode_of_delivery');
+        $course->show_mode_of_delivery = $request->input('show_mode_of_delivery');
+        // Save the course
+        $course->save();
+
+        return response()->json(['success' => true, 'message' => 'Course updated successfully.']);
+    }
+
+    public function CoursePendingStore(Request $request)
     {
         // Validate the incoming request
 
-        $validated = $request->validate([
-            'ref' => 'nullable|string|max:255',
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'telp' => 'nullable|string|max:15',
-            'course_name' => 'nullable|string|max:255',
-            // 'course_id' => 'required|exists:courses,id', // Ensure the course exists
-        ]);
-        dd($request);
+        // $validated = $request->validate([
+        //     'ref' => 'nullable|string|max:255',
+        //     'name' => 'required|string|max:255',
+        //     'email' => 'required|email|max:255',
+        //     'telp' => 'nullable|string|max:15',
+        //     'course_name' => 'nullable|string|max:255',
+        //     // 'course_id' => 'required|exists:courses,id', // Ensure the course exists
+        // ]);
+
+
 
         // try {
         //     // Store the data in the courses_pending table
@@ -191,6 +491,7 @@ class CourseController extends Controller
         //     return back()->withInput()->withErrors(['error' => $e->getMessage()]);
         // }
     }
+
     public function categories()
     {
         $query = Category::query();
@@ -202,6 +503,7 @@ class CourseController extends Controller
 
         return view('course.category.category-list', compact('categories', 'max_id'));
     }
+
     public function categoriesStore(Request $request)
     {
 
@@ -251,6 +553,7 @@ class CourseController extends Controller
         Toastr::success(trans('common.Operation successful'), trans('common.Success'));
         return redirect()->back();
     }
+
     public function categoriesEdit(Request $request, $id)
     {
         $edit = Category::find($id);
@@ -260,6 +563,7 @@ class CourseController extends Controller
         $max_id = count($categories) + 1;
         return view('course.category.category-list', compact('categories', 'edit', 'max_id'));
     }
+
     public function categoriesUpdate(Request $request)
     {
 
@@ -327,6 +631,7 @@ class CourseController extends Controller
         Toastr::success('Operation successful', 'Success');
         return redirect()->route('categories.index');
     }
+
     public function categoriesDelete($id)
     {
         $category = Category::find($id);
@@ -347,162 +652,6 @@ class CourseController extends Controller
         }
 
         return response()->json(['success' => false, 'message' => 'Category not found.'], 404);
-    }
-    public function courselList(Request $request)
-    {
-        $user = Auth::user();
-
-        $video_list = [];
-        $vdocipher_list = [];
-
-        $courses = [];
-        $query = Category::where('status', 1)->orderBy('position_order', 'ASC');
-        $categories = $query->with('childs')->get();
-
-        $languages = getLanguageList();
-        $levels = CourseLevel::where('status', 1)->get(['title', 'id']);
-        $title = 'All';
-
-
-        $data['category_search'] = $request->get('category', '');
-        $data['category_type'] = $request->get('type', '');
-        $data['category_instructor'] = $request->get('instructor', '');
-        $data['search_required_type'] = (int)$request->get('search_required_type', 0);
-        $data['search_delivery_mode'] = $request->get('search_delivery_mode', '');
-        $data['category_status'] = $request->get('search_status', '');
-
-
-        $sub_lists = [];
-
-        $query = Course::whereIn('type', [1, 2])->with('category', 'user');
-        // dd($request);
-
-        if ($request->course_status != "") {
-            if ($request->course_status == 1) {
-                $query->where('courses.status', 1);
-            } elseif ($request->course_status == 0) {
-                $query->where('courses.status', 0);
-            }
-        }
-
-        if ($request->category != "") {
-            $query->where('category_id', $request->category);
-        }
-        if ($request->type != "") {
-            $query->where('type', $request->type);
-        }
-        if ($request->instructor != "") {
-            $query->where('user_id', $request->instructor);
-        }
-        if ($request->search_status != "") {
-            $query->where('courses.status', $request->search_status == "Active" ? 1 : 0);
-        }
-        if ($request->required_type != "") {
-            $query->where('required_type', $request->required_type == 'Compulsory' ? 1 : 0);
-        }
-        if ($request->mode_of_delivery != "") {
-            $query->where('mode_of_delivery', $request->mode_of_delivery);
-        }
-        // dd($request);
-
-        if ($request->ajax()) {
-
-            $query->select('courses.*');
-
-            return DataTables::of($query)
-                ->addIndexColumn()
-                ->editColumn('title', function ($query) {
-                    return $query->title;
-                })
-                ->editColumn('required_type', function ($query) {
-                    return $query->required_type == 1 ? trans('courses.Compulsory') : trans('courses.Open');
-                })->editColumn('mode_of_delivery', function ($query) {
-                    if ($query->mode_of_delivery == 1) {
-                        // $title = trans('courses.Online');
-                        $title = 'Online';
-                    } elseif ($query->mode_of_delivery == 2) {
-                        $title = 'Distance Learning';
-
-                        // $title = trans('courses.Distance Learning');
-                    } else {
-                        if (isModuleActive('Org')) {
-                            $title = 'Offline';
-                        } else {
-                            $title = 'Face-to-Face';
-                        }
-                    }
-                    return $title;
-                })
-                ->addColumn('type', function ($query) {
-                    return $query->type == 1 ? 'Course' : 'Quiz';
-                })->addColumn('status', function ($query) {
-                    // return '';
-
-                    return view('components._course_status_td', ['query' => $query]);
-                })
-                // ->addColumn('lessons', function ($query) {
-                //     return translatedNumber($query->lessons->count());
-                // })
-                ->editColumn('category', function ($query) {
-                    if ($query->category) {
-                        return $query->category->name;
-                    } else {
-                        return '';
-                    }
-                })
-                // ->editColumn('quiz', function ($query) {
-                //     if ($query->quiz) {
-                //         return $query->quiz->title;
-                //     } else {
-                //         return '';
-                //     }
-                // })
-                ->editColumn('user', function ($query) {
-                    if ($query->user) {
-                        return $query->user->name;
-                    } else {
-                        return '';
-                    }
-                })
-                // ->addColumn('enrolled_users', function ($query) {
-                //     return translatedNumber($query->enrollUsers->where('teach_via', 1)->count()) . "/" . translatedNumber($query->enrollUsers->where('teach_via', 2)->count());
-                // })
-                ->editColumn('scope', function ($query) {
-                    if ($query->scope == 1) {
-                        $scope = 'Public';
-                    } else {
-                        $scope = 'Private';
-                    }
-                    return $scope;
-                })->addColumn('price', function ($query) {
-                    return number_format($query->price) . ' ฿';
-                    // return view('coursesetting::components._course_price_td', ['query' => $query]);
-                })->addColumn('action', function ($query) {
-
-                    // $html = ' ';
-                    return view('components._course_action_td', ['query' => $query]);
-
-                    return '';
-                })->rawColumns(['status', 'price', 'action', 'enrolled_users'])
-                ->make(true);
-        }
-
-        return view(
-            'course.course_list',
-            $data,
-            compact(
-                'sub_lists',
-                'levels',
-                // 'video_list',
-                // 'vdocipher_list',
-                'title',
-                // 'quizzes',
-                'courses',
-                'categories',
-                'languages',
-                // 'instructors'
-            )
-        );
     }
 
     public function getAllCourseData(Request $request)
@@ -615,7 +764,6 @@ class CourseController extends Controller
 
             $course->status = $request->status; // Update the status
 
-
             $course->save(); // Save the changes
 
             // dd($request->all(), $request->status , $course);
@@ -625,14 +773,19 @@ class CourseController extends Controller
             return response()->json(['success' => false, 'message' => 'Failed to update status.']);
         }
     }
-    public function courseLevel(Request $request) {}
+
+    public function courseLevelList(Request $request)
+    {
+
+        $levels = CourseLevel::all();
+
+        return view('course.levels.course_level_list', compact('levels'));
+    }
 
     public function category_status_update(Request $request)
     {
         // dd($request);
-        if (demoCheck()) {
-            return redirect()->back();
-        }
+
         try {
             $store = Category::find($request->id);
             $store->status = $request->status;
@@ -644,5 +797,98 @@ class CourseController extends Controller
             Log::info($e->getMessage());
             return response()->json(['error' => $e->getMessage()]);
         }
+    }
+
+    public function courseLevelStore(Request $request)
+    {
+        try {
+            $level = new CourseLevel();
+            $level->id = CourseLevel::max('id') + 1;
+            foreach ($request->title as $key => $title) {
+                $level->setTranslation('title', $key, $title);
+            }
+            $level->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Course level added successfully.'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to add course level.',
+                'error' => $e->getMessage()
+            ]);
+        }
+    }
+
+    public function courseLevelUpdateStatus(Request $request)
+    {
+        // dd($request);
+        try {
+            $store = CourseLevel::find($request->id);
+            $store->status = $request->status;
+            $store->save();
+            return response()->json([
+                'message' => 'success'
+            ], 200);
+        } catch (\Exception $e) {
+            Log::info($e->getMessage());
+            return response()->json(['error' => $e->getMessage()]);
+        }
+    }
+
+    public function courseLevelEdit(Request $request, $id)
+    {
+        $edit = CourseLevel::find($id);
+        $levels = CourseLevel::all();
+
+        return view('course.levels.course_level_list', compact('levels', 'edit'));
+    }
+
+    public function courseLevelUpdate(Request $request)
+    {
+        $code = auth()->user()->language_code;
+
+        // Validate the request
+        $validated = $request->validate([
+            'title.' . $code => 'required|max:255',  // Validate the 'title' field for the specific language code
+        ]);
+
+        $edit = CourseLevel::findOrFail($request->id);
+        foreach ($request->title as $key => $title) {
+            $edit->setTranslation('title', $key, $title);
+        }
+        $edit->save();
+
+        // Return a success response
+        return response()->json(['success' => true, 'message' => 'Course level updated successfully.']);
+    }
+
+    public function courseLevelDestroy($id)
+    {
+        
+        try {
+            $level = CourseLevel::findOrFail($id);
+            $level->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Course level deleted successfully.'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error deleting course level: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getCourseLevelsData()
+    {
+        $levels = CourseLevel::select(['id', 'title', 'status']); // Add your fields here
+        return response()->json([
+            'data' => $levels
+        ]);
     }
 }

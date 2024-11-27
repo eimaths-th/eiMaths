@@ -3,12 +3,16 @@
 @section('style')
     {{-- @include('affiliate.backend.my_affiliate-head') --}}
     {{-- <link rel="stylesheet" href="{{ asset('backend/css/backend_style.css') }}{{ assetVersion() }}" /> --}}
+
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
     {{-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> --}}
 
     <!-- Toastr JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    {{-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script> --}}
+    {{-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> --}}
     <style>
         .sms-breadcrumb h1 {
             font-size: 18px;
@@ -421,7 +425,9 @@
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
-
+                        <a class="btn btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addCourseModal">
+                            <i class="fa fa-plus"></i> Add Course
+                        </a>
                     </ol>
 
                 </div>
@@ -431,133 +437,8 @@
     <section class="content">
         <div class="container-fluid">
             <div class="row justify-content-center">
-                <div class="col-lg-12">
-                    <div class="card card-primary">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <h4 class="mb-0">{{ __('courses.Advanced Filter') }} </h4>
-                        </div>
-                        <div class="card-body">
-                            <form action="{{ route('course.list') }}" method="GET">
-                                <div class="row">
 
-                                    <div class="col-lg-3 mt-20">
-
-                                        <label class="primary_input_label"
-                                            for="category">{{ __('courses.Category') }}</label>
-                                        <select class="primary_select" name="category" id="category">
-                                            <option data-display="{{ __('common.Select') }} {{ __('courses.Category') }}"
-                                                value="">{{ __('common.Select') }} {{ __('courses.Category') }}
-                                            </option>
-                                            @foreach ($categories as $category)
-                                                @if ($category->parent_id == 0)
-                                                    @include('backend.categories._single_select_option', [
-                                                        'category' => $category,
-                                                        'level' => 1,
-                                                    ])
-                                                @endif
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <div class="col-lg-3 mt-20">
-
-                                        <label class="primary_input_label" for="type">{{ __('courses.Type') }}</label>
-                                        <select class="primary_select" name="type" id="type">
-                                            <option data-display="{{ __('common.Select') }} {{ __('courses.Type') }}"
-                                                value="">{{ __('common.Select') }} {{ __('courses.Type') }}</option>
-                                            <option value="1"
-                                                {{ isset($category_type) ? ($category_type == 1 ? 'selected' : '') : '' }}>
-                                                {{ __('courses.Course') }}</option>
-                                            <option value="2"
-                                                {{ isset($category_type) ? ($category_type == 2 ? 'selected' : '') : '' }}>
-                                                {{ __('quiz.Quiz') }}</option>
-                                        </select>
-
-                                    </div>
-                                    <div class="col-lg-3 mt-20">
-
-                                        <label class="primary_input_label"
-                                            for="instructor">{{ __('courses.Instructor') }}</label>
-                                        <select class="primary_select" name="instructor" id="instructor">
-                                            <option
-                                                data-display="{{ __('common.Select') }} {{ __('courses.Instructor') }}"
-                                                value="">{{ __('common.Select') }} {{ __('courses.Instructor') }}
-                                            </option>
-                                            {{-- @foreach ($instructors as $instructor)
-                                                <option value="{{ $instructor->id }}"
-                                                    {{ isset($category_instructor) ? ($category_instructor == $instructor->id ? 'selected' : '') : '' }}>
-                                                    {{ @$instructor->name }} </option>
-                                            @endforeach --}}
-                                        </select>
-
-                                    </div>
-
-                                    <div class="col-lg-3 mt-20">
-
-                                        <label class="primary_input_label" for="status">{{ __('common.Status') }}</label>
-                                        <select class="primary_select" name="search_status" id="status">
-                                            <option data-display="{{ __('common.Select') }} {{ __('common.Status') }}"
-                                                value="">{{ __('common.Select') }} {{ __('common.Status') }}
-                                            </option>
-                                            <option value="Active"
-                                                {{ isset($category_status) ? ($category_status == 'Active' ? 'selected' : '') : 'selected' }}>
-                                                {{ __('courses.Active') }} </option>
-                                            <option value="Inactive"
-                                                {{ isset($category_status) ? ($category_status == 'Inactive' ? 'selected' : '') : '' }}>
-                                                {{ __('common.Inactive') }} </option>
-                                        </select>
-
-                                    </div>
-                                    {{-- @if (isModuleActive('Org')) --}}
-                                    {{-- <div class="col-lg-3 mt-20">
-                                        <label class="primary_input_label"
-                                            for="search_required_type">{{ __('courses.Required Type') }}</label>
-                                        <select class="primary_select" name="search_required_type"
-                                            id="search_required_type">
-                                            <option
-                                                data-display="{{ __('common.Select') }} {{ __('courses.Required Type') }}"
-                                                value="">{{ __('common.Select') }} {{ __('courses.Required Type') }}
-                                            </option>
-                                            <option value="Compulsory"
-                                                {{ isset($search_required_type) ? ($search_required_type == 'Compulsory' ? 'selected' : '') : '' }}>
-                                                {{ __('courses.Compulsory') }} </option>
-                                            <option value="Open"
-                                                {{ isset($search_required_type) ? ($search_required_type == 'Open' ? 'selected' : '') : '' }}>
-                                                {{ __('courses.Open') }}</option>
-                                        </select>
-
-                                    </div>
-
-                                    <div class="col-lg-3 mt-20">
-
-                                        <label class="primary_input_label"
-                                            for="status">{{ __('courses.Delivery Mode') }}</label>
-                                        <select class="primary_select" name="search_delivery_mode" id="status">
-                                            <option
-                                                data-display="{{ __('common.Select') }} {{ __('courses.Delivery Mode') }}"
-                                                value="">{{ __('common.Select') }} {{ __('courses.Delivery Mode') }}
-                                            </option>
-                                            <option value="1"
-                                                {{ isset($search_delivery_mode) ? ($search_delivery_mode == '1' ? 'selected' : '') : '' }}>
-                                                {{ __('courses.Online') }} </option>
-                                            <option value="3"
-                                                {{ isset($search_delivery_mode) ? ($search_delivery_mode == '3' ? 'selected' : '') : '' }}>
-                                                {{ __('courses.Offline') }}</option>
-                                        </select>
-
-                                    </div> --}}
-                                    {{-- @endif --}}
-                                    <div class="col-12 mt-2">
-                                        <button type="submit" class="btn btn-primary radius_30px   fix-gr-bg">
-                                            <span class="ti-search pe-2"></span>
-
-                                            {{ __('courses.Filter') }} </button>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-
-                    </div>
-                </div>
+                {{-- @include('course.course_search') --}}
 
                 <div class="col-lg-12">
                     <div class="card card-primary">
@@ -574,10 +455,8 @@
                                     /* Ensures the button aligns to the far right */
                                 }
                             </style>
-                            <a class="btn btn-primary" href="#">
-                                {{-- href="{{ route('course.store') }}"> --}}
-                                <i class="fa fa-plus"></i> Add Course
-                            </a>
+                            {{-- href="{{ route('course.store') }}"> --}}
+
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
@@ -1065,6 +944,8 @@
             </div>
         </div>
     </section>
+    @include('course.coures_modal_create_form')
+    @include('course.coures_modal_edit_form')
     {{-- @include('backend.partials.delete_modal') --}}
     @php
         // dd($url);
@@ -1089,7 +970,7 @@
                     loadingRecords: '&nbsp;',
                     processing: `<div class="spinner-border text-primary"></div>`,
                     "sProcessing": "Processcing...",
-                    "sLengthMenu": "Display_MENU_ Row",
+                    "sLengthMenu": "Display _MENU_ Row",
                     "sZeroRecords": "No Data Fount",
                     "sInfo": "Display _START_ To _END_ From _TOTAL_ Records",
                     "sInfoEmpty": "Display 0 To 0 From 0 Records",
@@ -1134,11 +1015,15 @@
                     }, // Delivery
                     {
                         data: 'category',
-                        name: 'category'
+                        name: 'category',
+                        orderable: false,
+                        searchable: false
                     }, // Category
                     {
                         data: 'user',
-                        name: 'user'
+                        name: 'user',
+                        orderable: false,
+                        searchable: false
                     }, // Instructor
                     // {
                     //     data: 'lessons',
@@ -1210,7 +1095,188 @@
             });
         });
     </script>
+    <script>
+        document.getElementById('addCourseForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent the default form submission
 
+            // Gather form data
+            const formData = new FormData(this);
+
+            // Send data via AJAX (example using Fetch API)
+            fetch('{{ route('course.store') }}', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        $('#Listview').DataTable().ajax.reload();
+                        toastr.success(data.message, {
+                            timeOut: 5000
+                        });
+
+                        $('.form').trigger('reset');
+
+                        $('#addCourseModal').modal('hide');
+                        // alert('Course added successfully!');
+                        // location.reload(); // Optionally reload the page or update the UI dynamically
+                    } else {
+                        toastr.error(data.message, {
+                            timeOut: 5000
+                        });
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        });
+    </script>
+
+    <script>
+        document.addEventListener('click', function(event) {
+            if (event.target.classList.contains('edit-btn')) {
+                const courseId = event.target.getAttribute('data-id');
+                // console.log(courseId); // Should log the course ID
+                // Remaining logic...
+
+                const editUrl = "{{ route('course.edit', ['id' => ':id']) }}".replace(':id', courseId);
+
+                fetch(editUrl, {
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            $('#editCourseId').val(data.course.id);
+                            document.getElementById('editCourseTitle').value = data.course.title.en;
+                            document.getElementById('editCategoryId').value = data.course.category_id;
+                            // Add other fields as needed
+                            // Populate mode of delivery (set the selected option based on course data)
+                            document.getElementById('editDeliveryMode').value = data.course.mode_of_delivery;
+
+                            // Populate course price
+                            document.getElementById('editCoursePrice').value = data.course.price;
+
+                            // Populate status (radio buttons)
+                            if (data.course.status === 1) {
+                                document.getElementById('edittStatusActive').checked = true;
+                                document.getElementById('editStatusInactive').checked = false;
+                            } else {
+                                document.getElementById('edittStatusActive').checked = false;
+                                document.getElementById('editStatusInactive').checked = true;
+                            }
+
+                            // Handle course image (if any image exists)
+                            const imageElement = document.getElementById('courseImagePreview');
+                            if (data.course.image) {
+                                const imagePath = data.course.image.replace('public/', '');
+                                const imageUrl = "{{ asset('') }}" + imagePath;
+                                imageElement.src = imageUrl;
+
+
+                            } else {
+                                imageElement.src = ''; // Clear image if none exists
+                            }
+
+                            // Populate hidden fields
+                            document.getElementById('editLevel').value = data.course.level || '1';
+                            document.getElementById('editPublish').value = data.course.publish || '1';
+                            document.getElementById('editLang_id').value = data.course.lang_id || '19';
+                            document.getElementById('editUser_id').value = data.course.user_id || '';
+                            document.getElementById('editType').value = data.course.type || '1';
+                            document.getElementById('editScope').value = data.course.scope || '1';
+                            document.getElementById('editShow_mode_of_delivery').value = data.course
+                                .show_mode_of_delivery || '1';
+
+                            // Show the modal
+                            const modal = new bootstrap.Modal(document.getElementById('editCourseModal'));
+                            modal.show();
+                        } else {
+                            alert('Failed to fetch course details.');
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+            }
+        });
+
+        document.getElementById('editCourseForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const courseId = document.getElementById('editCourseId').value;
+            const updateUrl = "{{ route('course.update', ['id' => ':id']) }}".replace(':id', courseId);
+            const formData = new FormData(this);
+
+            fetch(updateUrl, {
+                    method: 'POST', // Use POST and spoof PUT
+                    body: formData,
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'X-HTTP-Method-Override': 'PUT', // Spoof method
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('HTTP error ' + response.status);
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        $('#Listview').DataTable().ajax.reload();
+                        toastr.success(data.message, {
+                            timeOut: 5000
+                        });
+                        $('.form').trigger('reset');
+
+                        $('#editCourseModal').modal('hide');
+                        // location.reload();
+                    } else {
+                        // alert('Failed to update course: ' + (data.message || 'Unknown error'));
+                        $('#Listview').DataTable().ajax.reload();
+                        toastr.error(data.message, {
+                            timeOut: 5000
+                        });
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        });
+
+        document.addEventListener('click', function(event) {
+            if (event.target.classList.contains('delete-btn')) {
+
+                // Use event.target to get the clicked element
+                const courseId = event.target.getAttribute('data-id');
+                const destroyUrl = "{{ route('course.destroy', ['id' => ':id']) }}".replace(':id', courseId);
+
+
+                if (confirm('Are you sure you want to delete this course?')) {
+                    fetch(destroyUrl, {
+                            method: 'DELETE',
+                            headers: {
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                $('#Listview').DataTable().ajax.reload();
+                                toastr.success(data.message, {
+                                    timeOut: 5000
+                                });
+                                // alert('Course deleted successfully!');
+                                // location.reload(); // Refresh the page or update the UI dynamically
+                            } else {
+                                toastr.error('Error deleting the course.', {
+                                    timeOut: 5000
+                                });
+                            }
+                        })
+                        .catch(error => console.error('Error:', error));
+                }
+            }
+        });
+    </script>
     {{-- <script>
         // dataTableOptions.serverSide = true
         // dataTableOptions.processing = true

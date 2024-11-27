@@ -142,10 +142,24 @@ Route::group(['middleware' => ['auth', 'affiliate.redirect']], function () {
 
     Route::get('/course/list', [CourseController::class, 'courselList'])->name('course.list');
     Route::get('/course/list-data', [CourseController::class, 'getAllCourseData'])->name('course.data');
-    Route::get('/course/course-level', [CourseController::class, 'courseLevel'])->name('course.level');
     Route::post('/courses/update-status', [CourseController::class, 'updateStatus'])->name('courses.updateStatus');
+    Route::post('/course/add', [CourseController::class, 'store'])->name('course.store');
+    // Route to fetch course details for editing
+    Route::get('/course/edit/{id}', [CourseController::class, 'edit'])->name('course.edit');
 
+    // Route to update the course
+    Route::put('/course/update/{id}', [CourseController::class, 'update'])->name('course.update');
+    Route::delete('/courses/{id}', [CourseController::class, 'destroy'])->name('course.destroy');
     // Route::get('/course/list', 'CourseSettingController@getAllCourse')->name('getAllCourse')->middleware('RoutePermissionCheck:getAllCourse');
+
+    Route::get('/course/course-level/list', [CourseController::class, 'courseLevelList'])->name('course.level.list');
+    Route::post('/course/course-level/list/store', [CourseController::class, 'courseLevelStore'])->name('course.level.store');
+    Route::get('/course/course-level/edit/{id}', [CourseController::class, 'courseLevelEdit'])->name('course.level.edit');
+    Route::post('/course/course-level/update', [CourseController::class, 'courseLevelUpdate'])->name('course.level.update');
+    Route::post('/course/course-level/update-status', [CourseController::class, 'courseLevelUpdateStatus'])->name('course.level.update_status');
+    Route::get('/course/course-level/get-data', [CourseController::class, 'getCourseLevelsData'])->name('course.levels.data');
+
+    Route::delete('/courses/course-level/destroy/{id}', [CourseController::class, 'courseLevelDestroy'])->name('course.level.destroy');
 
 
 });

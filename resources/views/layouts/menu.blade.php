@@ -206,9 +206,9 @@
 
 @can('course-manage')
     <li
-        class="nav-item {{ in_array(Request::route()->getName(), ['categories.index', 'course.list', 'questions-quizzes.create']) ? 'menu-open' : '' }}">
+        class="nav-item {{ in_array(Request::route()->getName(), ['categories.index', 'course.list', 'course.level.list']) ? 'menu-open' : '' }}">
         <a href="#"
-            class="nav-link {{ in_array(Request::route()->getName(), ['categories.index', 'course.list', 'questions-quizzes.create']) ? 'active' : '' }}">
+            class="nav-link {{ in_array(Request::route()->getName(), ['categories.index', 'course.list', 'course.level.list']) ? 'active' : '' }}">
             {{-- <i class="nav-icon fas fa-user-gear"></i> --}}
             <i class="nav-icon fas fa-book"></i> <!-- good -->
             {{-- <i class="nav-icon fas fa-chalkboard-teacher"></i> --}}
@@ -233,7 +233,7 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a href="{{ route('course.list') }}" class="nav-link {{ Request::is('course.list') ? 'active' : '' }}">
+                <a href="{{ route('course.level.list') }}" class="nav-link {{ Request::is('course.level.list') ? 'active' : '' }}">
                     <i class="nav-icon fa-solid fa-comment-dots"></i>
                     <p>Course level</p>
                 </a>
