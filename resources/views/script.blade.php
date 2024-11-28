@@ -782,7 +782,6 @@
     const handle_student_stutus = async () => {
         try {
             const datas = await student_status();
-            // console.log(datas);
 
             const options = student_status_chart_data(datas);
             var chart_data = echarts.init(document.getElementById("student_status"));
