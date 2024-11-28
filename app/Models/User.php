@@ -7,6 +7,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Modules\Affiliate\Entities\AffiliateReferralPayment;
+use Modules\Affiliate\Entities\AffiliateUserWallet;
+use Modules\Affiliate\Entities\AffiliateWithdraw;
+use Modules\RolePermission\Entities\Role;
 use Spatie\Permission\Traits\HasRoles;
 //use Spatie\Permission\Traits\HasPermissions;
 
@@ -24,11 +28,15 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'affiliate_request',
+        'language_code',
+        'referral',
         'email',
+        'email_verified_at',
         'password',
         'department_id',
         'position_id',
-        'disable'
+        'disable',
     ];
 
     /**
@@ -67,4 +75,35 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Position::class);
     }
+    public function affiliateWallet()
+    {
+        return $this->hasOne(AffiliateUserWallet::class, 'user_id');
+    }
+   
+
+    public function affiliateTransaction()
+    {
+        return $this->hasMany(AffiliateWithdraw::class, 'user_id');
+    }
+
+    public function affiliateCommissions()
+    {
+        return $this->hasMany(AffiliateReferralPayment::class, 'payment_to');
+    }
+
+    public function isOrganization()
+    {
+        return $this->role_id == 5;
+    }
+    // public function roles()
+    // {
+    //     // Define the relationship with the Role model (assuming a many-to-many relationship)
+    //     return $this->belongsToMany(Role::class);
+    // }
+
+    // public function hasRole($role)
+    // {
+    //     // Check if the user has the specified role
+    //     return $this->roles()->where('name', $role)->exists();
+    // }
 }

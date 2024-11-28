@@ -22,7 +22,7 @@ use Illuminate\Http\Request;
 
 //Auth::routes();
 
-Route::group(['middleware' => ['auth']], function () {
+Route::group(['middleware' => ['auth','affiliate.redirect']], function () {
     //Route::get('/roles', [RoleController::class, 'index'])->name('roles.index');
     //Route::get('/roles/store', [RoleController::class, 'store'])->name('roles.store');
     Route::get('/roles/edit/{id}', [RoleController::class, 'edit'])->name('roles.edit2');
@@ -166,7 +166,19 @@ Route::group(['middleware' => ['auth']], function () {
 
     /* Route::get('/', [App\Http\Controllers\ContactController::class, 'index']);
     Route::get('/home', [App\Http\Controllers\ContactController::class, 'index'])->name('home'); */
-    Route::get('/', [App\Http\Controllers\HomeController::class, 'index']);
+    // Route::get('/', [HomeController::class, 'index']);
+    Route::get('/', [HomeController::class, 'index']);
+
+    // Route::get('/', function () {
+    //     $user = Auth::user();
+
+    //     // Check if the user is logged in and has the 'Affiliate_user' role
+    //     if ($user && $user->hasRole('Affiliate_user')) {
+    //         return redirect()->route('my_affiliate.index');
+    //     }
+
+    //     return redirect()->route('home.index'); // Adjust this as needed
+    // });
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
     Route::post('/contact/export', [ContactController::class, 'exportContact'])->name('contact.export');
     Route::post('/reciept/export', [ReceiptController::class, 'exportReciept'])->name('reciept.export');

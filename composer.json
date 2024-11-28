@@ -2,11 +2,16 @@
     "name": "laravel/laravel",
     "type": "project",
     "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["laravel", "framework"],
+    "keywords": [
+        "laravel",
+        "framework"
+    ],
     "license": "MIT",
     "require": {
         "php": "^8.1",
         "barryvdh/laravel-dompdf": "^2.0",
+        "brian2694/laravel-toastr": "^5.59",
+        "cocur/slugify": "^4.6",
         "fruitcake/laravel-cors": "dev-develop",
         "guzzlehttp/guzzle": "^7.2",
         "infyomlabs/laravel-ui-adminlte": "^5.2",
@@ -25,9 +30,12 @@
         "setasign/fpdi-tcpdf": "^2.3",
         "socialiteproviders/google": "^4.1",
         "spatie/laravel-permission": "^5.10",
+        "spatie/laravel-sluggable": "^3.6",
+        "spatie/laravel-translatable": "^6.8",
         "yajra/laravel-datatables-oracle": "^10.4"
     },
     "require-dev": {
+        "barryvdh/laravel-debugbar": "^3.14",
         "fakerphp/faker": "^1.9.1",
         "krlove/eloquent-model-generator": "^2.0",
         "laravel/pint": "^1.0",
@@ -41,8 +49,14 @@
         "psr-4": {
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
-            "Database\\Seeders\\": "database/seeders/"
-        }
+            "Database\\Seeders\\": "database/seeders/",
+            "Modules\\": "public/Modules/"
+        },
+        "files": [
+            "app/Helpers/Helper.php",
+            "app/Helpers/Constant.php",
+            "app/Helpers/SaasHelper.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {

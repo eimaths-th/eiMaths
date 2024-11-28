@@ -1,0 +1,29 @@
+{
+    "Affiliate": {
+        "item_id": "36723237",
+        "migration": [
+            "2021_12_05_141246_create_affiliate_links_table.php",
+            "2021_12_06_102647_create_affiliate_link_visit_track_users_table.php",
+            "2021_12_06_115255_create_referral_users_table.php",
+            "2021_12_06_130347_create_affiliate_configurations_table.php",
+            "2021_12_06_173303_create_affiliate_referral_payments_table.php",
+            "2021_12_07_100911_create_affiliate_user_wallets_table.php",
+            "2021_12_07_152509_create_affiliate_withdraws_table.php",
+            "2021_12_19_172520_add_affiliate_module_user_info_table.php",
+            "2022_04_22_172616_AddAffiliatePageToFrontendPage.php",
+            "2022_05_10_161828_AssignMyAffiliateForStudent.php",
+            "2022_10_05_131251_create_affiliate_module_permission_table.php",
+            "2023_09_26_140133_updateAffiliatepage.php",
+            "2024_05_13_142231_AddCommissionListInAffiliate.php"
+        ],
+        "versions": [
+            "2.0.0"
+        ],
+        "url": [
+            "https://www.aorasoft.com/"
+        ],
+        "notes": [
+            "This is Affiliate module for Infix LMS. Thanks for using."
+        ]
+    }
+}

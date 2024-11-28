@@ -46,7 +46,7 @@
                     <h2>eiMaths TH - Bangkae</h2>
                 </div>
                 <div class="contact-info">
-                    <a href="tel:+66616208666">
+                    <a href="tel:+66932585897">
                         <i class="fas fa-phone-alt"></i> +6693-258-5897
                     </a>
                 </div>

@@ -11,7 +11,14 @@
                     </a>
                 </div> --}}
                 <div class="shrink-0 flex items-center">
-                    <a href="{{ route('home3') }}">
+                    @php
+                        if (isset($student) && $student->type === 'demo') {
+                            $route = route('home.section', ['P6', '4', '20']);
+                        } else {
+                            $route = route('home3');
+                        }
+                    @endphp
+                    <a href="{{ $route }}">
                         <img src="{{ asset('images/logo.png') }}" style="height: 65px; width: 130px;"
                             alt="Application Logo" />
                     </a>
@@ -36,7 +43,7 @@
                         <a href="{{ route('home3') }}" class="{{ navLinkClasses('home3') }}"> Home </a>
                         <a href="{{ route('tests') }}" class="{{ navLinkClasses('tests') }}"> Tests </a>
                     --}}
-                    <a href="{{ route('home3') }}" class="{{ navLinkClasses('home3') }}"> Home </a>
+                    <a href="{{ $route }}" class="{{ navLinkClasses('home3') }}"> Home </a>
                     <a href="{{ route('leaderboard') }}" class="{{ navLinkClasses('leaderboard') }}"> Leaderboard </a>
                     <a href="{{ route('myresults') }}"
                         class="{{ navLinkClasses('myresults') }}">{{ __('My Results') }}</a>
@@ -71,14 +78,16 @@
                                 {{-- {{ $user->name }} --}}
                                 <form method="POST" action="{{ route('logout') }}">
                                     @csrf
-                                    <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-gray-700"
+                                    <button type="submit"
+                                        class="block w-full text-left px-4 py-2 text-sm text-gray-700"
                                         onclick="event.preventDefault(); this.closest('form').submit();">{{ __('Log Out') }}</button>
                                 </form>
                             @elseif(isset($student))
                                 {{-- {{ $student->nickname }} --}}
                                 <form method="POST" action="{{ route('student.logout') }}">
                                     @csrf
-                                    <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-gray-700"
+                                    <button type="submit"
+                                        class="block w-full text-left px-4 py-2 text-sm text-gray-700"
                                         onclick="event.preventDefault(); this.closest('form').submit();">{{ __('Log Out') }}</button>
                                 </form>
                             @else

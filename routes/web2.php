@@ -1,6 +1,9 @@
 <?php
 
+use App\Http\Controllers\AffiliateAuthController;
+use App\Http\Controllers\AffiliateController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\CourseController;
 use App\Http\Controllers\eLeanController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
@@ -37,7 +40,7 @@ use Illuminate\Support\Facades\Storage;
 */
 
 
-Route::group(['middleware' => ['auth']], function () {
+Route::group(['middleware' => ['auth', 'affiliate.redirect']], function () {
     Route::post('/student_by_level', [App\Http\Controllers\DashboardController::class, 'dashboard_student_by_level'])->name('dashboard.student_by_level');
     Route::post('/student_by_centre', [App\Http\Controllers\DashboardController::class, 'dashboard_student_by_centre'])->name('dashboard.student_by_centre');
     Route::post('/teacher_by_centre', [App\Http\Controllers\DashboardController::class, 'dashboard_teacher_by_centre'])->name('dashboard.teacher_by_centre');
@@ -126,10 +129,42 @@ Route::group(['middleware' => ['auth']], function () {
 
     // Route::get('quiz/{quiz}', [HomeController::class, 'show'])->name('quiz.show');
 
+    //course list 
+
+    Route::get('/course/categories', [CourseController::class, 'categories'])->name('categories.index');
+    Route::post('/course/categories-store', [CourseController::class, 'categoriesStore'])->name('categories.store');
+
+    Route::get('/course/categories/edit/{id}', [CourseController::class, 'categoriesEdit'])->name('categories.edit');
+    Route::delete('/course/categories/delete/{id}', [CourseController::class, 'categoriesDelete'])->name('category.delete');
+    Route::post('/course/categories/update', [CourseController::class, 'categoriesUpdate'])->name('categories.update');
+    Route::post('/categories/status-update', [CourseController::class, 'category_status_update'])->name('category.status_update');
+
+
+    Route::get('/course/list', [CourseController::class, 'courselList'])->name('course.list');
+    Route::get('/course/list-data', [CourseController::class, 'getAllCourseData'])->name('course.data');
+    Route::post('/courses/update-status', [CourseController::class, 'updateStatus'])->name('courses.updateStatus');
+    Route::post('/course/add', [CourseController::class, 'store'])->name('course.store');
+    // Route to fetch course details for editing
+    Route::get('/course/edit/{id}', [CourseController::class, 'edit'])->name('course.edit');
+
+    // Route to update the course
+    Route::put('/course/update/{id}', [CourseController::class, 'update'])->name('course.update');
+    Route::delete('/courses/{id}', [CourseController::class, 'destroy'])->name('course.destroy');
+    // Route::get('/course/list', 'CourseSettingController@getAllCourse')->name('getAllCourse')->middleware('RoutePermissionCheck:getAllCourse');
+
+    Route::get('/course/course-level/list', [CourseController::class, 'courseLevelList'])->name('course.level.list');
+    Route::post('/course/course-level/list/store', [CourseController::class, 'courseLevelStore'])->name('course.level.store');
+    Route::get('/course/course-level/edit/{id}', [CourseController::class, 'courseLevelEdit'])->name('course.level.edit');
+    Route::post('/course/course-level/update', [CourseController::class, 'courseLevelUpdate'])->name('course.level.update');
+    Route::post('/course/course-level/update-status', [CourseController::class, 'courseLevelUpdateStatus'])->name('course.level.update_status');
+    Route::get('/course/course-level/get-data', [CourseController::class, 'getCourseLevelsData'])->name('course.levels.data');
+
+    Route::delete('/courses/course-level/destroy/{id}', [CourseController::class, 'courseLevelDestroy'])->name('course.level.destroy');
+
 
 });
 
-Route::group(['middleware' => ['auth.userOrStudent']], function () {
+Route::group(['middleware' => ['auth.userOrStudent', 'affiliate.redirect']], function () {
     Route::get('quiz-home', [eLeanController::class, 'home'])->name('home3');
     Route::get('quiz-home/{level}', [eLeanController::class, 'homeLevel'])->name('home.level');
     Route::get('quiz-home/{level}/{term}', [eLeanController::class, 'homeTerm'])->name('home.term');
@@ -154,7 +189,28 @@ Route::post('/students-logout', [App\Http\Controllers\ContactController::class, 
 Route::get('/normalize', [App\Http\Controllers\HomeController::class, 'normalizeNumber1'])->name('normalize');
 Route::get('thank-you', [ContactController::class, 'thank_you'])->name('demo.thank_you');
 
+
+Route::get('/affiliate', [AffiliateController::class, 'fontend'])->name('affiliate.index');
+Route::get('/courses', [AffiliateController::class, 'courses'])->name('affiliate.courses');
+// Route::get('/courses', [CourseController::class, 'coursePageSection'])->name('courses.page.section');
+
+Route::get('/affiliate/registration', [AffiliateAuthController::class, 'showRegistrationFrom'])->name('affiliate.registration');
+Route::post('/affiliate/register', [AffiliateAuthController::class, 'register'])->name('affiliate.register');
+Route::get('/affiliate/login', [AffiliateAuthController::class, 'login'])->name('affiliate.login');
+
+Route::post('/affiliate/logout', [AffiliateAuthController::class, 'logout'])->name('affiliate.logout');
+
+Route::post('/affiliate/my_affiliate/add-or-update-paypal-account', [AffiliateAuthController::class, 'addOrUpdatePaypalAccount'])->name('add_or_update_paypal_account');
+// In your web.php routes file
+Route::post('/courses/pending', [CourseController::class, 'store'])->name('courses.pending.store');
+
+
+// Route::get('/affiliate/my_affiliate', )->name('my_affiliate.index');
+Route::resource('/affiliate/my_affiliate', AffiliateController::class)->except(['destroy']);
+
+
+// Route::get('thank-you', [ContactController::class, 'thank_you'])->name('demo.thank_you');
+
 Route::get('manon', function (Request $request) {
     return $request;
 });
-
