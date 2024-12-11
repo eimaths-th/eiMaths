@@ -1,9 +1,9 @@
 <div class="modal fade" id="ReceiptModal">
-    <div class="modal-dialog modal-xxl">
+    <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header bg-primary">
                 <h4 class="modal-title"><i class="fa-solid fa-file-invoice-dollar"></i> New Receipt</h4>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -29,7 +29,6 @@
                         <span aria-hidden="true"></span>
                     </button>
                 </div>
-
 
                 {{-- 'route' => 'users.store', --}}
                 {!! Form::open(['method' => 'POST', 'class' => 'form']) !!}
@@ -62,6 +61,36 @@
                                 <div class="card">
                                     <div class="card-body">
                                         <div class="row">
+                                            <div class="col-xs-3 col-sm-3 col-md-3">
+                                                <div class="form-group">
+                                                    <strong><i class="fas fa-code"></i> Referent Code:</strong>
+                                                    {{-- <select style="width: 100%;"
+                                                        class="productl select2 select2_single form-control"
+                                                        id="ReceiptCentre" name="rcentre" multiple="multiple"
+                                                        @cannot('all-centre') disabled @endcannot>
+                                                        @foreach ($centre as $key2)
+                                                            <option value="{{ $key2->id }}"
+                                                                @if (Auth::user()->department->id == (int) $key2->id) selected @endif>
+                                                                {{ $key2->name }}
+                                                            </option>
+                                                        @endforeach
+
+                                                    </select> --}}
+
+                                                    <input type="text" name="getRef" id="getRef"
+                                                        class="form-control">
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-3 col-sm-3 col-md-3">
+
+                                            </div>
+                                            <div class="col-xs-3 col-sm-3 col-md-3">
+
+                                            </div>
+                                            <div class="col-xs-3 col-sm-3 col-md-3">
+
+                                            </div>
+
                                             <div class="col-xs-6 col-sm-6 col-md-6">
                                                 <div class="form-group">
                                                     <strong><i class="fas fa-code"></i> Centre Code:</strong>
@@ -120,6 +149,7 @@
                                                     </select>
                                                 </div>
                                             </div>
+
                                             <div class="col-xs-3 col-sm-3 col-md-3">
                                                 <div class="form-group">
                                                     <strong><i class="fas fa-book-open"></i> Term:</strong>
@@ -238,7 +268,7 @@
                 <button type="button" class="btn btn-success" id="ReceiptCreateForm"><i
                         class="fas fa-download"></i>
                     Save </button>
-                <button type="button" class="btn btn-danger modelClose" data-dismiss="modal"><i
+                <button type="button" class="btn btn-danger modelClose" data-bs-dismiss="modal"><i
                         class="fas fa-door-closed"></i> Close</button>
             </div>
         </div>

@@ -31,14 +31,7 @@ class AffiliateController extends Controller
     }
     public function index(Request $request)
     {
-        // echo "hi its dashboard";
-        // dd($request);
-        // if (isAffiliateUser() && !hasAffiliateAccess()) {
-        //     abort('403', trans('affiliate.The request is now pending for admin approval'));
-        // } elseif (!hasAffiliateAccess() && !isAffiliateUser()) {
-        //     abort('403',trans('affiliate.You are not affiliate user. You need to join affiliate program first.'));
-        // }
-        // try {
+
 
         if (Auth::user()) {
             // Code when the user is authenticated
@@ -49,11 +42,27 @@ class AffiliateController extends Controller
         $data['end_date'] = isset($request->endDate) ? $request->endDate : '';
         $data['user'] = Auth::user();
         $affiliate_wallet = $data['user']->affiliateWallet;
+        $affiliate_bank = $data['user']->affiliateBank;
+
         if ($affiliate_wallet && $affiliate_wallet->paypal_account) {
             $data['paypal_account'] = $affiliate_wallet->paypal_account;
+            $data['amount'] = $affiliate_wallet->amount;
+
         } else {
             $data['paypal_account'] = ' ';
+            $data['paypal_account'] = 0;
         }
+
+        if ($affiliate_bank && $affiliate_bank->account_number) {
+            $data['account_number'] = $affiliate_bank->account_number;
+            $data['bank_name'] = $affiliate_bank->bank_name;
+            $data['account_name'] = $affiliate_bank->account_name;
+        } else {
+            $data['account_number'] = 'N/A'; // Clearer default value
+            $data['bank_name'] = 'N/A'; // To handle missing bank name
+            $data['account_name'] = 'N/A'; // To handle missing account name
+        }
+
         $data['data'] = $this->affiliateRepo->all();
         $affiliateTransactionRepo = new AffiliateTransactionRepository();
         $data['user_transaction_data'] = $affiliateTransactionRepo->userWiseWithdraw($data['start_date'], $data['end_date']);
@@ -65,6 +74,10 @@ class AffiliateController extends Controller
         // dd($data);
         return view('affiliate.backend.my_affiliate', [
             'data' => $data,
+            'amount' => $data['amount'],
+            'bank_name' => $data['bank_name'],
+            'account_number' => $data['account_number'],
+            'account_name' => $data['account_name'],
             'paypal_account' => $data['paypal_account'],
             'start_date' => $data['start_date'],
             'end_date' => $data['end_date']

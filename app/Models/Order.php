@@ -11,6 +11,8 @@ class Order extends Model
     protected $fillable = [
         'centre',
         'cid',
+        'courses_pending_id',
+        'ref',
         'order_number',
         'detail',
         'total_price',
@@ -27,5 +29,10 @@ class Order extends Model
     public function contact()
     {
         return $this->belongsTo(Contact::class, 'cid', 'id');
+    }
+
+    public function affiliateCommissions()
+    {
+        return $this->hasMany(AffiliateCommissionList::class, 'order_id');
     }
 }

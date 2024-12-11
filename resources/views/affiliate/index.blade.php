@@ -2,6 +2,17 @@
 @section('style')
 @endsection
 @section('content')
+    @if (request('ref'))
+        @php
+            $ref = request('ref');
+            // dd(request('ref'), $ref);
+        @endphp
+    @else
+        @php
+            $ref = '';
+            // dd(request('ref'), $ref);
+        @endphp
+    @endif
     <div id="content-area">
         <div class="full-page" data-type="component-text" data-preview="" data-aoraeditor-title="All Section"
             data-aoraeditor-categories="Affiliate Page">

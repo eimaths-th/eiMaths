@@ -3,7 +3,7 @@
 
 namespace Modules\Affiliate\Repositories;
 
-
+use App\Models\AffiliateUserBank;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Modules\Affiliate\Entities\AffiliateConfiguration;
@@ -100,6 +100,19 @@ class AffiliateRepository
             ],
             [
                 'paypal_account'     => $data['paypal_account'],
+            ]
+        );
+    }
+    public function addOrUpdateBankAccount(array $data)
+    {
+        return AffiliateUserBank::updateOrCreate(
+            [
+                'user_id'   => Auth::id(),
+            ],
+            [
+                'bank_name'     => $data['bank_name'],
+                'account_number'     => $data['account_number'],
+                'account_name'     => $data['account_name'],
             ]
         );
     }

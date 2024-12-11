@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -17,13 +18,17 @@ class CoursePending extends Model
         'name',
         'email',
         'telp',
+        'type_parent',
         'course_name',
-        'course_id'
+        'start_course',
+        'status',
+        'to_course',
+        'start_term',
+        'to_term',
+        'course_id',
     ];
-
-    // You can define relationships if needed
-    // Example: public function course()
-    // {
-    //     return $this->belongsTo(Course::class);
-    // }
+    public function affiliateCommissions()
+    {
+        return $this->hasMany(AffiliateCommissionList::class, 'courses_pending_id');
+    }
 }

@@ -1,11 +1,15 @@
 <?php
 
 use App\Http\Controllers\AffiliateAuthController;
+use App\Http\Controllers\AffiliateConfigurationsController;
 use App\Http\Controllers\AffiliateController;
+use App\Http\Controllers\CommissionListControler;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\eLeanController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\LineApiController;
+use App\Http\Controllers\LineController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\QuestionQuizzesController;
@@ -131,6 +135,11 @@ Route::group(['middleware' => ['auth', 'affiliate.redirect']], function () {
 
     //course list 
 
+    // line api setting 
+
+    Route::resource('/line-api', LineApiController::class);
+    Route::post('/line-api/update-status/{id}', [LineApiController::class, 'updateStatus'])->name('line-api.updateStatus');
+
     Route::get('/course/categories', [CourseController::class, 'categories'])->name('categories.index');
     Route::post('/course/categories-store', [CourseController::class, 'categoriesStore'])->name('categories.store');
 
@@ -161,7 +170,17 @@ Route::group(['middleware' => ['auth', 'affiliate.redirect']], function () {
 
     Route::delete('/courses/course-level/destroy/{id}', [CourseController::class, 'courseLevelDestroy'])->name('course.level.destroy');
 
+    Route::get('/courses/pending/index', [CourseController::class, 'coursesPendingIndex'])->name('courses.pending.index');
+    Route::post('/courses/pending/confirm/{id}', [CourseController::class, 'coursesPendingConfirm'])->name('courses.pending.confirm');
+    Route::post('/courses/pending/cancel/{id}', [CourseController::class, 'coursesPendingCancel'])->name('courses.pending.cancel');
+    Route::post('/courses/pending/reset/{id}', [CourseController::class, 'coursesPendingReset'])->name('courses.pending.reset');
+    Route::get('/courses/pending/new-student/{id}', [CourseController::class, 'coursesPendingNewStd'])->name('courses.pending.new.student');
+    Route::post('/courses/pending/new-student/store', [CourseController::class, 'coursesPendingNewStdStore'])->name('courses.pending.new.student.store');
 
+    Route::get('/commission-list', [CommissionListControler::class, 'index'])->name('commission-list.index');
+    Route::post('/commission/update-status', [CommissionListControler::class, 'updateStatus'])->name('commission-list.updateStatus');
+    Route::get('/affiliate-configurations', [AffiliateConfigurationsController::class, 'index'])->name('affiliate-configurations.index');
+    Route::post('/update-commission-config', [AffiliateConfigurationsController::class, 'update'])->name('affiliate-configurations.update');
 });
 
 Route::group(['middleware' => ['auth.userOrStudent', 'affiliate.redirect']], function () {
@@ -202,7 +221,7 @@ Route::post('/affiliate/logout', [AffiliateAuthController::class, 'logout'])->na
 
 Route::post('/affiliate/my_affiliate/add-or-update-paypal-account', [AffiliateAuthController::class, 'addOrUpdatePaypalAccount'])->name('add_or_update_paypal_account');
 // In your web.php routes file
-Route::post('/courses/pending', [CourseController::class, 'store'])->name('courses.pending.store');
+Route::post('/courses/pending', [CourseController::class, 'coursesPendingStore'])->name('courses.pending.store');
 
 
 // Route::get('/affiliate/my_affiliate', )->name('my_affiliate.index');
@@ -210,6 +229,8 @@ Route::resource('/affiliate/my_affiliate', AffiliateController::class)->except([
 
 
 // Route::get('thank-you', [ContactController::class, 'thank_you'])->name('demo.thank_you');
+// Route::post('/webhook/line', [LineController::class, 'webhook'])->name('line.webhook');
+Route::post('/webhook/line', [LineController::class, 'webhook'])->name('line.webhook');
 
 Route::get('manon', function (Request $request) {
     return $request;

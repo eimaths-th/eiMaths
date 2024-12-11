@@ -3,12 +3,14 @@
     <div class="courses_area">
         <div class="container">
             <div class="row">
-                <div class="col-lg-4 col-xl-3">
+                {{-- <div class="col-lg-4 col-xl-3">
                     <x-class-page-section-sidebar :level="$level" :type="$type" :categories="$categories"
                         :category="$category" :languages="$languages" :language="$language" :mode="$mode" />
-                    {{--  --}}
-                </div>
-                <div class="col-lg-8 col-xl-9">
+                </div> --}}
+                {{--  --}}
+
+                <div class="col-lg-12 col-xl-12">
+                    {{-- <div class="col-lg-8 col-xl-9"> --}}
                     <div class="row">
                         <div class="col-12">
                             <div class="box_header d-flex flex-wrap align-items-center justify-content-between">
@@ -49,15 +51,12 @@
                             // dd($courses);
                         @endphp
                         @if (isset($courses))
-                            @foreach ($courses as $course)
+                            {{-- @foreach ($courses as $course)
                                 <div class="col-lg-6 col-xl-4">
                                     <div class="couse_wizged">
-                                        <a href="{{ courseDetailsUrl(@$course->id, @$course->type, @$course->slug) }}">
+                                        <a href="#">
                                             <div class="thumb">
 
-                                                {{-- <div class="thumb_inner lazy"
-                                                     data-src="{{ asset($course->thumbnail) }}">
-                                                </div> --}}
                                                 <div class="thumb_inner lazy"
                                                     data-src="{{ asset(str_replace('public/', '', $course->thumbnail)) }}">
                                                 </div>
@@ -66,8 +65,7 @@
                                             </div>
                                         </a>
                                         <div class="course_content">
-                                            <a
-                                                href="{{ courseDetailsUrl(@$course->id, @$course->type, @$course->slug) }}">
+                                            <a href="#">
 
                                                 <h4 class="noBrake" title=" {{ $course->title }}">
                                                     {{ $course->title }}
@@ -111,7 +109,68 @@
                                         </div>
                                     </div>
                                 </div>
+                            @endforeach --}}
+
+                            @foreach ($courses as $course)
+                                <div class="col-lg-6 col-xl-4">
+                                    <div class="couse_wizged">
+                                        <!-- Trigger Modal -->
+                                        <a href="javascript:void(0);" data-bs-toggle="modal"
+                                            data-bs-target="#receiptModal" data-course-id ="{{ $course->id }}"
+                                            data-title="{{ $course->title }}"
+                                            data-thumbnail="{{ asset(str_replace('public/', '', $course->thumbnail)) }}">
+                                            <div class="thumb">
+                                                <div class="thumb_inner lazy"
+                                                    data-src="{{ asset(str_replace('public/', '', $course->thumbnail)) }}">
+                                                </div>
+                                                <x-price-tag :price="$course->price" :discount="$course->discount_price" />
+                                            </div>
+                                        </a>
+                                        <div class="course_content">
+                                            <a href="javascript:void(0);" data-bs-toggle="modal"
+                                                data-bs-target="#receiptModal" data-title="{{ $course->title }}">
+                                                <h4 class="noBrake" title=" {{ $course->title }}">{{ $course->title }}
+                                                </h4>
+                                            </a>
+                                            <div class="rating_cart">
+                                                <div class="rateing">
+                                                    <span>{{ $course->total_rating }}/5</span>
+                                                    <i class="fas fa-star"></i>
+                                                </div>
+                                                @if (!onlySubscription())
+                                                    @auth
+                                                        @if (!$course->isLoginUserEnrolled && !$course->isLoginUserCart)
+                                                            <a href="#" class="cart_store"
+                                                                data-id="{{ $course->id }}">
+                                                                <i class="fas fa-shopping-cart"></i>
+                                                            </a>
+                                                        @endif
+                                                    @endauth
+                                                    @guest
+                                                        @if (!$course->isGuestUserCart)
+                                                            <a href="#" class="cart_store"
+                                                                data-id="{{ $course->id }}">
+                                                                <i class="fas fa-shopping-cart"></i>
+                                                            </a>
+                                                        @endif
+                                                    @endguest
+                                                @endif
+                                            </div>
+                                            <div class="course_less_students">
+                                                <a> <i class="ti-agenda"></i> {{ $course->total_lessons }}
+                                                    {{ __('frontend.Lessons') }}</a>
+                                                @if (!Settings('hide_total_enrollment_count') == 1)
+                                                    <a>
+                                                        <i class="ti-user"></i> {{ $course->total_enrolled }}
+                                                        {{ __('frontend.Students') }}
+                                                    </a>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             @endforeach
+
                         @endif
                         @if (count($courses) == 0)
                             <div class="col-lg-12">

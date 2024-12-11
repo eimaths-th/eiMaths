@@ -23,7 +23,8 @@ use App\Models\Invoice;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Interfaces\MoneyConvertServiceInterface;
-
+use App\Models\AffiliateCommissionList;
+use App\Models\CoursePending;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
@@ -31,6 +32,8 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\File;
 use Detection\MobileDetect;
+use Exception;
+use Modules\Affiliate\Entities\AffiliateConfiguration;
 use PDF;
 
 
@@ -592,6 +595,26 @@ class OrderController extends Controller
     /**
      * Update the specified resource in storage.
      */
+
+    public function updateWaitingForPayment($status, $id)
+    {
+        // dd($status, $id);
+        $data = CoursePending::find($id);
+        if ($status == 'succ') {
+            # code...
+            $data->update(['status' => 4]);
+        }
+    }
+
+    private function update_commmission_list($courses_pending_id, $order_id, $reciept_id)
+    {
+        // Retrieve the order by ID and update the receipt_id
+        AffiliateCommissionList::where([
+            'order_id' => $order_id,
+            'courses_pending_id' => $courses_pending_id,
+        ])->update(['reciept_id' => $reciept_id, 'status' => 'paid']); // Correct format
+    }
+
     public function update(Request $request, $id)
     {
         //
@@ -611,6 +634,8 @@ class OrderController extends Controller
 
         $data = [
             'cid' => $request->get('cid'),
+            'ref' => $request->get('ref'),
+            'courses_pending_id' => $request->get('courses_pending_id'),
             'total_price' => $request->get('total_cost'),
             'detail' => $request->get('detail'),
             'refund' => $request->get('refund'),
@@ -626,6 +651,7 @@ class OrderController extends Controller
 
         $order = Order::find($id);
         $order->update($data);
+
         /* OrderDetail::where('order_id', $id)->delete();
 
         $amounts = $request->input('amount');
@@ -672,6 +698,8 @@ class OrderController extends Controller
             $receipt = new Receipt();
             $receipt->centre = $order->centre;
             $receipt->cid = $order->cid;
+            $receipt->ref = $order->ref;
+            $receipt->courses_pending_id = $order->courses_pending_id;
             $receipt->student_no = $order->contact->code;
             $receipt->student_name = $order->contact->name;
             $receipt->receipt_number = ReceiptRunningNumber::generate($order->centre);
@@ -682,6 +710,18 @@ class OrderController extends Controller
             $receipt->total_fee = $order->total_price;
             $receipt->start_term = $order->contact->start_term;
             $receipt->save();
+
+
+            if ($order->courses_pending_id) {
+                # code...
+                $statusss = 'succ';
+                $this->updateWaitingForPayment($statusss, $receipt->courses_pending_id);
+            }
+            if ($order->ref) {
+                # code...
+                $this->update_commmission_list($receipt->courses_pending_id, $receipt->oid, $receipt->id); // on helper
+
+            }
 
 
             $datas = Receipt::select(
@@ -701,15 +741,15 @@ class OrderController extends Controller
                 "receipts.payment as payment",
                 "orders.discount_book as discount_book",
                 DB::raw("CASE
-            WHEN contacts.father_name IS NOT NULL AND contacts.father_name != '' THEN contacts.father_name
-            WHEN contacts.mother_name IS NOT NULL AND contacts.mother_name != '' THEN contacts.mother_name
-            ELSE NULL
-        END AS parent_name"),
+                WHEN contacts.father_name IS NOT NULL AND contacts.father_name != '' THEN contacts.father_name
+                WHEN contacts.mother_name IS NOT NULL AND contacts.mother_name != '' THEN contacts.mother_name
+                ELSE NULL
+                END AS parent_name"),
                 DB::raw("CASE
-            WHEN contacts.father_name IS NOT NULL AND contacts.father_name != '' THEN contacts.father_mobile
-            WHEN contacts.mother_name IS NOT NULL AND contacts.mother_name != '' THEN contacts.mother_mobile
-            ELSE NULL
-        END AS parent_mobile")
+                WHEN contacts.father_name IS NOT NULL AND contacts.father_name != '' THEN contacts.father_mobile
+                WHEN contacts.mother_name IS NOT NULL AND contacts.mother_name != '' THEN contacts.mother_mobile
+                ELSE NULL
+                END AS parent_mobile")
 
             )
                 ->join("contacts", "contacts.id", "=", "receipts.cid")

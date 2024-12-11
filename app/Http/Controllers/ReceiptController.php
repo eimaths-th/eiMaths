@@ -210,6 +210,7 @@ class ReceiptController extends Controller
 
             $query = Receipt::select(
                 "receipts.id as id",
+                "receipts.ref as ref",
                 "receipts.receipt_number as receipt_number",
                 "receipts.total_fee as total_fee",
                 "receipts.payment_date as payment_date",
@@ -251,6 +252,7 @@ class ReceiptController extends Controller
             }
             $datas = $query->groupBy(
                 'receipts.id',
+                'receipts.ref',
                 'receipts.receipt_number',
                 'receipts.total_fee',
                 'receipts.payment_date',
@@ -276,6 +278,9 @@ class ReceiptController extends Controller
                     $nic = $row->contact_nickname !== null && $row->contact_nickname !== '' ? '(' . $row->contact_nickname . ')' : '';
                     //return $row->contact_name . ' ' . $nic;
                     return $row->contact_name;
+                })
+                ->editColumn('ref', function ($row) {
+                    return $row->ref;
                 })
                 ->editColumn('book_use', function (Receipt $datas) {
 
@@ -447,6 +452,7 @@ class ReceiptController extends Controller
             //sleep(2);
             $query = Order::select(
                 "orders.id as id",
+                "orders.ref as ref",
                 "orders.order_number as order_number",
                 "orders.total_price as total_price",
                 "orders.created_at as created_at",
@@ -488,6 +494,7 @@ class ReceiptController extends Controller
             }
             $query->groupBy(
                 "orders.id",
+                "orders.ref",
                 "orders.order_number",
                 "orders.total_price",
                 "orders.created_at",
@@ -500,13 +507,16 @@ class ReceiptController extends Controller
             );
 
             $datas = $query->orderBy("orders.id", "desc")->get();
-
+            // dd($datas);
             return datatables()->of($datas)
                 ->editColumn('checkbox', function ($row) {
                     return '<input type="checkbox" id="' . $row->id . '" class="flat" name="table_records[]" value="' . $row->id . '" >';
                 })
                 ->editColumn('created_at', function (Order $datas) {
                     return date('Y-m-d H:i:s', strtotime($datas->created_at));
+                })
+                ->editColumn('ref_code', function (Order $datas) {
+                    return $datas->ref;
                 })
                 ->editColumn('contact_name', function ($row) {
                     $nic = $row->contact_nickname !== null && $row->contact_nickname !== '' ? '(' . $row->contact_nickname . ')' : '';

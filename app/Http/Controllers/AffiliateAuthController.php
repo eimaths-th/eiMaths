@@ -11,12 +11,7 @@ use Brian2694\Toastr\Facades\Toastr;
 
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Modules\Affiliate\Http\Requests\AffiliateConfigurationRequest;
-use Modules\Affiliate\Http\Requests\AffiliateLinkRequest;
 use Modules\Affiliate\Repositories\AffiliateRepository;
-use Modules\Affiliate\Repositories\AffiliateTransactionRepository;
-use Modules\FrontendManage\Entities\FrontPage;
 
 class AffiliateAuthController extends Controller
 {
@@ -159,7 +154,8 @@ class AffiliateAuthController extends Controller
         $request->validate($validate_rules, validationMessage($validate_rules));
         try {
             $this->affiliateRepo->addOrUpdatePaypalAccount($request->all());
-            Toastr::success(trans('common.Operation successful'), trans('common.Success'));
+            $this->affiliateRepo->addOrUpdateBankAccount($request->all());
+            Toastr::success('Operation successful', 'Success');
             return back();
         } catch (Exception $e) {
             Toastr::error($e->getMessage(), trans('common.Error'));

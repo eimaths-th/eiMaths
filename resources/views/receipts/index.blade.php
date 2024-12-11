@@ -135,6 +135,7 @@
                                                     <th width="5%"><input type="checkbox" id="check-all" class="flat">
                                                     </th>
                                                     <th>Centre</th>
+                                                    <th>Referent Code</th>
                                                     <th>Student Code</th>
                                                     <th>Student Name</th>
                                                     <th>ReceiptNumber</th>
@@ -152,6 +153,7 @@
                                             </tbody>
                                             <tfoot>
                                                 <tr>
+                                                    <th></th>
                                                     <th></th>
                                                     <th></th>
                                                     <th></th>

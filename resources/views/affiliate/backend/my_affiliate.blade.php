@@ -148,7 +148,7 @@
     @include('affiliate.backend.my_affiliate-head')
 
     @yield('style')
-    
+
 </head>
 
 <body class="admin">
@@ -172,7 +172,7 @@
     <div class="main-wrapper" style="min-height: 600px">
         <!-- Sidebar  -->
         <!-- sidebar part here -->
-        
+
         @include('affiliate.backend.my_affiliate-sidebar')
 
         <!-- Page Content  -->
@@ -247,7 +247,7 @@
                                             <h3>Current Balance</h3>
                                             <p class="mb-0">Affiliate Account Current Balance</p>
                                         </div>
-                                        <h1 class="gradient-color2">0</h1>
+                                        <h1 class="gradient-color2"> {{ number_format($amount, 2) ?? '0' }} ฿</h1>
                                     </div>
                                 </div>
                             </a>
@@ -258,7 +258,7 @@
                                 <div class="white-box single-summery">
                                     <div class="d-flex justify-content-between">
                                         <div class="row">
-                                            <div class="col-12">
+                                            {{-- <div class="col-12">
                                                 <div class="row d-flex justify-content-between">
                                                     <div>
                                                         <h3>Total Earning</h3>
@@ -275,6 +275,34 @@
                                                     </div>
                                                     <h1 class="gradient-color2">
                                                         0
+                                                    </h1>
+                                                </div>
+                                            </div> --}}
+                                            <div class="col-12">
+                                                <div class="row d-flex justify-content-between">
+                                                    <div>
+                                                        <h3>{{ __('affiliate.Total Earning') }}</h3>
+                                                    </div>
+                                                    <h1 class="gradient-color2">
+                                                        @if ($start_date && $end_date)
+                                                            {{ getPriceFormat($user->affiliateCommissions->where('status', 1)->whereBetween('date', [$start_date, $end_date])->sum('amount'),false) }}
+                                                        @else
+                                                            {{ getPriceFormat($user->affiliateCommissions->where('status', 1)->sum('amount'), false) }}
+                                                        @endif
+                                                    </h1>
+                                                </div>
+                                            </div>
+                                            <div class="col-12">
+                                                <div class="row d-flex justify-content-between">
+                                                    <div>
+                                                        <h3>{{ __('affiliate.Pending') }}</h3>
+                                                    </div>
+                                                    <h1 class="gradient-color2">
+                                                        @if ($start_date && $end_date)
+                                                            {{ getPriceFormat($user->affiliateCommissions->where('status', 0)->whereBetween('date', [$start_date, $end_date])->sum('amount'),false) }}
+                                                        @else
+                                                            {{ getPriceFormat($user->affiliateCommissions->where('status', 0)->sum('amount'), false) }}
+                                                        @endif
                                                     </h1>
                                                 </div>
                                             </div>
@@ -357,7 +385,7 @@
 
                         </div>
                         @include('affiliate.backend.my_affiliate-table')
-                        
+
                     </div>
                 </div>
                 <div id="append_html"></div>
@@ -526,7 +554,7 @@
 
     @include('affiliate.backend.my_affiliate-script')
     @yield('script')
-    
+
 </body>
 
 </html>

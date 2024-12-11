@@ -515,9 +515,8 @@
     }
 </style>
 
-<link rel='stylesheet' type='text/css' property='stylesheet'
-    href='/_debugbar/assets/stylesheets?v=1725818754&theme=auto' data-turbolinks-eval='false' data-turbo-eval='false'>
-<script src='/_debugbar/assets/javascript?v=1725818754' data-turbolinks-eval='false' data-turbo-eval='false'></script>
-<script data-turbo-eval='false'>
+{{-- <link rel='stylesheet' type='text/css' property='stylesheet' href='/_debugbar/assets/stylesheets' data-turbolinks-eval='false' data-turbo-eval='false'>
+<script src='/_debugbar/assets/javascript' data-turbolinks-eval='false' data-turbo-eval='false'></script> --}}
+{{-- <script data-turbo-eval='false'>
     jQuery.noConflict(true);
-</script>
+</script> --}}
