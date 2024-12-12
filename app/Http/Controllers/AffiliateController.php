@@ -74,7 +74,7 @@ class AffiliateController extends Controller
         // dd($data);
         return view('affiliate.backend.my_affiliate', [
             'data' => $data,
-            'amount' => $data['amount'],
+            'amount' => $data['amount'] ?? '0',
             'bank_name' => $data['bank_name'],
             'account_number' => $data['account_number'],
             'account_name' => $data['account_name'],
