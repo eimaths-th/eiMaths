@@ -11,8 +11,9 @@ use App\Models\Position;
 use Spatie\Permission\Models\Role;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
-
+use Modules\Affiliate\Entities\AffiliateUserWallet;
 
 class CommissionListControler extends Controller
 {
@@ -99,17 +100,42 @@ class CommissionListControler extends Controller
             return response()->json(['message' => 'Invalid action'], 400);
         }
 
-        // Update the status
+        // Find the commission record
         $commission = AffiliateCommissionList::find($id);
         if (!$commission) {
-            return response()->json(['message' => 'Record not found'], 404);
+            return response()->json(['message' => 'Commission record not found'], 404);
         }
 
-        $commission->status = $action === 'approve' ? 'approved' : 'rejected';
-        $commission->save();
+        $amount = $commission->commission_amount;
+        $user_id = $commission->payment_to;
 
-        return response()->json(['message' => 'Status updated successfully!']);
+        // Start a transaction to ensure consistency
+        DB::beginTransaction();
+        try {
+            // Update the wallet amount if the action is "approve"
+            if ($action === 'approve') {
+                AffiliateUserWallet::where('user_id', $user_id)
+                    ->increment('amount', $amount);
+            }
+
+            // Update the commission status
+            $commission->status = $action === 'approve' ? 'approved' : 'rejected';
+            $commission->save();
+
+            // Commit the transaction
+            DB::commit();
+
+            return response()->json(['message' => 'Status updated successfully!']);
+        } catch (\Exception $e) {
+            // Rollback the transaction on error
+            DB::rollBack();
+            return response()->json([
+                'message' => 'An error occurred while updating the status',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
+
     public function create()
     {
         //

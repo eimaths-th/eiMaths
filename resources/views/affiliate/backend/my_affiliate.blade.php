@@ -281,28 +281,31 @@
                                             <div class="col-12">
                                                 <div class="row d-flex justify-content-between">
                                                     <div>
-                                                        <h3>{{ __('affiliate.Total Earning') }}</h3>
+                                                        <h3>Total Earning</h3>
                                                     </div>
                                                     <h1 class="gradient-color2">
                                                         @if ($start_date && $end_date)
-                                                            {{ getPriceFormat($user->affiliateCommissions->where('status', 1)->whereBetween('date', [$start_date, $end_date])->sum('amount'),false) }}
+                                                            {{ number_format($user->affiliateCommissions->where('status', 'approved')->whereBetween('created_at', [$start_date, $end_date])->sum('commission_amount'),2) }}
                                                         @else
-                                                            {{ getPriceFormat($user->affiliateCommissions->where('status', 1)->sum('amount'), false) }}
+                                                            {{ number_format($user->affiliateCommissions->where('status', 'approved')->sum('commission_amount'), 2) }}
                                                         @endif
+                                                        ฿
                                                     </h1>
                                                 </div>
                                             </div>
                                             <div class="col-12">
                                                 <div class="row d-flex justify-content-between">
                                                     <div>
-                                                        <h3>{{ __('affiliate.Pending') }}</h3>
+                                                        <h3>Pending</h3>
                                                     </div>
                                                     <h1 class="gradient-color2">
                                                         @if ($start_date && $end_date)
-                                                            {{ getPriceFormat($user->affiliateCommissions->where('status', 0)->whereBetween('date', [$start_date, $end_date])->sum('amount'),false) }}
+                                                            {{ number_format($user->affiliateCommissions->where('status', 'pending')->whereBetween('date', [$start_date, $end_date])->sum('commission_amount'),2) }}
                                                         @else
-                                                            {{ getPriceFormat($user->affiliateCommissions->where('status', 0)->sum('amount'), false) }}
+                                                            {{-- {{ number_format($user->affiliateCommissions->where('status', 'pending' or 'paid')->sum('commission_amount'), 2) }} --}}
+                                                            {{ number_format($user->affiliateCommissions->whereIn('status', ['pending', 'paid'])->sum('commission_amount'), 2) }}
                                                         @endif
+                                                        ฿
                                                     </h1>
                                                 </div>
                                             </div>
