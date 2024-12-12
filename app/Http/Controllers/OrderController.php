@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use AddCommissionListInAffiliate;
 use App\Models\Order;
 use App\Models\ReceiptRunningNumber;
 use App\Models\OrderDetail;
@@ -25,6 +26,7 @@ use App\Http\Controllers\Controller;
 use App\Interfaces\MoneyConvertServiceInterface;
 use App\Models\AffiliateCommissionList;
 use App\Models\CoursePending;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
@@ -623,8 +625,23 @@ class OrderController extends Controller
     //     ])->update(['reciept_id' => $reciept_id, 'status' => 'paid']); // Correct format
     // }
 
+    private function sent_ref_to_reciept($ref, $order_id,$courses_pending_id)
+    {
 
-    private function update_commmission_list($order_id, $reciept_id, $courses_pending_id = null, $payment_to = null)
+        $user = User::where('referral', $ref)->first();
+        $order = Order::find($order_id);
+        $aff_config = AffiliateConfiguration::find(3);
+        $commission_rate = $aff_config->value / 100;
+        AffiliateCommissionList::create([
+            'payment_to' => $user->id,
+            'courses_pending_id' => $courses_pending_id,
+            'order_id' => $order_id,
+            'status' => 'pending',
+            'commission_amount' => ($order->total_price - ($order->register_fee + $order->access_fee)) * $commission_rate,
+        ]);
+    }
+
+    private function update_commmission_list($order_id, $receipt_id, $courses_pending_id = null, $payment_to = null)
     {
         $conditions = ['order_id' => $order_id];
 
@@ -635,17 +652,20 @@ class OrderController extends Controller
         if ($payment_to) {
             $conditions['payment_to'] = $payment_to;
         }
-
-        AffiliateCommissionList::where($conditions)->update([
-            'reciept_id' => $reciept_id,
+        // dd($conditions);
+        // Use where with an array for conditions
+        $testbug = AffiliateCommissionList::where($conditions)->update([
+            'reciept_id' => $receipt_id,
             'status' => 'paid',
         ]);
+        return $testbug;
     }
+
 
     public function update(Request $request, $id)
     {
         //
-        // dd($request);    
+        // dd($request->all());
         $rules = [
             'order_number' => 'required|string|max:20',
             'cid' => 'required|integer|max:255',
@@ -739,23 +759,33 @@ class OrderController extends Controller
             $receipt->start_term = $order->contact->start_term;
             $receipt->save();
 
+            $check = AffiliateCommissionList::where('order_id', $order->id)->get();
+            // $check = AffiliateCommissionList::where('order_id', $order->id)->count();
+            $c = count($check);
+
+            if ($c == 0 && $order->ref) { 
+
+                $commission  = $this->sent_ref_to_reciept($order->ref, $receipt->oid, $receipt->courses_pending_id ?? null);
+            }
 
             if ($order->courses_pending_id) {
                 $statusss = 'succ';
                 $this->updateWaitingForPayment($statusss, $receipt->courses_pending_id);
-            } else {
-                $commmissionList = $order->ref
-                    ? create_commmission_list($order->id)
-                    : '';
             }
 
-            if ($order->ref) {
-                if ($order->courses_pending_id) {
-                    $this->update_commmission_list($receipt->oid, $receipt->id, $receipt->courses_pending_id);
-                } else {
-                    $this->update_commmission_list($receipt->oid, $receipt->id, null, $commmissionList->payment_to);
-                }
+            $user_payment_to = User::where('referral', $order->ref)->first();
+
+            if ($order->ref && $order->courses_pending_id) {
+                # code...
+                $testbug = $this->update_commmission_list($receipt->oid, $receipt->id, $receipt->courses_pending_id, $user_payment_to->id);
+                // dd('1', $testbug, 'true');
+            } elseif ($order->ref && !$order->courses_pending_id) {
+
+                $this->update_commmission_list($receipt->oid, $receipt->id, null, $user_payment_to->id);
+                
             }
+
+            // dd($order->ref, $order->courses_pending_id);
 
             $datas = Receipt::select(
                 "receipts.*",
@@ -815,13 +845,11 @@ class OrderController extends Controller
                 return redirect()->back()->with('error', 'Receipt data not found.');
             }
 
-
             $qty = 0;
             foreach ($datas_list as $price_list) {
                 $ccname = $price_list->first_char;
                 $qty = $qty + $price_list->row_count;
             }
-
 
             // Data to pass to the view
             if ($datas_list[0]->first_char == "K") {

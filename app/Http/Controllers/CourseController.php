@@ -1370,7 +1370,7 @@ class CourseController extends Controller
         $this->updateWaitingForPayment($status, $courses_pending_id);
 
         if ($request->get('ref')) {
-            $commmissionList = create_commmission_list($courses_pending_id, $order->id); // on helper
+            $commmissionList = create_commmission_list($order->id, $courses_pending_id, $request->get('ref')); // on helper
         }
         $select_list_contact = '<option value="' . $contact->id . '" > ' . $contact->name . '</option>';
         return response()->json([

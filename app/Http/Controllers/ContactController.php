@@ -747,7 +747,7 @@ class ContactController extends Controller
     public function receipt(Request $request)
     {
 
-        // dd($request);
+        // dd($request->all());
         //
         $validator = Validator::make($request->all(), [
             'centre' => 'required',
@@ -973,8 +973,9 @@ class ContactController extends Controller
             $status = 'wait';
             $this->updateWaitingForPayment($status, $courses_pending_id);
         }
+        // dd($request->all());
         if ($request->get('ref')) {
-            $commmissionList = create_commmission_list($courses_pending_id, $order->id); // on helper
+            $commmissionList = create_commmission_list($order->id,$courses_pending_id ,$request->get('ref')); // on helper
         }
 
         $select_list_contact = '<option value="' . $contact->id . '" > ' . $contact->name . '</option>';

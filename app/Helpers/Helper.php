@@ -77,16 +77,19 @@ use PhpOffice\PhpSpreadsheet\Shared\Date;
 
 
 if (!function_exists('create_commmission_list')) {
-    function create_commmission_list($order_id, $courses_pending_id = null)
+    function create_commmission_list($order_id, $courses_pending_id = null, $reqRef)
     {
         $order = Order::find($order_id);
         if (!$order) {
             throw new Exception("Order not found with ID: $order_id");
         }
+        // dd($reqRef);
+        $coursePendingRef = $courses_pending_id 
+            ? CoursePending::find($courses_pending_id)?->ref 
+            : null;
 
-        $ref = $courses_pending_id
-            ? CoursePending::find($courses_pending_id)?->ref
-            : $order->ref;
+        // Use coursePendingRef if it exists, otherwise fallback to reqRef
+        $ref = $coursePendingRef ?: $reqRef;
 
         if (empty($ref)) {
             throw new Exception("Referral code not found.");

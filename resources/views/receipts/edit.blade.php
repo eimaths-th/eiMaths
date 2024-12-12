@@ -421,7 +421,7 @@
                              class="fa-solid fa-hand-holding-dollar"></i>
                          Pending</button>
                      <button type="button" class="btn btn-success" id="SubmitEditForm"><i
-                             class="fa-solid fa-sack-dollar"></i> Create Receipt</button>
+                             class="fa-solid fa-sack-dollar"></i>Create Receipt</button>
                      {{--  <button type="button" class="btn btn-danger modelClose" data-dismiss="modal"><i
                              class="fas fa-door-closed"></i> Close</button> --}}
                  </div>

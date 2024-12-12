@@ -606,7 +606,7 @@
                 url: "orders/edit/" + id,
                 method: 'GET',
                 success: function(res) {
-                    // console.log(res);
+                    console.log(res);
                     $('#EditCentre').val(res.data.centre).change();
                     $('#EditCentre').prop('disabled', true);
                     $('#EditLot').val(res.receipt_number);
@@ -663,12 +663,10 @@
                     }
 
                     if (res.data.ref) {
-                        console.log('true');
-                        console.log(res);
                         $('#getRef').val(res.data.ref);
                         $('#getRef').prop('readonly', true);
                     } else {
-                        console.log('false Create Receipt');
+                        console.log('id Create Receipt');
 
                         $('#getRef').val(''); // Clear the value if ref is null or undefined
                         $('#getRef').prop('readonly',
@@ -677,7 +675,7 @@
                     if (res.data.courses_pending_id) {
                         $('#courses_pending_id').val(res.data.courses_pending_id);
 
-                    }else{
+                    } else {
                         console.log('false courses_pending_id');
                         $('#courses_pending_id').val('');
                     }
@@ -763,20 +761,19 @@
                     }
 
                     if (res.data.ref) {
-                        console.log('true22');
-                        console.log(res);
-                        console.log(res.data.ref);
-
+                        
                         $('#getRef').val(res.data.ref);
                         $('#courses_pending_id').val(res.data.courses_pending_id);
                         $('#getRef').prop('readonly', true);
                     } else {
-                        console.log('false');
-
+                        
                         $('#getRef').val(''); // Clear the value if ref is null or undefined
                         $('#getRef').prop('readonly',
                             false); // Make editable if ref is null or undefined
                     }
+
+                    console.log('test');
+                    
 
                     $('#EditModal').modal('show');
 
@@ -804,13 +801,12 @@
                 status = 0; // Set status to 0 if Pending button is clicked
             }
 
+            console.log('test1');
 
             var values = $("input[name='imgFiles2[]']")
                 .map(function() {
                     return $(this).val();
                 }).get();
-
-
 
             var formData = {
                 ref: $('#getRef').val(),
@@ -846,6 +842,17 @@
                                 '</li></strong>');
                         });
                     } else {
+                        console.log(result);
+                        // $('.alert-danger').hide();
+                        // $('.alert-success').show();
+                        // $('.alert-success').append('<strong><li>' + result.success +
+                        //     '</li></strong>');
+                        // $('#EditModal').modal('hide');
+                        // toastr.success(result.success, {
+                        //     timeOut: 5000
+                        // });
+                        // clearDropzonePreviews2();
+                        // $('#Listview').DataTable().ajax.reload();
 
                         var ostatus = result.status;
                         if (ostatus == 1) {
