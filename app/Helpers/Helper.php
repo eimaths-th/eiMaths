@@ -77,43 +77,115 @@ use PhpOffice\PhpSpreadsheet\Shared\Date;
 
 
 if (!function_exists('create_commmission_list')) {
-    function create_commmission_list($courses_pending_id, $order_id)
+    function create_commmission_list($order_id, $courses_pending_id = null)
     {
         $order = Order::find($order_id);
         if (!$order) {
             throw new Exception("Order not found with ID: $order_id");
         }
-        $course_pending = CoursePending::find($courses_pending_id);
-        if (!$course_pending) {
-            throw new Exception("CoursePending not found with ID: $courses_pending_id");
-        }
-        $ref = $course_pending->ref;
 
-        $ref = $course_pending->ref;
-        $user_id = null; // Default to null if no user found
+        $ref = $courses_pending_id
+            ? CoursePending::find($courses_pending_id)?->ref
+            : $order->ref;
 
-        if (!empty($ref)) { // Ensure $ref is not empty or null
-            $user = ModelsUser::where('referral', $ref)->first();
-            if (!$user) {
-                throw new Exception("User not found with ref: $ref");
-            }
-            $user_id = $user->id;
+        if (empty($ref)) {
+            throw new Exception("Referral code not found.");
         }
+
+        $user = ModelsUser::where('referral', $ref)->first();
+        if (!$user) {
+            throw new Exception("User not found with ref: $ref");
+        }
+
         $aff_config = AffiliateConfiguration::find(3);
-
         if (!$aff_config) {
             throw new Exception("Affiliate configuration not found with ID: 3");
         }
+
         $commission_rate = $aff_config->value / 100;
         return AffiliateCommissionList::create([
-            'payment_to' => $user_id, // Ensure user ID is correctly retrieved
+            'payment_to' => $user->id,
             'courses_pending_id' => $courses_pending_id,
             'order_id' => $order_id,
-            'status' => 'pending', // Default status
-            'commission_amount' => $order->total_price * $commission_rate, // Calculate commission
+            'status' => 'pending',
+            'commission_amount' => $order->total_price * $commission_rate,
         ]);
     }
 }
+
+
+// if (!function_exists('create_commmission_list')) {
+//     function create_commmission_list($courses_pending_id, $order_id)
+//     {
+//         $order = Order::find($order_id);
+//         if (!$order) {
+//             throw new Exception("Order not found with ID: $order_id");
+//         }
+//         $course_pending = CoursePending::find($courses_pending_id);
+//         if (!$course_pending) {
+//             $course_pending = '';
+//         }
+//         $ref = $course_pending->ref;
+
+//         $ref = $course_pending->ref;
+//         $user_id = null; // Default to null if no user found
+
+//         if (!empty($ref)) { // Ensure $ref is not empty or null
+//             $user = ModelsUser::where('referral', $ref)->first();
+//             if (!$user) {
+//                 throw new Exception("User not found with ref: $ref");
+//             }
+//             $user_id = $user->id;
+//         }
+//         $aff_config = AffiliateConfiguration::find(3);
+
+//         if (!$aff_config) {
+//             throw new Exception("Affiliate configuration not found with ID: 3");
+//         }
+//         $commission_rate = $aff_config->value / 100;
+//         return AffiliateCommissionList::create([
+//             'payment_to' => $user_id, // Ensure user ID is correctly retrieved
+//             'courses_pending_id' => $courses_pending_id,
+//             'order_id' => $order_id,
+//             'status' => 'pending', // Default status
+//             'commission_amount' => $order->total_price * $commission_rate, // Calculate commission
+//         ]);
+//     }
+// }
+// if (!function_exists('create_commmission_list2')) {
+//     function create_commmission_list2( $order_id)
+//     {
+//         $order = Order::find($order_id);
+//         if (!$order) {
+//             throw new Exception("Order not found with ID: $order_id");
+//         }
+
+//         $ref = $order->ref;
+
+//         $user_id = null; // Default to null if no user found
+
+//         if (!empty($ref)) { // Ensure $ref is not empty or null
+//             $user = ModelsUser::where('referral', $ref)->first();
+//             if (!$user) {
+//                 throw new Exception("User not found with ref: $ref");
+//             }
+//             $user_id = $user->id;
+//         }
+//         $aff_config = AffiliateConfiguration::find(3);
+
+//         if (!$aff_config) {
+//             throw new Exception("Affiliate configuration not found with ID: 3");
+//         }
+//         $commission_rate = $aff_config->value / 100;
+//         return AffiliateCommissionList::create([
+//             'payment_to' => $user_id, // Ensure user ID is correctly retrieved
+//             // 'courses_pending_id' => '',
+//             'order_id' => $order_id,
+//             'status' => 'pending', // Default status
+//             'commission_amount' => $order->total_price * $commission_rate, // Calculate commission
+//         ]);
+//     }
+// }
 
 // if (!function_exists('create_commmission_list')) {
 //     function create_commmission_list($courses_pending_id, $order_id)

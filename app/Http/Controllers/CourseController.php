@@ -877,6 +877,7 @@ class CourseController extends Controller
         $level = level::where([['status', '1']])
             ->orderBy("name", "asc")->get();
         if ($request->ajax()) {
+            // $query = CoursePending::where('start_course', 1)->orderBy('id', 'desc');
             $query = CoursePending::query()->orderBy('id', 'desc');
 
             return DataTables::of($query)
@@ -1140,12 +1141,7 @@ class CourseController extends Controller
     }
     public function coursesPendingNewStdStore(Request $request)
     {
-
-
-
-        // dd(
-        //     $request->all()
-        // );
+        // dd($request);
 
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255|unique:contacts',

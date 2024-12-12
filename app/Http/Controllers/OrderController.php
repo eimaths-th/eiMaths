@@ -606,18 +606,46 @@ class OrderController extends Controller
         }
     }
 
-    private function update_commmission_list($courses_pending_id, $order_id, $reciept_id)
+    // private function update_commmission_list($courses_pending_id, $order_id, $reciept_id)
+    // {
+    //     // Retrieve the order by ID and update the receipt_id
+    //     AffiliateCommissionList::where([
+    //         'order_id' => $order_id,
+    //         'courses_pending_id' => $courses_pending_id,
+    //     ])->update(['reciept_id' => $reciept_id, 'status' => 'paid']); // Correct format
+    // }
+    // private function update_commmission_list2($payment_to, $order_id, $reciept_id)
+    // {
+    //     // Retrieve the order by ID and update the receipt_id
+    //     AffiliateCommissionList::where([
+    //         'order_id' => $order_id,
+    //         'payment_to' => $payment_to,
+    //     ])->update(['reciept_id' => $reciept_id, 'status' => 'paid']); // Correct format
+    // }
+
+
+    private function update_commmission_list($order_id, $reciept_id, $courses_pending_id = null, $payment_to = null)
     {
-        // Retrieve the order by ID and update the receipt_id
-        AffiliateCommissionList::where([
-            'order_id' => $order_id,
-            'courses_pending_id' => $courses_pending_id,
-        ])->update(['reciept_id' => $reciept_id, 'status' => 'paid']); // Correct format
+        $conditions = ['order_id' => $order_id];
+
+        if ($courses_pending_id) {
+            $conditions['courses_pending_id'] = $courses_pending_id;
+        }
+
+        if ($payment_to) {
+            $conditions['payment_to'] = $payment_to;
+        }
+
+        AffiliateCommissionList::where($conditions)->update([
+            'reciept_id' => $reciept_id,
+            'status' => 'paid',
+        ]);
     }
 
     public function update(Request $request, $id)
     {
         //
+        // dd($request);    
         $rules = [
             'order_number' => 'required|string|max:20',
             'cid' => 'required|integer|max:255',
@@ -654,12 +682,12 @@ class OrderController extends Controller
 
         /* OrderDetail::where('order_id', $id)->delete();
 
-        $amounts = $request->input('amount');
-        $prices = $request->input('price');
-        $sids = $request->input('sid');
+                $amounts = $request->input('amount');
+                $prices = $request->input('price');
+                $sids = $request->input('sid');
 
-        if (is_array($amounts) && is_array($prices) && count($amounts) === count($prices)) {
-            foreach ($amounts as $index => $amount) {
+                if (is_array($amounts) && is_array($prices) && count($amounts) === count($prices)) {
+                foreach ($amounts as $index => $amount) {
                 if (isset($sids[$index])) { // Check if the index exists in $sids array
                     $priceq = bookuse::find($sids[$index]);
                     $orderDetail = new OrderDetail();
@@ -671,9 +699,9 @@ class OrderController extends Controller
                     $orderDetail->price = $prices[$index];
                     $orderDetail->save();
                 }
-            }
-        }
- */
+                }
+                }
+            */
         //file att
 
         $filesa = $request->get('img');
@@ -713,16 +741,21 @@ class OrderController extends Controller
 
 
             if ($order->courses_pending_id) {
-                # code...
                 $statusss = 'succ';
                 $this->updateWaitingForPayment($statusss, $receipt->courses_pending_id);
+            } else {
+                $commmissionList = $order->ref
+                    ? create_commmission_list($order->id)
+                    : '';
             }
+
             if ($order->ref) {
-                # code...
-                $this->update_commmission_list($receipt->courses_pending_id, $receipt->oid, $receipt->id); // on helper
-
+                if ($order->courses_pending_id) {
+                    $this->update_commmission_list($receipt->oid, $receipt->id, $receipt->courses_pending_id);
+                } else {
+                    $this->update_commmission_list($receipt->oid, $receipt->id, null, $commmissionList->payment_to);
+                }
             }
-
 
             $datas = Receipt::select(
                 "receipts.*",

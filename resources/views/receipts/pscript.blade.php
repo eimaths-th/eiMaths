@@ -476,7 +476,7 @@
         };
         var table = $('#Listview').DataTable(table_option);
         // console.log(table_option);
-        
+
         $('#SearchButtons').on('click', function() {
             var searchType = $('#search_type').val();
             var keyword = $('#keyword').val();
@@ -665,17 +665,23 @@
                     if (res.data.ref) {
                         console.log('true');
                         console.log(res);
-
                         $('#getRef').val(res.data.ref);
-                        $('#courses_pending_id').val(res.data.courses_pending_id);
                         $('#getRef').prop('readonly', true);
                     } else {
-                        console.log('false');
+                        console.log('false Create Receipt');
 
                         $('#getRef').val(''); // Clear the value if ref is null or undefined
                         $('#getRef').prop('readonly',
                             false); // Make editable if ref is null or undefined
                     }
+                    if (res.data.courses_pending_id) {
+                        $('#courses_pending_id').val(res.data.courses_pending_id);
+
+                    }else{
+                        console.log('false courses_pending_id');
+                        $('#courses_pending_id').val('');
+                    }
+
 
                     $('#EditModal').modal('show');
                     hideOverlay();

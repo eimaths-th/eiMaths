@@ -970,7 +970,6 @@ class ContactController extends Controller
         }
         if ($courses_pending_id) {
             # code...
-
             $status = 'wait';
             $this->updateWaitingForPayment($status, $courses_pending_id);
         }

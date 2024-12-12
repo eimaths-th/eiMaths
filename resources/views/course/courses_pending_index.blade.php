@@ -904,9 +904,10 @@
                     } // Action
                 ],
                 createdRow: function(row, data, dataIndex) {
-                    // Sequential numbering
+                
                     var info = table.page.info();
                     $('td:eq(0)', row).html(info.start + dataIndex + 1);
+                
                 }
             });
 
@@ -1213,7 +1214,7 @@
                     $('#getRef').val(res.data.ref);
                     $('#getRef').prop('readonly', true);
                 } else {
-                    console.log('false');
+                    console.log('false  New Receipt');
 
                     $('#getRef').val(''); // Clear the value if ref is null or undefined
                     $('#getRef').prop('readonly', false); // Make editable if ref is null or undefined
@@ -2424,5 +2425,4 @@
 
         });
     </script> --}}
-    {{-- แก้ บัค id หาย เมื่อไม่มี ref --}}
 @endsection
