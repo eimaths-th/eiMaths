@@ -11,6 +11,7 @@ use Modules\Localization\Entities\Language;
 use App\Models\CoursePending;
 use App\Models\Department;
 use App\Models\level;
+use App\Models\LineApiSetting;
 use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\OrderDetailList;
@@ -1075,9 +1076,14 @@ class CourseController extends Controller
         // Send a message to Line OA
         // Replace with your Line User ID
 
-        $lineUserId = 'U25fc5496e631e0cab0923f8f3cfc6db0';
-        $accessToken = '2U8EhhLV69SeO/s/++xinSMV/g5r0K0WVvsaboSDAfGTX1Yz3820Xy/f7zSSz5wD+e4o0EOqwbmyudz61unaWxWP//j+gbGbSsDEyOVuMplrGoUWcLNE4NicviIUIcovVQ7Yub4BWefq7ABdgsr9QQdB04t89/1O/w1cDnyilFU='; // Replace with your Channel Access Token
+          // $lineUserId = 'U25fc5496e631e0cab0923f8f3cfc6db0';
+        // $accessToken = '2U8EhhLV69SeO/s/++xinSMV/g5r0K0WVvsaboSDAfGTX1Yz3820Xy/f7zSSz5wD+e4o0EOqwbmyudz61unaWxWP//j+gbGbSsDEyOVuMplrGoUWcLNE4NicviIUIcovVQ7Yub4BWefq7ABdgsr9QQdB04t89/1O/w1cDnyilFU='; // Replace with your Channel Access Token
 
+        $line_api = LineApiSetting::where('status', 1)->first();
+
+        $lineUserId = decrypt($line_api->line_user_id);
+        $accessToken = decrypt($line_api->channel_access_token);
+      
         $this->sendLineMessage($lineUserId, $accessToken, $message);
 
         // $this->sendMulticastMessage([$lineUserId], $accessToken, 'Hello from Line OA!1cd ');
