@@ -108,6 +108,7 @@
             'receipts_pending',
             'courses.pending.index',
             'commission-list.index',
+            'config-withdraw.index',
         ])
             ? 'menu-open'
             : '' }}">
@@ -117,6 +118,7 @@
                 'receipts_pending',
                 'courses.pending.index',
                 'commission-list.index',
+                'config-withdraw.index',
             ])
                 ? 'active'
                 : '' }}">
@@ -130,6 +132,13 @@
                     class="nav-link {{ Request::is('courses.pending.index') ? 'active' : '' }}">
                     <i class="nav-icon fa-solid fa-comment-dots"></i>
                     <p>Courses Pennding</p>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{{ route('config-withdraw.index') }}"
+                    class="nav-link {{ Request::is('config-withdraw.index') ? 'active' : '' }}">
+                    <i class="nav-icon fa-solid fa-comment-dots"></i>
+                    <p>Config Withdraw</p>
                 </a>
             </li>
             <li class="nav-item">

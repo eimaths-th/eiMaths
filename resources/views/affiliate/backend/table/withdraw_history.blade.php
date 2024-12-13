@@ -62,13 +62,13 @@
                                         </button>
                                         <div class="dropdown-menu dropdown-menu-right"
                                             aria-labelledby="dropdownMenu2">
-                                                <a href="#"
+                                                {{-- <a href="#"
                                                     class="dropdown-item edit_row"
                                                     data-id="{{ $item->id }}">Edit</a>
                                                 <a href="#"
                                                     class="dropdown-item delete_row"
                                                     data-id="{{ $item->id }}"
-                                                    type="button">Delete</a>
+                                                    type="button">Delete</a> --}}
                                         </div>
                                     </div>
                                 </td>
