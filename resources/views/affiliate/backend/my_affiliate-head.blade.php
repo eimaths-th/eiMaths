@@ -1,6 +1,6 @@
 <meta charset="utf-8" class="test" />
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-<meta name="csrf-token" content="S2b9x1qm9PItqnuUewh2B7IN3c7KcABR0nbRYaFy">
+<meta name="csrf-token" content="{{ csrf_token() }}">
 <link rel="icon" href="{{ asset('uploads/main/files/09-08-2024/cropped-footer-logo-32x32.png') }}" type="image/png" />
 <title>
     eiMaths ecommerce

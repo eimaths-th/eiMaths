@@ -1,6 +1,6 @@
 (function ($) {
     "use strict";
-    let _token = $('meta[name=_token]').attr('content');
+    let _token = $('meta[name="csrf-token"]').attr('content');
     if (typeof _token == 'undefined') {
         _token = $('#csrf_token').val();
     }
@@ -51,12 +51,17 @@
         });
 
         $(document).on('submit', '#create_withdraw_request', function (event) {
+
+            console.log(_token);
+            console.log($('#withdraw_request_store_url').val());
+
             event.preventDefault();
             let formElement = $(this).serializeArray()
             let formData = new FormData();
             formElement.forEach(element => {
                 formData.append(element.name, element.value);
             });
+
             formData.append('_token', _token);
             resetValidationError();
             $.ajax({

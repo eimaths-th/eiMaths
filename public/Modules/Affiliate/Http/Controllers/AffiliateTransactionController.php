@@ -27,6 +27,8 @@ class AffiliateTransactionController extends Controller
 
     public function store(AffiliateWithdrawRequest $request)
     {
+
+        dd($request);
         try {
             DB::beginTransaction();
             $this->affiliateTransactionRepo->withdrawRequest($request->validated());

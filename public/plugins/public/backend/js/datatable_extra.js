@@ -65,83 +65,251 @@ let dataTableLang = {
 }
 
 
+// var dataTableOptions = {
+//     bLengthChange: true,
+//     lengthChange: true,
+//     lengthMenu: [[10, 25, 50, 100, 10000000], [window.jsLang('data_10'), window.jsLang('data_25'), window.jsLang('data_50'), window.jsLang('data_100'), window.jsLang('data_all'), window.jsLang('data_all')]],
+//     bDestroy: true,
+//     stateSave: true,
+//     language: dataTableLang,
+//     dom: 'Blfrtip',
+//     buttons: [{
+//         extend: 'copyHtml5',
+//         text: '<i class="far fa-copy"></i>',
+//         title: dataTableTitle,
+//         titleAttr: window.jsLang('data_copy'),
+//         exportOptions: {
+//             columns: ':not(:last-child)',
+//         }
+//     }, {
+//         extend: 'excelHtml5',
+//         text: '<i class="far fa-file-excel"></i>',
+//         titleAttr: window.jsLang('data_excel'),
+//         title: dataTableTitle,
+//         margin: [10, 10, 10, 0],
+//         exportOptions: {
+//             columns: ':not(:last-child)',
+//         },
+
+//     }, {
+//         extend: 'csvHtml5',
+//         text: '<i class="far fa-file-alt"></i>',
+//         titleAttr: window.jsLang('data_csv'),
+//         exportOptions: {
+//             columns: ':not(:last-child)',
+//         }
+//     }, {
+//         extend: 'pdfHtml5',
+//         text: '<i class="far fa-file-pdf"></i>',
+//         title: dataTableTitle,
+//         titleAttr: window.jsLang('data_pdf'),
+//         exportOptions: {
+//             columns: ':not(:last-child)',
+//         },
+//         orientation: 'landscape',
+//         pageSize: 'A4',
+//         margin: [0, 0, 0, 0],
+//         alignment: 'left',
+//         header: true,
+//         customize: function (doc) {
+//             doc.content[1].table.widths = Array(doc.content[1].table.body[0].length + 1).join('*').split('');
+//         }
+
+//     }, {
+//         extend: 'print',
+//         text: '<i class="fa fa-print"></i>',
+//         titleAttr: window.jsLang('data_print'),
+//         title: dataTableTitle,
+//         exportOptions: {
+//             columns: ':not(:last-child)',
+//         }
+//     }, {
+//         extend: 'colvis', text: '<i class="fa fa-columns"></i>', postfixButtons: ['colvisRestore']
+//     }],
+
+//     responsive: true,
+//     columnDefs: [
+
+//         {
+//             targets: '_all', // Or specific column index for DT_RowIndex
+//             render: function (data, type, row) {
+//                 if (type === 'display') {
+//                     return window.translatedNumber(data)
+//                 }
+//                 return data;
+//             }
+//         }]
+
+// }
+
+// var dataTableOptions = {
+//     bLengthChange: true,
+//     lengthChange: true,
+//     lengthMenu: [
+//         [10, 25, 50, 100, 10000000],
+//         [
+//             window.jsLang('data_10'),
+//             window.jsLang('data_25'),
+//             window.jsLang('data_50'),
+//             window.jsLang('data_100'),
+//             window.jsLang('data_all')
+//         ]
+//     ],
+//     bDestroy: true,
+//     stateSave: true,
+//     language: dataTableLang,
+//     dom: 'Blfrtip',
+//     buttons: [
+//         {
+//             extend: 'copyHtml5',
+//             text: '<i class="far fa-copy"></i>',
+//             title: dataTableTitle,
+//             titleAttr: window.jsLang('data_copy'),
+//             exportOptions: {
+//                 columns: ':not(:last-child)',
+//             }
+//         },
+//         {
+//             extend: 'excelHtml5',
+//             text: '<i class="far fa-file-excel"></i>',
+//             titleAttr: window.jsLang('data_excel'),
+//             title: dataTableTitle,
+//             margin: [10, 10, 10, 0],
+//             exportOptions: {
+//                 columns: ':not(:last-child)',
+//             }
+//         },
+//         {
+//             extend: 'csvHtml5',
+//             text: '<i class="far fa-file-alt"></i>',
+//             titleAttr: window.jsLang('data_csv'),
+//             exportOptions: {
+//                 columns: ':not(:last-child)',
+//             }
+//         },
+//         {
+//             extend: 'pdfHtml5',
+//             text: '<i class="far fa-file-pdf"></i>',
+//             title: dataTableTitle,
+//             titleAttr: window.jsLang('data_pdf'),
+//             exportOptions: {
+//                 columns: ':not(:last-child)',
+//             },
+//             orientation: 'landscape',
+//             pageSize: 'A4',
+//             margin: [0, 0, 0, 0],
+//             alignment: 'left',
+//             header: true,
+//             customize: function (doc) {
+//                 doc.content[1].table.widths = Array(doc.content[1].table.body[0].length + 1).join('*').split('');
+//             }
+//         },
+//         {
+//             extend: 'print',
+//             text: '<i class="fa fa-print"></i>',
+//             titleAttr: window.jsLang('data_print'),
+//             title: dataTableTitle,
+//             exportOptions: {
+//                 columns: ':not(:last-child)',
+//             }
+//         },
+//         {
+//             extend: 'colvis',
+//             text: '<i class="fa fa-columns"></i>',
+//             postfixButtons: ['colvisRestore']
+//         }
+//     ],
+//     responsive: true,
+//     scrollX: true, // Enable horizontal scrolling
+//     columnDefs: [
+//         {
+//             targets: '_all',
+//             render: function (data, type, row) {
+//                 if (type === 'display') {
+//                     return window.translatedNumber(data)
+//                 }
+//                 return data;
+//             }
+//         }
+//     ]
+// };
+
+
 var dataTableOptions = {
     bLengthChange: true,
     lengthChange: true,
-    lengthMenu: [[10, 25, 50, 100, 10000000], [window.jsLang('data_10'), window.jsLang('data_25'), window.jsLang('data_50'), window.jsLang('data_100'), window.jsLang('data_all'), window.jsLang('data_all')]],
+    lengthMenu: [
+        [10, 25, 50, 100, 10000000],
+        [window.jsLang('data_10'), window.jsLang('data_25'), window.jsLang('data_50'), window.jsLang(
+            'data_100'), window.jsLang('data_all')]
+    ],
     bDestroy: true,
     stateSave: true,
     language: dataTableLang,
     dom: 'Blfrtip',
-    buttons: [{
-        extend: 'copyHtml5',
-        text: '<i class="far fa-copy"></i>',
-        title: dataTableTitle,
-        titleAttr: window.jsLang('data_copy'),
-        exportOptions: {
-            columns: ':not(:last-child)',
-        }
-    }, {
-        extend: 'excelHtml5',
-        text: '<i class="far fa-file-excel"></i>',
-        titleAttr: window.jsLang('data_excel'),
-        title: dataTableTitle,
-        margin: [10, 10, 10, 0],
-        exportOptions: {
-            columns: ':not(:last-child)',
-        },
-
-    }, {
-        extend: 'csvHtml5',
-        text: '<i class="far fa-file-alt"></i>',
-        titleAttr: window.jsLang('data_csv'),
-        exportOptions: {
-            columns: ':not(:last-child)',
-        }
-    }, {
-        extend: 'pdfHtml5',
-        text: '<i class="far fa-file-pdf"></i>',
-        title: dataTableTitle,
-        titleAttr: window.jsLang('data_pdf'),
-        exportOptions: {
-            columns: ':not(:last-child)',
-        },
-        orientation: 'landscape',
-        pageSize: 'A4',
-        margin: [0, 0, 0, 0],
-        alignment: 'left',
-        header: true,
-        customize: function (doc) {
-            doc.content[1].table.widths = Array(doc.content[1].table.body[0].length + 1).join('*').split('');
-        }
-
-    }, {
-        extend: 'print',
-        text: '<i class="fa fa-print"></i>',
-        titleAttr: window.jsLang('data_print'),
-        title: dataTableTitle,
-        exportOptions: {
-            columns: ':not(:last-child)',
-        }
-    }, {
-        extend: 'colvis', text: '<i class="fa fa-columns"></i>', postfixButtons: ['colvisRestore']
-    }],
-
-    responsive: true,
-    columnDefs: [
-
+    buttons: [
         {
-            targets: '_all', // Or specific column index for DT_RowIndex
-            render: function (data, type, row) {
+            extend: 'copyHtml5',
+            text: '<i class="far fa-copy"></i>',
+            title: dataTableTitle,
+            titleAttr: window.jsLang('data_copy'),
+            exportOptions: { columns: ':not(:last-child)' }
+        },
+        {
+            extend: 'excelHtml5',
+            text: '<i class="far fa-file-excel"></i>',
+            titleAttr: window.jsLang('data_excel'),
+            title: dataTableTitle,
+            exportOptions: { columns: ':not(:last-child)' }
+        },
+        {
+            extend: 'csvHtml5',
+            text: '<i class="far fa-file-alt"></i>',
+            titleAttr: window.jsLang('data_csv'),
+            exportOptions: { columns: ':not(:last-child)' }
+        },
+        {
+            extend: 'pdfHtml5',
+            text: '<i class="far fa-file-pdf"></i>',
+            title: dataTableTitle,
+            titleAttr: window.jsLang('data_pdf'),
+            exportOptions: { columns: ':not(:last-child)' },
+            orientation: 'landscape',
+            pageSize: 'A4',
+            customize: function(doc) {
+                doc.content[1].table.widths = Array(doc.content[1].table.body[0].length + 1)
+                    .join('*')
+                    .split('');
+            }
+        },
+        {
+            extend: 'print',
+            text: '<i class="fa fa-print"></i>',
+            titleAttr: window.jsLang('data_print'),
+            title: dataTableTitle,
+            exportOptions: { columns: ':not(:last-child)' }
+        },
+        {
+            extend: 'colvis',
+            text: '<i class="fa fa-columns"></i>',
+            postfixButtons: ['colvisRestore']
+        }
+    ],
+    responsive: true, // Enable automatic resizing for responsiveness
+    // autoWidth: true, // Automatically adjust column widths
+    scrollX: true,
+    columnDefs: [
+        {
+            targets: '_all', // Apply to all columns
+            render: function(data, type, row) {
                 if (type === 'display') {
-                    return window.translatedNumber(data)
+                    return window.translatedNumber(data);
                 }
                 return data;
             }
-        }]
-
-}
-
+        }
+    ]
+};
 
 function updateColumnExportOption(dataTableOptions, columnList) {
     dataTableOptions.buttons[0].exportOptions.columns = columnList; //copy

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AffiliateCommissionList;
+use App\Models\CoursePending;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Modules\Affiliate\Repositories\AffiliateRepository;
@@ -10,6 +12,7 @@ use Modules\Affiliate\Http\Requests\AffiliateLinkRequest;
 use Brian2694\Toastr\Facades\Toastr;
 // use Brian2694\Toastr\Facades\Toastr;
 use Exception;
+use Modules\Affiliate\Entities\AffiliateWithdraw;
 use Modules\CourseSetting\Entities\Category;
 use Modules\Localization\Entities\Language;
 
@@ -47,7 +50,6 @@ class AffiliateController extends Controller
         if ($affiliate_wallet && $affiliate_wallet->paypal_account) {
             $data['paypal_account'] = $affiliate_wallet->paypal_account;
             $data['amount'] = $affiliate_wallet->amount;
-
         } else {
             $data['paypal_account'] = ' ';
             $data['paypal_account'] = 0;
@@ -65,13 +67,21 @@ class AffiliateController extends Controller
 
         $data['data'] = $this->affiliateRepo->all();
         $affiliateTransactionRepo = new AffiliateTransactionRepository();
-        $data['user_transaction_data'] = $affiliateTransactionRepo->userWiseWithdraw($data['start_date'], $data['end_date']);
-        $data['user_income_data'] = $affiliateTransactionRepo->userWiseIncome($data['start_date'], $data['end_date']);
+        $data['user_transaction_data'] = AffiliateWithdraw::where('user_id', Auth::user()->id)
+        ->orderBy('id', 'desc')
+        ->get();
+        $data['courses_pennding'] = CoursePending::where('ref', Auth::user()->referral)
+            ->orderBy('id', 'desc')
+            ->get();
+        $data['user_income_data'] = AffiliateCommissionList::where('payment_to', Auth::user()->id)
+            ->orderBy('id', 'desc')
+            ->get();
+
         if ($data['user']->role_id == 3) {
             return view('affiliate::student.student_index', $data);
         }
         // echo Auth::user()->id . Auth::user()->name;
-        // dd($data);
+        // dd($data,Auth::user()->id);
         return view('affiliate.backend.my_affiliate', [
             'data' => $data,
             'amount' => $data['amount'] ?? '0',

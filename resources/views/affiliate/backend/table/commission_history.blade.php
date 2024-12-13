@@ -5,7 +5,7 @@
     <div class="QA_section QA_section_heading_custom check_box_table">
         <div class="QA_table ">
             <div class="">
-                <table id="lms_table" class="table Crm_table_active3">
+                <table id="" class="table Crm_table_active3">
                     <thead>
                         <tr>
                             <th>SL</th>
@@ -19,17 +19,15 @@
                         @foreach ($data['user_income_data'] as $item)
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
-                                <td>{{ showDate($item->date) }}</td>
-                                <td>{{ showPrice($item->amount) }}</td>
+                                <td>{{ $item->created_at->format('d-m-Y') }}</td>
+                                <td>{{ number_format($item->commission_amount, 2) }} ฿</td>
                                 <td>{{ $item->course ? $item->course->title : '' }}
                                 </td>
                                 <td>
-                                    @if ($item->status == 0)
-                                        <span
-                                            class="badge_3">{{ __('affiliate.Pending') }}</span>
+                                    @if ($item->status === 'approved')
+                                        <span class="badge_1">Approved</span>
                                     @else
-                                        <span
-                                            class="badge_1">{{ __('affiliate.Done') }}</span>
+                                        <span class="badge_3">Pending</span>
                                     @endif
                                 </td>
                             </tr>

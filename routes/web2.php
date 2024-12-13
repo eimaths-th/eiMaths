@@ -3,7 +3,9 @@
 use App\Http\Controllers\AffiliateAuthController;
 use App\Http\Controllers\AffiliateConfigurationsController;
 use App\Http\Controllers\AffiliateController;
+use App\Http\Controllers\AffiliateTransactionController;
 use App\Http\Controllers\CommissionListControler;
+use App\Http\Controllers\ConfigWithdrawController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\eLeanController;
@@ -181,6 +183,12 @@ Route::group(['middleware' => ['auth', 'affiliate.redirect']], function () {
     Route::post('/commission/update-status', [CommissionListControler::class, 'updateStatus'])->name('commission-list.updateStatus');
     Route::get('/affiliate-configurations', [AffiliateConfigurationsController::class, 'index'])->name('affiliate-configurations.index');
     Route::post('/update-commission-config', [AffiliateConfigurationsController::class, 'update'])->name('affiliate-configurations.update');
+
+    Route::get('/config-withdraw', [ConfigWithdrawController::class, 'index'])->name('config-withdraw.index');
+    Route::post('/config-withdraw/approve', [ConfigWithdrawController::class, 'approve_withdraw'])->name('config_withdraw.approve');
+
+
+
 });
 
 Route::group(['middleware' => ['auth.userOrStudent', 'affiliate.redirect']], function () {
@@ -226,6 +234,11 @@ Route::post('/courses/pending', [CourseController::class, 'coursesPendingStore']
 
 // Route::get('/affiliate/my_affiliate', )->name('my_affiliate.index');
 Route::resource('/affiliate/my_affiliate', AffiliateController::class)->except(['destroy']);
+Route::resource('/affiliate/my_affiliate/withdraw', AffiliateTransactionController::class)->except(['destroy']);
+
+// Route::resource('withdraw_request', 'AffiliateTransactionController')->except(['destroy']);
+Route::post('destroy/withdraw_request', [AffiliateTransactionController::class, 'destroy'])->name('withdraw.destroy');
+Route::post('balance-transfer-to-wallet', [AffiliateTransactionController::class, 'balanceTransferToWallet'])->name('balance_transfer_to_wallet');
 
 
 // Route::get('thank-you', [ContactController::class, 'thank_you'])->name('demo.thank_you');

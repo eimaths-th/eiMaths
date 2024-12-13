@@ -60,21 +60,21 @@
                 <!-- test load 2-->
                 <div class="header_right d-flex justify-content-between align-items-center">
 
-                    <div class="select_style d-flex">
+                    {{-- <div class="select_style d-flex">
                         <select name="code" id="language_code"
                             class="nice_Select bgLess mb-0 menuLangChanger text-uppercase"
                             onchange="location = this.value;">
 
                             <option value="#" data-display="th">
-                                {{-- <option value="http://127.0.0.1:8001/change-language/th" data-display="th"> --}}
+                                <option value="http://127.0.0.1:8001/change-language/th" data-display="th">
                                 Thailand
                             </option>
                         </select>
-                    </div>
+                    </div> --}}
 
                     <ul class="header_notification_warp d-flex align-items-center gap-25">
 
-                        <li class="nav-item" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                        {{-- <li class="nav-item" data-bs-toggle="tooltip" data-bs-placement="bottom"
                             title="Visit Website" data-bs-custom-class="tooltip-zindex">
                             <a target="_blank" class="visit_website_btn" href="{{ url('/') }}">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
@@ -98,13 +98,13 @@
                                         stroke-linejoin="round" />
                                 </svg>
                             </a>
-                        </li>
+                        </li> --}}
 
-                        <li class="d-flex" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                        {{-- <li class="d-flex" data-bs-toggle="tooltip" data-bs-placement="bottom"
                             title="Toggle Sidebar" data-bs-custom-class="tooltip-zindex">
                             <button class="nav-layout-toggler   p-0">
                                 <a href="#">
-                                    {{-- <a href="http://127.0.0.1:8001/change-menu/topbar"> --}}
+                                    <a href="http://127.0.0.1:8001/change-menu/topbar">
                                     <svg class="top_nav_fixed" width="24" height="24"
                                         viewBox="0 0 24 24" fill="none"
                                         xmlns="http://www.w3.org/2000/svg">
@@ -119,15 +119,15 @@
                                     </svg>
                                 </a>
                             </button>
-                        </li>
+                        </li> --}}
 
                         <!-- Theme Toggler start -->
-                        <li class="d-none d-sm-block" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                        {{-- <li class="d-none d-sm-block" data-bs-toggle="tooltip" data-bs-placement="bottom"
                             title="Toggle Theme" data-bs-custom-class="tooltip-zindex">
                             <div class="theme-toggler" id="">
                                 <div class="icons">
                                     <a href="#">
-                                        {{-- <a href="http://127.0.0.1:8001/change-theme/light"> --}}
+                                        <a href="http://127.0.0.1:8001/change-theme/light">
                                         <svg width="24" class="sun" height="24"
                                             viewBox="0 0 24 24" fill="none"
                                             xmlns="http://www.w3.org/2000/svg">
@@ -145,10 +145,10 @@
 
                                 </div>
                             </div>
-                        </li>
+                        </li> --}}
                         <!-- Theme toggler end -->
                         <!-- Start Notification -->
-                        <li class="scroll_notification_list" data-bs-toggle="tooltip"
+                        {{-- <li class="scroll_notification_list" data-bs-toggle="tooltip"
                             data-bs-placement="bottom" title="Notifications"
                             data-bs-custom-class="tooltip-zindex">
                             <a class="pulse theme_color bell_notification_clicker show_notifications"
@@ -186,17 +186,18 @@
                                 </div>
                                 <div class="nofity_footer">
                                     <div class="submit_button text-center pt_20">
-                                        <a href="#" {{-- <a href="http://127.0.0.1:8001/notification-setup/my-notifications" --}}
+                                        <a href="#" 
+                                        <a href="http://127.0.0.1:8001/notification-setup/my-notifications"
                                             class="primary-btn radius_30px text_white  fix-gr-bg">See
                                             More</a>
-                                        <a href="#" {{-- <a href="http://127.0.0.1:8001/NotificationMakeAllRead" --}} id="mark_all_as_read"
+                                        <a href="#" <a href="http://127.0.0.1:8001/NotificationMakeAllRead" id="mark_all_as_read"
                                             class="primary-btn radius_30px text_white  fix-gr-bg">Mark As
                                             Read</a>
                                     </div>
                                 </div>
                             </div>
                             <!--/ Menu_NOtification_Wrap  -->
-                        </li>
+                        </li> --}}
                         <!-- End Notification -->
 
 
@@ -220,9 +221,9 @@
 
                             <div class="profile_info_details">
 
-                                <a href="#" class="px-4 py-2">
-                                    {{-- <a href="http://127.0.0.1:8001/profile/test1" class="px-4 py-2"> --}}
-                                    <!-- <i class="ti-user"></i> -->
+                                {{-- <a href="#" class="px-4 py-2">
+                                    <!-- <a href="http://127.0.0.1:8001/profile/test1" class="px-4 py-2">
+                                     <i class="ti-user"></i> -->
                                     <svg width="24" height="24" viewBox="0 0 24 24"
                                         fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path
@@ -236,10 +237,10 @@
                                     </svg>
 
                                     <span>View Profile </span>
-                                </a>
-                                <a href="#" class="px-4 py-2">
-                                    {{-- <a href="http://127.0.0.1:8001/users/settings" class="px-4 py-2"> --}}
-                                    <!-- <i class="ti-settings"></i>  -->
+                                </a> --}}
+                                {{-- <a href="#" class="px-4 py-2">
+                                    <!-- <a href="http://127.0.0.1:8001/users/settings" class="px-4 py-2">
+                                    <i class="ti-settings"></i>  -->
                                     <svg width="24" height="24" viewBox="0 0 24 24"
                                         fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path
@@ -255,7 +256,7 @@
                                     </svg>
 
                                     <span>Account Settings </span>
-                                </a>
+                                </a> --}}
 
 
 

@@ -5,7 +5,7 @@
     <div class="QA_section QA_section_heading_custom check_box_table">
         <div class="QA_table ">
             <div class="">
-                <table id="lms_table" class="table Crm_table_active3">
+                <table id="" class="table Crm_table_active3">
                     <thead>
                         <tr>
                             <th>SL</th>
@@ -27,24 +27,23 @@
                                 </td>
                                 <td>
                                     @if ($item->payment_type == 1)
-                                        <span class="badge_5">Offline</span>
+                                        <span class="badge_5">PromptPay</span>
                                     @elseif($item->payment_type == 2)
-                                        <span class="badge_5">Paypal</span>
+                                        <span class="badge_5">Bank Account</span>
                                     @else
-                                        <span class="badge_5"> Add User
-                                            Wallet</span>
+                                        <span class="badge_5"> error </span>
                                     @endif
                                 </td>
                                 <td>
                                     @if ($item->status == 0)
                                         <span
-                                            class="badge_3">{{ __('affiliate.Pending') }}</span>
+                                            class="badge_3">Pending</span>
                                     @elseif($item->status == 1)
                                         <span
-                                            class="badge_1">{{ __('affiliate.Done') }}</span>
+                                            class="badge_1">Done</span>
                                     @else
                                         <span
-                                            class="badge_4">{{ __('affiliate.Cancel') }}</span>
+                                            class="badge_4">Cancel</span>
                                     @endif
                                 </td>
                                 <td>
@@ -59,21 +58,17 @@
                                             data-bs-toggle="dropdown"
                                             aria-haspopup="true"
                                             aria-expanded="false">
-                                            {{ __('common.Select') }}
+                                            Select
                                         </button>
                                         <div class="dropdown-menu dropdown-menu-right"
                                             aria-labelledby="dropdownMenu2">
-                                            @if (permissionCheck('affiliate.my_affiliate.index') && $item->status == 0)
                                                 <a href="#"
                                                     class="dropdown-item edit_row"
-                                                    data-id="{{ $item->id }}">{{ __('common.Edit') }}</a>
-                                            @endif
-                                            @if (permissionCheck('affiliate.my_affiliate.index') && $item->status == 0)
+                                                    data-id="{{ $item->id }}">Edit</a>
                                                 <a href="#"
                                                     class="dropdown-item delete_row"
                                                     data-id="{{ $item->id }}"
-                                                    type="button">{{ __('common.Delete') }}</a>
-                                            @endif
+                                                    type="button">Delete</a>
                                         </div>
                                     </div>
                                 </td>

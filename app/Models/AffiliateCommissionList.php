@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * @property integer $id
+ * @property integer $payment_to
  * @property integer $courses_pending_id
  * @property integer $order_id
  * @property integer $receipt_id

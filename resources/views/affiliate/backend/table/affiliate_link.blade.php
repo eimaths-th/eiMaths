@@ -11,8 +11,8 @@
                             <th>Affiliate Link</th>
                             <th>Visits</th>
                             <th>Registered</th>
-                            <th>Purchased</th>
-                            <th>Commissions</th>
+                            {{-- <th>Purchased</th>
+                            <th>Commissions</th> --}}
 
                         </tr>
                     </thead>
@@ -35,9 +35,9 @@
                                 </td>
                                 <td>{{ $item->visits }}</td>
                                 <td>{{ $item->registerUser->count() }}</td>
-                                <td>{{ $item->payment->count() }}</td>
+                                {{-- <td>{{ $item->payment->count() }}</td>
                                 <td>{{ showPrice($item->payment->sum('amount')) }}
-                                </td>
+                                </td> --}}
                             </tr>
                         @endforeach
                     </tbody>

@@ -15,27 +15,7 @@
                     <ol class="breadcrumb float-sm-right">
                         {{-- <li class="breadcrumb-item"><a href="#">Home</a></li>
                         <li class="breadcrumb-item active">Users Management</li> --}}
-                        @can('user-create')
-                            <button type="button" class="btn btn-success" id="CreateButton">
-                                <i class="fas fa-user"></i> Add User </button>
-                        @else
-                            <span class="d-inline-block" tabindex="0" data-toggle="tooltip" data-placement="bottom"
-                                title="You Not Have Permission">
-                                <button type="button" class="btn btn-success disabled">
-                                    <i class="fas fa-user"></i> Add User </button>
-                            </span>
-                        @endcan &nbsp;
-
-                        @can('user-delete')
-                            <button type="button" class="btn btn-danger delete_all_button"><i class="fa fa-trash"></i> Delete All</button>
-                        @else
-                            <span class="d-inline-block" tabindex="0" data-toggle="tooltip" data-placement="bottom"
-                                title="You Not Have Permission">
-                                <button type="button" class="btn btn-danger disabled"><i
-                                        class="fa fa-trash"></i> Delete All</button>
-                            </span>
-                        @endcan
-                    </ol>
+                        
 
                 </div>
             </div>
@@ -48,7 +28,7 @@
                 <div class="col-12">
                     <div class="card card-primary">
                         <div class="card-header">
-                            <h3 class="card-title"><i class="fa fa-user"></i> User Management</h3>
+                            <h3 class="card-title"><i class="fa fa-user"></i> Commission List</h3>
                             <div class="card-tools">
                                 <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
                                     <i class="fas fa-minus"></i>

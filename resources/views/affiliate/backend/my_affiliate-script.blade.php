@@ -53,48 +53,16 @@
 
 
 <script>
-    if ($('.Crm_table_active3').length) {
-        let datatable = $('.Crm_table_active3').DataTable(dataTableOptions);
+    // $('.Crm_table_active3').DataTable(dataTableOptions{
+    //     scrollX: true,
+    // });
+    $('.Crm_table_active3').DataTable(dataTableOptions);
+    // $('.Crm_table_active3').DataTable();
 
-        $(".selectAllQuiz").on("click", function() {
-            let totalQuestions = $('#totalQuestions');
-            let totalMarks = $('#totalMarks');
-
-            if ($(this).is(':checked')) {
-                datatable.$("input[type='checkbox']").prop('checked', true);
-            } else {
-                datatable.$("input[type='checkbox']").prop('checked', false);
-            }
-            let online_exam_id = $('#online_exam_id').val();
-            let ques_assign = $('.ques_assign').val();
-            let token = $('.csrf_token').val();
-            var myCheckboxes = [];
-            datatable.$("input[type='checkbox']").each(function() {
-                if ($(this).is(':checked')) {
-                    myCheckboxes.push($(this).val());
-                }
-            });
-            $.ajax({
-                type: 'POST',
-                url: ques_assign,
-                data: {
-                    '_token': token,
-                    online_exam_id: online_exam_id,
-                    questions: myCheckboxes,
-                },
-                success: function(data) {
-                    totalQuestions.html(data.totalQus);
-                    totalMarks.html(data.totalMarks);
-                    toastr.success('Successfully Assign', 'Success');
-                },
-                error: function(data) {
-                    toastr.error('Something Went Wrong', 'Error')
-                }
-            });
-        });
-
-    }
+    
 </script>
+
+<script></script>
 <script>
     setTimeout(function() {
         $('.preloader').fadeOut('slow', function() {

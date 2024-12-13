@@ -43,10 +43,8 @@ class CommissionListControler extends Controller
         if ($request->ajax()) {
             //sleep(2);
 
-            $datas =  AffiliateCommissionList::query();
-
-
-            $datas->orderBy("id", "desc")->get();
+            $datas =  AffiliateCommissionList::query()->orderBy("id", "desc")->get();
+       
             return datatables()->of($datas)
 
                 ->editColumn('ref', function ($row) {
