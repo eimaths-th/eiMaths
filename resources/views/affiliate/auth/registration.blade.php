@@ -24,27 +24,27 @@
                                         name="name" value="{{ old('name') }}">
                                 </div>
                                 <span class="text-danger" role="alert">{{ $errors->first('name') }}</span>
-                            </div>
-                        @endif
-                        <div class="col-12 mt_20">
-                            <div class="input-group custom_group_field">
+                            </div>@cannot ('update', Model::class) 
+                                
+                            @endif
+                            <div class="col-12 mt_20">
+                                <div class="input-group custom_group_f
+                            @endcannotield">
                                 <input type="email" class="form-control ps-0" placeholder="กรอกอีเมล" aria-label="email"
                                     name="email" value="{{ old('email') }}">
                             </div>
                             <span class="text-danger" role="alert">{{ $errors->first('email') }}</span>
                         </div>
 
-                        @if ($custom_field['show_phone'])
-                            <div class="col-12 mt_20">
-                                <div class="input-group custom_group_field">
-                                    <input type="text" class="form-control ps-0"
-                                        placeholder="กรอกหมายเลขโทรศัพท์ {{ $custom_field['required_phone'] ? '*' : '' }}"
-                                        {{ $custom_field['required_phone'] ? 'required' : '' }} aria-label="phone"
-                                        name="phone" value="{{ old('phone') }}">
-                                </div>
-                                <span class="text-danger" role="alert">{{ $errors->first('phone') }}</span>
+                        <div class="col-12 mt_20">
+                            <div class="input-group custom_group_field">
+                                <input type="text" class="form-control ps-0"
+                                    placeholder="กรอกหมายเลขโทรศัพท์ {{ $custom_field['required_phone'] ? '*' : '' }}"
+                                    {{ $custom_field['required_phone'] ? 'required' : '' }} aria-label="phone"
+                                    name="phone" value="{{ old('phone') }}">
                             </div>
-                        @endif
+               ื             <span class="text-danger" role="alert">{{ $errors->first('phone') }}</span>
+                        </div>
                         <div class="col-12 mt_20">
                             <div class="input-group custom_group_field">
                                 <input type="password" class="form-control ps-0" placeholder="กรอกยืนยันรหัสผ่าน"

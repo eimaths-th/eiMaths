@@ -32,6 +32,7 @@ class User extends Authenticatable
         'language_code',
         'referral',
         'email',
+        'phone',
         'email_verified_at',
         'password',
         'department_id',

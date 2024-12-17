@@ -95,12 +95,14 @@ class AffiliateAuthController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
+            'phone' => 'required|string|regex:/^[0-9]{10,15}$/|unique:users,phone',
             'password' => 'required|string|min:8|confirmed',
         ]);
 
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
+            'phone' => $validated['phone'],
             'affiliate_request' => 1,
             'department_id' => 5,
             'position_id' => 13,

@@ -369,7 +369,7 @@
                                             <div class="col-12">
                                                 <div class="row d-flex justify-content-between">
                                                     <div>
-                                                        <h3>{{ __('affiliate.Withdrawn') }}</h3>
+                                                        <h3>Withdrawn</h3>
                                                     </div>
                                                     <h1 class="gradient-color2">
                                                         @if ($start_date && $end_date)
@@ -383,7 +383,7 @@
                                             <div class="col-12">
                                                 <div class="row d-flex justify-content-between">
                                                     <div>
-                                                        <h3>{{ __('affiliate.Pending') }}</h3>
+                                                        <h3>Pending</h3>
                                                     </div>
                                                     <h1 class="gradient-color2">
                                                         @if ($start_date && $end_date)
