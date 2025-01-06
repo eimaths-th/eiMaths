@@ -10,13 +10,15 @@
                 {{--  --}}
 
                 <div class="col-lg-12 col-xl-12">
-                    {{-- <div class="col-lg-8 col-xl-9"> --}}
+                {{-- <div class="col-lg-8 col-xl-9"> --}}
                     <div class="row">
                         <div class="col-12">
                             <div class="box_header d-flex flex-wrap align-items-center justify-content-between">
                                 <h5 class="font_16 f_w_500 mb_30">{{ $total }}
-                                    {{ __('frontend.Course are found') }}</h5>
-                                <div class="box_header_right mb_30">
+                                    {{-- {{ __('frontend.Course are found') }} --}}
+                                    Course are found
+                                </h5>
+                                {{-- <div class="box_header_right mb_30">
                                     <div class="short_select d-flex align-items-center">
                                         <div class="mobile_filter mr_10">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="19.5" height="13"
@@ -44,7 +46,7 @@
                                                 {{ __('frontend.Date') }}</option>
                                         </select>
                                     </div>
-                                </div>
+                                </div> --}}
                             </div>
                         </div>
                         @php
@@ -129,42 +131,39 @@
                                         <div class="course_content">
                                             <a href="javascript:void(0);" data-bs-toggle="modal"
                                                 data-bs-target="#receiptModal" data-title="{{ $course->title }}">
-                                                <h4 class="noBrake" title=" {{ $course->title }}">{{ $course->title }}
+                                                <h4 class="noBrake d-flex justify-content-between align-items-center"
+                                                    title="{{ $course->title }}">
+                                                    <span class="text-left">
+                                                        {{ $course->title }}
+                                                    </span>
+                                                    <span class="text-right">
+                                                        {{ number_format($course->price) }} ฿
+                                                    </span>
                                                 </h4>
                                             </a>
                                             <div class="rating_cart">
-                                                <div class="rateing">
-                                                    <span>{{ $course->total_rating }}/5</span>
+                                                {{-- <div class="rateing">
+                                                    <span> {{ number_format($course->price) }} ฿</span>
                                                     <i class="fas fa-star"></i>
-                                                </div>
-                                                @if (!onlySubscription())
-                                                    @auth
-                                                        @if (!$course->isLoginUserEnrolled && !$course->isLoginUserCart)
-                                                            <a href="#" class="cart_store"
-                                                                data-id="{{ $course->id }}">
-                                                                <i class="fas fa-shopping-cart"></i>
-                                                            </a>
-                                                        @endif
-                                                    @endauth
-                                                    @guest
-                                                        @if (!$course->isGuestUserCart)
-                                                            <a href="#" class="cart_store"
-                                                                data-id="{{ $course->id }}">
-                                                                <i class="fas fa-shopping-cart"></i>
-                                                            </a>
-                                                        @endif
-                                                    @endguest
-                                                @endif
+                                                </div> --}}
+
+                                                {{-- <a href="#" class="cart_store" data-id="{{ $course->id }}">
+                                                    <i class="fas fa-shopping-cart"></i>
+                                                </a> --}}
                                             </div>
                                             <div class="course_less_students">
-                                                <a> <i class="ti-agenda"></i> {{ $course->total_lessons }}
-                                                    {{ __('frontend.Lessons') }}</a>
+                                                {{-- <a>
+                                                    <i class="ti-agenda"></i>
+                                                    {{ $course->total_lessons }}
+                                                    {{ __('frontend.Lessons') }}
+                                                </a>
                                                 @if (!Settings('hide_total_enrollment_count') == 1)
                                                     <a>
-                                                        <i class="ti-user"></i> {{ $course->total_enrolled }}
+                                                        <i class="ti-user"></i> 
+                                                        {{ $course->total_enrolled }}
                                                         {{ __('frontend.Students') }}
                                                     </a>
-                                                @endif
+                                                @endif --}}
                                             </div>
                                         </div>
                                     </div>
