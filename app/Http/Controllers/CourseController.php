@@ -1051,7 +1051,6 @@ class CourseController extends Controller
 
     public function coursesPendingStore(Request $request)
     {
-        // dd($request->all());
         $validatedData = $request->validate([
             'course_id' => 'required|integer|exists:courses,id',
             'name' => 'required|string|max:255',
@@ -1065,26 +1064,50 @@ class CourseController extends Controller
 
         $create = CoursePending::create($validatedData);
 
-        $message = "New Course Pending Created:\n"
-            . "Ref: {$validatedData['ref']}\n"
-            . "Name: {$validatedData['name']}\n"
-            . "Email: {$validatedData['email']}\n"
-            . "Tel: {$validatedData['telp']}\n"
-            . "Course Name: {$validatedData['course_name']}\n"
-            . "Type Parent: {$validatedData['type_parent']}\n";
+        // $message = "New Course Pending Created:\n"
+        //     . "Ref: {$validatedData['ref']}\n"
+        //     . "Name: {$validatedData['name']}\n"
+        //     . "Email: {$validatedData['email']}\n"
+        //     . "Tel: {$validatedData['telp']}\n"
+        //     . "Course Name: {$validatedData['course_name']}\n"
+        //     . "Type Parent: {$validatedData['type_parent']}\n";
 
-        // Send a message to Line OA
-        // Replace with your Line User ID
+        // // Send a message to Line OA
+        // // Replace with your Line User ID
 
-          // $lineUserId = 'U25fc5496e631e0cab0923f8f3cfc6db0';
-        // $accessToken = '2U8EhhLV69SeO/s/++xinSMV/g5r0K0WVvsaboSDAfGTX1Yz3820Xy/f7zSSz5wD+e4o0EOqwbmyudz61unaWxWP//j+gbGbSsDEyOVuMplrGoUWcLNE4NicviIUIcovVQ7Yub4BWefq7ABdgsr9QQdB04t89/1O/w1cDnyilFU='; // Replace with your Channel Access Token
+        // // $lineUserId = 'U25fc5496e631e0cab0923f8f3cfc6db0';
+        // // $accessToken = '2U8EhhLV69SeO/s/++xinSMV/g5r0K0WVvsaboSDAfGTX1Yz3820Xy/f7zSSz5wD+e4o0EOqwbmyudz61unaWxWP//j+gbGbSsDEyOVuMplrGoUWcLNE4NicviIUIcovVQ7Yub4BWefq7ABdgsr9QQdB04t89/1O/w1cDnyilFU='; // Replace with your Channel Access Token
 
-        $line_api = LineApiSetting::where('status', 1)->first();
+        // $line_api = LineApiSetting::where('status', 1)->first();
+        // if (!$line_api) {
+        //     return response()->json([
+        //         'success' => false,
+        //         'message' => 'No active Line API settings found.',
+        //     ], 404);
+        // }
 
-        $lineUserId = decrypt($line_api->line_user_id);
-        $accessToken = decrypt($line_api->channel_access_token);
-      
-        $this->sendLineMessage($lineUserId, $accessToken, $message);
+        // try {
+        //     $lineUserId = decrypt($line_api->line_user_id);
+        //     $accessToken = decrypt($line_api->channel_access_token);
+        //     dd(
+        //         $request->all(),
+        //         $line_api,
+        //         $accessToken,
+        //         $lineUserId
+        //     );
+
+        //     $this->sendLineMessage($lineUserId, $accessToken, $message);
+        // } catch (\Illuminate\Contracts\Encryption\DecryptException $e) {
+        //     return response()->json([
+        //         'success' => false,
+        //         'message' => 'Failed to decrypt Line API settings.',
+        //     ], 500);
+        // }
+
+        // $lineUserId = decrypt($line_api->line_user_id);
+        // $accessToken = decrypt($line_api->channel_access_token);
+
+        // $this->sendLineMessage($lineUserId, $accessToken, $message);
 
         // $this->sendMulticastMessage([$lineUserId], $accessToken, 'Hello from Line OA!1cd ');
 
