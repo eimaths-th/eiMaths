@@ -161,7 +161,7 @@
                                                     <a>
                                                         <i class="ti-user"></i> 
                                                         {{ $course->total_enrolled }}
-                                                        {{ __('frontend.Students') }}
+                                                        {{ __('frontend.Students') }}หก
                                                     </a>
                                                 @endif --}}
                                             </div>

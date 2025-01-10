@@ -24,17 +24,18 @@
                                         name="name" value="{{ old('name') }}">
                                 </div>
                                 <span class="text-danger" role="alert">{{ $errors->first('name') }}</span>
-                            </div>@cannot ('update', Model::class) 
-                                
-                            @endif
-                            <div class="col-12 mt_20">
-                                <div class="input-group custom_group_f
-                            @endcannotield">
-                                <input type="email" class="form-control ps-0" placeholder="กรอกอีเมล" aria-label="email"
-                                    name="email" value="{{ old('email') }}">
                             </div>
-                            <span class="text-danger" role="alert">{{ $errors->first('email') }}</span>
-                        </div>
+                            @cannot('update', Model::class)
+                                <div class="col-12 mt_20">
+                                    <div class="input-group custom_group_field">
+                                        <input type="email" class="form-control ps-0" placeholder="กรอกอีเมล"
+                                            aria-label="email" name="email" value="{{ old('email') }}">
+                                    </div>
+                                    <span class="text-danger" role="alert">{{ $errors->first('email') }}</span>
+                                </div>
+                            @endcannot
+                        @endif
+
 
                         <div class="col-12 mt_20">
                             <div class="input-group custom_group_field">
@@ -43,7 +44,7 @@
                                     {{ $custom_field['required_phone'] ? 'required' : '' }} aria-label="phone"
                                     name="phone" value="{{ old('phone') }}">
                             </div>
-               ื             <span class="text-danger" role="alert">{{ $errors->first('phone') }}</span>
+                            <span class="text-danger" role="alert">{{ $errors->first('phone') }}</span>
                         </div>
                         <div class="col-12 mt_20">
                             <div class="input-group custom_group_field">
