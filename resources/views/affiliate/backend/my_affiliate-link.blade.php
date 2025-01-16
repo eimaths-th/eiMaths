@@ -89,8 +89,8 @@
                             <div class="input-effect">
                                 <input readonly
                                     class="primary-input form-control{{ $errors->has('user_name') ? ' is-invalid' : '' }}"
-                                    type="text" id="user_name" name="user_name"
-                                    autocomplete="off" value="{{ $user->referral }}">
+                                    type="text" id="user_name" name="user_name" autocomplete="off"
+                                    value="{{ $user->referral }}">
 
                             </div>
                         </div>
@@ -101,8 +101,7 @@
                                 </label>
                                 <input
                                     class="primary-input-field form-control{{ $errors->has('url') ? ' is-invalid' : '' }}"
-                                    type="text" id="url" name="url"
-                                    autocomplete="off"
+                                    type="text" id="url" name="url" autocomplete="off"
                                     value="{{ isset($row) ? $row->url : old('url') }}">
 
                                 <span class="focus-border"></span>
@@ -121,8 +120,7 @@
 
                                 <input readonly
                                     class="primary-input-field form-control{{ $errors->has('affiliate_link') ? ' is-invalid' : '' }}"
-                                    id="affiliate_link" type="text"
-                                    name="affiliate_link" autocomplete="off"
+                                    id="affiliate_link" type="text" name="affiliate_link" autocomplete="off"
                                     value="{{ isset($row) ? $row->affiliate_link : old('affiliate_link') }}">
                                 <span class="focus-border"></span>
                                 @if ($errors->has('affiliate_link'))
@@ -141,8 +139,10 @@
                                 <i class="ti-check"></i>
                                 @if (isset($row))
                                     {{ __('common.Update') }}
+                                    Update
                                 @else
-                                    {{ __('common.Save') }}
+                                    {{-- {{ __('common.Save') }} --}}
+                                    Save
                                 @endif
                             </button>
                         </div>

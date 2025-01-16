@@ -37,4 +37,8 @@ class Receipt extends Model
     {
         return $this->hasMany(AffiliateCommissionList::class, 'receipt_id');
     }
+    public function contact()
+    {
+        return $this->belongsTo(Contact::class, 'cid');
+    }
 }

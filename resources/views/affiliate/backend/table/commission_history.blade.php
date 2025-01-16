@@ -21,7 +21,8 @@
                                 <td>{{ $loop->iteration }}</td>
                                 <td>{{ $item->created_at->format('d-m-Y') }}</td>
                                 <td>{{ number_format($item->commission_amount, 2) }} ฿</td>
-                                <td>{{ $item->coursePending ? $item->coursePending->course_name : '' }}
+                                <td>{{ $item->coursePending ? $item->coursePending->course_name : $item->receipt->contact->level_name }}
+
                                 </td>
                                 <td>
                                     @if ($item->status === 'approved')
