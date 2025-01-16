@@ -37,7 +37,7 @@
 
                     </div>
                 </div>
-                {{-- <div class="col-sm-3">
+                 <div class="col-sm-3">
                     <div class="form-group">
                         <div class="input-group">
                             <div class="input-group-prepend">
@@ -48,7 +48,7 @@
                             <input type="text" class="form-control float-right" id="reservation" name="reservation">
                         </div>
                     </div>
-                </div> --}}
+                </div>
                 <div class="col-xs-1 col-sm-1 col-md-1">
                     <div class="form-group">
                         <button type="button" class="form-control btn bg-gradient-success" id="SearchButtons">

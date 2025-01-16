@@ -259,9 +259,9 @@ class DashboardController extends Controller
 
         //$summaryByDate->where('orders.status', 1);
 
-        /*  if ($reservationValue) {
-            $summaryByDate->where('payment_date', 'like', $reservationValue.'%');
-        } */
+        if ($reservationValue) {
+            $summaryByDate->where('payment_date', 'like', $reservationValue . '%');
+        }
 
         $summaryByDate->groupBy('payment_date');
         $datas = $summaryByDate->get();
@@ -334,9 +334,9 @@ class DashboardController extends Controller
             $query->where('centre', $dcentreValue);
         }
 
-        /*  if ($reservationValue) {
-            $summaryByDate->where('payment_date', 'like', $reservationValue.'%');
-        } */
+        if ($reservationValue) {
+            $query->where('payment_date', 'like', $reservationValue . '%');
+        }
 
         $query->groupBy('date');
         $datas = $query->get();
