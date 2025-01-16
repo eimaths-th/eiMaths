@@ -335,7 +335,7 @@ class DashboardController extends Controller
         }
 
         if ($reservationValue) {
-            $query->where('payment_date', 'like', $reservationValue . '%');
+            $query->where('date', 'like', $reservationValue . '%');
         }
 
         $query->groupBy('date');
