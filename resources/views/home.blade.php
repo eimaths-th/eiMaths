@@ -56,12 +56,12 @@
 
                     </div>
                 </div>
-                <div class="col-xs-1 col-sm-1 col-md-1" style="align-items: flex-end;">
+               {{--  <div class="col-xs-1 col-sm-1 col-md-1" style="align-items: flex-end;">
                     <div class="form-group">
                         <button type="button" class="form-control btn bg-gradient-warning" id="resetSearchButton"><i
                                 class="fa-solid fa-rotate"></i></button>
                     </div>
-                </div>
+                </div> --}}
             </div>
         </div>
     </section>
