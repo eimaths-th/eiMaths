@@ -1,6 +1,6 @@
 <meta charset="utf-8" class="test" />
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-<meta name="csrf-token" content="S2b9x1qm9PItqnuUewh2B7IN3c7KcABR0nbRYaFy">
+<meta name="csrf-token" content="{{ csrf_token() }}">
 <link rel="icon" href="{{ asset('uploads/main/files/09-08-2024/cropped-footer-logo-32x32.png') }}" type="image/png" />
 <title>
     eiMaths ecommerce
@@ -515,9 +515,8 @@
     }
 </style>
 
-<link rel='stylesheet' type='text/css' property='stylesheet'
-    href='/_debugbar/assets/stylesheets?v=1725818754&theme=auto' data-turbolinks-eval='false' data-turbo-eval='false'>
-<script src='/_debugbar/assets/javascript?v=1725818754' data-turbolinks-eval='false' data-turbo-eval='false'></script>
-<script data-turbo-eval='false'>
+{{-- <link rel='stylesheet' type='text/css' property='stylesheet' href='/_debugbar/assets/stylesheets' data-turbolinks-eval='false' data-turbo-eval='false'>
+<script src='/_debugbar/assets/javascript' data-turbolinks-eval='false' data-turbo-eval='false'></script> --}}
+{{-- <script data-turbo-eval='false'>
     jQuery.noConflict(true);
-</script>
+</script> --}}

@@ -12,6 +12,8 @@ class Receipt extends Model
     protected $fillable = [
         'centre',
         'cid',
+        'courses_pending_id',
+        'ref',
         'student_no',
         'student_name',
         'receipt_number',
@@ -30,4 +32,9 @@ class Receipt extends Model
         'created_by',
         'updated_by',
     ];
+
+    public function affiliateCommissions()
+    {
+        return $this->hasMany(AffiliateCommissionList::class, 'receipt_id');
+    }
 }

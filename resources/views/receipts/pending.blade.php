@@ -122,6 +122,7 @@
                                                     </th>
                                                     <th {{-- data-priority="6" --}}>Centre</th>
                                                     <th {{-- data-priority="2" --}}>Date</th>
+                                                    <th>Referent Code</th>
                                                     <th {{-- data-priority="4" --}}>Student Code</th>
                                                     <th {{-- data-priority="5" --}}>Student Name</th>
                                                     <th>Level</th>
@@ -145,6 +146,8 @@
                                                     <th></th>
                                                     <th></th>
                                                     {{-- <th></th> --}}
+                                                    {{-- <th></th> --}}
+                                                    <th align="right"></th>
                                                     <th align="right"></th>
                                                     <th align="right"></th>
                                                     <th style="text-align: right;">Total</th>

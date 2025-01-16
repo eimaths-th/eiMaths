@@ -1187,6 +1187,7 @@
                 url: "{{ route('contacts.receipt') }}",
                 method: 'post',
                 data: {
+                    ref: $('#getRef').val(),
                     centre: $('#ReceiptCentre').val()[0],
                     student: $('#s_student').val()[0],
                     level: $('#ReceiptLevel').val()[0],

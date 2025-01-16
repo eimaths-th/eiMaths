@@ -408,6 +408,10 @@
                     data: 'created_at',
                     name: 'created_at'
                 },
+                {
+                    data: 'ref_code',
+                    name: 'ref_code'
+                },
                 /* {
                     data: 'order_number',
                     name: 'order_number'
@@ -459,18 +463,19 @@
                 sum = 0;
                 // Calculate the sum of values in column 8 for all pages
                 var sum = api
-                    .column(7)
+                    .column(8)
                     .data()
                     .reduce(function(acc, value) {
                         return parseFloat(acc) + parseFloat(value);
                     }, 0);
 
                 // Update the footer cell with the sum
-                $(api.column(7).footer()).html(sum.toFixed(
+                $(api.column(8).footer()).html(sum.toFixed(
                     2)); // Adjust the decimal places as needed
             }
         };
         var table = $('#Listview').DataTable(table_option);
+        // console.log(table_option);
 
         $('#SearchButtons').on('click', function() {
             var searchType = $('#search_type').val();
@@ -525,9 +530,6 @@
             table.draw();
         });
 
-
-
-
         function storeFieldValues() {
             var dateStart = $('#reservation').val();
             var searchType = $('#search_type').val();
@@ -568,88 +570,7 @@
 
 
 
-        $(document).on('click', '#getEditData', function(e) {
-            e.preventDefault();
 
-
-            $('.alert-danger').html('');
-            $('.alert-danger').hide();
-            $('.alert-success').html('');
-            $('.alert-success').hide();
-            clearDropzonePreviews2();
-
-
-
-            id = $(this).data('id');
-            $.ajax({
-                url: "orders/edit/" + id,
-                method: 'GET',
-                success: function(res) {
-                    console.log(res);
-                    $('#EditCentre').val(res.data.centre).change();
-                    $('#EditCentre').prop('disabled', true);
-                    $('#EditLot').val(res.receipt_number);
-                    $('#EditCompany').val(res.data.cid).change();
-                    $('#EditTotalCost').val(res.total_price);
-                    $('#EditTotalCosth').val(res.old_price);
-                    $('#EditDetail').val(res.data.detail);
-
-
-                    if (res.data.discount !== "" && res.data.discount !== null) {
-                        $('#EditDiscountTerm').val(res.data.discount);
-                    }
-
-                    if (res.data.discount_book !== "" && res.data.discount_book !== null) {
-                        $('#EditDiscountBook').val(res.data.discount_book);
-                    }
-
-                    if (res.data.termfee !== "" && res.data.termfee !== null) {
-                        $('#EditTermFee').val(res.data.termfee);
-                    }
-
-                    if (res.data.bookfee !== "" && res.data.bookfee !== null) {
-                        $('#EditBookFee').val(res.data.bookfee);
-                    }
-
-                    if (res.data.refund !== "" && res.data.refund !== null) {
-                        $('#EditRefund').val(res.data.refund);
-                    } else {
-                        $('#EditRefund').val(res.para[0].price);
-                    }
-                    if (res.data.register_fee !== "" && res.data.register_fee !== null) {
-                        $('#EditRegisterFee').val(res.data.register_fee);
-                    } else {
-                        $('#EditRegisterFee').val(res.para[1].price);
-                    }
-                    if (res.data.access_fee !== "" && res.data.access_fee !== null) {
-                        $('#EditAccessFee').val(res.data.access_fee);
-                    } else {
-                        $('#EditAccessFee').val(res.para[2].price);
-                    }
-
-
-                    if (res.data.payment == 1) {
-                        $("#eradioSuccess1").prop("checked", true);
-                    } else if (res.data.payment == 2) {
-                        $("#eradioSuccess2").prop("checked", true);
-                    } else if (res.data.payment == 3) {
-                        $("#eradioSuccess3").prop("checked", true);
-                    }
-
-                    $('#EditModalBodyTable').html(res.table_html);
-                    $('.imgs').html(res.imgs);
-
-                    if (res.data.status == 1) {
-                        $('#SubmitEditFormp').css('display', 'none');
-                        $('#SubmitEditForm').html('<i class="fas fa-download"></i> Save');
-                    }
-
-                    $('#EditModal').modal('show');
-
-                }
-            });
-
-        })
 
 
         $(document).on('click', '.btn-delete', function(e) {
@@ -740,11 +661,126 @@
                     if (res.data.status == 1) {
                         $('#SubmitEditFormp').css('display', 'none');
                     }
+
+                    if (res.data.ref) {
+                        $('#getRef').val(res.data.ref);
+                        $('#getRef').prop('readonly', true);
+                    } else {
+                        console.log('id Create Receipt');
+
+                        $('#getRef').val(''); // Clear the value if ref is null or undefined
+                        $('#getRef').prop('readonly',
+                            false); // Make editable if ref is null or undefined
+                    }
+                    if (res.data.courses_pending_id) {
+                        $('#courses_pending_id').val(res.data.courses_pending_id);
+
+                    } else {
+                        console.log('false courses_pending_id');
+                        $('#courses_pending_id').val('');
+                    }
+
+
                     $('#EditModal').modal('show');
                     hideOverlay();
                 }
             });
         }
+
+        $(document).on('click', '#getEditData', function(e) {
+            e.preventDefault();
+
+
+            $('.alert-danger').html('');
+            $('.alert-danger').hide();
+            $('.alert-success').html('');
+            $('.alert-success').hide();
+            clearDropzonePreviews2();
+            id = $(this).data('id');
+            $.ajax({
+                url: "orders/edit/" + id,
+                method: 'GET',
+                success: function(res) {
+                    // console.log(res);
+                    $('#EditCentre').val(res.data.centre).change();
+                    $('#EditCentre').prop('disabled', true);
+                    $('#EditLot').val(res.receipt_number);
+                    $('#EditCompany').val(res.data.cid).change();
+                    $('#EditTotalCost').val(res.total_price);
+                    $('#EditTotalCosth').val(res.old_price);
+                    $('#EditDetail').val(res.data.detail);
+
+
+                    if (res.data.discount !== "" && res.data.discount !== null) {
+                        $('#EditDiscountTerm').val(res.data.discount);
+                    }
+
+                    if (res.data.discount_book !== "" && res.data.discount_book !== null) {
+                        $('#EditDiscountBook').val(res.data.discount_book);
+                    }
+
+                    if (res.data.termfee !== "" && res.data.termfee !== null) {
+                        $('#EditTermFee').val(res.data.termfee);
+                    }
+
+                    if (res.data.bookfee !== "" && res.data.bookfee !== null) {
+                        $('#EditBookFee').val(res.data.bookfee);
+                    }
+
+                    if (res.data.refund !== "" && res.data.refund !== null) {
+                        $('#EditRefund').val(res.data.refund);
+                    } else {
+                        $('#EditRefund').val(res.para[0].price);
+                    }
+                    if (res.data.register_fee !== "" && res.data.register_fee !== null) {
+                        $('#EditRegisterFee').val(res.data.register_fee);
+                    } else {
+                        $('#EditRegisterFee').val(res.para[1].price);
+                    }
+                    if (res.data.access_fee !== "" && res.data.access_fee !== null) {
+                        $('#EditAccessFee').val(res.data.access_fee);
+                    } else {
+                        $('#EditAccessFee').val(res.para[2].price);
+                    }
+
+
+                    if (res.data.payment == 1) {
+                        $("#eradioSuccess1").prop("checked", true);
+                    } else if (res.data.payment == 2) {
+                        $("#eradioSuccess2").prop("checked", true);
+                    } else if (res.data.payment == 3) {
+                        $("#eradioSuccess3").prop("checked", true);
+                    }
+
+                    $('#EditModalBodyTable').html(res.table_html);
+                    $('.imgs').html(res.imgs);
+
+                    if (res.data.status == 1) {
+                        $('#SubmitEditFormp').css('display', 'none');
+                        $('#SubmitEditForm').html('<i class="fas fa-download"></i> Save');
+                    }
+
+                    if (res.data.ref) {
+                        
+                        $('#getRef').val(res.data.ref);
+                        $('#courses_pending_id').val(res.data.courses_pending_id);
+                        $('#getRef').prop('readonly', true);
+                    } else {
+                        
+                        $('#getRef').val(''); // Clear the value if ref is null or undefined
+                        $('#getRef').prop('readonly',
+                            false); // Make editable if ref is null or undefined
+                    }
+
+                    console.log('test');
+                    
+
+                    $('#EditModal').modal('show');
+
+                }
+            });
+
+        })
 
         let status = 0;
 
@@ -765,15 +801,16 @@
                 status = 0; // Set status to 0 if Pending button is clicked
             }
 
+            console.log('test1');
 
             var values = $("input[name='imgFiles2[]']")
                 .map(function() {
                     return $(this).val();
                 }).get();
 
-
-
             var formData = {
+                ref: $('#getRef').val(),
+                courses_pending_id: $('#courses_pending_id').val(),
                 order_number: $('#EditLot').val(),
                 cid: $('#EditCompany').val()[0],
                 total_cost: $('#EditTotalCost').val(),
@@ -805,6 +842,17 @@
                                 '</li></strong>');
                         });
                     } else {
+                        console.log(result);
+                        // $('.alert-danger').hide();
+                        // $('.alert-success').show();
+                        // $('.alert-success').append('<strong><li>' + result.success +
+                        //     '</li></strong>');
+                        // $('#EditModal').modal('hide');
+                        // toastr.success(result.success, {
+                        //     timeOut: 5000
+                        // });
+                        // clearDropzonePreviews2();
+                        // $('#Listview').DataTable().ajax.reload();
 
                         var ostatus = result.status;
                         if (ostatus == 1) {

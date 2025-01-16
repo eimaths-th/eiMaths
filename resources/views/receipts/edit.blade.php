@@ -190,18 +190,19 @@
                                                  </div>
                                              </div>
                                              <div class="col-xs-6 col-sm-6 col-md-6">
-                                                <div class="form-group">
-                                                    <strong><i class="fas fa-dollar-sign"></i> ค่าธรรมเนียมบัตรเครดิต / Service Charge
-                                                        :</strong>
-                                                    {!! Form::number('orther_fee', '0.00', [
-                                                        'id' => 'EditOrtherFee',
-                                                        'step' => '0.50',
-                                                        'placeholder' => 'ค่าธรรมเนียมบัตรเครดิต / Service Charge',
-                                                        'class' => 'auto_decimal form-control',
-                                                        'readonly' => false,
-                                                    ]) !!}
-                                                </div>
-                                            </div>
+                                                 <div class="form-group">
+                                                     <strong><i class="fas fa-dollar-sign"></i> ค่าธรรมเนียมบัตรเครดิต
+                                                         / Service Charge
+                                                         :</strong>
+                                                     {!! Form::number('orther_fee', '0.00', [
+                                                         'id' => 'EditOrtherFee',
+                                                         'step' => '0.50',
+                                                         'placeholder' => 'ค่าธรรมเนียมบัตรเครดิต / Service Charge',
+                                                         'class' => 'auto_decimal form-control',
+                                                         'readonly' => false,
+                                                     ]) !!}
+                                                 </div>
+                                             </div>
                                          </div>
                                          <div class="row">
                                              <div class="col-xs-6 col-sm-6 col-md-6">
@@ -247,6 +248,23 @@
                                                          'id' => 'EditTotalCosth',
                                                          'type' => 'hidden', // Set the input type to 'hidden'
                                                          'hidden' => true, // Add the 'hidden' attribute
+                                                     ]) !!}
+                                                 </div>
+                                             </div>
+                                             <div class="col-xs-6 col-sm-6 col-md-6">
+                                                 <div class="form-group">
+                                                     <strong><i class="fa-solid fa-hashtag"></i> Referent : </strong>
+                                                     {!! Form::text('getRef', null, [
+                                                         'id' => 'getRef',
+                                                         'placeholder' => 'Referent',
+                                                         'class' => 'form-control',
+                                                         // 'readonly' => 'true',
+                                                     ]) !!}
+                                                     {!! Form::text('courses_pending_id', null, [
+                                                         'id' => 'courses_pending_id',
+                                                         'type' => 'hidden', // Set the input type to 'hidden'
+                                                         'hidden' => true, // Add the 'hidden' attribute
+                                                        //  'type' => 'text', // Set the input type to 'hidden'
                                                      ]) !!}
                                                  </div>
                                              </div>
@@ -403,7 +421,7 @@
                              class="fa-solid fa-hand-holding-dollar"></i>
                          Pending</button>
                      <button type="button" class="btn btn-success" id="SubmitEditForm"><i
-                             class="fa-solid fa-sack-dollar"></i> Create Receipt</button>
+                             class="fa-solid fa-sack-dollar"></i>Create Receipt</button>
                      {{--  <button type="button" class="btn btn-danger modelClose" data-dismiss="modal"><i
                              class="fas fa-door-closed"></i> Close</button> --}}
                  </div>

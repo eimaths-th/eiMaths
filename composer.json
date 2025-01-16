@@ -13,7 +13,7 @@
         "brian2694/laravel-toastr": "^5.59",
         "cocur/slugify": "^4.6",
         "fruitcake/laravel-cors": "dev-develop",
-        "guzzlehttp/guzzle": "^7.2",
+        "guzzlehttp/guzzle": "^7.8",
         "infyomlabs/laravel-ui-adminlte": "^5.2",
         "intervention/image": "^2.7",
         "laravel/framework": "^10.10",
@@ -35,7 +35,6 @@
         "yajra/laravel-datatables-oracle": "^10.4"
     },
     "require-dev": {
-        "barryvdh/laravel-debugbar": "^3.14",
         "fakerphp/faker": "^1.9.1",
         "krlove/eloquent-model-generator": "^2.0",
         "laravel/pint": "^1.0",

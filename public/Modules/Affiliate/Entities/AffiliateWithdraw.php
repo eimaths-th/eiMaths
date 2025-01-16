@@ -2,11 +2,22 @@
 
 namespace Modules\Affiliate\Entities;
 
-
+use App\Models\User;
 use App\Traits\Tenantable;
-use App\User;
+// use App\User;
 use Illuminate\Database\Eloquent\Model;
 
+
+/**
+ * @property integer $id
+ * @property integer $user_id
+ * @property string $withdraw_amount
+ * @property string $payment_type
+ * @property string $status
+ * @property string $request_date
+ * @property string $confirmed_by
+ * @property string $confirm_date
+ */
 class AffiliateWithdraw extends Model
 {
     use Tenantable;
@@ -24,6 +35,10 @@ class AffiliateWithdraw extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+    public function confirmedBy()
+    {
+        return $this->belongsTo(User::class, 'confirmed_by', 'id');
     }
 
     public function confirmedUser()

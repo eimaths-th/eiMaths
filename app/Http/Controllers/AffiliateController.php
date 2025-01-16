@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AffiliateCommissionList;
+use App\Models\CoursePending;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Modules\Affiliate\Repositories\AffiliateRepository;
@@ -10,6 +12,7 @@ use Modules\Affiliate\Http\Requests\AffiliateLinkRequest;
 use Brian2694\Toastr\Facades\Toastr;
 // use Brian2694\Toastr\Facades\Toastr;
 use Exception;
+use Modules\Affiliate\Entities\AffiliateWithdraw;
 use Modules\CourseSetting\Entities\Category;
 use Modules\Localization\Entities\Language;
 
@@ -31,14 +34,7 @@ class AffiliateController extends Controller
     }
     public function index(Request $request)
     {
-        // echo "hi its dashboard";
-        // dd($request);
-        // if (isAffiliateUser() && !hasAffiliateAccess()) {
-        //     abort('403', trans('affiliate.The request is now pending for admin approval'));
-        // } elseif (!hasAffiliateAccess() && !isAffiliateUser()) {
-        //     abort('403',trans('affiliate.You are not affiliate user. You need to join affiliate program first.'));
-        // }
-        // try {
+
 
         if (Auth::user()) {
             // Code when the user is authenticated
@@ -49,22 +45,49 @@ class AffiliateController extends Controller
         $data['end_date'] = isset($request->endDate) ? $request->endDate : '';
         $data['user'] = Auth::user();
         $affiliate_wallet = $data['user']->affiliateWallet;
+        $affiliate_bank = $data['user']->affiliateBank;
+
         if ($affiliate_wallet && $affiliate_wallet->paypal_account) {
             $data['paypal_account'] = $affiliate_wallet->paypal_account;
+            $data['amount'] = $affiliate_wallet->amount;
         } else {
             $data['paypal_account'] = ' ';
+            $data['paypal_account'] = 0;
         }
+
+        if ($affiliate_bank && $affiliate_bank->account_number) {
+            $data['account_number'] = $affiliate_bank->account_number;
+            $data['bank_name'] = $affiliate_bank->bank_name;
+            $data['account_name'] = $affiliate_bank->account_name;
+        } else {
+            $data['account_number'] = 'N/A'; // Clearer default value
+            $data['bank_name'] = 'N/A'; // To handle missing bank name
+            $data['account_name'] = 'N/A'; // To handle missing account name
+        }
+
         $data['data'] = $this->affiliateRepo->all();
         $affiliateTransactionRepo = new AffiliateTransactionRepository();
-        $data['user_transaction_data'] = $affiliateTransactionRepo->userWiseWithdraw($data['start_date'], $data['end_date']);
-        $data['user_income_data'] = $affiliateTransactionRepo->userWiseIncome($data['start_date'], $data['end_date']);
+        $data['user_transaction_data'] = AffiliateWithdraw::where('user_id', Auth::user()->id)
+        ->orderBy('id', 'desc')
+        ->get();
+        $data['courses_pennding'] = CoursePending::where('ref', Auth::user()->referral)
+            ->orderBy('id', 'desc')
+            ->get();
+        $data['user_income_data'] = AffiliateCommissionList::where('payment_to', Auth::user()->id)
+            ->orderBy('id', 'desc')
+            ->get();
+
         if ($data['user']->role_id == 3) {
             return view('affiliate::student.student_index', $data);
         }
         // echo Auth::user()->id . Auth::user()->name;
-        // dd($data);
+        // dd($data,Auth::user()->id);
         return view('affiliate.backend.my_affiliate', [
             'data' => $data,
+            'amount' => $data['amount'] ?? '0',
+            'bank_name' => $data['bank_name'],
+            'account_number' => $data['account_number'],
+            'account_name' => $data['account_name'],
             'paypal_account' => $data['paypal_account'],
             'start_date' => $data['start_date'],
             'end_date' => $data['end_date']

@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Gate;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\ExportForm;
 use App\Exports\ExportExcel;
-
+use App\Models\CoursePending;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 
@@ -734,10 +734,20 @@ class ContactController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+
+    public function updateWaitingForPayment($status, $id)
+    {
+
+        $data = CoursePending::find($id);
+        if ($status == 'wait') {
+            # code...
+            $data->update(['status' => 3]);
+        }
+    }
     public function receipt(Request $request)
     {
 
-
+        // dd($request->all());
         //
         $validator = Validator::make($request->all(), [
             'centre' => 'required',
@@ -764,6 +774,12 @@ class ContactController extends Controller
             return response()->json(['errors' => $validator->errors()->all()]);
         }
 
+        if ($request->get('ref')) {
+            $ref_code = $request->get('ref');
+        } else {
+            $ref_code = '';
+        }
+        $courses_pending_id = $request->get('courses_pending_id');
         $bookq = bookuse::find($request->get('bookuse'));
         $levelq = Level::find($request->get('level'));
         $termq = Term::find($request->get('term'));
@@ -895,6 +911,8 @@ class ContactController extends Controller
         $input_order['cid'] = $request->get('student');
         $input_order['order_number'] = OrderRunningNumber::generate($request->get('centre'));
         $input_order['total_price'] = $mprice + $mbprice;
+        $input_order['ref'] = $ref_code;
+        $input_order['courses_pending_id'] = $courses_pending_id;
         $order = Order::create($input_order);
 
         foreach ($bookss as $dresult) {
@@ -949,6 +967,15 @@ class ContactController extends Controller
             $input_order_detail2['quantity'] = 1;
             $input_order_detail2['price'] = $fprice2;
             $order_detail2 = OrderDetail::create($input_order_detail2);
+        }
+        if ($courses_pending_id) {
+            # code...
+            $status = 'wait';
+            $this->updateWaitingForPayment($status, $courses_pending_id);
+        }
+        // dd($request->all());
+        if ($request->get('ref')) {
+            $commmissionList = create_commmission_list($order->id,$courses_pending_id ,$request->get('ref')); // on helper
         }
 
         $select_list_contact = '<option value="' . $contact->id . '" > ' . $contact->name . '</option>';
@@ -1421,7 +1448,7 @@ class ContactController extends Controller
             foreach ($data as $key) {
                 $select_list .= '<option value="' . $key->name . '" >' . $key->name . '</option>';
             }
-
+            // dd($select_list);
             return response()->json([
                 'html' =>  $select_list
             ]);
@@ -1432,7 +1459,7 @@ class ContactController extends Controller
     public function tfind(Request $request, $type, $level, $term)
     {
         //$select_list = "<option value=''>please select</option>";
-
+        // dd($request);
         $select_list = "";
         if ($type == 'add') {
             $data = bookuse::select(

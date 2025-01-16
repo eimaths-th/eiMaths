@@ -55,14 +55,14 @@ class UserController extends Controller
         if ($request->ajax()) {
             //sleep(2);
 
-            $datas = User::with('department', 'position');
+            $datas = User::with('department', 'position')->orderBy("id", "desc")->get();
             if (!Gate::allows('all-centre')) {
                 $datas->whereHas('department', function ($query) {
                     $query->where('id', Auth::user()->department->id);
                 });
             }
 
-            $datas->orderBy("id", "desc")->get();
+            // $datas->orderBy("id", "desc")->get();
             return datatables()->of($datas)
                 ->editColumn('role', function (User $datas) {
                     if (!empty($datas->getRoleNames())) {

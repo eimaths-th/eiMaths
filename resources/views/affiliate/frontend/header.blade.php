@@ -7,7 +7,7 @@
                         <!-- header__left__start  -->
                         <div class="header__left d-flex align-items-center gap-20 ">
                             <div class="">
-                                <a class="logo_img" href="{{ route('affiliate.index') }}">
+                                <a class="logo_img" href="https://www.eimaths-th.com/">
                                     <img class="p-2" src="{{ asset('images/logo.png') }}" width="150"
                                         alt="eiMaths ecommerce">
                                 </a>
@@ -17,8 +17,8 @@
 
                             </div>
 
-                            <div class="category_search d-flex category_box_iner">
-                                {{-- <form action="https://ecommerce.eimaths-th.com/search"> --}}
+                            {{-- <div class="category_search d-flex category_box_iner">
+                                <form action="https://ecommerce.eimaths-th.com/search">
                                 <form action="#">
                                     <div class="input-group theme_search_field">
                                         <div class="input-group-prepend">
@@ -33,60 +33,55 @@
 
                                     </div>
                                 </form>
-                            </div>
+                            </div> --}}
                         </div>
                         <!-- header__left__start  -->
 
                         <!-- main_menu_start  -->
                         <div class="main_menu text-end d-none d-lg-block category_box_iner">
                             <nav>
-                                <div class="menu_dropdown">
+                                {{-- <div class="menu_dropdown">
                                     <ul>
                                         <li class="mega_menu_dropdown active_menu_item">
-                                            {{-- <a href="https://ecommerce.eimaths-th.com/courses?category=2"> --}}
+                                            <a href="https://ecommerce.eimaths-th.com/courses?category=2">
                                             <a href="#">
                                                 Upper Primary
                                             </a>
                                         </li>
                                         <li class="mega_menu_dropdown active_menu_item">
-                                            {{-- <a href="https://ecommerce.eimaths-th.com/courses?category=1"> --}}
+                                            <a href="https://ecommerce.eimaths-th.com/courses?category=1">
                                             <a href="#">
                                                 Lower Primary
                                             </a>
                                         </li>
                                     </ul>
-                                </div>
+                                </div> --}}
 
 
-                                <ul id="mobile-menu">
+                                {{-- <ul id="mobile-menu">
 
 
                                     <li class="  ">
-                                        {{-- <a href="https://ecommerce.eimaths-th.com/"> --}}
                                         <a href="#"> Home </a>
                                     </li>
 
                                     <li class="  ">
-                                        {{-- <a href="https://ecommerce.eimaths-th.com/courses"> --}}
                                         <a href="#"> Courses </a>
                                     </li>
 
                                     <li class="  ">
-                                        {{-- <a href="https://ecommerce.eimaths-th.com/classes"> --}}
                                         <a href="#">
 
                                             Classes</a>
                                     </li>
 
                                     <li class="  ">
-                                        {{-- <a href="https://ecommerce.eimaths-th.com/affiliate"> --}}
                                         <a href="#">
 
                                             Affiliate</a>
                                     </li>
 
                                     <li class="  ">
-                                        {{-- <a href="https://ecommerce.eimaths-th.com/contact-us"> --}}
                                         <a href="#">
                                             Contact Us</a>
                                     </li>
@@ -94,7 +89,7 @@
                                     <li><a href="#"></a></li>
 
 
-                                </ul>
+                                </ul> --}}
 
 
                             </nav>

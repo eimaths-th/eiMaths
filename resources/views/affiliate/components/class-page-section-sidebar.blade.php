@@ -11,7 +11,7 @@
     <div class="course_category_chose  mt_10">
         <div class="course_title mb_30 d-flex align-items-center">
             <div class="d-flex align-items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" width="19.5" height="13" viewBox="0 0 19.5 13">
+                {{-- <svg xmlns="http://www.w3.org/2000/svg" width="19.5" height="13" viewBox="0 0 19.5 13">
                     <g id="filter-icon" transform="translate(28)">
                         <rect id="Rectangle_1" data-name="Rectangle 1" width="19.5" height="2" rx="1"
                             transform="translate(-28)" fill="var(--system_primery_color)" />
@@ -21,12 +21,12 @@
                             transform="translate(-20.75 11)" fill="var(--system_primery_color)" />
                     </g>
                 </svg>
-                <h5 class="font_16 f_w_500 mb-0">Filter Category</h5>
+                <h5 class="font_16 f_w_500 mb-0">Filter Category</h5> --}}
             </div>
             <div class="popupClose"><i class="ti-close"></i></div>
         </div>
 
-        <div class="course_category_inner">
+        {{-- <div class="course_category_inner">
             <div class="single_course_categry">
                 <h4 class="font_18 f_w_700">
                     Class Category
@@ -63,9 +63,7 @@
                                 <span class="label_name">{{ $l->title }}</span>
                             </label>
                         </li>
-                        {{-- @php
-                            dd($l);
-                        @endphp --}}
+                       
                     @endforeach
 
 
@@ -115,6 +113,6 @@
 
                 </ul>
             </div>
-        </div>
+        </div> --}}
     </div>
 </div>

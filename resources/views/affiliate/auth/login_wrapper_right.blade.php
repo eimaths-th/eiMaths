@@ -24,7 +24,7 @@
 
 <div class="login_wrapper_right">
     <div class="login_main_info">
-        <h4>{{ $route }}</h4>
+        <h4>การลงทะเบียน</h4>
         <h4>{{ htmlspecialchars($title ?? 'Welcome to Infix Learning Management System') }}</h4>
         <div class="thumb">
             <img src="{{ asset($banner ?? 'frontend/infixlmstheme/img/banner/global.png') }}" alt="">

@@ -32,6 +32,7 @@ class User extends Authenticatable
         'language_code',
         'referral',
         'email',
+        'phone',
         'email_verified_at',
         'password',
         'department_id',
@@ -79,7 +80,12 @@ class User extends Authenticatable
     {
         return $this->hasOne(AffiliateUserWallet::class, 'user_id');
     }
+    public function affiliateBank()
+    {
+        return $this->hasOne(AffiliateUserBank::class, 'user_id');
+    }
    
+
 
     public function affiliateTransaction()
     {
@@ -87,6 +93,10 @@ class User extends Authenticatable
     }
 
     public function affiliateCommissions()
+    {
+        return $this->hasMany(AffiliateCommissionList::class, 'payment_to');
+    }
+    public function affiliateCommissions2()
     {
         return $this->hasMany(AffiliateReferralPayment::class, 'payment_to');
     }

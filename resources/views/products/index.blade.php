@@ -9,6 +9,7 @@
 @endsection
 
 @section('content')
+    {{-- {{ session('errors')->first('error1') }} --}}
     <section class="content-header">
         <div class="container-fluid">
             <div class="row">

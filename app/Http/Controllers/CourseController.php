@@ -2,11 +2,23 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\bookuse;
+use App\Models\Contact;
 use Illuminate\Http\Request;
 use Modules\CourseSetting\Entities\Course;
 use Modules\CourseSetting\Entities\CourseLevel;
 use Modules\Localization\Entities\Language;
 use App\Models\CoursePending;
+use App\Models\Department;
+use App\Models\level;
+use App\Models\LineApiSetting;
+use App\Models\Order;
+use App\Models\OrderDetail;
+use App\Models\OrderDetailList;
+use App\Models\OrderRunningNumber;
+use App\Models\Sterm;
+use App\Models\studentRunningNumber;
+use App\Models\term;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Modules\CourseSetting\Entities\Category;
@@ -17,6 +29,10 @@ use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Session;
 use Livewire\Attributes\Validate;
+use GuzzleHttp\Client;
+use Svg\Tag\Rect;
+use Illuminate\Support\Facades\Validator;
+
 
 // use Toastr;
 
@@ -321,7 +337,6 @@ class CourseController extends Controller
 
     public function store(Request $request)
     {
-        // dd($request);
 
         $validated = $request->validate([
             'title' => 'required|string',
@@ -451,47 +466,6 @@ class CourseController extends Controller
 
         return response()->json(['success' => true, 'message' => 'Course updated successfully.']);
     }
-
-    public function CoursePendingStore(Request $request)
-    {
-        // Validate the incoming request
-
-        // $validated = $request->validate([
-        //     'ref' => 'nullable|string|max:255',
-        //     'name' => 'required|string|max:255',
-        //     'email' => 'required|email|max:255',
-        //     'telp' => 'nullable|string|max:15',
-        //     'course_name' => 'nullable|string|max:255',
-        //     // 'course_id' => 'required|exists:courses,id', // Ensure the course exists
-        // ]);
-
-
-
-        // try {
-        //     // Store the data in the courses_pending table
-        //     CoursePending::create([
-        //         'ref' => $validated['ref'],
-        //         'name' => $validated['name'],
-        //         'email' => $validated['email'],
-        //         'telp' => $validated['telp'],
-        //         'course_name' => $validated['course_name'],
-        //         'course_id' => $validated['course_id'],
-        //     ]);
-
-        //     // Flash a success message
-        //     Toastr::success('Your course request has been submitted successfully.');
-
-        //     // Redirect or close the modal
-        //     return back();
-        // } catch (\Exception $e) {
-        //     // Flash an error message in case of failure
-        //     Toastr::error('There was an error submitting your request.');
-
-        //     // Optionally return the error
-        //     return back()->withInput()->withErrors(['error' => $e->getMessage()]);
-        // }
-    }
-
     public function categories()
     {
         $query = Category::query();
@@ -867,7 +841,7 @@ class CourseController extends Controller
 
     public function courseLevelDestroy($id)
     {
-        
+
         try {
             $level = CourseLevel::findOrFail($id);
             $level->delete();
@@ -890,5 +864,644 @@ class CourseController extends Controller
         return response()->json([
             'data' => $levels
         ]);
+    }
+
+    public function coursesPendingIndex(Request $request)
+    {
+        $centre = Department::where([['status', '1']])->orderBy("name", "asc")->get();
+        $term = term::where([['status', '1']])
+            ->orderBy("name", "asc")->get();
+        $sterm = Sterm::where([['status', '1']])
+            ->orderBy("name", "asc")->get();
+        $bookuse = bookuse::where([['status', '1']/* , ['type', '1'] */])
+            ->orderBy("name", "asc")->get();
+        $level = level::where([['status', '1']])
+            ->orderBy("name", "asc")->get();
+        if ($request->ajax()) {
+            // $query = CoursePending::where('start_course', 1)->orderBy('id', 'desc');
+            $query = CoursePending::query()->orderBy('id', 'desc');
+
+            return DataTables::of($query)
+                ->addIndexColumn()
+                ->editColumn('ref', function ($query) {
+                    return $query->ref;
+                })
+                ->editColumn('name', function ($query) {
+                    return $query->name ?? 'null';
+                })->editColumn('email', function ($query) {
+
+                    return $query->email;
+                })
+                ->addColumn('telp', function ($query) {
+
+                    return $query->telp ?? 'null';
+                })->addColumn('type_parent', function ($query) {
+
+                    return $query->type_parent ?? 'null';
+                })
+                ->editColumn('course_name', function ($query) {
+                    return $query->course_name;
+                })
+                ->editColumn('status', function ($query) {
+                    $html = '';
+                    if ($query->status == 1) {
+                        # code...
+                        $html .= '<span class="badge bg-warning rounded-pill"> pending </span>';
+                    } elseif ($query->status == 2) {
+                        # code...
+                        $html .= '<span class="badge bg-success rounded-pill"> Accepted </span>';
+                    } elseif ($query->status == 3) {
+                        # code...
+                        $html .= '<span class="badge bg-success rounded-pill"> Waiting for Payment </span>';
+                    } elseif ($query->status == 4) {
+                        # code...
+                        $html .= '<span class="badge bg-success rounded-pill"> success </span>';
+                    } elseif ($query->status == 0) {
+                        # code...
+                        $html .= '<span class="badge bg-danger rounded-pill"> denie </span>';
+                    }
+                    return $html;
+                })
+
+                ->addColumn('action', function ($query) {
+                    $dropdown = '<div class="dropdown">
+                                    <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="actionDropdown' . $query->id . '" data-bs-toggle="dropdown" aria-expanded="false">
+                                        Actions
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="actionDropdown' . $query->id . '">';
+
+                    if ($query->status == 1) {
+                        $dropdown .= '<li><button class="dropdown-item confirm-btn" data-id="' . $query->id . '">Confirm</button></li>
+                                      <li><button class="dropdown-item cancel-btn" data-id="' . $query->id . '">Cancel</button></li>';
+                    } elseif ($query->status == 2) {
+                        $dropdown .= '<li><button class="dropdown-item ModalNewStd" data-id="' . $query->id . '">New Student</button></li>
+                                      <li><button class="dropdown-item ModalNewReciept" data-id="' . $query->id . '">New Receipt</button></li>
+                                      <li><button class="dropdown-item reset-btn" data-id="' . $query->id . '">Reset</button></li>';
+                    } elseif ($query->status == 0) {
+                        $dropdown .= '<li><button class="dropdown-item reset-btn" data-id="' . $query->id . '">Reset</button></li>';
+                    } else {
+                        # code...
+                        // $dropdown .= '';
+                        $dropdown .= '<li><button class="dropdown-item reset-btn" data-id="' . $query->id . '">Reset</button></li>';
+                    }
+
+                    $dropdown .= '</ul>
+                                </div>';
+
+                    return $dropdown;
+                })
+
+                // ->addColumn('action', function ($query) {
+                //     if ($query->status == 1) {
+                //         return '<button class="btn btn-success confirm-btn btn-sm" data-id="' . $query->id . '">Confirm</button>
+                //                 <button class="btn btn-danger cancel-btn btn-sm" data-id="' . $query->id . '">Cancel</button>';
+                //     } elseif ($query->status == 2) {
+
+                //         return '
+                //         <button class="btn btn-success ModalNewStd btn-sm" data-id="' . $query->id . '">New Studnt</button>
+                //         <button class="btn btn-success ModalNewReciept btn-sm" data-id="' . $query->id . '">New Reciept</button>
+                //         <button class="btn btn-primary reset-btn btn-sm" data-id="' . $query->id . '">Reset</button>
+                //         ';
+                //     } elseif ($query->status == 0) {
+
+                //         return '
+                //         <button class="btn btn-primary reset-btn btn-sm" data-id="' . $query->id . '">Reset</button>
+                //         ';
+                //     }
+                //     return '
+
+                //     ';
+                // })
+
+                // ->addColumn('action', function ($query) {
+
+                //     // $html = '<a class="btn btn-warning edit-btn" data-id=" ' . $query->id . '">Edit</a> ';
+                //     // return $html;
+                //     // return view('components._course_action_td', ['query' => $query]);
+                //     // return '1';
+                // })
+                ->rawColumns(['status', 'price', 'action', 'enrolled_users'])
+                ->make(true);
+        }
+        return view('course.courses_pending_index')
+            ->with(['centre' => $centre])
+            ->with(['bookuse' => $bookuse])
+            ->with(['level' => $level])
+            ->with(['term' => $term])
+            ->with(['sterm' => $sterm])
+        ;
+    }
+
+    public function coursesPendingConfirm($id)
+    {
+        $data = CoursePending::find($id);
+
+        // Check if the course pending data exists
+        if ($data) {
+            $data->update(['status' => 2]); // Update the status to 2 (Confirm)
+            return response()->json([
+                'success' => true,
+                'message' => 'Course status confirmed successfully.',
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Course not found.',
+        ]);
+    }
+
+    public function coursesPendingCancel($id)
+    {
+        $data = CoursePending::find($id);
+
+        // Check if the course pending data exists
+        if ($data) {
+            $data->update(['status' => 0]); // Update the status to 3 (Cancel)
+            return response()->json([
+                'success' => true,
+                'message' => 'Course status canceled successfully.',
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Course not found.',
+        ]);
+    }
+
+    public function coursesPendingReset($id)
+    {
+        $data = CoursePending::find($id);
+
+        // Check if the course pending data exists
+        if ($data) {
+            $data->update(['status' => 1]); // Update the status to 3 (Cancel)
+            return response()->json([
+                'success' => true,
+                'message' => 'Course status Reset successfully.',
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Course not found.',
+        ]);
+    }
+
+    public function coursesPendingStore(Request $request)
+    {
+        $validatedData = $request->validate([
+            'course_id' => 'required|integer|exists:courses,id',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email',
+            'telp' => 'required|string|max:15',
+            'course_name' => 'required|string',
+            'type_parent' => 'required|in:father,mother',
+        ]);
+        $validatedData['ref'] = $request->ref ?? '';
+        $validatedData['status'] = '1';
+
+        $create = CoursePending::create($validatedData);
+        //line api test
+        // $message = "New Course Pending Created:\n"
+        //     . "Ref: {$validatedData['ref']}\n"
+        //     . "Name: {$validatedData['name']}\n"
+        //     . "Email: {$validatedData['email']}\n"
+        //     . "Tel: {$validatedData['telp']}\n"
+        //     . "Course Name: {$validatedData['course_name']}\n"
+        //     . "Type Parent: {$validatedData['type_parent']}\n";
+
+        // // Send a message to Line OA
+        // // Replace with your Line User ID
+
+        // // $lineUserId = 'U25fc5496e631e0cab0923f8f3cfc6db0';
+        // // $accessToken = '2U8EhhLV69SeO/s/++xinSMV/g5r0K0WVvsaboSDAfGTX1Yz3820Xy/f7zSSz5wD+e4o0EOqwbmyudz61unaWxWP//j+gbGbSsDEyOVuMplrGoUWcLNE4NicviIUIcovVQ7Yub4BWefq7ABdgsr9QQdB04t89/1O/w1cDnyilFU='; // Replace with your Channel Access Token
+
+        // $line_api = LineApiSetting::where('status', 1)->first();
+        // if (!$line_api) {
+        //     return response()->json([
+        //         'success' => false,
+        //         'message' => 'No active Line API settings found.',
+        //     ], 404);
+        // }
+
+        // try {
+        //     $lineUserId = decrypt($line_api->line_user_id);
+        //     $accessToken = decrypt($line_api->channel_access_token);
+        //     dd(
+        //         $request->all(),
+        //         $line_api,
+        //         $accessToken,
+        //         $lineUserId
+        //     );
+
+        //     $this->sendLineMessage($lineUserId, $accessToken, $message);
+        // } catch (\Illuminate\Contracts\Encryption\DecryptException $e) {
+        //     return response()->json([
+        //         'success' => false,
+        //         'message' => 'Failed to decrypt Line API settings.',
+        //     ], 500);
+        // }
+
+        // $lineUserId = decrypt($line_api->line_user_id);
+        // $accessToken = decrypt($line_api->channel_access_token);
+
+        // $this->sendLineMessage($lineUserId, $accessToken, $message);
+        // disable for testing
+
+        // $this->sendMulticastMessage([$lineUserId], $accessToken, 'Hello from Line OA!1cd ');
+
+        // // For broadcast
+        // $this->sendBroadcastMessage($accessToken, 'Hello from Line OA! 2');
+        // $this->sendMessageToMyself($accessToken, $message);
+        return response()->json([
+            'success' => true,
+            'message' => 'Course stored successfully!',
+        ]);
+    }
+
+    private function sendLineMessage($lineUserId, $accessToken, $message)
+    {
+        $accessToken = '2U8EhhLV69SeO/s/++xinSMV/g5r0K0WVvsaboSDAfGTX1Yz3820Xy/f7zSSz5wD+e4o0EOqwbmyudz61unaWxWP//j+gbGbSsDEyOVuMplrGoUWcLNE4NicviIUIcovVQ7Yub4BWefq7ABdgsr9QQdB04t89/1O/w1cDnyilFU='; // Replace with your Channel Access Token
+
+        $client = new Client();
+        $url = 'https://api.line.me/v2/bot/message/push';
+
+        $response = $client->post($url, [
+            'headers' => [
+                'Authorization' => "Bearer {$accessToken}",
+                'Content-Type' => 'application/json',
+            ],
+            'json' => [
+                'to' => $lineUserId,
+                'messages' => [
+                    [
+                        'type' => 'text',
+                        'text' => $message,
+                    ],
+                ],
+            ],
+        ]);
+
+        if ($response->getStatusCode() !== 200) {
+            // Handle error if needed
+            Log::error('Failed to send message to Line OA', ['response' => $response->getBody()->getContents()]);
+        }
+    }
+
+    public function coursesPendingNewStd($id)
+    {
+        $data = CoursePending::find($id);
+
+        return response()->json([
+            'success' => true,
+            'data' => $data,
+        ]);
+    }
+
+    public function updateWaitingForPayment($status, $id)
+    {
+
+        $data = CoursePending::find($id);
+        if ($status == 'wait') {
+            # code...
+            $data->update(['status' => 3]);
+        }
+    }
+    public function coursesPendingNewStdStore(Request $request)
+    {
+        // dd($request);
+
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255|unique:contacts',
+            'start_date' => 'required|string|max:10',
+            //'start_term' => 'required',
+            'school' => 'required|string|max:255',
+            'level' => 'required',
+            'term' => 'required',
+            'bookuse' => 'required',
+            'father_name' => 'nullable|string|max:255|required_without:mother_name',
+            //'father_email' => 'nullable|string|max:255|required_with:father_name,father_mobile',
+            'father_mobile' => 'nullable|string|max:20|required_with:father_name',
+            'mother_name' => 'nullable|string|max:255|required_without:father_name',
+            //'mother_email' => 'nullable|string|max:255|required_with:mother_name,mother_mobile',
+            'mother_mobile' => 'nullable|string|max:20|required_with:mother_name',
+        ], [
+            'name.required' => 'Student name must not be empty.',
+            'name.unique' => 'This student name already exists in the database.',
+            'start_date.required' => 'Please provide a start date.',
+            'start_term.required' => 'Please select a start term.',
+            'school.required' => 'Please provide the school name.',
+            'level.required' => 'Please select a level.',
+            'term.required' => 'Please select a term.',
+            'bookuse.required' => 'Please specify book usage.',
+            'father_name.required_without' => 'Either Father name or Mother name must be provided.',
+            'father_email.required_with' => 'Father email is required when Father name is provided.',
+            'father_mobile.required_with' => 'Father mobile is required when Father name is provided.',
+            'mother_name.required_without' => 'Either Mother name or Father name must be provided.',
+            'mother_email.required_with' => 'Mother email is required when Mother name is provided.',
+            'mother_mobile.required_with' => 'Mother mobile is required when Mother name is provided.',
+        ]);
+
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()->all()]);
+        }
+
+        $bookq = bookuse::find($request->get('bookuse'));
+        $levelq = Level::find($request->get('level'));
+        $termq = Term::find($request->get('term'));
+
+        if ($bookq->type == 1) {
+            $mprice = $levelq->price;
+            $mbprice = $levelq->book_price;
+            $fprice = $levelq->price;
+        } elseif ($bookq->type == 2) {
+            $mprice = $levelq->half_price;
+            $mbprice = $levelq->book_half_price;
+            $fprice = $levelq->half_price;
+        }
+
+        if (!empty($request->get('level2'))) {
+
+            $bookq2 = bookuse::find($request->get('bookuse2'));
+            $levelq2 = Level::find($request->get('level2'));
+            $termq2 = Term::find($request->get('term2'));
+
+            $mprice = 0;
+            $mbprice = 0;
+            $coin = 0;
+            for ($i = $levelq->id; $i <= $levelq2->id; $i++) {
+                $sbook = 1;
+
+                if ($i == $levelq->id) {
+                    $sterm = $termq->name;
+                } else {
+                    $sterm = 1;
+                }
+
+                if ($i == $levelq2->id) {
+                    $eterm = $termq2->name;
+                } else {
+                    $eterm = 4;
+                }
+
+                for ($j = $sterm; $j <= $eterm; $j++) {
+                    if ($i == $levelq->id && $j == $sterm) {
+                        $sbook = $bookq->type;
+                    } else if ($i == $levelq2->id && $j == $eterm) {
+                        $sbook = $bookq->type;
+                    } else {
+                        $sbook = 1;
+                    }
+                    //echo $j . "<br>";
+                    /*  $books = bookuse::where('type', '=', $sbook)
+                        ->where('level_id', '=', $i)
+                        ->where('term_id', '=', $j)
+                        ->get(); */
+                    $books = bookuse::select(
+                        "bookuses.*",
+                        "bookuses.type as level_type",
+                        "levels.name as level_name",
+                        "levels.price as price",
+                        "levels.half_price as half_price",
+                        "levels.book_price as book_price",
+                        "levels.book_half_price as book_half_price",
+                        "terms.name as term_name",
+                    )
+                        ->join("terms", "terms.id", "=", "bookuses.term_id")
+                        ->join("levels", "levels.id", "=", "bookuses.level_id");
+
+                    if ($i == $levelq->id && $j == $sterm) {
+                        $books->where('bookuses.id', '=', $bookq->id);
+                    } else if ($i == $levelq2->id && $j == $eterm) {
+                        $books->where('bookuses.id', '=', $bookq2->id);
+                    } else {
+                        $books->where('type', '=', $sbook)->where('bookuses.level_id', '=', $i)
+                            ->where('bookuses.term_id', '=', $j);
+                    }
+                    $books = $books->get();
+                    $bookss[] = $books;
+
+                    if ($books[0]->level_type == 1) {
+                        $mprice = $mprice + $books[0]->price;
+                        $mbprice = $mbprice + $books[0]->book_price;
+                    } else {
+                        $mprice = $mprice + $books[0]->half_price;
+                        $mbprice = $mbprice + $books[0]->book_half_price;
+                    }
+
+                    $coin++;
+                }
+            }
+
+
+            if ($bookq2->type == 1) {
+                $fprice2 = $levelq2->price;
+            } elseif ($bookq2->type == 2) {
+                $fprice2 = $levelq2->half_price;
+            }
+        } else {
+            $books = bookuse::select(
+                "bookuses.*",
+                "bookuses.type as level_type",
+                "levels.name as level_name",
+                "levels.price as price",
+                "levels.half_price as half_price",
+                "levels.book_price as book_price",
+                "levels.book_half_price as book_half_price",
+                "terms.name as term_name",
+            )
+                ->join("terms", "terms.id", "=", "bookuses.term_id")
+                ->join("levels", "levels.id", "=", "bookuses.level_id")
+                ->where('bookuses.level_id', '=', $request->get('level'))
+                ->where('bookuses.term_id', '=', $request->get('term'))
+                ->where('bookuses.id', '=', $request->get('bookuse'))
+                ->get();
+            $bookss[] = $books;
+        }
+        // dd($coin);
+
+        $input = $request->all();
+        $input['code'] = studentRunningNumber::generate($request->get('centre'));
+        $input['level_name'] = $levelq->name;
+        $input['term_name'] = $termq->name;
+        $input['bookuse_name'] = $bookq->name;
+        $input['type'] = 'student';
+
+        if (!empty($request->get('level2'))) {
+            $input['level2_name'] = $levelq2->name;
+            $input['term2_name'] = $termq2->name;
+            $input['bookuse2_name'] = $bookq2->name;
+        }
+
+        if ($request->get('ref')) {
+            $ref_code = $request->get('ref');
+        } else {
+            $ref_code = '';
+        }
+        $courses_pending_id = $request->get('courses_pending_id');
+
+        $input['courses_pending_id'] = $courses_pending_id;
+
+        $contact = Contact::create($input);
+
+        $input_order['centre'] = $request->get('centre');
+        $input_order['cid'] = $contact->id;
+        $input_order['order_number'] = OrderRunningNumber::generate($request->get('centre'));
+        $input_order['total_price'] = $mprice + $mbprice;
+        $input_order['ref'] = $ref_code;
+        $input_order['courses_pending_id'] = $courses_pending_id;
+        $order = Order::create($input_order);
+
+        foreach ($bookss as $dresult) {
+            foreach ($dresult as $book) {
+                if ($book->level_type == 1) {
+                    $tprice = $book->price;
+                    $bprice = $book->book_price;
+                } elseif ($book->level_type == 2) {
+                    $tprice = $book->half_price;
+                    $bprice = $book->book_half_price;
+                }
+                OrderDetailList::create([
+                    'order_id' => $order->id,
+                    'level' => $book->level_name,
+                    'term' => $book->term_name,
+                    'book' => $book->name,
+                    'price' => $tprice,
+                    'bprice' => $bprice,
+                ]);
+            }
+        }
+
+        $contact->order = $order->id;
+        $contact->save();
+
+        $input_order_detail['order_id'] = $order->id;
+        $input_order_detail['product_id'] = $bookq->id;
+        $input_order_detail['pname'] = $bookq->name;
+        $input_order_detail['punit'] = $bookq->unit;
+        $input_order_detail['quantity'] = 1;
+        $input_order_detail['price'] = $fprice;
+        $order_detail = OrderDetail::create($input_order_detail);
+
+        if (!empty($request->get('level2'))) {
+            $input_order_detail2['order_id'] = $order->id;
+            $input_order_detail2['product_id'] = $bookq2->id;
+            $input_order_detail2['pname'] = $bookq2->name;
+            $input_order_detail2['punit'] = $bookq2->unit;
+            $input_order_detail2['quantity'] = 1;
+            $input_order_detail2['price'] = $fprice2;
+            $order_detail2 = OrderDetail::create($input_order_detail2);
+        }
+
+        $status = 'wait';
+        $this->updateWaitingForPayment($status, $courses_pending_id);
+
+        if ($request->get('ref')) {
+            $commmissionList = create_commmission_list($order->id, $courses_pending_id, $request->get('ref')); // on helper
+        }
+        $select_list_contact = '<option value="' . $contact->id . '" > ' . $contact->name . '</option>';
+        return response()->json([
+            'success' => 'Added student information successfully.',
+            'contact' => $select_list_contact,
+            'cid' => $contact->id,
+            'oid' => $order->id,
+            'coin' => $coin,
+        ]);
+    }
+
+    // private function create_commmission_list($courses_pending_id, $order_id)
+    // {
+    //     dd(
+    //         $courses_pending_id,
+    //         $order_id,
+    //     );
+    // }
+
+    private function sendBroadcastMessage($accessToken, $message)
+    {
+        $accessToken = '2U8EhhLV69SeO/s/++xinSMV/g5r0K0WVvsaboSDAfGTX1Yz3820Xy/f7zSSz5wD+e4o0EOqwbmyudz61unaWxWP//j+gbGbSsDEyOVuMplrGoUWcLNE4NicviIUIcovVQ7Yub4BWefq7ABdgsr9QQdB04t89/1O/w1cDnyilFU='; // Replace with your Channel Access Token
+
+        $client = new Client();
+        $url = 'https://api.line.me/v2/bot/message/broadcast';
+
+        $response = $client->post($url, [
+            'headers' => [
+                'Authorization' => "Bearer {$accessToken}",
+                'Content-Type' => 'application/json',
+            ],
+            'json' => [
+                'messages' => [
+                    [
+                        'type' => 'text',
+                        'text' => $message,
+                    ],
+                ],
+            ],
+        ]);
+
+        if ($response->getStatusCode() !== 200) {
+            Log::error('Failed to send broadcast message to Line OA', ['response' => $response->getBody()->getContents()]);
+        }
+    }
+
+    private function sendMulticastMessage($userIds, $accessToken, $message)
+    {
+        $accessToken = '2U8EhhLV69SeO/s/++xinSMV/g5r0K0WVvsaboSDAfGTX1Yz3820Xy/f7zSSz5wD+e4o0EOqwbmyudz61unaWxWP//j+gbGbSsDEyOVuMplrGoUWcLNE4NicviIUIcovVQ7Yub4BWefq7ABdgsr9QQdB04t89/1O/w1cDnyilFU='; // Replace with your Channel Access Token
+
+        $client = new Client();
+        $url = 'https://api.line.me/v2/bot/message/multicast';
+
+        $response = $client->post($url, [
+            'headers' => [
+                'Authorization' => "Bearer {$accessToken}",
+                'Content-Type' => 'application/json',
+            ],
+            'json' => [
+                'to' => $userIds, // Array of Line user IDs
+                'messages' => [
+                    [
+                        'type' => 'text',
+                        'text' => $message,
+                    ],
+                ],
+            ],
+        ]);
+
+        if ($response->getStatusCode() !== 200) {
+            \Log::error('Failed to send multicast message to Line OA', ['response' => $response->getBody()->getContents()]);
+        }
+    }
+
+    private function sendMessageToMyself($accessToken, $message)
+    {
+
+        $accessToken = '2U8EhhLV69SeO/s/++xinSMV/g5r0K0WVvsaboSDAfGTX1Yz3820Xy/f7zSSz5wD+e4o0EOqwbmyudz61unaWxWP//j+gbGbSsDEyOVuMplrGoUWcLNE4NicviIUIcovVQ7Yub4BWefq7ABdgsr9QQdB04t89/1O/w1cDnyilFU='; // Replace with your Line OA Channel Access Token
+        $userId = 'U25fc5496e631e0cab0923f8f3cfc6db0'; // Replace with your Line User ID
+
+        $client = new \GuzzleHttp\Client();
+        $url = 'https://api.line.me/v2/bot/message/push';
+
+        $response = $client->post($url, [
+            'headers' => [
+                'Authorization' => "Bearer {$accessToken}",
+                'Content-Type' => 'application/json',
+            ],
+            'json' => [
+                'to' => $userId,
+                'messages' => [
+                    [
+                        'type' => 'text',
+                        'text' => $message,
+                    ],
+                ],
+            ],
+        ]);
+
+        if ($response->getStatusCode() !== 200) {
+            \Log::error('Failed to send message to myself', ['response' => $response->getBody()->getContents()]);
+        }
     }
 }
