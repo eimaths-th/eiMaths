@@ -33,7 +33,7 @@ class ConfigWithdrawController extends Controller
             return datatables()->of($datas)
 
                 ->editColumn('user_id', function ($row) {
-                    return $row->user->name;
+                    return $row->user->name ?? 'N/A';
                 })
                 ->editColumn('withdraw_amount', function ($row) {
                     return number_format($row->withdraw_amount, 2) . ' ฿';
