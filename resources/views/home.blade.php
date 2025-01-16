@@ -15,7 +15,7 @@
                 <div class="col-sm-7">
                     <h4><i class="fa-solid fa-chart-pie"></i> eiMaths {{--  [{{ Auth::user()->department->name }}]  --}}Stats</h4>
                 </div>
-                <div class="col-sm-3">
+                <div class="col-sm-2">
                     <div class="form-group">
                         <div class="input-group">
                             <div class="input-group-prepend">
@@ -37,7 +37,7 @@
 
                     </div>
                 </div>
-                 <div class="col-sm-3">
+                 <div class="col-sm-2">
                     <div class="form-group">
                         <div class="input-group">
                             <div class="input-group-prepend">
