@@ -1,6 +1,6 @@
 <div role="tabpanel" class="tab-pane fade" id="courses_registered_tab">
     <div class="main-title">
-        <h3 class="mb-20">Commission History</h3>
+        <h3 class="mb-20">Courses Registered</h3>
     </div>
     <div class="QA_section QA_section_heading_custom check_box_table">
         <div class="QA_table ">
@@ -29,8 +29,8 @@
                                 <td>{{ $item->telp ?? 'N/A'}} </td>
                                 <td>{{ $item->course_name ?? 'N/A'}} </td>
                                 <td>
-                                    @if ($item->status === 'approved')
-                                        <span class="badge_1">Approved</span>
+                                    @if ($item->status === '4')
+                                        <span class="badge_1">Success</span>
                                     @else
                                         <span class="badge_3">Pending</span>
                                     @endif

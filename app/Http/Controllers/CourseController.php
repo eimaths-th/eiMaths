@@ -1063,7 +1063,7 @@ class CourseController extends Controller
         $validatedData['status'] = '1';
 
         $create = CoursePending::create($validatedData);
-
+        //line api test
         // $message = "New Course Pending Created:\n"
         //     . "Ref: {$validatedData['ref']}\n"
         //     . "Name: {$validatedData['name']}\n"
@@ -1108,6 +1108,7 @@ class CourseController extends Controller
         // $accessToken = decrypt($line_api->channel_access_token);
 
         // $this->sendLineMessage($lineUserId, $accessToken, $message);
+        // disable for testing
 
         // $this->sendMulticastMessage([$lineUserId], $accessToken, 'Hello from Line OA!1cd ');
 
