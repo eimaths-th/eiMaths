@@ -24,14 +24,12 @@ class ConfigWithdrawController extends Controller
         } else {
             $roles = Role::pluck('name', 'name')->all();
         }
-
         if ($request->ajax()) {
             //sleep(2);
 
             $datas =  AffiliateWithdraw::query()->orderBy("id", "desc")->get();
 
             return datatables()->of($datas)
-
                 ->editColumn('user_id', function ($row) {
                     return $row->user->name ?? 'N/A';
                 })
@@ -86,7 +84,7 @@ class ConfigWithdrawController extends Controller
                     return $row->request_date;
                 })
                 ->editColumn('confirmed_by', function ($row) {
-                    return $row->confirmedBy->name;
+                    return $row->confirmedBy->name ?? '';
                 })
                 ->editColumn('confirm_date', function ($row) {
                     return $row->confirm_date;
@@ -95,19 +93,19 @@ class ConfigWithdrawController extends Controller
                     return '<input type="checkbox" id="' . $row->id . '" class="flat" name="table_records[]" value="' . $row->id . '" >';
                 })
                 ->addColumn('action', function ($row) {
-
                     $html = '';
                     if ($row->status == 0) {
                         // Button for "Approve"
                         $html .= '<button class="btn btn-success btn-sm approve-withdraw-btn" data-id="' . $row->id . '">Approve</button>';
-
                         // Button for "Reject"
                         $html .= ' <button class="btn btn-danger btn-sm reject-withdraw-btn" data-id="' . $row->id . '">Reject</button>';
                     }
-
                     return $html;
                 })->rawColumns(['checkbox', 'action', 'status'])->toJson();
+                // dd($datas);
+        
         }
+
         // $withdraw =  AffiliateWithdraw::all();
         return view('config_withdraw.index');
         // return view('config-withdraw.index', [

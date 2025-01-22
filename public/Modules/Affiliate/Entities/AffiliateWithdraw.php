@@ -36,6 +36,7 @@ class AffiliateWithdraw extends Model
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
+    
     public function confirmedBy()
     {
         return $this->belongsTo(User::class, 'confirmed_by', 'id');
