@@ -130,6 +130,162 @@
 
     </section>
 
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card card-primary">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class="fa fa-user"></i>Affiliate Configurations</h3>
+                            <div class="card-tools">
+                                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                                {{-- <button type="button" class="btn btn-tool" data-card-widget="remove" title="Remove">
+                                    <i class="fas fa-times"></i>
+                                </button> --}}
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+                            @if ($message = Session::get('success'))
+                                {{--  <div class="alert alert-success">
+                                    <p>{{ $message }}</p>
+                                </div> --}}
+                                <script>
+                                    toastr.success('{{ $message }}', {
+                                        timeOut: 5000
+                                    });
+                                </script>
+                            @endif
+                            <form>
+                                <div class="row">
+
+                                    @foreach ($aff_comission as $comission)
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="mb-2"> Course per Month
+                                                    <span class="text-danger">*</span>
+                                                </label>
+                                                <div class="row">
+                                                    <div class="col-lg-10">
+                                                        <input class="form-control" type="number" id="course_per_month"
+                                                            name="course_per_month" autocomplete="off"
+                                                            value="{{ $comission->course_per_month }}">
+                                                    </div>
+                                                    <div class="col-lg-2">
+                                                        <label class="mb-2">คน
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="row">
+                                                <div class="col-lg-6">
+                                                    <div class="form-group">
+                                                        <label class="mb-2"> Low
+                                                            <span class="text-danger">*</span>
+                                                        </label>
+                                                        <div class="row">
+                                                            <div class="col-lg-8">
+                                                                <input class="form-control" type="number"
+                                                                    id="comission_per_course_15_percent"
+                                                                    name="comission_per_course_15_percent"
+                                                                    autocomplete="off"
+                                                                    value="{{ $comission->user_per_course_low }}">
+                                                            </div>
+                                                            <div class="col-lg-4">
+                                                                <label class="mb-2">คอร์ส
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-6">
+                                                    <div class="form-group">
+                                                        <label class="mb-2"> High
+                                                            <span class="text-danger">*</span>
+                                                        </label>
+                                                        <div class="row">
+                                                            <div class="col-lg-8">
+                                                                <input class="form-control" type="number"
+                                                                    id="comission_per_course_15_percent"
+                                                                    name="comission_per_course_15_percent"
+                                                                    autocomplete="off"
+                                                                    value="{{ $comission->user_per_course_high }}">
+                                                            </div>
+                                                            <div class="col-lg-4">
+                                                                <label class="mb-2">คอร์ส
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="mb-2"> comission per course 10 percent
+                                                    
+                                                    <span class="text-danger">*</span>
+                                                </label>
+                                                <div class="row">
+                                                    <div class="col-lg-10">
+                                                        <input class="form-control" type="number"
+                                                            id="comission_per_course_10_percent"
+                                                            name="comission_per_course_10_percent" autocomplete="off"
+                                                            value="{{ $comission->comission_per_course_10_percent }}">
+                                                    </div>
+                                                    <div class="col-lg-2">
+                                                        <label class="mb-2">บาท
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="mb-2"> comission per course 15 percent
+                                                    <span class="text-danger">*</span>
+                                                </label>
+                                                <div class="row">
+                                                    <div class="col-lg-10">
+                                                        <input class="form-control" type="number"
+                                                            id="comission_per_course_15_percent"
+                                                            name="comission_per_course_15_percent" autocomplete="off"
+                                                            value="{{ $comission->comission_per_course_15_percent }}">
+                                                    </div>
+                                                    <div class="col-lg-2">
+                                                        <label class="mb-2">บาท
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                    {{--  --}}
+
+                                    <div class="col-lg-3">
+                                        <button type="submit" class="btn btn-primary" id="updateCommissionConfig_2">
+                                            <i class="ti-check"></i>
+                                            update
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
     {{--  {!! $data->render() !!} --}}
 @endsection
 

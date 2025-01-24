@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\affiliateConfigCommission;
 use Illuminate\Http\Request;
 use Modules\Affiliate\Entities\AffiliateConfiguration;
 
@@ -14,9 +15,11 @@ class AffiliateConfigurationsController extends Controller
     {
         //
         $aff_config = AffiliateConfiguration::all();
+        $aff_comission = affiliateConfigCommission::all();
         // dd($aff_config);
         return view('affiliate.config.index', [
-            'aff_config' => $aff_config
+            'aff_config' => $aff_config,
+            'aff_comission' => $aff_comission,
         ]);
     }
 

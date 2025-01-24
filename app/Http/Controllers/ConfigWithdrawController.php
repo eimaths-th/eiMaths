@@ -34,7 +34,7 @@ class ConfigWithdrawController extends Controller
                     return $row->user->name ?? 'N/A';
                 })
                 ->editColumn('withdraw_amount', function ($row) {
-                    return number_format($row->withdraw_amount, 2) . ' ฿';
+                    return number_format($row->withdraw_amount ?? '0', 2) . ' ฿';
                 })
                 ->editColumn('account', function ($row) {
                     $account = '';
@@ -81,13 +81,13 @@ class ConfigWithdrawController extends Controller
                     return $html;
                 })
                 ->editColumn('request_date', function ($row) {
-                    return $row->request_date;
+                    return $row->request_date ?? '';
                 })
                 ->editColumn('confirmed_by', function ($row) {
                     return $row->confirmedBy->name ?? '';
                 })
                 ->editColumn('confirm_date', function ($row) {
-                    return $row->confirm_date;
+                    return $row->confirm_date ?? '';
                 })
                 ->editColumn('checkbox', function ($row) {
                     return '<input type="checkbox" id="' . $row->id . '" class="flat" name="table_records[]" value="' . $row->id . '" >';
