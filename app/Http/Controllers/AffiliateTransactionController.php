@@ -33,20 +33,27 @@ class AffiliateTransactionController extends Controller
     // }
     public function store(AffiliateWithdrawRequest $request)
     {
-        $id = $request->id;
 
-        $UserBank = AffiliateUserBank::where('user_id', $id)->first();
-        if (!$UserBank) {
-            Toastr::error('Bank Account Not found');
-            return response()->json(['error' => 'Bank account not found'], 404);
-        }
+        // dd($request->all());
+        $id = $request->user_id;
 
-        // Find the user's wallet
         $UserWallet = AffiliateUserWallet::where('user_id', $id)->first();
         if (!$UserWallet) {
-            Toastr::error('Promptpay Account not found');
             return response()->json(['error' => 'Prompt Pay account not found'], 404);
         }
+
+        if ($request->payment_type == 2) {
+            # code...
+            $UserBank = AffiliateUserBank::where('user_id', $id)->first();
+
+            if (!$UserBank) {
+                return response()->json(['error' => 'Bank account not found'], 404);
+            }
+        }
+
+
+        // Find the user's wallet
+
 
         try {
             DB::beginTransaction();
