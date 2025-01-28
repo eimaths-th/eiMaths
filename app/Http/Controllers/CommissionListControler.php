@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AffiliateCommissionList;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\AffiliateUserBank;
 use App\Models\User;
 use App\Models\Department;
 use App\Models\Position;
@@ -14,6 +15,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Modules\Affiliate\Entities\AffiliateUserWallet;
+use Modules\Affiliate\Entities\AffiliateWithdraw;
 
 class CommissionListControler extends Controller
 {
@@ -108,6 +110,23 @@ class CommissionListControler extends Controller
         $commission = AffiliateCommissionList::find($id);
         if (!$commission) {
             return response()->json(['message' => 'Commission record not found'], 404);
+        }
+
+        $withdrawRequest = AffiliateWithdraw::find($id);
+        if (!$withdrawRequest) {
+            return response()->json(['error' => 'Withdraw request not found'], 404);
+        }
+
+        // Find the user's wallet
+        $UserWallet = AffiliateUserWallet::where('user_id', $withdrawRequest->user_id)->first();
+        if (!$UserWallet) {
+            return response()->json(['error' => 'User wallet not found'], 404);
+        }
+
+        //find the user's bank
+        $UserBank = AffiliateUserBank::where('user_id', $withdrawRequest->user_id)->first();
+        if (!$UserBank) {
+            return response()->json(['error' => 'User bank not found'], 404);
         }
 
         $appoved_by = Auth::user()->id;
