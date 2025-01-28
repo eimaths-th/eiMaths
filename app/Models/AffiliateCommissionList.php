@@ -27,7 +27,7 @@ class AffiliateCommissionList extends Model
     /**
      * @var array
      */
-    protected $fillable = ['payment_to','courses_pending_id', 'order_id', 'reciept_id', 'status', 'commission_amount', 'created_at', 'updated_at'];
+    protected $fillable = ['payment_to','courses_pending_id', 'order_id', 'reciept_id', 'status', 'month' , 'year', 'commission_amount', 'created_at', 'updated_at'];
 
     public function coursePending()
     {

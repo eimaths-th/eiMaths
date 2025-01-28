@@ -259,9 +259,9 @@ class DashboardController extends Controller
 
         //$summaryByDate->where('orders.status', 1);
 
-        /*  if ($reservationValue) {
-            $summaryByDate->where('payment_date', 'like', $reservationValue.'%');
-        } */
+        if ($reservationValue) {
+            $summaryByDate->where('payment_date', 'like', $reservationValue . '%');
+        }
 
         $summaryByDate->groupBy('payment_date');
         $datas = $summaryByDate->get();
@@ -310,7 +310,7 @@ class DashboardController extends Controller
         $totalTransactionsSum = $datas->sum('count');
         $totaldis = $datas->sum('count_dis');
         $totalgradute = $datas->sum('count_gradute');
-
+        // dd($totalTransactionsSum, $totaldis, $totalgradute, $datas);
         return response()->json([
             'total_student' => $totalTransactionsSum,
             'total_discontinue' => $totaldis,
@@ -334,9 +334,9 @@ class DashboardController extends Controller
             $query->where('centre', $dcentreValue);
         }
 
-        /*  if ($reservationValue) {
-            $summaryByDate->where('payment_date', 'like', $reservationValue.'%');
-        } */
+        if ($reservationValue) {
+            $query->where('date', 'like', $reservationValue . '%');
+        }
 
         $query->groupBy('date');
         $datas = $query->get();

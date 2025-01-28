@@ -28,11 +28,13 @@ use App\Http\Livewire\Question\QuestionForm;
 use App\Http\Livewire\Question\QuestionList;
 use App\Http\Livewire\Quiz\QuizForm;
 use App\Http\Livewire\Quiz\QuizList;
+use App\Models\affiliateConfigCommission;
 use App\Models\Contact;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Modules\Affiliate\Entities\AffiliateConfiguration;
 
 /*
 |--------------------------------------------------------------------------
@@ -186,6 +188,7 @@ Route::group(['middleware' => ['auth', 'affiliate.redirect']], function () {
 
     Route::get('/config-withdraw', [ConfigWithdrawController::class, 'index'])->name('config-withdraw.index');
     Route::post('/config-withdraw/approve', [ConfigWithdrawController::class, 'approve_withdraw'])->name('config_withdraw.approve');
+    Route::post('/commission/updateConfigComission', [AffiliateConfigurationsController::class, 'updateConfigComission'])->name('commission.updateConfigComission');
 
 
 

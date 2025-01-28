@@ -15,7 +15,7 @@
                 <div class="col-sm-7">
                     <h4><i class="fa-solid fa-chart-pie"></i> eiMaths {{--  [{{ Auth::user()->department->name }}]  --}}Stats</h4>
                 </div>
-                <div class="col-sm-3">
+                <div class="col-sm-2">
                     <div class="form-group">
                         <div class="input-group">
                             <div class="input-group-prepend">
@@ -37,7 +37,7 @@
 
                     </div>
                 </div>
-                {{-- <div class="col-sm-3">
+                 <div class="col-sm-2">
                     <div class="form-group">
                         <div class="input-group">
                             <div class="input-group-prepend">
@@ -48,7 +48,7 @@
                             <input type="text" class="form-control float-right" id="reservation" name="reservation">
                         </div>
                     </div>
-                </div> --}}
+                </div>
                 <div class="col-xs-1 col-sm-1 col-md-1">
                     <div class="form-group">
                         <button type="button" class="form-control btn bg-gradient-success" id="SearchButtons">
@@ -56,12 +56,12 @@
 
                     </div>
                 </div>
-                <div class="col-xs-1 col-sm-1 col-md-1" style="align-items: flex-end;">
+               {{--  <div class="col-xs-1 col-sm-1 col-md-1" style="align-items: flex-end;">
                     <div class="form-group">
                         <button type="button" class="form-control btn bg-gradient-warning" id="resetSearchButton"><i
                                 class="fa-solid fa-rotate"></i></button>
                     </div>
-                </div>
+                </div> --}}
             </div>
         </div>
     </section>

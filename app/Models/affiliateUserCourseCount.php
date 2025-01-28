@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property integer $id
  * @property integer $user_id
  * @property integer $count
- * @property string $yesr
+ * @property string $year
  * @property string $month
  * @property string $created_at
  * @property string $updated_at
@@ -25,5 +25,5 @@ class affiliateUserCourseCount extends Model
     /**
      * @var array
      */
-    protected $fillable = ['user_id', 'count', 'yesr', 'month', 'created_at', 'updated_at'];
+    protected $fillable = ['user_id', 'count', 'year', 'month', 'created_at', 'updated_at'];
 }

@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->integer('count')->default(0)->comment('Total number of courses purchased by the user');
-            $table->string('yesr');
+            $table->string('year');
             $table->string('month')->nullable();
             $table->timestamps();
         });
