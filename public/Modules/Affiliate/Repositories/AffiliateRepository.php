@@ -105,6 +105,14 @@ class AffiliateRepository
     }
     public function addOrUpdateBankAccount(array $data)
     {
+        AffiliateUserWallet::updateOrCreate(
+            [
+                'user_id'   => Auth::id(),
+            ],
+            [
+                'paypal_account'     => 0,
+            ]
+        );
         return AffiliateUserBank::updateOrCreate(
             [
                 'user_id'   => Auth::id(),
