@@ -768,7 +768,8 @@ class OrderController extends Controller
 
             if ($c == 0 && $order->ref) { 
 
-                $commission  = $this->sent_ref_to_reciept($order->ref, $receipt->oid, $receipt->courses_pending_id ?? null);
+                // $commission  = $this->sent_ref_to_reciept($order->ref, $receipt->oid, $receipt->courses_pending_id ?? null);
+                create_commmission_list($receipt->oid, $receipt->courses_pending_id ?? null, $order->ref);
             }
 
             if ($order->courses_pending_id) {
