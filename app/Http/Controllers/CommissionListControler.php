@@ -62,6 +62,12 @@ class CommissionListControler extends Controller
                 ->editColumn('commission_amount', function ($row) {
                     return $row->commission_amount;
                 })
+                ->editColumn('payment_to', function ($row) {
+                    return $row->paymentTo->name ?? 'Null User';
+                })
+                ->editColumn('approved_by', function ($row) {
+                    return $row->approvedBy->name ?? '';
+                })
                 ->editColumn('created_at', function ($row) {
                     return $row->created_at->format('d-m-Y');
                 })
@@ -104,6 +110,8 @@ class CommissionListControler extends Controller
             return response()->json(['message' => 'Commission record not found'], 404);
         }
 
+        $appoved_by = Auth::user()->id;
+
         $amount = $commission->commission_amount;
         $user_id = $commission->payment_to;
 
@@ -118,6 +126,7 @@ class CommissionListControler extends Controller
 
             // Update the commission status
             $commission->status = $action === 'approve' ? 'approved' : 'rejected';
+            $commission->approved_by = $appoved_by;
             $commission->save();
 
             // Commit the transaction

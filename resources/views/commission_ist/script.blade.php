@@ -85,6 +85,14 @@
                     name: 'commission_amount'
                 },
                 {
+                    data: 'payment_to',
+                    name: 'payment_to'
+                },
+                {
+                    data: 'approved_by',
+                    name: 'approved_by'
+                },
+                {
                     data: 'created_at',
                     name: 'created_at'
                 },

@@ -41,13 +41,18 @@ class ConfigWithdrawController extends Controller
                     if ($row->payment_type == 1) {
                         # code...PromptPay
                         $type = AffiliateUserWallet::where('user_id', $row->user_id)->first();
-                        $account = $type->paypal_account;
+                        $account = $type->paypal_account ?? 'Paypal Account is not found';
                     } elseif ($row->payment_type == 2) {
                         # code...
                         $type = AffiliateUserBank::where('user_id', $row->user_id)->first();
-                        $account = $type->account_number . ' | Bank : ' . $type->bank_name;
+
+                        $account_number = $type->account_number ?? 'Account Number is not found';
+                        $bank_name = $type->bank_name ?? 'Bank Name is not found';
+
+                        $account = '' .$account_number. ' | ' . $bank_name;
+                        
                     }
-                    return $account ?? 'N/A';
+                    return $account;
                 })
                 ->editColumn('payment_type', function ($row) {
                     if ($row->payment_type == 1) {
@@ -133,6 +138,12 @@ class ConfigWithdrawController extends Controller
         $UserWallet = AffiliateUserWallet::where('user_id', $withdrawRequest->user_id)->first();
         if (!$UserWallet) {
             return response()->json(['error' => 'User wallet not found'], 404);
+        }
+
+        //find the user's bank
+        $UserBank = AffiliateUserBank::where('user_id', $withdrawRequest->user_id)->first();
+        if (!$UserBank) {
+            return response()->json(['error' => 'User bank not found'], 404);
         }
 
 
