@@ -15,7 +15,8 @@
                     <ol class="breadcrumb float-sm-right">
                         {{-- <li class="breadcrumb-item"><a href="#">Home</a></li>
                         <li class="breadcrumb-item active">Users Management</li> --}}
-                       
+                        <button id="approveSelectedBtn" class="btn btn-success ms-3 me-3">Approve All Selected</button>&nbsp;
+                        <button id="rejectSelectedBtn" class="btn btn-danger">Reject All Selected</button>
                     </ol>
 
                 </div>
@@ -24,6 +25,8 @@
     </section>
 
     <section class="content">
+
+
         <div class="container-fluid">
             <div class="row">
                 <div class="col-12">
@@ -66,6 +69,8 @@
                                             <th>Status</th>
                                             <th>Confirmed By</th>
                                             <th>Confirm Date</th>
+                                            <th>Rejected Date</th>
+                                            <th>Rejected Date</th>
                                             <th width="120px">Action</th>
                                         </tr>
                                     </thead>

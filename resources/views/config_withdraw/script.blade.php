@@ -97,11 +97,84 @@
                     name: 'confirm_date'
                 },
                 {
+                    data: 'rejected_by',
+                    name: 'rejected_by'
+                },
+                {
+                    data: 'reject_date',
+                    name: 'reject_date'
+                },
+                {
                     data: 'action',
                     name: 'action'
                 },
             ]
         });
+
+        $('#approveAllBtn').on('change', function() {
+            const isChecked = $(this).prop('checked');
+            $('input[name="table_records[]"]').prop('checked', isChecked);
+        });
+
+        $('#Listview tbody').on('change', 'input[name="table_records[]"]', function() {
+            if (!this.checked) {
+                $('#approveAllBtn').prop('checked', false);
+            }
+        });
+
+        $('#approveSelectedBtn').on('click', function() {
+            const selectedIds = [];
+            var action = 'approve';
+            $('input[name="table_records[]"]:checked').each(function() {
+                selectedIds.push($(this).val());
+            });
+
+            if (selectedIds.length > 0) {
+                approveWithdraws(selectedIds,action);
+            } else {
+                alert('No records selected.');
+            }
+        });
+        
+        $('#rejectSelectedBtn').on('click', function() {
+            const selectedIds = [];
+            var action = 'reject';
+            $('input[name="table_records[]"]:checked').each(function() {
+                selectedIds.push($(this).val());
+            });
+
+            if (selectedIds.length > 0) {
+                approveWithdraws(selectedIds,action);
+            } else {
+                alert('No records selected.');
+            }
+        });
+        
+
+        // AJAX Request to Approve Withdrawals
+        function approveWithdraws(ids,action) {
+            $.ajax({
+                url: '/approve-withdraws',
+                method: 'POST',
+                data: {
+                    _token: $('meta[name="csrf-token"]').attr('content'),
+                    withdraw_ids: ids,
+                    action: action
+                },
+                success: function(response) {
+                    toastr.success(response.message, {
+                        timeOut: 5000
+                    });
+                    $('#Listview').DataTable().ajax.reload();
+                    table.ajax.reload();
+                },
+                error: function() {
+                    console.error(xhr.responseText);
+                    toastr.error(xhr.responseJSON.error, 'Error');
+                }
+            });
+        }
+
 
     });
 

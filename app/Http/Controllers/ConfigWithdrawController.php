@@ -49,8 +49,7 @@ class ConfigWithdrawController extends Controller
                         $account_number = $type->account_number ?? 'Account Number is not found';
                         $bank_name = $type->bank_name ?? 'Bank Name is not found';
 
-                        $account = '' .$account_number. ' | ' . $bank_name;
-                        
+                        $account = '' . $account_number . ' | ' . $bank_name;
                     }
                     return $account;
                 })
@@ -94,6 +93,12 @@ class ConfigWithdrawController extends Controller
                 ->editColumn('confirm_date', function ($row) {
                     return $row->confirm_date ?? '';
                 })
+                ->editColumn('rejected_by', function ($row) {
+                    return $row->rejectedBy->name ?? '';
+                })
+                ->editColumn('reject_date', function ($row) {
+                    return $row->confirm_date ?? '';
+                })
                 ->editColumn('checkbox', function ($row) {
                     return '<input type="checkbox" id="' . $row->id . '" class="flat" name="table_records[]" value="' . $row->id . '" >';
                 })
@@ -107,8 +112,8 @@ class ConfigWithdrawController extends Controller
                     }
                     return $html;
                 })->rawColumns(['checkbox', 'action', 'status'])->toJson();
-                // dd($datas);
-        
+            // dd($datas);
+
         }
 
         // $withdraw =  AffiliateWithdraw::all();
@@ -189,6 +194,56 @@ class ConfigWithdrawController extends Controller
         return response()->json(['error' => 'Unexpected error occurred'], 500);
     }
 
+    public function approveWithdraws(Request $request)
+    {
+        $withdrawIds = $request->input('withdraw_ids');
+        $action = $request->input('action');
+
+        // Check if IDs and action are provided
+        if (empty($withdrawIds)) {
+            return response()->json(['error' => 'No records selected'], 400);
+        }
+
+        if (!in_array($action, ['approve', 'reject'])) {
+            return response()->json(['error' => 'Invalid action'], 400);
+        }
+
+        // Get all withdraw requests
+        $withdrawRequests = AffiliateWithdraw::whereIn('id', $withdrawIds)->get();
+
+        if ($withdrawRequests->isEmpty()) {
+            return response()->json(['error' => 'Withdraw requests not found'], 404);
+        }
+
+        foreach ($withdrawRequests as $withdrawRequest) {
+            $UserWallet = AffiliateUserWallet::where('user_id', $withdrawRequest->user_id)->first();
+
+            if (!$UserWallet) {
+                return response()->json(['error' => "User wallet not found for ID {$withdrawRequest->user_id}"], 404);
+            }
+
+            if ($action === 'approve') {
+                $withdrawAmount = (float) $withdrawRequest->withdraw_amount;
+                // Deduct the withdrawal amount
+                $UserWallet->decrement('amount', $withdrawAmount);
+
+                // Update the withdraw status to approved
+                $withdrawRequest->status = 1;
+                $withdrawRequest->confirmed_by = auth()->id();
+                $withdrawRequest->confirm_date = now();
+                $withdrawRequest->save();
+            } elseif ($action === 'reject') {
+                $withdrawRequest->status = 2;
+                $withdrawRequest->rejected_by = auth()->id() ?? null; // Ensure this field exists in your schema
+                $withdrawRequest->reject_date = now();
+                $withdrawRequest->save();
+            }
+        }
+
+        $message = $action === 'approve' ? 'Withdraw requests approved successfully' : 'Withdraw requests rejected successfully';
+
+        return response()->json(['success' => true, 'message' => $message]);
+    }
 
 
 

@@ -17,6 +17,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $request_date
  * @property string $confirmed_by
  * @property string $confirm_date
+ * @property string $rejected_by
+ * @property string $reject_date
  */
 class AffiliateWithdraw extends Model
 {
@@ -30,6 +32,8 @@ class AffiliateWithdraw extends Model
         'request_date',
         'confirmed_by',
         'confirm_date',
+        'rejected_by',
+        'reject_date',
     ];
 
     public function user()
@@ -40,6 +44,10 @@ class AffiliateWithdraw extends Model
     public function confirmedBy()
     {
         return $this->belongsTo(User::class, 'confirmed_by', 'id');
+    }
+    public function rejectedBy()
+    {
+        return $this->belongsTo(User::class, 'rejected_by', 'id');
     }
 
     public function confirmedUser()

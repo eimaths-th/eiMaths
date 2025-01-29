@@ -189,7 +189,7 @@ Route::group(['middleware' => ['auth', 'affiliate.redirect']], function () {
     Route::get('/config-withdraw', [ConfigWithdrawController::class, 'index'])->name('config-withdraw.index');
     Route::post('/config-withdraw/approve', [ConfigWithdrawController::class, 'approve_withdraw'])->name('config_withdraw.approve');
     Route::post('/commission/updateConfigComission', [AffiliateConfigurationsController::class, 'updateConfigComission'])->name('commission.updateConfigComission');
-
+    Route::post('/approve-withdraws', [ConfigWithdrawController::class, 'approveWithdraws'])->name('withdraw.approve-all');
 
 
 });
