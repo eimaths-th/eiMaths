@@ -155,9 +155,9 @@ class ConfigWithdrawController extends Controller
             $withdrawAmount = (float) $withdrawRequest->withdraw_amount; // Assuming the field is 'amount'
 
             // Check if the user has sufficient balance
-            if ($walletBalance < $withdrawAmount) {
-                return response()->json(['error' => 'Insufficient wallet balance'], 400);
-            }
+            // if ($walletBalance < $withdrawAmount) {
+            //     return response()->json(['error' => 'Insufficient wallet balance'], 400);
+            // }
             // dd($withdrawAmount, $walletBalance, $UserWallet, $withdrawRequest);
 
 
