@@ -97,7 +97,7 @@ class ConfigWithdrawController extends Controller
                     return $row->rejectedBy->name ?? '';
                 })
                 ->editColumn('reject_date', function ($row) {
-                    return $row->confirm_date ?? '';
+                    return $row->reject_date ?? '';
                 })
                 ->editColumn('checkbox', function ($row) {
                     return '<input type="checkbox" id="' . $row->id . '" class="flat" name="table_records[]" value="' . $row->id . '" >';
