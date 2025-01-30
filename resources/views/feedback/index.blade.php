@@ -56,7 +56,7 @@
                                     <thead>
                                         <tr>
                                             <th>No.</th>
-                                            <th>Title>
+                                            <th>Title</th>
                                             <th>Category</th>
                                             <th>Status</th>
                                             <th>Priority</th>
