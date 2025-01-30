@@ -194,14 +194,12 @@ Route::group(['middleware' => ['auth', 'affiliate.redirect']], function () {
 
 
     //feedback routes
+    Route::get('/feedback', [FeedbackController::class, 'index'])->name('feedback.index');
+    Route::get('/feedback/create', [FeedbackController::class, 'create'])->name('feedback.create');
+    Route::post('/feedback', [FeedbackController::class, 'store'])->name('feedback.store');
+    Route::get('/feedback/{feedback}', [FeedbackController::class, 'show'])->name('feedback.show');
+    Route::post('/feedback/{feedback}/update-status', [FeedbackController::class, 'updateStatus'])->name('feedback.updateStatus');
 
-    Route::middleware(['auth'])->group(function () {
-        Route::get('/feedback', [FeedbackController::class, 'index'])->name('feedback.index');
-        Route::get('/feedback/create', [FeedbackController::class, 'create'])->name('feedback.create');
-        Route::post('/feedback', [FeedbackController::class, 'store'])->name('feedback.store');
-        Route::get('/feedback/{feedback}', [FeedbackController::class, 'show'])->name('feedback.show');
-        Route::post('/feedback/{feedback}/update-status', [FeedbackController::class, 'updateStatus'])->name('feedback.updateStatus');
-    });
 });
 
 Route::group(['middleware' => ['auth.userOrStudent', 'affiliate.redirect']], function () {
