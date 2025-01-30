@@ -30,6 +30,8 @@ Route::group(['middleware' => ['auth','affiliate.redirect']], function () {
     //Route::delete('/roles/destroy', [RoleController::class, 'destroy'])->name('roles.destroy');
     Route::post('/roles/destroy_all', [RoleController::class, 'destroy_all'])->name('roles.destroy_all');
     Route::resource('users', UserController::class);
+    Route::get('/users/admin/affiliate', [UserController::class,  'affiliateUser'])->name('users.affiliate');
+
     Route::get('/logout', [UserController::class, 'perform'])->name('logout.perform');
     Route::get('/users/edit/{id}', [UserController::class, 'edit'])->name('users.edit2');
     Route::put('/users/save/{id}', [UserController::class, 'update'])->name('users.save');

@@ -9,6 +9,7 @@ use App\Http\Controllers\ConfigWithdrawController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\eLeanController;
+use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LineApiController;
 use App\Http\Controllers\LineController;
@@ -192,6 +193,15 @@ Route::group(['middleware' => ['auth', 'affiliate.redirect']], function () {
     Route::post('/approve-withdraws', [ConfigWithdrawController::class, 'approveWithdraws'])->name('withdraw.approve-all');
 
 
+    //feedback routes
+
+    Route::middleware(['auth'])->group(function () {
+        Route::get('/feedback', [FeedbackController::class, 'index'])->name('feedback.index');
+        Route::get('/feedback/create', [FeedbackController::class, 'create'])->name('feedback.create');
+        Route::post('/feedback', [FeedbackController::class, 'store'])->name('feedback.store');
+        Route::get('/feedback/{feedback}', [FeedbackController::class, 'show'])->name('feedback.show');
+        Route::post('/feedback/{feedback}/update-status', [FeedbackController::class, 'updateStatus'])->name('feedback.updateStatus');
+    });
 });
 
 Route::group(['middleware' => ['auth.userOrStudent', 'affiliate.redirect']], function () {

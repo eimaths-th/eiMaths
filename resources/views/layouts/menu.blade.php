@@ -302,6 +302,12 @@
                         <p>Users</p>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a href="{{ route('users.affiliate') }}" class="nav-link {{ Request::is('users.index') ? 'active' : '' }}">
+                        <i class="nav-icon fa-solid fa-comment-dots"></i>
+                        <p>Users Affiliate</p>
+                    </a>
+                </li>
             @endcan
             @can('role-list')
                 <li class="nav-item">
