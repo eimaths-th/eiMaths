@@ -285,7 +285,7 @@
                                                 <div class="row d-flex justify-content-between">
                                                     <div>
                                                         <h4>
-                                                            Courses via Referral Code
+                                                            Courses via Referral Code for` {{ date('M Y') }}
                                                         </h4>
                                                     </div>
                                                     <h1 class="gradient-color2">
