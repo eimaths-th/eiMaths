@@ -98,7 +98,7 @@ class AffiliateController extends Controller
             'paypal_account' => $data['paypal_account'],
             'start_date' => $data['start_date'],
             'end_date' => $data['end_date'],
-            'count_course' => $count_course->count,
+            'count_course' => $count_course->count ?? 0,
         ]);
         // } catch (Exception $e) {
         //     Toastr::error($e->getMessage(), trans('common.Error'));
