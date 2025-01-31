@@ -150,6 +150,26 @@
                 </div>
             </div>
             {{ Form::close() }}
+
+            <div class="row d-flex justify-content-between mt-4">
+                <div>
+                    <h3>
+                        Your Referral Code
+                    </h3>
+                </div>
+                <div class="row">
+                    <div class="col-lg-8">
+                        <input type="text" class="form-control" value="{{ $user->referral }}" id="referralCopy"
+                            readonly>
+                    </div>
+                    <div class="col-lg-4">
+                        <button id="copyBtn" class="primary-btn small fix-gr-bg" type="button"
+                            onclick="copyToClipboard('#referralCopy')">
+                            <i class="fa fa-copy"></i> Copy
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

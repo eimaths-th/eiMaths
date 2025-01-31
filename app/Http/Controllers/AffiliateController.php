@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\AffiliateCommissionList;
+use App\Models\affiliateUserCourseCount;
 use App\Models\CoursePending;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -80,6 +81,12 @@ class AffiliateController extends Controller
         if ($data['user']->role_id == 3) {
             return view('affiliate::student.student_index', $data);
         }
+        $month = date('m');
+        $year = date('Y');
+        $count_course = affiliateUserCourseCount::where('user_id', Auth::user()->id)
+        ->where('month', $month)
+        ->where('year', $year)
+        ->first();
         // echo Auth::user()->id . Auth::user()->name;
         // dd($data,Auth::user()->id);
         return view('affiliate.backend.my_affiliate', [
@@ -90,7 +97,8 @@ class AffiliateController extends Controller
             'account_name' => $data['account_name'],
             'paypal_account' => $data['paypal_account'],
             'start_date' => $data['start_date'],
-            'end_date' => $data['end_date']
+            'end_date' => $data['end_date'],
+            'count_course' => $count_course->count,
         ]);
         // } catch (Exception $e) {
         //     Toastr::error($e->getMessage(), trans('common.Error'));

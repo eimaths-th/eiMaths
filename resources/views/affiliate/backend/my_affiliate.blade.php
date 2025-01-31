@@ -170,7 +170,7 @@
             $user->referral = generateUniqueId();
             $user->save();
         }
-
+        // dd($user->id);
     @endphp
     <input type="hidden" name="demoMode" id="demoMode" value="">
     <input type="hidden" name="url" id="url" value="{{ url('/') }}">
@@ -277,19 +277,19 @@
                                                         <h3>Current Balance</h3>
                                                     </div>
                                                     <h1 class="gradient-color2"> {{ number_format($amount, 2) ?? '0' }}
-                                                        ฿</h1>
+                                                        ฿
+                                                    </h1>
                                                 </div>
                                             </div>
                                             <div class="col-12">
                                                 <div class="row d-flex justify-content-between">
                                                     <div>
-                                                        <h3>
-                                                            {{-- Pending --}}
-
-                                                        </h3>
+                                                        <h4>
+                                                            Courses via Referral Code
+                                                        </h4>
                                                     </div>
                                                     <h1 class="gradient-color2">
-                                                        {{-- 0 --}}
+                                                        {{ $count_course }}
                                                     </h1>
                                                 </div>
                                             </div>

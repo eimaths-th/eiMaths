@@ -104,10 +104,13 @@ class AffiliateAuthController extends Controller
             'email' => $validated['email'],
             'phone' => $validated['phone'],
             'affiliate_request' => 1,
+            'language_code' => 'en',
             'department_id' => 5,
+            'referral' => generateUniqueId(),
             'position_id' => 13,
             'password' => bcrypt($validated['password']),
         ]);
+        
 
         $user->assignRole('Affiliate-user');
 
