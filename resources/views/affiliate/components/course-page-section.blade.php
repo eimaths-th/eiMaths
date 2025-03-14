@@ -10,7 +10,7 @@
                 {{--  --}}
 
                 <div class="col-lg-12 col-xl-12">
-                {{-- <div class="col-lg-8 col-xl-9"> --}}
+                    {{-- <div class="col-lg-8 col-xl-9"> --}}
                     <div class="row">
                         <div class="col-12">
                             <div class="box_header d-flex flex-wrap align-items-center justify-content-between">
@@ -117,13 +117,19 @@
                                 <div class="col-lg-6 col-xl-4">
                                     <div class="couse_wizged">
                                         <!-- Trigger Modal -->
+                                        {{-- @php
+                                            dd($course->thumbnail, asset($course->thumbnail),asset(str_replace('public/', '', $course->thumbnail)))
+                                            ;
+                                        @endphp --}}
                                         <a href="javascript:void(0);" data-bs-toggle="modal"
                                             data-bs-target="#receiptModal" data-course-id ="{{ $course->id }}"
-                                            data-title="{{ $course->title }}"
+                                            data-title="{{ $course->title }}" 
                                             data-thumbnail="{{ asset(str_replace('public/', '', $course->thumbnail)) }}">
+                                            {{-- data-thumbnail="{{ asset($course->thumbnail) }}"> --}}
                                             <div class="thumb">
-                                                <div class="thumb_inner lazy"
-                                                    data-src="{{ asset(str_replace('public/', '', $course->thumbnail)) }}">
+                                                <img src="{{ asset(str_replace('public/', '', $course->thumbnail)) }}" alt="">
+                                                <div class="thumb_inner lazy" data-src="{{ asset(str_replace('public/', '', $course->thumbnail)) }}">
+                                                    {{-- data-src="{{ asset($course->thumbnail) }}"> --}}
                                                 </div>
                                                 <x-price-tag :price="$course->price" :discount="$course->discount_price" />
                                             </div>
