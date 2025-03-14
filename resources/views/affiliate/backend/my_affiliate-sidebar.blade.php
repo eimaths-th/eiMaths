@@ -14,20 +14,27 @@
     </div>
     @php
         if (Auth::user()->name) {
-            # code...
+            
             $name = Auth::user()->name;
+        
         }
         else {
             
+
             $name = Auth::user()->email;
+
         }
     @endphp
     <div class="sidebar-user text-center">
         <div class="sidebar-profile mx-auto">
+
             <img src="https://ui-avatars.com/api/?background=random&amp;name={{ $name }}" alt="">
+
         </div>
         <h4>
+
             {{ $name }}
+
         </h4>
 
         <div class="sidebar-badge">

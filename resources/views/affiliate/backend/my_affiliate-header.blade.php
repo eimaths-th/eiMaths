@@ -1,3 +1,13 @@
+@php
+    if (Auth::user()->name) {
+        # code...
+        $name = Auth::user()->name;
+    }
+    else {
+        
+        $name = Auth::user()->email;
+    }
+@endphp
 <div class="container-fluid g-0" id="main-nav-for-chat">
     <div class="row">
         <div class="col-lg-12 p-0">
@@ -204,18 +214,18 @@
                     </ul>
                     <div class="profile_info">
                         <div class="profileThumb"
-                            style="background-image: url('https://ui-avatars.com/api/?background=random&amp;name=test1')">
+                            style="background-image: url('https://ui-avatars.com/api/?background=random&amp;name={{ $name }}')">
                         </div>
 
                         <div class="profile_info_iner">
                             <div class="use_info px-3 d-flex align-items-center">
                                 <div class="thumb"
-                                    style="background-image: url('https://ui-avatars.com/api/?background=random&amp;name=test1')">
+                                    style="background-image: url('https://ui-avatars.com/api/?background=random&amp;name={{ $name }}')">
 
                                 </div>
                                 <div class="user_text">
                                     <p>Welcome</p>
-                                    <span>test1 </span>
+                                    <span>{{ $name }} </span>
                                 </div>
                             </div>
 
