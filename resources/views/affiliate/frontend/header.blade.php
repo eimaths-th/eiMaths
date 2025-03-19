@@ -128,7 +128,7 @@
                                     <div class="profile_info_iner collaps_part_content">
                                         @if (Auth::user()->hasRole('Affiliate-user'))
                                             {{-- <a href="{{ route('studentDashboard') }}">{{ __('dashboard.Dashboard') }}</a> --}}
-                                            <a href="#">Dashboard</a>
+                                            <a href="{{ route('my_affiliate.index') }}">Dashboard</a>
                                             {{-- <a href="{{ auth()->user()->username ? route('profileUniqueUrl', auth()->user()->username) : '' }}">{{ __('frontendmanage.My Profile') }}</a> --}}
                                             {{-- <a href="#">My Profile</a> --}}
                                             {{-- <a href="{{ route('users.settings') }}">{{ __('frontend.Account Settings') }}</a> --}}

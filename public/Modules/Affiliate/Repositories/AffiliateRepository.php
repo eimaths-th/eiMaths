@@ -92,8 +92,9 @@ class AffiliateRepository
         return true;
     }
 
-    public function addOrUpdatePaypalAccount(array $data)
+    public function addOrUpdatePaypalAccountUser(array $data)
     {
+
         return AffiliateUserWallet::updateOrCreate(
             [
                 'user_id'   => Auth::id(),
@@ -105,14 +106,16 @@ class AffiliateRepository
     }
     public function addOrUpdateBankAccount(array $data)
     {
-        AffiliateUserWallet::updateOrCreate(
-            [
-                'user_id'   => Auth::id(),
-            ],
-            [
-                'paypal_account'     => 0,
-            ]
-        );
+        // dd($data);
+
+        // AffiliateUserWallet::updateOrCreate(
+        //     [
+        //         'user_id'   => Auth::id(),
+        //     ],
+        //     [
+        //         'paypal_account'     => 0,
+        //     ]
+        // );
         return AffiliateUserBank::updateOrCreate(
             [
                 'user_id'   => Auth::id(),

@@ -153,12 +153,13 @@ class AffiliateAuthController extends Controller
      */
     public function addOrUpdatePaypalAccount(Request $request)
     {
+        // dd($request->all());
         $validate_rules = [
             'paypal_account' => 'required',
         ];
         $request->validate($validate_rules, validationMessage($validate_rules));
         try {
-            $this->affiliateRepo->addOrUpdatePaypalAccount($request->all());
+            $this->affiliateRepo->addOrUpdatePaypalAccountUser($request->all());
             $this->affiliateRepo->addOrUpdateBankAccount($request->all());
             Toastr::success('Operation successful', 'Success');
             return back();
