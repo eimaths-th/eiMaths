@@ -50,19 +50,19 @@ class CommissionListControler extends Controller
             return datatables()->of($datas)
 
                 ->editColumn('ref', function ($row) {
-                    return $row->order->ref;
+                    return $row->order->ref ?? '';
                 })
                 ->editColumn('order_id', function ($row) {
-                    return $row->order->order_number;
+                    return $row->order->order_number ?? '';
                 })
                 ->editColumn('reciept_id', function ($row) {
                     return $row->receipt->receipt_number ?? '';
                 })
                 ->editColumn('status', function ($row) {
-                    return $row->status;
+                    return $row->status ?? '';
                 })
                 ->editColumn('commission_amount', function ($row) {
-                    return $row->commission_amount;
+                    return $row->commission_amount ?? '';
                 })
                 ->editColumn('payment_to', function ($row) {
                     return $row->paymentTo->name ?? 'Null User';
@@ -71,7 +71,7 @@ class CommissionListControler extends Controller
                     return $row->approvedBy->name ?? '';
                 })
                 ->editColumn('created_at', function ($row) {
-                    return $row->created_at->format('d-m-Y');
+                    return $row->created_at->format('d-m-Y') ?? '';
                 })
                 ->editColumn('checkbox', function ($row) {
                     return '<input type="checkbox" id="' . $row->id . '" class="flat" name="table_records[]" value="' . $row->id . '" >';
