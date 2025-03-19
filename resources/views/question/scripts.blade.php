@@ -1,10 +1,27 @@
 <script>
+    function insertFrac() {
+        let question_text = document.querySelector('#text');
+        if (question_text) {
+            question_text.value += ' Frac(เศษ,ส่วน) ';
+        }
+    }
+
+    function insertMixed() {
+        let question_text = document.querySelector('#text');
+        if (question_text) {
+            question_text.value += ' MixFrac(เศษ,ส่วน) ';
+        }
+    }
     $(document).ready(function() {
+
+
         function toggleTypeFields(selectedType, res) {
             if (selectedType === 'written') {
                 $('.options_type').hide();
                 $('.written_type').show();
                 $('.image_type').hide();
+                $('.fraction_type').hide();
+                $('.fraction-button').hide();
 
                 if (res) {
                     $('#written').val(res.question.written_answer); // Set written answer if applicable
@@ -14,17 +31,57 @@
                 $('.written_type').hide();
                 $('.options_type').show();
                 $('.image_type').hide();
+                $('.fraction_type').hide();
+                $('.fraction-button').hide();
+
 
             } else if (selectedType === 'image') {
                 $('.written_type').hide();
                 $('.options_type').hide();
                 $('.image_type').show();
+                $('.fraction_type').hide();
+                $('.fraction-button').hide();
+
+
+            } else if (selectedType === 'fraction') {
+                $('.written_type').hide();
+                $('.options_type').hide();
+                $('.image_type').hide();
+                $('.fraction_type').show();
+                $('.fraction-button').show();
+
 
             } else {
                 $('.written_type').hide();
                 $('.options_type').hide();
                 $('.image_type').hide();
+                $('.fraction_type').hide();
+                $('.fraction-button').hide();
 
+
+            }
+        }
+
+        function toggleTypeFractionFields(selectedFractionType, res) {
+            if (selectedFractionType === 'written') {
+                $('.options_type_fraction').hide();
+                $('.written_type_fraction').show();
+
+                if (res) {
+                    $('#answer_numerator').val(res.question
+                        .answer_numerator); // Set written answer if applicable
+                    $('#answer_denominator').val(res.question
+                        .answer_denominator); // Set written answer if applicable
+                    $('#answer_type').val(res.question.answer_type); // Set written answer if applicable
+
+                }
+            } else if (selectedFractionType === 'options') {
+                $('.written_type_fraction').hide();
+                $('.options_type_fraction').show();
+
+            } else {
+                $('.written_type_fraction').hide();
+                $('.options_type_fraction').hide();
             }
         }
 
@@ -32,13 +89,21 @@
         $('.written_type').hide();
         $('.options_type').hide();
         $('.image_type').hide();
+        $('.fraction_type').hide();
+
 
         var token = '{{ csrf_token() }}';
+
 
         var table = $('#Listview').DataTable({
             ajax: '',
             serverSide: true,
             processing: true,
+            drawCallback: function() {
+                if (typeof MathJax !== "undefined") {
+                    MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+                }
+            },// <-- ✅ Added missing comma here
             language: {
                 loadingRecords: '&nbsp;',
                 processing: `<div class="spinner-border text-primary"></div>`,
@@ -118,6 +183,32 @@
                 $('td:eq(0)', row).html(info.start + dataIndex + 1);
             }
         });
+        $('#Listview').DataTable().clear().draw();
+
+        function addFractionOption(numerator = '', denominator = '', answerType = 'mixed', correct = 0) {
+            $('#add-fraction-container').append(`
+                    <div class="fraction-item mt-2 form-row align-items-center">
+                        <div class="col-xs-3 col-sm-3 col-md-3 text-center">
+                            <input type="number" class="form-control" name="answer_numerator[${optionIndex}]" value="${numerator}" placeholder="Numerator" required>
+                        </div>
+                        <div class="col-xs-3 col-sm-3 col-md-3 text-center">
+                            <input type="number" class="form-control" name="answer_denominator[${optionIndex}]" value="${denominator}" placeholder="Denominator" required min="1">
+                        </div>
+                        <div class="col-xs-3 col-sm-3 col-md-3 text-center">
+                            <select name="answer_type[${optionIndex}]" class="form-control">
+                                <option value="frac" ${answerType === 'frac' ? 'selected' : ''}>Fraction</option>
+                                <option value="mixed" ${answerType === 'mixed' ? 'selected' : ''}>Mixed Fraction</option>
+                            </select>
+                        </div>
+                        <div class="col-auto text-nowrap">
+                            <input type="hidden" name="options[${optionIndex}][correct]" value="0">
+                            <input type="checkbox" class="text-left" name="options[${optionIndex}][correct]" value="1" ${correct ? 'checked' : ''}> Correct&nbsp
+                            <button type="button" class="btn btn-danger btn-sm remove-option"><i class="fa fa-trash"></i></button>
+                        </div>
+                    </div>
+                `);
+            optionIndex++;
+        }
 
         function addOption(text = '', correct = 0) {
             $('#options-container').append(`
@@ -140,8 +231,6 @@
             $(this).siblings('.file-name').text(fileName);
         });
 
-
-
         $(document).on('click', '.remove-option-img', function() {
             $(this).closest('.img-option-item').remove();
         });
@@ -149,13 +238,23 @@
             $(this).closest('.show-img-option-item').remove();
         });
 
-
-
         $('#add-option').on('click', function() {
             addOption();
         });
 
+        $('#add-fraction-option').on('click', function() {
+            addFractionOption();
+        });
+        $('#add-fraction-container').on('click', '.remove-option', function() {
+            $(this).closest('.fraction-item').remove();
+        });
 
+        $(document).on('change', '#answer_type_fraction', function() {
+            var selectedFractionType = $(this).val();
+            console.log(selectedFractionType);
+
+            toggleTypeFractionFields(selectedFractionType);
+        });
         $(document).on('change', '#type', function() {
             var selectedType = $(this).val();
             toggleTypeFields(selectedType);
@@ -232,12 +331,11 @@
 
             // Initialize formData as a FormData object
             var formData = new FormData();
-
+            formData.append('_token', token);
             formData.append('text', $('#text').val());
             formData.append('code_snippet', $('#code_snippet').val());
             formData.append('answer_explanation', $('#answer_explanation').val());
             formData.append('more_info_link', $("#more_info_link").val());
-            formData.append('_token', token);
 
             var fileInput = document.getElementById('imageQuestion');
             var file = fileInput.files[0]; // Get the first file (if multiple, you can loop)
@@ -275,6 +373,49 @@
                     }
                     formData.append('imgOptions[' + index + '][correct]', isCorrect);
                 });
+            } else if (selectedType === 'fraction') {
+                formData.append('type', 'fraction');
+                var fractionType = $('#answer_type_fraction').val();
+                var answer_type = $('#answer_type').val();
+                formData.append('fraction_type', fractionType);
+                formData.append('answer_type', answer_type);
+                if (fractionType === 'written') {
+                    var numerator = $('#answer_numerator').val();
+                    var denominator = $('#answer_denominator').val();
+                    var answerType = $('#answer_type').val();
+                    formData.append('numerator', numerator);
+                    formData.append('denominator', denominator);
+                    formData.append('answer_type', answerType);
+                } else if (fractionType === 'options') {
+                    $('#add-fraction-container .fraction-item').each(function(index, element) {
+                        var numerator = $(element).find('input[name="answer_numerator[' +
+                            index + ']"]').val();
+                        var denominator = $(element).find('input[name="answer_denominator[' +
+                            index + ']"]').val();
+                        var answerType = $(element).find('select[name="answer_type[' + index +
+                            ']"]').val();
+                        var isCorrect = $(element).find('input[type="checkbox"]').is(
+                            ':checked') ? 1 : 0;
+
+                        formData.append('options[' + index + '][numerator]', numerator);
+                        formData.append('options[' + index + '][denominator]', denominator);
+                        formData.append('options[' + index + '][answer_type]', answerType);
+                        formData.append('options[' + index + '][correct]', isCorrect);
+                    });
+
+                }
+                // $('#add-fraction-container .fraction-item').each(function(index, element) {
+                //     var numerator = $(element).find('input[name$="[numerator]"]').val();
+                //     var denominator = $(element).find('input[name$="[denominator]"]').val();
+                //     var answerType = $(element).find('select[name$="[answer_type]"]').val();
+                //     var isCorrect = $(element).find('input[type="checkbox"]').is(':checked') ?
+                //         1 : 0;
+                //     formData.append('options[' + index + '][numerator]', numerator);
+                //     formData.append('options[' + index + '][denominator]', denominator);
+                //     formData.append('options[' + index + '][answer_type]', answerType);
+                //     formData.append('options[' + index + '][correct]', isCorrect);
+                // });
+
             }
             $('#loadingi').show();
 

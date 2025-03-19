@@ -129,6 +129,8 @@
             /* text-align: center; */
         }
     </style>
+    <script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 @endsection
 
 @section('content')
@@ -153,10 +155,14 @@
                 </div>
             </div>
         </div>
-    </section>
 
+    </section>
     <section class="content">
+
         <div class="container-fluid">
+            {{-- <h1>
+                test \(\frac{6}{7}\) + \(\frac{7}{8}\)
+            </h1> --}}
             <div class="row">
                 <div class="col-12">
                     <div class="card card-primary">

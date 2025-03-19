@@ -61,6 +61,11 @@ class Question extends Model
     {
         return $this->hasMany(Option::class)->inRandomOrder();
     }
+ 
+    public function fractions(): HasMany
+    {
+        return $this->hasMany(FactionAnswer::class)->inRandomOrder();
+    }
 
     public function images(): HasMany
     {

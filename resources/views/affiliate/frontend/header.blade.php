@@ -105,7 +105,7 @@
                         @auth()
                             <div class="header__right login_user">
                                 <div class="profile_info collaps_part">
-                                    <div class="profile_img collaps_icon     d-flex align-items-center">
+                                    <div class="profile_img collaps_icon d-flex align-items-center">
                                         <div class="studentProfileThumb"
                                             style="background-image: url('{{ getProfileImage(Auth::user()->image, Auth::user()->name) }}')">
                                         </div>
@@ -130,9 +130,9 @@
                                             {{-- <a href="{{ route('studentDashboard') }}">{{ __('dashboard.Dashboard') }}</a> --}}
                                             <a href="#">Dashboard</a>
                                             {{-- <a href="{{ auth()->user()->username ? route('profileUniqueUrl', auth()->user()->username) : '' }}">{{ __('frontendmanage.My Profile') }}</a> --}}
-                                            <a href="#">My Profile</a>
+                                            {{-- <a href="#">My Profile</a> --}}
                                             {{-- <a href="{{ route('users.settings') }}">{{ __('frontend.Account Settings') }}</a> --}}
-                                            <a href="#">Account Settings</a>
+                                            {{-- <a href="#">Account Settings</a> --}}
 
                                             @if (isModuleActive('Affiliate') && auth()->user()->affiliate_request != 1)
                                                 <a
@@ -140,10 +140,10 @@
                                             @endif
                                         @else
                                             {{-- <a href="{{ route('dashboard') }}">{{ __('dashboard.Dashboard') }}</a> --}}
-                                            <a href="#">Dashboard</a>
-                                            <a href="#">My Profile</a>
-                                            <a href="#">Account Settings</a>
-                                            
+                                            <a href="{{ route('my_affiliate.index') }}">Dashboard</a>
+                                            {{-- <a href="#">My Profile</a>
+                                            <a href="#">Account Settings</a> --}}
+
                                             {{-- <a href="{{ auth()->user()->name ? route('profileUniqueUrl', auth()->user()->name) : '' }}">{{ __('frontendmanage.My Profile') }}</a> --}}
 
                                             {{-- <a href="{{ route('users.settings') }}">{{ __('frontend.Account Settings') }}</a> --}}
@@ -160,7 +160,8 @@
                                                 </a>
                                             @endforeach
                                         @endif --}}
-                                        <a href="#"
+                                        
+                                        <a href="{{ route('affiliate.logout') }}"
                                             onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Log
                                             Out</a>
 

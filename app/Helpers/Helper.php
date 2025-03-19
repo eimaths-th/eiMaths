@@ -83,7 +83,55 @@ use PhpOffice\PhpSpreadsheet\Shared\Date;
 
 
 
+//fractional drisplay
+if (!function_exists('replaceMixedFractions')) {
+    function replaceMixedFractions($text)
+    {
+        return preg_replace_callback('/(MixFrac|Frac)\((\d+),\s*(\d+)\)/', function ($matches) {
+            $function = $matches[1]; // Function name (either toMixedFraction or toFraction)
+            $numerator = (int) $matches[2];
+            $denominator = (int) $matches[3];
 
+            return $function === 'MixFrac'
+                ? toMixedFraction($numerator, $denominator)
+                : toFraction($numerator, $denominator);
+        }, $text);
+    }
+}
+
+if (!function_exists('textFraction')) {
+    function textFraction($numerator, $denominator)
+    {
+        // This generates LaTeX syntax for the fraction
+        return "\\(\\frac{{$numerator}}{{$denominator}}\\)";
+    }
+}
+
+if (!function_exists('toFraction')) {
+    function toFraction($numerator, $denominator)
+    {
+        if ($numerator % $denominator == 0) {
+            return (string) ($numerator / $denominator); // Whole number
+        }
+        return "\(\\frac{{$numerator}}{{$denominator}}\)";
+    }
+}
+
+if (!function_exists('toMixedFraction')) {
+    function toMixedFraction($numerator, $denominator)
+    {
+        if ($numerator % $denominator == 0) {
+            return (string) ($numerator / $denominator); // Whole number
+        }
+
+        $whole = intdiv($numerator, $denominator);
+        $remainder = $numerator % $denominator;
+
+        return $whole > 0
+            ? "\({$whole} \\frac{{$remainder}}{{$denominator}}\)"
+            : "\(\\frac{{$remainder}}{{$denominator}}\)";   }
+}
+//end fractional drisplay
 
 if (!function_exists('create_commmission_list')) {
     function create_commmission_list($order_id, $courses_pending_id = null, $reqRef)
@@ -142,11 +190,11 @@ if (!function_exists('create_commmission_list')) {
             ->where('year', $year)
             ->where('month', $month)
             ->first();
-            
+
         if ($courseCount && $courseCount->count == 0) {
             # code...
             initializeUserCourseCount($user->id, $year, $month);
-        }else {
+        } else {
             # code...
             initializeUserCourseCount($user->id, $year, $month);
         }
@@ -214,7 +262,7 @@ if (!function_exists('create_commmission_list')) {
         }
 
         // $resultCommission = $countingCourse * $commission_rate;
-        checkCourseCurrent($user->id, $year, $month, $config_commission,$userCourseCount);
+        checkCourseCurrent($user->id, $year, $month, $config_commission, $userCourseCount);
         incrementUserCourseCount($user->id, $countingCourse, $year, $month);
 
         // return AffiliateCommissionList::create([
@@ -290,7 +338,7 @@ if (!function_exists('activeStudent')) {
 }
 
 if (!function_exists('checkCourseCurrent')) {
-    function checkCourseCurrent($user_id, $year, $month, $config_commission,$userCourseCount)
+    function checkCourseCurrent($user_id, $year, $month, $config_commission, $userCourseCount)
     {
         $high = $config_commission->user_per_course_high;
         $percent_15 = $config_commission->comission_per_course_15_percent;
@@ -315,6 +363,7 @@ if (!function_exists('checkCourseCurrent')) {
         }
     }
 }
+
 if (!function_exists('courseCount')) {
     function courseCount($start_level, $end_level, $start_term, $end_term)
     {

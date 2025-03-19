@@ -19,6 +19,7 @@ use App\Http\Controllers\QuestionQuizzesController;
 use App\Http\Controllers\QuizController;
 use App\Http\Controllers\QuizzesController;
 use App\Http\Controllers\ResultController;
+use App\Http\Controllers\TestSystemQuestionsController;
 use App\Http\Livewire\Admin\AdminForm;
 use App\Http\Livewire\Admin\AdminList;
 use App\Http\Livewire\Admin\Tests\TestList;
@@ -204,6 +205,8 @@ Route::group(['middleware' => ['auth', 'affiliate.redirect']], function () {
 
 Route::group(['middleware' => ['auth.userOrStudent', 'affiliate.redirect']], function () {
     Route::get('quiz-home', [eLeanController::class, 'home'])->name('home3');
+    Route::post('/quiz/save-answer', [QuizController::class, 'saveAnswer'])->name('quiz.saveAnswer');
+
     Route::get('quiz-home/{level}', [eLeanController::class, 'homeLevel'])->name('home.level');
     Route::get('quiz-home/{level}/{term}', [eLeanController::class, 'homeTerm'])->name('home.term');
     Route::get('quiz-home/{level}/{term}/{section}', [eLeanController::class, 'homeSection'])->name('home.section');
@@ -259,3 +262,11 @@ Route::post('/webhook/line', [LineController::class, 'webhook'])->name('line.web
 Route::get('manon', function (Request $request) {
     return $request;
 });
+
+
+
+// test route 
+Route::get('/test-system-questions', [TestSystemQuestionsController::class, 'index'])->name('ts.questions.index');
+Route::get('/test-system-questions/create', [TestSystemQuestionsController::class, 'create'])->name('ts.questions.create');
+Route::get('/test-system-questions/view', [TestSystemQuestionsController::class, 'view'])->name('ts.questions.view');
+Route::post('/test-system-questions', [TestSystemQuestionsController::class, 'store'])->name('ts.questions.store');

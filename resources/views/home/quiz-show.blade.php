@@ -87,13 +87,13 @@
         }
 
         /* .answer-container {
-                position: relative;
-                width: 100%;
-                border: 2px solid orange;
-                border-radius: 5px;
-                padding: 15px;
-                box-sizing: border-box;
-            } */
+                                                                                                                                                                    position: relative;
+                                                                                                                                                                    width: 100%;
+                                                                                                                                                                    border: 2px solid orange;
+                                                                                                                                                                    border-radius: 5px;
+                                                                                                                                                                    padding: 15px;
+                                                                                                                                                                    box-sizing: border-box;
+                                                                                                                                                                } */
 
 
         .image-answer-container {
@@ -142,15 +142,15 @@
         }
 
         /* .answer-label {
-                position: absolute;
-                top: -15px;
-                left: 15px;
-                font-size: 14px;
-                background-color: white;
-                padding: 0 5px;
-                color: #000000;
-                font-weight: bold;
-            } */
+                                                                                                                                                                    position: absolute;
+                                                                                                                                                                    top: -15px;
+                                                                                                                                                                    left: 15px;
+                                                                                                                                                                    font-size: 14px;
+                                                                                                                                                                    background-color: white;
+                                                                                                                                                                    padding: 0 5px;
+                                                                                                                                                                    color: #000000;
+                                                                                                                                                                    font-weight: bold;
+                                                                                                                                                                } */
 
         .answer-box {
             font-size: 16px;
@@ -164,12 +164,81 @@
             font-size: 16px;
         }
     </style>
+    <style>
+        .pagination {
+            justify-content: center;
+        }
+    </style>
+
+    <style>
+        /* Style for regular fraction inputs */
+        .fraction-input {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .fraction-numerator,
+        .fraction-denominator {
+            width: 40px;
+            text-align: center;
+        }
+
+        .fraction-input span {
+            font-size: 18px;
+            padding: 0 5px;
+        }
+
+        /* Style for mixed fraction inputs */
+        .mixed-fraction-input {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+
+        .mixed-whole {
+            width: 40px;
+            text-align: center;
+        }
+
+        /* Optional: Adjust overall input appearance */
+        input[type="text"] {
+            font-size: 16px;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+    </style>
+    <style>
+        .frac {
+            display: inline-block;
+            position: relative;
+            vertical-align: middle;
+            letter-spacing: 0.001em;
+            text-align: center;
+        }
+
+        .frac>span {
+            display: block;
+            padding: 0.1em;
+        }
+
+        .frac span.bottom {
+            border-top: thin solid black;
+        }
+
+        .frac span.symbol {
+            display: none;
+        }
+    </style>
+    <script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 @endpush
 @push('script')
 @endpush
 @section('content')
     <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 ">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
                     @if (!$quiz->public && !auth()->check())
@@ -197,7 +266,18 @@
 
                             <span class="text-bold">Question {{ $currentQuestionIndex + 1 }} of
                                 {{ $questionsCount }}:</span>
-                            <h2 class="mb-4 text-2xl">{{ $currentQuestion->text ?? '' }}</h2>
+                            <h2 class="mb-4 text-2xl">
+                                @if ($currentQuestion->type === 'fraction')
+                                    @php
+
+                                        $text = replaceMixedFractions($currentQuestion->text);
+
+                                    @endphp
+                                    {{ $text }}
+                                @else
+                                    {{ $currentQuestion->text ?? '' }}
+                                @endif
+                            </h2>
                             @if ($currentQuestion->img_name)
                                 <div class="img-container mb-4">
                                     <img class="img-custom" src="{{ asset('img_questions/' . $currentQuestion->img_name) }}"
@@ -208,13 +288,12 @@
                                 <pre class="mb-4 border-2 border-solid bg-gray-50 p-2">{{ $currentQuestion->code_snippet }}</pre>
                             @endif
 
-                            <form id="quiz-form"
-                                action="{{ route('quiz.next', ['quiz' => $quiz, 'currentQuestionIndex' => $currentQuestionIndex]) }}"
-                                method="POST">
+                            <form id="quiz-form" {{-- action="{{ route('quiz.next', ['quiz' => $quiz, 'currentQuestionIndex' => $currentQuestionIndex, 'quizStartTime' => $quizStartTime]) }}" --}} action="#" method="POST">
                                 @csrf
                                 <input type="hidden" name="startTimeInSeconds" id="startTimeInSeconds"
                                     value="{{ $secondsPerQuestion }}">
-                                <input type="hidden" name="currentQuestionIndex" value="{{ $currentQuestionIndex }}">
+                                <input type="hidden" id="currentQuestionIndex" name="currentQuestionIndex"
+                                    value="{{ $currentQuestionIndex }}">
                                 <input type="hidden" name="currentQuestionId" id="currentQuestionId"
                                     value="{{ $currentQuestion->id }}">
                                 <input type="hidden" id="currentQuestionType" name="currentQuestionType"
@@ -254,6 +333,93 @@
                                             </div>
                                         @endforeach
                                     </div>
+                                @elseif ($currentQuestion->type === 'fraction')
+                                    {{-- <div>
+        
+                                                @php
+                                                    dd($currentQuestion->fractions);
+                                                @endphp
+                                                <h1>fraction_type : {{ $currentQuestion->fractions->first()->type }} </h1>
+                                            </div> --}}
+                                    @if ($currentQuestion->fractions->first()->type === 'written')
+                                        @if ($currentQuestion->fractions->first()->answer_type === 'frac')
+                                            <div class='frac'>
+                                                <input type="hidden" id="type_frac" name="currentQuestionFracType"
+                                                    value="{{ $currentQuestion->fractions->first()->type }}">
+                                                <input type="hidden" id="answer_type_frac"
+                                                    name="currentQuestionFracAnswerType"
+                                                    value="{{ $currentQuestion->fractions->first()->answer_type }}">
+                                                <span>
+                                                    <input type='text' name='currentQuestionFracNumerator'
+                                                        placeholder='Numerator' class='fraction-numerator'>
+                                                </span>
+                                                <span class='symbol'>/</span>
+                                                <span class='bottom'>
+                                                    <input type='text' name='currentQuestionFracDenominator'
+                                                        placeholder='Denominator' class='fraction-denominator'>
+
+                                                </span>
+
+
+                                            </div>
+                                        @else
+                                            <input type="hidden" id="type_frac" name="currentQuestionFracType"
+                                                value="{{ $currentQuestion->fractions->first()->type }}">
+                                            <input type="hidden" id="answer_type_frac" name="currentQuestionFracAnswerType"
+                                                value="{{ $currentQuestion->fractions->first()->answer_type }}">
+
+                                            <input type='text' name='currentQuestionFracWhole'
+                                                placeholder='Whole Number' class='mixed-whole' />
+                                            <div class='frac'>
+                                                <span>
+                                                    <input type='text' name='currentQuestionFracNumerator'
+                                                        placeholder='Numerator' class='fraction-numerator'>
+                                                </span>
+                                                <span class='symbol'>/</span>
+                                                <span class='bottom'>
+                                                    <input type='text' name='currentQuestionFracDenominator'
+                                                        placeholder='Denominator' class='fraction-denominator'>
+                                                </span>
+                                            </div>
+                                        @endif
+                                    @else
+                                        <!-- answer fraction its option -->
+                                        {{-- <div class="row"> --}}
+
+                                        @foreach ($currentQuestion->fractions as $option)
+                                            <div class="col-lg-6 mt-5">
+                                                <input type="hidden" id="answerOfQuestion[fraction][type_frac]"
+                                                    name="answerOfQuestion[fraction][type_frac]" value="optios">
+
+                                                <label for="option-{{ $option->id }}">
+                                                    <input type="radio" id="frationOption-{{ $option->id }}"
+                                                        name="answerOfQuestion[{{ $currentQuestionIndex }}]"
+                                                        value="{{ $option->id }}">
+                                                    @php
+                                                        if ($option->answer_type == 'mixed') {
+                                                            # code...
+                                                            $textOption = toMixedFraction(
+                                                                $option->numerator,
+                                                                $option->denominator,
+                                                            );
+                                                        } else {
+                                                            $textOption = toFraction(
+                                                                $option->numerator,
+                                                                $option->denominator,
+                                                            );
+                                                        }
+
+                                                    @endphp
+
+                                                    {{ $textOption }}
+
+                                                    <input type="hidden" id="optionFracAnswer"
+                                                        value="{{ $option->text }}">
+                                                </label>
+                                            </div>
+                                        @endforeach
+                                        {{-- </div> --}}
+                                    @endif
                                 @endif
                                 <div id="answer-container">
 
@@ -261,12 +427,16 @@
                                 <div class="mt-4">
                                     @if ($currentQuestionIndex < $questionsCount - 1)
                                         {{-- <button id="showAnswer" type="button"
-                                            class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md font-semibold text-xs uppercase tracking-widest shadow-sm focus:outline-none disabled:opacity-25 transition ease-in-out duration-150">
-                                            Confirm
-                                        </button> --}}
+                                                    class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md font-semibold text-xs uppercase tracking-widest shadow-sm focus:outline-none disabled:opacity-25 transition ease-in-out duration-150">
+                                                    Confirm
+                                                </button> --}}
                                         <button type="submit" id="nextQuestion"
                                             class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md font-semibold text-xs uppercase tracking-widest shadow-sm focus:outline-none disabled:opacity-25 transition ease-in-out duration-150">
                                             Next question
+                                        </button>
+                                        <button type="button" id="nextQuestionJS"
+                                            class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md font-semibold text-xs uppercase tracking-widest shadow-sm focus:outline-none disabled:opacity-25 transition ease-in-out duration-150">
+                                            Next question JS
                                         </button>
                                     @else
                                         <button type="submit"
@@ -280,13 +450,174 @@
                     @endif
 
                 </div>
+
             </div>
+            <!-- i want to make quick navigation bar -->
+
+            <div class="w-1/3 p-4 bg-orange-400 rounded-lg shadow-md">
+                <h3 class="text-lg font-semibold mb-3">Quiz Progress</h3>
+
+                <div class="grid grid-cols-5 gap-2">
+                    @for ($i = 0; $i < $questionsCount; $i++)
+                        <a href="{{ route('quiz.show', ['quiz' => $quiz, 'currentQuestionIndex' => $i, 'quizStartTime' => $quizStartTime]) }}"
+                            class="quiz-nav w-10 h-10 flex items-center justify-center rounded-full text-dark font-bold
+                        {{ $i == $currentQuestionIndex ? 'bg-white' : 'bg-orange-500' }}">
+                            {{ $i + 1 }}
+                        </a>
+                    @endfor
+                </div>
+                <div class="fixed top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-md shadow-md">
+                    Time Elapsed: <span id="quiz-timer">0:00</span>
+                </div>
+            </div>
+
         </div>
     </div>
 
 
 @endsection
 @push('scripts')
+    <script>
+        var _token = '{{ csrf_token() }}';
+
+        document.getElementById('quiz-form').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent the default form submission
+
+            // Create a FormData object from the form
+            var formData = new FormData(this);
+            console.log(formData);
+            
+
+            // Optionally, add custom data to the form
+            // formData.append('customKey', 'customValue');
+
+            // Make an AJAX request using fetch
+            fetch("{{ route('quiz.next', ['quiz' => $quiz, 'currentQuestionIndex' => $currentQuestionIndex, 'quizStartTime' => $quizStartTime]) }}", {
+                    method: 'POST',
+                    body: formData,
+                    _token: _token,
+                })
+                .then(response => {
+                    // Check if the response is in JSON format
+                    const contentType = response.headers.get('Content-Type');
+                    if (contentType && contentType.includes('application/json')) {
+                        return response.json(); // Parse the JSON response
+                    } else {
+                        return response.text(); // If not JSON, return HTML or text response
+                    }
+                })
+                .then(data => {
+                    if (typeof data === 'string') {
+                        console.error('Received HTML or text:', data);
+                    } else {
+                        console.log('Success:', data);
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+
+        });
+    </script>
+    <script>
+        var _token = '{{ csrf_token() }}';
+        document.addEventListener("DOMContentLoaded", function() {
+            let answerInputs = document.querySelectorAll(".answer-option");
+            let quizNavButtons = document.querySelectorAll(".quiz-nav");
+            let nextButton = document.getElementById("nextQuestionBtn");
+
+            function saveAnswer(callback) {
+                let selectedOption = document.querySelector(".answer-option:checked");
+                let answerValue = selectedOption ? selectedOption.value : null;
+                let questionId = selectedOption ? selectedOption.dataset.questionId : null;
+                let questionType = selectedOption ? selectedOption.dataset.questionType : null;
+                let currentQuestionIndex = document.getElementById("currentQuestionIndex").value;
+
+                if (questionId && answerValue !== null) {
+                    fetch("/quiz/save-answer", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                                "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute(
+                                    "content"),
+                            },
+                            body: JSON.stringify({
+                                question_id: questionId,
+                                answer: answerValue,
+                                type: questionType,
+                                currentQuestionIndex: currentQuestionIndex,
+                            }),
+                        }).then(response => response.json())
+                        .then(data => {
+                            console.log(data.message);
+                            if (callback) callback(); // Proceed after saving
+                        })
+                        .catch(error => console.error("Error:", error));
+                } else {
+                    if (callback) callback(); // Proceed if no answer selected
+                }
+            }
+
+            // Save answer before clicking Next button
+            if (nextButton) {
+                nextButton.addEventListener("click", function(e) {
+                    e.preventDefault();
+                    saveAnswer(() => {
+                        window.location.href = this.getAttribute("href");
+                    });
+                });
+            }
+
+            // Save answer before clicking Quiz Navigation Bar
+            quizNavButtons.forEach(button => {
+                button.addEventListener("click", function(e) {
+                    e.preventDefault();
+                    saveAnswer(() => {
+                        window.location.href = this.getAttribute("href");
+                    });
+                });
+            });
+
+            // Auto-save when user selects an answer
+            answerInputs.forEach(input => {
+                input.addEventListener("change", function() {
+                    saveAnswer();
+                });
+            });
+        });
+    </script>
+    {{-- <script>
+        function navigateToQuestion(event, index) {
+            event.preventDefault();
+            let form = document.getElementById('quiz-form');
+            form.action = `{{ route('quiz.next', ['quiz' => $quiz, 'currentQuestionIndex' => '__INDEX__']) }}`.replace(
+                '__INDEX__', index);
+            form.submit();
+        }
+    </script> --}}
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            let quizStartTime = @json($quizStartTime) ? @json($quizStartTime) * 1000 : new Date()
+                .getTime();
+
+            let timerDisplay = document.getElementById("quiz-timer");
+
+            function updateTimer() {
+                let now = new Date().getTime();
+                let elapsed = Math.floor((now - quizStartTime) / 1000); // Elapsed seconds
+
+                let minutes = Math.floor(elapsed / 60);
+                let seconds = elapsed % 60;
+
+                timerDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, "0")}`;
+            }
+
+            setInterval(updateTimer, 1000);
+            updateTimer();
+        });
+    </script>
+
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             let secondsLeft = 0;

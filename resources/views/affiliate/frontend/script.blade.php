@@ -1,6 +1,7 @@
-
-<script type="text/javascript" src="{{ asset('Modules/AoraPageBuilder/Resources/assets/js/bootstrap.min.js') }}"></script>
-<script type="text/javascript" src="{{ asset('Modules/AoraPageBuilder/Resources/assets/js/jquery-ui.min.js') }}"></script>
+<script type="text/javascript" src="{{ asset('Modules/AoraPageBuilder/Resources/assets/js/bootstrap.min.js') }}">
+</script>
+<script type="text/javascript" src="{{ asset('Modules/AoraPageBuilder/Resources/assets/js/jquery-ui.min.js') }}">
+</script>
 <script type="text/javascript" src="{{ asset('Modules/AoraPageBuilder/Resources/assets/js/ckeditor.js') }}"></script>
 <script type="text/javascript" src="{{ asset('Modules/AoraPageBuilder/Resources/assets/js/form-builder.min.js') }}">
 </script>
@@ -18,6 +19,13 @@
     $('.ui-resizable-resizer').remove()
 </script>
 
+<script src=" {{ asset('js/app.js') . assetVersion() }} "></script>
+<script src=" {{ asset('frontend/infixlmstheme/js/app.js' . assetVersion()) }} "></script>
+{{-- <script src="https://ecommerce.eimaths-th.com/public/backend/js/summernote-bs4.min.js?v=3953"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBq4zPuqxFWOoPVLs1qpXV0ZkeOhGe0JIg"></script>
+<script src="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/js/map.js"></script>
+<script src="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/js/contact.js?v=3267"></script>
+<script src="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/js/custom.js?v=9813"></script> --}}
 
 
 <script type="text/javascript" data-aoraeditor="script">
@@ -41,4 +49,3 @@
     //     });
     // }, 0);
 </script>
-
