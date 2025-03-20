@@ -36,7 +36,7 @@ class AffiliateController extends Controller
     }
     public function index(Request $request)
     {
-
+       
 
         if (Auth::user()) {
             // Code when the user is authenticated
@@ -92,23 +92,7 @@ class AffiliateController extends Controller
         // dd($data,Auth::user()->id);
 
         // dd(Auth::user()->referral);
-        $referral = Auth::user()->referral;
-        // gennerate url
-        if ($referral) {
-            # code...
-            $user_name = Auth::user()->referral;
-            $url = route('affiliate.courses');
-            $affiliate_link =  $url  . '?ref=' . Auth::user()->referral;
-            // dd($affiliate_link, $url, $user_name);
-            $dataGenerate = [
-                '_token' => csrf_token(),
-                'user_name' => $user_name,
-                'url' => $url,
-                'affiliate_link' => $affiliate_link
-            ];
-            // dd($dataGenerate);
-            $this->generateUrl($dataGenerate);
-        }
+        
 
 
         return view('affiliate.backend.my_affiliate', [
@@ -174,22 +158,7 @@ class AffiliateController extends Controller
         //
     }
 
-    public function generateUrl($dataGenerate)
-    {
-        //
-        $firstRow = AffiliateLink::where('owner_id', Auth::user()->id)->first();
-        // check if the user has already generated the link
-        if ($firstRow) {
-            return back();
-        } else {
-            # code...
-            $this->affiliateRepo->create($dataGenerate);
-            Toastr::success('Affiliate Link Generated Successfully');
-            return back();
-        }
-
-    }
-
+    
     /**
      * Store a newly created resource in storage.
      */

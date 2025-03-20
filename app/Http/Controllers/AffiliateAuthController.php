@@ -11,6 +11,7 @@ use Brian2694\Toastr\Facades\Toastr;
 
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
+use Modules\Affiliate\Entities\AffiliateLink;
 use Modules\Affiliate\Repositories\AffiliateRepository;
 
 class AffiliateAuthController extends Controller
@@ -90,6 +91,12 @@ class AffiliateAuthController extends Controller
         
         return view('affiliate.auth.registration', compact('page', 'custom_field'));
     }
+    public function generateUrl($dataGenerate)
+    {
+        //
+        return $this->affiliateRepo->create($dataGenerate);
+    }
+
     public function register(Request $request)
     {
         $validated = $request->validate([
@@ -113,12 +120,31 @@ class AffiliateAuthController extends Controller
         
 
         $user->assignRole('Affiliate-user');
+        
+        $referral = $user->referral;
+        // gennerate url
+        if ($referral) {
+            # code...
+            $user_name = $referral;
+            $url = route('affiliate.courses');
+            $affiliate_link =  $url  . '?ref=' . $referral;
+            // dd($affiliate_link, $url, $user_name);
+            $dataGenerate = [
+                '_token' => csrf_token(),
+                'user_name' => $user_name,
+                'url' => $url,
+                'affiliate_link' => $affiliate_link
+            ];
+            // dd($dataGenerate);
+            $this->generateUrl($dataGenerate);
+        }
 
         auth()->login($user);
 
         // Redirect or return response
         return redirect()->route('my_affiliate.index')->with('success', 'Registration successful!');
     }
+
     public function login()
     {
         // if (Storage::has('.app_resetting')) {
