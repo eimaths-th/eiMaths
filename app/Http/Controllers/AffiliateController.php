@@ -13,6 +13,7 @@ use Modules\Affiliate\Http\Requests\AffiliateLinkRequest;
 use Brian2694\Toastr\Facades\Toastr;
 // use Brian2694\Toastr\Facades\Toastr;
 use Exception;
+use Modules\Affiliate\Entities\AffiliateLink;
 use Modules\Affiliate\Entities\AffiliateWithdraw;
 use Modules\CourseSetting\Entities\Category;
 use Modules\Localization\Entities\Language;
@@ -69,8 +70,8 @@ class AffiliateController extends Controller
         $data['data'] = $this->affiliateRepo->all();
         $affiliateTransactionRepo = new AffiliateTransactionRepository();
         $data['user_transaction_data'] = AffiliateWithdraw::where('user_id', Auth::user()->id)
-        ->orderBy('id', 'desc')
-        ->get();
+            ->orderBy('id', 'desc')
+            ->get();
         $data['courses_pennding'] = CoursePending::where('ref', Auth::user()->referral)
             ->orderBy('id', 'desc')
             ->get();
@@ -84,11 +85,32 @@ class AffiliateController extends Controller
         $month = date('m');
         $year = date('Y');
         $count_course = affiliateUserCourseCount::where('user_id', Auth::user()->id)
-        ->where('month', $month)
-        ->where('year', $year)
-        ->first();
+            ->where('month', $month)
+            ->where('year', $year)
+            ->first();
         // echo Auth::user()->id . Auth::user()->name;
         // dd($data,Auth::user()->id);
+
+        // dd(Auth::user()->referral);
+        $referral = Auth::user()->referral;
+        // gennerate url
+        if ($referral) {
+            # code...
+            $user_name = Auth::user()->referral;
+            $url = route('affiliate.courses');
+            $affiliate_link =  $url  . '?ref=' . Auth::user()->referral;
+            // dd($affiliate_link, $url, $user_name);
+            $dataGenerate = [
+                '_token' => csrf_token(),
+                'user_name' => $user_name,
+                'url' => $url,
+                'affiliate_link' => $affiliate_link
+            ];
+            // dd($dataGenerate);
+            $this->generateUrl($dataGenerate);
+        }
+
+
         return view('affiliate.backend.my_affiliate', [
             'data' => $data,
             'amount' => $data['amount'] ?? '0',
@@ -152,15 +174,31 @@ class AffiliateController extends Controller
         //
     }
 
+    public function generateUrl($dataGenerate)
+    {
+        //
+        $firstRow = AffiliateLink::where('owner_id', Auth::user()->id)->first();
+        // check if the user has already generated the link
+        if ($firstRow) {
+            return back();
+        } else {
+            # code...
+            $this->affiliateRepo->create($dataGenerate);
+            Toastr::success('Affiliate Link Generated Successfully');
+            return back();
+        }
+
+    }
+
     /**
      * Store a newly created resource in storage.
      */
     public function store(AffiliateLinkRequest $request)
     {
+        // dd($request->all());
         try {
             $this->affiliateRepo->create($request->validated());
-
-            Toastr::success(trans('affiliate.Affiliate Link Generated Successfully'));
+            Toastr::success('Affiliate Link Generated Successfully');
             return back();
         } catch (Exception $e) {
             Toastr::error($e->getMessage(), trans('common.Error'));

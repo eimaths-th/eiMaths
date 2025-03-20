@@ -71,7 +71,8 @@ class CommissionListControler extends Controller
                     return $row->approvedBy->name ?? '';
                 })
                 ->editColumn('created_at', function ($row) {
-                    return $row->created_at->format('d-m-Y') ?? '';
+                    return $row->created_at->format('d-m-Y') ?? ''
+                    ;
                 })
                 ->editColumn('checkbox', function ($row) {
                     return '<input type="checkbox" id="' . $row->id . '" class="flat" name="table_records[]" value="' . $row->id . '" >';

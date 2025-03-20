@@ -2,6 +2,24 @@
 
     <div class="row">
         <div class="col-lg-12">
+            <div class="row d-flex justify-content-between mb-5">
+                <div>
+                    <h3>
+                        Your Referral Code
+                    </h3>
+                </div>
+                <div class="row">
+                    <div class="col-lg-8">
+                        <input type="text" class="form-control" value="{{ $user->referral }}" id="referralCopy" readonly>
+                    </div>
+                    <div class="col-lg-4">
+                        <button id="copyBtn" class="primary-btn small fix-gr-bg" type="button"
+                            onclick="copyToClipboard('#referralCopy')">
+                            <i class="fa fa-copy"></i> Copy
+                        </button>
+                    </div>
+                </div>
+            </div>
             <div class="main-title">
                 <h3 class="mb-20">
                     Create Affiliate Link
@@ -96,7 +114,7 @@
                         </div>
                         <div class="col-lg-12 mb-30">
                             <div class="input-effect">
-                                <label class="mb-2"> {{ __('affiliate.Enter URL') }}
+                                <label class="mb-2"> Enter URL
                                     <span class="required_mark_theme">*</span>
                                 </label>
                                 <input
@@ -115,8 +133,7 @@
 
                         <div class="col-lg-12 mb-30">
                             <div class="input-effect">
-                                <label class="mb-2">
-                                    {{ __('affiliate.Affiliate Link') }}</label>
+                                <label class="mb-2">Affiliate Link</label>
 
                                 <input readonly
                                     class="primary-input-field form-control{{ $errors->has('affiliate_link') ? ' is-invalid' : '' }}"
@@ -151,25 +168,7 @@
             </div>
             {{ Form::close() }}
 
-            <div class="row d-flex justify-content-between mt-4">
-                <div>
-                    <h3>
-                        Your Referral Code
-                    </h3>
-                </div>
-                <div class="row">
-                    <div class="col-lg-8">
-                        <input type="text" class="form-control" value="{{ $user->referral }}" id="referralCopy"
-                            readonly>
-                    </div>
-                    <div class="col-lg-4">
-                        <button id="copyBtn" class="primary-btn small fix-gr-bg" type="button"
-                            onclick="copyToClipboard('#referralCopy')">
-                            <i class="fa fa-copy"></i> Copy
-                        </button>
-                    </div>
-                </div>
-            </div>
+
         </div>
     </div>
 </div>
