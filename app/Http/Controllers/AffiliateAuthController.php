@@ -94,7 +94,7 @@ class AffiliateAuthController extends Controller
     public function generateUrl($dataGenerate)
     {
         //
-        return $this->affiliateRepo->create($dataGenerate);
+        return $this->affiliateRepo->firstCreate($dataGenerate);
     }
 
     public function register(Request $request)
@@ -120,8 +120,9 @@ class AffiliateAuthController extends Controller
         
 
         $user->assignRole('Affiliate-user');
-        
+
         $referral = $user->referral;
+        $user_id = $user->id;
         // gennerate url
         if ($referral) {
             # code...
@@ -131,6 +132,7 @@ class AffiliateAuthController extends Controller
             // dd($affiliate_link, $url, $user_name);
             $dataGenerate = [
                 '_token' => csrf_token(),
+                'user_id' => $user_id,
                 'user_name' => $user_name,
                 'url' => $url,
                 'affiliate_link' => $affiliate_link

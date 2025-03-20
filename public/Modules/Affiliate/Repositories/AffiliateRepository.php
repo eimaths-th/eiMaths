@@ -32,6 +32,13 @@ class AffiliateRepository
 
         }
     }
+    public function firstCreate(array $data)
+    {
+        return AffiliateLink::create([
+            'affiliate_link' => $data['affiliate_link'],
+            'owner_id' => $data['user_id'],
+        ]);
+    }
     public function create(array $data)
     {
         return AffiliateLink::create([
