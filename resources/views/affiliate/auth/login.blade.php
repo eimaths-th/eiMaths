@@ -114,8 +114,8 @@
                                     </label>
                                 @endif
                                 {{-- <a href="{{ route('affiliate.registration') }}" class="text-dark"> สมัคสมาชิก </a> --}}
-                                <a href="#" {{-- <a href="{{route('SendPasswordResetLink')}}" --}}
-                                    class="forgot_pass ">ลืมรหัสผ่าน?</a>
+                                {{-- <a href="#" <a href="{{route('SendPasswordResetLink')}}"
+                                    class="forgot_pass ">ลืมรหัสผ่าน?</a> --}}
                             </div>
                         </div>
                         <div class="col-12">

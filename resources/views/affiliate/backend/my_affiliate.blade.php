@@ -198,12 +198,11 @@
                 <div class="container-fluid p-0">
                     <div class="d-flex flex-wrap justify-content-between">
                         <h1 class="text-uppercase">My Affiliate</h1>
-                        <div class="bc-pages">
-                            {{-- <a href="http://127.0.0.1:8001/dashboard">Dashboard</a> --}}
+                        {{-- <div class="bc-pages">
                             <a href="#">Dashboard</a>
                             <a href="">Affiliate</a>
                             <a href="{{ route('my_affiliate.index') }}">My Affiliate</a>
-                        </div>
+                        </div> --}}
                     </div>
                 </div>
             </section>
@@ -485,7 +484,7 @@
                 <div class="container">
                     <div class="row">
                         <div class="col-lg-12 text-center mt-5 footer-copyright">
-                            <p class="p-3 mb-0">Copyright © 2021 InfixLMS. All rights reserved | Made By CodeThemes</p>
+                            <p class="p-3 mb-0">Copyright © {{ date('Y')}} eiMaths TH. All rights reserved | Made By eiDev</p>
                         </div>
                     </div>
                 </div>

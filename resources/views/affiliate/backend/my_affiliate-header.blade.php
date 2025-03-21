@@ -44,7 +44,7 @@
 
                 <!-- test load 1-->
 
-                <div class="d-flex align-items-center">
+                {{-- <div class="d-flex align-items-center">
                     <div class="serach_field-area ml-30">
                         <div class="search_inner">
                             <form action="#">
@@ -59,7 +59,7 @@
                         </div>
                         <div id="livesearch" style="display: none;"></div>
                     </div>
-                </div>
+                </div> --}}
                 <!-- end test load 1-->
 
                 <div class="header_middle d-none d-md-block">
