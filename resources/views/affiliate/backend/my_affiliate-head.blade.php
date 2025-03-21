@@ -23,12 +23,16 @@
 
 
 {{-- <link rel="stylesheet" href="{{ asset('backend/css/app1.css')}}{{assetVersion()}}"> --}}
-
+{{-- @php
+        dd(isRtl());
+    @endphp --}}
 @if (isRtl())
     <link rel="stylesheet" href="{{ asset('backend/css/backend_style_rtl.css') }}{{ assetVersion() }}" />
 @else
     <link rel="stylesheet" href="{{ asset('backend/css/backend_style.css') }}{{ assetVersion() }}" />
+    
 @endif
+{{-- <link rel="stylesheet" href="{{ asset('backend/css/backend_style.css') }}{{ assetVersion() }}" /> --}}
 
 <!-- uppy css -->
 
