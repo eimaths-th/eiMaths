@@ -87,13 +87,13 @@
         }
 
         /* .answer-container {
-                                                                                                                                                                    position: relative;
-                                                                                                                                                                    width: 100%;
-                                                                                                                                                                    border: 2px solid orange;
-                                                                                                                                                                    border-radius: 5px;
-                                                                                                                                                                    padding: 15px;
-                                                                                                                                                                    box-sizing: border-box;
-                                                                                                                                                                } */
+                                                                                                                                                                                            position: relative;
+                                                                                                                                                                                            width: 100%;
+                                                                                                                                                                                            border: 2px solid orange;
+                                                                                                                                                                                            border-radius: 5px;
+                                                                                                                                                                                            padding: 15px;
+                                                                                                                                                                                            box-sizing: border-box;
+                                                                                                                                                                                        } */
 
 
         .image-answer-container {
@@ -142,15 +142,15 @@
         }
 
         /* .answer-label {
-                                                                                                                                                                    position: absolute;
-                                                                                                                                                                    top: -15px;
-                                                                                                                                                                    left: 15px;
-                                                                                                                                                                    font-size: 14px;
-                                                                                                                                                                    background-color: white;
-                                                                                                                                                                    padding: 0 5px;
-                                                                                                                                                                    color: #000000;
-                                                                                                                                                                    font-weight: bold;
-                                                                                                                                                                } */
+                                                                                                                                                                                            position: absolute;
+                                                                                                                                                                                            top: -15px;
+                                                                                                                                                                                            left: 15px;
+                                                                                                                                                                                            font-size: 14px;
+                                                                                                                                                                                            background-color: white;
+                                                                                                                                                                                            padding: 0 5px;
+                                                                                                                                                                                            color: #000000;
+                                                                                                                                                                                            font-weight: bold;
+                                                                                                                                                                                        } */
 
         .answer-box {
             font-size: 16px;
@@ -288,7 +288,9 @@
                                 <pre class="mb-4 border-2 border-solid bg-gray-50 p-2">{{ $currentQuestion->code_snippet }}</pre>
                             @endif
 
-                            <form id="quiz-form" {{-- action="{{ route('quiz.next', ['quiz' => $quiz, 'currentQuestionIndex' => $currentQuestionIndex, 'quizStartTime' => $quizStartTime]) }}" --}} action="#" method="POST">
+                            <form id="quiz-form"
+                                action="{{ route('quiz.next', ['quiz' => $quiz, 'currentQuestionIndex' => $currentQuestionIndex, 'quizStartTime' => $quizStartTime]) }}"
+                                {{-- action="#"  --}} method="POST">
                                 @csrf
                                 <input type="hidden" name="startTimeInSeconds" id="startTimeInSeconds"
                                     value="{{ $secondsPerQuestion }}">
@@ -459,8 +461,28 @@
 
                 <div class="grid grid-cols-5 gap-2">
                     @for ($i = 0; $i < $questionsCount; $i++)
+                        <button
+                            class="quiz-nav w-10 h-10 flex items-center justify-center rounded-full text-dark font-bold 
+                            {{ $i == $currentQuestionIndex ? 'bg-white' : 'bg-orange-500' }}"
+                            data-question-index="{{ $i }}">
+                            {{ $i + 1 }}
+                        </button>
+                    @endfor
+                </div>
+                <div class="fixed top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-md shadow-md">
+                    Time Elapsed: <span id="quiz-timer">0:00</span>
+                </div>
+            </div>
+            @php
+                dd($quiz);
+            @endphp
+            <div class="w-1/3 p-4 bg-orange-400 rounded-lg shadow-md">
+                <h3 class="text-lg font-semibold mb-3">Quiz Progress non quiz-nav</h3>
+
+                <div class="grid grid-cols-5 gap-2">
+                    @for ($i = 0; $i < $questionsCount; $i++)
                         <a href="{{ route('quiz.show', ['quiz' => $quiz, 'currentQuestionIndex' => $i, 'quizStartTime' => $quizStartTime]) }}"
-                            class="quiz-nav w-10 h-10 flex items-center justify-center rounded-full text-dark font-bold
+                            class="w-10 h-10 flex items-center justify-center rounded-full text-dark font-bold
                         {{ $i == $currentQuestionIndex ? 'bg-white' : 'bg-orange-500' }}">
                             {{ $i + 1 }}
                         </a>
@@ -478,112 +500,60 @@
 @endsection
 @push('scripts')
     <script>
-        var _token = '{{ csrf_token() }}';
-
-        document.getElementById('quiz-form').addEventListener('submit', function(event) {
-            event.preventDefault(); // Prevent the default form submission
-
-            // Create a FormData object from the form
-            var formData = new FormData(this);
-            console.log(formData);
-            
-
-            // Optionally, add custom data to the form
-            // formData.append('customKey', 'customValue');
-
-            // Make an AJAX request using fetch
-            fetch("{{ route('quiz.next', ['quiz' => $quiz, 'currentQuestionIndex' => $currentQuestionIndex, 'quizStartTime' => $quizStartTime]) }}", {
-                    method: 'POST',
-                    body: formData,
-                    _token: _token,
-                })
-                .then(response => {
-                    // Check if the response is in JSON format
-                    const contentType = response.headers.get('Content-Type');
-                    if (contentType && contentType.includes('application/json')) {
-                        return response.json(); // Parse the JSON response
-                    } else {
-                        return response.text(); // If not JSON, return HTML or text response
-                    }
-                })
-                .then(data => {
-                    if (typeof data === 'string') {
-                        console.error('Received HTML or text:', data);
-                    } else {
-                        console.log('Success:', data);
-                    }
-                })
-                .catch((error) => {
-                    console.error('Error:', error);
-                });
-
-        });
-    </script>
-    <script>
-        var _token = '{{ csrf_token() }}';
         document.addEventListener("DOMContentLoaded", function() {
-            let answerInputs = document.querySelectorAll(".answer-option");
-            let quizNavButtons = document.querySelectorAll(".quiz-nav");
-            let nextButton = document.getElementById("nextQuestionBtn");
+            const quizForm = document.getElementById("quiz-form");
+            const navButtons = document.querySelectorAll(".quiz-nav");
 
-            function saveAnswer(callback) {
-                let selectedOption = document.querySelector(".answer-option:checked");
-                let answerValue = selectedOption ? selectedOption.value : null;
-                let questionId = selectedOption ? selectedOption.dataset.questionId : null;
-                let questionType = selectedOption ? selectedOption.dataset.questionType : null;
-                let currentQuestionIndex = document.getElementById("currentQuestionIndex").value;
+            if (navButtons.length > 0 && quizForm) {
+                navButtons.forEach(button => {
+                    button.addEventListener("click", function(event) {
+                        event.preventDefault();
 
-                if (questionId && answerValue !== null) {
-                    fetch("/quiz/save-answer", {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json",
-                                "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute(
-                                    "content"),
-                            },
-                            body: JSON.stringify({
-                                question_id: questionId,
-                                answer: answerValue,
-                                type: questionType,
-                                currentQuestionIndex: currentQuestionIndex,
-                            }),
-                        }).then(response => response.json())
-                        .then(data => {
-                            console.log(data.message);
-                            if (callback) callback(); // Proceed after saving
-                        })
-                        .catch(error => console.error("Error:", error));
-                } else {
-                    if (callback) callback(); // Proceed if no answer selected
-                }
-            }
-
-            // Save answer before clicking Next button
-            if (nextButton) {
-                nextButton.addEventListener("click", function(e) {
-                    e.preventDefault();
-                    saveAnswer(() => {
-                        window.location.href = this.getAttribute("href");
+                        let changeToquestionIndex = this.getAttribute("data-question-index");
+                        saveAnswer(changeToquestionIndex);
                     });
                 });
             }
 
-            // Save answer before clicking Quiz Navigation Bar
-            quizNavButtons.forEach(button => {
-                button.addEventListener("click", function(e) {
-                    e.preventDefault();
-                    saveAnswer(() => {
-                        window.location.href = this.getAttribute("href");
-                    });
-                });
-            });
+            function saveAnswer(changeToIndex) {
+                let formData = new FormData(quizForm);
 
-            // Auto-save when user selects an answer
-            answerInputs.forEach(input => {
-                input.addEventListener("change", function() {
-                    saveAnswer();
-                });
-            });
+                // Append additional data
+                formData.append("quiz_id", "{{ $quiz->id }}");
+                formData.append("changeToQuestionIndex", changeToIndex);
+                formData.append("quizStartTime", "{{ $quizStartTime }}");
+
+                fetch("{{ route('quiz.saveAnswer') }}", {
+                        method: "POST",
+                        headers: {
+                            "X-CSRF-TOKEN": document.querySelector('input[name="_token"]').value,
+                        },
+                        body: formData,
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log("Answer saved:", data);
+                        moveToNextQuestion(data);
+                    })
+                    .catch(error => {
+                        console.error("Error saving answer:", error);
+                    });
+            }
+
+            function moveToNextQuestion(data) {
+                let changeToIndex = data.changeToIndex;
+                let quiz = data.quiz.slug;
+                let quizStartTime = data.quizStartTime;
+
+                // Construct the URL correctly
+                let nextUrl =
+                    `{{ route('quiz.next', ['quiz' => '__QUIZ__', 'currentQuestionIndex' => '__INDEX__', 'quizStartTime' => '__START_TIME__']) }}`
+                    .replace("__QUIZ__", quiz)
+                    .replace("__INDEX__", changeToIndex)
+                    .replace("__START_TIME__", quizStartTime);
+
+                window.location.href = nextUrl;
+            }
         });
     </script>
     {{-- <script>
@@ -616,7 +586,6 @@
             updateTimer();
         });
     </script>
-
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {

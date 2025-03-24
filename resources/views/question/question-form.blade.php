@@ -7,7 +7,7 @@
                     <span id="question-title"></span>
                     {{-- {{ $editing ? 'Edit Question' : 'Create Question' }} --}}
                 </h4>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -243,7 +243,7 @@
                     </button> --}}
                 </span>
 
-                <button type="button" class="btn btn-danger modelClose" data-dismiss="modal">
+                <button type="button" class="btn btn-danger modelClose" data-bs-dismiss="modal">
                     <i class="fas fa-door-closed"></i> Close
                 </button>
             </div>

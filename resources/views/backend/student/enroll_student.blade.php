@@ -235,7 +235,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title"> {{ __('certificate.Generate Certificate') }} </h4>
-                    <button type="button" class="close" data-dismiss="modal"><i
+                    <button type="button" class="close" data-bs-dismiss="modal"><i
                             class="ti-close "></i></button>
                 </div>
 
@@ -249,7 +249,7 @@
                         <input type="hidden" name="id" value="" id="generate_certificate_id">
                         <div class="mt-40 d-flex justify-content-between">
                             <button type="button" class="primary-btn tr-bg"
-                                    data-dismiss="modal">{{__('common.Cancel')}}</button>
+                                    data-bs-dismiss="modal">{{__('common.Cancel')}}</button>
 
                             <button class="primary-btn fix-gr-bg">{{__('common.Confirm')}}</button>
 
@@ -267,7 +267,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title"> {{ __('certificate.Remove Certificate') }} </h4>
-                    <button type="button" class="close" data-dismiss="modal"><i
+                    <button type="button" class="close" data-bs-dismiss="modal"><i
                             class="ti-close "></i></button>
                 </div>
 
@@ -281,7 +281,7 @@
                         <input type="hidden" name="id" value="" id="cancel_certificate_id">
                         <div class="mt-40 d-flex justify-content-between">
                             <button type="button" class="primary-btn tr-bg"
-                                    data-dismiss="modal">{{__('common.Cancel')}}</button>
+                                    data-bs-dismiss="modal">{{__('common.Cancel')}}</button>
 
                             <button class="primary-btn fix-gr-bg">{{__('common.Confirm')}}</button>
 

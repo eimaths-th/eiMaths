@@ -8,8 +8,10 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ParentController;
 use App\Http\Controllers\PermissionsController;
+use App\Http\Controllers\QrCodePaymentController;
 use App\Http\Controllers\ReceiptController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\TeachingPeriodController;
 use App\Http\Controllers\UserController;
 
 use App\Services\FileUploadService;
@@ -22,7 +24,7 @@ use Illuminate\Http\Request;
 
 //Auth::routes();
 
-Route::group(['middleware' => ['auth','affiliate.redirect']], function () {
+Route::group(['middleware' => ['auth', 'affiliate.redirect']], function () {
     //Route::get('/roles', [RoleController::class, 'index'])->name('roles.index');
     //Route::get('/roles/store', [RoleController::class, 'store'])->name('roles.store');
     Route::get('/roles/edit/{id}', [RoleController::class, 'edit'])->name('roles.edit2');
@@ -31,6 +33,7 @@ Route::group(['middleware' => ['auth','affiliate.redirect']], function () {
     Route::post('/roles/destroy_all', [RoleController::class, 'destroy_all'])->name('roles.destroy_all');
     Route::resource('users', UserController::class);
     Route::get('/users/admin/affiliate', [UserController::class,  'affiliateUser'])->name('users.affiliate');
+    Route::DELETE('/users/admin/affiliate/destroy', [UserController::class,  'destroyAffiliateUser'])->name('users.affiliate.destroy');
 
     Route::get('/logout', [UserController::class, 'perform'])->name('logout.perform');
     Route::get('/users/edit/{id}', [UserController::class, 'edit'])->name('users.edit2');
@@ -141,6 +144,13 @@ Route::group(['middleware' => ['auth','affiliate.redirect']], function () {
     Route::post('/history/upload/delete', [App\Http\Controllers\HistoryStudentImgController::class, 'destroy'])->name('history.delete');
 
     Route::get('/histories/show/{id}', [App\Http\Controllers\HistoriesController::class, 'show'])->name('history.show');
+
+    Route::resource('qrcode_payment', QrCodePaymentController::class);
+    Route::resource('TeachingPeriod', TeachingPeriodController::class);
+
+    Route::get('TeachingPeriod/find/{department_id}/{day}', [TeachingPeriodController::class, 'find'])->name('TeachingPeriod.find');
+
+
 
 
     //parent route

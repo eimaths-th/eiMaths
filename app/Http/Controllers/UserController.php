@@ -174,7 +174,7 @@ class UserController extends Controller
                         $html = '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> Edit</button> ';
                     }
                     if (Gate::allows('user-delete')) {
-                        $html .= '<button type="button" data-rowid="' . $row->id . '" class="btn btn-sm btn-danger btn-delete"><i class="fa fa-trash"></i> Delete</button>';
+                        $html .= '<button type="button" data-rowid="' . $row->id . '" class="btn btn-sm btn-danger btn-delete-affiliate-user"><i class="fa fa-trash"></i> Delete</button>';
                     } else {
                         $html .= '<button type="button" class="btn btn-sm btn-danger disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-trash"></i> Delete</button> ';
                     }
@@ -415,6 +415,17 @@ class UserController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function destroy(Request $request)
+    {
+        /*    if (!Auth::user()->hasPermissionTo('user-delete')) {
+            return response()->json(['errors' => 'คุณไม่มีสิทธิ์ลบข้อมูล.'], 200);
+        } */
+        $id = $request->get('id');
+        User::find($id)->delete();
+        return ['success' => true, 'message' => 'Delete User Success'];
+        /* return redirect()->route('users.index')
+            ->with('success', 'User deleted successfully'); */
+    }
+    public function destroyAffiliateUser(Request $request)
     {
         /*    if (!Auth::user()->hasPermissionTo('user-delete')) {
             return response()->json(['errors' => 'คุณไม่มีสิทธิ์ลบข้อมูล.'], 200);

@@ -18,21 +18,85 @@ use Illuminate\Support\Facades\Redirect;
 
 class QuizController extends Controller
 {
+
     public function saveAnswer(Request $request)
     {
-        dd($request->all());
+        // dd($request->all());
+        $currentQuestionIndex = (int) $request->input('currentQuestionIndex', 0);
+        $answerOfQuestion = $request->input("answerOfQuestion.$currentQuestionIndex");
+        $currentQuestionId = $request->input('currentQuestionId');
+        $currentQuestionType = $request->input('currentQuestionType');
+        $currentQuestionFracType = $request->input('currentQuestionFracType');
+        $currentQuestionFracAnswerType = $request->input('currentQuestionFracAnswerType');
+
+        // Fetch the correct answer from the database
+        $question = Question::find($currentQuestionId);
+        $correctAnswer = $question ? $question->correct_answer : null;
         $answersOfQuestions = session()->get('answersOfQuestions', []);
 
-        $answersOfQuestions[$request->currentQuestionIndex] = [
-            'question_id' => $request->question_id,
-            'answer' => $request->answer,
-            'type' => $request->type,
-        ];
+        if ($currentQuestionType === 'fraction') {
+            if ($currentQuestionFracType === 'written') {
+                $currentQuestionFracNumerator = $request->input('currentQuestionFracNumerator');
+                $currentQuestionFracDenominator = $request->input('currentQuestionFracDenominator');
+
+                if ($request->input('currentQuestionFracWhole')) {
+                    $whole  = $request->input('currentQuestionFracWhole');
+                    $currentQuestionFracNumerator = $whole * $currentQuestionFracDenominator + $currentQuestionFracNumerator;
+                }
+
+                // Check if the fraction answer is correct
+                $isCorrect = $correctAnswer && isset($correctAnswer['numerator']) &&
+                    isset($correctAnswer['denominator']) &&
+                    $correctAnswer['numerator'] == $currentQuestionFracNumerator &&
+                    $correctAnswer['denominator'] == $currentQuestionFracDenominator;
+
+                $answersOfQuestions[$currentQuestionIndex] = [
+                    'question_id' => $currentQuestionId,
+                    'type' => $currentQuestionType,
+                    'frac_type' => $currentQuestionFracType,
+                    'answer' => [
+                        'numerator' => $currentQuestionFracNumerator,
+                        'denominator' => $currentQuestionFracDenominator,
+                    ],
+                    'answer_type' => $currentQuestionFracAnswerType,
+                    'is_correct' => $isCorrect
+                ];
+            } else {
+                $isCorrect = $correctAnswer == $answerOfQuestion;
+
+                $answersOfQuestions[$currentQuestionIndex] = [
+                    'question_id' => $currentQuestionId,
+                    'answer' => $answerOfQuestion,
+                    'type' => $currentQuestionType,
+                    'is_correct' => $isCorrect
+                ];
+            }
+        } else {
+            $isCorrect = $correctAnswer == $answerOfQuestion;
+
+            $answersOfQuestions[$currentQuestionIndex] = [
+                'question_id' => $currentQuestionId,
+                'answer' => $answerOfQuestion,
+                'type' => $currentQuestionType,
+                'is_correct' => $isCorrect
+            ];
+        }
 
         session()->put('answersOfQuestions', $answersOfQuestions);
-
-        return response()->json(['message' => 'Answer saved successfully']);
+        
+        // return redirect()->route('quiz.show',['quiz' => $quiz, 'currentQuestionIndex' => $currentQuestionIndex, 'quizStartTime' => $quizStartTime]);
+   
+        // dd($request->all(), $answersOfQuestions);
+        $quiz = Quiz::find($request->input('quiz_id'));
+        $changeToIndex = $request->input('changeToQuestionIndex');
+        $quizStartTime = $request->input('quizStartTime');
+        return response()->json([
+            'quiz' => $quiz,
+            'changeToIndex' => $changeToIndex,
+            'quizStartTime' => $quizStartTime
+        ]);
     }
+
     public function show(Quiz $quiz, Request $request)
     {
         // dd($request->all());
@@ -76,7 +140,7 @@ class QuizController extends Controller
 
     public function nextQuestion(Request $request, Quiz $quiz)
     {
-        dd($request->all());
+        // dd($request->all());
         $currentQuestionIndex = (int) $request->input('currentQuestionIndex', 0);
         $answerOfQuestion = $request->input("answerOfQuestion.$currentQuestionIndex");
         $currentQuestionId = $request->input('currentQuestionId');
@@ -142,7 +206,7 @@ class QuizController extends Controller
     {
         $answersOfQuestions = session('answersOfQuestions', []);
 
-        dd($request->all(), $answersOfQuestions);
+        dd('submit', $request->all(), $answersOfQuestions);
         $startTimeInSeconds = session('startTimeInSeconds', now()->timestamp);
         $timeSpent = now()->timestamp - $startTimeInSeconds;
         $result = 0;
@@ -193,7 +257,16 @@ class QuizController extends Controller
             ? redirect()->route('demo.thank_you')
             : redirect()->route('results.show', ['test' => $test]);
     }
-
+    private function checkAnswer(Question $question, array $answerData)
+    {
+        return match ($answerData['type']) {
+            'options' => optional(Option::find($answerData['answer']))->correct,
+            'written' => strtolower($answerData['answer']) === strtolower($question->written_answer),
+            'image' => optional(ImageOption::find($answerData['answer']))->correct,
+            default => false,
+        };
+    }
+    
     private function getCorrectAnswer(Question $question)
     {
         return match ($question->type) {
@@ -204,15 +277,7 @@ class QuizController extends Controller
         };
     }
 
-    private function checkAnswer(Question $question, array $answerData)
-    {
-        return match ($answerData['type']) {
-            'options' => optional(Option::find($answerData['answer']))->correct,
-            'written' => strtolower($answerData['answer']) === strtolower($question->written_answer),
-            'image' => optional(ImageOption::find($answerData['answer']))->correct,
-            default => false,
-        };
-    }
+    
 }
 
 

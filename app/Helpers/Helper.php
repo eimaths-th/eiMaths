@@ -10,6 +10,7 @@ use App\Models\CoursePending;
 use App\Models\level;
 use App\Models\Order;
 use App\Models\OrderDetailList;
+use App\Models\QRCodePayMent;
 use App\Models\term;
 use App\Models\User as ModelsUser;
 use App\Notifications\GeneralNotification;
@@ -34,6 +35,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Str;
 use IvoPetkov\HTML5DOMDocument;
+use KS\PromptPay;
 use Modules\Affiliate\Entities\AffiliateConfiguration;
 use Modules\Blog\Entities\UserBlog;
 use Modules\CourseSetting\Entities\Category;
@@ -84,6 +86,29 @@ use PhpOffice\PhpSpreadsheet\Shared\Date;
 
 
 //fractional drisplay
+if (!function_exists('generateQrCode')) {
+    function generateQrCode($amount)
+    {
+        $qr = QRCodePayMent::first();
+        $promptpay_number = $qr->promptpay_numbers;
+        // $promptpay_number = "1103702601675";
+        $qrCodeData = new PromptPay();
+        $savePath = public_path('img/qrcode/qr.png');
+
+        if ($amount) {
+            # code...
+            $qrCodeData->generatePayload($promptpay_number, $amount);
+            $qrCodeData->generateQrCode($savePath, $promptpay_number, $amount);
+        } else {
+            $qrCodeData->generatePayload($promptpay_number);
+            $qrCodeData->generateQrCode($savePath, $promptpay_number);
+        }
+
+
+        $qrCodeImage = asset('img/qrcode/qr.png');
+        return $qrCodeImage;
+    }
+}
 if (!function_exists('replaceMixedFractions')) {
     function replaceMixedFractions($text)
     {

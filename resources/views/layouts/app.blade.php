@@ -299,7 +299,7 @@
                 '<div class="modal-content">' +
                 '<div id="ezAlerts-header" class="modal-header ' + headClass + '">' +
                 '<h4 id="ezAlerts-title" class="modal-title">Modal title</h4>' +
-                '<button id="close-button" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>' +
+                '<button id="close-button" type="button" class="close" data-bs-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>' +
                 '</div>' +
                 '<div id="ezAlerts-body" class="modal-body">' +
                 '<div id="ezAlerts-message" ></div>' +

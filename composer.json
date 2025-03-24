@@ -16,6 +16,7 @@
         "guzzlehttp/guzzle": "^7.8",
         "infyomlabs/laravel-ui-adminlte": "^5.2",
         "intervention/image": "^2.7",
+        "kittinan/php-promptpay-qr": "^0.1.5",
         "laravel/framework": "^10.10",
         "laravel/sanctum": "^3.2",
         "laravel/tinker": "^2.8",

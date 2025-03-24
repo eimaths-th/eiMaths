@@ -20,11 +20,11 @@
                     </div>
                 </div>
             </div>
-            <div class="main-title">
+            {{-- <div class="main-title">
                 <h3 class="mb-20">
                     Create Affiliate Link
                 </h3>
-            </div>
+            </div> --}}
 
             {{-- <form method="POST" action="{{ route('my_affiliate.index') }}"
                 accept-charset="UTF-8" class="form-horizontal"
@@ -83,7 +83,7 @@
                 </div>
             </form> --}}
 
-            @if (isset($row))
+            {{-- @if (isset($row))
                 {{ Form::open([
                     'class' => 'form-horizontal',
                     'files' => true,
@@ -158,7 +158,6 @@
                                     {{ __('common.Update') }}
                                     Update
                                 @else
-                                    {{-- {{ __('common.Save') }} --}}
                                     Save
                                 @endif
                             </button>
@@ -166,7 +165,7 @@
                     </div>
                 </div>
             </div>
-            {{ Form::close() }}
+            {{ Form::close() }} --}}
 
 
         </div>
