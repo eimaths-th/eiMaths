@@ -1,6 +1,7 @@
 @extends('affiliate.frontend.main')
 @section('style')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
     <style>
         #loading {
@@ -34,6 +35,24 @@
             100% {
                 transform: rotate(360deg);
             }
+        }
+
+        footer {
+            background: #ffb618;
+            color: white;
+        }
+
+        footer a {
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        footer a:hover {
+            color: #f8d210;
+        }
+
+        .bg-dark {
+            background: #ff951c !important;
         }
     </style>
 @endsection
@@ -97,10 +116,80 @@
         </div>
     </div> --}}
     {{-- @include('affiliate.modal_line_contact') --}}
+    <footer class="bg-dark text-white py-4">
+        <div class="container">
+            <div class="row">
+                <!-- Column 1: Logo & About -->
+                <div class="col-md-4 text-center text-md-start">
+                    <img src="{{ asset('images/logo.png') }}" alt="eiMaths-TH Logo" style="width: 40%; height: auto;">
+                    {{-- <h5 class="mt-2">eiMaths-TH</h5> --}}
+                    <p class="text-white">Providing quality content and services since 2024.</p>
+                </div>
+
+                <!-- Column 2: Quick Links -->
+                <div class="col-md-4">
+                    <!-- footer.courses.header2 -->
+                    <h5>ประกาศ</h5>
+                    <!-- footer.courses.content2 -->
+                    ราคาคอร์สเรียนไม่รวมค่าแรกเข้า และ ค่าอุปกรณ์การเรียน
+                    <br>
+                </div>
+
+                <!-- Column 3: Social Media -->
+                <div class="col-md-4 text-center text-md-end">
+                    <h5>Follow Us</h5>
+                    <a href="https://www.facebook.com/eimaths.th/?locale=th_TH" target="_blank" class="text-white me-2">
+                        <i class="fab fa-facebook"></i>
+                    </a>
+                    <a href="https://www.youtube.com/channel/UCiD8a78ZN6SNQViVmG1St0A" target="_blank"
+                        class="text-white me-2">
+                        <i class="fab fa-youtube"></i>
+                    </a>
+                    <a href="https://www.tiktok.com/@eimaths.th" target="_blank" class="text-white me-2">
+                        <i class="fa-brands fa-tiktok"></i>
+                    </a>
+                </div>
+            </div>
+
+            <hr class="mt-4">
+
+            <!-- Copyright -->
+            <div class="text-center">
+                <p>© {{ date('Y') }} eiMaths-TH. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    {{-- <footer class="bg-dark text-white text-center py-4">
+        <div class="container">
+            <img src="your-logo.png" alt="Logo" style="width: 150px; height: auto;">
+            <p class="mt-2">© 2024 EIMaths. All Rights Reserved.</p>
+            <div class="social-icons">
+                <a href="https://www.tiktok.com/@eimaths.th" class="text-white me-2">
+                    <i class="fab fa-tiktok"></i>
+                </a>
+                <a href="https://www.facebook.com/eimaths" class="text-white me-2">
+                    <i class="fab fa-facebook"></i>
+                </a>
+                <a href="https://www.instagram.com/eimaths" class="text-white me-2">
+                    <i class="fab fa-instagram"></i>
+                </a>
+            </div>
+        </div>
+    </footer> --}}
+    @include('affiliate.frontend.promotion_modal')
 @endsection
 @section('script')
     {{-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"></script> --}}
-
+    <script>
+        $(document).ready(function() {
+            $('#promoModal').modal('show');
+            
+            // setTimeout(function() {
+            //     $('#promoModal').modal('show');
+            // }, 2000); // Show after 2 seconds
+        });
+    </script>
     <script>
         // document.addEventListener('click', function(e) {
         //     if (e.target.closest('[data-bs-toggle="modal"]')) {
@@ -316,7 +405,8 @@
                                             icon: "success",
                                             confirmButtonText: "OK"
                                         }).then(() => {
-                                            location.reload(); // Reload the page after user clicks "OK"
+                                            location
+                                                .reload(); // Reload the page after user clicks "OK"
                                         });
                                     })
                                     .catch(error => {
@@ -330,7 +420,7 @@
                                     })
                                     .finally(() => {
                                         document.getElementById('loading').style.display =
-                                        'none'; // Hide loading animation
+                                            'none'; // Hide loading animation
                                     });
                             }
                         })
