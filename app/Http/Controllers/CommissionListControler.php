@@ -113,19 +113,19 @@ class CommissionListControler extends Controller
             return response()->json(['message' => 'Commission record not found'], 404);
         }
 
-        $withdrawRequest = AffiliateWithdraw::find($id);
-        if (!$withdrawRequest) {
-            return response()->json(['error' => 'Withdraw request not found'], 404);
-        }
+        // $withdrawRequest = AffiliateWithdraw::find($id);
+        // if (!$withdrawRequest) {
+        //     return response()->json(['error' => 'Withdraw request not found'], 404);
+        // }
 
         // Find the user's wallet
-        $UserWallet = AffiliateUserWallet::where('user_id', $withdrawRequest->user_id)->first();
+        $UserWallet = AffiliateUserWallet::where('user_id', $commission->payment_to)->first();
         if (!$UserWallet) {
             return response()->json(['error' => 'User wallet not found'], 404);
         }
 
         //find the user's bank
-        $UserBank = AffiliateUserBank::where('user_id', $withdrawRequest->user_id)->first();
+        $UserBank = AffiliateUserBank::where('user_id', $commission->payment_to)->first();
         if (!$UserBank) {
             return response()->json(['error' => 'User bank not found'], 404);
         }
