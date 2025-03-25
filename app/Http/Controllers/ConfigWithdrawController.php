@@ -225,7 +225,7 @@ class ConfigWithdrawController extends Controller
             if ($action === 'approve') {
                 $withdrawAmount = (float) $withdrawRequest->withdraw_amount;
                 // Deduct the withdrawal amount
-                $UserWallet->decrement('amount', $withdrawAmount);
+                // $UserWallet->decrement('amount', $withdrawAmount);
 
                 // Update the withdraw status to approved
                 $withdrawRequest->status = 1;
