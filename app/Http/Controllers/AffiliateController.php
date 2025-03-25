@@ -35,7 +35,12 @@ class AffiliateController extends Controller
     public function fontend()
     {
         //
-        return view('affiliate.index');
+        $departments = Department::whereNotIn('id', [1, 4, 5])->get();
+        // dd($teaching_periods);
+        $days = ['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Thursday', 'Friday'];
+        $qr_payment = QRCodePayMent::first();
+
+        return view('affiliate.index',compact('departments','days','qr_payment'));
     }
     public function index(Request $request)
     {

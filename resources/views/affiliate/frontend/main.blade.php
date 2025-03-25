@@ -265,6 +265,7 @@
     </div>
     @include('affiliate.form_modal')
     @include('affiliate.modal_line_contact')
+    
 </body>
 @include('affiliate.frontend.script')
 @yield('script')
