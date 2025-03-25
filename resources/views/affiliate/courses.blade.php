@@ -1,7 +1,47 @@
 @extends('affiliate.frontend.main')
 @section('style')
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        #loading {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            z-index: 9999;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-top: 5px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 10px auto;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
 @endsection
 @section('content')
+    <div id="loading" style="display: none;">
+        <div class="spinner"></div>
+        <p class="text-white">Sending email...</p>
+    </div>
     <div>
         <div class="breadcrumb_area bradcam_bg_2"
             style="background-image: url('{{ asset('uploads/main/files/09-08-2024/bb.png') }}')">
@@ -36,7 +76,7 @@
         @endphp
     @endif
 
-    
+
     {{-- <div class="modal fade" id="receiptModal" tabindex="-1" role="dialog" aria-labelledby="receiptModalLabel"
         aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -80,6 +120,7 @@
         //     }
         // });
 
+
         document.addEventListener('DOMContentLoaded', () => {
             // Listen for clicks on modal trigger buttons
             document.querySelectorAll('[data-bs-toggle="modal"]').forEach(button => {
@@ -88,11 +129,13 @@
                     const link = e.target.closest('[data-bs-toggle="modal"]');
                     const title = link.getAttribute('data-title');
                     const courseId = link.getAttribute('data-course-id');
+                    const price = link.getAttribute('data-price');
 
                     // Populate the form fields inside the modal
                     $('#purchaseModalLabel').text(title);
                     $('#course_id').val(courseId);
                     $('#course_name').val(title);
+                    $('#course_price').val(price);
 
                     $('#receiptModal').modal('show');
 
@@ -123,25 +166,30 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
+                        console.log(data);
 
                         $('.form').trigger('reset');
                         $('#receiptModal').modal('hide');
-
+                        const coursePending_id = data.coursePending_id;
+                        $('#coursePending_id').val(coursePending_id);
+                        // Show the modal
                         $('#modalLineContact').modal('show');
-                        
+
+                        // Update the QR code image source
+                        $('#qrCodePayment').attr('src', data.qrCodePayment);
+
+                        // Handle QR Code download
                         $('#downloadQrButton').off('click').on('click', function() {
-                            // Assuming the QR code image URL is available in the response
-                            const qrUrl =
-                            "{{ asset('images/line/qr-line.jpg') }}"; // Replace with your actual QR URL from the response
+                            const qrUrl = data.qrCodePayment;
                             const link = document.createElement('a');
                             link.href = qrUrl;
-                            link.download = 'qr_code.png'; // Set the filename for download
+                            link.download = 'qr_code.png';
                             document.body.appendChild(link);
                             link.click();
                             document.body.removeChild(link);
                         });
-                        $('.modal-backdrop').removeClass('modal-backdrop');
 
+                        $('.modal-backdrop').removeClass('modal-backdrop');
                     } else {
                         toastr.error(data.message, {
                             timeOut: 5000
@@ -149,6 +197,148 @@
                     }
                 })
                 .catch(error => console.error('Error:', error));
+        });
+    </script>
+    <script>
+        $(document).ready(function() {
+            // Listen for change events on #department and #day selects
+            $('#department, #day').on('change', function() {
+                let department_id = $('#department').val();
+                let day = $('#day').val();
+
+                // Check if both fields have values
+                if (department_id && day) {
+                    $.ajax({
+                        url: '/courses/findPeriodOptions/' + department_id + '/' + day,
+                        type: 'GET',
+                        dataType: 'json',
+                        success: function(response) {
+                            $('#teaching_period').html(response.html);
+                        },
+                        error: function(xhr) {
+                            console.log('Error:', xhr.responseText);
+                        }
+                    });
+                } else {
+                    // Reset period dropdown if no department or day is selected
+                    $('#teaching_period').html('<option value="">Period</option>');
+                }
+            });
+
+
+        });
+    </script>
+    <script>
+        document.getElementById('copy_account_number_btn').addEventListener('click', function() {
+            // Get the text content of the account number
+            const accountNumber = document.getElementById('copy_account_number').textContent;
+
+            // Create a temporary textarea element
+            const tempInput = document.createElement('textarea');
+            tempInput.value = accountNumber;
+            document.body.appendChild(tempInput);
+
+            // Select and copy the text
+            tempInput.select();
+            document.execCommand('copy');
+
+            // Remove the temporary input
+            document.body.removeChild(tempInput);
+
+            // Show a success message (optional)
+            alert('Copied: ' + accountNumber);
+        });
+    </script>
+    <script>
+        document.getElementById('payment_slip').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('slip_preview');
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const paymentForm = document.getElementById('paymentForm');
+
+            if (paymentForm) { // Ensure the form exists
+                paymentForm.addEventListener('submit', function(event) {
+                    event.preventDefault(); // Prevent default form submission
+
+                    let formData = new FormData(this);
+
+                    var _token = "{{ csrf_token() }}";
+                    formData.append('_token', _token)
+
+                    fetch("{{ route('payment.upload') }}", {
+                            method: "POST",
+                            body: formData,
+
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire({
+                                    title: "Success!",
+                                    text: "Payment slip uploaded successfully!",
+                                    icon: "success",
+                                    confirmButtonText: "OK"
+                                });
+
+                                document.getElementById('paymentForm').reset();
+                                document.getElementById('slip_preview').style.display = 'none';
+                                document.getElementById('loading').style.display = 'block';
+                                // Send an email confirmation
+                                fetch("{{ route('senMailconfirm') }}", {
+                                        method: "POST",
+                                        headers: {
+                                            'X-CSRF-TOKEN': "{{ csrf_token() }}",
+                                            'Content-Type': 'application/json',
+                                            'Accept': 'application/json'
+                                        },
+                                        body: JSON.stringify({
+                                            coursePending_id: data.coursePending_id
+                                        })
+                                    })
+                                    .then(response => response.json())
+                                    .then(mailData => {
+                                        Swal.fire({
+                                            title: "Email Sent!",
+                                            text: mailData.message,
+                                            icon: "success",
+                                            confirmButtonText: "OK"
+                                        }).then(() => {
+                                            location.reload(); // Reload the page after user clicks "OK"
+                                        });
+                                    })
+                                    .catch(error => {
+                                        Swal.fire({
+                                            title: "Error!",
+                                            text: "Failed to send email.",
+                                            icon: "error",
+                                            confirmButtonText: "OK"
+                                        });
+                                        console.error("Error sending email:", error);
+                                    })
+                                    .finally(() => {
+                                        document.getElementById('loading').style.display =
+                                        'none'; // Hide loading animation
+                                    });
+                            }
+                        })
+                        .catch(error => console.error("Error:", error));
+
+                });
+            } else {
+                console.log('paymentForm element not found!');
+            }
         });
     </script>
 @endsection

@@ -182,6 +182,7 @@ Route::group(['middleware' => ['auth', 'affiliate.redirect']], function () {
     Route::post('/courses/pending/reset/{id}', [CourseController::class, 'coursesPendingReset'])->name('courses.pending.reset');
     Route::get('/courses/pending/new-student/{id}', [CourseController::class, 'coursesPendingNewStd'])->name('courses.pending.new.student');
     Route::post('/courses/pending/new-student/store', [CourseController::class, 'coursesPendingNewStdStore'])->name('courses.pending.new.student.store');
+    Route::get('/courses/pending/fetch/slip/{id}', [CourseController::class, 'fetchSlip'])->name('courses.pending.fetch.receipt');
 
     Route::get('/commission-list', [CommissionListControler::class, 'index'])->name('commission-list.index');
     Route::post('/commission/update-status', [CommissionListControler::class, 'updateStatus'])->name('commission-list.updateStatus');
@@ -243,6 +244,9 @@ Route::post('/affiliate/logout', [AffiliateAuthController::class, 'logout'])->na
 Route::post('/affiliate/my_affiliate/add-or-update-paypal-account', [AffiliateAuthController::class, 'addOrUpdatePaypalAccount'])->name('add_or_update_paypal_account');
 // In your web.php routes file
 Route::post('/courses/pending', [CourseController::class, 'coursesPendingStore'])->name('courses.pending.store');
+Route::get('/courses/findPeriodOptions/{department_id}/{day}', [AffiliateController::class, 'findPeriodOptions'])->name('courses.findPeriodOptions');
+Route::post('/payment/upload', [CourseController::class, 'uploadSlip'])->name('payment.upload');
+Route::POST('/senMailconfirm', [CourseController::class, 'senMail'])->name('senMailconfirm');
 
 
 // Route::get('/affiliate/my_affiliate', )->name('my_affiliate.index');
@@ -252,6 +256,7 @@ Route::resource('/affiliate/my_affiliate/withdraw', AffiliateTransactionControll
 // Route::resource('withdraw_request', 'AffiliateTransactionController')->except(['destroy']);
 Route::post('destroy/withdraw_request', [AffiliateTransactionController::class, 'destroy'])->name('withdraw.destroy');
 Route::post('balance-transfer-to-wallet', [AffiliateTransactionController::class, 'balanceTransferToWallet'])->name('balance_transfer_to_wallet');
+
 
 
 // Route::get('thank-you', [ContactController::class, 'thank_you'])->name('demo.thank_you');

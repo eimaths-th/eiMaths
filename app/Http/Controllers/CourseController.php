@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\RegistrationConfirmation;
 use App\Models\bookuse;
 use App\Models\Contact;
 use Illuminate\Http\Request;
@@ -31,6 +32,7 @@ use Illuminate\Support\Facades\Session;
 use Livewire\Attributes\Validate;
 use GuzzleHttp\Client;
 use Svg\Tag\Rect;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
 
@@ -884,23 +886,32 @@ class CourseController extends Controller
             return DataTables::of($query)
                 ->addIndexColumn()
                 ->editColumn('ref', function ($query) {
-                    return $query->ref;
+                    return $query->ref ?? '';
                 })
                 ->editColumn('name', function ($query) {
-                    return $query->name ?? 'null';
+                    return $query->name ?? '';
                 })->editColumn('email', function ($query) {
 
-                    return $query->email;
+                    return $query->email ?? '';
                 })
                 ->addColumn('telp', function ($query) {
 
-                    return $query->telp ?? 'null';
+                    return $query->telp ?? '';
                 })->addColumn('type_parent', function ($query) {
 
-                    return $query->type_parent ?? 'null';
+                    return $query->type_parent ?? '';
+                })
+                ->editColumn('department', function ($query) {
+                    return $query->department->code ?? '';
+                })
+                ->editColumn('day', function ($query) {
+                    return $query->day ?? '';
+                })
+                ->editColumn('period', function ($query) {
+                    return $query->period ?? '';
                 })
                 ->editColumn('course_name', function ($query) {
-                    return $query->course_name;
+                    return $query->course_name ?? '';
                 })
                 ->editColumn('status', function ($query) {
                     $html = '';
@@ -944,7 +955,7 @@ class CourseController extends Controller
                         // $dropdown .= '';
                         $dropdown .= '<li><button class="dropdown-item reset-btn" data-id="' . $query->id . '">Reset</button></li>';
                     }
-
+                    $dropdown .= '<li><button class="dropdown-item view-slip-btn" data-id="' . $query->id . '">view slip</button></li>';
                     $dropdown .= '</ul>
                                 </div>';
 
@@ -992,6 +1003,21 @@ class CourseController extends Controller
         ;
     }
 
+
+    public function fetchSlip($id)
+    {
+        // Assuming you have a CoursePending model that stores the slip image path
+        $coursePending = CoursePending::find($id);
+
+        if (!$coursePending) {
+            return response()->json(['error' => 'Slip not found'], 404);
+        }
+
+        // Return the path to the image stored in the public directory
+        return response()->json([
+            'image' => asset($coursePending->slip) // Adjust path as needed
+        ]);
+    }
     public function coursesPendingConfirm($id)
     {
         $data = CoursePending::find($id);
@@ -1058,9 +1084,15 @@ class CourseController extends Controller
             'telp' => 'required|string|max:15',
             'course_name' => 'required|string',
             'type_parent' => 'required|in:father,mother',
+            'department_id' => 'required|string|max:255',
+            'day' => 'required|string|max:255',
+            'period' => 'required|string|max:255',
+            'price' => 'required|string|max:255',
+
         ]);
         $validatedData['ref'] = $request->ref ?? '';
         $validatedData['status'] = '1';
+
 
         $create = CoursePending::create($validatedData);
         //line api test
@@ -1115,11 +1147,91 @@ class CourseController extends Controller
         // // For broadcast
         // $this->sendBroadcastMessage($accessToken, 'Hello from Line OA! 2');
         // $this->sendMessageToMyself($accessToken, $message);
+        // dd($request->all(),$validatedData,$create);
+
+        $qrCodePayment = generateQrCode($create->price);
+        // dd($qrCodePayment);
+
         return response()->json([
             'success' => true,
             'message' => 'Course stored successfully!',
+            'qrCodePayment' => $qrCodePayment,
+            'coursePending_id' => $create->id,
         ]);
     }
+
+    public function uploadSlip(Request $request)
+    {
+        $request->validate([
+            'payment_slip' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            'coursePending_id' => 'required',
+        ]);
+
+
+        // Find the CoursePending record
+        $coursePending = CoursePending::find($request->coursePending_id);
+        if (!$coursePending) {
+            return response()->json(['success' => false, 'message' => 'Course pending not found.'], 404);
+        }
+
+        // Handle the file upload
+        $folderPath = "img/payment_slips";
+        $imagePath = '';
+
+        if ($request->hasFile('payment_slip')) {
+            // dd( $request->all(),$coursePending);
+
+            $fileName = time() . Str::random(10) . '-' . $request->file('payment_slip')->getClientOriginalName();
+
+            $request->file('payment_slip')->move(public_path($folderPath), $fileName);
+            $imagePath =  $folderPath . '/' . $fileName;
+
+            $coursePending->update(['slip' => $imagePath]);
+            // dd( $request->all(),$coursePending);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Slip uploaded successfully',
+                'coursePending_id' => $coursePending->id // Return the file URL
+            ]);
+        }
+
+        return response()->json(['success' => false, 'message' => 'No file uploaded.'], 400);
+    }
+
+    public function senMail(Request $request)
+    {
+
+        // dd($request->all());
+        $coursePending = CoursePending::find($request->coursePending_id);
+        $coursePending_id = $request->coursePending_id;
+        if (!$coursePending) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Course not found'
+            ], 404);
+        }
+        $data = [
+            'name' => $coursePending->name,
+            'email' => $coursePending->email,
+            'telp' => $coursePending->telp,
+            'course_name' => $coursePending->course_name,
+            'type_parent' => $coursePending->type_parent,
+            'department' => $coursePending->department,
+            'day' => $coursePending->day,
+            'period' => $coursePending->period,
+            'price' => $coursePending->price,
+            'ref' => $coursePending->ref,
+            'status' => $coursePending->status,
+        ];
+
+        Mail::to($data['email'])->send(new RegistrationConfirmation($data, $coursePending_id));
+        return response()->json([
+            'success' => true,
+            'message' => 'Email sent successfully.',
+        ]);
+    }
+
 
     private function sendLineMessage($lineUserId, $accessToken, $message)
     {

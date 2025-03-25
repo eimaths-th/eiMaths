@@ -68,9 +68,13 @@
                                             <td>{{ $teaching_period->day }}</td>
                                             <td> {{ $teaching_period->period }} </td>
                                             <td>
-                                                <a href="#" data-id="{{ $teaching_period->id }}"
-                                                    class="btn btn-primary btn-sm">Edit</a>
-                                                <a href="#" class="btn btn-danger btn-sm">Delete</a>
+                                                <form action="{{ route('TeachingPeriod.destroy', $teaching_period->id) }}"
+                                                    method="POST">
+                                                    <a class="btn btn-primary" href="{{ route('TeachingPeriod.edit', $teaching_period->id) }}">Edit</a>
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    {{-- <button type="submit" class="btn btn-danger">Delete</button> --}}
+                                                </form>
                                             </td>
                                         </tr>
                                     @endforeach
@@ -117,7 +121,8 @@
                                     <option value="">Select department</option>
                                     @foreach ($departments as $department)
                                         <option value="{{ $department->id }}">{{ $department->name }}
-                                            ({{ $department->code }})</option>
+                                            ({{ $department->code }})
+                                        </option>
                                     @endforeach
                                 </select>
                                 <select name="day" id="day" class="form-control mb-3">

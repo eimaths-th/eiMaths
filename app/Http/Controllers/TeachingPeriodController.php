@@ -18,7 +18,7 @@ class TeachingPeriodController extends Controller
         //
         // withotu id 
         $teaching_periods = TeachingPeriod::all();
-        $departments = Department::whereNotIn('id', [1, 4, 5])->get();  // 1,4,5 are the id of the departments that are not to be shown
+        $departments = Department::whereNotIn('id', [1, 4, 5])->get();
         // dd($teaching_periods);
         $days = ['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Thursday', 'Friday'];
         $time = [
@@ -98,18 +98,24 @@ class TeachingPeriodController extends Controller
 
         $html = '';
         foreach ($teachingPeriods as $teachingPeriod) {
-            // Properly concatenate HTML string using double quotes for consistency
             $html .= '
-            <tr>
-                <td>' . $teachingPeriod->department->name . '</td>
-                <td>' . $teachingPeriod->day . '</td>
-                <td>' . $teachingPeriod->period . '</td>
-                <td>
-                    <a href="#" data-id="' . $teachingPeriod->id . '" class="btn btn-primary btn-sm">Edit</a>
-                    <a href="#" data-id="' . $teachingPeriod->id . '" class="btn btn-danger btn-sm">Delete</a>
-                </td>
-            </tr>';
+                <tr>
+                    <td>' . $teachingPeriod->department->name . '</td>
+                    <td>' . $teachingPeriod->day . '</td>
+                    <td>' . $teachingPeriod->period . '</td>
+                    <td>
+                        <form action="' . route('TeachingPeriod.destroy', $teachingPeriod->id) . '" method="POST">
+                            <a class="btn btn-info" href="' . route('TeachingPeriod.edit', $teachingPeriod->id) . '">Edit</a>
+        
+                            <input type="hidden" name="_token" value="' . csrf_token() . '">
+                            <input type="hidden" name="_method" value="DELETE">
+            
+                        </form>
+                    </td>
+                </tr>';
         }
+        
+
 
         // Return the data as a JSON response
         return response()->json(['html' => $html]);

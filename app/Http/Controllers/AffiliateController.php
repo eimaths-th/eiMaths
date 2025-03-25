@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\AffiliateCommissionList;
 use App\Models\affiliateUserCourseCount;
 use App\Models\CoursePending;
+use App\Models\Department;
+use App\Models\QRCodePayMent;
+use App\Models\TeachingPeriod;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Modules\Affiliate\Repositories\AffiliateRepository;
@@ -147,11 +150,33 @@ class AffiliateController extends Controller
     {
         // Retrieve categories
         $categories = Category::all();
-
+        $departments = Department::whereNotIn('id', [1, 4, 5])->get();
+        // dd($teaching_periods);
+        $days = ['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Thursday', 'Friday'];
         // Retrieve languages (assuming you have a Language model or method to fetch languages)
         $languages = Language::where('status', 1)->select('id', 'code', 'name', 'native', 'rtl')->get(); // Adjust this to your actual query for languages
+        $qr_payment = QRCodePayMent::first();
 
-        return view('affiliate.courses', compact('request', 'categories', 'languages'));
+        return view('affiliate.courses', compact('request', 'categories', 'languages', 'departments', 'days' , 'qr_payment'));
+    }
+
+    public function findPeriodOptions(Request $request, $department_id, $day)
+    {
+        // Retrieve teaching periods for the selected department and day
+        $teachingPeriods = TeachingPeriod::where('department_id', $department_id)
+            ->where('day', $day)
+            ->get();
+
+        $html = '';
+        foreach ($teachingPeriods as $teachingPeriod) {
+            $html .= '
+            
+                <option value="' . $teachingPeriod->period . '">' . $teachingPeriod->period . '</option>
+            
+            ';
+        }
+        // Return the data as a JSON response
+        return response()->json(['html' => $html]);
     }
     public function create()
     {

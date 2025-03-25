@@ -27,5 +27,5 @@ class QRCodePayMent extends Model
     /**
      * @var array
      */
-    protected $fillable = ['qr_code', 'account_name', 'bank_name', 'account_numbers', 'promptpay_numbers', 'img', 'created_at', 'updated_at'];
+    protected $fillable = ['qr_code', 'account_name', 'bank_name', 'account_numbers', 'promptpay_numbers','status', 'img', 'created_at', 'updated_at'];
 }

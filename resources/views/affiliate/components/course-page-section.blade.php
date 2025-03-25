@@ -124,6 +124,7 @@
                                         <a href="javascript:void(0);" data-bs-toggle="modal"
                                             data-bs-target="#receiptModal" data-course-id ="{{ $course->id }}"
                                             data-title="{{ $course->title }}" 
+                                            data-price="{{ $course->price }}" 
                                             data-thumbnail="{{ asset(str_replace('public/', '', $course->thumbnail)) }}">
                                             {{-- data-thumbnail="{{ asset($course->thumbnail) }}"> --}}
                                             <div class="thumb">
