@@ -36,41 +36,35 @@
                                 </td>
                                 <td>
                                     @if ($item->status == 0)
-                                        <span
-                                            class="badge_3">Pending</span>
+                                        <span class="badge_3">Pending</span>
                                     @elseif($item->status == 1)
-                                        <span
-                                            class="badge_1">Done</span>
+                                        <span class="badge_1">Done</span>
                                     @else
-                                        <span
-                                            class="badge_4">Cancel</span>
+                                        <span class="badge_4">Cancel</span>
                                     @endif
                                 </td>
                                 <td>
-                                    {{ $item->confirm_date ? showDate($item->confirm_date) : 'NA' }}
+                                    {{-- {{ $item->confirm_date ?? ($item->reject_date ?? 'N/A') }} --}}
+                                    {{ $item->confirm_date ?? ($item->reject_date ?? 'N/A') }}
                                 </td>
 
                                 <td>
-                                    <div class="dropdown CRM_dropdown">
-                                        <button
-                                            class="btn btn-secondary dropdown-toggle"
-                                            type="button" id="dropdownMenu2"
-                                            data-bs-toggle="dropdown"
-                                            aria-haspopup="true"
+                                    {{-- <div class="dropdown CRM_dropdown">
+                                        <button class="btn btn-secondary dropdown-toggle" type="button"
+                                            id="dropdownMenu2" data-bs-toggle="dropdown" aria-haspopup="true"
                                             aria-expanded="false">
                                             Select
                                         </button>
-                                        <div class="dropdown-menu dropdown-menu-right"
-                                            aria-labelledby="dropdownMenu2">
-                                                {{-- <a href="#"
+                                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu2">
+                                            <a href="#"
                                                     class="dropdown-item edit_row"
                                                     data-id="{{ $item->id }}">Edit</a>
                                                 <a href="#"
                                                     class="dropdown-item delete_row"
                                                     data-id="{{ $item->id }}"
-                                                    type="button">Delete</a> --}}
+                                                    type="button">Delete</a>
                                         </div>
-                                    </div>
+                                    </div> --}}
                                 </td>
                             </tr>
                         @endforeach
