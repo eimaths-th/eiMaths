@@ -105,8 +105,7 @@ class TeachingPeriodController extends Controller
                     <td>' . $teachingPeriod->period . '</td>
                     <td>
                         <form action="' . route('TeachingPeriod.destroy', $teachingPeriod->id) . '" method="POST">
-                            <a class="btn btn-info" href="' . route('TeachingPeriod.edit', $teachingPeriod->id) . '">Edit</a>
-        
+                        
                             <input type="hidden" name="_token" value="' . csrf_token() . '">
                             <input type="hidden" name="_method" value="DELETE">
             
@@ -114,9 +113,9 @@ class TeachingPeriodController extends Controller
                     </td>
                 </tr>';
         }
-        
 
 
+        //  <a class="btn btn-info" href="' . route('TeachingPeriod.edit', $teachingPeriod->id) . '">Edit</a>
         // Return the data as a JSON response
         return response()->json(['html' => $html]);
     }
