@@ -6,9 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * @property integer $id
- * @property string $img
+ * @property string $img //path file
  * @property string $title
  * @property string $status
+ * @property string $url
  * @property string $created_by
  * @property string $updated_by
  * @property string $created_at

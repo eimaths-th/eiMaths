@@ -6,6 +6,8 @@ use App\Models\AffiliateCommissionList;
 use App\Models\affiliateUserCourseCount;
 use App\Models\CoursePending;
 use App\Models\Department;
+use App\Models\FooterSetting;
+use App\Models\PromotionImage;
 use App\Models\QRCodePayMent;
 use App\Models\TeachingPeriod;
 use Illuminate\Http\Request;
@@ -40,11 +42,11 @@ class AffiliateController extends Controller
         $days = ['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Thursday', 'Friday'];
         $qr_payment = QRCodePayMent::first();
 
-        return view('affiliate.index',compact('departments','days','qr_payment'));
+        return view('affiliate.index', compact('departments', 'days', 'qr_payment'));
     }
     public function index(Request $request)
     {
-       
+
 
         if (Auth::user()) {
             // Code when the user is authenticated
@@ -100,7 +102,7 @@ class AffiliateController extends Controller
         // dd($data,Auth::user()->id);
 
         // dd(Auth::user()->referral);
-        
+
 
 
         return view('affiliate.backend.my_affiliate', [
@@ -162,7 +164,21 @@ class AffiliateController extends Controller
         $languages = Language::where('status', 1)->select('id', 'code', 'name', 'native', 'rtl')->get(); // Adjust this to your actual query for languages
         $qr_payment = QRCodePayMent::first();
 
-        return view('affiliate.courses', compact('request', 'categories', 'languages', 'departments', 'days' , 'qr_payment'));
+        $footer = FooterSetting::first();
+        $promotion = PromotionImage::where('status', 'enabled')->get();
+
+
+
+        return view('affiliate.courses', compact(
+            'request',
+            'categories',
+            'languages',
+            'departments',
+            'days',
+            'qr_payment',
+            'footer',
+            'promotion'
+        ));
     }
 
     public function findPeriodOptions(Request $request, $department_id, $day)
@@ -188,7 +204,7 @@ class AffiliateController extends Controller
         //
     }
 
-    
+
     /**
      * Store a newly created resource in storage.
      */

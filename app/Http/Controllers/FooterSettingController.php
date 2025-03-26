@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\FooterSetting;
 use Illuminate\Http\Request;
 
 class FooterSettingController extends Controller
@@ -12,11 +13,28 @@ class FooterSettingController extends Controller
     public function index()
     {
         //
+        $footer = FooterSetting::first();
+        return view(
+            'footer_setting.index',
+            compact('footer')
+        );
     }
 
     /**
      * Show the form for creating a new resource.
      */
+
+    public function createOrUpdate(Request $request)
+    {
+        // dd($request->all());
+        $footer = FooterSetting::first();
+        if ($footer) {
+            $footer->update($request->all());
+        } else {
+            FooterSetting::create($request->all());
+        }
+        return redirect()->route('footer-setting.index');
+    }
     public function create()
     {
         //

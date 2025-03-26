@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\FooterSettingController;
 use App\Http\Controllers\HistoriesController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
@@ -8,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ParentController;
 use App\Http\Controllers\PermissionsController;
+use App\Http\Controllers\PromotionImageController;
 use App\Http\Controllers\QrCodePaymentController;
 use App\Http\Controllers\ReceiptController;
 use App\Http\Controllers\RoleController;
@@ -147,10 +149,17 @@ Route::group(['middleware' => ['auth', 'affiliate.redirect']], function () {
 
     Route::resource('qrcode_payment', QrCodePaymentController::class);
     Route::resource('TeachingPeriod', TeachingPeriodController::class);
+    Route::resource('promotion-img', PromotionImageController::class);
+    Route::resource('footer-setting', FooterSettingController::class);
+    //createOrUpdate
+    Route::post('/footer-setting/createOrUpdate', [FooterSettingController::class, 'createOrUpdate'])->name('footer-setting.createOrUpdate');
 
     Route::get('TeachingPeriod/find/{department_id}/{day}', [TeachingPeriodController::class, 'find'])->name('TeachingPeriod.find');
 
-
+    Route::post('/promotion-images/update-status', [PromotionImageController::class, 'updateStatus'])->name('promotion-images.updateStatus');
+    Route::post('/promotion-images/update-status2', [PromotionImageController::class, 'updateStatus2'])->name('promotion-images.updateStatus2');
+    Route::post('/promotion-images/disable-all', [PromotionImageController::class, 'disableAll'])->name('promotion-images.disableAll');
+    
 
 
     //parent route

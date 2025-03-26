@@ -123,15 +123,15 @@
                 <div class="col-md-4 text-center text-md-start">
                     <img src="{{ asset('images/logo.png') }}" alt="eiMaths-TH Logo" style="width: 40%; height: auto;">
                     {{-- <h5 class="mt-2">eiMaths-TH</h5> --}}
-                    <p class="text-white">Providing quality content and services since 2024.</p>
+                    <p class="text-white"> {{ $footer->description }} </p>
                 </div>
 
                 <!-- Column 2: Quick Links -->
                 <div class="col-md-4">
                     <!-- footer.courses.header2 -->
-                    <h5>ประกาศ</h5>
+                    <h5>{{ $footer->title }}</h5>
                     <!-- footer.courses.content2 -->
-                    ราคาคอร์สเรียนไม่รวมค่าแรกเข้า และ ค่าอุปกรณ์การเรียน
+                    {{ $footer->description2 }}
                     <br>
                 </div>
 
@@ -184,7 +184,7 @@
     <script>
         $(document).ready(function() {
             $('#promoModal').modal('show');
-            
+           
             // setTimeout(function() {
             //     $('#promoModal').modal('show');
             // }, 2000); // Show after 2 seconds
@@ -400,7 +400,7 @@
                                     .then(response => response.json())
                                     .then(mailData => {
                                         Swal.fire({
-                                            title: "Email Sent!",
+                                            title: "Purchase completed!",
                                             text: mailData.message,
                                             icon: "success",
                                             confirmButtonText: "OK"
