@@ -46,7 +46,7 @@ class CommissionListControler extends Controller
             //sleep(2);
 
             $datas =  AffiliateCommissionList::query()->orderBy("id", "desc")->get();
-       
+
             return datatables()->of($datas)
 
                 ->editColumn('ref', function ($row) {
@@ -71,8 +71,7 @@ class CommissionListControler extends Controller
                     return $row->approvedBy->name ?? '';
                 })
                 ->editColumn('created_at', function ($row) {
-                    return $row->created_at->format('d-m-Y') ?? ''
-                    ;
+                    return $row->created_at->format('d-m-Y') ?? '';
                 })
                 ->editColumn('checkbox', function ($row) {
                     return '<input type="checkbox" id="' . $row->id . '" class="flat" name="table_records[]" value="' . $row->id . '" >';
@@ -102,59 +101,58 @@ class CommissionListControler extends Controller
         $id = $request->id;
         $action = $request->action;
 
-        // Validate the action
+        // Validate action
         if (!in_array($action, ['approve', 'reject'])) {
             return response()->json(['message' => 'Invalid action'], 400);
         }
 
-        // Find the commission record
+        // Find commission
         $commission = AffiliateCommissionList::find($id);
         if (!$commission) {
             return response()->json(['message' => 'Commission record not found'], 404);
         }
 
-        // $withdrawRequest = AffiliateWithdraw::find($id);
-        // if (!$withdrawRequest) {
-        //     return response()->json(['error' => 'Withdraw request not found'], 404);
-        // }
-
-        // Find the user's wallet
+        // Find user wallet
         $UserWallet = AffiliateUserWallet::where('user_id', $commission->payment_to)->first();
         if (!$UserWallet) {
             return response()->json(['error' => 'User wallet not found'], 404);
         }
 
-        //find the user's bank
+        // Find user bank
         $UserBank = AffiliateUserBank::where('user_id', $commission->payment_to)->first();
         if (!$UserBank) {
             return response()->json(['error' => 'User bank not found'], 404);
         }
 
         $appoved_by = Auth::user()->id;
-
-        $amount = $commission->commission_amount;
+        $amount = (float) $commission->commission_amount;
         $user_id = $commission->payment_to;
 
-        // Start a transaction to ensure consistency
+        // Ensure amount is valid
+        if ($amount <= 0 || !is_numeric($amount)) {
+            return response()->json(['error' => 'Invalid amount value'], 400);
+        }
+
+        // Start transaction
         DB::beginTransaction();
         try {
-            // Update the wallet amount if the action is "approve"
             if ($action === 'approve') {
-                AffiliateUserWallet::where('user_id', $user_id)
-                    ->increment('amount', $amount);
+                $UserWallet->increment('amount', $amount);
+                $UserWallet->refresh(); // Reload updated balance
             }
 
-            // Update the commission status
-            $commission->status = $action === 'approve' ? 'approved' : 'rejected';
+            // Update commission status
+            $commission->status = ($action === 'approve') ? 'approved' : 'rejected';
             $commission->approved_by = $appoved_by;
             $commission->save();
 
-            // Commit the transaction
             DB::commit();
 
-            return response()->json(['message' => 'Status updated successfully!']);
+            return response()->json([
+                'message' => 'Status updated successfully!',
+                'new_wallet_balance' => $UserWallet->amount // Show updated balance
+            ]);
         } catch (\Exception $e) {
-            // Rollback the transaction on error
             DB::rollBack();
             return response()->json([
                 'message' => 'An error occurred while updating the status',
