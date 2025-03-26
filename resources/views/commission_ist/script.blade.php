@@ -127,7 +127,15 @@
             },
             error: function(xhr) {
                 console.error(xhr.responseText);
-                alert('An error occurred. Please try again.');
+
+                let errorMessage = "An error occurred.";
+                if (xhr.responseJSON && xhr.responseJSON.error) {
+                    errorMessage = xhr.responseJSON.error;
+                }
+
+                toastr.error(errorMessage, {
+                    timeOut: 5000
+                });
             }
         });
     });
