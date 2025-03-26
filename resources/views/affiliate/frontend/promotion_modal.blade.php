@@ -22,10 +22,11 @@
 <div class="modal fade" id="promoModal" tabindex="-1" aria-labelledby="promoImageModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-body p-0 text-center">
-                <button type="button" class="btn-close bg-danger position-absolute top-0 end-0 m-2"
-                    data-bs-dismiss="modal" aria-label="Close"></button>
+            <!-- Close Button Moved Outside modal-body -->
+            <button type="button" class="btn-close bg-danger position-absolute top-0 end-0 m-2" data-bs-dismiss="modal"
+                aria-label="Close" style="z-index: 1055;"></button>
 
+            <div class="modal-body p-0 text-center">
                 @if (count($promotion) > 1) <!-- Check if more than 1 image -->
                     <div id="promoCarousel" class="carousel slide" data-bs-ride="carousel">
                         <div class="carousel-inner">
@@ -52,11 +53,24 @@
                     </div>
                 @else
                     <a href="{{ $promotion->url }}" target="_blank">
-                        <img src="{{ asset('storage/' . $promotion->img) }}" alt="Promotion"
-                            class="img-fluid w-100 rounded">
+                        <img src="{{ asset($promotion->img) }}" alt="Promotion" class="img-fluid w-100 rounded">
                     </a>
                 @endif
             </div>
         </div>
     </div>
 </div>
+
+
+
+<!-- Initialize Modal with JavaScript -->
+<script>
+    // Ensure modal close functionality works even with dynamic content
+    var promoModal = new bootstrap.Modal(document.getElementById('promoModal'), {
+        keyboard: true
+    });
+
+    // If you need to manually trigger the modal or close it, you can use:
+    // promoModal.show(); // To open
+    // promoModal.hide(); // To close
+</script>

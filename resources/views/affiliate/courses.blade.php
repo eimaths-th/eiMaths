@@ -2,6 +2,8 @@
 @section('style')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
     <style>
         #loading {
@@ -184,7 +186,7 @@
     <script>
         $(document).ready(function() {
             $('#promoModal').modal('show');
-           
+
             // setTimeout(function() {
             //     $('#promoModal').modal('show');
             // }, 2000); // Show after 2 seconds
