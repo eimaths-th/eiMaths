@@ -10,16 +10,18 @@
             </div>
 
             <div class="modal-body" id="modal-body">
+                <!-- <h4>Scan PromptPay</h4> 
                 <h4>Scan PromptPay</h4>
                 <hr>
                 <div class="text-center">
 
-                    {{-- <p class="theme_text">Pls contact Admin / โปรติดต่อ แอดมิน</p> --}}
+                    
 
                     <img id="qrCodePayment" src="" alt="" style="width: 500px; height: auto;">
 
                 </div>
                 <hr>
+                -->
                 <div class="form-group">
                     {{-- bank account --}}
                     <label for="name">ชื่อบัญชี :</label>
@@ -36,7 +38,7 @@
                     <button class="btn btn-primary" id="copy_account_number_btn">Copy</button>
                 </div>
             </div>
-            <hr>
+            {{-- <hr> --}}
             <form id="paymentForm" enctype="multipart/form-data">
                 @csrf
                 <hr>
