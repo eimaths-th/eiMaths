@@ -100,6 +100,7 @@ class PromotionImageController extends Controller
     }
     public function updateStatus(Request $request)
     {
+        // dd($request->all());
         $imageId = $request->input('id');
         $status = $request->input('status');
         // First, disable all images

@@ -320,6 +320,7 @@
             $('.status_enable_disable').change(function(e) {
                 e.preventDefault();
                 let selectedImageId = $(this).val();
+                let isChecked = $(this).is(':checked');
 
                 // Send the selected image ID via AJAX to update the status
                 $.ajax({
@@ -327,6 +328,7 @@
                     method: 'POST',
                     data: {
                         id: selectedImageId,
+                        status: isChecked ? 'enabled' : 'disabled',
                         _token: $('meta[name="csrf-token"]').attr('content')
                     },
                     success: function(response) {

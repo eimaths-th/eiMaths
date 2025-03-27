@@ -32,7 +32,7 @@
                         <div class="carousel-inner">
                             @foreach ($promotion as $key => $image)
                                 <div class="carousel-item {{ $key == 0 ? 'active' : '' }}">
-                                    <a href="{{ $image->url }}" target="_blank">
+                                    <a href="{{ $image->url ?? '#'}}" target="_blank">
                                         <img src="{{ asset($image->img) }}" alt="Promotion"
                                             class="img-fluid w-100 rounded">
                                     </a>
@@ -52,8 +52,8 @@
                         </button>
                     </div>
                 @else
-                    <a href="{{ $promotion->url }}" target="_blank">
-                        <img src="{{ asset($promotion->img) }}" alt="Promotion" class="img-fluid w-100 rounded">
+                    <a href="{{ $promotion->first()->url ?? '#'}}" target="_blank">
+                        <img src="{{ asset($promotion->first()->img) }}" alt="Promotion" class="img-fluid w-100 rounded">
                     </a>
                 @endif
             </div>
