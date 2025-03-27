@@ -101,13 +101,13 @@ class PromotionImageController extends Controller
     public function updateStatus(Request $request)
     {
         $imageId = $request->input('id');
-
+        $status = $request->input('status');
         // First, disable all images
         // PromotionImage::where('status', 'enabled')->update(['status' => 'disabled']);
 
         // Then, enable the selected image
         $image = PromotionImage::find($imageId);
-        $image->status = 'enabled';
+        $image->status = $status;
         $image->save();
 
         return response()->json(['message' => 'Image status updated successfully!']);
