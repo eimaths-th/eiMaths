@@ -12,16 +12,17 @@
             <div class="modal-body" id="modal-body">
                 <!-- <h4>Scan PromptPay</h4> 
                 <h4>Scan PromptPay</h4>
-                <hr>
+                <hr>-->
                 <div class="text-center">
 
                     
 
-                    <img id="qrCodePayment" src="" alt="" style="width: 500px; height: auto;">
+                    {{-- <img id="qrCodePayment" src="" alt="" style="width: 500px; height: auto;"> --}}
+                    <img src="{{ asset('img/qrcode/eipayment.png') }}" alt="" style="width: 500px; height: auto;">
 
                 </div>
                 <hr>
-                -->
+                
                 <div class="form-group">
                     {{-- bank account --}}
                     <label for="name">ชื่อบัญชี :</label>
