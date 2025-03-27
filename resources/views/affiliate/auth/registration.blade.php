@@ -215,7 +215,6 @@
                 </form>
             </div>
 
-
             <h5 class="shitch_text">
                 คุณมีบัญชีอยู่แล้ว? <a href="{{ route('affiliate.login') }}"> เข้าสู่ระบบ</a>
 

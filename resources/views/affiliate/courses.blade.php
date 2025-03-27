@@ -179,7 +179,9 @@
             </div>
         </div>
     </footer> --}}
-    @include('affiliate.frontend.promotion_modal')
+    @if ($promotion->count() > 0)
+        @include('affiliate.frontend.promotion_modal')
+    @endif
 @endsection
 @section('script')
     {{-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"></script> --}}
