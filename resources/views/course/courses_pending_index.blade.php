@@ -463,7 +463,7 @@
 @section('script')
     <script>
         $(document).ready(function() {
-           
+
             var token = ''
             $.ajaxSetup({
                 headers: {
@@ -800,6 +800,7 @@
 
             if ($("#ReceiptCentre").val() !== null) {
                 let centre = $('#ReceiptCentre').val();
+
                 if (centre.length !== 0) {
                     $.ajax({
                         method: "GET",
@@ -812,6 +813,8 @@
                     });
                 }
             }
+
+
 
 
             $("#AddCentre").change(function() {
@@ -949,7 +952,7 @@
             // Send AJAX request to fetch the receipt image
 
             console.log(id);
-            
+
             $.ajax({
                 url: "{{ route('courses.pending.fetch.receipt', ':id') }}".replace(':id', id),
                 method: 'GET',
@@ -1252,6 +1255,8 @@
             });
         });
 
+
+
         $(document).on('click', '.ModalNewReciept', async function(e) {
             e.preventDefault();
             $('.alert-danger').html('');
@@ -1267,19 +1272,18 @@
             $('#AddBook2').val(null).trigger("change");
             $('#AddLevel2').val(null).trigger("change")
             $('#AddTerm2').val(null).trigger("change");
-
             let id = $(this).data('id');
+
             try {
                 const res = await $.ajax({
                     url: "{{ route('courses.pending.new.student', ':id') }}".replace(':id', id),
                     method: 'GET'
                 });
                 console.log(res);
-
                 if (res.data.ref) {
-                    console.log('true7');
-                    console.log(res);
 
+                    getCentre(res.centre_id);
+                    $('#ReceiptCentre').html(res.htmlOptions);
                     $('#getRef').val(res.data.ref);
                     $('#getRef').prop('readonly', true);
                 } else {
@@ -1299,7 +1303,57 @@
                 console.error('Error:', error);
             }
 
+            $(document).on('change', '#s_student', function() {
+                let student_id = $('#s_student').val();
+                $.ajax({
+                    // url: "{{ route('courses.pending.new.student', ':id') }}".replace(':id', id),
+                    url: "{{ route('courses.pending.getCheckRefStudnet') }}",
+                    method: 'GET',
+                    data: {
+                        id: id,
+                        student_id: student_id,
+                    },
+                    success: function(response) {
+                        console.log(response);
+
+                        if (response.success) {
+
+                        } else {
+                            alert(response.message);
+                            toastr.error(response.message, {
+                                timeOut: 10000
+                            }); // Make editable if ref is null or undefined
+
+                        }
+                        $('#getRef').val(response.ref);
+                        $('#getRef').prop('readonly', true);
+                    }
+                });
+
+
+            });
+
         });
+
+
+
+        function getCentre(centre) {
+            // console.log(centre);
+
+            if (centre) {
+                $.ajax({
+                    method: "GET",
+                    url: "{{ route('histories.running', ':centre') }}".replace(':centre', centre),
+                    async: false,
+                    success: function(res) {
+                        //$('#AddCode').prop('readonly', false);
+                        $('#s_student').html(res.html_std);
+                    }
+                });
+            }
+
+        }
+
 
 
         $('#ReceiptCreateForm').click(function(e) {

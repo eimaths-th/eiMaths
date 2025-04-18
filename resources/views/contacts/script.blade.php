@@ -541,6 +541,10 @@
                     name: 'code'
                 },
                 {
+                    data: 'ref',
+                    name: 'ref'
+                },
+                {
                     data: 'name',
                     name: 'name'
                 },
@@ -879,6 +883,7 @@
                     centre: $('#AddCentre').val()[0],
                     code: $('#AddCode').val(),
                     name: $('#AddName').val(),
+                    ref: $('#AddReferral').val(),
                     nickname: $('#AddNickname').val(),
                     gender: $("input[name='gender']:checked").val(),
                     birth_date: $('#AddBirthDate').val(),
@@ -1151,6 +1156,28 @@
             });
         });
 
+        $(document).on('change', '#s_student', function(e) {
+            e.preventDefault();
+
+            var std_id = $(this).val();
+            //get referrent form std
+            $.ajax({
+                url: "contacts/getRef/" + std_id,
+                method: 'GET',
+                success: function(res) {
+                    
+                    if (res.ref) {
+                        $('#getRef').prop('readonly', true);
+                        $('#getRef').val(res.ref);
+                    } else {
+                        $('#getRef').prop('readonly', false);
+                    }
+                    // $('#getRef').prop('readonly', true);
+
+                }
+            });
+            // console.log($(this).val());      
+        });
 
         // Create product Ajax request.
         $('#ReceiptCreateForm').click(function(e) {
@@ -1229,6 +1256,19 @@
                             encodeURIComponent(oid);
                         window.location.href = url;
                     }
+                },
+                error: function(xhr) { // Handle exception errors here
+                    // console.error(xhr.responseText); // Debugging
+
+                    let errorMsg = "An unexpected error occurred!";
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMsg = xhr.responseJSON
+                            .message; // Use Laravel exception message
+                    }
+
+                    toastr.error(errorMsg, "Error", {
+                        timeOut: 5000
+                    });
                 }
             });
         });

@@ -80,7 +80,7 @@ class PromotionImageController extends Controller
         //
     }
 
-    /**
+    /**6
      * Update the specified resource in storage.
      */
     public function update(Request $request, string $id)

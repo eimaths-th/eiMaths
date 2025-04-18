@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Answer;
 use App\Models\Contact;
+use App\Models\FactionAnswer;
 use App\Models\ImageOption;
 use App\Models\Option;
 use App\Models\Question;
@@ -36,18 +37,19 @@ class QuizController extends Controller
 
         if ($currentQuestionType === 'fraction') {
             if ($currentQuestionFracType === 'written') {
+                // Handle fraction answer
+                $currentQuestionFracWhole = $request->input('currentQuestionFracWhole');
                 $currentQuestionFracNumerator = $request->input('currentQuestionFracNumerator');
                 $currentQuestionFracDenominator = $request->input('currentQuestionFracDenominator');
 
                 if ($request->input('currentQuestionFracWhole')) {
                     $whole  = $request->input('currentQuestionFracWhole');
-                    $currentQuestionFracNumerator = $whole * $currentQuestionFracDenominator + $currentQuestionFracNumerator;
+                    $sumWhole = $whole * $currentQuestionFracDenominator + $currentQuestionFracNumerator;
                 }
 
                 // Check if the fraction answer is correct
-                $isCorrect = $correctAnswer && isset($correctAnswer['numerator']) &&
-                    isset($correctAnswer['denominator']) &&
-                    $correctAnswer['numerator'] == $currentQuestionFracNumerator &&
+                $isCorrect = $correctAnswer && isset($correctAnswer['numerator']) && isset($correctAnswer['denominator']) &&
+                    $correctAnswer['numerator'] == $sumWhole &&
                     $correctAnswer['denominator'] == $currentQuestionFracDenominator;
 
                 $answersOfQuestions[$currentQuestionIndex] = [
@@ -55,11 +57,12 @@ class QuizController extends Controller
                     'type' => $currentQuestionType,
                     'frac_type' => $currentQuestionFracType,
                     'answer' => [
+                        'whole' => $currentQuestionFracWhole ?? null,
                         'numerator' => $currentQuestionFracNumerator,
                         'denominator' => $currentQuestionFracDenominator,
                     ],
                     'answer_type' => $currentQuestionFracAnswerType,
-                    'is_correct' => $isCorrect
+                    // 'is_correct' => $isCorrect
                 ];
             } else {
                 $isCorrect = $correctAnswer == $answerOfQuestion;
@@ -67,8 +70,10 @@ class QuizController extends Controller
                 $answersOfQuestions[$currentQuestionIndex] = [
                     'question_id' => $currentQuestionId,
                     'answer' => $answerOfQuestion,
+                    'frac_type' => $currentQuestionFracType,
+
                     'type' => $currentQuestionType,
-                    'is_correct' => $isCorrect
+                    // 'is_correct' => $isCorrect
                 ];
             }
         } else {
@@ -77,15 +82,17 @@ class QuizController extends Controller
             $answersOfQuestions[$currentQuestionIndex] = [
                 'question_id' => $currentQuestionId,
                 'answer' => $answerOfQuestion,
+                'frac_type' => $currentQuestionFracType,
+
                 'type' => $currentQuestionType,
-                'is_correct' => $isCorrect
+                // 'is_correct' => $isCorrect
             ];
         }
 
         session()->put('answersOfQuestions', $answersOfQuestions);
-        
+
         // return redirect()->route('quiz.show',['quiz' => $quiz, 'currentQuestionIndex' => $currentQuestionIndex, 'quizStartTime' => $quizStartTime]);
-   
+
         // dd($request->all(), $answersOfQuestions);
         $quiz = Quiz::find($request->input('quiz_id'));
         $changeToIndex = $request->input('changeToQuestionIndex');
@@ -125,9 +132,22 @@ class QuizController extends Controller
 
         $answersOfQuestions = session('answersOfQuestions', []);
         $correctAnswer = $this->getCorrectAnswer($currentQuestion);
+        $answers = session()->get('answersOfQuestions', []);
+        $getAnserSessionIndex = $answers[$currentQuestionIndex] ?? null;
 
+        $getAnserSessionIndexWhole = null;
+        $getAnserSessionIndexNumerator = null;
+        $getAnserSessionIndexDenominator = null;
+
+        if (!empty($getAnserSessionIndex['answer']) && is_array($getAnserSessionIndex['answer'])) {
+            $getAnserSessionIndexWhole = $getAnserSessionIndex['answer']['whole'] ?? null;
+            $getAnserSessionIndexNumerator = $getAnserSessionIndex['answer']['numerator'] ?? null;
+            $getAnserSessionIndexDenominator = $getAnserSessionIndex['answer']['denominator'] ?? null;
+        }
+        // dd($answers);
         return view('home.quiz-show', compact(
             'quiz',
+            'getAnserSessionIndex',
             'currentQuestionIndex',
             'questionsCount',
             'currentQuestion',
@@ -135,12 +155,14 @@ class QuizController extends Controller
             'correctAnswer',
             'quizStartTime',
             'startTimeInSeconds',
+            'getAnserSessionIndexWhole',
+            'getAnserSessionIndexNumerator',
+            'getAnserSessionIndexDenominator',
         ))->with('header', 'Quiz: ' . $quiz->title);
     }
 
     public function nextQuestion(Request $request, Quiz $quiz)
     {
-        // dd($request->all());
         $currentQuestionIndex = (int) $request->input('currentQuestionIndex', 0);
         $answerOfQuestion = $request->input("answerOfQuestion.$currentQuestionIndex");
         $currentQuestionId = $request->input('currentQuestionId');
@@ -154,18 +176,21 @@ class QuizController extends Controller
             # code...
             if ($currentQuestionFracType === 'written') {
                 # code...
+                $currentQuestionFracWhole = $request->input('currentQuestionFracWhole');
                 $currentQuestionFracNumerator = $request->input('currentQuestionFracNumerator');
                 $currentQuestionFracDenominator = $request->input('currentQuestionFracDenominator');
-                if ($request->input('currentQuestionFracWhole')) {
-                    # code...
-                    $whole  = $request->input('currentQuestionFracWhole');
-                    $currentQuestionFracNumerator = $whole * $currentQuestionFracDenominator + $currentQuestionFracNumerator;
-                }
+
+                // if ($request->input('currentQuestionFracWhole')) {
+                //     # code...
+                //     $whole  = $request->input('currentQuestionFracWhole');
+                //     $currentQuestionFracNumerator = $whole * $currentQuestionFracDenominator + $currentQuestionFracNumerator;
+                // }
                 $answersOfQuestions[$currentQuestionIndex] = [
                     'question_id' => $currentQuestionId,
                     'type' => $currentQuestionType,
                     'frac_type' => $currentQuestionFracType,
                     'answer' => [
+                        'whole' => $currentQuestionFracWhole ?? null,
                         'numerator' => $currentQuestionFracNumerator,
                         'denominator' => $currentQuestionFracDenominator,
                     ],
@@ -176,6 +201,8 @@ class QuizController extends Controller
                 $answersOfQuestions[$currentQuestionIndex] = [
                     'question_id' => $currentQuestionId,
                     'answer' => $answerOfQuestion,
+                    'frac_type' => $currentQuestionFracType,
+
                     'type' => $currentQuestionType,
                 ];
             }
@@ -184,6 +211,8 @@ class QuizController extends Controller
             $answersOfQuestions[$currentQuestionIndex] = [
                 'question_id' => $currentQuestionId,
                 'answer' => $answerOfQuestion,
+                'frac_type' => $currentQuestionFracType,
+
                 'type' => $currentQuestionType,
             ];
         }
@@ -195,6 +224,7 @@ class QuizController extends Controller
         if ($currentQuestionIndex >= $questionsCount - 1) {
             return $this->submit($request, $quiz);
         }
+        // dd($request->all(),$quiz);
 
         return redirect()->route('quiz.show', [
             'quiz' => $quiz,
@@ -204,9 +234,9 @@ class QuizController extends Controller
 
     public function submit(Request $request, Quiz $quiz)
     {
+
         $answersOfQuestions = session('answersOfQuestions', []);
 
-        dd('submit', $request->all(), $answersOfQuestions);
         $startTimeInSeconds = session('startTimeInSeconds', now()->timestamp);
         $timeSpent = now()->timestamp - $startTimeInSeconds;
         $result = 0;
@@ -227,9 +257,20 @@ class QuizController extends Controller
         ]);
 
         // Process answers and store results
+        // dd('submit', $request->all(), $answersOfQuestions);
+
         foreach ($answersOfQuestions as $answerData) {
             $question = Question::find($answerData['question_id']);
-            $correct = $this->checkAnswer($question, $answerData);
+            $type = $answerData['type'];
+            if ($type === 'fraction') {
+                # code...
+                $correct = $this->checkAnswerFactions($question, $answerData);
+                // dd($correct);
+                $textAnswerFactions = $this->textAnswerFactions($question, $answerData);
+            } else {
+                # code...
+                $correct = $this->checkAnswer($question, $answerData);
+            }
 
             if ($correct) {
                 $result++;
@@ -242,6 +283,7 @@ class QuizController extends Controller
                 'option_id' => $answerData['type'] === 'options' ? $answerData['answer'] : null,
                 'image_id' => $answerData['type'] === 'image' ? $answerData['answer'] : null,
                 'written_answer' => $answerData['type'] === 'written' ? $answerData['answer'] : null,
+                'fraction' => $answerData['type'] === 'fraction' ? $textAnswerFactions : null,
                 'correct' => $correct ? 1 : 0,
                 'type_user' => $typeUser,
             ]);
@@ -257,6 +299,113 @@ class QuizController extends Controller
             ? redirect()->route('demo.thank_you')
             : redirect()->route('results.show', ['test' => $test]);
     }
+    private function textAnswerFactions(Question $question, array $answerData)
+    {
+        $fractions = FactionAnswer::find($answerData['answer']);
+        $textAnswerFactions = '';
+        $numerator = '';
+        $denominator = '';
+        if ($answerData['frac_type'] === 'written') {
+            if ($answerData['answer_type'] === 'mixed') {
+
+                $numerator = $answerData['answer']['whole'] * $answerData['answer']['denominator'] + $answerData['answer']['numerator'];
+                $denominator = $answerData['answer']['denominator'];
+                $textAnswerFactions = "MixFrac($numerator,$denominator)";
+            } else {
+
+                $numerator = $answerData['answer']['numerator'];
+                $denominator = $answerData['answer']['denominator'];
+                $textAnswerFactions = "Frac($numerator,$denominator)";
+            }
+            # code...
+        } else {
+            # code...
+            //ex Frac(1,2),MixFrac(5,3) 
+            $textAnswerFactions = $answerData['answer'];
+        }
+
+        return $textAnswerFactions;
+    }
+
+    private function checkAnswerFactions(Question $question, array $answerData)
+    {
+        return match ($answerData['frac_type']) {
+            'options' => optional(FactionAnswer::find($answerData['answer']))->correct,
+            'written' => $this->checkWrittenFraction($question, $answerData),
+            default => false,
+        };
+    }
+
+    private function checkWrittenFraction(Question $question, array $answerData)
+    {
+        $correctFraction = $question->fractions()->first();
+
+        if (!$correctFraction) {
+            return false;
+        }
+
+        $whole = $answerData['answer']['whole'] ?? 0;
+        $numerator = $answerData['answer']['numerator'] ?? null;
+        $denominator = $answerData['answer']['denominator'] ?? null;
+
+        if ($answerData['answer_type'] === 'mixed') {
+            $userNumerator = ((int)$denominator * (int)$whole) + (int)$numerator;
+
+            return (
+                $userNumerator == $correctFraction->numerator &&
+                $denominator == $correctFraction->denominator
+            );
+        } else {
+            return (
+                (int)$numerator == $correctFraction->numerator &&
+                (int)$denominator == $correctFraction->denominator
+            );
+        }
+    }
+
+    // private function checkAnswerFactions(Question $question, array $answerData)
+    // {
+    //     return match ($answerData['frac_type']) {
+    //         'options' => optional($question->fractions()->where('correct', true)->first())->id,
+    //         'written' => function () use ($question, $answerData) {
+    //             $correctFraction = $question->fractions()->first();
+
+    //             if (!$correctFraction) {
+    //                 return false;
+    //             }
+
+    //             $whole = $answerData['answer']['whole'] ?? null;
+    //             $numerator = $answerData['answer']['numerator'] ?? null;
+    //             $denominator = $answerData['answer']['denominator'] ?? null;
+
+    //             if ($answerData['answer_type'] === 'mixed') {
+    //                 # code...
+    //                 if ($whole) {
+    //                     # code...
+    //                     return (
+    //                         // $whole == $correctFraction->whole &&
+    //                         ($denominator * $whole) + $numerator  == $correctFraction->numerator &&
+    //                         $denominator == $correctFraction->denominator
+    //                     );
+    //                 } else {
+    //                     # code...
+    //                     return (
+    //                         // $whole == $correctFraction->whole &&
+    //                         $numerator  == $correctFraction->numerator &&
+    //                         $denominator == $correctFraction->denominator
+    //                     );
+    //                 }
+    //             } else {
+    //                 # code...
+    //                 return (
+    //                     $numerator == $correctFraction->numerator &&
+    //                     $denominator == $correctFraction->denominator
+    //                 );
+    //             }
+    //         },
+    //         default => false,
+    //     };
+    // }
     private function checkAnswer(Question $question, array $answerData)
     {
         return match ($answerData['type']) {
@@ -266,7 +415,7 @@ class QuizController extends Controller
             default => false,
         };
     }
-    
+
     private function getCorrectAnswer(Question $question)
     {
         return match ($question->type) {
@@ -276,8 +425,6 @@ class QuizController extends Controller
             default => null,
         };
     }
-
-    
 }
 
 

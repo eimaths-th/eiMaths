@@ -29,7 +29,20 @@ class Answer extends Model
      */
     protected $table = 'answers';
 
-    protected $fillable = ['user_id', 'test_id', 'question_id','type_user', 'option_id','image_id','written_answer', 'correct', 'created_at', 'updated_at', 'deleted_at'];
+    protected $fillable = [
+        'user_id',
+        'test_id',
+        'question_id',
+        'type_user',
+        'option_id',
+        'image_id',
+        'fraction',
+        'written_answer',
+        'correct',
+        'created_at',
+        'updated_at',
+        'deleted_at'
+    ];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo

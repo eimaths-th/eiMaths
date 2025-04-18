@@ -1266,11 +1266,60 @@ class CourseController extends Controller
     {
         $data = CoursePending::find($id);
 
+        $centre = Department::where([['status', '1']])->orderBy("name", "asc")->get();
+
+        $htmlOptions = '';
+        foreach ($centre as $dept) {
+            $htmlOptions .= '<option value="' . $dept->id . '"' . ($data->department_id == $dept->id ? 'selected' : '') . '>' . $dept->name . '</option>';
+        }
+        $centre_id = $data->department_id;
+
         return response()->json([
             'success' => true,
             'data' => $data,
+            'centre_id' => $centre_id,
+            'htmlOptions' => $htmlOptions,
         ]);
     }
+
+    public function getCheckRefStudnet(Request $request)
+    {
+
+
+        $student_id = $request->student_id[0];
+        $coursePending = CoursePending::find($request->id);
+        $student = Contact::find($student_id);
+
+        $student_ref = $student->ref;
+        $coursePending_ref = $coursePending->ref;
+        $ref = '';
+        if ($student_ref && ($student_ref == $coursePending_ref)) {
+            $ref = $student->ref;
+        } else if ($student_ref && ($student_ref != $coursePending_ref)) {
+            # code...
+            $ref = $student->ref;
+            $coursePending->update(['status' => 0]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'นักเรียนคนนี้มี Referent Code อยู่แล้ว',
+                'ref' => $ref,
+            ]);
+        } else if ($student_ref == null) {
+            # code...
+            $ref = $coursePending->ref;
+            $student->update(['ref' => $coursePending->ref]);
+        }
+
+
+
+        // dd($data);
+        return response()->json([
+            'success' => true,
+            'ref' => $ref,
+        ]);
+    }
+
 
     public function updateWaitingForPayment($status, $id)
     {
@@ -1450,14 +1499,16 @@ class CourseController extends Controller
 
         if ($request->get('ref')) {
             $ref_code = $request->get('ref');
+            // $input['referal'] = $ref_code;
         } else {
             $ref_code = '';
+            // $input['referal'] = '';
         }
         $courses_pending_id = $request->get('courses_pending_id');
 
         $input['courses_pending_id'] = $courses_pending_id;
-
         $contact = Contact::create($input);
+        // dd($request->all(), $input);    
 
         $input_order['centre'] = $request->get('centre');
         $input_order['cid'] = $contact->id;

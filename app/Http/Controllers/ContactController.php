@@ -151,6 +151,9 @@ class ContactController extends Controller
                 ->editColumn('nickname', function ($row) {
                     return $row->nickname !== null && $row->nickname !== '' ? $row->nickname : '-';
                 })
+                ->editColumn('ref', function ($row) {
+                    return $row->ref !== null && $row->ref !== '' ? $row->ref : '-';
+                })
                 ->editColumn('start_date', function ($row) {
                     return $this->formatDate($row->start_date);
                 })
@@ -672,6 +675,7 @@ class ContactController extends Controller
         }
 
         $contact = Contact::create($input);
+        // dd($request->all(), $input);    
 
         $input_order['centre'] = $request->get('centre');
         $input_order['cid'] = $contact->id;
@@ -735,12 +739,21 @@ class ContactController extends Controller
      * Store a newly created resource in storage.
      */
 
+    public function getRef($id)
+    {
+
+        $data = Contact::find($id);
+        return response()->json([
+            'ref' => $data->ref ?? '',
+            // 'data' => $data,
+        ]);
+    }
+
     public function updateWaitingForPayment($status, $id)
     {
 
         $data = CoursePending::find($id);
         if ($status == 'wait') {
-            # code...
             $data->update(['status' => 3]);
         }
     }
@@ -907,6 +920,19 @@ class ContactController extends Controller
         }
 
 
+        if ($courses_pending_id) {
+
+            $courses_pending = CoursePending::find($courses_pending_id);
+
+            if ($courses_pending->status == 0) {
+                # code...
+
+                $courses_pending_id = null;
+            } else {
+                $status = 'wait';
+                $this->updateWaitingForPayment($status, $courses_pending_id);
+            }
+        }
         $input_order['centre'] = $request->get('centre');
         $input_order['cid'] = $request->get('student');
         $input_order['order_number'] = OrderRunningNumber::generate($request->get('centre'));
@@ -936,6 +962,7 @@ class ContactController extends Controller
         }
 
         $contact = Contact::where('id', $request->get('student'))->first();
+        $contact->ref = $ref_code;
         $contact->order = $order->id;
         $contact->level = $request->get('level');
         $contact->term = $request->get('term');
@@ -968,14 +995,10 @@ class ContactController extends Controller
             $input_order_detail2['price'] = $fprice2;
             $order_detail2 = OrderDetail::create($input_order_detail2);
         }
-        if ($courses_pending_id) {
-            # code...
-            $status = 'wait';
-            $this->updateWaitingForPayment($status, $courses_pending_id);
-        }
+        
         // dd($request->all());
         if ($request->get('ref')) {
-            $commmissionList = create_commmission_list($order->id,$courses_pending_id ,$request->get('ref')); // on helper
+            $commmissionList = create_commmission_list($order->id, $courses_pending_id, $request->get('ref')); // on helper
         }
 
         $select_list_contact = '<option value="' . $contact->id . '" > ' . $contact->name . '</option>';

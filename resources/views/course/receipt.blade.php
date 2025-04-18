@@ -100,13 +100,12 @@
                                                         @cannot('all-centre') disabled @endcannot>
                                                         <!-- <option value="" selected>Select Student</option>
                                                                                                                                                                                                                                                                                                                                                                                                     <option value="" selected>Select Parent</option>-->
-                                                        @foreach ($centre as $key2)
+                                                        {{-- @foreach ($centre as $key2)
                                                             <option value="{{ $key2->id }}"
                                                                 @if (Auth::user()->department->id == (int) $key2->id) selected @endif>
-                                                                {{-- {{ $key2->code }} --}}
                                                                 {{ $key2->name }}
                                                             </option>
-                                                        @endforeach
+                                                        @endforeach --}}
 
                                                     </select>
                                                 </div>
@@ -115,8 +114,7 @@
                                                 <div class="form-group">
                                                     <strong><i class="fas fa-code"></i> Student No.</strong>
                                                     <select name="student"
-                                                        id="s_student"class="select2 select2_single form-control s_student"
-                                                        multiple="multiple">
+                                                        id="s_student"class="select2 select2_single form-control s_student" multiple="multiple">
                                                         <option value="">select student</option>
 
                                                     </select>

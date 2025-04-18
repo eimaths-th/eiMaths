@@ -87,13 +87,13 @@
         }
 
         /* .answer-container {
-                                                                                                                                                                                            position: relative;
-                                                                                                                                                                                            width: 100%;
-                                                                                                                                                                                            border: 2px solid orange;
-                                                                                                                                                                                            border-radius: 5px;
-                                                                                                                                                                                            padding: 15px;
-                                                                                                                                                                                            box-sizing: border-box;
-                                                                                                                                                                                        } */
+                                                                                                                                                                                                        position: relative;
+                                                                                                                                                                                                        width: 100%;
+                                                                                                                                                                                                        border: 2px solid orange;
+                                                                                                                                                                                                        border-radius: 5px;
+                                                                                                                                                                                                        padding: 15px;
+                                                                                                                                                                                                        box-sizing: border-box;
+                                                                                                                                                                                                    } */
 
 
         .image-answer-container {
@@ -142,15 +142,15 @@
         }
 
         /* .answer-label {
-                                                                                                                                                                                            position: absolute;
-                                                                                                                                                                                            top: -15px;
-                                                                                                                                                                                            left: 15px;
-                                                                                                                                                                                            font-size: 14px;
-                                                                                                                                                                                            background-color: white;
-                                                                                                                                                                                            padding: 0 5px;
-                                                                                                                                                                                            color: #000000;
-                                                                                                                                                                                            font-weight: bold;
-                                                                                                                                                                                        } */
+                                                                                                                                                                                                        position: absolute;
+                                                                                                                                                                                                        top: -15px;
+                                                                                                                                                                                                        left: 15px;
+                                                                                                                                                                                                        font-size: 14px;
+                                                                                                                                                                                                        background-color: white;
+                                                                                                                                                                                                        padding: 0 5px;
+                                                                                                                                                                                                        color: #000000;
+                                                                                                                                                                                                        font-weight: bold;
+                                                                                                                                                                                                    } */
 
         .answer-box {
             font-size: 16px;
@@ -336,13 +336,13 @@
                                         @endforeach
                                     </div>
                                 @elseif ($currentQuestion->type === 'fraction')
-                                    {{-- <div>
-        
-                                                @php
-                                                    dd($currentQuestion->fractions);
-                                                @endphp
-                                                <h1>fraction_type : {{ $currentQuestion->fractions->first()->type }} </h1>
-                                            </div> --}}
+                                    <div>
+
+                                        @php
+                                            // dd($getAnserSessionIndexNumerator);
+                                        @endphp
+                                        {{-- <h1>fraction_type : {{ $currentQuestion->fractions->first()->type }} </h1> --}}
+                                    </div>
                                     @if ($currentQuestion->fractions->first()->type === 'written')
                                         @if ($currentQuestion->fractions->first()->answer_type === 'frac')
                                             <div class='frac'>
@@ -353,12 +353,14 @@
                                                     value="{{ $currentQuestion->fractions->first()->answer_type }}">
                                                 <span>
                                                     <input type='text' name='currentQuestionFracNumerator'
-                                                        placeholder='Numerator' class='fraction-numerator'>
+                                                        placeholder='Numerator' class='fraction-numerator'
+                                                        value="{{ $getAnserSessionIndexNumerator }}">
                                                 </span>
                                                 <span class='symbol'>/</span>
                                                 <span class='bottom'>
                                                     <input type='text' name='currentQuestionFracDenominator'
-                                                        placeholder='Denominator' class='fraction-denominator'>
+                                                        placeholder='Denominator' class='fraction-denominator'
+                                                        value="{{ $getAnserSessionIndexDenominator }}">
 
                                                 </span>
 
@@ -371,16 +373,19 @@
                                                 value="{{ $currentQuestion->fractions->first()->answer_type }}">
 
                                             <input type='text' name='currentQuestionFracWhole'
-                                                placeholder='Whole Number' class='mixed-whole' />
+                                                placeholder='Whole Number' class='mixed-whole'
+                                                value="{{ $getAnserSessionIndexWhole }}" />
                                             <div class='frac'>
                                                 <span>
                                                     <input type='text' name='currentQuestionFracNumerator'
-                                                        placeholder='Numerator' class='fraction-numerator'>
+                                                        placeholder='Numerator' class='fraction-numerator'
+                                                        value="{{ $getAnserSessionIndexNumerator }}">
                                                 </span>
                                                 <span class='symbol'>/</span>
                                                 <span class='bottom'>
                                                     <input type='text' name='currentQuestionFracDenominator'
-                                                        placeholder='Denominator' class='fraction-denominator'>
+                                                        placeholder='Denominator' class='fraction-denominator'
+                                                        value="{{ $getAnserSessionIndexDenominator }}">
                                                 </span>
                                             </div>
                                         @endif
@@ -391,7 +396,7 @@
                                         @foreach ($currentQuestion->fractions as $option)
                                             <div class="col-lg-6 mt-5">
                                                 <input type="hidden" id="answerOfQuestion[fraction][type_frac]"
-                                                    name="answerOfQuestion[fraction][type_frac]" value="optios">
+                                                    name="currentQuestionFracType" value="options">
 
                                                 <label for="option-{{ $option->id }}">
                                                     <input type="radio" id="frationOption-{{ $option->id }}"
@@ -472,11 +477,14 @@
                 <div class="fixed top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-md shadow-md">
                     Time Elapsed: <span id="quiz-timer">0:00</span>
                 </div>
+                {{-- <div class="fixed top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-md shadow-md">
+                    Time Elapsed: <span id="quiz-timer">0:00</span>
+                </div> --}}
             </div>
             @php
-                dd($quiz);
+                // dd($quiz);
             @endphp
-            <div class="w-1/3 p-4 bg-orange-400 rounded-lg shadow-md">
+            {{-- <div class="w-1/3 p-4 bg-orange-400 rounded-lg shadow-md">
                 <h3 class="text-lg font-semibold mb-3">Quiz Progress non quiz-nav</h3>
 
                 <div class="grid grid-cols-5 gap-2">
@@ -488,10 +496,8 @@
                         </a>
                     @endfor
                 </div>
-                <div class="fixed top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-md shadow-md">
-                    Time Elapsed: <span id="quiz-timer">0:00</span>
-                </div>
-            </div>
+                
+            </div> --}}
 
         </div>
     </div>
@@ -524,7 +530,7 @@
                 formData.append("quizStartTime", "{{ $quizStartTime }}");
 
                 fetch("{{ route('quiz.saveAnswer') }}", {
-                        method: "POST",
+                        method: "POST", // <- changed from GET to POST
                         headers: {
                             "X-CSRF-TOKEN": document.querySelector('input[name="_token"]').value,
                         },
@@ -542,15 +548,14 @@
 
             function moveToNextQuestion(data) {
                 let changeToIndex = data.changeToIndex;
-                let quiz = data.quiz.slug;
+                let quiz = data.quiz.slug; // now this is a slug or ID
                 let quizStartTime = data.quizStartTime;
 
-                // Construct the URL correctly
+                // Replace placeholders in route with dynamic values
                 let nextUrl =
-                    `{{ route('quiz.next', ['quiz' => '__QUIZ__', 'currentQuestionIndex' => '__INDEX__', 'quizStartTime' => '__START_TIME__']) }}`
+                    `{{ route('quiz.show', ['quiz' => '__QUIZ__', 'currentQuestionIndex' => '__INDEX__']) }}`
                     .replace("__QUIZ__", quiz)
                     .replace("__INDEX__", changeToIndex)
-                    .replace("__START_TIME__", quizStartTime);
 
                 window.location.href = nextUrl;
             }

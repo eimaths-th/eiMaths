@@ -183,6 +183,7 @@ Route::group(['middleware' => ['auth', 'affiliate.redirect']], function () {
     Route::get('/courses/pending/new-student/{id}', [CourseController::class, 'coursesPendingNewStd'])->name('courses.pending.new.student');
     Route::post('/courses/pending/new-student/store', [CourseController::class, 'coursesPendingNewStdStore'])->name('courses.pending.new.student.store');
     Route::get('/courses/pending/fetch/slip/{id}', [CourseController::class, 'fetchSlip'])->name('courses.pending.fetch.receipt');
+    Route::get('/courses/pending/getCheckRefStudnet', [CourseController::class, 'getCheckRefStudnet'])->name('courses.pending.getCheckRefStudnet');
 
     Route::get('/commission-list', [CommissionListControler::class, 'index'])->name('commission-list.index');
     Route::post('/commission/update-status', [CommissionListControler::class, 'updateStatus'])->name('commission-list.updateStatus');
@@ -206,12 +207,15 @@ Route::group(['middleware' => ['auth', 'affiliate.redirect']], function () {
 
 Route::group(['middleware' => ['auth.userOrStudent', 'affiliate.redirect']], function () {
     Route::get('quiz-home', [eLeanController::class, 'home'])->name('home3');
+    // Route::get('/quiz/save-answer', [QuizController::class, 'saveAnswer'])->name('quiz.saveAnswer');
     Route::post('/quiz/save-answer', [QuizController::class, 'saveAnswer'])->name('quiz.saveAnswer');
+    Route::post('quiz/{quiz}/next/{currentQuestionIndex}', [QuizController::class, 'nextQuestion'])->name('quiz.next');
+
+
     Route::get('quiz-home/{level}', [eLeanController::class, 'homeLevel'])->name('home.level');
     Route::get('quiz-home/{level}/{term}', [eLeanController::class, 'homeTerm'])->name('home.term');
     Route::get('quiz-home/{level}/{term}/{section}', [eLeanController::class, 'homeSection'])->name('home.section');
     Route::get('quiz/{quiz}', [QuizController::class, 'show'])->name('quiz.show');
-    Route::post('quiz/{quiz}/next/{currentQuestionIndex}', [QuizController::class, 'nextQuestion'])->name('quiz.next');
     Route::post('quiz/{quiz}/submit', [QuizController::class, 'submit'])->name('quiz.submit');
     Route::get('results/{test}', [ResultController::class, 'show'])->name('results.show');
     Route::get('myresults', [eLeanController::class, 'myResult'])->name('myresults');
