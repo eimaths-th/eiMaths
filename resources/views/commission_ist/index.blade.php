@@ -84,6 +84,8 @@
 
     </section>
 
+    @include('commission_ist.template_modal')
+
     {{--  {!! $data->render() !!} --}}
 @endsection
 

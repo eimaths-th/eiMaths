@@ -130,12 +130,12 @@
             });
 
             if (selectedIds.length > 0) {
-                approveWithdraws(selectedIds,action);
+                approveWithdraws(selectedIds, action);
             } else {
                 alert('No records selected.');
             }
         });
-        
+
         $('#rejectSelectedBtn').on('click', function() {
             const selectedIds = [];
             var action = 'reject';
@@ -144,15 +144,15 @@
             });
 
             if (selectedIds.length > 0) {
-                approveWithdraws(selectedIds,action);
+                approveWithdraws(selectedIds, action);
             } else {
                 alert('No records selected.');
             }
         });
-        
+
 
         // AJAX Request to Approve Withdrawals
-        function approveWithdraws(ids,action) {
+        function approveWithdraws(ids, action) {
             $.ajax({
                 url: '/approve-withdraws',
                 method: 'POST',
@@ -204,6 +204,39 @@
             error: function(xhr) {
                 console.error(xhr.responseText);
                 toastr.error(xhr.responseJSON.error, 'Error');
+            }
+        });
+    });
+    
+    $(document).on('click', '.view-btn', function(e) {
+        e.preventDefault();
+        let id = $(this).data('id');
+        let action = $(this).hasClass('view-btn') ? 'view' : 'print';
+
+        $.ajax({
+            url: '{{ route('config-withdraw.view') }}', // Update this to your actual endpoint
+            method: 'POST',
+            data: {
+                id: id,
+                action: action,
+                _token: $('meta[name="csrf-token"]').attr('content'),
+            },
+            success: function(response) {
+                $('#print_data').html(response.html);
+                $('#PrintModal').modal('show');
+
+            },
+            error: function(xhr) {
+                console.error(xhr.responseText);
+
+                let errorMessage = "An error occurred.";
+                if (xhr.responseJSON && xhr.responseJSON.error) {
+                    errorMessage = xhr.responseJSON.error;
+                }
+
+                toastr.error(errorMessage, {
+                    timeOut: 5000
+                });
             }
         });
     });

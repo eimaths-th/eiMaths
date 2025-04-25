@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\AffiliateUserBank;
+use App\Models\PVNumber;
 use Illuminate\Http\Request;
 use Modules\Affiliate\Entities\AffiliateWithdraw;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\View;
 use Modules\Affiliate\Entities\AffiliateUserWallet;
 use Spatie\Permission\Models\Role;
 
@@ -109,6 +111,9 @@ class ConfigWithdrawController extends Controller
                         $html .= '<button class="btn btn-success btn-sm approve-withdraw-btn" data-id="' . $row->id . '">Approve</button>';
                         // Button for "Reject"
                         $html .= ' <button class="btn btn-danger btn-sm reject-withdraw-btn" data-id="' . $row->id . '">Reject</button>';
+                    } else {
+                        # code...
+                        $html .= '<button class="btn btn-primary btn-sm view-btn" data-id="' . $row->id . '">Report</button>';
                     }
                     return $html;
                 })->rawColumns(['checkbox', 'action', 'status'])->toJson();
@@ -263,12 +268,64 @@ class ConfigWithdrawController extends Controller
         //
     }
 
+    public function runningNumber()
+    {
+
+    }
+
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Request $request)
     {
-        //
+        $id = $request->id;
+        $withdraw = AffiliateWithdraw::find($id);
+        // dd(
+        //     $request->all(),
+        //     $withdraw
+        // );
+        if (!$withdraw) {
+            return response()->json(['message' => 'Commission record not found'], 404);
+        }
+
+        
+        // dd($data);
+
+        $template = 'config_withdraw.view_report_modal';
+        $account = '';
+        if ($withdraw->payment_type == 1) {
+            # code...PromptPay
+            $type = AffiliateUserWallet::where('user_id', $withdraw->user_id)->first();
+            $account = $type->paypal_account ?? 'Paypal Account is not found';
+        } elseif ($withdraw->payment_type == 2) {
+            # code...
+            $type = AffiliateUserBank::where('user_id', $withdraw->user_id)->first();
+
+            $account_number = $type->account_number ?? 'Account Number is not found';
+            $bank_name = $type->bank_name ?? 'Bank Name is not found';
+
+            $account = '' . $account_number . ' ธ.' . $bank_name;
+        }
+        
+        if (!$withdraw->pv_number) {
+            # code...
+            $pvNumber = PVNumber::runningNumber();
+            $withdraw->pv_number = $pvNumber;
+            $withdraw->save();
+        }
+
+        $htmlContent = View::make(
+            $template,
+            [
+                'withdraw' => $withdraw,
+                'account' => $account,
+            ]
+        )->render();
+
+        return response()->json([
+            'html' =>  $htmlContent
+
+        ]);
     }
 
     /**

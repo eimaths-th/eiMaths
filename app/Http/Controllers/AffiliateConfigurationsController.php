@@ -21,6 +21,11 @@ class AffiliateConfigurationsController extends Controller
         $aff_config = AffiliateConfiguration::all();
         $aff_comission = affiliateConfigCommission::all();
         $results = activeStudent();
+        $results2 = getRecieptWithRef();
+
+
+        // dd($results2);
+
 
 
         // $aff_config_commission = affiliateConfigCommission::all();
@@ -46,6 +51,7 @@ class AffiliateConfigurationsController extends Controller
             'aff_config' => $aff_config,
             'aff_comission' => $aff_comission,
             'count_std' => $results,
+            'results2' => $results2,
         ]);
     }
 

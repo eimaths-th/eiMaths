@@ -14,6 +14,7 @@ use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\View;
 use Modules\Affiliate\Entities\AffiliateUserWallet;
 use Modules\Affiliate\Entities\AffiliateWithdraw;
 
@@ -85,6 +86,9 @@ class CommissionListControler extends Controller
 
                         // Button for "Reject"
                         $html .= ' <button class="btn btn-danger btn-sm reject-btn" data-id="' . $row->id . '">Reject</button>';
+                    } else {
+                        # code...
+                        $html .= '<button class="btn btn-primary btn-sm view-btn" data-id="' . $row->id . '">Report</button>';
                     }
 
                     return $html;
@@ -92,6 +96,8 @@ class CommissionListControler extends Controller
         }
         return view('commission_ist.index');
     }
+
+
     /**
      * Show the form for creating a new resource.
      */
@@ -177,10 +183,25 @@ class CommissionListControler extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Request $request)
     {
-        //
+        $id = $request->id;
+        $commission = AffiliateCommissionList::find($id);
+        dd(
+            $commission,
+        );
+        if (!$commission) {
+            return response()->json(['message' => 'Commission record not found'], 404);
+        }
+        $template = 'commission_ist.view_report_modal';
+        $htmlContent = View::make($template, $commission)->render();
+        return response()->json([
+            'commission' => $commission,
+            'html' =>  $htmlContent
+
+        ]);
     }
+
 
     /**
      * Show the form for editing the specified resource.

@@ -134,6 +134,7 @@
                         <div class="info-box-content">
                             <span class="info-box-text">Total Student</span>
                             <span class="info-box-number" id="">{{ $count_std }} คน</span>
+                            <span class="info-box-number" id="">{{ $results2 }} คอร์ส</span>
                         </div>
                     </div>
                 </div>

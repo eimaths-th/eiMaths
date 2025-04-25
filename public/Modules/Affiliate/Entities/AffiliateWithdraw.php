@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * @property integer $id
+ * @property integer $pv_number,
  * @property integer $user_id
  * @property string $withdraw_amount
  * @property string $payment_type
@@ -26,6 +27,7 @@ class AffiliateWithdraw extends Model
 
     protected $fillable = [
         'user_id',
+        'pv_number', // pv_running_number
         'withdraw_amount',
         'payment_type',
         'status',

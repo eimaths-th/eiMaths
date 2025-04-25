@@ -187,6 +187,7 @@ Route::group(['middleware' => ['auth', 'affiliate.redirect']], function () {
 
     Route::get('/commission-list', [CommissionListControler::class, 'index'])->name('commission-list.index');
     Route::post('/commission/update-status', [CommissionListControler::class, 'updateStatus'])->name('commission-list.updateStatus');
+    Route::post('/commission-list/view', [CommissionListControler::class, 'show'])->name('commission-list.view');
     Route::get('/affiliate-configurations', [AffiliateConfigurationsController::class, 'index'])->name('affiliate-configurations.index');
     Route::post('/update-commission-config', [AffiliateConfigurationsController::class, 'update'])->name('affiliate-configurations.update');
 
@@ -194,6 +195,7 @@ Route::group(['middleware' => ['auth', 'affiliate.redirect']], function () {
     Route::post('/config-withdraw/approve', [ConfigWithdrawController::class, 'approve_withdraw'])->name('config_withdraw.approve');
     Route::post('/commission/updateConfigComission', [AffiliateConfigurationsController::class, 'updateConfigComission'])->name('commission.updateConfigComission');
     Route::post('/approve-withdraws', [ConfigWithdrawController::class, 'approveWithdraws'])->name('withdraw.approve-all');
+    Route::post('/config-withdraw/view', [ConfigWithdrawController::class, 'show'])->name('config-withdraw.view');
 
 
     //feedback routes

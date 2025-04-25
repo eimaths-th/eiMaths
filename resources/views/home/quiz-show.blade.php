@@ -86,15 +86,6 @@
 
         }
 
-        /* .answer-container {
-                                                                                                                                                                                                        position: relative;
-                                                                                                                                                                                                        width: 100%;
-                                                                                                                                                                                                        border: 2px solid orange;
-                                                                                                                                                                                                        border-radius: 5px;
-                                                                                                                                                                                                        padding: 15px;
-                                                                                                                                                                                                        box-sizing: border-box;
-                                                                                                                                                                                                    } */
-
 
         .image-answer-container {
             display: flex;
@@ -141,21 +132,9 @@
 
         }
 
-        /* .answer-label {
-                                                                                                                                                                                                        position: absolute;
-                                                                                                                                                                                                        top: -15px;
-                                                                                                                                                                                                        left: 15px;
-                                                                                                                                                                                                        font-size: 14px;
-                                                                                                                                                                                                        background-color: white;
-                                                                                                                                                                                                        padding: 0 5px;
-                                                                                                                                                                                                        color: #000000;
-                                                                                                                                                                                                        font-weight: bold;
-                                                                                                                                                                                                    } */
-
         .answer-box {
             font-size: 16px;
             color: #333;
-            padding-left: 10px;
         }
 
 
@@ -230,6 +209,9 @@
         .frac span.symbol {
             display: none;
         }
+        .bg-orange-300 {
+            background-color: #ffa238;
+        }
     </style>
     <script type="text/javascript" async
         src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
@@ -238,271 +220,241 @@
 @endpush
 @section('content')
     <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 ">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
-                    @if (!$quiz->public && !auth()->check())
-                        <div class="text-white px-6 py-4 border-0 rounded relative mb-4 bg-red-700">
-                            <span class="inline-block align-middle mr-8">
-                                This test is available only for registered users. Please <a href="{{ route('login') }}"
-                                    class="hover:underline">Log in</a> or <a href="{{ route('register') }}"
-                                    class="hover:underline">Register</a>
-                            </span>
-                        </div>
-                    @else
-                        {{-- รอมาทำต่อ next Question  --}}
-                        @php
-                            $secondsPerQuestion = $startTimeInSeconds;
-                        @endphp
-
-                        <div id="quiz-container" data-seconds-left="0">
-                            <div class="mb-2">
-                                Time elapsed:
-                                <span id="time-elapsed" class="font-bold">
-                                    00:00:00
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <!-- Flex container for quiz and progress -->
+            <div class="flex flex-col lg:flex-row gap-6 ">
+                <!-- Quiz Section -->
+                <div class="lg:w-2/3 bg-white overflow-hidden shadow-sm sm:rounded-lg col-lg-8">
+                    <div class="p-6 text-gray-900">
+                        @if (!$quiz->public && !auth()->check())
+                            <div class="text-white px-6 py-4 border-0 rounded relative mb-4 bg-red-700">
+                                <span class="inline-block align-middle mr-8">
+                                    This test is available only for registered users. Please <a href="{{ route('login') }}"
+                                        class="hover:underline">Log in</a> or <a href="{{ route('register') }}"
+                                        class="hover:underline">Register</a>
                                 </span>
-                                sec.
                             </div>
+                        @else
+                            @php
+                                $secondsPerQuestion = $startTimeInSeconds;
+                            @endphp
 
-                            <span class="text-bold">Question {{ $currentQuestionIndex + 1 }} of
-                                {{ $questionsCount }}:</span>
-                            <h2 class="mb-4 text-2xl">
-                                @if ($currentQuestion->type === 'fraction')
-                                    @php
-
-                                        $text = replaceMixedFractions($currentQuestion->text);
-
-                                    @endphp
-                                    {{ $text }}
-                                @else
-                                    {{ $currentQuestion->text ?? '' }}
-                                @endif
-                            </h2>
-                            @if ($currentQuestion->img_name)
-                                <div class="img-container mb-4">
-                                    <img class="img-custom" src="{{ asset('img_questions/' . $currentQuestion->img_name) }}"
-                                        alt="Image option">
+                            <div id="quiz-container" data-seconds-left="0">
+                                <div class="mb-2">
+                                    Time elapsed:
+                                    <span id="time-elapsed" class="font-bold">
+                                        00:00:00
+                                    </span>
+                                    sec.
                                 </div>
-                            @endif
-                            @if ($currentQuestion->code_snippet)
-                                <pre class="mb-4 border-2 border-solid bg-gray-50 p-2">{{ $currentQuestion->code_snippet }}</pre>
-                            @endif
 
-                            <form id="quiz-form"
-                                action="{{ route('quiz.next', ['quiz' => $quiz, 'currentQuestionIndex' => $currentQuestionIndex, 'quizStartTime' => $quizStartTime]) }}"
-                                {{-- action="#"  --}} method="POST">
-                                @csrf
-                                <input type="hidden" name="startTimeInSeconds" id="startTimeInSeconds"
-                                    value="{{ $secondsPerQuestion }}">
-                                <input type="hidden" id="currentQuestionIndex" name="currentQuestionIndex"
-                                    value="{{ $currentQuestionIndex }}">
-                                <input type="hidden" name="currentQuestionId" id="currentQuestionId"
-                                    value="{{ $currentQuestion->id }}">
-                                <input type="hidden" id="currentQuestionType" name="currentQuestionType"
-                                    value="{{ $currentQuestion->type }}">
-                                <input type="hidden" id="correctAnswer" value="{{ $correctAnswer }}">
-                                @if ($currentQuestion->type === 'written')
-                                    <div>
-                                        <input type="text" name="answerOfQuestion[{{ $currentQuestionIndex }}]"
-                                            class="form-control" placeholder="Enter answer" autocomplete="off">
+                                <span class="text-bold">Question {{ $currentQuestionIndex + 1 }} of
+                                    {{ $questionsCount }}:</span>
+                                <h2 class="mb-4 text-2xl">
+                                    @if ($currentQuestion->type === 'fraction')
+                                        @php
+
+                                            $text = replaceMixedFractions($currentQuestion->text);
+
+                                        @endphp
+                                        {{ $text }}
+                                    @else
+                                        {{ $currentQuestion->text ?? '' }}
+                                    @endif
+                                </h2>
+                                @if ($currentQuestion->img_name)
+                                    <div class="img-container mb-4">
+                                        <img class="img-custom"
+                                            src="{{ asset('img_questions/' . $currentQuestion->img_name) }}"
+                                            alt="Image option">
                                     </div>
-                                @elseif ($currentQuestion->type === 'options')
-                                    @foreach ($currentQuestion->options as $option)
-                                        <div>
-                                            <label for="option-{{ $option->id }}">
-                                                <input type="radio" id="option-{{ $option->id }}"
-                                                    name="answerOfQuestion[{{ $currentQuestionIndex }}]"
-                                                    {{-- name="answerOfQuestion[{{ $currentQuestion->id }}]" --}} value="{{ $option->id }}">
-                                                {{ $option->text }}
-                                                <input type="hidden" id="optionAnswer" value="{{ $option->text }}">
-                                            </label>
-                                        </div>
-                                    @endforeach
-                                @elseif ($currentQuestion->type === 'image')
-                                    <div class="image-container">
-                                        @foreach ($currentQuestion->images as $image)
-                                            <div class="image-item">
-                                                <label for="img-option-{{ $image->id }}">
-                                                    <input type="radio" id="img-option-{{ $image->id }}"
-                                                        name="answerOfQuestion[{{ $currentQuestionIndex }}]"
-                                                        value="{{ $image->id }}">
-                                                    <img src="{{ asset('images_options/' . $image->img_name) }}"
-                                                        id="img-option-{{ $image->id }}" alt="Image option">
-                                                    <input type="hidden" id="imgOptionAnswer"
-                                                        value="{{ $image->img_name }}">
+                                @endif
+                                @if ($currentQuestion->code_snippet)
+                                    <pre class="mb-4 border-2 border-solid bg-gray-50 p-2">{{ $currentQuestion->code_snippet }}</pre>
+                                @endif
 
+                                <form id="quiz-form"
+                                    action="{{ route('quiz.next', ['quiz' => $quiz, 'currentQuestionIndex' => $currentQuestionIndex, 'quizStartTime' => $quizStartTime]) }}"
+                                    method="POST">
+                                    @csrf
+                                    <input type="hidden" name="startTimeInSeconds" id="startTimeInSeconds"
+                                        value="{{ $secondsPerQuestion }}">
+                                    <input type="hidden" id="currentQuestionIndex" name="currentQuestionIndex"
+                                        value="{{ $currentQuestionIndex }}">
+                                    <input type="hidden" name="currentQuestionId" id="currentQuestionId"
+                                        value="{{ $currentQuestion->id }}">
+                                    <input type="hidden" id="currentQuestionType" name="currentQuestionType"
+                                        value="{{ $currentQuestion->type }}">
+                                    <input type="hidden" id="correctAnswer" value="{{ $correctAnswer }}">
+                                    @if ($currentQuestion->type === 'written')
+                                        <div>
+                                            <input type="text" name="answerOfQuestion[{{ $currentQuestionIndex }}]"
+                                                class="form-control" placeholder="Enter answer" autocomplete="off">
+                                        </div>
+                                    @elseif ($currentQuestion->type === 'options')
+                                        @foreach ($currentQuestion->options as $option)
+                                            <div>
+                                                <label for="option-{{ $option->id }}">
+                                                    <input type="radio" id="option-{{ $option->id }}"
+                                                        name="answerOfQuestion[{{ $currentQuestionIndex }}]"
+                                                        value="{{ $option->id }}">
+                                                    {{ $option->text }}
+                                                    <input type="hidden" id="optionAnswer" value="{{ $option->text }}">
                                                 </label>
                                             </div>
                                         @endforeach
-                                    </div>
-                                @elseif ($currentQuestion->type === 'fraction')
-                                    <div>
+                                    @elseif ($currentQuestion->type === 'image')
+                                        <div class="image-container">
+                                            @foreach ($currentQuestion->images as $image)
+                                                <div class="image-item">
+                                                    <label for="img-option-{{ $image->id }}">
+                                                        <input type="radio" id="img-option-{{ $image->id }}"
+                                                            name="answerOfQuestion[{{ $currentQuestionIndex }}]"
+                                                            value="{{ $image->id }}">
+                                                        <img src="{{ asset('images_options/' . $image->img_name) }}"
+                                                            id="img-option-{{ $image->id }}" alt="Image option">
+                                                        <input type="hidden" id="imgOptionAnswer"
+                                                            value="{{ $image->img_name }}">
 
-                                        @php
-                                            // dd($getAnserSessionIndexNumerator);
-                                        @endphp
-                                        {{-- <h1>fraction_type : {{ $currentQuestion->fractions->first()->type }} </h1> --}}
-                                    </div>
-                                    @if ($currentQuestion->fractions->first()->type === 'written')
-                                        @if ($currentQuestion->fractions->first()->answer_type === 'frac')
-                                            <div class='frac'>
+                                                    </label>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    @elseif ($currentQuestion->type === 'fraction')
+                                        <div>
+
+                                            @php
+                                                // dd($getAnserSessionIndexNumerator);
+                                            @endphp
+                                        </div>
+                                        @if ($currentQuestion->fractions->first()->type === 'written')
+                                            @if ($currentQuestion->fractions->first()->answer_type === 'frac')
+                                                <div class='frac'>
+                                                    <input type="hidden" id="type_frac" name="currentQuestionFracType"
+                                                        value="{{ $currentQuestion->fractions->first()->type }}">
+                                                    <input type="hidden" id="answer_type_frac"
+                                                        name="currentQuestionFracAnswerType"
+                                                        value="{{ $currentQuestion->fractions->first()->answer_type }}">
+                                                    <span>
+                                                        <input type='text' name='currentQuestionFracNumerator'
+                                                            placeholder='Numerator' class='fraction-numerator'
+                                                            value="{{ $getAnserSessionIndexNumerator }}">
+                                                    </span>
+                                                    <span class='symbol'>/</span>
+                                                    <span class='bottom'>
+                                                        <input type='text' name='currentQuestionFracDenominator'
+                                                            placeholder='Denominator' class='fraction-denominator'
+                                                            value="{{ $getAnserSessionIndexDenominator }}">
+
+                                                    </span>
+
+
+                                                </div>
+                                            @else
                                                 <input type="hidden" id="type_frac" name="currentQuestionFracType"
                                                     value="{{ $currentQuestion->fractions->first()->type }}">
                                                 <input type="hidden" id="answer_type_frac"
                                                     name="currentQuestionFracAnswerType"
                                                     value="{{ $currentQuestion->fractions->first()->answer_type }}">
-                                                <span>
-                                                    <input type='text' name='currentQuestionFracNumerator'
-                                                        placeholder='Numerator' class='fraction-numerator'
-                                                        value="{{ $getAnserSessionIndexNumerator }}">
-                                                </span>
-                                                <span class='symbol'>/</span>
-                                                <span class='bottom'>
-                                                    <input type='text' name='currentQuestionFracDenominator'
-                                                        placeholder='Denominator' class='fraction-denominator'
-                                                        value="{{ $getAnserSessionIndexDenominator }}">
 
-                                                </span>
-
-
-                                            </div>
+                                                <input type='text' name='currentQuestionFracWhole'
+                                                    placeholder='Whole Number' class='mixed-whole'
+                                                    value="{{ $getAnserSessionIndexWhole }}" />
+                                                <div class='frac'>
+                                                    <span>
+                                                        <input type='text' name='currentQuestionFracNumerator'
+                                                            placeholder='Numerator' class='fraction-numerator'
+                                                            value="{{ $getAnserSessionIndexNumerator }}">
+                                                    </span>
+                                                    <span class='symbol'>/</span>
+                                                    <span class='bottom'>
+                                                        <input type='text' name='currentQuestionFracDenominator'
+                                                            placeholder='Denominator' class='fraction-denominator'
+                                                            value="{{ $getAnserSessionIndexDenominator }}">
+                                                    </span>
+                                                </div>
+                                            @endif
                                         @else
-                                            <input type="hidden" id="type_frac" name="currentQuestionFracType"
-                                                value="{{ $currentQuestion->fractions->first()->type }}">
-                                            <input type="hidden" id="answer_type_frac" name="currentQuestionFracAnswerType"
-                                                value="{{ $currentQuestion->fractions->first()->answer_type }}">
+                                            <!-- answer fraction its option -->
 
-                                            <input type='text' name='currentQuestionFracWhole'
-                                                placeholder='Whole Number' class='mixed-whole'
-                                                value="{{ $getAnserSessionIndexWhole }}" />
-                                            <div class='frac'>
-                                                <span>
-                                                    <input type='text' name='currentQuestionFracNumerator'
-                                                        placeholder='Numerator' class='fraction-numerator'
-                                                        value="{{ $getAnserSessionIndexNumerator }}">
-                                                </span>
-                                                <span class='symbol'>/</span>
-                                                <span class='bottom'>
-                                                    <input type='text' name='currentQuestionFracDenominator'
-                                                        placeholder='Denominator' class='fraction-denominator'
-                                                        value="{{ $getAnserSessionIndexDenominator }}">
-                                                </span>
-                                            </div>
+                                            @foreach ($currentQuestion->fractions as $option)
+                                                <div class="col-lg-6 mt-5">
+                                                    <input type="hidden" id="answerOfQuestion[fraction][type_frac]"
+                                                        name="currentQuestionFracType" value="options">
+
+                                                    <label for="option-{{ $option->id }}">
+                                                        <input type="radio" id="frationOption-{{ $option->id }}"
+                                                            name="answerOfQuestion[{{ $currentQuestionIndex }}]"
+                                                            value="{{ $option->id }}">
+                                                        @php
+                                                            if ($option->answer_type == 'mixed') {
+                                                                # code...
+                                                                $textOption = toMixedFraction(
+                                                                    $option->numerator,
+                                                                    $option->denominator,
+                                                                );
+                                                            } else {
+                                                                $textOption = toFraction(
+                                                                    $option->numerator,
+                                                                    $option->denominator,
+                                                                );
+                                                            }
+
+                                                        @endphp
+
+                                                        {{ $textOption }}
+
+                                                        <input type="hidden" id="optionFracAnswer"
+                                                            value="{{ $option->text }}">
+                                                    </label>
+                                                </div>
+                                            @endforeach
                                         @endif
-                                    @else
-                                        <!-- answer fraction its option -->
-                                        {{-- <div class="row"> --}}
-
-                                        @foreach ($currentQuestion->fractions as $option)
-                                            <div class="col-lg-6 mt-5">
-                                                <input type="hidden" id="answerOfQuestion[fraction][type_frac]"
-                                                    name="currentQuestionFracType" value="options">
-
-                                                <label for="option-{{ $option->id }}">
-                                                    <input type="radio" id="frationOption-{{ $option->id }}"
-                                                        name="answerOfQuestion[{{ $currentQuestionIndex }}]"
-                                                        value="{{ $option->id }}">
-                                                    @php
-                                                        if ($option->answer_type == 'mixed') {
-                                                            # code...
-                                                            $textOption = toMixedFraction(
-                                                                $option->numerator,
-                                                                $option->denominator,
-                                                            );
-                                                        } else {
-                                                            $textOption = toFraction(
-                                                                $option->numerator,
-                                                                $option->denominator,
-                                                            );
-                                                        }
-
-                                                    @endphp
-
-                                                    {{ $textOption }}
-
-                                                    <input type="hidden" id="optionFracAnswer"
-                                                        value="{{ $option->text }}">
-                                                </label>
-                                            </div>
-                                        @endforeach
-                                        {{-- </div> --}}
                                     @endif
-                                @endif
-                                <div id="answer-container">
+                                    <div id="answer-container">
 
-                                </div>
-                                <div class="mt-4">
-                                    @if ($currentQuestionIndex < $questionsCount - 1)
-                                        {{-- <button id="showAnswer" type="button"
-                                                    class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md font-semibold text-xs uppercase tracking-widest shadow-sm focus:outline-none disabled:opacity-25 transition ease-in-out duration-150">
-                                                    Confirm
-                                                </button> --}}
-                                        <button type="submit" id="nextQuestion"
-                                            class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md font-semibold text-xs uppercase tracking-widest shadow-sm focus:outline-none disabled:opacity-25 transition ease-in-out duration-150">
-                                            Next question
-                                        </button>
-                                        <button type="button" id="nextQuestionJS"
-                                            class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md font-semibold text-xs uppercase tracking-widest shadow-sm focus:outline-none disabled:opacity-25 transition ease-in-out duration-150">
-                                            Next question JS
-                                        </button>
-                                    @else
-                                        <button type="submit"
-                                            class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest transition ease-in-out duration-150">
-                                            Submit
-                                        </button>
-                                    @endif
-                                </div>
-                            </form>
-                        </div>
-                    @endif
+                                    </div>
+                                    <div class="mt-4">
+                                        @if ($currentQuestionIndex < $questionsCount - 1)
+                                            <button type="submit" id="nextQuestion"
+                                                class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md font-semibold text-xs uppercase tracking-widest shadow-sm focus:outline-none disabled:opacity-25 transition ease-in-out duration-150">
+                                                Next question
+                                            </button>
+                                            <button type="button" id="nextQuestionJS"
+                                                class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md font-semibold text-xs uppercase tracking-widest shadow-sm focus:outline-none disabled:opacity-25 transition ease-in-out duration-150">
+                                                Next question JS
+                                            </button>
+                                        @else
+                                            <button type="submit"
+                                                class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest transition ease-in-out duration-150">
+                                                Submit
+                                            </button>
+                                        @endif
+                                    </div>
+                                </form>
+                            </div>
+                        @endif
 
+                    </div>
                 </div>
-
+                <!-- Quiz Progress Section -->
+                <div class="w-1/3 p-4 bg-orange-300 rounded-lg shadow-md col-lg-4">
+                    <h3 class="text-lg font-semibold mb-3">Quiz Progress</h3>
+                    <div class="grid grid-cols-5 gap-2">
+                        @for ($i = 0; $i < $questionsCount; $i++)
+                            <button
+                                class="quiz-nav w-10 h-10 flex items-center justify-center rounded-full text-dark font-bold 
+                                {{ $i == $currentQuestionIndex ? 'bg-white' : 'bg-orange-500' }}"
+                                data-question-index="{{ $i }}">
+                                {{ $i + 1 }}
+                            </button>
+                        @endfor
+                    </div>
+                </div>
             </div>
-            <!-- i want to make quick navigation bar -->
-
-            <div class="w-1/3 p-4 bg-orange-400 rounded-lg shadow-md">
-                <h3 class="text-lg font-semibold mb-3">Quiz Progress</h3>
-
-                <div class="grid grid-cols-5 gap-2">
-                    @for ($i = 0; $i < $questionsCount; $i++)
-                        <button
-                            class="quiz-nav w-10 h-10 flex items-center justify-center rounded-full text-dark font-bold 
-                            {{ $i == $currentQuestionIndex ? 'bg-white' : 'bg-orange-500' }}"
-                            data-question-index="{{ $i }}">
-                            {{ $i + 1 }}
-                        </button>
-                    @endfor
-                </div>
-                <div class="fixed top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-md shadow-md">
-                    Time Elapsed: <span id="quiz-timer">0:00</span>
-                </div>
-                {{-- <div class="fixed top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-md shadow-md">
-                    Time Elapsed: <span id="quiz-timer">0:00</span>
-                </div> --}}
-            </div>
-            @php
-                // dd($quiz);
-            @endphp
-            {{-- <div class="w-1/3 p-4 bg-orange-400 rounded-lg shadow-md">
-                <h3 class="text-lg font-semibold mb-3">Quiz Progress non quiz-nav</h3>
-
-                <div class="grid grid-cols-5 gap-2">
-                    @for ($i = 0; $i < $questionsCount; $i++)
-                        <a href="{{ route('quiz.show', ['quiz' => $quiz, 'currentQuestionIndex' => $i, 'quizStartTime' => $quizStartTime]) }}"
-                            class="w-10 h-10 flex items-center justify-center rounded-full text-dark font-bold
-                        {{ $i == $currentQuestionIndex ? 'bg-white' : 'bg-orange-500' }}">
-                            {{ $i + 1 }}
-                        </a>
-                    @endfor
-                </div>
-                
-            </div> --}}
 
         </div>
     </div>
-
-
 @endsection
 @push('scripts')
     <script>

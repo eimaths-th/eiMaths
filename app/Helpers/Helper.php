@@ -11,6 +11,7 @@ use App\Models\level;
 use App\Models\Order;
 use App\Models\OrderDetailList;
 use App\Models\QRCodePayMent;
+use App\Models\Receipt;
 use App\Models\term;
 use App\Models\User as ModelsUser;
 use App\Notifications\GeneralNotification;
@@ -154,7 +155,8 @@ if (!function_exists('toMixedFraction')) {
 
         return $whole > 0
             ? "\({$whole} \\frac{{$remainder}}{{$denominator}}\)"
-            : "\(\\frac{{$remainder}}{{$denominator}}\)";   }
+            : "\(\\frac{{$remainder}}{{$denominator}}\)";
+    }
 }
 //end fractional drisplay
 
@@ -189,7 +191,8 @@ if (!function_exists('create_commmission_list')) {
         if (!$aff_config) {
             throw new Exception("Affiliate configuration not found with ID: 3");
         }
-        $activeStudent = activeStudent();
+        $activeStudent = getRecieptWithRef();
+        // $activeStudent = activeStudent();
 
         //----------------------------------------------------------------
         $orderDetails = OrderDetailList::where('order_id', $order->id)
@@ -239,18 +242,6 @@ if (!function_exists('create_commmission_list')) {
         $config_commission = affiliateConfigCommission::find($getIdCommission);
 
         $commission_rate = 0;
-        // $userCourseCount += $countingCourse;
-        // if ($userCourseCount > $config_commission->user_per_course_low) {
-        //     # code...
-        //     $commission_rate = $config_commission->comission_per_course_15_percent; //15% commission rate มากกว่า 5 คอร์ส
-
-        // } elseif ($userCourseCount <= $config_commission->user_per_course_low) {
-        //     # code...
-        //     $commission_rate = $config_commission->comission_per_course_10_percent; //10% commission rate น้อยกว่าเท่ากับ 5 คอร์ส
-
-        // } else {
-        //     $commission_rate = 0; //error ไม่มีคอร์ส
-        // }
 
         //แก้เงื่อนไข วนลูปเพิ่มเติม ช่วงระหว่าง user_per_course_low ถึง user_per_course_high
         $low = $config_commission->user_per_course_low;
@@ -361,6 +352,46 @@ if (!function_exists('activeStudent')) {
         return $results;
     }
 }
+
+if (!function_exists('getRecieptWithRef')) {
+    function getRecieptWithRef()
+    {
+
+        // how to where ref not null
+        $month = date('m');
+        $year = date('Y');
+        $CouresCounting = 0;
+        $Receipts = Receipt::whereMonth('payment_date', $month)
+            ->whereYear('payment_date', $year)
+            ->where('ref', '!=', null)
+            // ->count();
+            ->get();
+        foreach ($Receipts as $Receipt) {
+
+            $orderDetails = OrderDetailList::where('order_id', $Receipt->oid)
+                ->groupBy('level')
+                ->selectRaw('level, MIN(term) as min_term, MAX(term) as max_term')
+                ->get();
+
+            // Get the start and end levels
+            $start_level_name = $orderDetails->min('level');
+            $end_level_name = $orderDetails->max('level');
+
+            $start_level = level::where('name', $start_level_name)->value('id');
+            $end_level = level::where('name', $end_level_name)->value('id');
+
+            // Find the correct start term and end term based on level
+            $start_term = $orderDetails->where('level', $start_level_name)->max('min_term');
+            $end_term = $orderDetails->where('level', $end_level_name)->max('max_term');
+
+            $CouresCounting += courseCount($start_level, $end_level, $start_term, $end_term);
+        }
+        // $results = Contact::where('ref', 0)->count();
+
+        return $CouresCounting;
+    }
+}
+
 
 if (!function_exists('checkCourseCurrent')) {
     function checkCourseCurrent($user_id, $year, $month, $config_commission, $userCourseCount)

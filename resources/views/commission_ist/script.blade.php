@@ -139,4 +139,37 @@
             }
         });
     });
+
+    $(document).on('click', '.view-btn', function(e) {
+        e.preventDefault();
+        let id = $(this).data('id');
+        let action = $(this).hasClass('view-btn') ? 'view' : 'print';
+
+        $.ajax({
+            url: '{{ route('commission-list.view') }}', // Update this to your actual endpoint
+            method: 'POST',
+            data: {
+                id: id,
+                action: action,
+                _token: $('meta[name="csrf-token"]').attr('content'),
+            },
+            success: function(response) {
+                $('#print_data').html(response.html);
+                $('#PrintModal').modal('show');
+
+            },
+            error: function(xhr) {
+                console.error(xhr.responseText);
+
+                let errorMessage = "An error occurred.";
+                if (xhr.responseJSON && xhr.responseJSON.error) {
+                    errorMessage = xhr.responseJSON.error;
+                }
+
+                toastr.error(errorMessage, {
+                    timeOut: 5000
+                });
+            }
+        });
+    });
 </script>

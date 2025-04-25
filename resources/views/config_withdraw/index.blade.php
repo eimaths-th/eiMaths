@@ -91,6 +91,7 @@
     </section>
 
     {{--  {!! $data->render() !!} --}}
+    @include('config_withdraw.template_modal')
 @endsection
 
 
