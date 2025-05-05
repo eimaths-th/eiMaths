@@ -88,7 +88,7 @@ class CommissionListControler extends Controller
                         $html .= ' <button class="btn btn-danger btn-sm reject-btn" data-id="' . $row->id . '">Reject</button>';
                     } else {
                         # code...
-                        $html .= '<button class="btn btn-primary btn-sm view-btn" data-id="' . $row->id . '">Report</button>';
+                        // $html .= '<button class="btn btn-primary btn-sm view-btn" data-id="' . $row->id . '">Report</button>';
                     }
 
                     return $html;
@@ -187,9 +187,9 @@ class CommissionListControler extends Controller
     {
         $id = $request->id;
         $commission = AffiliateCommissionList::find($id);
-        dd(
-            $commission,
-        );
+        // dd(
+        //     $commission,
+        // );
         if (!$commission) {
             return response()->json(['message' => 'Commission record not found'], 404);
         }
