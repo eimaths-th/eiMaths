@@ -303,13 +303,13 @@
         };
     </script>
     <!-- This site is optimized with the Yoast SEO plugin v19.13 - https://yoast.com/wordpress/plugins/seo/ -->
-    <title>Contact us - eiMaths TH</title>
+    <title>Form - eiMaths TH</title>
     <meta name="description"
         content="Time adjustment is one of the biggest reasons Because of this, most parents use internet-based math tutorials to save time. If you wish to have that perfect maths class for your kid then contact us now!" />
     <link rel="canonical" href="index.html" />
     <meta property="og:locale" content="en_US" />
     <meta property="og:type" content="article" />
-    <meta property="og:title" content="Contact us - eiMaths" />
+    <meta property="og:title" content="Form- eiMaths" />
     <meta property="og:description"
         content="Time adjustment is one of the biggest reasons Because of this, most parents use internet-based math tutorials to save time. If you wish to have that perfect maths class for your kid then contact us now!" />
     <meta property="og:url" content="https://eimaths.com/contact-us/" />
@@ -4554,7 +4554,7 @@
                                                                 <input type="text" id="fname" class="input"
                                                                     value="" name="fname" required
                                                                     data-field_type="input" data-original_id="fname"
-                                                                    placeholder="Firs Name Parent">
+                                                                    placeholder="Firs Name Parent" >
 
 
                                                             <p class="et_pb_contact_field et_pb_contact_field_1 et_pb_contact_field_half et_pb_contact_field_last"
@@ -4602,7 +4602,7 @@
                                                                     value="" name="first_name_student"
                                                                     data-required_mark="required"
                                                                     data-field_type="input" data-original_id="phone"
-                                                                    placeholder="First Name Student">
+                                                                    placeholder="First Name Student" required>
                                                             </p>
 
                                                             <p class="et_pb_contact_field et_pb_contact_field_1 et_pb_contact_field_half et_pb_contact_field_last"
@@ -4614,7 +4614,7 @@
                                                                     value="" name="last_name_student"
                                                                     data-required_mark="required"
                                                                     data-field_type="input" data-original_id="last_name_student"
-                                                                    placeholder="Last Name Student">
+                                                                    placeholder="Last Name Student" required>
                                                             </p>
                                                             <p class="et_pb_contact_field et_pb_contact_field_2 et_pb_contact_field_half"
                                                                 data-id="phone" data-type="input">
@@ -4625,7 +4625,7 @@
                                                                     value="" name="nick_name_student"
                                                                     data-required_mark="required"
                                                                     data-field_type="input" data-original_id="nick_name_student"
-                                                                    placeholder="Nick Name Student">
+                                                                    placeholder="Nick Name Student" required>
                                                             </p>
 
 
@@ -4635,7 +4635,7 @@
                                                                 <label for="et_pb_contact_message_0"
                                                                     class="et_pb_contact_form_label">Address</label>
                                                                 <textarea name="message" id="message" class="et_pb_contact_message input" data-required_mark="not_required"
-                                                                    data-field_type="text" data-original_id="message" placeholder="Address"></textarea>
+                                                                    data-field_type="text" data-original_id="message" placeholder="Address" required></textarea>
                                                             </p>
                                                             <div class="et_contact_bottom_container">
 
@@ -4658,6 +4658,43 @@
                                                                 var nick_name_student = $('#nick_name_student').val();
                                                                 var message = $('#message').val();
                                                                 var token = $('meta[name="csrf-token"]').attr('content');
+
+
+                                                                if (telp == '' && email == '') {
+                                                                    $('#error-container').show();
+                                                                    $('#error-container').html('<li>Please enter telp or email </li>');
+                                                                    return;
+                                                                }
+                                                                if (fname == '') {
+                                                                    $('#error-container').show();
+                                                                    $('#error-container').html('<li>Please enter first name parent </li>');
+                                                                    return;
+                                                                }
+                                                                if (lname == '') {
+                                                                    $('#error-container').show();
+                                                                    $('#error-container').html('<li>Please enter last name parent </li>');
+                                                                    return;
+                                                                }
+                                                                if (first_name_student == '') {
+                                                                    $('#error-container').show();
+                                                                    $('#error-container').html('<li>Please enter first name student </li>');
+                                                                    return;
+                                                                }
+                                                                if (last_name_student == '') {
+                                                                    $('#error-container').show();
+                                                                    $('#error-container').html('<li>Please enter last name student </li>');
+                                                                    return;
+                                                                }
+                                                                if (nick_name_student == '') {
+                                                                    $('#error-container').show();
+                                                                    $('#error-container').html('<li>Please enter nick name student </li>');
+                                                                    return;
+                                                                }
+                                                                if (message == '') {
+                                                                    $('#error-container').show();
+                                                                    $('#error-container').html('<li>Please enter address </li>');
+                                                                    return;
+                                                                }
 
                                                                 $.ajax({
                                                                         url: "{{ route('ei-form.store') }}",

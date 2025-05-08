@@ -52,6 +52,12 @@
                     <p>Parent Manage</p>
                 </a>
             </li>
+            <li class="nav-item">
+                <a href="{{ route('ei_form.backEndIndex') }}" class="nav-link {{ Request::is('ei_form.backEndIndex') ? 'active' : '' }}">
+                    <i class="nav-icon fa-solid fa-comment-dots"></i>
+                    <p>eiForm</p>
+                </a>
+            </li>
         </ul>
     </li>
 @endcan
