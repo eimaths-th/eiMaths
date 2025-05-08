@@ -8,6 +8,7 @@ use App\Http\Controllers\CommissionListControler;
 use App\Http\Controllers\ConfigWithdrawController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\CourseController;
+use App\Http\Controllers\EiFormController;
 use App\Http\Controllers\eLeanController;
 use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\HomeController;
@@ -274,6 +275,8 @@ Route::get('manon', function (Request $request) {
 });
 
 
+route::get('ei-form', [EiFormController::class, 'index'])->name('ei-form.index');
+route::post('ei-form/store', [EiFormController::class, 'store'])->name('ei-form.store');
 
 // test route 
 Route::get('/test-system-questions', [TestSystemQuestionsController::class, 'index'])->name('ts.questions.index');
