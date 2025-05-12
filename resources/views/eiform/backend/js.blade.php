@@ -67,6 +67,10 @@
                     name: 'first_name_student'
                 }, 
                 {
+                    data: 'category',
+                    name: 'category'
+                },
+                {
                     data: 'address',
                     name: 'address'
                 },

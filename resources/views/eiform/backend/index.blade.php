@@ -61,6 +61,7 @@
                                             <th>Name Parent</th>
                                             <th>Contact</th>
                                             <th>Student Name</th>
+                                            <th>Category</th>
                                             <th>Address</th>
                                             <th width="120px"></th>
                                         </tr>

@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $first_name_student
  * @property string $last_name_student
  * @property string $nick_name_student
+ * @property string $category
  * @property string $address
  * @property string $created_at
  * @property string $updated_at
@@ -29,5 +30,17 @@ class EiForm extends Model
     /**
      * @var array
      */
-    protected $fillable = ['first_name_parent', 'last_name_parent', 'telp_parent', 'email_parent', 'first_name_student', 'last_name_student', 'nick_name_student', 'address', 'created_at', 'updated_at'];
+    protected $fillable = [
+        'first_name_parent',
+        'last_name_parent',
+        'telp_parent',
+        'email_parent',
+        'first_name_student',
+        'last_name_student',
+        'nick_name_student',
+        'category',
+        'address',
+        'created_at',
+        'updated_at'
+    ];
 }

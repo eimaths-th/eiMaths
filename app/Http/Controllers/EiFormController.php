@@ -101,8 +101,17 @@ class EiFormController extends Controller
                     return $text;
                     // return $row->first_name_student ?? '' . ' ' . $row->last_name_student ?? '' . ' (' . $row->nick_name_student ?? '' . ')';
                 })
+                ->editColumn('category', function ($row) {
+                    if ($row->category) {
+                        # code...
+                        $text = 'category ' . $row->category;
+                    }else {
+                        $text = '';
+                    }
+                    return $text;
+                })
                 ->editColumn('address', function ($row) {
-                    return $row->address;
+                    return $row->address ?? '';
                 })
                 
                 ->addColumn('action', function ($row) {

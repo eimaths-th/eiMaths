@@ -4546,6 +4546,57 @@
                                                         <form class="et_pb_contact_form clearfix" method="POST" id="form_contact" action="{{ route('ei-form.store') }}"
                                                             enctype="multipart/form-data">
                                                             @csrf
+
+                                                            <p class="et_pb_contact_field et_pb_contact_field_2 et_pb_contact_field_half"
+                                                                data-id="phone" data-type="input">
+
+                                                                <label for="et_pb_contact_phone_0"
+                                                                    class="et_pb_contact_form_label">First Name Student</label>
+                                                                <input type="text" id="first_name_student" class="input"
+                                                                    value="" name="first_name_student"
+                                                                    data-required_mark="required"
+                                                                    data-field_type="input" data-original_id="phone"
+                                                                    placeholder="First Name Student" required>
+                                                            </p>
+
+                                                            <p class="et_pb_contact_field et_pb_contact_field_1 et_pb_contact_field_half et_pb_contact_field_last"
+                                                                data-id="email" data-type="email">
+
+                                                                <label for="et_pb_contact_email_0"
+                                                                    class="et_pb_contact_form_label">Last Name Student</label>
+                                                                <input type="text" id="last_name_student" class="input"
+                                                                    value="" name="last_name_student"
+                                                                    data-required_mark="required"
+                                                                    data-field_type="input" data-original_id="last_name_student"
+                                                                    placeholder="Last Name Student" required>
+                                                            </p>
+                                                            <p class="et_pb_contact_field et_pb_contact_field_2 et_pb_contact_field_half"
+                                                                data-id="phone" data-type="input">
+
+                                                                <label for="et_pb_contact_phone_0"
+                                                                    class="et_pb_contact_form_label">Nick Name Student</label>
+                                                                <input type="text" id="nick_name_student" class="input"
+                                                                    value="" name="nick_name_student"
+                                                                    data-required_mark="required"
+                                                                    data-field_type="input" data-original_id="nick_name_student"
+                                                                    placeholder="Nick Name Student" required>
+                                                            </p>
+                                                            <p class="et_pb_contact_field et_pb_contact_field_1 et_pb_contact_field_half et_pb_contact_field_last"
+                                                                data-id="topic" data-type="select">
+
+                                                                <label for="et_pb_contact_topic_0"
+                                                                    class="et_pb_contact_form_label"> Category </label>
+                                                                <select id="category"
+                                                                    class="et_pb_contact_select input" name="category"
+                                                                    data-required_mark="not_required"
+                                                                    data-field_type="select" data-original_id="category">
+                                                                    <option value="">Select Category</option>
+                                                                    <option value="1">Category 1</option>
+                                                                    <option value="2">Category 2</option>
+                                                                    <option value="3">Category 3</option>
+                                                                    <option value="4">Category 4</option>
+                                                                </select>
+                                                            </p>
                                                             <p class="et_pb_contact_field et_pb_contact_field_0 et_pb_contact_field_half"
                                                                 data-id="fname" data-type="input">
 
@@ -4593,40 +4644,7 @@
                                                                     data-field_type="email" data-original_id="email"
                                                                     placeholder="Email Address">
                                                             </p>
-                                                            <p class="et_pb_contact_field et_pb_contact_field_2 et_pb_contact_field_half"
-                                                                data-id="phone" data-type="input">
-
-                                                                <label for="et_pb_contact_phone_0"
-                                                                    class="et_pb_contact_form_label">First Name Student</label>
-                                                                <input type="text" id="first_name_student" class="input"
-                                                                    value="" name="first_name_student"
-                                                                    data-required_mark="required"
-                                                                    data-field_type="input" data-original_id="phone"
-                                                                    placeholder="First Name Student" required>
-                                                            </p>
-
-                                                            <p class="et_pb_contact_field et_pb_contact_field_1 et_pb_contact_field_half et_pb_contact_field_last"
-                                                                data-id="email" data-type="email">
-
-                                                                <label for="et_pb_contact_email_0"
-                                                                    class="et_pb_contact_form_label">Last Name Student</label>
-                                                                <input type="text" id="last_name_student" class="input"
-                                                                    value="" name="last_name_student"
-                                                                    data-required_mark="required"
-                                                                    data-field_type="input" data-original_id="last_name_student"
-                                                                    placeholder="Last Name Student" required>
-                                                            </p>
-                                                            <p class="et_pb_contact_field et_pb_contact_field_2 et_pb_contact_field_half"
-                                                                data-id="phone" data-type="input">
-
-                                                                <label for="et_pb_contact_phone_0"
-                                                                    class="et_pb_contact_form_label">Nick Name Student</label>
-                                                                <input type="text" id="nick_name_student" class="input"
-                                                                    value="" name="nick_name_student"
-                                                                    data-required_mark="required"
-                                                                    data-field_type="input" data-original_id="nick_name_student"
-                                                                    placeholder="Nick Name Student" required>
-                                                            </p>
+                                                            
 
 
                                                             <p class="et_pb_contact_field et_pb_contact_field_6 et_pb_contact_field_last"
@@ -4646,13 +4664,14 @@
                                                             </div>
                                                         </form>
                                                         <script>
-                                                            //ถึง pdpa
+                                                            
                                                             $('#SubmitCreateForm').click(function(e) {
                                                                 e.preventDefault();
                                                                 var fname = $('#fname').val();
                                                                 var lname = $('#lname').val();
                                                                 var telp = $('#telp').val();
                                                                 var email = $('#email').val();
+                                                                var category = $('#category').val();
                                                                 var first_name_student = $('#first_name_student').val();
                                                                 var last_name_student = $('#last_name_student').val();
                                                                 var nick_name_student = $('#nick_name_student').val();
@@ -4706,6 +4725,7 @@
                                                                             last_name_parent: lname,
                                                                             telp_parent: telp,
                                                                             email_parent: email,
+                                                                            category: category,
                                                                             first_name_student: first_name_student,
                                                                             last_name_student: last_name_student,
                                                                             nick_name_student: nick_name_student,
