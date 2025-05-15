@@ -4682,36 +4682,43 @@
                                                                 if (telp == '' && email == '') {
                                                                     $('#error-container').show();
                                                                     $('#error-container').html('<li>Please enter telp or email </li>');
+                                                                    alert('Please enter telp or email');
                                                                     return;
                                                                 }
                                                                 if (fname == '') {
                                                                     $('#error-container').show();
                                                                     $('#error-container').html('<li>Please enter first name parent </li>');
+                                                                    alert('Please enter first name parent');
                                                                     return;
                                                                 }
                                                                 if (lname == '') {
                                                                     $('#error-container').show();
                                                                     $('#error-container').html('<li>Please enter last name parent </li>');
+                                                                    alert('Please enter last name parent');
                                                                     return;
                                                                 }
                                                                 if (first_name_student == '') {
                                                                     $('#error-container').show();
                                                                     $('#error-container').html('<li>Please enter first name student </li>');
+                                                                    alert('Please enter first name student');
                                                                     return;
                                                                 }
                                                                 if (last_name_student == '') {
                                                                     $('#error-container').show();
                                                                     $('#error-container').html('<li>Please enter last name student </li>');
+                                                                    alert('Please enter last name student');
                                                                     return;
                                                                 }
                                                                 if (nick_name_student == '') {
                                                                     $('#error-container').show();
                                                                     $('#error-container').html('<li>Please enter nick name student </li>');
+                                                                    alert('Please enter nick name student');
                                                                     return;
                                                                 }
                                                                 if (message == '') {
                                                                     $('#error-container').show();
                                                                     $('#error-container').html('<li>Please enter address </li>');
+                                                                    alert('Please enter address');
                                                                     return;
                                                                 }
 
