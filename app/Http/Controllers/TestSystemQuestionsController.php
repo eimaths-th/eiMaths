@@ -24,6 +24,11 @@ class TestSystemQuestionsController extends Controller
         // dd('create');
         return view('question.testq.create');
     }
+    public function emptyView()
+    {
+        // dd('create');
+        return view('question.testq.show');
+    }
     /**
      * Store a newly created resource in storage.
      */

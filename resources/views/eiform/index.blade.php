@@ -780,11 +780,11 @@
         href='https://www.eimaths-th.com/wp-content/plugins/addon-elements-for-elementor-page-builder/assets/css/eae.min8392.css?ver=1.11.16'
         type='text/css' media='all' />
     <link rel='stylesheet' id='font-awesome-4-shim-css'
-        href='https://www.eimaths-th.com/wp-content/plugins/elementor/assets/lib/font-awesome/css/v4-shims.min5152.css?ver=1.0' type='text/css'
-        media='all' />
+        href='https://www.eimaths-th.com/wp-content/plugins/elementor/assets/lib/font-awesome/css/v4-shims.min5152.css?ver=1.0'
+        type='text/css' media='all' />
     <link rel='stylesheet' id='font-awesome-5-all-css'
-        href='https://www.eimaths-th.com/wp-content/plugins/elementor/assets/lib/font-awesome/css/all.min5152.css?ver=1.0' type='text/css'
-        media='all' />
+        href='https://www.eimaths-th.com/wp-content/plugins/elementor/assets/lib/font-awesome/css/all.min5152.css?ver=1.0'
+        type='text/css' media='all' />
     <link rel='stylesheet' id='vegas-css-css'
         href='https://www.eimaths-th.com/wp-content/plugins/addon-elements-for-elementor-page-builder/assets/lib/vegas/vegas.min8d5a.css?ver=2.4.0'
         type='text/css' media='all' />
@@ -1547,8 +1547,8 @@
         }
     </style>
     <link rel='stylesheet' id='tpro-slick-css'
-        href='https://www.eimaths-th.com/wp-content/plugins/testimonial-pro/public/assets/css/slick.min5bf8.css?ver=2.2.5' type='text/css'
-        media='all' />
+        href='https://www.eimaths-th.com/wp-content/plugins/testimonial-pro/public/assets/css/slick.min5bf8.css?ver=2.2.5'
+        type='text/css' media='all' />
     <link rel='stylesheet' id='tpro-font-awesome-css'
         href='https://www.eimaths-th.com/wp-content/plugins/testimonial-pro/public/assets/css/font-awesome.min5bf8.css?ver=2.2.5'
         type='text/css' media='all' />
@@ -1556,8 +1556,8 @@
         href='https://www.eimaths-th.com/wp-content/plugins/testimonial-pro/public/assets/css/magnific-popup.min5bf8.css?ver=2.2.5'
         type='text/css' media='all' />
     <link rel='stylesheet' id='tpro-style-css'
-        href='https://www.eimaths-th.com/wp-content/plugins/testimonial-pro/public/assets/css/style.min5bf8.css?ver=2.2.5' type='text/css'
-        media='all' />
+        href='https://www.eimaths-th.com/wp-content/plugins/testimonial-pro/public/assets/css/style.min5bf8.css?ver=2.2.5'
+        type='text/css' media='all' />
     <link rel='stylesheet' id='tpro-custom-css'
         href='https://www.eimaths-th.com/wp-content/cache/asset-cleanup/css/item/tpro-custom-vdcf4065f69463e207e9594837ca775468606b817.css'
         type='text/css' media='all' />
@@ -1576,24 +1576,25 @@
         href='../../cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min52c7.css?ver=6.0.5'
         type='text/css' media='all' />
     <link rel='stylesheet' id='store-styles-css'
-        href='https://www.eimaths-th.com/wp-content/plugins/wc-pickup-store/assets/css/stores.min52c7.css?ver=6.0.5' type='text/css'
-        media='all' />
+        href='https://www.eimaths-th.com/wp-content/plugins/wc-pickup-store/assets/css/stores.min52c7.css?ver=6.0.5'
+        type='text/css' media='all' />
     <link rel='stylesheet' id='woocommerce-layout-css'
-        href='https://www.eimaths-th.com/wp-content/plugins/woocommerce/assets/css/woocommerce-layoutcb57.css?ver=7.2.2' type='text/css'
-        media='all' />
+        href='https://www.eimaths-th.com/wp-content/plugins/woocommerce/assets/css/woocommerce-layoutcb57.css?ver=7.2.2'
+        type='text/css' media='all' />
     <link rel='stylesheet' id='woocommerce-smallscreen-css'
-        href='https://www.eimaths-th.com/wp-content/plugins/woocommerce/assets/css/woocommerce-smallscreencb57.css?ver=7.2.2' type='text/css'
-        media='only screen and (max-width: 768px)' />
+        href='https://www.eimaths-th.com/wp-content/plugins/woocommerce/assets/css/woocommerce-smallscreencb57.css?ver=7.2.2'
+        type='text/css' media='only screen and (max-width: 768px)' />
     <link rel='stylesheet' id='woocommerce-general-css'
-        href='https://www.eimaths-th.com/wp-content/plugins/woocommerce/assets/css/woocommercecb57.css?ver=7.2.2' type='text/css'
-        media='all' />
+        href='https://www.eimaths-th.com/wp-content/plugins/woocommerce/assets/css/woocommercecb57.css?ver=7.2.2'
+        type='text/css' media='all' />
     <style id='woocommerce-inline-inline-css' type='text/css'>
         .woocommerce form .form-row .required {
             visibility: visible;
         }
     </style>
-    <link rel='stylesheet' id='dashicons-css' href='https://www.eimaths-th.com/wp-includes/css/dashicons.min52c7.css?ver=6.0.5'
-        type='text/css' media='all' />
+    <link rel='stylesheet' id='dashicons-css'
+        href='https://www.eimaths-th.com/wp-includes/css/dashicons.min52c7.css?ver=6.0.5' type='text/css'
+        media='all' />
     <link rel='stylesheet' id='wpmi-icons-css'
         href='https://www.eimaths-th.com/wp-content/cache/asset-cleanup/css/item/wpmi-icons-v6f571eeb910023bef474ee84c5ca47f486faa7f9.css'
         type='text/css' media='all' />
@@ -1604,11 +1605,11 @@
         href='https://www.eimaths-th.com/wp-content/plugins/elementor/assets/lib/eicons/css/elementor-icons.min91ce.css?ver=5.16.0'
         type='text/css' media='all' />
     <link rel='stylesheet' id='elementor-frontend-legacy-css'
-        href='https://www.eimaths-th.com/wp-content/plugins/elementor/assets/css/frontend-legacy.min2e46.css?ver=3.9.2' type='text/css'
-        media='all' />
+        href='https://www.eimaths-th.com/wp-content/plugins/elementor/assets/css/frontend-legacy.min2e46.css?ver=3.9.2'
+        type='text/css' media='all' />
     <link rel='stylesheet' id='elementor-frontend-css'
-        href='https://www.eimaths-th.com/wp-content/plugins/elementor/assets/css/frontend.min2e46.css?ver=3.9.2' type='text/css'
-        media='all' />
+        href='https://www.eimaths-th.com/wp-content/plugins/elementor/assets/css/frontend.min2e46.css?ver=3.9.2'
+        type='text/css' media='all' />
     <style id='elementor-frontend-inline-css' type='text/css'>
         .elementor-kit-977 {
             --e-global-color-primary: #6EC1E4;
@@ -3971,17 +3972,20 @@
         href='https://www.eimaths-th.com/wp-content/cache/asset-cleanup/css/item/hfe-widgets-style-v4dba0137fb277de752ffd1f99acf1f2d015dc792.css'
         type='text/css' media='all' />
     <link rel='stylesheet' id='popup-maker-site-css'
-        href='https://www.eimaths-th.com/wp-content/uploads/pum/pum-site-styles1a56.css?generated=1671691530&amp;ver=1.17.1' type='text/css'
-        media='all' />
+        href='https://www.eimaths-th.com/wp-content/uploads/pum/pum-site-styles1a56.css?generated=1671691530&amp;ver=1.17.1'
+        type='text/css' media='all' />
     <link rel='stylesheet' id='divi-style-pum-css'
-        href='https://www.eimaths-th.com/wp-content/themes/Divi/style-static.min0349.css?ver=4.19.1' type='text/css' media='all' />
+        href='https://www.eimaths-th.com/wp-content/themes/Divi/style-static.min0349.css?ver=4.19.1' type='text/css'
+        media='all' />
     <link rel='stylesheet' id='google-fonts-1-css'
         href='https://fonts.googleapis.com/css?family=Roboto%3A100%2C100italic%2C200%2C200italic%2C300%2C300italic%2C400%2C400italic%2C500%2C500italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%2C900%2C900italic%7CRoboto+Slab%3A100%2C100italic%2C200%2C200italic%2C300%2C300italic%2C400%2C400italic%2C500%2C500italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%2C900%2C900italic%7CFredoka+One%3A100%2C100italic%2C200%2C200italic%2C300%2C300italic%2C400%2C400italic%2C500%2C500italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%2C900%2C900italic&amp;display=auto&amp;ver=6.0.5'
         type='text/css' media='all' />
     <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
-    <script type='text/javascript' src='https://www.eimaths-th.com/wp-includes/js/jquery/jquery.minaf6c.js?ver=3.6.0' id='jquery-core-js'></script>
-    <script type='text/javascript' src='https://www.eimaths-th.com/wp-includes/js/jquery/jquery-migrate.mind617.js?ver=3.3.2'
-        id='jquery-migrate-js'></script>
+    <script type='text/javascript' src='https://www.eimaths-th.com/wp-includes/js/jquery/jquery.minaf6c.js?ver=3.6.0'
+        id='jquery-core-js'></script>
+    <script type='text/javascript'
+        src='https://www.eimaths-th.com/wp-includes/js/jquery/jquery-migrate.mind617.js?ver=3.3.2' id='jquery-migrate-js'>
+    </script>
     <script type='text/javascript' id='jquery-js-after'>
         jqueryParams.length && $.each(jqueryParams, function(e, r) {
             if ("function" == typeof r) {
@@ -4007,16 +4011,20 @@
         };
         /* \]\]> */
     </script>
-    <script type='text/javascript' src='https://www.eimaths-th.com/wp-content/plugins/revslider/public/assets/js/rbtools.min9b30.js?ver=6.3.1'
+    <script type='text/javascript'
+        src='https://www.eimaths-th.com/wp-content/plugins/revslider/public/assets/js/rbtools.min9b30.js?ver=6.3.1'
         id='tp-tools-js'></script>
-    <script type='text/javascript' src='https://www.eimaths-th.com/wp-content/plugins/revslider/public/assets/js/rs6.min9b30.js?ver=6.3.1'
+    <script type='text/javascript'
+        src='https://www.eimaths-th.com/wp-content/plugins/revslider/public/assets/js/rs6.min9b30.js?ver=6.3.1'
         id='revmin-js'></script>
-    <script type='text/javascript' src='https://www.eimaths-th.com/wp-content/plugins/supercarousel/public/js/supercarouselmerged9e95.js?ver=3.8.0'
+    <script type='text/javascript'
+        src='https://www.eimaths-th.com/wp-content/plugins/supercarousel/public/js/supercarouselmerged9e95.js?ver=3.8.0'
         id='sc_merged-js'></script>
     <link rel="https://api.w.org/" href="https://www.eimaths-th.com/wp-json/index.html" />
     <link rel="alternate" type="application/json" href="https://www.eimaths-th.com/wp-json/wp/v2/pages/260.json" />
     <link rel="EditURI" type="application/rsd+xml" title="RSD" href="../xmlrpc0db0.php?rsd" />
-    <link rel="wlwmanifest" type="application/wlwmanifest+xml" href="https://www.eimaths-th.com/wp-includes/wlwmanifest.xml" />
+    <link rel="wlwmanifest" type="application/wlwmanifest+xml"
+        href="https://www.eimaths-th.com/wp-includes/wlwmanifest.xml" />
     <meta name="generator" content="WordPress 6.0.5" />
     <meta name="generator" content="WooCommerce 7.2.2" />
     <link rel='shortlink' href='../index8e1b.html?p=260' />
@@ -4204,9 +4212,12 @@
 
         gtag('config', 'AW-926876969');
     </script>
-    <link rel="icon" href="https://www.eimaths-th.com/wp-content/uploads/2019/08/cropped-footer-logo-32x32.png" sizes="32x32" />
-    <link rel="icon" href="https://www.eimaths-th.com/wp-content/uploads/2019/08/cropped-footer-logo-192x192.png" sizes="192x192" />
-    <link rel="apple-touch-icon" href="https://www.eimaths-th.com/wp-content/uploads/2019/08/cropped-footer-logo-180x180.png" />
+    <link rel="icon" href="https://www.eimaths-th.com/wp-content/uploads/2019/08/cropped-footer-logo-32x32.png"
+        sizes="32x32" />
+    <link rel="icon" href="https://www.eimaths-th.com/wp-content/uploads/2019/08/cropped-footer-logo-192x192.png"
+        sizes="192x192" />
+    <link rel="apple-touch-icon"
+        href="https://www.eimaths-th.com/wp-content/uploads/2019/08/cropped-footer-logo-180x180.png" />
     <meta name="msapplication-TileImage"
         content="https://eimaths.com/wp-content/uploads/2019/08/cropped-footer-logo-270x270.png" />
     <script type="text/javascript">
@@ -4420,7 +4431,8 @@
 
         window.onload = function() {
             var s = document.createElement('script');
-            s.setAttribute('src', "https://www.eimaths-th.com/wp-content/plugins/official-facebook-pixel/js/openbridge_plugin.js");
+            s.setAttribute('src',
+                "https://www.eimaths-th.com/wp-content/plugins/official-facebook-pixel/js/openbridge_plugin.js");
             s.setAttribute('onload', 'updateConfig()');
             document.body.appendChild(s);
         }
@@ -4428,7 +4440,7 @@
     <div id="page-container">
         <div id="et-boc" class="et-boc">
             {{-- @include('includes.header-ei') --}}
-         
+
             <!-- #main-header -->
             <div id="et-main-area">
                 <div id="main-content">
@@ -4457,7 +4469,7 @@
                                                     class="et_pb_module et_pb_text et_pb_text_0  et_pb_text_align_center et_pb_bg_layout_light">
                                                     <div class="et_pb_text_inner">
                                                         <h1>
-                                                           eiMaths
+                                                            eiMaths
 
                                                         </h1>
                                                         <h1>
@@ -4465,7 +4477,7 @@
                                                         </h1>
                                                         <h2>
 
-                                                            
+
 
                                                         </h2>
                                                     </div>
@@ -4488,8 +4500,9 @@
 
                                                     <span class="et_pb_image_wrap "><img loading="lazy"
                                                             width="1920" height="576"
-                                                            src="https://www.eimaths-th.com/wp-content/uploads/2022/07/4.jpg" alt=""
-                                                            title="4" class="wp-image-239982" /></span>
+                                                            src="https://www.eimaths-th.com/wp-content/uploads/2022/07/4.jpg"
+                                                            alt="" title="4"
+                                                            class="wp-image-239982" /></span>
                                                 </div>
                                             </div>
                                         </div>
@@ -4502,19 +4515,20 @@
                                                 <div class="et_pb_text_inner">
                                                     <h1>
                                                         eiMaths Form
-                                                     </h1>
-                                                     <h1>
-                                                         
-                                                     </h1>
+                                                    </h1>
+                                                    <h1>
+
+                                                    </h1>
                                                     <h2>
 
-                                                     
+
                                                     </h2>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="et_pb_section et_pb_section_2 et_pb_with_background et_section_regular">
+                                    <div
+                                        class="et_pb_section et_pb_section_2 et_pb_with_background et_section_regular">
 
                                         <div class="et_pb_row et_pb_row_4">
                                             <div
@@ -4543,7 +4557,8 @@
                                                     @endif
                                                     <p id="response-container"> </p>
                                                     <div class="et_pb_contact">
-                                                        <form class="et_pb_contact_form clearfix" method="POST" id="form_contact" action="{{ route('ei-form.store') }}"
+                                                        <form class="et_pb_contact_form clearfix" method="POST"
+                                                            id="form_contact" action="{{ route('ei-form.store') }}"
                                                             enctype="multipart/form-data">
                                                             @csrf
 
@@ -4551,9 +4566,11 @@
                                                                 data-id="phone" data-type="input">
 
                                                                 <label for="et_pb_contact_phone_0"
-                                                                    class="et_pb_contact_form_label">First Name Student</label>
-                                                                <input type="text" id="first_name_student" class="input"
-                                                                    value="" name="first_name_student"
+                                                                    class="et_pb_contact_form_label">First Name
+                                                                    Student</label>
+                                                                <input type="text" id="first_name_student"
+                                                                    class="input" value=""
+                                                                    name="first_name_student"
                                                                     data-required_mark="required"
                                                                     data-field_type="input" data-original_id="phone"
                                                                     placeholder="First Name Student" required>
@@ -4563,22 +4580,28 @@
                                                                 data-id="email" data-type="email">
 
                                                                 <label for="et_pb_contact_email_0"
-                                                                    class="et_pb_contact_form_label">Last Name Student</label>
-                                                                <input type="text" id="last_name_student" class="input"
-                                                                    value="" name="last_name_student"
+                                                                    class="et_pb_contact_form_label">Last Name
+                                                                    Student</label>
+                                                                <input type="text" id="last_name_student"
+                                                                    class="input" value=""
+                                                                    name="last_name_student"
                                                                     data-required_mark="required"
-                                                                    data-field_type="input" data-original_id="last_name_student"
+                                                                    data-field_type="input"
+                                                                    data-original_id="last_name_student"
                                                                     placeholder="Last Name Student" required>
                                                             </p>
                                                             <p class="et_pb_contact_field et_pb_contact_field_2 et_pb_contact_field_half"
                                                                 data-id="phone" data-type="input">
 
                                                                 <label for="et_pb_contact_phone_0"
-                                                                    class="et_pb_contact_form_label">Nick Name Student</label>
-                                                                <input type="text" id="nick_name_student" class="input"
-                                                                    value="" name="nick_name_student"
+                                                                    class="et_pb_contact_form_label">Nick Name
+                                                                    Student</label>
+                                                                <input type="text" id="nick_name_student"
+                                                                    class="input" value=""
+                                                                    name="nick_name_student"
                                                                     data-required_mark="required"
-                                                                    data-field_type="input" data-original_id="nick_name_student"
+                                                                    data-field_type="input"
+                                                                    data-original_id="nick_name_student"
                                                                     placeholder="Nick Name Student" required>
                                                             </p>
                                                             <p class="et_pb_contact_field et_pb_contact_field_1 et_pb_contact_field_half et_pb_contact_field_last"
@@ -4589,7 +4612,8 @@
                                                                 <select id="category"
                                                                     class="et_pb_contact_select input" name="category"
                                                                     data-required_mark="not_required"
-                                                                    data-field_type="select" data-original_id="category">
+                                                                    data-field_type="select"
+                                                                    data-original_id="category">
                                                                     <option value="">Select Category</option>
                                                                     <option value="1">Category 1</option>
                                                                     <option value="2">Category 2</option>
@@ -4601,18 +4625,20 @@
                                                                 data-id="fname" data-type="input">
 
                                                                 <label for="et_pb_contact_fname_0"
-                                                                    class="et_pb_contact_form_label">Firs Name Parent</label>
+                                                                    class="et_pb_contact_form_label">Firs Name
+                                                                    Parent</label>
                                                                 <input type="text" id="fname" class="input"
                                                                     value="" name="fname" required
                                                                     data-field_type="input" data-original_id="fname"
-                                                                    placeholder="Firs Name Parent" >
+                                                                    placeholder="Firs Name Parent">
 
 
                                                             <p class="et_pb_contact_field et_pb_contact_field_1 et_pb_contact_field_half et_pb_contact_field_last"
                                                                 data-id="lname" data-type="input">
 
                                                                 <label for="et_pb_contact_lname_0"
-                                                                    class="et_pb_contact_form_label">Last Name Parent</label>
+                                                                    class="et_pb_contact_form_label">Last Name
+                                                                    Parent</label>
                                                                 <input type="text" id="lname" class="input"
                                                                     value="" name="lname"
                                                                     data-required_mark="required"
@@ -4644,7 +4670,7 @@
                                                                     data-field_type="email" data-original_id="email"
                                                                     placeholder="Email Address">
                                                             </p>
-                                                            
+
 
 
                                                             <p class="et_pb_contact_field et_pb_contact_field_6 et_pb_contact_field_last"
@@ -4664,126 +4690,234 @@
                                                             </div>
                                                         </form>
                                                         <script>
-                                                            
+                                                            // $('#SubmitCreateForm').click(function(e) {
+                                                            //     e.preventDefault();
+                                                            //     var fname = $('#fname').val();
+                                                            //     var lname = $('#lname').val();
+                                                            //     var telp = $('#telp').val();
+                                                            //     var email = $('#email').val();
+                                                            //     var category = $('#category').val();
+                                                            //     var first_name_student = $('#first_name_student').val();
+                                                            //     var last_name_student = $('#last_name_student').val();
+                                                            //     var nick_name_student = $('#nick_name_student').val();
+                                                            //     var message = $('#message').val();
+                                                            //     var token = $('meta[name="csrf-token"]').attr('content');
+
+                                                            //     // how to for each alert all input
+
+                                                            //     if (telp == '' && email == '') {
+                                                            //         $('#error-container').show();
+                                                            //         $('#error-container').html('<li>Please enter telp or email </li>');
+                                                            //         alert('Please enter telp or email');
+                                                            //         return;
+                                                            //     }
+                                                            //     if (fname == '') {
+                                                            //         $('#error-container').show();
+                                                            //         $('#error-container').html('<li>Please enter first name parent </li>');
+                                                            //         alert('Please enter first name parent');
+                                                            //         return;
+                                                            //     }
+                                                            //     if (lname == '') {
+                                                            //         $('#error-container').show();
+                                                            //         $('#error-container').html('<li>Please enter last name parent </li>');
+                                                            //         alert('Please enter last name parent');
+                                                            //         return;
+                                                            //     }
+                                                            //     if (first_name_student == '') {
+                                                            //         $('#error-container').show();
+                                                            //         $('#error-container').html('<li>Please enter first name student </li>');
+                                                            //         alert('Please enter first name student');
+                                                            //         return;
+                                                            //     }
+                                                            //     if (last_name_student == '') {
+                                                            //         $('#error-container').show();
+                                                            //         $('#error-container').html('<li>Please enter last name student </li>');
+                                                            //         alert('Please enter last name student');
+                                                            //         return;
+                                                            //     }
+                                                            //     if (nick_name_student == '') {
+                                                            //         $('#error-container').show();
+                                                            //         $('#error-container').html('<li>Please enter nick name student </li>');
+                                                            //         alert('Please enter nick name student');
+                                                            //         return;
+                                                            //     }
+                                                            //     if (message == '') {
+                                                            //         $('#error-container').show();
+                                                            //         $('#error-container').html('<li>Please enter address </li>');
+                                                            //         alert('Please enter address');
+                                                            //         return;
+                                                            //     }
+
+                                                            //     $.ajax({
+                                                            //             url: "{{ route('ei-form.store') }}",
+                                                            //             type: "POST",
+                                                            //             method: "POST",
+
+                                                            //             data: {
+                                                            //                 first_name_parent: fname,
+                                                            //                 last_name_parent: lname,
+                                                            //                 telp_parent: telp,
+                                                            //                 email_parent: email,
+                                                            //                 category: category,
+                                                            //                 first_name_student: first_name_student,
+                                                            //                 last_name_student: last_name_student,
+                                                            //                 nick_name_student: nick_name_student,
+                                                            //                 address: message,
+                                                            //                 _token: token,
+                                                            //             },
+                                                            //             success: function(result) {
+
+                                                            //                 var pdpa = $('#form_contact').hide();
+                                                            //                 var pdpa = $('#error-container').hide();
+                                                            //                 // $('#msg').text(result.msg);
+                                                            //                 // $('#msg').text(result.msg);
+                                                            //                 // $('#msg2').text(result.msg2);
+                                                            //                 $('#response-container').html(result.html);
+
+
+                                                            //             },
+                                                            //             error: function(xhr) {
+                                                            //                 // Handle errors here
+
+                                                            //                 // Parse the JSON response (if the server returns JSON error messages)
+                                                            //                 var errorResponse;
+                                                            //                 try {
+                                                            //                     errorResponse = JSON.parse(xhr.responseText);
+                                                            //                 } catch (e) {
+                                                            //                     // If the response is not JSON, handle the error appropriately (optional)
+                                                            //                     console.error('Error parsing JSON response:', e);
+                                                            //                     return; // Exit the error handling function
+                                                            //                 }
+
+                                                            //                 if (errorResponse && errorResponse.errors) {
+                                                            //                     // Display the errors in the error container
+                                                            //                     var errorContainer = $('#error-container');
+                                                            //                     errorContainer.empty();
+                                                            //                     errorContainer.show();
+
+                                                            //                     // Append each error message to the container
+                                                            //                     $.each(errorResponse.errors, function(field, messages) {
+                                                            //                         $.each(messages, function(index, message) {
+                                                            //                             errorContainer.append('<li>' + message + '</li>');
+                                                            //                         });
+                                                            //                     });
+                                                            //                 } else {
+                                                            //                     // Handle the case where there are no errors but other error responses (optional)
+                                                            //                     console.error('Unexpected error response:', errorResponse);
+                                                            //                 }
+                                                            //             }
+
+                                                            //         });
+
+
+                                                            // });
+
                                                             $('#SubmitCreateForm').click(function(e) {
                                                                 e.preventDefault();
-                                                                var fname = $('#fname').val();
-                                                                var lname = $('#lname').val();
+
+                                                                var fields = [{
+                                                                        id: 'fname',
+                                                                        label: 'first name parent'
+                                                                    },
+                                                                    {
+                                                                        id: 'lname',
+                                                                        label: 'last name parent'
+                                                                    },
+                                                                    {
+                                                                        id: 'first_name_student',
+                                                                        label: 'first name student'
+                                                                    },
+                                                                    {
+                                                                        id: 'last_name_student',
+                                                                        label: 'last name student'
+                                                                    },
+                                                                    {
+                                                                        id: 'nick_name_student',
+                                                                        label: 'nick name student'
+                                                                    },
+                                                                    {
+                                                                        id: 'message',
+                                                                        label: 'address'
+                                                                    }
+                                                                ];
+
                                                                 var telp = $('#telp').val();
                                                                 var email = $('#email').val();
-                                                                var category = $('#category').val();
-                                                                var first_name_student = $('#first_name_student').val();
-                                                                var last_name_student = $('#last_name_student').val();
-                                                                var nick_name_student = $('#nick_name_student').val();
-                                                                var message = $('#message').val();
                                                                 var token = $('meta[name="csrf-token"]').attr('content');
+                                                                var category = $('#category').val();
 
+                                                                var errorMessages = [];
 
-                                                                if (telp == '' && email == '') {
-                                                                    $('#error-container').show();
-                                                                    $('#error-container').html('<li>Please enter telp or email </li>');
-                                                                    alert('Please enter telp or email');
-                                                                    return;
+                                                                // Check if either telp or email is provided
+                                                                if (telp === '' && email === '') {
+                                                                    errorMessages.push('Please enter telp or email');
                                                                 }
-                                                                if (fname == '') {
-                                                                    $('#error-container').show();
-                                                                    $('#error-container').html('<li>Please enter first name parent </li>');
-                                                                    alert('Please enter first name parent');
-                                                                    return;
-                                                                }
-                                                                if (lname == '') {
-                                                                    $('#error-container').show();
-                                                                    $('#error-container').html('<li>Please enter last name parent </li>');
-                                                                    alert('Please enter last name parent');
-                                                                    return;
-                                                                }
-                                                                if (first_name_student == '') {
-                                                                    $('#error-container').show();
-                                                                    $('#error-container').html('<li>Please enter first name student </li>');
-                                                                    alert('Please enter first name student');
-                                                                    return;
-                                                                }
-                                                                if (last_name_student == '') {
-                                                                    $('#error-container').show();
-                                                                    $('#error-container').html('<li>Please enter last name student </li>');
-                                                                    alert('Please enter last name student');
-                                                                    return;
-                                                                }
-                                                                if (nick_name_student == '') {
-                                                                    $('#error-container').show();
-                                                                    $('#error-container').html('<li>Please enter nick name student </li>');
-                                                                    alert('Please enter nick name student');
-                                                                    return;
-                                                                }
-                                                                if (message == '') {
-                                                                    $('#error-container').show();
-                                                                    $('#error-container').html('<li>Please enter address </li>');
-                                                                    alert('Please enter address');
+
+                                                                // Loop through required fields
+                                                                fields.forEach(function(field) {
+                                                                    var value = $('#' + field.id).val();
+                                                                    if (value === '') {
+                                                                        errorMessages.push('Please enter ' + field.label);
+                                                                    }
+                                                                });
+
+                                                                // If there are errors, show and stop
+                                                                if (errorMessages.length > 0) {
+                                                                    var errorContainer = $('#error-container');
+                                                                    errorContainer.empty().show();
+                                                                    errorMessages.forEach(function(msg) {
+                                                                        errorContainer.append('<li>' + msg + '</li>');
+                                                                    });
+                                                                    alert(errorMessages.join('\n'));
                                                                     return;
                                                                 }
 
+                                                                // Prepare data
+                                                                var formData = {
+                                                                    first_name_parent: $('#fname').val(),
+                                                                    last_name_parent: $('#lname').val(),
+                                                                    telp_parent: telp,
+                                                                    email_parent: email,
+                                                                    category: category,
+                                                                    first_name_student: $('#first_name_student').val(),
+                                                                    last_name_student: $('#last_name_student').val(),
+                                                                    nick_name_student: $('#nick_name_student').val(),
+                                                                    address: $('#message').val(),
+                                                                    _token: token,
+                                                                };
+
+                                                                // Submit form via AJAX
                                                                 $.ajax({
-                                                                        url: "{{ route('ei-form.store') }}",
-                                                                        type: "POST",
-                                                                        method: "POST",
-
-                                                                        data: {
-                                                                            first_name_parent: fname,
-                                                                            last_name_parent: lname,
-                                                                            telp_parent: telp,
-                                                                            email_parent: email,
-                                                                            category: category,
-                                                                            first_name_student: first_name_student,
-                                                                            last_name_student: last_name_student,
-                                                                            nick_name_student: nick_name_student,
-                                                                            address: message,
-                                                                            _token: token,
-                                                                        },
-                                                                        success: function(result) {
-
-                                                                            var pdpa = $('#form_contact').hide();
-                                                                            var pdpa = $('#error-container').hide();
-                                                                            // $('#msg').text(result.msg);
-                                                                            // $('#msg').text(result.msg);
-                                                                            // $('#msg2').text(result.msg2);
-                                                                            $('#response-container').html(result.html);
-
-
-                                                                        },
-                                                                        error: function(xhr) {
-                                                                            // Handle errors here
-
-                                                                            // Parse the JSON response (if the server returns JSON error messages)
-                                                                            var errorResponse;
-                                                                            try {
-                                                                                errorResponse = JSON.parse(xhr.responseText);
-                                                                            } catch (e) {
-                                                                                // If the response is not JSON, handle the error appropriately (optional)
-                                                                                console.error('Error parsing JSON response:', e);
-                                                                                return; // Exit the error handling function
-                                                                            }
-
-                                                                            if (errorResponse && errorResponse.errors) {
-                                                                                // Display the errors in the error container
-                                                                                var errorContainer = $('#error-container');
-                                                                                errorContainer.empty();
-                                                                                errorContainer.show();
-
-                                                                                // Append each error message to the container
-                                                                                $.each(errorResponse.errors, function(field, messages) {
-                                                                                    $.each(messages, function(index, message) {
-                                                                                        errorContainer.append('<li>' + message + '</li>');
-                                                                                    });
-                                                                                });
-                                                                            } else {
-                                                                                // Handle the case where there are no errors but other error responses (optional)
-                                                                                console.error('Unexpected error response:', errorResponse);
-                                                                            }
+                                                                    url: "{{ route('ei-form.store') }}",
+                                                                    type: "POST",
+                                                                    data: formData,
+                                                                    success: function(result) {
+                                                                        $('#form_contact').hide();
+                                                                        $('#error-container').hide();
+                                                                        $('#response-container').html(result.html);
+                                                                    },
+                                                                    error: function(xhr) {
+                                                                        var errorResponse;
+                                                                        try {
+                                                                            errorResponse = JSON.parse(xhr.responseText);
+                                                                        } catch (e) {
+                                                                            console.error('Error parsing JSON response:', e);
+                                                                            return;
                                                                         }
 
-                                                                    });
-
-
+                                                                        if (errorResponse && errorResponse.errors) {
+                                                                            var errorContainer = $('#error-container');
+                                                                            errorContainer.empty().show();
+                                                                            $.each(errorResponse.errors, function(field, messages) {
+                                                                                $.each(messages, function(index, message) {
+                                                                                    errorContainer.append('<li>' + message + '</li>');
+                                                                                });
+                                                                            });
+                                                                        } else {
+                                                                            console.error('Unexpected error response:', errorResponse);
+                                                                        }
+                                                                    }
+                                                                });
                                                             });
                                                         </script>
                                                     </div>
@@ -4803,7 +4937,7 @@
 
 
                                                     <div class="et_pb_text_inner">
-                                                       
+
                                                     </div>
                                                 </div>
                                                 <div
@@ -4813,13 +4947,13 @@
                                                 <div
                                                     class="et_pb_module et_pb_blurb et_pb_blurb_1 et_animated et_clickable  et_pb_text_align_left  et_pb_blurb_position_left et_pb_bg_layout_light">
 
-                                                   
+
                                                 </div>
                                                 <div
                                                     class="et_pb_module et_pb_blurb et_pb_blurb_2 et_animated et_clickable  et_pb_text_align_left  et_pb_blurb_position_left et_pb_bg_layout_light">
 
                                                     <div class="et_pb_blurb_content">
-                                                       
+
                                                     </div>
                                                 </div>
                                                 <div class="et_pb_module et_pb_image et_pb_image_2 contact-image">
@@ -4843,7 +4977,7 @@
                                                 <div
                                                     class="et_pb_module et_pb_code et_pb_code_0 et_animated  et_pb_text_align_center">
                                                     <div class="et_pb_code_inner">
-                                                       
+
                                                     </div>
                                                 </div>
                                             </div>
@@ -5590,8 +5724,7 @@
                                                                                 <tr class="eae-table__body-row">
 
                                                                                     <td class="eae-table__body_row_column elementor-repeater-item-2b03c3e"
-                                                                                        colspan="1"
-                                                                                        rowspan="1">
+                                                                                        colspan="1" rowspan="1">
                                                                                         <div
                                                                                             class="eae-table__body-column-wrapper">
                                                                                             <div
@@ -5607,8 +5740,7 @@
 
 
                                                                                     <td class="eae-table__body_row_column elementor-repeater-item-fb9d87a"
-                                                                                        colspan="1"
-                                                                                        rowspan="1">
+                                                                                        colspan="1" rowspan="1">
                                                                                         <div
                                                                                             class="eae-table__body-column-wrapper">
                                                                                             <div
@@ -5627,8 +5759,7 @@
                                                                                 <tr class="eae-table__body-row">
 
                                                                                     <td class="eae-table__body_row_column elementor-repeater-item-a938f5a"
-                                                                                        colspan="1"
-                                                                                        rowspan="1">
+                                                                                        colspan="1" rowspan="1">
                                                                                         <div
                                                                                             class="eae-table__body-column-wrapper">
                                                                                             <div
@@ -10787,7 +10918,8 @@
     <script type='text/javascript'
         src='https://www.eimaths-th.com/wp-content/plugins/addon-elements-for-elementor-page-builder/assets/lib/vegas/vegas.min8d5a.js?ver=2.4.0'
         id='vegas-js'></script>
-    <script type='text/javascript' src='https://www.eimaths-th.com/wp-content/plugins/honeypot/includes/js/wpa4c56.js?ver=2.0.2' id='wpascript-js'>
+    <script type='text/javascript'
+        src='https://www.eimaths-th.com/wp-content/plugins/honeypot/includes/js/wpa4c56.js?ver=2.0.2' id='wpascript-js'>
     </script>
     {{-- <script type='text/javascript' id='wpascript-js-after'>
         wpa_field_info = {
@@ -10796,7 +10928,8 @@
             "wpa_add_test": "no"
         }
     </script> --}}
-    <script type='text/javascript' src='https://www.eimaths-th.com/wp-includes/js/imagesloaded.mineda1.js?ver=4.1.4' id='imagesloaded-js'></script>
+    <script type='text/javascript' src='https://www.eimaths-th.com/wp-includes/js/imagesloaded.mineda1.js?ver=4.1.4'
+        id='imagesloaded-js'></script>
     <script type='text/javascript'
         src='https://www.eimaths-th.com/wp-content/plugins/testimonial-pro/public/assets/js/jquery.validate.min5bf8.js?ver=2.2.5'
         id='tpro-validate-js-js'></script>
@@ -10806,10 +10939,13 @@
     <script type='text/javascript'
         src='https://www.eimaths-th.com/wp-content/plugins/testimonial-pro/public/assets/js/infinite-scroll.pkgd.min5bf8.js?ver=2.2.5'
         id='tpro-infite-scroll-js'></script>
-    <script type='text/javascript' src='https://www.eimaths-th.com/wp-includes/js/masonry.min3a05.js?ver=4.2.2' id='masonry-js'></script>
-    <script type='text/javascript' src='https://www.eimaths-th.com/wp-includes/js/jquery/jquery.masonry.minef70.js?ver=3.1.2b'
-        id='jquery-masonry-js'></script>
-    <script type='text/javascript' src='https://www.eimaths-th.com/wp-content/plugins/testimonial-pro/public/assets/js/scripts.min5bf8.js?ver=2.2.5'
+    <script type='text/javascript' src='https://www.eimaths-th.com/wp-includes/js/masonry.min3a05.js?ver=4.2.2'
+        id='masonry-js'></script>
+    <script type='text/javascript'
+        src='https://www.eimaths-th.com/wp-includes/js/jquery/jquery.masonry.minef70.js?ver=3.1.2b' id='jquery-masonry-js'>
+    </script>
+    <script type='text/javascript'
+        src='https://www.eimaths-th.com/wp-content/plugins/testimonial-pro/public/assets/js/scripts.min5bf8.js?ver=2.2.5'
         id='tpro-scripts-js'></script>
     <script type='text/javascript'
         src='https://www.eimaths-th.com/wp-content/plugins/woocommerce/assets/js/jquery-blockui/jquery.blockUI.min8bd8.js?ver=2.7.0-wc.7.2.2'
@@ -10827,8 +10963,8 @@
         /* ]]> */
     </script>
     <script type='text/javascript'
-        src='https://www.eimaths-th.com/wp-content/plugins/woocommerce/assets/js/frontend/add-to-cart.mincb57.js?ver=7.2.2' id='wc-add-to-cart-js'>
-    </script>
+        src='https://www.eimaths-th.com/wp-content/plugins/woocommerce/assets/js/frontend/add-to-cart.mincb57.js?ver=7.2.2'
+        id='wc-add-to-cart-js'></script>
     <script type='text/javascript'
         src='https://www.eimaths-th.com/wp-content/plugins/woocommerce/assets/js/js-cookie/js.cookie.min5f13.js?ver=2.1.4-wc.7.2.2'
         id='js-cookie-js'></script>
@@ -10841,8 +10977,8 @@
         /* ]]> */
     </script>
     <script type='text/javascript'
-        src='https://www.eimaths-th.com/wp-content/plugins/woocommerce/assets/js/frontend/woocommerce.mincb57.js?ver=7.2.2' id='woocommerce-js'>
-    </script>
+        src='https://www.eimaths-th.com/wp-content/plugins/woocommerce/assets/js/frontend/woocommerce.mincb57.js?ver=7.2.2'
+        id='woocommerce-js'></script>
     <script type='text/javascript' id='wc-cart-fragments-js-extra'>
         /* <![CDATA[ */
         var wc_cart_fragments_params = {
@@ -10925,8 +11061,8 @@
     <script type='text/javascript'
         src='https://www.eimaths-th.com/wp-content/plugins/addon-elements-for-elementor-page-builder/assets/lib/lottie/lottie.min76f9.js?ver=5.6.8'
         id='eae-lottie-js'></script>
-    <script type='text/javascript' src='https://www.eimaths-th.com/wp-includes/js/jquery/ui/core.min0028.js?ver=1.13.1' id='jquery-ui-core-js'>
-    </script>
+    <script type='text/javascript' src='https://www.eimaths-th.com/wp-includes/js/jquery/ui/core.min0028.js?ver=1.13.1'
+        id='jquery-ui-core-js'></script>
     <script type='text/javascript' id='popup-maker-site-js-extra'>
         /* <![CDATA[ */
         var pum_vars = {
@@ -12160,23 +12296,29 @@
     <script type='text/javascript'
         src='https://www.eimaths-th.com/wp-content/uploads/pum/pum-site-scripts5cf7.js?defer&amp;generated=1671691530&amp;ver=1.17.1'
         id='popup-maker-site-js'></script>
-    <script type='text/javascript' src='https://www.eimaths-th.com/wp-content/themes/Divi/core/admin/js/common0349.js?ver=4.19.1'
+    <script type='text/javascript'
+        src='https://www.eimaths-th.com/wp-content/themes/Divi/core/admin/js/common0349.js?ver=4.19.1'
         id='et-core-common-js'></script>
     <script type='text/javascript'
         src='https://www.eimaths-th.com/wp-content/themes/Divi/includes/builder/feature/dynamic-assets/assets/js/jquery.fitvids0349.js?ver=4.19.1'
         id='fitvids-js'></script>
-    <script type='text/javascript' src='https://www.eimaths-th.com/wp-content/plugins/elementor/assets/js/webpack.runtime.min2e46.js?ver=3.9.2'
+    <script type='text/javascript'
+        src='https://www.eimaths-th.com/wp-content/plugins/elementor/assets/js/webpack.runtime.min2e46.js?ver=3.9.2'
         id='elementor-webpack-runtime-js'></script>
-    <script type='text/javascript' src='https://www.eimaths-th.com/wp-content/plugins/elementor/assets/js/frontend-modules.min2e46.js?ver=3.9.2'
+    <script type='text/javascript'
+        src='https://www.eimaths-th.com/wp-content/plugins/elementor/assets/js/frontend-modules.min2e46.js?ver=3.9.2'
         id='elementor-frontend-modules-js'></script>
-    <script type='text/javascript' src='https://www.eimaths-th.com/wp-content/plugins/elementor/assets/lib/waypoints/waypoints.min05da.js?ver=4.0.2'
+    <script type='text/javascript'
+        src='https://www.eimaths-th.com/wp-content/plugins/elementor/assets/lib/waypoints/waypoints.min05da.js?ver=4.0.2'
         id='elementor-waypoints-js'></script>
-    <script type='text/javascript' src='https://www.eimaths-th.com/wp-content/plugins/elementor/assets/lib/swiper/swiper.min48f5.js?ver=5.3.6'
+    <script type='text/javascript'
+        src='https://www.eimaths-th.com/wp-content/plugins/elementor/assets/lib/swiper/swiper.min48f5.js?ver=5.3.6'
         id='swiper-js'></script>
     <script type='text/javascript'
-        src='https://www.eimaths-th.com/wp-content/plugins/elementor/assets/lib/share-link/share-link.min2e46.js?ver=3.9.2' id='share-link-js'>
-    </script>
-    <script type='text/javascript' src='https://www.eimaths-th.com/wp-content/plugins/elementor/assets/lib/dialog/dialog.mind227.js?ver=4.9.0'
+        src='https://www.eimaths-th.com/wp-content/plugins/elementor/assets/lib/share-link/share-link.min2e46.js?ver=3.9.2'
+        id='share-link-js'></script>
+    <script type='text/javascript'
+        src='https://www.eimaths-th.com/wp-content/plugins/elementor/assets/lib/dialog/dialog.mind227.js?ver=4.9.0'
         id='elementor-dialog-js'></script>
     <script type='text/javascript' id='elementor-frontend-js-before'>
         var elementorFrontendConfig = {
@@ -12290,9 +12432,11 @@
             }
         };
     </script>
-    <script type='text/javascript' src='https://www.eimaths-th.com/wp-content/plugins/elementor/assets/js/frontend.min2e46.js?ver=3.9.2'
+    <script type='text/javascript'
+        src='https://www.eimaths-th.com/wp-content/plugins/elementor/assets/js/frontend.min2e46.js?ver=3.9.2'
         id='elementor-frontend-js'></script>
-    <script type='text/javascript' src='https://www.eimaths-th.com/wp-content/plugins/elementor/assets/js/preloaded-modules.min2e46.js?ver=3.9.2'
+    <script type='text/javascript'
+        src='https://www.eimaths-th.com/wp-content/plugins/elementor/assets/js/preloaded-modules.min2e46.js?ver=3.9.2'
         id='preloaded-modules-js'></script>
     <!-- start Simple Custom CSS and JS -->
     <script type="text/javascript">

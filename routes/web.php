@@ -103,6 +103,7 @@ Route::group(['middleware' => ['auth', 'affiliate.redirect']], function () {
 
     Route::get('/level/find/{type}/{level}', [App\Http\Controllers\ContactController::class, 'lfind'])->name('level.find');
     Route::get('/term/find/{type}/{level}/{term}', [App\Http\Controllers\ContactController::class, 'tfind'])->name('term.find');
+    Route::get('/scoin', [App\Http\Controllers\ContactController::class, 'sCoin'])->name('term.scoin');
 
     Route::get('/orders', [App\Http\Controllers\OrderController::class, 'index'])->name('orders');
     Route::get('/orders/running', [App\Http\Controllers\OrderController::class, 'create'])->name('orders.running');

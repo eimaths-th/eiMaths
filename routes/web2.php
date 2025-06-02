@@ -283,3 +283,4 @@ Route::get('/test-system-questions', [TestSystemQuestionsController::class, 'ind
 Route::get('/test-system-questions/create', [TestSystemQuestionsController::class, 'create'])->name('ts.questions.create');
 Route::get('/test-system-questions/view', [TestSystemQuestionsController::class, 'view'])->name('ts.questions.view');
 Route::post('/test-system-questions', [TestSystemQuestionsController::class, 'store'])->name('ts.questions.store');
+Route::get('/test-system-questions/emptyView', [TestSystemQuestionsController::class, 'emptyView'])->name('ts.questions.emptyView');

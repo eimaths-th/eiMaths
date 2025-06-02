@@ -995,7 +995,7 @@ class ContactController extends Controller
             $input_order_detail2['price'] = $fprice2;
             $order_detail2 = OrderDetail::create($input_order_detail2);
         }
-        
+
         // dd($request->all());
         if ($request->get('ref')) {
             $commmissionList = create_commmission_list($order->id, $courses_pending_id, $request->get('ref')); // on helper
@@ -1535,15 +1535,60 @@ class ContactController extends Controller
 
             return response()->json([
                 'html' =>  $select_list,
-
                 'scoin' => $result_coin,
             ]);
         }
     }
-    public function exportContact(Request $request)
+
+    public function sCoin(Request $request,)
     {
 
-        // dd($request);
+        $book = $request->get('book');
+        $level = $request->get('level');
+        $term = $request->get('term');
+
+        $book2 = $request->get('book2');
+        $level2 = $request->get('level2');
+        $term2 = $request->get('term2');
+
+        $result_coin = 0;
+        $check = false;
+        $type_book1 = bookuse::find($book)->type;
+        $type_book2 = bookuse::find($book2)->type;
+
+        if ($type_book1 == 1 && $type_book2 == 1) {
+            $full_books = bookuse::whereBetween('id', [$book, $book2])
+                ->where('type', 1)
+                ->get();
+        } elseif ($type_book1 == 2 && $type_book2 == 2) {
+            $full_books = bookuse::whereBetween('id', [$book, $book2])
+                ->where('type', 2)
+                ->get();
+        } else {
+            $full_books = bookuse::whereBetween('level_id', [$level, $level2])
+                ->whereBetween('term_id', [$term, $term2])
+                ->where('type', 1)
+
+                ->get();
+            $check = true;
+        }
+
+        foreach ($full_books as $full_book) {
+
+            $result_coin += $full_book->qty;
+        }
+
+        if ($check) {
+            $result_coin = $result_coin - 5;
+        }
+
+        return response()->json([
+            'scoin' => $result_coin,
+        ]);
+    }
+
+    public function exportContact(Request $request)
+    {
 
         if ($request->excel === "1") {
             # code...
