@@ -23,7 +23,8 @@ class AffiliateTransactionRepository
         if($withdraw){
             $user_wallet = AffiliateUserWallet::where('user_id',$data['user_id'])->first();
             if($user_wallet){
-                $update_wallet_amount = $user_wallet->amount - $data['withdraw_amount'];
+                // $update_wallet_amount = $user_wallet->amount - $data['withdraw_amount'];
+                $update_wallet_amount = $user_wallet->amount;
                 $user_wallet->update(['amount' => $update_wallet_amount]);
             }
         }

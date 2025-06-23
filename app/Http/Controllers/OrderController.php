@@ -627,7 +627,8 @@ class OrderController extends Controller
 
     private function sent_ref_to_reciept($ref, $order_id,$courses_pending_id)
     {
-
+        $month = date('m');
+        $year = date('Y');
         $user = User::where('referral', $ref)->first();
         $order = Order::find($order_id);
         $aff_config = AffiliateConfiguration::find(3);
@@ -636,6 +637,8 @@ class OrderController extends Controller
             'payment_to' => $user->id,
             'courses_pending_id' => $courses_pending_id,
             'order_id' => $order_id,
+            'month' => $month,
+            'year' => $year,
             'status' => 'pending',
             'commission_amount' => ($order->total_price - ($order->register_fee + $order->access_fee)) * $commission_rate,
         ]);
@@ -765,7 +768,8 @@ class OrderController extends Controller
 
             if ($c == 0 && $order->ref) { 
 
-                $commission  = $this->sent_ref_to_reciept($order->ref, $receipt->oid, $receipt->courses_pending_id ?? null);
+                // $commission  = $this->sent_ref_to_reciept($order->ref, $receipt->oid, $receipt->courses_pending_id ?? null);
+                create_commmission_list($receipt->oid, $receipt->courses_pending_id ?? null, $order->ref);
             }
 
             if ($order->courses_pending_id) {

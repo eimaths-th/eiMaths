@@ -55,7 +55,12 @@ class UserController extends Controller
         if ($request->ajax()) {
             //sleep(2);
 
-            $datas = User::with('department', 'position')->orderBy("id", "desc")->get();
+            $datas = User::with('department', 'position')->orderBy("id", "desc")
+                ->where(function ($query) {
+                    $query->where('affiliate_request', '!=', 1)
+                        ->orWhereNull('affiliate_request');
+                })
+                ->get();
             if (!Gate::allows('all-centre')) {
                 $datas->whereHas('department', function ($query) {
                     $query->where('id', Auth::user()->department->id);
@@ -111,6 +116,79 @@ class UserController extends Controller
             ->with(['position' => $position]);
     }
 
+    public function affiliateUser(Request $request)
+    {
+        /*  $data = User::orderBy('id', 'DESC')->paginate(5);
+        $roles = Role::pluck('name', 'name')->all();
+        return view('users.index', compact('data'))
+            ->with('i', ($request->input('page', 1) - 1) * 5)
+            ->with('roles', $roles); */
+        if (!Gate::allows('all-centre')) {
+            $roles = Role::pluck('name', 'id')->except([1, 4])->all();
+        } else {
+            $roles = Role::pluck('name', 'name')->all();
+        }
+
+        if ($request->ajax()) {
+            //sleep(2);
+
+            $datas = User::with('department', 'position')->orderBy("id", "desc")
+            ->where('affiliate_request', 1)
+            ->get();
+            if (!Gate::allows('all-centre')) {
+                $datas->whereHas('department', function ($query) {
+                    $query->where('id', Auth::user()->department->id);
+                });
+            }
+
+            // $datas->orderBy("id", "desc")->get();
+            return datatables()->of($datas)
+                ->editColumn('role', function (User $datas) {
+                    if (!empty($datas->getRoleNames())) {
+                        $urole = '';
+                        foreach ($datas->getRoleNames() as $v) {
+                            $urole = $v;
+                        }
+                    } else {
+                        $urole = '-';
+                    }
+
+                    return $urole;
+                })
+                ->editColumn('disable', function ($row) {
+                    return $row->disable == 1 ? "Yes" : "No";
+                })
+                ->editColumn('department', function ($row) {
+                    return $row->department->name;
+                })
+                ->editColumn('position', function ($row) {
+                    return $row->position->name;
+                })
+                ->editColumn('checkbox', function ($row) {
+                    return '<input type="checkbox" id="' . $row->id . '" class="flat" name="table_records[]" value="' . $row->id . '" >';
+                })
+                ->addColumn('action', function ($row) {
+                    if (Gate::allows('user-edit')) {
+                        $html = '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit</button> ';
+                    } else {
+                        $html = '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> Edit</button> ';
+                    }
+                    if (Gate::allows('user-delete')) {
+                        $html .= '<button type="button" data-rowid="' . $row->id . '" class="btn btn-sm btn-danger btn-delete-affiliate-user"><i class="fa fa-trash"></i> Delete</button>';
+                    } else {
+                        $html .= '<button type="button" class="btn btn-sm btn-danger disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-trash"></i> Delete</button> ';
+                    }
+                    return $html;
+                })->rawColumns(['checkbox', 'action'])->toJson();
+        }
+        $department = Department::where([['status', '1']])
+            ->orderBy("name", "asc")->get();
+        $position = Position::where([['status', '1']])
+            ->orderBy("name", "asc")->get();
+        return view('users.affiliate_user')->with('roles', $roles)
+            ->with(['department' => $department])
+            ->with(['position' => $position]);
+    }
     /**
      * Show the form for creating a new resource.
      *
@@ -337,6 +415,17 @@ class UserController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function destroy(Request $request)
+    {
+        /*    if (!Auth::user()->hasPermissionTo('user-delete')) {
+            return response()->json(['errors' => 'คุณไม่มีสิทธิ์ลบข้อมูล.'], 200);
+        } */
+        $id = $request->get('id');
+        User::find($id)->delete();
+        return ['success' => true, 'message' => 'Delete User Success'];
+        /* return redirect()->route('users.index')
+            ->with('success', 'User deleted successfully'); */
+    }
+    public function destroyAffiliateUser(Request $request)
     {
         /*    if (!Auth::user()->hasPermissionTo('user-delete')) {
             return response()->json(['errors' => 'คุณไม่มีสิทธิ์ลบข้อมูล.'], 200);

@@ -155,16 +155,16 @@
                                             </div>
                                         </div>
                                         <!--
-                                                        <div class="mt-4">
-                                                            <label for="questions" class="form-label">Questions</label>
-                                                            <select id="questions" name="questions[]" class="select2 form-control"
-                                                                multiple>
-                                                            </select>
-                                                            @error('questions')
+                                                                            <div class="mt-4">
+                                                                                <label for="questions" class="form-label">Questions</label>
+                                                                                <select id="questions" name="questions[]" class="select2 form-control"
+                                                                                    multiple>
+                                                                                </select>
+                                                                                @error('questions')
         <span class="text-red-600 text-sm mt-2">{{ $message }}</span>
     @enderror
-                                                        </div>
-                                                        -->
+                                                                            </div>
+                                                                            -->
                                         {{-- <div class="mt-4 form-check">
                                             <div class="flex items-center">
                                                 <label for="published" class="form-label">Published</label>
@@ -209,13 +209,38 @@
                                                 <h4 class="mb-4">Create Question #1</h4>
 
                                                 <input type="hidden" id="formMethod" name="_method" value="POST">
-
+                                                <div class="mb-3">
+                                                    <select name="type" id="SelectType" class="form-control">
+                                                        <option value="">Select type answer</option>
+                                                        <option value="options">Options</option>
+                                                        <option value="written">Written</option>
+                                                        <option value="image">Image</option>
+                                                        <option value="fraction">Fraction</option>
+                                                    </select>
+                                                </div>
                                                 <div class="mb-3">
                                                     <label for="text" class="form-label">Question text</label>
                                                     <textarea id="text" class="form-control" name=text>{{ $question->text ?? old('text') }}</textarea>
                                                     @error('text')
                                                         <div class="text-danger mt-2">{{ $message }}</div>
                                                     @enderror
+                                                    <div class="row mt-2 fraction-button" id="fraction-button"
+                                                        style="display: none;">
+                                                        <div class="col-lg-2">
+                                                            <button type="button" class="btn btn-primary"
+                                                                onclick="insertFrac()">
+                                                                {{-- เศษส่วน --}}
+                                                                Fraction
+                                                            </button>
+                                                        </div>
+                                                        <div class="col-lg-2">
+                                                            <button type="button" class="btn btn-primary"
+                                                                onclick="insertMixed()">
+                                                                {{-- จำนวนคละ --}}
+                                                                MixFrac
+                                                            </button>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                                 <div class="mb-3">
                                                     <label for="text" class="form-label">Question Image</label>
@@ -232,14 +257,7 @@
                                                 @php
                                                     // dd($question);
                                                 @endphp
-                                                <div class="mb-3">
-                                                    <select name="type" id="SelectType" class="form-control">
-                                                        <option value="">Select type answer</option>
-                                                        <option value="options">Options</option>
-                                                        <option value="written">Written</option>
-                                                        <option value="image">Image</option>
-                                                    </select>
-                                                </div>
+
 
                                                 <div class="mb-3 written_type">
                                                     <label for="written" class="form-label">Question Written</label>
@@ -305,7 +323,60 @@
                                                     @enderror
                                                 </div>
 
+                                                <div class="mb-3 fraction_type">
+                                                    <hr>
+                                                    <h2>answers fraction</h2>
+                                                    <div class="mb-3">
+                                                        <label for="answer_type" class="form-label">Type Answer</label>
+                                                        <select name="answer_type_fraction" id="answer_type_fraction"
+                                                            class="form-control">
+                                                            <option value="">select type answer fraction</option>
+                                                            <option value="written">written</option>
+                                                            <option value="options">options</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="written_type_fraction" style="display: none;">
+                                                        <div class="mb-3">
+                                                            <label for="answer_numerator"
+                                                                class="form-label">Numerator</label>
+                                                            <input type="number" class="form-control"
+                                                                name="answer_numerator" id="answer_numerator"
+                                                                placeholder="numerator" required>
+                                                        </div>
 
+                                                        <div class="mb-3">
+                                                            <label for="answer_denominator"
+                                                                class="form-label">Denominator</label>
+                                                            <input type="number" class="form-control"
+                                                                name="answer_denominator" required id="answer_denominator"
+                                                                placeholder="denominator" min="1">
+                                                        </div>
+
+                                                        <div class="mb-3">
+                                                            <label for="answer_type" class="form-label">Type
+                                                                Fraction</label>
+                                                            <select name="answer_type" id="answer_type"
+                                                                class="form-control">
+                                                                <option value="frac">Fraction</option>
+                                                                <option value="mixed" selected>Mixed Fraction</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="options_type_fraction" style="display: none;">
+                                                        <button type="button" class="btn btn-sm btn-primary mt-2"
+                                                            id="add-fraction-option">Add Fraction</button>
+                                                        <div id="add-fraction-container">
+
+                                                        </div>
+
+                                                    </div>
+
+
+                                                    <hr>
+                                                </div>
+
+                                                <!-- Hint -->
                                                 <div class="mb-3">
                                                     <label for="code_snippet" class="form-label">Hint</label>
                                                     <textarea id="code_snippet" class="form-control" name="code_snippet">{{ $question->code_snippet ?? old('code_snippet') }}</textarea>
@@ -314,6 +385,7 @@
                                                     @enderror
                                                 </div>
 
+                                                <!-- Answer explanation -->
                                                 <div class="mb-3">
                                                     <label for="answer_explanation" class="form-label">Answer
                                                         explanation</label>
@@ -323,6 +395,7 @@
                                                     @enderror
                                                 </div>
 
+                                                <!-- More info link -->
                                                 <div class="mb-3">
                                                     <label for="more_info_link" class="form-label">More info link</label>
                                                     <input type="text" id="more_info_link" class="form-control"

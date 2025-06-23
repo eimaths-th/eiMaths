@@ -310,7 +310,7 @@ class DashboardController extends Controller
         $totalTransactionsSum = $datas->sum('count');
         $totaldis = $datas->sum('count_dis');
         $totalgradute = $datas->sum('count_gradute');
-
+        // dd($totalTransactionsSum, $totaldis, $totalgradute, $datas);
         return response()->json([
             'total_student' => $totalTransactionsSum,
             'total_discontinue' => $totaldis,

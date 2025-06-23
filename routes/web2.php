@@ -8,7 +8,9 @@ use App\Http\Controllers\CommissionListControler;
 use App\Http\Controllers\ConfigWithdrawController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\CourseController;
+use App\Http\Controllers\EiFormController;
 use App\Http\Controllers\eLeanController;
+use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LineApiController;
 use App\Http\Controllers\LineController;
@@ -18,6 +20,7 @@ use App\Http\Controllers\QuestionQuizzesController;
 use App\Http\Controllers\QuizController;
 use App\Http\Controllers\QuizzesController;
 use App\Http\Controllers\ResultController;
+use App\Http\Controllers\TestSystemQuestionsController;
 use App\Http\Livewire\Admin\AdminForm;
 use App\Http\Livewire\Admin\AdminList;
 use App\Http\Livewire\Admin\Tests\TestList;
@@ -28,11 +31,13 @@ use App\Http\Livewire\Question\QuestionForm;
 use App\Http\Livewire\Question\QuestionList;
 use App\Http\Livewire\Quiz\QuizForm;
 use App\Http\Livewire\Quiz\QuizList;
+use App\Models\affiliateConfigCommission;
 use App\Models\Contact;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Modules\Affiliate\Entities\AffiliateConfiguration;
 
 /*
 |--------------------------------------------------------------------------
@@ -178,26 +183,42 @@ Route::group(['middleware' => ['auth', 'affiliate.redirect']], function () {
     Route::post('/courses/pending/reset/{id}', [CourseController::class, 'coursesPendingReset'])->name('courses.pending.reset');
     Route::get('/courses/pending/new-student/{id}', [CourseController::class, 'coursesPendingNewStd'])->name('courses.pending.new.student');
     Route::post('/courses/pending/new-student/store', [CourseController::class, 'coursesPendingNewStdStore'])->name('courses.pending.new.student.store');
+    Route::get('/courses/pending/fetch/slip/{id}', [CourseController::class, 'fetchSlip'])->name('courses.pending.fetch.receipt');
+    Route::get('/courses/pending/getCheckRefStudnet', [CourseController::class, 'getCheckRefStudnet'])->name('courses.pending.getCheckRefStudnet');
 
     Route::get('/commission-list', [CommissionListControler::class, 'index'])->name('commission-list.index');
     Route::post('/commission/update-status', [CommissionListControler::class, 'updateStatus'])->name('commission-list.updateStatus');
+    Route::post('/commission-list/view', [CommissionListControler::class, 'show'])->name('commission-list.view');
     Route::get('/affiliate-configurations', [AffiliateConfigurationsController::class, 'index'])->name('affiliate-configurations.index');
     Route::post('/update-commission-config', [AffiliateConfigurationsController::class, 'update'])->name('affiliate-configurations.update');
 
     Route::get('/config-withdraw', [ConfigWithdrawController::class, 'index'])->name('config-withdraw.index');
     Route::post('/config-withdraw/approve', [ConfigWithdrawController::class, 'approve_withdraw'])->name('config_withdraw.approve');
+    Route::post('/commission/updateConfigComission', [AffiliateConfigurationsController::class, 'updateConfigComission'])->name('commission.updateConfigComission');
+    Route::post('/approve-withdraws', [ConfigWithdrawController::class, 'approveWithdraws'])->name('withdraw.approve-all');
+    Route::post('/config-withdraw/view', [ConfigWithdrawController::class, 'show'])->name('config-withdraw.view');
 
 
+    //feedback routes
+    Route::get('/feedback', [FeedbackController::class, 'index'])->name('feedback.index');
+    Route::get('/feedback/create', [FeedbackController::class, 'create'])->name('feedback.create');
+    Route::post('/feedback', [FeedbackController::class, 'store'])->name('feedback.store');
+    Route::get('/feedback/{feedback}', [FeedbackController::class, 'show'])->name('feedback.show');
+    Route::post('/feedback/{feedback}/update-status', [FeedbackController::class, 'updateStatus'])->name('feedback.updateStatus');
 
 });
 
 Route::group(['middleware' => ['auth.userOrStudent', 'affiliate.redirect']], function () {
     Route::get('quiz-home', [eLeanController::class, 'home'])->name('home3');
+    // Route::get('/quiz/save-answer', [QuizController::class, 'saveAnswer'])->name('quiz.saveAnswer');
+    Route::post('/quiz/save-answer', [QuizController::class, 'saveAnswer'])->name('quiz.saveAnswer');
+    Route::post('quiz/{quiz}/next/{currentQuestionIndex}', [QuizController::class, 'nextQuestion'])->name('quiz.next');
+
+
     Route::get('quiz-home/{level}', [eLeanController::class, 'homeLevel'])->name('home.level');
     Route::get('quiz-home/{level}/{term}', [eLeanController::class, 'homeTerm'])->name('home.term');
     Route::get('quiz-home/{level}/{term}/{section}', [eLeanController::class, 'homeSection'])->name('home.section');
     Route::get('quiz/{quiz}', [QuizController::class, 'show'])->name('quiz.show');
-    Route::post('quiz/{quiz}/next/{currentQuestionIndex}', [QuizController::class, 'nextQuestion'])->name('quiz.next');
     Route::post('quiz/{quiz}/submit', [QuizController::class, 'submit'])->name('quiz.submit');
     Route::get('results/{test}', [ResultController::class, 'show'])->name('results.show');
     Route::get('myresults', [eLeanController::class, 'myResult'])->name('myresults');
@@ -230,6 +251,9 @@ Route::post('/affiliate/logout', [AffiliateAuthController::class, 'logout'])->na
 Route::post('/affiliate/my_affiliate/add-or-update-paypal-account', [AffiliateAuthController::class, 'addOrUpdatePaypalAccount'])->name('add_or_update_paypal_account');
 // In your web.php routes file
 Route::post('/courses/pending', [CourseController::class, 'coursesPendingStore'])->name('courses.pending.store');
+Route::get('/courses/findPeriodOptions/{department_id}/{day}', [AffiliateController::class, 'findPeriodOptions'])->name('courses.findPeriodOptions');
+Route::post('/payment/upload', [CourseController::class, 'uploadSlip'])->name('payment.upload');
+Route::POST('/senMailconfirm', [CourseController::class, 'senMail'])->name('senMailconfirm');
 
 
 // Route::get('/affiliate/my_affiliate', )->name('my_affiliate.index');
@@ -241,6 +265,7 @@ Route::post('destroy/withdraw_request', [AffiliateTransactionController::class, 
 Route::post('balance-transfer-to-wallet', [AffiliateTransactionController::class, 'balanceTransferToWallet'])->name('balance_transfer_to_wallet');
 
 
+
 // Route::get('thank-you', [ContactController::class, 'thank_you'])->name('demo.thank_you');
 // Route::post('/webhook/line', [LineController::class, 'webhook'])->name('line.webhook');
 Route::post('/webhook/line', [LineController::class, 'webhook'])->name('line.webhook');
@@ -248,3 +273,14 @@ Route::post('/webhook/line', [LineController::class, 'webhook'])->name('line.web
 Route::get('manon', function (Request $request) {
     return $request;
 });
+
+
+route::get('ei-form', [EiFormController::class, 'index'])->name('ei-form.index');
+route::post('ei-form/store', [EiFormController::class, 'store'])->name('ei-form.store');
+
+// test route 
+Route::get('/test-system-questions', [TestSystemQuestionsController::class, 'index'])->name('ts.questions.index');
+Route::get('/test-system-questions/create', [TestSystemQuestionsController::class, 'create'])->name('ts.questions.create');
+Route::get('/test-system-questions/view', [TestSystemQuestionsController::class, 'view'])->name('ts.questions.view');
+Route::post('/test-system-questions', [TestSystemQuestionsController::class, 'store'])->name('ts.questions.store');
+Route::get('/test-system-questions/emptyView', [TestSystemQuestionsController::class, 'emptyView'])->name('ts.questions.emptyView');

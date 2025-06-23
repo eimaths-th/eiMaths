@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\AffiliateUserBank;
+use App\Models\PVNumber;
 use Illuminate\Http\Request;
 use Modules\Affiliate\Entities\AffiliateWithdraw;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\View;
 use Modules\Affiliate\Entities\AffiliateUserWallet;
 use Spatie\Permission\Models\Role;
 
@@ -24,32 +26,34 @@ class ConfigWithdrawController extends Controller
         } else {
             $roles = Role::pluck('name', 'name')->all();
         }
-
         if ($request->ajax()) {
             //sleep(2);
 
             $datas =  AffiliateWithdraw::query()->orderBy("id", "desc")->get();
 
             return datatables()->of($datas)
-
                 ->editColumn('user_id', function ($row) {
-                    return $row->user->name;
+                    return $row->user->name ?? 'N/A';
                 })
                 ->editColumn('withdraw_amount', function ($row) {
-                    return number_format($row->withdraw_amount, 2) . ' ฿';
+                    return number_format($row->withdraw_amount ?? '0', 2) . ' ฿';
                 })
                 ->editColumn('account', function ($row) {
                     $account = '';
                     if ($row->payment_type == 1) {
                         # code...PromptPay
                         $type = AffiliateUserWallet::where('user_id', $row->user_id)->first();
-                        $account = $type->paypal_account;
+                        $account = $type->paypal_account ?? 'Paypal Account is not found';
                     } elseif ($row->payment_type == 2) {
                         # code...
                         $type = AffiliateUserBank::where('user_id', $row->user_id)->first();
-                        $account = $type->account_number . ' | Bank : ' . $type->bank_name;
+
+                        $account_number = $type->account_number ?? 'Account Number is not found';
+                        $bank_name = $type->bank_name ?? 'Bank Name is not found';
+
+                        $account = '' . $account_number . ' | ' . $bank_name;
                     }
-                    return $account ?? 'N/A';
+                    return $account;
                 })
                 ->editColumn('payment_type', function ($row) {
                     if ($row->payment_type == 1) {
@@ -83,31 +87,40 @@ class ConfigWithdrawController extends Controller
                     return $html;
                 })
                 ->editColumn('request_date', function ($row) {
-                    return $row->request_date;
+                    return $row->request_date ?? '';
                 })
                 ->editColumn('confirmed_by', function ($row) {
-                    return $row->confirmedBy->name;
+                    return $row->confirmedBy->name ?? '';
                 })
                 ->editColumn('confirm_date', function ($row) {
-                    return $row->confirm_date;
+                    return $row->confirm_date ?? '';
+                })
+                ->editColumn('rejected_by', function ($row) {
+                    return $row->rejectedBy->name ?? '';
+                })
+                ->editColumn('reject_date', function ($row) {
+                    return $row->reject_date ?? '';
                 })
                 ->editColumn('checkbox', function ($row) {
                     return '<input type="checkbox" id="' . $row->id . '" class="flat" name="table_records[]" value="' . $row->id . '" >';
                 })
                 ->addColumn('action', function ($row) {
-
                     $html = '';
                     if ($row->status == 0) {
                         // Button for "Approve"
                         $html .= '<button class="btn btn-success btn-sm approve-withdraw-btn" data-id="' . $row->id . '">Approve</button>';
-
                         // Button for "Reject"
                         $html .= ' <button class="btn btn-danger btn-sm reject-withdraw-btn" data-id="' . $row->id . '">Reject</button>';
+                    } else {
+                        # code...
+                        $html .= '<button class="btn btn-primary btn-sm view-btn" data-id="' . $row->id . '">Report</button>';
                     }
-
                     return $html;
                 })->rawColumns(['checkbox', 'action', 'status'])->toJson();
+            // dd($datas);
+
         }
+
         // $withdraw =  AffiliateWithdraw::all();
         return view('config_withdraw.index');
         // return view('config-withdraw.index', [
@@ -137,6 +150,12 @@ class ConfigWithdrawController extends Controller
             return response()->json(['error' => 'User wallet not found'], 404);
         }
 
+        //find the user's bank
+        $UserBank = AffiliateUserBank::where('user_id', $withdrawRequest->user_id)->first();
+        if (!$UserBank) {
+            return response()->json(['error' => 'User bank not found'], 404);
+        }
+
 
         // Handle the "approve" action
         if ($action === 'approve') {
@@ -146,9 +165,9 @@ class ConfigWithdrawController extends Controller
             $withdrawAmount = (float) $withdrawRequest->withdraw_amount; // Assuming the field is 'amount'
 
             // Check if the user has sufficient balance
-            if ($walletBalance < $withdrawAmount) {
-                return response()->json(['error' => 'Insufficient wallet balance'], 400);
-            }
+            // if ($walletBalance < $withdrawAmount) {
+            //     return response()->json(['error' => 'Insufficient wallet balance'], 400);
+            // }
             // dd($withdrawAmount, $walletBalance, $UserWallet, $withdrawRequest);
 
 
@@ -180,6 +199,56 @@ class ConfigWithdrawController extends Controller
         return response()->json(['error' => 'Unexpected error occurred'], 500);
     }
 
+    public function approveWithdraws(Request $request)
+    {
+        $withdrawIds = $request->input('withdraw_ids');
+        $action = $request->input('action');
+
+        // Check if IDs and action are provided
+        if (empty($withdrawIds)) {
+            return response()->json(['error' => 'No records selected'], 400);
+        }
+
+        if (!in_array($action, ['approve', 'reject'])) {
+            return response()->json(['error' => 'Invalid action'], 400);
+        }
+
+        // Get all withdraw requests
+        $withdrawRequests = AffiliateWithdraw::whereIn('id', $withdrawIds)->get();
+
+        if ($withdrawRequests->isEmpty()) {
+            return response()->json(['error' => 'Withdraw requests not found'], 404);
+        }
+
+        foreach ($withdrawRequests as $withdrawRequest) {
+            $UserWallet = AffiliateUserWallet::where('user_id', $withdrawRequest->user_id)->first();
+
+            if (!$UserWallet) {
+                return response()->json(['error' => "User wallet not found for ID {$withdrawRequest->user_id}"], 404);
+            }
+
+            if ($action === 'approve') {
+                $withdrawAmount = (float) $withdrawRequest->withdraw_amount;
+                // Deduct the withdrawal amount
+                // $UserWallet->decrement('amount', $withdrawAmount);
+
+                // Update the withdraw status to approved
+                $withdrawRequest->status = 1;
+                $withdrawRequest->confirmed_by = auth()->id();
+                $withdrawRequest->confirm_date = now();
+                $withdrawRequest->save();
+            } elseif ($action === 'reject') {
+                $withdrawRequest->status = 2;
+                $withdrawRequest->rejected_by = auth()->id() ?? null; // Ensure this field exists in your schema
+                $withdrawRequest->reject_date = now();
+                $withdrawRequest->save();
+            }
+        }
+
+        $message = $action === 'approve' ? 'Withdraw requests approved successfully' : 'Withdraw requests rejected successfully';
+
+        return response()->json(['success' => true, 'message' => $message]);
+    }
 
 
 
@@ -199,12 +268,64 @@ class ConfigWithdrawController extends Controller
         //
     }
 
+    public function runningNumber()
+    {
+
+    }
+
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Request $request)
     {
-        //
+        $id = $request->id;
+        $withdraw = AffiliateWithdraw::find($id);
+        // dd(
+        //     $request->all(),
+        //     $withdraw
+        // );
+        if (!$withdraw) {
+            return response()->json(['message' => 'Commission record not found'], 404);
+        }
+
+        
+        // dd($data);
+
+        $template = 'config_withdraw.view_report_modal';
+        $account = '';
+        if ($withdraw->payment_type == 1) {
+            # code...PromptPay
+            $type = AffiliateUserWallet::where('user_id', $withdraw->user_id)->first();
+            $account = $type->paypal_account ?? 'Paypal Account is not found';
+        } elseif ($withdraw->payment_type == 2) {
+            # code...
+            $type = AffiliateUserBank::where('user_id', $withdraw->user_id)->first();
+
+            $account_number = $type->account_number ?? 'Account Number is not found';
+            $bank_name = $type->bank_name ?? 'Bank Name is not found';
+
+            $account = '' . $account_number . ' ธ.' . $bank_name;
+        }
+        
+        if (!$withdraw->pv_number) {
+            # code...
+            $pvNumber = PVNumber::runningNumber();
+            $withdraw->pv_number = $pvNumber;
+            $withdraw->save();
+        }
+
+        $htmlContent = View::make(
+            $template,
+            [
+                'withdraw' => $withdraw,
+                'account' => $account,
+            ]
+        )->render();
+
+        return response()->json([
+            'html' =>  $htmlContent
+
+        ]);
     }
 
     /**

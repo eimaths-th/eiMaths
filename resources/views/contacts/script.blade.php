@@ -221,7 +221,7 @@
                     async: false,
                     success: function(res) {
                         //console.log(res)
-                        $('.scoin').val(res.scoin);
+                        // $('.scoin').val(res.scoin);
 
                         $('.books').html(res.html);
                         $('.books').prop('disabled', false);
@@ -269,7 +269,7 @@
                     success: function(res) {
                         //console.log(res)
                         $('.books2').html(res.html);
-                        $('.scoin').val(res.scoin);
+                        // $('.scoin').val(res.scoin);
                         $('.books2').prop('disabled', false);
                     }
                 });
@@ -389,8 +389,8 @@
                     },
                     async: false,
                     success: function(res) {
-                        //console.log(res)
-                        $('.rscoin').val(res.scoin);
+                        // console.log(res)
+                        // $('.rscoin').val(res.scoin);
 
                         $('.rbooks').html(res.html);
                         $('.rbooks').prop('disabled', false);
@@ -436,9 +436,68 @@
                     },
                     async: false,
                     success: function(res) {
-                        console.log(res)
+                        console.log(res.scoin)
                         $('.rbooks2').html(res.html);
+                        // $('.rscoin').val(res.scoin);
+                        $('.rbooks2').prop('disabled', false);
+                    }
+                });
+            }
+        })
+
+        $(".rbooks2").change(function() {
+            let level = $('#ReceiptLevel2').val();
+            let term = $('#ReceiptTerm2').val();
+            let book = $('#ReceiptBook').val();
+            let book2 = $('#ReceiptBook2').val();
+            
+            // $('#ReceiptBook2').html('');
+            if (level.length !== 0 && term.length !== 0) {
+                $.ajax({
+                    method: "GET",
+                    url: "/scoin",
+                    data: {
+                        level: $('#ReceiptLevel').val()[0],
+                        term: $('#ReceiptTerm').val()[0],
+                        level2: $('#ReceiptLevel2').val()[0],
+                        term2: $('#ReceiptTerm2').val()[0],
+                        book: $('#ReceiptBook').val()[0],
+                        book2: $('#ReceiptBook2').val()[0],
+                        _token: token,
+                    },
+                    async: false,
+                    success: function(res) {
+                        console.log(res)
                         $('.rscoin').val(res.scoin);
+                        $('.rbooks2').prop('disabled', false);
+                    }
+                });
+            }
+        })
+        $(".books2").change(function() {
+            let level = $('#AddLevel2').val();
+            let term = $('#AddTerm2').val();
+            let book = $('#AddBook').val();
+            let book2 = $('#AddBook2').val();
+            
+            // $('#ReceiptBook2').html('');
+            if (level.length !== 0 && term.length !== 0) {
+                $.ajax({
+                    method: "GET",
+                    url: "/scoin",
+                    data: {
+                        level: $('#AddLevel').val()[0],
+                        term: $('#AddTerm').val()[0],
+                        level2: $('#AddLevel2').val()[0],
+                        term2: $('#AddTerm2').val()[0],
+                        book: $('#AddBook').val()[0],
+                        book2: $('#AddBook2').val()[0],
+                        _token: token,
+                    },
+                    async: false,
+                    success: function(res) {
+                        console.log(res)
+                        $('.scoin').val(res.scoin);
                         $('.rbooks2').prop('disabled', false);
                     }
                 });
@@ -539,6 +598,10 @@
                 {
                     data: 'code',
                     name: 'code'
+                },
+                {
+                    data: 'ref',
+                    name: 'ref'
                 },
                 {
                     data: 'name',
@@ -879,6 +942,7 @@
                     centre: $('#AddCentre').val()[0],
                     code: $('#AddCode').val(),
                     name: $('#AddName').val(),
+                    ref: $('#AddReferral').val(),
                     nickname: $('#AddNickname').val(),
                     gender: $("input[name='gender']:checked").val(),
                     birth_date: $('#AddBirthDate').val(),
@@ -1151,6 +1215,28 @@
             });
         });
 
+        $(document).on('change', '#s_student', function(e) {
+            e.preventDefault();
+
+            var std_id = $(this).val();
+            //get referrent form std
+            $.ajax({
+                url: "contacts/getRef/" + std_id,
+                method: 'GET',
+                success: function(res) {
+                    
+                    if (res.ref) {
+                        $('#getRef').prop('readonly', true);
+                        $('#getRef').val(res.ref);
+                    } else {
+                        $('#getRef').prop('readonly', false);
+                    }
+                    // $('#getRef').prop('readonly', true);
+
+                }
+            });
+            // console.log($(this).val());      
+        });
 
         // Create product Ajax request.
         $('#ReceiptCreateForm').click(function(e) {
@@ -1229,6 +1315,19 @@
                             encodeURIComponent(oid);
                         window.location.href = url;
                     }
+                },
+                error: function(xhr) { // Handle exception errors here
+                    // console.error(xhr.responseText); // Debugging
+
+                    let errorMsg = "An unexpected error occurred!";
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMsg = xhr.responseJSON
+                            .message; // Use Laravel exception message
+                    }
+
+                    toastr.error(errorMsg, "Error", {
+                        timeOut: 5000
+                    });
                 }
             });
         });

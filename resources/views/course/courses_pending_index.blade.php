@@ -429,8 +429,11 @@
                                                         <th scope="col">name</th>
                                                         <th scope="col">email</th>
                                                         <th scope="col">telp</th>
-                                                        <th scope="col">course_name</th>
-                                                        <th scope="col">type_parent</th>
+                                                        <th scope="col">department </th>
+                                                        <th scope="col">day</th>
+                                                        <th scope="col">Teaching Period</th>
+                                                        <th scope="col">course name</th>
+                                                        <th scope="col">type parent</th>
 
                                                         <th scope="col">Status</th>
                                                         <th scope="col">Action</th>
@@ -454,6 +457,7 @@
     </section>
     @include('course.create_new_std')
     @include('course.receipt')
+    @include('course.modal_view_slip')
     {{-- @include('contacts.receipt') --}}
 @endsection
 @section('script')
@@ -796,6 +800,7 @@
 
             if ($("#ReceiptCentre").val() !== null) {
                 let centre = $('#ReceiptCentre').val();
+
                 if (centre.length !== 0) {
                     $.ajax({
                         method: "GET",
@@ -808,6 +813,8 @@
                     });
                 }
             }
+
+
 
 
             $("#AddCentre").change(function() {
@@ -883,6 +890,18 @@
                         name: 'telp'
                     }, // Delivery
                     {
+                        data: 'department',
+                        name: 'department'
+                    }, // Delivery
+                    {
+                        data: 'day',
+                        name: 'day'
+                    }, // Delivery
+                    {
+                        data: 'period',
+                        name: 'period'
+                    }, // Delivery
+                    {
                         data: 'course_name',
                         name: 'course_name'
                     }, // Delivery
@@ -904,12 +923,15 @@
                     } // Action
                 ],
                 createdRow: function(row, data, dataIndex) {
-                
+
                     var info = table.page.info();
                     $('td:eq(0)', row).html(info.start + dataIndex + 1);
-                
+
                 }
             });
+
+
+
 
 
         });
@@ -925,6 +947,56 @@
         function hideOverlay() {
             $('#overlay').css('display', 'none');
         }
+        $(document).on('click', '.view-slip-btn', function() {
+            var id = $(this).data('id');
+            // Send AJAX request to fetch the receipt image
+
+            console.log(id);
+
+            $.ajax({
+                url: "{{ route('courses.pending.fetch.receipt', ':id') }}".replace(':id', id),
+                method: 'GET',
+                success: function(response) {
+                    // Assuming your response contains the image path in response.image
+                    var imagePath = response.image;
+
+                    // Set the image preview in the modal
+                    $('#slip_preview').attr('src', imagePath);
+
+                    // Show the modal
+                    $('#ModalViewslip').modal('show');
+                },
+                error: function(error) {
+                    console.error('Error fetching receipt:', error);
+                }
+            });
+        });
+        // $('.view-slip-btn').on('click', function() {
+        //         console.log('View Slip Button Clicked');
+
+        //         var slipId = $(this).data('id'); // Get the slip ID from the button
+        //         console.log(slipId);
+
+        //         // You can make an AJAX request to fetch the slip image by ID
+        //         $.ajax({
+        //             url: '/courses/pending/fetch/slip/' +
+        //                 slipId, // Replace with your route to fetch the image
+        //             method: 'GET',
+        //             success: function(response) {
+        //                 // Assuming your response contains the image path in response.image
+        //                 var imagePath = response.image;
+
+        //                 // Set the image preview in the modal
+        //                 $('#slip_preview').attr('src', imagePath);
+
+        //                 // Show the modal
+        //                 $('#ModalViewSlip').modal('show');
+        //             },
+        //             error: function(error) {
+        //                 console.error('Error fetching slip:', error);
+        //             }
+        //         });
+        //     });
         $(document).on('click', '.confirm-btn', function() {
             var id = $(this).data('id');
             // Send AJAX request to handle confirmation (you may need to define a route for confirmation)
@@ -1183,6 +1255,8 @@
             });
         });
 
+
+
         $(document).on('click', '.ModalNewReciept', async function(e) {
             e.preventDefault();
             $('.alert-danger').html('');
@@ -1198,19 +1272,18 @@
             $('#AddBook2').val(null).trigger("change");
             $('#AddLevel2').val(null).trigger("change")
             $('#AddTerm2').val(null).trigger("change");
-
             let id = $(this).data('id');
+
             try {
                 const res = await $.ajax({
                     url: "{{ route('courses.pending.new.student', ':id') }}".replace(':id', id),
                     method: 'GET'
                 });
                 console.log(res);
-
                 if (res.data.ref) {
-                    console.log('true7');
-                    console.log(res);
 
+                    getCentre(res.centre_id);
+                    $('#ReceiptCentre').html(res.htmlOptions);
                     $('#getRef').val(res.data.ref);
                     $('#getRef').prop('readonly', true);
                 } else {
@@ -1230,7 +1303,57 @@
                 console.error('Error:', error);
             }
 
+            $(document).on('change', '#s_student', function() {
+                let student_id = $('#s_student').val();
+                $.ajax({
+                    // url: "{{ route('courses.pending.new.student', ':id') }}".replace(':id', id),
+                    url: "{{ route('courses.pending.getCheckRefStudnet') }}",
+                    method: 'GET',
+                    data: {
+                        id: id,
+                        student_id: student_id,
+                    },
+                    success: function(response) {
+                        console.log(response);
+
+                        if (response.success) {
+
+                        } else {
+                            alert(response.message);
+                            toastr.error(response.message, {
+                                timeOut: 10000
+                            }); // Make editable if ref is null or undefined
+
+                        }
+                        $('#getRef').val(response.ref);
+                        $('#getRef').prop('readonly', true);
+                    }
+                });
+
+
+            });
+
         });
+
+
+
+        function getCentre(centre) {
+            // console.log(centre);
+
+            if (centre) {
+                $.ajax({
+                    method: "GET",
+                    url: "{{ route('histories.running', ':centre') }}".replace(':centre', centre),
+                    async: false,
+                    success: function(res) {
+                        //$('#AddCode').prop('readonly', false);
+                        $('#s_student').html(res.html_std);
+                    }
+                });
+            }
+
+        }
+
 
 
         $('#ReceiptCreateForm').click(function(e) {

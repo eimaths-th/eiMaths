@@ -12,6 +12,31 @@
 </script>
 
 <script>
+    function copyToClipboard(element) {
+        var $temp = $("<input>");
+        $("body").append($temp);
+        $temp.val($(element).val()).select();
+        document.execCommand("copy");
+        $temp.remove();
+
+        // Change the icon and text to indicate success
+        let button = document.getElementById('copyBtn');
+        let icon = button.querySelector('i');
+
+        icon.classList.remove('fa-copy');
+        icon.classList.add('fa-check'); // Change icon to checkmark
+        button.innerHTML = '<i class="fa fa-check"></i> Copied!';
+
+        // Revert back after 2 seconds
+        setTimeout(() => {
+            icon.classList.remove('fa-check');
+            icon.classList.add('fa-copy');
+            button.innerHTML = '<i class="fa fa-copy"></i> Copy';
+        }, 2000);
+    }
+</script>
+
+<script>
     $(document).on('click', '.unread_notification', function(e) {
         e.preventDefault();
         $('.preloader').fadeIn('slow');
@@ -58,8 +83,6 @@
     // });
     $('.Crm_table_active3').DataTable(dataTableOptions);
     // $('.Crm_table_active3').DataTable();
-
-    
 </script>
 
 <script></script>

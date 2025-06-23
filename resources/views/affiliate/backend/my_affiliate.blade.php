@@ -170,7 +170,7 @@
             $user->referral = generateUniqueId();
             $user->save();
         }
-
+        // dd($user->id);
     @endphp
     <input type="hidden" name="demoMode" id="demoMode" value="">
     <input type="hidden" name="url" id="url" value="{{ url('/') }}">
@@ -198,12 +198,11 @@
                 <div class="container-fluid p-0">
                     <div class="d-flex flex-wrap justify-content-between">
                         <h1 class="text-uppercase">My Affiliate</h1>
-                        <div class="bc-pages">
-                            {{-- <a href="http://127.0.0.1:8001/dashboard">Dashboard</a> --}}
+                        {{-- <div class="bc-pages">
                             <a href="#">Dashboard</a>
                             <a href="">Affiliate</a>
                             <a href="{{ route('my_affiliate.index') }}">My Affiliate</a>
-                        </div>
+                        </div> --}}
                     </div>
                 </div>
             </section>
@@ -277,19 +276,19 @@
                                                         <h3>Current Balance</h3>
                                                     </div>
                                                     <h1 class="gradient-color2"> {{ number_format($amount, 2) ?? '0' }}
-                                                        ฿</h1>
+                                                        ฿
+                                                    </h1>
                                                 </div>
                                             </div>
                                             <div class="col-12">
                                                 <div class="row d-flex justify-content-between">
                                                     <div>
-                                                        <h3>
-                                                            {{-- Pending --}}
-
-                                                        </h3>
+                                                        <h4>
+                                                            Courses via Referral Code for {{ date('M Y') }}
+                                                        </h4>
                                                     </div>
                                                     <h1 class="gradient-color2">
-                                                        {{-- 0 --}}
+                                                        {{ $count_course }}
                                                     </h1>
                                                 </div>
                                             </div>
@@ -485,7 +484,7 @@
                 <div class="container">
                     <div class="row">
                         <div class="col-lg-12 text-center mt-5 footer-copyright">
-                            <p class="p-3 mb-0">Copyright © 2021 InfixLMS. All rights reserved | Made By CodeThemes</p>
+                            <p class="p-3 mb-0">Copyright © {{ date('Y')}} eiMaths TH. All rights reserved | Made By eiDev</p>
                         </div>
                     </div>
                 </div>

@@ -6,6 +6,10 @@
 /public/file_store
 /public/form_images
 /public/fonts
+/public/img/payment_slips
+/public/img/promotion
+# /public/img/qr_code
+# /public/img/*
 /public/fonts/*
 /public/stamps
 /public/storage

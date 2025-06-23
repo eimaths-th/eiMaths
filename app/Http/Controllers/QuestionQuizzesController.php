@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Question;
 use App\Models\Quiz;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class QuestionQuizzesController extends Controller
 {
@@ -167,54 +168,101 @@ class QuestionQuizzesController extends Controller
     public function store(Request $request)
     {
         // Validate the incoming request
+        // dd($request->all());
         $type = $request->type;
-        $commonRules = [
-            'type' => 'required',
-            'questions' => 'required|array',
-            'questions.*.text' => 'nullable|string',
-            'questions.*.type' => 'required|string|in:options,written,image',
-            'questions.*.code_snippet' => 'nullable|string',
-            'questions.*.answer_explanation' => 'nullable|string',
-            'questions.*.more_info_link' => 'nullable|string',
-            'questions.*.written' => 'nullable|string',
-            'questions.*.options' => 'nullable|array',
-            'questions.*.options.*.text' => 'nullable|string',
-            'questions.*.options.*.correct' => 'nullable|boolean',
-            'questions.*.imgOptions' => 'nullable|array',
-            'questions.*.imgOptions.*.file' => 'nullable|image',
-            'questions.*.imgOptions.*.correct' => 'nullable|boolean',
-            'questions_id' => 'nullable|array',
-            'questions_id.*' => 'integer',
-        ];
 
-        $customMessages = [
-            'type.required' => 'Please select quiz',
-            'questions.*.text.required' => 'Please add Question text',
-            'questions.*.type.required' => 'Please select type answers for Question',
-            'level.required' => 'Please select Grade',
-            'term.required' => 'Please select term',
-            'section.required' => 'Please select Level',
-        ];
+        //แก้ไข validate ให้เป็น array ที่มี key ตามชื่อของ field ที่ต้องการ validate
+        $rules = [
+            'type' => ['required'],
+            'questions' => ['required', 'array', 'min:1'], // At least one question is required
+            'questions.*.text' => ['required', 'string'],
+            'questions.*.type' => ['required', 'string', 'in:options,written,image,fraction'],
+            'questions.*.code_snippet' => ['required', 'string'],
+            'questions.*.answer_explanation' => ['required', 'string'],
+            'questions.*.more_info_link' => ['required', 'url'],
 
+            // Options Validation (for 'options' type)
+            'questions.*.options' => ['required_if:questions.*.type,options', 'array', 'min:1'],
+            'questions.*.options.*.text' => ['required', 'string'],
+            'questions.*.options.*.correct' => ['required', 'boolean'],
+
+            // Image Options Validation (for 'image' type)
+            'questions.*.imgOptions' => ['required_if:questions.*.type,image', 'array', 'min:1'],
+            'questions.*.imgOptions.*.file' => ['required', 'image'],
+            'questions.*.imgOptions.*.correct' => ['required', 'boolean'],
+
+            // IDs (if provided)
+            // 'questions_id' => ['required', 'array'],
+            // 'questions_id.*' => ['required', 'integer'],
+        ];
+        // Additional required fields for 'create' type
         if ($type === "create") {
-            $request->validate(array_merge($commonRules, [
-                'title' => 'required|string',
-                'slug' => 'required|string',
-                'level' => 'required',
-                'term' => 'required',
-                'section' => 'required',
-                'description' => 'nullable|string',
-                'public' => 'nullable|boolean',
-            ]), $customMessages);
-        } else {
-            $request->validate($commonRules, $customMessages);
+            $rules = array_merge($rules, [
+                'title' => ['required', 'string'],
+                'slug' => ['required', 'string', 'unique:quizzes,slug'],
+                'level' => ['required', 'string'],
+                'term' => ['required', 'string'],
+                'section' => ['required', 'string'],
+                'description' => ['required', 'string'],
+                'public' => ['required', 'boolean'],
+            ]);
         }
+
+        // Strict Validation for 'fraction' type questions
+        foreach ($request->input('questions', []) as $index => $question) {
+            if (isset($question['type']) && $question['type'] === 'fraction') {
+                $rules["questions.$index.answer_type_fraction"] = ['required', 'string', 'in:options,written'];
+
+                if ($question['answer_type_fraction'] === 'written') {
+                    $rules["questions.$index.answer_numerator"] = ['required', 'numeric'];
+                    $rules["questions.$index.answer_denominator"] = ['required', 'numeric', 'not_in:0'];
+                } elseif ($question['answer_type_fraction'] === 'options') {
+                    $rules["questions.$index.options"] = ['required', 'array', 'min:1'];
+                    $rules["questions.$index.options.*.answer_numerator"] = ['required', 'numeric'];
+                    $rules["questions.$index.options.*.answer_denominator"] = ['required', 'numeric', 'not_in:0'];
+                    $rules["questions.$index.options.*.answer_type"] = ['required', 'string'];
+                    $rules["questions.$index.options.*.correct"] = ['required', 'boolean'];
+                }
+            }
+        }
+
+        // Custom Error Messages
+        $messages = [
+            'type.required' => 'Quiz type is required.',
+            'questions.required' => 'At least one question is required.',
+            'questions.*.text.required' => 'Question text is required.',
+            'questions.*.type.required' => 'Question type is required.',
+            'title.required' => 'Quiz title is required.',
+            'slug.required' => 'Quiz slug is required and must be unique.',
+            'level.required' => 'Grade selection is required.',
+            'term.required' => 'Term selection is required.',
+            'section.required' => 'Section selection is required.',
+            'questions.*.options.*.text.required' => 'Each option must have a text value.',
+            'questions.*.options.*.correct.required' => 'Each option must have a correct/incorrect status.',
+            'questions.*.imgOptions.*.file.required' => 'Image file is required for image options.',
+            'questions.*.imgOptions.*.correct.required' => 'Correct answer status is required for image options.',
+            'questions.*.answer_numerator.required' => 'Numerator is required for fraction answers.',
+            'questions.*.answer_denominator.required' => 'Denominator is required for fraction answers.',
+            'questions.*.answer_denominator.not_in' => 'Denominator cannot be zero.',
+        ];
+
+        // Perform Validation
+        $validatedData = $request->validate($rules, $messages);
+
+        //new code validation
+
+
+
+
+        //end test
 
         $quiz_id = $request->quiz_id;
         $questions_ids = $request->questions_id ?? [];
         $questions_create_id = [];
         // dd($request->all());
         $questions = $request->questions;
+
+        // dd($questions);
 
         foreach ($questions as $questionn) {
             $question = new Question();
@@ -261,6 +309,31 @@ class QuestionQuizzesController extends Controller
                         ]);
                     }
                 }
+            } elseif (($questionn['type']) === 'fraction') {
+                $question->fractions()->delete();
+
+
+                if (($questionn['answer_type_fraction']) === 'written') {
+                    $question->fractions()->create([
+                        'numerator' => $questionn['answer_numerator'] ?? null,
+                        'denominator' => $questionn['answer_denominator'] ?? null,
+                        'type' => $questionn['answer_type_fraction'] ?? null,
+                        'answer_type' => $questionn['answer_type'] ?? 'mixed',
+                        'correct' => $questionn['correct'] ?? 0,
+                    ]);
+                } else {
+                    if (!empty($questionn['options'])) {
+                        foreach ($questionn['options'] as $fraction) {
+                            $question->fractions()->create([
+                                'type' => $questionn['answer_type_fraction'] ?? null,
+                                'numerator' => $fraction['answer_numerator'] ?? null,
+                                'denominator' => $fraction['answer_denominator'] ?? null,
+                                'answer_type' => $fraction['answer_type'] ?? 'mixed',
+                                'correct' => $fraction['correct'] ?? 0,
+                            ]);
+                        }
+                    }
+                }
             }
 
             $questions_create_id[] = $question->id;
@@ -286,7 +359,8 @@ class QuestionQuizzesController extends Controller
             }
         }
 
-        $quiz->questions()->sync($questions_ids);
+        $quiz->questions()->syncWithoutDetaching($questions_ids);
+
 
         return response()->json(['success' => 'Quiz created successfully!']);
     }

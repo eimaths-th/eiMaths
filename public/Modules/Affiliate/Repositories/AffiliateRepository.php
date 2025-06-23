@@ -32,6 +32,13 @@ class AffiliateRepository
 
         }
     }
+    public function firstCreate(array $data)
+    {
+        return AffiliateLink::create([
+            'affiliate_link' => $data['affiliate_link'],
+            'owner_id' => $data['user_id'],
+        ]);
+    }
     public function create(array $data)
     {
         return AffiliateLink::create([
@@ -92,8 +99,9 @@ class AffiliateRepository
         return true;
     }
 
-    public function addOrUpdatePaypalAccount(array $data)
+    public function addOrUpdatePaypalAccountUser(array $data)
     {
+
         return AffiliateUserWallet::updateOrCreate(
             [
                 'user_id'   => Auth::id(),
@@ -105,6 +113,16 @@ class AffiliateRepository
     }
     public function addOrUpdateBankAccount(array $data)
     {
+        // dd($data);
+
+        // AffiliateUserWallet::updateOrCreate(
+        //     [
+        //         'user_id'   => Auth::id(),
+        //     ],
+        //     [
+        //         'paypal_account'     => 0,
+        //     ]
+        // );
         return AffiliateUserBank::updateOrCreate(
             [
                 'user_id'   => Auth::id(),

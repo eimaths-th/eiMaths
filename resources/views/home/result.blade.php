@@ -34,6 +34,8 @@
             /* Aligns the text vertically in the middle of the image */
         }
     </style>
+    <script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 @endpush
 @push('script')
 @endpush
@@ -144,6 +146,10 @@
             </div>
         @endisset --}}
         <br>
+
+        {{-- @php
+            dd($results);
+        @endphp --}}
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
@@ -152,7 +158,13 @@
                             <tbody class="bg-white">
                                 <tr class="bg-gray-100">
                                     <td class="w-1/2">Question #{{ $loop->iteration }}</td>
-                                    <td>{!! nl2br($result->question->text) !!}</td>
+
+                                    @if ($result->question->type === 'fraction')
+                                        {{-- <td>{!! nl2br($result->question->text) !!}</td> --}}
+                                        <td>{{ replaceMixedFractions($result->question->text) }}</td>
+                                    @else
+                                        <td>{!! nl2br($result->question->text) !!}</td>
+                                    @endif
                                 </tr>
                                 <tr>
                                     @php
@@ -164,6 +176,9 @@
                                         } elseif ($type === 'written') {
                                             # code...
                                             $title = 'Written';
+                                        } elseif ($type === 'fraction') {
+                                            # code...
+                                            $title = 'Fraction';
                                         } else {
                                             # code...
                                             $title = 'Title is not found';
@@ -224,6 +239,59 @@
                                             <li class="font-bold text-orange-500">
                                                 {{ $result->question->written_answer }} (correct answer)
                                             </li>
+                                        @elseif ($type === 'fraction')
+                                            @if ($result->question->fractions->first()->type === 'options')
+                                                @foreach ($result->question->fractions as $fractions)
+                                                    {{-- @php
+                                                        dd($fractions->answer_type);
+                                                    @endphp --}}
+                                                    <li @class([
+                                                        'underline' => $result->fraction == $fractions->id,
+                                                        'font-bold text-orange-500' => $fractions->correct == 1,
+                                                    ])>
+                                                        @if ($fractions->answer_type == 'mixed')
+                                                            {{-- {{toFraction($fraction->numerator, $fraction->denominator) }} --}}
+                                                            {{ toMixedFraction($fractions->numerator, $fractions->denominator) }}
+                                                        @else
+                                                            {{ toFraction($fractions->numerator, $fractions->denominator) }}
+                                                        @endif
+                                                        {{-- {{ $fractions->numerator }} / {{ $fractions->denominator }} --}}
+                                                        @if ($fractions->correct == 1)
+                                                            <span class="italic">(correct answer)</span>
+                                                        @endif
+                                                        @if ($result->fraction == $fractions->id)
+                                                            <span class="italic">(your answer)</span>
+                                                        @endif
+                                                    </li>
+                                                @endforeach
+                                            @else
+                                                @foreach ($result->question->fractions as $fraction)
+                                                    @php
+                                                        // dd($fraction->answer_type);
+                                                    @endphp
+                                                    <li @class([
+                                                        'underline' => $result->correct != 1,
+                                                        'font-bold text-orange-500' => $result->correct == 1,
+                                                    ])>
+                                                        {{ replaceMixedFractions($result->fraction) }} (your answer)
+                                                    </li>
+                                                    <li class="font-bold text-orange-500">
+                                                        @if ($fraction->answer_type == 'mixed')
+                                                            {{-- {{toFraction($fraction->numerator, $fraction->denominator) }} --}}
+                                                            {{ toMixedFraction($fraction->numerator, $fraction->denominator) }}
+                                                        @else
+                                                            {{ toFraction($fraction->numerator, $fraction->denominator) }}
+                                                        @endif
+                                                        (correct answer)
+                                                        {{-- {{ $fraction->numerator }} / {{ $fraction->denominator }} (correct
+                                                        answer) --}}
+                                                    </li>
+                                                @endforeach
+                                            @endif
+
+                                            @if (is_null($result->fraction))
+                                                <span class="font-bold italic">Question unanswered.</span>
+                                            @endif
                                         @else
                                             <span class="font-bold italic">Question unanswered.</span>
                                         @endif
@@ -267,6 +335,19 @@
 @endsection
 @push('scripts')
     <script>
+        // function insertFrac() {
+        //     let question_text = document.querySelector('#text');
+        //     if (question_text) {
+        //         question_text.value += ' Frac(เศษ,ส่วน) ';
+        //     }
+        // }
+
+        // function insertMixed() {
+        //     let question_text = document.querySelector('#text');
+        //     if (question_text) {
+        //         question_text.value += ' MixFrac(เศษ,ส่วน) ';
+        //     }
+        // }
         window.addEventListener('popstate', function(event) {
             // Redirect to the home page
             window.location.href =

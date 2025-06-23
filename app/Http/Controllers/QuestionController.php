@@ -5,13 +5,53 @@ namespace App\Http\Controllers;
 use App\Models\Option;
 use App\Models\Question;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Log;
 
 class QuestionController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
+
+    public function replaceMixedFractions($text)
+    {
+        return preg_replace_callback('/(MixFrac|Frac)\((\d+),\s*(\d+)\)/', function ($matches) {
+            $function = $matches[1]; // Function name (either toMixedFraction or toFraction)
+            $numerator = (int) $matches[2];
+            $denominator = (int) $matches[3];
+
+            return $function === 'MixFrac'
+                ? $this->toMixedFraction($numerator, $denominator)
+                : $this->toFraction($numerator, $denominator);
+        }, $text);
+    }
+
+    public function textFraction($numerator, $denominator)
+    {
+        // This generates LaTeX syntax for the fraction
+        return "\\(\\frac{{$numerator}}{{$denominator}}\\)";
+    }
+    public function toFraction($numerator, $denominator)
+    {
+        if ($numerator % $denominator == 0) {
+            return (string) ($numerator / $denominator); // Whole number
+        }
+        return "\(\\frac{{$numerator}}{{$denominator}}\)";
+    }
+
+    public function toMixedFraction($numerator, $denominator)
+    {
+        if ($numerator % $denominator == 0) {
+            return (string) ($numerator / $denominator); // Whole number
+        }
+
+        $whole = intdiv($numerator, $denominator);
+        $remainder = $numerator % $denominator;
+
+        return $whole > 0
+            ? "\({$whole} \\frac{{$remainder}}{{$denominator}}\)"
+            : "\(\\frac{{$remainder}}{{$denominator}}\)";
+    }
     public function index(Request $request)
     {
         if ($request->ajax()) {
@@ -22,6 +62,12 @@ class QuestionController extends Controller
                 ->addColumn('#', function ($row) {
                     return $row->id;
                 })
+                ->addColumn('text', function ($row) {
+                    Log::info("Original Text: " . $row->text);
+                    $textFrac = replaceMixedFractions($row->text);
+                    Log::info("Processed Text: " . $textFrac);
+                    return $textFrac;
+                })
                 ->addColumn('option', function ($row) {
                     if ($row->type === 'written') {
                         # code...
@@ -29,6 +75,23 @@ class QuestionController extends Controller
                     } elseif ($row->type === 'image') {
                         # code...
                         return $row->images()->count();
+                    } elseif ($row->type === 'fraction') {
+                        $fraction = $row->fractions()->first(); // Get the first fraction record
+
+                        if ($fraction) {
+                            if ($fraction->type === 'written') {
+                                if ($fraction->answer_type === 'frac') {
+                                    return $this->toFraction($fraction->numerator, $fraction->denominator);
+                                } else {
+                                    return $this->toMixedFraction($fraction->numerator, $fraction->denominator);
+                                }
+                                return $fraction->numerator . '/' . $fraction->denominator;
+                            } else {
+                                return $row->fractions()->count(); // Count all fraction options
+                            }
+                        }
+
+                        return 'N/A'; // Handle case where no fraction data exists
                     } else {
 
                         return $row->options()->count();
@@ -42,7 +105,7 @@ class QuestionController extends Controller
                     $html = '<button type="button" class="btn btn-sm btn-warning" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit</a>';
                     $html .= '<button type="button" class="btn btn-sm btn-danger delete-button" style="margin-left: 5px;" data-id="' . $row->id . '"><i class="fa fa-trash"></i> Delete</button>';
                     return $html;
-                })->rawColumns(['action'])->toJson();
+                })->rawColumns(['action','text'])->toJson();
         }
         return view('question.qusetion-list');
     }
@@ -63,13 +126,15 @@ class QuestionController extends Controller
     {
         // dd($request->img_name);
 
+
+
         $validated = $request->validate([
             'text' => 'nullable|string',
             'img_name' => 'nullable|image|file|mimes:jpg,png,jpeg|max:2048',
-            'type' => 'required|in:written,options,image',
+            'type' => 'required|in:written,options,image,fraction',
             'code_snippet' => 'nullable|string',
             'answer_explanation' => 'nullable|string',
-            'more_info_link' => 'nullable|url',
+            // 'more_info_link' => 'nullable|url',
         ], [
             'text.required' => 'Please add Question text',
             'type.required' => 'Please select the type of answer',
@@ -135,7 +200,30 @@ class QuestionController extends Controller
             if ($countCorrect == 0) {
                 return response()->json(['errors' => ['Please add at least one correct option']], 422);
             }
+        } elseif ($validated['type'] === 'fraction') {
+            $rules = [
+                'fraction_type' => 'required|in:written,options', // Must be 'written' or 'options'
+            ];
+
+            if ($request->fraction_type === 'written') {
+                // Validate written fraction
+                $rules['numerator'] = 'required|integer';
+                $rules['denominator'] = 'required|integer|min:1'; // Denominator cannot be 0
+                $rules['answer_type'] = 'required|in:frac,mixed'; // Must be fraction or mixed fraction
+            } elseif ($request->fraction_type === 'options') {
+                // Validate fraction options
+                $rules['options'] = 'required|array|min:1'; // Must have at least one fraction option
+                $rules['options.*.numerator'] = 'required|integer';
+                $rules['options.*.denominator'] = 'required|integer|min:1';
+                $rules['options.*.answer_type'] = 'required|in:frac,mixed';
+                $rules['options.*.correct'] = 'required|boolean'; // Correct field should be boolean (1 or 0)
+            }
+
+            // Apply validation
+            $validatedData = $request->validate($rules);
         }
+        // dd($request->all());
+
         $question = new Question();
         $question->text = $validated['text'];
         $question->type = $validated['type'];
@@ -156,7 +244,7 @@ class QuestionController extends Controller
             }
         }
 
-
+        // dd($request->all());
         if ($validated['type'] === 'options') {
             $question->options()->delete();
             foreach ($validatedOptions['options'] as $option) {
@@ -179,6 +267,29 @@ class QuestionController extends Controller
                     $question->images()->create([
                         'img_name' => $fileName,
                         'correct' => $imgOption['correct'],
+                    ]);
+                }
+            }
+        } elseif ($validated['type'] === 'fraction') {
+
+            if ($request->fraction_type === 'written') {
+                // Create a new written fraction
+                $question->fractions()->create([
+                    'type' => $validatedData['fraction_type'],
+                    'numerator' => $validatedData['numerator'],
+                    'denominator' => $validatedData['denominator'],
+                    'answer_type' => $validatedData['answer_type'],
+                ]);
+            } elseif ($request->fraction_type === 'options') {
+                // Create a new fraction options
+                foreach ($validatedData['options'] as $option) {
+                    $question->fractions()->create([
+                        'type' => $validatedData['fraction_type'],
+
+                        'numerator' => $option['numerator'],
+                        'denominator' => $option['denominator'],
+                        'answer_type' => $option['answer_type'],
+                        'correct' => $option['correct'],
                     ]);
                 }
             }

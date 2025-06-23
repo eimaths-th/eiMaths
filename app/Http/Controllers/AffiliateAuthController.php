@@ -11,6 +11,7 @@ use Brian2694\Toastr\Facades\Toastr;
 
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
+use Modules\Affiliate\Entities\AffiliateLink;
 use Modules\Affiliate\Repositories\AffiliateRepository;
 
 class AffiliateAuthController extends Controller
@@ -90,6 +91,12 @@ class AffiliateAuthController extends Controller
         
         return view('affiliate.auth.registration', compact('page', 'custom_field'));
     }
+    public function generateUrl($dataGenerate)
+    {
+        //
+        return $this->affiliateRepo->firstCreate($dataGenerate);
+    }
+
     public function register(Request $request)
     {
         $validated = $request->validate([
@@ -104,18 +111,42 @@ class AffiliateAuthController extends Controller
             'email' => $validated['email'],
             'phone' => $validated['phone'],
             'affiliate_request' => 1,
+            'language_code' => 'en',
             'department_id' => 5,
+            'referral' => generateUniqueId(),
             'position_id' => 13,
             'password' => bcrypt($validated['password']),
         ]);
+        
 
         $user->assignRole('Affiliate-user');
+
+        $referral = $user->referral;
+        $user_id = $user->id;
+        // gennerate url
+        if ($referral) {
+            # code...
+            $user_name = $referral;
+            $url = route('affiliate.courses');
+            $affiliate_link =  $url  . '?ref=' . $referral;
+            // dd($affiliate_link, $url, $user_name);
+            $dataGenerate = [
+                '_token' => csrf_token(),
+                'user_id' => $user_id,
+                'user_name' => $user_name,
+                'url' => $url,
+                'affiliate_link' => $affiliate_link
+            ];
+            // dd($dataGenerate);
+            $this->generateUrl($dataGenerate);
+        }
 
         auth()->login($user);
 
         // Redirect or return response
         return redirect()->route('my_affiliate.index')->with('success', 'Registration successful!');
     }
+
     public function login()
     {
         // if (Storage::has('.app_resetting')) {
@@ -150,12 +181,13 @@ class AffiliateAuthController extends Controller
      */
     public function addOrUpdatePaypalAccount(Request $request)
     {
+        // dd($request->all());
         $validate_rules = [
             'paypal_account' => 'required',
         ];
         $request->validate($validate_rules, validationMessage($validate_rules));
         try {
-            $this->affiliateRepo->addOrUpdatePaypalAccount($request->all());
+            $this->affiliateRepo->addOrUpdatePaypalAccountUser($request->all());
             $this->affiliateRepo->addOrUpdateBankAccount($request->all());
             Toastr::success('Operation successful', 'Success');
             return back();

@@ -78,7 +78,25 @@
                     toastr.success('Withdraw Request Submitted Successfully', 'Success');
                 },
                 error: function (response) {
-                    showValidationErrors('#create_withdraw_request', response.responseJSON.errors);
+
+                    if (response.status === 404 && response.responseJSON.error) {
+                        create_form_reset();
+                        $('#withdraw_request_modal').modal('hide');
+                        $('#withdraw_submit_btn').prop('disabled', false);
+                        toastr.error(response.responseJSON.error);
+
+                    } else if (response.status === 503) {
+                        $('#withdraw_submit_btn').prop('disabled', false);
+                        toastr.error('Service unavailable. Please try again later.');
+                    } else {
+                        $('#withdraw_submit_btn').prop('disabled', false);
+                        toastr.error('An unexpected error occurred.');
+                    }
+
+                    // Handle validation errors, if necessary
+                    if (response.responseJSON && response.responseJSON.errors) {
+                        showValidationErrors('#create_withdraw_request', response.responseJSON.errors);
+                    }
                 }
             });
         });

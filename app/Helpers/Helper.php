@@ -3,8 +3,16 @@
 use App\Http\Controllers\Frontend\ThemeDynamicData;
 use App\Jobs\PushNotificationJob;
 use App\Models\AffiliateCommissionList;
+use App\Models\affiliateConfigCommission;
+use App\Models\affiliateUserCourseCount;
+use App\Models\Contact;
 use App\Models\CoursePending;
+use App\Models\level;
 use App\Models\Order;
+use App\Models\OrderDetailList;
+use App\Models\QRCodePayMent;
+use App\Models\Receipt;
+use App\Models\term;
 use App\Models\User as ModelsUser;
 use App\Notifications\GeneralNotification;
 use App\User;
@@ -28,6 +36,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Str;
 use IvoPetkov\HTML5DOMDocument;
+use KS\PromptPay;
 use Modules\Affiliate\Entities\AffiliateConfiguration;
 use Modules\Blog\Entities\UserBlog;
 use Modules\CourseSetting\Entities\Category;
@@ -76,16 +85,94 @@ use PhpOffice\PhpSpreadsheet\Shared\Date;
 
 
 
+
+//fractional drisplay
+if (!function_exists('generateQrCode')) {
+    function generateQrCode($amount)
+    {
+        $qr = QRCodePayMent::first();
+        $promptpay_number = $qr->promptpay_numbers;
+        // $promptpay_number = "1103702601675";
+        $qrCodeData = new PromptPay();
+        $savePath = public_path('img/qrcode/qr.png');
+
+        if ($amount) {
+            # code...
+            $qrCodeData->generatePayload($promptpay_number, $amount);
+            $qrCodeData->generateQrCode($savePath, $promptpay_number, $amount);
+        } else {
+            $qrCodeData->generatePayload($promptpay_number);
+            $qrCodeData->generateQrCode($savePath, $promptpay_number);
+        }
+
+
+        $qrCodeImage = asset('img/qrcode/qr.png');
+        return $qrCodeImage;
+    }
+}
+if (!function_exists('replaceMixedFractions')) {
+    function replaceMixedFractions($text)
+    {
+        return preg_replace_callback('/(MixFrac|Frac)\((\d+),\s*(\d+)\)/', function ($matches) {
+            $function = $matches[1]; // Function name (either toMixedFraction or toFraction)
+            $numerator = (int) $matches[2];
+            $denominator = (int) $matches[3];
+
+            return $function === 'MixFrac'
+                ? toMixedFraction($numerator, $denominator)
+                : toFraction($numerator, $denominator);
+        }, $text);
+    }
+}
+
+if (!function_exists('textFraction')) {
+    function textFraction($numerator, $denominator)
+    {
+        // This generates LaTeX syntax for the fraction
+        return "\\(\\frac{{$numerator}}{{$denominator}}\\)";
+    }
+}
+
+if (!function_exists('toFraction')) {
+    function toFraction($numerator, $denominator)
+    {
+        if ($numerator % $denominator == 0) {
+            return (string) ($numerator / $denominator); // Whole number
+        }
+        return "\(\\frac{{$numerator}}{{$denominator}}\)";
+    }
+}
+
+if (!function_exists('toMixedFraction')) {
+    function toMixedFraction($numerator, $denominator)
+    {
+        if ($numerator % $denominator == 0) {
+            return (string) ($numerator / $denominator); // Whole number
+        }
+
+        $whole = intdiv($numerator, $denominator);
+        $remainder = $numerator % $denominator;
+
+        return $whole > 0
+            ? "\({$whole} \\frac{{$remainder}}{{$denominator}}\)"
+            : "\(\\frac{{$remainder}}{{$denominator}}\)";
+    }
+}
+//end fractional drisplay
+
 if (!function_exists('create_commmission_list')) {
     function create_commmission_list($order_id, $courses_pending_id = null, $reqRef)
     {
+        $month = date('m');
+        $year = date('Y');
+
         $order = Order::find($order_id);
         if (!$order) {
             throw new Exception("Order not found with ID: $order_id");
         }
         // dd($reqRef);
-        $coursePendingRef = $courses_pending_id 
-            ? CoursePending::find($courses_pending_id)?->ref 
+        $coursePendingRef = $courses_pending_id
+            ? CoursePending::find($courses_pending_id)?->ref
             : null;
 
         // Use coursePendingRef if it exists, otherwise fallback to reqRef
@@ -104,18 +191,264 @@ if (!function_exists('create_commmission_list')) {
         if (!$aff_config) {
             throw new Exception("Affiliate configuration not found with ID: 3");
         }
+        $activeStudent = getRecieptWithRef();
+        // $activeStudent = activeStudent();
 
-        $commission_rate = $aff_config->value / 100;
-        return AffiliateCommissionList::create([
-            'payment_to' => $user->id,
-            'courses_pending_id' => $courses_pending_id,
-            'order_id' => $order_id,
-            'status' => 'pending',
-            'commission_amount' => $order->total_price * $commission_rate,
-        ]);
+        //----------------------------------------------------------------
+        $orderDetails = OrderDetailList::where('order_id', $order->id)
+            ->groupBy('level')
+            ->selectRaw('level, MIN(term) as min_term, MAX(term) as max_term')
+            ->get();
+
+        // Get the start and end levels
+        $start_level_name = $orderDetails->min('level');
+        $end_level_name = $orderDetails->max('level');
+
+        $start_level = level::where('name', $start_level_name)->value('id');
+        $end_level = level::where('name', $end_level_name)->value('id');
+
+        // Find the correct start term and end term based on level
+        $start_term = $orderDetails->where('level', $start_level_name)->max('min_term');
+        $end_term = $orderDetails->where('level', $end_level_name)->max('max_term');
+
+        $countingCourse = courseCount($start_level, $end_level, $start_term, $end_term);
+        //------------------------------------------------------------------
+
+        $courseCount = affiliateUserCourseCount::where('user_id', $user->id)
+            ->where('year', $year)
+            ->where('month', $month)
+            ->first();
+
+        if ($courseCount && $courseCount->count == 0) {
+            # code...
+            initializeUserCourseCount($user->id, $year, $month);
+        } else {
+            # code...
+            initializeUserCourseCount($user->id, $year, $month);
+        }
+        $aff_config_commission = affiliateConfigCommission::all();
+
+        $getIdCommission = 0;
+
+        foreach ($aff_config_commission as $commissoin) {
+            # code...
+            if ($activeStudent >= $commissoin->course_per_month) {
+                $getIdCommission = $commissoin->id;
+            }
+        }
+
+        $userCourseCount = $courseCount ? $courseCount->count : 0;
+
+        $config_commission = affiliateConfigCommission::find($getIdCommission);
+
+        $commission_rate = 0;
+
+        //แก้เงื่อนไข วนลูปเพิ่มเติม ช่วงระหว่าง user_per_course_low ถึง user_per_course_high
+        $low = $config_commission->user_per_course_low;
+        $high = $config_commission->user_per_course_high;
+        $percent_10 = $config_commission->comission_per_course_10_percent;
+        $percent_15 = $config_commission->comission_per_course_15_percent;
+
+        for ($i = 0; $i < $countingCourse; $i++) {
+            # code...
+            if ($countingCourse > $high) {
+                # code...
+                $commission_rate = $percent_15; //15% commission rate มากกว่า 5 คอร์ส
+
+            } elseif ($i + $userCourseCount >= $low && $i <= $high) {
+                # code...
+                $commission_rate = $percent_15; //15% commission rate น้อยกว่าเท่ากับ 5 คอร์ส
+            } elseif ($i + $userCourseCount <= $low) {
+                # code...
+                $commission_rate = $percent_10; //10% commission rate น้อยกว่าเท่ากับ 5 คอร์ส
+
+            } else {
+                $commission_rate = 0; //error ไม่มีคอร์ส
+            }
+
+            AffiliateCommissionList::create([
+                'payment_to' => $user->id,
+                'courses_pending_id' => $courses_pending_id,
+                'order_id' => $order_id,
+                'month' => $month,
+                'year' => $year,
+                'status' => 'pending',
+                'commission_amount' => $commission_rate,
+            ]);
+        }
+
+        // $resultCommission = $countingCourse * $commission_rate;
+        checkCourseCurrent($user->id, $year, $month, $config_commission, $userCourseCount);
+        incrementUserCourseCount($user->id, $countingCourse, $year, $month);
+
+        // return AffiliateCommissionList::create([
+        //     'payment_to' => $user->id,
+        //     'courses_pending_id' => $courses_pending_id,
+        //     'order_id' => $order_id,
+        //     'month' => $month,
+        //     'year' => $year,
+        //     'status' => 'pending',
+        //     'commission_amount' => $resultCommission,
+        // ]);
     }
 }
 
+//sart test keySearch:26-01-2025
+
+if (!function_exists('incrementUserCourseCount')) {
+    function incrementUserCourseCount($user_id, $count, $year, $month)
+    {
+        $check = affiliateUserCourseCount::where('user_id', $user_id)
+            ->where('year', $year)
+            ->where('month', $month)
+            ->first();
+        // dd('check', $check);
+        if ($check) {
+            $check->count += $count;
+            $check->save();
+            return $check;
+        } else {
+            return affiliateUserCourseCount::create([
+                'user_id' => $user_id,
+                'count' => $count,
+                'year' => $year,
+                'month' => $month,
+            ]);
+        }
+    }
+}
+
+if (!function_exists('initializeUserCourseCount')) {
+    function initializeUserCourseCount($user_id, $year, $month) // first record
+    {
+        // Use passed values or the current year/month if they are not provided
+        $month = $month ?? date('m');
+        $year = $year ?? date('Y');
+
+        $check = affiliateUserCourseCount::where('user_id', $user_id)
+            ->where('year', $year)  // Ensure correct column name
+            ->where('month', $month)
+            ->first();
+
+        if (!$check) {
+            return affiliateUserCourseCount::create([
+                'user_id' => $user_id,
+                'count' => 0,
+                'year' => $year,  // Ensure correct column name
+                'month' => $month,
+            ]);
+        }
+
+        return $check;
+    }
+}
+
+if (!function_exists('activeStudent')) {
+    function activeStudent()
+    {
+
+        $results = Contact::where('discontinued', 0)->count();
+
+        return $results;
+    }
+}
+
+if (!function_exists('getRecieptWithRef')) {
+    function getRecieptWithRef()
+    {
+
+        // how to where ref not null
+        $month = date('m');
+        $year = date('Y');
+        $CouresCounting = 0;
+        $Receipts = Receipt::whereMonth('payment_date', $month)
+            ->whereYear('payment_date', $year)
+            ->where('ref', '!=', null)
+            // ->count();
+            ->get();
+        foreach ($Receipts as $Receipt) {
+
+            $orderDetails = OrderDetailList::where('order_id', $Receipt->oid)
+                ->groupBy('level')
+                ->selectRaw('level, MIN(term) as min_term, MAX(term) as max_term')
+                ->get();
+
+            // Get the start and end levels
+            $start_level_name = $orderDetails->min('level');
+            $end_level_name = $orderDetails->max('level');
+
+            $start_level = level::where('name', $start_level_name)->value('id');
+            $end_level = level::where('name', $end_level_name)->value('id');
+
+            // Find the correct start term and end term based on level
+            $start_term = $orderDetails->where('level', $start_level_name)->max('min_term');
+            $end_term = $orderDetails->where('level', $end_level_name)->max('max_term');
+
+            $CouresCounting += courseCount($start_level, $end_level, $start_term, $end_term);
+        }
+        // $results = Contact::where('ref', 0)->count();
+
+        return $CouresCounting;
+    }
+}
+
+
+if (!function_exists('checkCourseCurrent')) {
+    function checkCourseCurrent($user_id, $year, $month, $config_commission, $userCourseCount)
+    {
+        $high = $config_commission->user_per_course_high;
+        $percent_15 = $config_commission->comission_per_course_15_percent;
+
+        // Fetch the course count record
+        $courseCount = affiliateUserCourseCount::where('user_id', $user_id)
+            ->where('year', $year)
+            ->where('month', $month)
+            ->first();
+
+        // dd($courseCount);
+
+        // Ensure the record exists before checking the count
+        if ($courseCount && $courseCount->count + $userCourseCount >= $high) {
+            // Update all matching records
+            $list =  AffiliateCommissionList::where('payment_to', $user_id)
+                ->where('year', $year)
+                ->where('month', $month)
+                ->update(['commission_amount' => $percent_15]);
+
+            // dd('list', $list);
+        }
+    }
+}
+
+if (!function_exists('courseCount')) {
+    function courseCount($start_level, $end_level, $start_term, $end_term)
+    {
+        $coin = 0;
+        for ($i = $start_level; $i <= $end_level; $i++) {
+
+            if ($i == $start_level) {
+                $sterm = $start_term;
+            } else {
+                $sterm = 1;
+            }
+
+            if ($i == $end_level) {
+                $eterm = $end_term;
+            } else {
+                $eterm = term::where('level_id', $i)->count();
+            }
+
+            for ($j = $sterm; $j <= $eterm; $j++) {
+
+                $coin++;
+            }
+        }
+
+        return $coin;
+    }
+}
+
+//end test keySearch:26-01-2025
 
 // if (!function_exists('create_commmission_list')) {
 //     function create_commmission_list($courses_pending_id, $order_id)

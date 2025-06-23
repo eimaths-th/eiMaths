@@ -26,9 +26,18 @@ class CoursePending extends Model
         'start_term',
         'to_term',
         'course_id',
+        'department_id',
+        'day',
+        'period',
+        'price',
+        'slip',
     ];
     public function affiliateCommissions()
     {
         return $this->hasMany(AffiliateCommissionList::class, 'courses_pending_id');
+    }
+    public function department()
+    {
+        return $this->belongsTo(Department::class);
     }
 }

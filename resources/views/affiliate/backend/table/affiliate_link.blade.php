@@ -9,8 +9,8 @@
                     <thead>
                         <tr>
                             <th>Affiliate Link</th>
-                            <th>Visits</th>
-                            <th>Registered</th>
+                            {{-- <th>Visits</th> --}}
+                            {{-- <th>Registered</th> --}}
                             {{-- <th>Purchased</th>
                             <th>Commissions</th> --}}
 
@@ -33,8 +33,8 @@
                                     <a target="_blank" href="{{ $item->affiliate_link }}">{{ $item->affiliate_link }}</a>
                                     {{-- {{ $item->affiliate_link }} --}}
                                 </td>
-                                <td>{{ $item->visits }}</td>
-                                <td>{{ $item->registerUser->count() }}</td>
+                                {{-- <td>{{ $item->visits }}</td> --}}
+                                {{-- <td>{{ $item->registerUser->count() }}</td> --}}
                                 {{-- <td>{{ $item->payment->count() }}</td>
                                 <td>{{ showPrice($item->payment->sum('amount')) }}
                                 </td> --}}

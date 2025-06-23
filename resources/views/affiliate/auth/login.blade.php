@@ -103,7 +103,7 @@
                                     <input type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }}
                                         value="1">
                                     <span class="checkmark mr_15"></span>
-                                    <span class="label_name">จดจำฉัน</span>
+                                    <span class="text-drak">จดจำฉัน</span>
                                 </label>
                                 @if (Settings('allow_force_logout'))
                                     <label class="primary_checkbox d-flex">
@@ -113,8 +113,9 @@
                                         <span class="label_name">{{ __('auth.Force login') }}</span>
                                     </label>
                                 @endif
-                                <a href="#" {{-- <a href="{{route('SendPasswordResetLink')}}" --}}
-                                    class="forgot_pass">ลืมรหัสผ่าน?</a>
+                                {{-- <a href="{{ route('affiliate.registration') }}" class="text-dark"> สมัคสมาชิก </a> --}}
+                                {{-- <a href="#" <a href="{{route('SendPasswordResetLink')}}"
+                                    class="forgot_pass ">ลืมรหัสผ่าน?</a> --}}
                             </div>
                         </div>
                         <div class="col-12">
@@ -134,6 +135,7 @@
                                 <button type="submit" class="theme_btn text-center w-100">
                                     เข้าสู่ระบบ</button>
                             @endif
+                            <a href="{{ route('affiliate.registration') }}" class="btn mt-3 theme_btn text-center w-100">สมัครสมาชิก</a>
                         </div>
                     </div>
                 </form>

@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\EiFormController;
+use App\Http\Controllers\FooterSettingController;
 use App\Http\Controllers\HistoriesController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
@@ -8,8 +10,11 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ParentController;
 use App\Http\Controllers\PermissionsController;
+use App\Http\Controllers\PromotionImageController;
+use App\Http\Controllers\QrCodePaymentController;
 use App\Http\Controllers\ReceiptController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\TeachingPeriodController;
 use App\Http\Controllers\UserController;
 
 use App\Services\FileUploadService;
@@ -22,7 +27,7 @@ use Illuminate\Http\Request;
 
 //Auth::routes();
 
-Route::group(['middleware' => ['auth','affiliate.redirect']], function () {
+Route::group(['middleware' => ['auth', 'affiliate.redirect']], function () {
     //Route::get('/roles', [RoleController::class, 'index'])->name('roles.index');
     //Route::get('/roles/store', [RoleController::class, 'store'])->name('roles.store');
     Route::get('/roles/edit/{id}', [RoleController::class, 'edit'])->name('roles.edit2');
@@ -30,6 +35,9 @@ Route::group(['middleware' => ['auth','affiliate.redirect']], function () {
     //Route::delete('/roles/destroy', [RoleController::class, 'destroy'])->name('roles.destroy');
     Route::post('/roles/destroy_all', [RoleController::class, 'destroy_all'])->name('roles.destroy_all');
     Route::resource('users', UserController::class);
+    Route::get('/users/admin/affiliate', [UserController::class,  'affiliateUser'])->name('users.affiliate');
+    Route::DELETE('/users/admin/affiliate/destroy', [UserController::class,  'destroyAffiliateUser'])->name('users.affiliate.destroy');
+
     Route::get('/logout', [UserController::class, 'perform'])->name('logout.perform');
     Route::get('/users/edit/{id}', [UserController::class, 'edit'])->name('users.edit2');
     Route::put('/users/save/{id}', [UserController::class, 'update'])->name('users.save');
@@ -44,6 +52,7 @@ Route::group(['middleware' => ['auth','affiliate.redirect']], function () {
     Route::post('/contacts/store', [App\Http\Controllers\ContactController::class, 'store'])->name('contacts.store');
     Route::post('/contacts/receipt', [App\Http\Controllers\ContactController::class, 'receipt'])->name('contacts.receipt');
     Route::get('/contacts/edit/{id}', [App\Http\Controllers\ContactController::class, 'edit'])->name('contacts.edit');
+    Route::get('/contacts/getRef/{id}', [App\Http\Controllers\ContactController::class, 'getRef'])->name('contacts.getRef');
     Route::get('/contacts/course/{id}', [App\Http\Controllers\ContactController::class, 'get_course'])->name('contacts.course');
     Route::put('/contacts/save/{id}', [App\Http\Controllers\ContactController::class, 'update'])->name('contacts.save');
     Route::delete('/contacts/destroy', [App\Http\Controllers\ContactController::class, 'destroy'])->name('contacts.destroy');
@@ -94,6 +103,7 @@ Route::group(['middleware' => ['auth','affiliate.redirect']], function () {
 
     Route::get('/level/find/{type}/{level}', [App\Http\Controllers\ContactController::class, 'lfind'])->name('level.find');
     Route::get('/term/find/{type}/{level}/{term}', [App\Http\Controllers\ContactController::class, 'tfind'])->name('term.find');
+    Route::get('/scoin', [App\Http\Controllers\ContactController::class, 'sCoin'])->name('term.scoin');
 
     Route::get('/orders', [App\Http\Controllers\OrderController::class, 'index'])->name('orders');
     Route::get('/orders/running', [App\Http\Controllers\OrderController::class, 'create'])->name('orders.running');
@@ -140,6 +150,20 @@ Route::group(['middleware' => ['auth','affiliate.redirect']], function () {
 
     Route::get('/histories/show/{id}', [App\Http\Controllers\HistoriesController::class, 'show'])->name('history.show');
 
+    Route::resource('qrcode_payment', QrCodePaymentController::class);
+    Route::resource('TeachingPeriod', TeachingPeriodController::class);
+    Route::resource('promotion-img', PromotionImageController::class);
+    Route::resource('footer-setting', FooterSettingController::class);
+    //createOrUpdate
+    Route::post('/footer-setting/createOrUpdate', [FooterSettingController::class, 'createOrUpdate'])->name('footer-setting.createOrUpdate');
+
+    Route::get('TeachingPeriod/find/{department_id}/{day}', [TeachingPeriodController::class, 'find'])->name('TeachingPeriod.find');
+
+    Route::post('/promotion-images/update-status', [PromotionImageController::class, 'updateStatus'])->name('promotion-images.updateStatus');
+    Route::post('/promotion-images/update-status2', [PromotionImageController::class, 'updateStatus2'])->name('promotion-images.updateStatus2');
+    Route::post('/promotion-images/disable-all', [PromotionImageController::class, 'disableAll'])->name('promotion-images.disableAll');
+    
+
 
     //parent route
     Route::resource('parent', ParentController::class);
@@ -182,6 +206,8 @@ Route::group(['middleware' => ['auth','affiliate.redirect']], function () {
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
     Route::post('/contact/export', [ContactController::class, 'exportContact'])->name('contact.export');
     Route::post('/reciept/export', [ReceiptController::class, 'exportReciept'])->name('reciept.export');
+
+    Route::get('/ei_form', [EiFormController::class, 'backEndIndex'])->name('ei_form.backEndIndex');
 });
 
 Route::get('/teacher', function () {

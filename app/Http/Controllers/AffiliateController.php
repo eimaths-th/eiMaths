@@ -3,7 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\AffiliateCommissionList;
+use App\Models\affiliateUserCourseCount;
 use App\Models\CoursePending;
+use App\Models\Department;
+use App\Models\FooterSetting;
+use App\Models\PromotionImage;
+use App\Models\QRCodePayMent;
+use App\Models\TeachingPeriod;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Modules\Affiliate\Repositories\AffiliateRepository;
@@ -12,6 +18,7 @@ use Modules\Affiliate\Http\Requests\AffiliateLinkRequest;
 use Brian2694\Toastr\Facades\Toastr;
 // use Brian2694\Toastr\Facades\Toastr;
 use Exception;
+use Modules\Affiliate\Entities\AffiliateLink;
 use Modules\Affiliate\Entities\AffiliateWithdraw;
 use Modules\CourseSetting\Entities\Category;
 use Modules\Localization\Entities\Language;
@@ -30,7 +37,12 @@ class AffiliateController extends Controller
     public function fontend()
     {
         //
-        return view('affiliate.index');
+        $departments = Department::whereNotIn('id', [1, 4, 5])->get();
+        // dd($teaching_periods);
+        $days = ['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Thursday', 'Friday'];
+        $qr_payment = QRCodePayMent::first();
+
+        return view('affiliate.index', compact('departments', 'days', 'qr_payment'));
     }
     public function index(Request $request)
     {
@@ -68,8 +80,8 @@ class AffiliateController extends Controller
         $data['data'] = $this->affiliateRepo->all();
         $affiliateTransactionRepo = new AffiliateTransactionRepository();
         $data['user_transaction_data'] = AffiliateWithdraw::where('user_id', Auth::user()->id)
-        ->orderBy('id', 'desc')
-        ->get();
+            ->orderBy('id', 'desc')
+            ->get();
         $data['courses_pennding'] = CoursePending::where('ref', Auth::user()->referral)
             ->orderBy('id', 'desc')
             ->get();
@@ -80,8 +92,19 @@ class AffiliateController extends Controller
         if ($data['user']->role_id == 3) {
             return view('affiliate::student.student_index', $data);
         }
+        $month = date('m');
+        $year = date('Y');
+        $count_course = affiliateUserCourseCount::where('user_id', Auth::user()->id)
+            ->where('month', $month)
+            ->where('year', $year)
+            ->first();
         // echo Auth::user()->id . Auth::user()->name;
         // dd($data,Auth::user()->id);
+
+        // dd(Auth::user()->referral);
+
+
+
         return view('affiliate.backend.my_affiliate', [
             'data' => $data,
             'amount' => $data['amount'] ?? '0',
@@ -90,7 +113,8 @@ class AffiliateController extends Controller
             'account_name' => $data['account_name'],
             'paypal_account' => $data['paypal_account'],
             'start_date' => $data['start_date'],
-            'end_date' => $data['end_date']
+            'end_date' => $data['end_date'],
+            'count_course' => $count_course->count ?? 0,
         ]);
         // } catch (Exception $e) {
         //     Toastr::error($e->getMessage(), trans('common.Error'));
@@ -133,26 +157,63 @@ class AffiliateController extends Controller
     {
         // Retrieve categories
         $categories = Category::all();
-
+        $departments = Department::whereNotIn('id', [1, 4, 5])->get();
+        // dd($teaching_periods);
+        $days = ['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Thursday', 'Friday'];
         // Retrieve languages (assuming you have a Language model or method to fetch languages)
         $languages = Language::where('status', 1)->select('id', 'code', 'name', 'native', 'rtl')->get(); // Adjust this to your actual query for languages
+        $qr_payment = QRCodePayMent::first();
 
-        return view('affiliate.courses', compact('request', 'categories', 'languages'));
+        $footer = FooterSetting::first();
+        $promotion = PromotionImage::where('status', 'enabled')->get();
+
+
+
+        return view('affiliate.courses', compact(
+            'request',
+            'categories',
+            'languages',
+            'departments',
+            'days',
+            'qr_payment',
+            'footer',
+            'promotion'
+        ));
+    }
+
+    public function findPeriodOptions(Request $request, $department_id, $day)
+    {
+        // Retrieve teaching periods for the selected department and day
+        $teachingPeriods = TeachingPeriod::where('department_id', $department_id)
+            ->where('day', $day)
+            ->get();
+
+        $html = '';
+        foreach ($teachingPeriods as $teachingPeriod) {
+            $html .= '
+            
+                <option value="' . $teachingPeriod->period . '">' . $teachingPeriod->period . '</option>
+            
+            ';
+        }
+        // Return the data as a JSON response
+        return response()->json(['html' => $html]);
     }
     public function create()
     {
         //
     }
 
+
     /**
      * Store a newly created resource in storage.
      */
     public function store(AffiliateLinkRequest $request)
     {
+        // dd($request->all());
         try {
             $this->affiliateRepo->create($request->validated());
-
-            Toastr::success(trans('affiliate.Affiliate Link Generated Successfully'));
+            Toastr::success('Affiliate Link Generated Successfully');
             return back();
         } catch (Exception $e) {
             Toastr::error($e->getMessage(), trans('common.Error'));

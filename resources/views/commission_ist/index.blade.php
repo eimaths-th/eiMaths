@@ -57,11 +57,13 @@
                                     <thead>
                                         <tr>
                                             <th><input type="checkbox" id="check-all" class="flat"></th>
-                                            <th>ref</th>
-                                            <th>order_id</th>
-                                            <th>receipt_id</th>
+                                            <th>Referal</th>
+                                            <th>Order ID</th>
+                                            <th>Receipt ID</th>
                                             <th>status</th>
-                                            <th>commission_amount</th>
+                                            <th>Commission Amount</th>
+                                            <th>Payment to</th>
+                                            <th>Approved By</th>
                                             <th>created_at</th>
                                             <th width="120px">Action</th>
                                         </tr>
@@ -81,6 +83,8 @@
         </div>
 
     </section>
+
+    @include('commission_ist.template_modal')
 
     {{--  {!! $data->render() !!} --}}
 @endsection

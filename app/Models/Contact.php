@@ -64,7 +64,7 @@ class Contact extends Model implements AuthenticatableContract
     /**
      * @var array
      */
-    protected $fillable = ['ctype', 'order', 'centre', 'code','type', 'start_date', 'start_term', 'name', 'nickname', 'school', 'gender', 'birth_date', 'password','address', 'postcode', 'telephone', 'father_name', 'father_email', 'father_mobile', 'mother_name', 'mother_email', 'mother_mobile', 'level', 'term', 'bookuse', 'level_name', 'term_name', 'bookuse_name', 'level2', 'term2', 'bookuse2', 'level2_name', 'term2_name', 'bookuse2_name', 'discontinued', 'discontinued_date', 'discontinued_reason', 'created_by', 'updated_by', 'created_at', 'updated_at'];
+    protected $fillable = [ 'ref','ctype', 'order', 'centre', 'code','type', 'start_date', 'start_term', 'name', 'nickname', 'school', 'gender', 'birth_date', 'password','address', 'postcode', 'telephone', 'father_name', 'father_email', 'father_mobile', 'mother_name', 'mother_email', 'mother_mobile', 'level', 'term', 'bookuse', 'level_name', 'term_name', 'bookuse_name', 'level2', 'term2', 'bookuse2', 'level2_name', 'term2_name', 'bookuse2_name', 'discontinued', 'discontinued_date', 'discontinued_reason', 'created_by', 'updated_by', 'created_at', 'updated_at'];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany

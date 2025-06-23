@@ -128,6 +128,7 @@
                                                     name="search_type">
                                                     <option value="">Please Select</option>
                                                     <option value="1">Student Code</option>
+                                                    {{-- <option value="">Referal Code</option> --}}
                                                     <option value="2">Student Name</option>
                                                     <option value="3">Father Name</option>
                                                     <option value="4">Mother Name</option>
@@ -177,6 +178,7 @@
                                                     </th>
                                                     <th>Centre</th>
                                                     <th>Code</th>
+                                                    <th>Referal</th>
                                                     <th>Student Name</th>
                                                     <th>Student Nick Name</th>
                                                     <th>Register Date</th>

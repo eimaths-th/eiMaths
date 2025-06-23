@@ -390,6 +390,41 @@
                 }
             }); //end ajax
         })
+        $(document).on('click', '.btn-delete-affiliate-user', function() {
+            if (!confirm("Confirm Delete Data ?")) return;
+
+            var rowid = $(this).data('rowid')
+            var el = $(this)
+            if (!rowid) return;
+
+
+            $.ajax({
+                //type: "POST",
+                method: 'DELETE',
+                dataType: 'JSON',
+                url: "/users/admin/affiliate/destroy",
+                data: {
+                    id: rowid,
+                    //_method: 'delete',
+                    _token: token
+                },
+                success: function(data) {
+                    console.log(data);
+                    if (data.success) {
+                        toastr.success(data.message, {
+                            timeOut: 5000
+                        });
+                        table.row(el.parents('tr'))
+                            .remove()
+                            .draw();
+                    } else {
+                        toastr.error(data.errors, {
+                            timeOut: 5000
+                        });
+                    }
+                }
+            }); //end ajax
+        })
 
 
     });

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AffiliateCommissionList;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\AffiliateUserBank;
 use App\Models\User;
 use App\Models\Department;
 use App\Models\Position;
@@ -13,7 +14,9 @@ use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\View;
 use Modules\Affiliate\Entities\AffiliateUserWallet;
+use Modules\Affiliate\Entities\AffiliateWithdraw;
 
 class CommissionListControler extends Controller
 {
@@ -44,26 +47,32 @@ class CommissionListControler extends Controller
             //sleep(2);
 
             $datas =  AffiliateCommissionList::query()->orderBy("id", "desc")->get();
-       
+
             return datatables()->of($datas)
 
                 ->editColumn('ref', function ($row) {
-                    return $row->order->ref;
+                    return $row->order->ref ?? '';
                 })
                 ->editColumn('order_id', function ($row) {
-                    return $row->order->order_number;
+                    return $row->order->order_number ?? '';
                 })
                 ->editColumn('reciept_id', function ($row) {
                     return $row->receipt->receipt_number ?? '';
                 })
                 ->editColumn('status', function ($row) {
-                    return $row->status;
+                    return $row->status ?? '';
                 })
                 ->editColumn('commission_amount', function ($row) {
-                    return $row->commission_amount;
+                    return $row->commission_amount ?? '';
+                })
+                ->editColumn('payment_to', function ($row) {
+                    return $row->paymentTo->name ?? 'Null User';
+                })
+                ->editColumn('approved_by', function ($row) {
+                    return $row->approvedBy->name ?? '';
                 })
                 ->editColumn('created_at', function ($row) {
-                    return $row->created_at->format('d-m-Y');
+                    return $row->created_at->format('d-m-Y') ?? '';
                 })
                 ->editColumn('checkbox', function ($row) {
                     return '<input type="checkbox" id="' . $row->id . '" class="flat" name="table_records[]" value="' . $row->id . '" >';
@@ -77,6 +86,9 @@ class CommissionListControler extends Controller
 
                         // Button for "Reject"
                         $html .= ' <button class="btn btn-danger btn-sm reject-btn" data-id="' . $row->id . '">Reject</button>';
+                    } else {
+                        # code...
+                        // $html .= '<button class="btn btn-primary btn-sm view-btn" data-id="' . $row->id . '">Report</button>';
                     }
 
                     return $html;
@@ -84,6 +96,8 @@ class CommissionListControler extends Controller
         }
         return view('commission_ist.index');
     }
+
+
     /**
      * Show the form for creating a new resource.
      */
@@ -93,39 +107,58 @@ class CommissionListControler extends Controller
         $id = $request->id;
         $action = $request->action;
 
-        // Validate the action
+        // Validate action
         if (!in_array($action, ['approve', 'reject'])) {
             return response()->json(['message' => 'Invalid action'], 400);
         }
 
-        // Find the commission record
+        // Find commission
         $commission = AffiliateCommissionList::find($id);
         if (!$commission) {
             return response()->json(['message' => 'Commission record not found'], 404);
         }
 
-        $amount = $commission->commission_amount;
+        // Find user wallet
+        $UserWallet = AffiliateUserWallet::where('user_id', $commission->payment_to)->first();
+        if (!$UserWallet) {
+            return response()->json(['error' => 'User wallet not found'], 404);
+        }
+
+        // Find user bank
+        $UserBank = AffiliateUserBank::where('user_id', $commission->payment_to)->first();
+        if (!$UserBank) {
+            return response()->json(['error' => 'User bank not found'], 404);
+        }
+
+        $appoved_by = Auth::user()->id;
+        $amount = (float) $commission->commission_amount;
         $user_id = $commission->payment_to;
 
-        // Start a transaction to ensure consistency
+        // Ensure amount is valid
+        if ($amount <= 0 || !is_numeric($amount)) {
+            return response()->json(['error' => 'Invalid amount value'], 400);
+        }
+
+        // Start transaction
         DB::beginTransaction();
         try {
-            // Update the wallet amount if the action is "approve"
             if ($action === 'approve') {
-                AffiliateUserWallet::where('user_id', $user_id)
-                    ->increment('amount', $amount);
+                $UserWallet->increment('amount', $amount);
+                $UserWallet->refresh(); // Reload updated balance
             }
 
-            // Update the commission status
-            $commission->status = $action === 'approve' ? 'approved' : 'rejected';
+            // Update commission status
+            $commission->status = ($action === 'approve') ? 'approved' : 'rejected';
+            $commission->approved_by = $appoved_by;
             $commission->save();
 
-            // Commit the transaction
             DB::commit();
 
-            return response()->json(['message' => 'Status updated successfully!']);
+            return response()->json([
+                'message' => 'Status updated successfully!',
+                'new_wallet_balance' => $UserWallet->amount // Show updated balance
+            ]);
         } catch (\Exception $e) {
-            // Rollback the transaction on error
             DB::rollBack();
             return response()->json([
                 'message' => 'An error occurred while updating the status',
@@ -150,10 +183,25 @@ class CommissionListControler extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Request $request)
     {
-        //
+        $id = $request->id;
+        $commission = AffiliateCommissionList::find($id);
+        // dd(
+        //     $commission,
+        // );
+        if (!$commission) {
+            return response()->json(['message' => 'Commission record not found'], 404);
+        }
+        $template = 'commission_ist.view_report_modal';
+        $htmlContent = View::make($template, $commission)->render();
+        return response()->json([
+            'commission' => $commission,
+            'html' =>  $htmlContent
+
+        ]);
     }
+
 
     /**
      * Show the form for editing the specified resource.

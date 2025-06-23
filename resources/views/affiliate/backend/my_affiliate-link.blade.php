@@ -2,11 +2,29 @@
 
     <div class="row">
         <div class="col-lg-12">
-            <div class="main-title">
+            <div class="row d-flex justify-content-between mb-5">
+                <div>
+                    <h3>
+                        Your Referral Code
+                    </h3>
+                </div>
+                <div class="row">
+                    <div class="col-lg-8">
+                        <input type="text" class="form-control" value="{{ $user->referral }}" id="referralCopy" readonly>
+                    </div>
+                    <div class="col-lg-4">
+                        <button id="copyBtn" class="primary-btn small fix-gr-bg" type="button"
+                            onclick="copyToClipboard('#referralCopy')">
+                            <i class="fa fa-copy"></i> Copy
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {{-- <div class="main-title">
                 <h3 class="mb-20">
                     Create Affiliate Link
                 </h3>
-            </div>
+            </div> --}}
 
             {{-- <form method="POST" action="{{ route('my_affiliate.index') }}"
                 accept-charset="UTF-8" class="form-horizontal"
@@ -65,7 +83,7 @@
                 </div>
             </form> --}}
 
-            @if (isset($row))
+            {{-- @if (isset($row))
                 {{ Form::open([
                     'class' => 'form-horizontal',
                     'files' => true,
@@ -89,20 +107,19 @@
                             <div class="input-effect">
                                 <input readonly
                                     class="primary-input form-control{{ $errors->has('user_name') ? ' is-invalid' : '' }}"
-                                    type="text" id="user_name" name="user_name"
-                                    autocomplete="off" value="{{ $user->referral }}">
+                                    type="text" id="user_name" name="user_name" autocomplete="off"
+                                    value="{{ $user->referral }}">
 
                             </div>
                         </div>
                         <div class="col-lg-12 mb-30">
                             <div class="input-effect">
-                                <label class="mb-2"> {{ __('affiliate.Enter URL') }}
+                                <label class="mb-2"> Enter URL
                                     <span class="required_mark_theme">*</span>
                                 </label>
                                 <input
                                     class="primary-input-field form-control{{ $errors->has('url') ? ' is-invalid' : '' }}"
-                                    type="text" id="url" name="url"
-                                    autocomplete="off"
+                                    type="text" id="url" name="url" autocomplete="off"
                                     value="{{ isset($row) ? $row->url : old('url') }}">
 
                                 <span class="focus-border"></span>
@@ -116,13 +133,11 @@
 
                         <div class="col-lg-12 mb-30">
                             <div class="input-effect">
-                                <label class="mb-2">
-                                    {{ __('affiliate.Affiliate Link') }}</label>
+                                <label class="mb-2">Affiliate Link</label>
 
                                 <input readonly
                                     class="primary-input-field form-control{{ $errors->has('affiliate_link') ? ' is-invalid' : '' }}"
-                                    id="affiliate_link" type="text"
-                                    name="affiliate_link" autocomplete="off"
+                                    id="affiliate_link" type="text" name="affiliate_link" autocomplete="off"
                                     value="{{ isset($row) ? $row->affiliate_link : old('affiliate_link') }}">
                                 <span class="focus-border"></span>
                                 @if ($errors->has('affiliate_link'))
@@ -141,15 +156,18 @@
                                 <i class="ti-check"></i>
                                 @if (isset($row))
                                     {{ __('common.Update') }}
+                                    Update
                                 @else
-                                    {{ __('common.Save') }}
+                                    Save
                                 @endif
                             </button>
                         </div>
                     </div>
                 </div>
             </div>
-            {{ Form::close() }}
+            {{ Form::close() }} --}}
+
+
         </div>
     </div>
 </div>

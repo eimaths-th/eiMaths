@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-
+use App\Models\AffiliateUserBank;
 use Brian2694\Toastr\Facades\Toastr;
 use Exception;
 use Illuminate\Http\Request;
@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Modules\Affiliate\Entities\AffiliateReferralPayment;
+use Modules\Affiliate\Entities\AffiliateUserWallet;
 use Modules\Affiliate\Http\Requests\AffiliateWithdrawRequest;
 use Modules\Affiliate\Http\Requests\BalanceTransferRequest;
 use Modules\Affiliate\Repositories\AffiliateTransactionRepository;
@@ -33,7 +34,27 @@ class AffiliateTransactionController extends Controller
     public function store(AffiliateWithdrawRequest $request)
     {
 
-        // dd($request);
+        // dd($request->all());
+        $id = $request->user_id;
+
+        $UserWallet = AffiliateUserWallet::where('user_id', $id)->first();
+        if (!$UserWallet) {
+            return response()->json(['error' => 'Prompt Pay account not found'], 404);
+        }
+
+        if ($request->payment_type == 2) {
+            # code...
+            $UserBank = AffiliateUserBank::where('user_id', $id)->first();
+
+            if (!$UserBank) {
+                return response()->json(['error' => 'Bank account not found'], 404);
+            }
+        }
+
+
+        // Find the user's wallet
+
+
         try {
             DB::beginTransaction();
             $this->affiliateTransactionRepo->withdrawRequest($request->validated());
@@ -41,10 +62,11 @@ class AffiliateTransactionController extends Controller
             return response()->json(['status' => 200]);
         } catch (Exception $e) {
             DB::rollBack();
-            Toastr::error($e->getMessage(), trans('common.Error'));
+            Toastr::error($e->getMessage(), trans('common.error'));
             return response()->json(['error' => $e->getMessage()], 503);
         }
     }
+
 
     public function balanceTransferToWallet(BalanceTransferRequest $request)
     {

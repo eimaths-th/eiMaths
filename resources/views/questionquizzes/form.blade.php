@@ -3,7 +3,7 @@
         <div class="modal-content">
             <div class="modal-header bg-primary">
                 <h4 class="modal-title"><i class="fas fa-user"></i> Create Question</h4>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -96,7 +96,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-success" id="SubmitCreateForm"><i class="fas fa-download"></i>
                     Save</button>
-                <button type="button" class="btn btn-danger modelClose" data-dismiss="modal"><i
+                <button type="button" class="btn btn-danger modelClose" data-bs-dismiss="modal"><i
                         class="fas fa-door-closed"></i> Close</button>
             </div>
         </div>
@@ -110,7 +110,7 @@
                     <i class="fas fa-user"></i>
                     {{ $editing ? 'Edit Question' : 'Create Question' }}
                 </h4>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -194,7 +194,7 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-danger modelClose" data-dismiss="modal">
+                <button type="button" class="btn btn-danger modelClose" data-bs-dismiss="modal">
                     <i class="fas fa-door-closed"></i> Close
                 </button>
             </div>
@@ -210,7 +210,7 @@
                     <span id="question-title"></span>
                     {{-- {{ $editing ? 'Edit Question' : 'Create Question' }} --}}
                 </h4>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -415,7 +415,7 @@
                     </button> --}}
                 </span>
 
-                <button type="button" class="btn btn-danger modelClose" data-dismiss="modal">
+                <button type="button" class="btn btn-danger modelClose" data-bs-dismiss="modal">
                     <i class="fas fa-door-closed"></i> Close
                 </button>
             </div>

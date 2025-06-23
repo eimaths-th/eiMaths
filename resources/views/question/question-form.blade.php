@@ -7,7 +7,7 @@
                     <span id="question-title"></span>
                     {{-- {{ $editing ? 'Edit Question' : 'Create Question' }} --}}
                 </h4>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -25,6 +25,15 @@
                 <form class="form" id="questionForm">
                     @csrf
                     <input type="hidden" id="formMethod" name="_method" value="POST">
+                    <div class="mb-3">
+                        <select name="type" id="type" class="form-control">
+                            <option value="">Select type answer</option>
+                            <option value="options">Options</option>
+                            <option value="written">Written</option>
+                            <option value="image">image</option>
+                            <option value="fraction">fraction</option>
+                        </select>
+                    </div>
 
                     <div class="mb-3">
                         <label for="text" class="form-label">Question text</label>
@@ -32,7 +41,25 @@
                         @error('text')
                             <div class="text-danger mt-2">{{ $message }}</div>
                         @enderror
+                        <div class="row mt-2 fraction-button" id="fraction-button" style="display: none;">
+                            <div class="col-lg-2">
+                                <button type="button" class="btn btn-primary" onclick="insertFrac()">
+                                    {{-- เศษส่วน --}}
+                                    Fraction
+                                </button>
+                            </div>
+                            <div class="col-lg-2">
+                                <button type="button" class="btn btn-primary" onclick="insertMixed()">
+                                    {{-- จำนวนคละ --}}
+                                    MixFrac
+                                </button>
+                            </div>
+                        </div>
                     </div>
+
+
+
+
                     <div class="mb-3">
                         <label for="text" class="form-label">Question Image</label>
                         <div id="show-image-question-container" class="form-row align-items-center">
@@ -46,16 +73,6 @@
                         @error('text')
                             <div class="text-danger mt-2">{{ $message }}</div>
                         @enderror
-                    </div>
-
-                    <div class="mb-3">
-                        <select name="type" id="type" class="form-control">
-                            <option value="">Select type answer</option>
-                            <option value="options">Options</option>
-                            <option value="written">Written</option>
-                            <option value="image">image</option>
-
-                        </select>
                     </div>
 
                     <div class="mb-3 written_type">
@@ -145,7 +162,52 @@
                         @enderror
                     </div>
 
+                    <div class="mb-3 fraction_type">
+                        <hr>
+                        <h2>answers fraction</h2>
+                        <div class="mb-3">
+                            <label for="answer_type" class="form-label">Type Answer</label>
+                            <select name="answer_type_fraction" id="answer_type_fraction" class="form-control">
+                                <option value="">select type answer fraction</option>
+                                <option value="written">written</option>
+                                <option value="options">options</option>
+                            </select>
+                        </div>
+                        <div class="written_type_fraction">
+                            <div class="mb-3">
+                                <label for="answer_numerator" class="form-label">Numerator</label>
+                                <input type="number" class="form-control" name="answer_numerator"  id="answer_numerator"
+                                placeholder="numerator" required>
+                            </div>
 
+                            <div class="mb-3">
+                                <label for="answer_denominator" class="form-label">Denominator</label>
+                                <input type="number" class="form-control" name="answer_denominator" required id="answer_denominator"
+                                   placeholder="denominator" min="1">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="answer_type" class="form-label">Type Fraction</label>
+                                <select name="answer_type" id="answer_type" class="form-control">
+                                    <option value="frac">Fraction</option>
+                                    <option value="mixed" selected>Mixed Fraction</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="options_type_fraction">
+                            <button type="button" class="btn btn-sm btn-primary mt-2" id="add-fraction-option">Add Fraction</button>
+                            <div id="add-fraction-container">
+                                
+                            </div>
+                        
+                        </div>
+
+
+                        <hr>
+                    </div>
+
+                    <!-- Hint -->
                     <div class="mb-3">
                         <label for="code_snippet" class="form-label">Hint</label>
                         <textarea id="code_snippet" class="form-control" name="code_snippet">{{ $question->code_snippet ?? old('code_snippet') }}</textarea>
@@ -153,7 +215,7 @@
                             <div class="text-danger mt-2">{{ $message }}</div>
                         @enderror
                     </div>
-
+                    <!-- Answer explanation -->
                     <div class="mb-3">
                         <label for="answer_explanation" class="form-label">Answer explanation</label>
                         <textarea id="answer_explanation" class="form-control" name="answer_explanation">{{ $question->answer_explanation ?? old('answer_explanation') }}</textarea>
@@ -161,7 +223,7 @@
                             <div class="text-danger mt-2">{{ $message }}</div>
                         @enderror
                     </div>
-
+                    <!-- More info link -->
                     <div class="mb-3">
                         <label for="more_info_link" class="form-label">More info link</label>
                         <input type="text" id="more_info_link" class="form-control" name="more_info_link"
@@ -170,6 +232,7 @@
                             <div class="text-danger mt-2">{{ $message }}</div>
                         @enderror
                     </div>
+
                 </form>
 
             </div>
@@ -180,7 +243,7 @@
                     </button> --}}
                 </span>
 
-                <button type="button" class="btn btn-danger modelClose" data-dismiss="modal">
+                <button type="button" class="btn btn-danger modelClose" data-bs-dismiss="modal">
                     <i class="fas fa-door-closed"></i> Close
                 </button>
             </div>

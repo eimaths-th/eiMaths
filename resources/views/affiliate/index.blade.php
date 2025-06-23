@@ -28,7 +28,7 @@
                                         <div class="breadcam_text text-center"><br><span><span
                                                     style="font-size:28px;">เข้าร่วมโปรแกรม Affiliate
                                                     ของเรา</span></span>
-                                            <h4><strong>เป็นส่วนหนึ่งของความสำเร็จของเรา รับค่าคอมมิชชั่นสูงสุด 20%
+                                            <h4><strong>เป็นส่วนหนึ่งของความสำเร็จของเรา รับค่าคอมมิชชั่นสูงสุด 15%
                                                     จากการแนะนำ</strong></h4>
                                             <p>เรามีค่าคอมมิชชั่นที่น่าสนใจสำหรับแต่ละการแนะนำที่ประสบความสำเร็จ</p>
                                             <a class="theme_btn" href="{{ route('affiliate.registration') }}">
@@ -59,15 +59,15 @@
                                             <div class="commision_left">
                                                 <h4>อัตราค่าคอมมิชชั่น</h4>
                                                 <p class="rate_text">ช่วยกำหนดอนาคตของการค้า</p>
-                                                <h3>20%</h3>
+                                                <h3>15%</h3>
                                                 <p class="Sale_text">For the First Sale</p><a class="theme_btn small_btn2"
-                                                    {{-- href="https://ecommerce.eimaths-th.com/my-affiliate"> --}} href="#">
+                                                    {{-- href="https://ecommerce.eimaths-th.com/my-affiliate"> --}} href="{{ route('affiliate.login') }}">
                                                     &nbsp;สร้าง
                                                     Affiliate ลิงค์</a>
-                                                <p class="discription_text">เสนอค่าคอมมิชชั่น 20%
-                                                    สำหรับการขายครั้งแรกที่แนะนำ
-                                                    หากผู้เยี่ยมชมของคุณซื้อสินค้าของเรามูลค่า 10,000 บาท
-                                                    คุณจะได้รับค่าคอมมิชชั่น 2,000</p>
+                                                <p class="discription_text">เสนอค่าคอมมิชชั่น 15%
+                                                    สำหรับการขาย
+                                                    หากผู้เยี่ยมชมของคุณซื้อสินค้าของเรา
+                                                    คุณจะได้รับค่าคอมมิชชั่น สูงสุด15%</p>
                                             </div>
                                             <div class="commision_right flex-fill">
                                                 <div class="commision_payment_lists">
@@ -804,7 +804,7 @@
                                         </div>
                                         <div class="apply_btn text-center mb_30"><a
                                                 class="theme_btn min_windth_200 text-center" {{-- href="https://ecommerce.eimaths-th.com/affiliate/registration"> --}}
-                                                href="#">
+                                                href=" {{ route('affiliate.registration') }} ">
                                                 สมัครเลย!!</a>
                                         </div>
                                     </div>
@@ -834,46 +834,9 @@
                             </div>
                         </div>
                     </div>
-                    <div class="contact_section " data-type="component-text">
-                        <div class="container">
-                            <div class="row justify-content-center">
-                                <div class="col-xl-10">
-                                    <div class="contact_address">
-                                        <div class="row justify-content-center">
-                                            <div class="col-xl-12">
-                                                <div class="row justify-content-between">
-                                                    <div class="col-lg-5">
-                                                        <div class="contact_info mb_30">
-                                                            <h4 class="mb-0">ข้อมูลการติดต่อ</h4>
-                                                            <div class="address_lines">
-                                                                <div class="single_address_line d-flex">
-                                                                    <div class="address_info">
-                                                                        <p>The Crystal SB ราชพฤกษ์ ชั้น 3, 555/9
-                                                                            อำเภอบางกรวย จังหวัดนนทบุรี 11130</p>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="single_address_line d-flex">
-                                                                    <div class="address_info">
-                                                                        <p>0 616-208-666</p>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="single_address_line d-flex">
-                                                                    <div class="address_info">
-                                                                        <p>info@eimaths-th.com</p>
-                                                                        <p>ส่งคำถามของคุณมาหาเราได้ตลอดเวลา!</p>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    {{-- test contact --}}
+
+                    {{-- end test contact --}}
                     <style type="text/css" data-type="component-text">
                         .bg-deep-green {
                             background-color: #6CB552 !important
@@ -1284,6 +1247,64 @@
                                             <p>กรณีศึกษานี้แสดงให้เห็นว่าความสำเร็จในโปรแกรม Affiliate
                                                 มาจากการวางแผนและใช้กลยุทธ์ที่เหมาะสมในการดึงดูดและสร้างความเชื่อมั่นในกลุ่มเป้าหมาย
                                             </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div data-type="component-text">
+                    <div class="breadcrumb_area bradcam_bg_1 position-relative">
+                        <div class="breadcrumb_img w-100 h-100 position-absolute bottom-0 left-0 "><img alt=""
+                                class="w-100 h-100 img-cover"
+                                src="{{ asset('frontend/infixlmstheme/img/banner/bradcam_bg_1.jpg') }}">
+                            {{-- src="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/img/banner/bradcam_bg_1.jpg"> --}}
+                        </div>
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-lg-9 offset-lg-1">
+                                    <div class="breadcam_wrap"><span>About Company</span>
+                                        <h3>The leading global marketplace.</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="contact_section " data-type="component-text">
+                    <div class="container">
+                        <div class="row justify-content-center">
+                            <div class="col-xl-10">
+                                <div class="contact_address">
+                                    <div class="row justify-content-center">
+                                        <div class="col-xl-12">
+                                            <div class="row justify-content-between">
+                                                <div class="col-lg-5">
+                                                    <div class="contact_info mb_30">
+                                                        <h4 class="mb-0">ข้อมูลการติดต่อ</h4>
+                                                        <div class="address_lines">
+                                                            <div class="single_address_line d-flex">
+                                                                <div class="address_info">
+                                                                    <p>The Crystal SB ราชพฤกษ์ ชั้น 3, 555/9
+                                                                        อำเภอบางกรวย จังหวัดนนทบุรี 11130</p>
+                                                                </div>
+                                                            </div>
+                                                            <div class="single_address_line d-flex">
+                                                                <div class="address_info">
+                                                                    <p>0 616-208-666</p>
+                                                                </div>
+                                                            </div>
+                                                            <div class="single_address_line d-flex">
+                                                                <div class="address_info">
+                                                                    <p>info@eimaths-th.com</p>
+                                                                    <p>ส่งคำถามของคุณมาหาเราได้ตลอดเวลา!</p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

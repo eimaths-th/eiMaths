@@ -27,7 +27,7 @@ class AffiliateCommissionList extends Model
     /**
      * @var array
      */
-    protected $fillable = ['payment_to','courses_pending_id', 'order_id', 'reciept_id', 'status', 'commission_amount', 'created_at', 'updated_at'];
+    protected $fillable = ['payment_to','courses_pending_id', 'order_id', 'reciept_id', 'status', 'month' , 'year', 'commission_amount', 'approved_by', 'created_at', 'updated_at'];
 
     public function coursePending()
     {
@@ -37,6 +37,16 @@ class AffiliateCommissionList extends Model
     /**
      * Define the relationship with the Order model.
      */
+    public function paymentTo()
+    {
+        return $this->belongsTo(User::class, 'payment_to');
+    }
+    
+    public function approvedBy()
+    {
+        return $this->belongsTo(User::class, 'approved_by');
+    }
+
     public function order()
     {
         return $this->belongsTo(Order::class, 'order_id');
