@@ -91,7 +91,10 @@
             element: document.getElementById('content'),
             spellChecker: false,
             forceSync: true,
+            minHeight: '625px',
         });
+
+        easymde.togglePreview();
 
         document.getElementById('thumbnail').addEventListener('change', function() {
             const file = this.files[0];

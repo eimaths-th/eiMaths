@@ -86,6 +86,7 @@
             element: document.getElementById('content'),
             spellChecker: false,
             forceSync: true,
+            minHeight: '625px',
         });
 
         document.getElementById('thumbnail').addEventListener('change', function() {
