@@ -16,6 +16,7 @@ use App\Http\Controllers\ReceiptController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\TeachingPeriodController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\BlogController;
 
 use App\Services\FileUploadService;
 use Illuminate\Http\Request;
@@ -219,3 +220,5 @@ Auth::routes();
 Route::get('/auth/google', [App\Http\Controllers\GoogleController::class, 'loginWithGoogle'])->name('google.login');
 Route::get('/auth/google/callback', [App\Http\Controllers\GoogleController::class, 'callbackFromGoogle'])->name('google.callback');
 Route::get('/blank', [App\Http\Controllers\HomeController::class, 'blank'])->name('blank');
+
+Route::resource('blogs', BlogController::class);

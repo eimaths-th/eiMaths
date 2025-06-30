@@ -61,6 +61,14 @@
         </ul>
     </li>
 @endcan
+@can('blog-list')
+    <li class="nav-item">
+        <a href="{{ route('blogs.index') }}" class="nav-link {{ Request::is('blogs*') ? 'active' : '' }}">
+            <i class="nav-icon fas fa-blog"></i>
+            <p>Blog Management</p>
+        </a>
+    </li>
+@endcan
 @can('order-list')
     <!--<li class="nav-item {{ in_array(Request::route()->getName(), ['orders']) ? 'menu-open' : '' }}">
                                                                         <a href="#" class="nav-link {{ in_array(Request::route()->getName(), ['orders']) ? 'active' : '' }}">

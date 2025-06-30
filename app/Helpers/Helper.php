@@ -161,7 +161,7 @@ if (!function_exists('toMixedFraction')) {
 //end fractional drisplay
 
 if (!function_exists('create_commmission_list')) {
-    function create_commmission_list($order_id, $courses_pending_id = null, $reqRef)
+    function create_commmission_list($order_id, $reqRef, $courses_pending_id = null)
     {
         $month = date('m');
         $year = date('Y');
