@@ -96,8 +96,8 @@ class BlogController extends Controller
     public function api_show(Blog $blog)
     {
         $blog = Blog::all();
-        foreach ($blog as $blog) {
-            $blog->thumbnail = url('storage/' . $blog->thumbnail);
+        foreach ($blog as $b) {
+            $b->thumbnail = url('storage/' . $b->thumbnail);
         }
         return response()->json($blog);
     }
