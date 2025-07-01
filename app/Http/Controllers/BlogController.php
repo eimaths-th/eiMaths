@@ -92,6 +92,9 @@ class BlogController extends Controller
     public function api_show(Blog $blog)
     {
         $blog = Blog::all();
+        foreach ($blog as $blog) {
+            $blog->thumbnail = url('storage/' . $blog->thumbnail);
+        }
         return response()->json($blog);
     }
 
@@ -105,6 +108,8 @@ class BlogController extends Controller
         if (!$blog) {
             return response()->json(['message' => 'Blog not found'], 404);
         }
+
+        $blog->thumbnail = url('storage/' . $blog->thumbnail);
 
         return response()->json($blog);
     }
