@@ -149,7 +149,7 @@ class BlogController extends Controller
             $slug = $original_slug . '-' . $count++;
         }
 
-        if (Blog::where('slug', $slug)->exists()) {
+        if (Blog::where('slug', $slug)->where('id', '!=', $blog->id)->exists()) {
             return redirect()->back()->with('error', 'Slug already exists. Please choose a different slug.');
         }
 

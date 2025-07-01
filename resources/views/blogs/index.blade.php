@@ -43,9 +43,9 @@
                         </div>
 
                         <div class="card-body">
-                            @if ($message = Session::get('success'))
+                            @if (Session::has('success'))
                                 <script>
-                                    toastr.success('{{ $message }}', {
+                                    toastr.success('{{ Session::get('success') }}', {
                                         timeOut: 5000
                                     });
                                 </script>

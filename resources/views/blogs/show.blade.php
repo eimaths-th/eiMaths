@@ -13,7 +13,7 @@
     <hr>
     <p><strong>Meta Description:</strong> {{ $blog->meta_description }}</p>
     <p><strong>Meta Keywords:</strong> {{ $blog->meta_keywords }}</p>
-    <a href="{{ route('blogs.index') }}" class="btn btn-secondary">Back to Blogs</a>
+    <a href="{{ route('blogs.index') }}" class="btn btn-secondary">Back to Blog</a>
     <a href="{{ route('blogs.edit', $blog) }}" class="btn btn-warning">Edit Blog</a>
 </div>
 @endsection
