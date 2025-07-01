@@ -11,7 +11,9 @@ class BlogController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('permission:blog-list', ['only' => ['index','show']]);
+        // $this->middleware('permission:blog-list', ['only' => ['index','show']]); // Comment out for public API access
+        // For API read-only access, we don't need permission middleware for index and show_by_slug
+
         $this->middleware('permission:blog-create', ['only' => ['create','store']]);
         $this->middleware('permission:blog-edit', ['only' => ['edit','update']]);
         $this->middleware('permission:blog-delete', ['only' => ['destroy']]);
@@ -82,6 +84,29 @@ class BlogController extends Controller
     public function show(Blog $blog)
     {
         return view('blogs.show', compact('blog'));
+    }
+
+    /**
+     * Display the specified resource for API.
+     */
+    public function api_show(Blog $blog)
+    {
+        $blog = Blog::all();
+        return response()->json($blog);
+    }
+
+    /**
+     * Display the specified blog by slug for API.
+     */
+    public function api_show_by_slug(string $slug_param)
+    {
+        $blog = Blog::where('slug', $slug_param)->first();
+
+        if (!$blog) {
+            return response()->json(['message' => 'Blog not found'], 404);
+        }
+
+        return response()->json($blog);
     }
 
     /**

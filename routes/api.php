@@ -21,6 +21,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::get('/blogs', [App\Http\Controllers\BlogController::class, 'api_show']);
+Route::get('/blogs/{slug}', [App\Http\Controllers\BlogController::class, 'api_show_by_slug']);
+
 //Route::middleware('cors')->post('/applogin', [APIController::class, 'login']);
 Route::middleware('auth.apikey')->group(function () {
     Route::post('/applogin', [APIController::class, 'login']);
