@@ -2,8 +2,8 @@
 
 @section('content')
 <div class="container p-3">
-    <img src="{{ asset('storage/' . $blog->thumbnail) }}" alt="Thumbnail" width="25%" style="aspect-ratio: 16/9; object-fit: cover; border-radius: 12px;">
-    <h1>{{ $blog->title }}</h1>
+    <img class="col-12 col-md-6" src="{{ asset('storage/' . $blog->thumbnail) }}" alt="Thumbnail" style="aspect-ratio: 16/9; object-fit: cover; border-radius: 12px;">
+    <h1 class="my-4">{{ $blog->title }}</h1>
     <p><strong>Published:</strong> {{ $blog->is_published ? 'Yes' : 'No' }}</p>
     <p><strong>Published At:</strong> {{ $blog->published_at ? $blog->published_at->format('M d, Y H:i') : 'N/A' }}</p>
     <hr>
