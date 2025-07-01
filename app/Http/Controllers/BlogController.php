@@ -59,6 +59,10 @@ class BlogController extends Controller
             $slug = $original_slug . '-' . $count++;
         }
 
+        if (Blog::where('slug', $slug)->exists()) {
+            return redirect()->back()->with('error', 'Slug already exists. Please choose a different slug.');
+        }
+
         $thumbnail_path = null;
         if ($request->hasFile('thumbnail')) {
             $thumbnail_path = $request->file('thumbnail')->store('thumbnails', 'public');
@@ -143,6 +147,10 @@ class BlogController extends Controller
         $count = 1;
         while (Blog::where('slug', $slug)->where('id', '!=', $blog->id)->exists()) {
             $slug = $original_slug . '-' . $count++;
+        }
+
+        if (Blog::where('slug', $slug)->exists()) {
+            return redirect()->back()->with('error', 'Slug already exists. Please choose a different slug.');
         }
 
         $thumbnail_path = $blog->thumbnail;
