@@ -97,6 +97,7 @@ class BlogController extends Controller
     {
         $blog = Blog::all();
         foreach ($blog as $b) {
+            $b->makeHidden('id');
             $b->thumbnail = url('storage/' . $b->thumbnail);
         }
         return response()->json($blog);
@@ -113,6 +114,7 @@ class BlogController extends Controller
             return response()->json(['message' => 'Blog not found'], 404);
         }
 
+        $blog->makeHidden('id');
         $blog->thumbnail = url('storage/' . $blog->thumbnail);
 
         return response()->json($blog);
