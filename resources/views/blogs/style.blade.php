@@ -32,4 +32,15 @@
         /* Set a high z-index to make sure it's on top of everything */
     }
 
+    .markdown-html-body p img {
+        width: 50%;
+        object-fit: cover;
+        border-radius: 12px;
+    }
+
+    @media screen and (max-width: 768px) {
+        .markdown-html-body p img {
+            width: 100%;
+        }
+    }
 </style>
