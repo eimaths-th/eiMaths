@@ -5,10 +5,19 @@ namespace App\Http\Controllers;
 use App\Models\Blog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class BlogController extends Controller
 {
+    private function generate_thai_slug(string $text): string
+    {
+        $slug = str_replace(' ', '-', trim($text));
+        $slug = preg_replace('/-+/', '-', $slug);
+        $slug = Str::lower($slug);
+        return $slug;
+    }
+
     public function __construct()
     {
         // $this->middleware('permission:blog-list', ['only' => ['index','show']]); // Comment out for public API access
@@ -51,7 +60,7 @@ class BlogController extends Controller
             'is_published' => 'boolean',
         ]);
 
-        $slug = $request->slug ? Str::slug($request->slug, '-', null) : Str::slug($request->title, '-', null);
+        $slug = $request->slug ? $this->generate_thai_slug($request->slug) : $this->generate_thai_slug($request->title);
 
         $original_slug = $slug;
         $count = 1;
@@ -139,11 +148,11 @@ class BlogController extends Controller
             'content' => 'required|string',
             'meta_description' => 'nullable|string|max:255',
             'meta_keywords' => 'nullable|string|max:255',
-            'thumbnail' => 'nullable|image|mimes:png,jpg,jpeg|max:2048',
+            'thumbnail' => 'nullable|image|mimes:png,jpg,jpeg|max:5120',
             'is_published' => 'boolean',
         ]);
 
-        $slug = $request->slug ? Str::slug($request->slug, '-', null) : Str::slug($request->title, '-', null);
+        $slug = $request->slug ? $this->generate_thai_slug($request->slug) : $this->generate_thai_slug($request->title);
 
         $original_slug = $slug;
         $count = 1;
