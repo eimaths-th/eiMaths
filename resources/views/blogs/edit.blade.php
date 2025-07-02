@@ -39,7 +39,7 @@
                 <img class="d-none mt-3" id="thumbnail_preview" alt="Thumbnail Preview" width="25%" style="aspect-ratio: 16/9; object-fit: cover; border-radius: 12px;">
             @endif
             <div class="form-text text-danger">* Allowed file types: png, jpg, jpeg</div>
-            <div class="form-text text-danger">* Max file size: 2MB</div>
+            <div class="form-text text-danger">* Max file size: 5MB</div>
         </div>
         <div class="form-group">
             <label for="content">Content</label>
