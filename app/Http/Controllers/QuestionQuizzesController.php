@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Question;
 use App\Models\Quiz;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
 class QuestionQuizzesController extends Controller
@@ -174,29 +175,33 @@ class QuestionQuizzesController extends Controller
         //แก้ไข validate ให้เป็น array ที่มี key ตามชื่อของ field ที่ต้องการ validate
         $rules = [
             'type' => ['required'],
-            'questions' => ['required', 'array', 'min:1'], // At least one question is required
-            'questions.*.text' => ['required', 'string'],
-            'questions.*.type' => ['required', 'string', 'in:options,written,image,fraction'],
-            'questions.*.code_snippet' => ['required', 'string'],
-            'questions.*.answer_explanation' => ['required', 'string'],
-            'questions.*.more_info_link' => ['required', 'url'],
+            'questions' => ['required', 'array', 'min:1'],
 
-            // Options Validation (for 'options' type)
+            // Either text or image (manual check later)
+            'questions.*.text' => ['nullable', 'string'],
+            'questions.*.img_name' => ['nullable', 'string'],
+
+            'questions.*.type' => ['required', 'string', 'in:options,written,image,fraction'],
+            'questions.*.level' => ['required', 'string'],
+            'questions.*.term' => ['required', 'string'],
+            'questions.*.section' => ['required', 'string'],
+            'questions.*.code_snippet' => ['nullable', 'string'],
+            'questions.*.answer_explanation' => ['nullable', 'string'],
+            'questions.*.more_info_link' => ['nullable', 'url'],
+
+            // Options for multiple choice
             'questions.*.options' => ['required_if:questions.*.type,options', 'array', 'min:1'],
             'questions.*.options.*.text' => ['required', 'string'],
             'questions.*.options.*.correct' => ['required', 'boolean'],
 
-            // Image Options Validation (for 'image' type)
+            // Image options
             'questions.*.imgOptions' => ['required_if:questions.*.type,image', 'array', 'min:1'],
             'questions.*.imgOptions.*.file' => ['required', 'image'],
             'questions.*.imgOptions.*.correct' => ['required', 'boolean'],
-
-            // IDs (if provided)
-            // 'questions_id' => ['required', 'array'],
-            // 'questions_id.*' => ['required', 'integer'],
         ];
+
         // Additional required fields for 'create' type
-        if ($type === "create") {
+        if ($type === 'create') {
             $rules = array_merge($rules, [
                 'title' => ['required', 'string'],
                 'slug' => ['required', 'string', 'unique:quizzes,slug'],
@@ -208,7 +213,7 @@ class QuestionQuizzesController extends Controller
             ]);
         }
 
-        // Strict Validation for 'fraction' type questions
+        // Special rules for fraction-type questions
         foreach ($request->input('questions', []) as $index => $question) {
             if (isset($question['type']) && $question['type'] === 'fraction') {
                 $rules["questions.$index.answer_type_fraction"] = ['required', 'string', 'in:options,written'];
@@ -226,28 +231,50 @@ class QuestionQuizzesController extends Controller
             }
         }
 
-        // Custom Error Messages
+        // Custom error messages
         $messages = [
             'type.required' => 'Quiz type is required.',
             'questions.required' => 'At least one question is required.',
-            'questions.*.text.required' => 'Question text is required.',
             'questions.*.type.required' => 'Question type is required.',
-            'title.required' => 'Quiz title is required.',
-            'slug.required' => 'Quiz slug is required and must be unique.',
-            'level.required' => 'Grade selection is required.',
-            'term.required' => 'Term selection is required.',
-            'section.required' => 'Section selection is required.',
-            'questions.*.options.*.text.required' => 'Each option must have a text value.',
+            'questions.*.code_snippet.required' => 'Hint is required.',
+            'questions.*.level.required' => 'level is required.',
+            'questions.*.term.required' => 'term is required.',
+            'questions.*.section.required' => 'section is required.',
+            'questions.*.answer_explanation.required' => 'Answer explanation is required.',
+            'questions.*.options.*.text.required' => 'Each option must have text.',
             'questions.*.options.*.correct.required' => 'Each option must have a correct/incorrect status.',
             'questions.*.imgOptions.*.file.required' => 'Image file is required for image options.',
             'questions.*.imgOptions.*.correct.required' => 'Correct answer status is required for image options.',
-            'questions.*.answer_numerator.required' => 'Numerator is required for fraction answers.',
-            'questions.*.answer_denominator.required' => 'Denominator is required for fraction answers.',
+            'questions.*.answer_numerator.required' => 'Numerator is required for fraction answer.',
+            'questions.*.answer_denominator.required' => 'Denominator is required for fraction answer.',
             'questions.*.answer_denominator.not_in' => 'Denominator cannot be zero.',
+            'title.required' => 'Quiz title is required.',
+            'slug.required' => 'Quiz slug is required.',
+            'slug.unique' => 'Slug must be unique.',
+            'level.required' => 'Grade is required.',
+            'term.required' => 'Term is required.',
+            'section.required' => 'Section is required.',
         ];
 
+        // Build validator
+        $validator = Validator::make($request->all(), $rules, $messages);
+
+        // Add custom logic: must have either text or img_name
+        $validator->after(function ($validator) use ($request) {
+            foreach ($request->input('questions', []) as $index => $question) {
+                $text = $question['text'] ?? null;
+                $img = $question['img_name'] ?? null;
+
+                if (empty($text) && empty($img)) {
+                    $validator->errors()->add("questions.$index.text", 'Either text or image is required.');
+                    $validator->errors()->add("questions.$index.img_name", 'Either image or text is required.');
+                }
+            }
+        });
+
+        $validator->validate();
         // Perform Validation
-        $validatedData = $request->validate($rules, $messages);
+        // $validatedData = $request->validate($rules, $messages);
 
         //new code validation
 
@@ -267,6 +294,9 @@ class QuestionQuizzesController extends Controller
         foreach ($questions as $questionn) {
             $question = new Question();
             $question->text = $questionn['text'];
+            $question->level = $questionn['level'];
+            $question->term = $questionn['term'];
+            $question->section = $questionn['section'];
             $question->type = $questionn['type'];
             $question->code_snippet = $questionn['code_snippet'] ?? null;
             $question->answer_explanation = $questionn['answer_explanation'] ?? null;

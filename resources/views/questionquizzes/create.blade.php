@@ -465,8 +465,7 @@
     </section>
 
     {{-- @include('question.question-form', ['editing' => false, 'question' => null, 'options' => []]) --}}
-    @include('questionquizze
-    s.form', ['editing' => true, 'question' => null, 'options' => []])
+    @include('questionquizzes.form', ['editing' => true, 'question' => null, 'options' => []])
 
 
     {{-- @include('question.edit') --}}

@@ -11,6 +11,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property integer $id
  * @property string $code
  * @property string $text
+ * @property string $level
+ * @property string $term
+ * @property string $section
  * @property string $code_snippet
  * @property string $answer_explanation
  * @property string $more_info_link
@@ -31,7 +34,22 @@ class Question extends Model
      * @var array
      */
     protected $table = 'questions';
-    protected $fillable = ['code', 'text', 'code_snippet', 'answer_explanation', 'more_info_link', 'written_answer', 'type','img_name', 'created_at', 'updated_at', 'deleted_at'];
+    protected $fillable = [
+        'code',
+        'text',
+        'level',
+        'term',
+        'section',
+        'code_snippet',
+        'answer_explanation',
+        'more_info_link',
+        'written_answer',
+        'type',
+        'img_name',
+        'created_at',
+        'updated_at',
+        'deleted_at'
+    ];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
@@ -61,7 +79,7 @@ class Question extends Model
     {
         return $this->hasMany(Option::class)->inRandomOrder();
     }
- 
+
     public function fractions(): HasMany
     {
         return $this->hasMany(FactionAnswer::class)->inRandomOrder();

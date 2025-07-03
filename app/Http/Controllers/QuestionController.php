@@ -462,6 +462,9 @@ class QuestionController extends Controller
         $question->update([
             'text' => $request->input('text'),
             'code_snippet' => $request->input('code_snippet'),
+            'term' => $request->input('term'),
+            'level' => $request->input('level'),
+            'section' => $request->input('section'),
             'answer_explanation' => $request->input('answer_explanation'),
             'more_info_link' => $request->input('more_info_link'),
             'type' => $validated['type'],

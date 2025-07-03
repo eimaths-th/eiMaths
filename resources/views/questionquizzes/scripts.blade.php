@@ -81,7 +81,7 @@
         });
 
         function checkSelectionsAndFetchData() {
-            
+
             if (levelQuiz && termQuiz && sectionQuiz) {
                 // All 3 are selected, now fetch data
                 $.ajax({
@@ -340,6 +340,11 @@
 
         function addForm2() {
             FormIndex++;
+            let options = '';
+            for (let i = 1; i <= 20; i++) {
+                options += `<option value="${i}">${i}</option>`;
+            }
+
 
             let newForm = `
                 <div class="question-form">
@@ -437,7 +442,47 @@
                                 </div>
                         </div>
                         <hr>
-                    </div>                                                  
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <div class="mt-4">
+                                <label for="level" class="form-label">Grade</label>
+                                <select id="level_${FormIndex}" name="level_${FormIndex}" class="form-control">
+                                    <option value="" selected>Select term</option>
+                                    <option value="K1">K1</option>
+                                    <option value="K2">K2</option>
+                                    <option value="P1">P1</option>
+                                    <option value="P2">P2</option>
+                                    <option value="P3">P3</option>
+                                    <option value="P4">P4</option>
+                                    <option value="P5">P5</option>
+                                    <option value="P6">P6</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="mt-4">
+                                <label for="term" class="form-label">Term</label>
+                                <select id="term_${FormIndex}" name="term_${FormIndex}" class="form-control">
+                                    <option value="" selected>Select term</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="mt-4">
+                                <label for="section" class="form-label">Level</label>
+                                <select id="section_${FormIndex}" name="section_${FormIndex}" class="form-control">
+                                    <option value="" selected>Select Level</option>
+                                    ${options}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
 
                     <div class="mb-3">
                         <label for="code_snippet_${FormIndex}" class="form-label">Hint</label>
@@ -812,6 +857,12 @@
 
                     quizData.append('questions[' + index + '][code_snippet]', $(element).find(
                         `textarea[name="code_snippet${prefix}"]`).val());
+                    quizData.append('questions[' + index + '][level]', $(element).find(
+                        `select[name="level${prefix}"]`).val());
+                    quizData.append('questions[' + index + '][term]', $(element).find(
+                        `select[name="term${prefix}"]`).val());
+                    quizData.append('questions[' + index + '][section]', $(element).find(
+                        `select[name="section${prefix}"]`).val());
                     quizData.append('questions[' + index + '][answer_explanation]', $(element)
                         .find(`textarea[name="answer_explanation${prefix}"]`).val());
                     quizData.append('questions[' + index + '][more_info_link]', $(element).find(
