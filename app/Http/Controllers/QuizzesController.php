@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 // use App\Models\Question;
 
+use App\Models\Contact;
 use App\Models\Question;
 use App\Models\Quiz;
 use Illuminate\Http\Request;
@@ -56,7 +57,14 @@ class QuizzesController extends Controller
                     return $html;
                 })->rawColumns(['action', 'published', 'public'])->toJson();
         }
-        return view('quiz.quiz-list');
+
+        $students = Contact::all();
+        $quizzes = Quiz::all();
+        return view('quiz.quiz-list', [
+            'students' => $students,
+            'quizzes' => $quizzes,
+
+        ]);
     }
 
     /**

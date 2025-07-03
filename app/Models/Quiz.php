@@ -23,7 +23,7 @@ class Quiz extends Model
 {
     protected $table = 'quizzes';
 
-    protected $fillable = ['title', 'slug', 'level', 'term','section','description', 'published', 'public', 'created_at', 'updated_at', 'deleted_at'];
+    protected $fillable = ['title', 'slug', 'level', 'term', 'section', 'description', 'published', 'public', 'created_at', 'updated_at', 'deleted_at'];
 
     public function tests()
     {
@@ -48,5 +48,12 @@ class Quiz extends Model
     public function scopePublished($query)
     {
         return $query->where('published', true);
+    }
+
+    public function contacts()
+    {
+        return $this->belongsToMany(Contact::class)
+            ->withPivot('assigned_at', 'status')
+            ->withTimestamps();
     }
 }

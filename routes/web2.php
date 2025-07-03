@@ -4,6 +4,7 @@ use App\Http\Controllers\AffiliateAuthController;
 use App\Http\Controllers\AffiliateConfigurationsController;
 use App\Http\Controllers\AffiliateController;
 use App\Http\Controllers\AffiliateTransactionController;
+use App\Http\Controllers\AssignQuizToStudentController;
 use App\Http\Controllers\CommissionListControler;
 use App\Http\Controllers\ConfigWithdrawController;
 use App\Http\Controllers\ContactController;
@@ -108,6 +109,10 @@ Route::group(['middleware' => ['auth', 'affiliate.redirect']], function () {
     Route::get('quizzes/edit/{question}', [QuizzesController::class, 'edit'])->name('quizzes.edit');
     Route::put('quizzes/update/{question}', [QuizzesController::class, 'update'])->name('quizzes.update');
     Route::delete('quizzes/{id}', [QuizzesController::class, 'destroy'])->name('quizzes.destroy');
+
+    Route::post('assign-quiz', [AssignQuizToStudentController::class, 'assignQuiz'])->name('assignQuiz');
+    Route::get('assign', [AssignQuizToStudentController::class, 'index'])->name('assign');
+
 
     // Route::get('questions-quizzes', [QuestionQuizzesController::class, 'index'])->name('questions-quizzes');
     // Route::get('questions-quizzes/create', [QuestionQuizzesController::class, 'create'])->name('questions-quizzes.create');

@@ -14,11 +14,9 @@
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
-                        {{-- <li class="breadcrumb-item"><a href="#">Home</a></li>
-                        <li class="breadcrumb-item active">Users Management</li> --}}
-                        {{-- <a href="{{ route('question2.create') }}" class="btn btn-success">
-                            Create Question
-                        </a> --}}
+                       
+                        <button type="button" class="btn btn-success " id="AssignButton">
+                            <i class="fas fa-user"></i> Assign Quiz </button>&nbsp;
                         <button type="button" class="btn btn-success" id="CreateButton">
                             <i class="fas fa-user"></i> Create Quiz </button>
 
@@ -87,7 +85,7 @@
 
     {{-- @include('question.question-form', ['editing' => false, 'question' => null, 'options' => []]) --}}
     @include('quiz.quiz-form', [ 'editing' => false,'quiz' => null, 'options' => []])
-
+    @include('quiz.quiz-assign')
 
     {{-- @include('question.edit') --}}
 

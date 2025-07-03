@@ -4,6 +4,14 @@
             placeholder: "Select Questions",
             allowClear: true
         });
+        $('.select-std').select2({
+            placeholder: "Select Student",
+            allowClear: true
+        });
+        $('.select-quiz').select2({
+            placeholder: "Select Quiz",
+            allowClear: true
+        });
 
         // $('#level').select2({
 
@@ -57,6 +65,81 @@
                 });
             }
         });
+        // var table = $('#Listview2').DataTable({
+        //     ajax: '',
+        //     serverSide: true,
+        //     processing: true,
+        //     language: {
+        //         loadingRecords: '&nbsp;',
+        //         processing: `<div class="spinner-border text-primary"></div>`,
+        //         "sProcessing": "Processcing...",
+        //         "sLengthMenu": "Display_MENU_ Row",
+        //         "sZeroRecords": "No Data Fount",
+        //         "sInfo": "Display _START_ To _END_ From _TOTAL_ Records",
+        //         "sInfoEmpty": "Display 0 To 0 From 0 Records",
+        //         "sInfoFiltered": "(Filters _MAX_ Row)",
+        //         "sInfoPostFix": "",
+        //         "sSearch": "Search:",
+        //         "sUrl": "",
+        //         "oPaginate": {
+        //             "sFirst": "First",
+        //             "sPrevious": "Previous",
+        //             "sNext": "Next",
+        //             "sLast": "Last"
+        //         }
+        //     },
+        //     aaSorting: [
+        //         [0, "desc"]
+        //     ],
+        //     iDisplayLength: 10,
+        //     lengthMenu: [10, 25, 50, 75, 100],
+        //     stateSave: true,
+        //     autoWidth: false,
+        //     responsive: true,
+        //     sPaginationType: "full_numbers",
+        //     dom: 'T<"clear">lfrtip',
+        //     columns: [{
+        //             data: '#',
+        //             name: '#',
+        //             createdCell: function(td, cellData, rowData, row, col) {
+        //                 $(td).addClass('text-nowrap').css('width', '1%');
+        //             }
+        //         },
+        //         {
+        //             data: 'student',
+        //             name: 'student'
+        //         },
+        //         {
+        //             data: 'quiz',
+        //             name: 'quiz'
+        //         },
+        //         {
+        //             data: 'status',
+        //             name: 'status'
+        //         },
+        //         {
+        //             data: 'assign_at',
+        //             name: 'assign_at',
+        //             createdCell: function(td, cellData, rowData, row, col) {
+        //                 $(td).addClass('text-nowrap').css('width', '1%');
+        //             }
+        //         },
+        //         {
+        //             data: 'action',
+        //             name: 'action',
+        //             orderable: false,
+        //             searchable: false,
+        //             createdCell: function(td, cellData, rowData, row, col) {
+        //                 $(td).addClass('text-nowrap').css('width', '1%');
+        //             }
+        //         }
+        //     ],
+        //     createdRow: function(row, data, dataIndex) {
+        //         // Sequential numbering
+        //         var info = table.page.info();
+        //         $('td:eq(0)', row).html(info.start + dataIndex + 1);
+        //     }
+        // });
         var table = $('#Listview').DataTable({
             ajax: '',
             serverSide: true,
@@ -202,6 +285,20 @@
 
             $('#CreateModal').modal('show');
         });
+        $(document).on('click', '#AssignButton', function(e) {
+            e.preventDefault();
+            $('.alert-danger').html('');
+            $('.alert-danger').hide();
+            $('.alert-success').html('');
+            $('.alert-success').hide();
+            $('.form').trigger('reset');
+            $('#assign-title').text('Assign Quiz');
+
+            var btn =
+                '<button type="button" class="btn btn-success" id="SubmitAssignForm"> <i class="fas fa-download"></i> Save  </button>';
+            $('#btn-assign-submit').html(btn);
+            $('#AssignModal').modal('show');
+        });
 
         function checkSelectionsAndFetchData() {
             const level = $('#level').val();
@@ -234,7 +331,7 @@
                         $('#questions').trigger('change');
                     }
                 });
-                
+
             }
         }
 
@@ -307,6 +404,67 @@
                         $('#Listview').DataTable().ajax.reload();
                         $('.form').trigger('reset');
                         $('#CreateModal').modal('hide');
+                    }
+                },
+                error: function(xhr) {
+                    var errors = xhr.responseJSON.errors;
+                    $('.alert-danger').html('');
+                    $.each(errors, function(key, value) {
+                        $('.alert-danger').show();
+                        $('.alert-danger').append('<strong><li>' + value +
+                            '</li></strong>');
+                    });
+                }
+            });
+        });
+        $(document).on('click', '#SubmitAssignForm', function(e) {
+            e.preventDefault();
+            $('.alert-danger').html('');
+            $('.alert-danger').hide();
+            $('.alert-success').html('');
+            $('.alert-success').hide();
+            // console.log('test');
+            $.ajax({
+                url: "{{ route('assignQuiz') }}",
+                method: 'post',
+                data: {
+                    student_id: $('#student_id').val(),
+                    quiz_id: $('#quiz_id').val(),
+                    status: $('#status').val(),
+                    _token: token,
+                },
+                success: function(result) {
+                    if (result.errors) {
+                        $('.alert-danger').html('');
+                        $.each(result.errors, function(key, value) {
+                            $('.alert-danger').show();
+                            $('.alert-danger').append('<strong><li>' + value +
+                                '</li></strong>');
+                        });
+                    } else {
+                        // Hide and clear alerts
+                        $('.alert-danger').hide().html('');
+                        $('.alert-success').show().html('<strong><li>' + result.success +
+                            '</li></strong>');
+
+                        // Show toast
+                        toastr.success(result.success, {
+                            timeOut: 5000
+                        });
+
+                        // Reload DataTable
+                        $('#Listview').DataTable().ajax.reload();
+
+                        // Reset the form
+                        $('#quizForm')[0].reset();
+
+                        // Clear multiple select values
+                        $('#student_id').val(null).trigger('change');
+                        $('#quiz_id').val(null).trigger('change');
+                        $('#status').val('').trigger('change');
+
+                        // Hide the modal
+                        // $('#AssignModal').modal('hide');
                     }
                 },
                 error: function(xhr) {
