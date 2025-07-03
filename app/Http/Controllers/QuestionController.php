@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Option;
 use App\Models\Question;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 class QuestionController extends Controller
@@ -247,6 +248,7 @@ class QuestionController extends Controller
         $question->answer_explanation = $validated['answer_explanation'] ?? null;
         $question->more_info_link = $validated['more_info_link'] ?? null;
         $question->written_answer = $validated['type'] === 'written' ? $validatedWritten['written_answer'] : null;
+        $question->created_by = Auth::user()->id;
         $question->save();
         $code = str_pad($question->id, 6, '0', STR_PAD_LEFT);
         $question->update(['code' => $code]);
@@ -468,6 +470,7 @@ class QuestionController extends Controller
             'answer_explanation' => $request->input('answer_explanation'),
             'more_info_link' => $request->input('more_info_link'),
             'type' => $validated['type'],
+            'updated_by' => Auth::user()->id,
             'written_answer' => $validated['type'] === 'written' ? $validatedWritten['written_answer'] : null,
         ]);
         if ($request->hasFile('img_name')) {

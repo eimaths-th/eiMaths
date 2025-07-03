@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Question;
 use App\Models\Quiz;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
@@ -302,6 +303,7 @@ class QuestionQuizzesController extends Controller
             $question->answer_explanation = $questionn['answer_explanation'] ?? null;
             $question->more_info_link = $questionn['more_info_link'] ?? null;
             $question->written_answer = $questionn['type'] === 'written' ? $questionn['written'] : null;
+            $question->created_by = Auth::user()->id;
             $question->save();
             $code = str_pad($question->id, 6, '0', STR_PAD_LEFT);
             $question->update(['code' => $code]);
@@ -381,6 +383,7 @@ class QuestionQuizzesController extends Controller
                 'description' => $request['description'],
                 'published' => 0,
                 'public' => $request['public'] ?? 0,
+                'created_by' => Auth::user()->id,
             ]);
         } else {
             $quiz = Quiz::find($quiz_id);
@@ -390,7 +393,6 @@ class QuestionQuizzesController extends Controller
         }
 
         $quiz->questions()->syncWithoutDetaching($questions_ids);
-
 
         return response()->json(['success' => 'Quiz created successfully!']);
     }

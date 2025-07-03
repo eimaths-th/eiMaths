@@ -8,6 +8,7 @@ use App\Models\Contact;
 use App\Models\Question;
 use App\Models\Quiz;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class QuizzesController extends Controller
 {
@@ -123,6 +124,8 @@ class QuizzesController extends Controller
             'description' => $validated['description'],
             'published' => 0,
             'public' => $validated['public'] ?? 0,
+            'created_by' => Auth::user()->id,
+            
         ]);
 
         $quiz->questions()->attach($validated['questions']);
@@ -192,6 +195,8 @@ class QuizzesController extends Controller
             'description' => $request->input('description'),
             'published' => 0,
             'public' => $request->boolean('public'),
+            'updated_by' => Auth::user()->id,
+
         ]);
 
         $quiz->questions()->sync($request->input('questions', []));
