@@ -1540,52 +1540,103 @@ class ContactController extends Controller
         }
     }
 
-    public function sCoin(Request $request,)
+    // public function sCoin(Request $request,)
+    // {
+
+    //     $book = $request->get('book');
+    //     $level = $request->get('level');
+    //     $term = $request->get('term');
+
+    //     $book2 = $request->get('book2');
+    //     $level2 = $request->get('level2');
+    //     $term2 = $request->get('term2');
+
+    //     $result_coin = 0;
+    //     $check = false;
+    //     $type_book1 = bookuse::find($book)->type;
+    //     $type_book2 = bookuse::find($book2)->type;
+
+    //     if ($type_book1 == 1 && $type_book2 == 1) {
+    //         $full_books = bookuse::whereBetween('id', [$book, $book2])
+    //             ->where('type', 1)
+    //             ->get();
+    //     } elseif ($type_book1 == 2 && $type_book2 == 2) {
+    //         $full_books = bookuse::whereBetween('id', [$book, $book2])
+    //             ->where('type', 2)
+    //             ->get();
+    //     } else {
+    //         $full_books = bookuse::whereBetween('level_id', [$level, $level2])
+    //             ->whereBetween('term_id', [$term, $term2])
+    //             ->where('type', 1)
+
+    //             ->get();
+    //         $check = true;
+    //     }
+
+    //     foreach ($full_books as $full_book) {
+
+    //         $result_coin += $full_book->qty;
+    //     }
+
+    //     if ($check) {
+    //         $result_coin = $result_coin - 5;
+    //     }
+
+    //     return response()->json([
+    //         'scoin' => $result_coin,
+    //     ]);
+    // }
+
+    public function sCoin(Request $request)
     {
-
-        $book = $request->get('book');
-        $level = $request->get('level');
-        $term = $request->get('term');
-
-        $book2 = $request->get('book2');
-        $level2 = $request->get('level2');
-        $term2 = $request->get('term2');
+        $book     = $request->get('book');
+        $book2    = $request->get('book2');
+        $level    = $request->get('level');
+        $level2   = $request->get('level2');
+        $term     = $request->get('term');
+        $term2    = $request->get('term2');
 
         $result_coin = 0;
         $check = false;
-        $type_book1 = bookuse::find($book)->type;
-        $type_book2 = bookuse::find($book2)->type;
 
-        if ($type_book1 == 1 && $type_book2 == 1) {
+        $book1_model = bookuse::find($book);
+        $book2_model = bookuse::find($book2);
+
+        // Safety check if books exist
+        if (!$book1_model || !$book2_model) {
+            return response()->json([
+                'error' => 'One or both books not found.'
+            ], 404);
+        }
+
+        $type1 = $book1_model->type;
+        $type2 = $book2_model->type;
+
+        if ($type1 === $type2) {
+            // Same type, filter by book ID range
             $full_books = bookuse::whereBetween('id', [$book, $book2])
-                ->where('type', 1)
-                ->get();
-        } elseif ($type_book1 == 2 && $type_book2 == 2) {
-            $full_books = bookuse::whereBetween('id', [$book, $book2])
-                ->where('type', 2)
+                ->where('type', $type1)
                 ->get();
         } else {
+            // Different types, fallback to level/term-based filtering
             $full_books = bookuse::whereBetween('level_id', [$level, $level2])
                 ->whereBetween('term_id', [$term, $term2])
                 ->where('type', 1)
-
                 ->get();
             $check = true;
         }
 
-        foreach ($full_books as $full_book) {
-
-            $result_coin += $full_book->qty;
-        }
+        $result_coin = $full_books->sum('qty');
 
         if ($check) {
-            $result_coin = $result_coin - 5;
+            $result_coin = max(0, $result_coin - 5); // prevent negative coin
         }
 
         return response()->json([
             'scoin' => $result_coin,
         ]);
     }
+
 
     public function exportContact(Request $request)
     {

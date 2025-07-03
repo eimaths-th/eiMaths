@@ -193,6 +193,9 @@
                                         <th> # </th>
                                         <th> Code </th>
                                         <th> Text </th>
+                                        <th> Grade </th>
+                                        <th> Term </th>
+                                        <th> Lavel </th>
                                         <th> Type Option </th>
                                         <th> Options </th>
                                         {{-- <th> Level </th>

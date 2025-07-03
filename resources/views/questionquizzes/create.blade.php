@@ -154,28 +154,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <!--
-                                                                            <div class="mt-4">
-                                                                                <label for="questions" class="form-label">Questions</label>
-                                                                                <select id="questions" name="questions[]" class="select2 form-control"
-                                                                                    multiple>
-                                                                                </select>
-                                                                                @error('questions')
-        <span class="text-red-600 text-sm mt-2">{{ $message }}</span>
-    @enderror
-                                                                            </div>
-                                                                            -->
-                                        {{-- <div class="mt-4 form-check">
-                                            <div class="flex items-center">
-                                                <label for="published" class="form-label">Published</label>
-                                                <input type="checkbox" id="published" class="form-check-input ml-2"
-                                                    name="published"
-                                                    {{ old('published', $quiz->published ?? false) ? 'checked' : '' }}>
-                                            </div>
-                                            @error('published')
-                                                <span class="text-red-600 text-sm mt-2">{{ $message }}</span>
-                                            @enderror
-                                        </div> --}}
+
 
                                         <div class="mt-4 form-check">
                                             <div class="flex items-center">
@@ -375,7 +354,55 @@
 
                                                     <hr>
                                                 </div>
+                                                <div class="row">
+                                                    <div class="col-lg-4">
+                                                        <div class="mt-4">
+                                                            <label for="level" class=" form-label">Grade</label>
+                                                            <select id="level" name="level" class="form-control">
+                                                                <option value=""  selected>Select term
+                                                                </option>
+                                                                <option value="K1">K1</option>
+                                                                <option value="K2">K2</option>
+                                                                <option value="P1">P1</option>
+                                                                <option value="P2">P2</option>
+                                                                <option value="P3">P3</option>
+                                                                <option value="P4">P4</option>
+                                                                <option value="P5">P5</option>
+                                                                <option value="P6">P6</option>
+                                                            </select>
 
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-4">
+                                                        <div class="mt-4">
+                                                            <label for="term" class=" form-label">Term</label>
+                                                            <select id="term" name="term" class="form-control">
+                                                                <option value=""  selected>Select term
+                                                                </option>
+                                                                <option value="1">1</option>
+                                                                <option value="2">2</option>
+                                                                <option value="3">3</option>
+                                                                <option value="4">4</option>
+                                                            </select>
+
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-4">
+                                                        <div class="mt-4">
+                                                            <label for="section" class=" form-label">Level</label>
+                                                            <select id="section" name="section" class="form-control">
+                                                                <option value=""  selected>Select Level
+                                                                </option>
+                                                                @for ($i = 1; $i <= 20; $i++)
+                                                                    <option value="{{ $i }}">
+                                                                        {{ $i }}</option>
+                                                                @endfor
+
+                                                            </select>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
                                                 <!-- Hint -->
                                                 <div class="mb-3">
                                                     <label for="code_snippet" class="form-label">Hint</label>
@@ -438,7 +465,8 @@
     </section>
 
     {{-- @include('question.question-form', ['editing' => false, 'question' => null, 'options' => []]) --}}
-    @include('questionquizzes.form', ['editing' => true, 'question' => null, 'options' => []])
+    @include('questionquizze
+    s.form', ['editing' => true, 'question' => null, 'options' => []])
 
 
     {{-- @include('question.edit') --}}

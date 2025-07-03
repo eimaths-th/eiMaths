@@ -203,6 +203,62 @@
             $('#CreateModal').modal('show');
         });
 
+        function checkSelectionsAndFetchData() {
+            const level = $('#level').val();
+            const term = $('#term').val();
+            const section = $('#section').val();
+
+            if (level && term && section) {
+                // All 3 are selected, now fetch data
+                $.ajax({
+                    url: '{{ route('questions.list') }}', // Adjust the route to match your setup
+                    method: 'GET',
+                    data: {
+                        level: level,
+                        term: term,
+                        section: section
+                    },
+                    success: function(res) {
+                        console.log(res);
+                        var options = res.questions;
+                        $('#questions').empty();
+                        $.each(options, function(id, question) {
+                            // console.log(id);
+                            var selected = ({{ json_encode(old('questions', [])) }})
+                                .includes(question.id) ? 'selected' : '';
+                            $('#questions').append('<option value="' + question.id +
+                                '" ' + selected + '>' + question.code + ' ' +
+                                question.text + '</option>');
+                        });
+                        // Refresh Select2
+                        $('#questions').trigger('change');
+                    }
+                });
+                
+            }
+        }
+
+        // $("#level").change(function() {
+        //     let level = $('#level').val();
+
+        //     // console.log(level);
+
+
+        //     // $.ajax({
+        //     //     method: "GET",
+        //     //     url: "histories/running/" + centre,
+        //     //     async: false,
+        //     //     success: function(res) {
+        //     //         //$('#AddCode').prop('readonly', false);
+        //     //         $('#s_student').html(res.html_std);
+        //     //     }
+        //     // });
+        // })
+
+        $('#level, #term, #section').on('change', function() {
+            checkSelectionsAndFetchData();
+        });
+
         $(document).on('keyup', '#title', function(e) {
             e.preventDefault();
             var val = $('#title').val();

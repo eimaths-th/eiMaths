@@ -62,6 +62,15 @@ class QuestionController extends Controller
                 ->addColumn('#', function ($row) {
                     return $row->id;
                 })
+                ->addColumn('level', function ($row) {
+                    return $row->level;
+                })
+                ->addColumn('term', function ($row) {
+                    return $row->term;
+                })
+                ->addColumn('section', function ($row) {
+                    return $row->section;
+                })
                 ->addColumn('text', function ($row) {
                     Log::info("Original Text: " . $row->text);
                     $textFrac = replaceMixedFractions($row->text);
@@ -124,19 +133,23 @@ class QuestionController extends Controller
      */
     public function store(Request $request)
     {
-        // dd($request->img_name);
-
-
+        // dd($request->all());
 
         $validated = $request->validate([
-            'text' => 'nullable|string',
+            'text' => 'required|string',
+            'level' => 'required|string',
+            'term' => 'required|string',
+            'section' => 'required|string',
             'img_name' => 'nullable|image|file|mimes:jpg,png,jpeg|max:2048',
             'type' => 'required|in:written,options,image,fraction',
             'code_snippet' => 'nullable|string',
             'answer_explanation' => 'nullable|string',
-            // 'more_info_link' => 'nullable|url',
+            'more_info_link' => 'nullable|url',
         ], [
             'text.required' => 'Please add Question text',
+            'level.required' => 'Please add Question grade',
+            'term.required' => 'Please add Question term',
+            'section.required' => 'Please add Question lavel',
             'type.required' => 'Please select the type of answer',
             'type.in' => 'The selected type is invalid',
             'code_snippet.required' => 'Please add Code snippet',
@@ -227,6 +240,9 @@ class QuestionController extends Controller
         $question = new Question();
         $question->text = $validated['text'];
         $question->type = $validated['type'];
+        $question->level = $validated['level'];
+        $question->term = $validated['term'];
+        $question->section = $validated['section'];
         $question->code_snippet = $validated['code_snippet'] ?? null;
         $question->answer_explanation = $validated['answer_explanation'] ?? null;
         $question->more_info_link = $validated['more_info_link'] ?? null;
@@ -341,7 +357,10 @@ class QuestionController extends Controller
     {
         // dd($request->all());
         $validated = $request->validate([
-            'text' => 'nullable|string',
+            'text' => 'required|string',
+            'level' => 'required|string',
+            'term' => 'required|string',
+            'section' => 'required|string',
             'type' => 'required|in:written,options,image',
             'img_name' => 'nullable|image|file|mimes:jpg,png,jpeg|max:2048',
             'code_snippet' => 'nullable',
@@ -349,6 +368,9 @@ class QuestionController extends Controller
             'more_info_link' => 'nullable|url'
         ], [
             'text.required' => 'Please add Question text',
+            'level.required' => 'Please add Question Grade',
+            'term.required' => 'Please add Question term',
+            'section.required' => 'Please add Question lavel',
             'type.required' => 'Please select the type of answer',
             'type.in' => 'The selected type is invalid',
             'code_snippet.required' => 'Please add Code snippet',

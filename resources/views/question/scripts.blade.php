@@ -103,7 +103,7 @@
                 if (typeof MathJax !== "undefined") {
                     MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
                 }
-            },// <-- ✅ Added missing comma here
+            }, // <-- ✅ Added missing comma here
             language: {
                 loadingRecords: '&nbsp;',
                 processing: `<div class="spinner-border text-primary"></div>`,
@@ -150,6 +150,18 @@
                 {
                     data: 'text',
                     name: 'text'
+                },
+                {
+                    data: 'level',
+                    name: 'level'
+                },
+                {
+                    data: 'term',
+                    name: 'term'
+                },
+                {
+                    data: 'section',
+                    name: 'section'
                 },
                 {
                     data: 'type',
@@ -333,6 +345,9 @@
             var formData = new FormData();
             formData.append('_token', token);
             formData.append('text', $('#text').val());
+            formData.append('level', $('#level').val());
+            formData.append('term', $('#term').val());
+            formData.append('section', $('#section').val());
             formData.append('code_snippet', $('#code_snippet').val());
             formData.append('answer_explanation', $('#answer_explanation').val());
             formData.append('more_info_link', $("#more_info_link").val());
@@ -494,6 +509,9 @@
                     $('#answer_explanation').val(res.question.answer_explanation);
                     $('#more_info_link').val(res.question.more_info_link);
                     $('#type').val(res.question.type);
+                    $('#level').val(res.question.level).trigger('change');
+                    $('#term').val(res.question.term).trigger('change');
+                    $('#section').val(res.question.section).trigger('change');
 
                     toggleTypeFields(res.question.type, res);
 
@@ -603,6 +621,9 @@
 
             var formData1 = new FormData();
             formData1.append('text', $('#text').val());
+            formData1.append('level', $('#level').val());
+            formData1.append('term', $('#term').val());
+            formData1.append('section', $('#section').val());
             formData1.append('code_snippet', $('#code_snippet').val());
             formData1.append('answer_explanation', $('#answer_explanation').val());
             formData1.append('more_info_link', $("#more_info_link").val());

@@ -50,6 +50,9 @@
                 $('#questions_id').trigger('change');
             }
         });
+
+
+
     });
 
     $(document).ready(function() {
@@ -69,10 +72,46 @@
         });
         $(document).on('change', '#section', function() {
             sectionQuiz = $(this).val(); // Get selected quiz ID
+            checkSelectionsAndFetchData();
+
         });
         $(document).on('change', '#term', function() {
             termQuiz = $(this).val(); // Get selected quiz ID
+
         });
+
+        function checkSelectionsAndFetchData() {
+            
+            if (levelQuiz && termQuiz && sectionQuiz) {
+                // All 3 are selected, now fetch data
+                $.ajax({
+                    url: '{{ route('questions.list') }}', // Adjust the route to match your setup
+                    method: 'GET',
+                    data: {
+                        level: levelQuiz,
+                        term: termQuiz,
+                        section: sectionQuiz
+                    },
+                    success: function(res) {
+                        console.log(res);
+                        var options = res.questions;
+                        $('#questions_id').empty();
+                        $.each(options, function(id, question) {
+                            // console.log(id);
+                            var selected = ({{ json_encode(old('questions', [])) }})
+                                .includes(question.id) ? 'selected' : '';
+                            $('#questions_id').append('<option value="' + question.id +
+                                '" ' + selected + '>' + question.code + ' ' +
+                                question.text + '</option>');
+                        });
+                        // Refresh Select2
+                        $('#questions_id').trigger('change');
+                    }
+                });
+
+            }
+
+        }
 
 
         $(document).on('keyup', '#title', function(e) {

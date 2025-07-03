@@ -67,9 +67,21 @@ class QuizzesController extends Controller
         //
     }
 
-    public function rec()
+    public function rec(Request $request)
     {
-        $questions = Question::all();
+        if ($request->has(['level', 'term', 'section'])) {
+            # code...
+            $questions = Question::where([
+                'level' => $request->level,
+                'term' => $request->term,
+                'section' => $request->section,
+            ])
+                ->get();
+        } else {
+            # code...
+            $questions = Question::all();
+        }
+
         return response()->json(['questions' => $questions]);
     }
 
