@@ -383,30 +383,35 @@ class QuestionController extends Controller
     public function update(Request $request, $id)
     {
         // dd($request->all());
-        $validated = $request->validate([
-            'text' => 'required|string',
+        $validator = Validator::make($request->all(), [
+            'text' => 'nullable|string',
             'level' => 'required|string',
             'term' => 'required|string',
             'section' => 'required|string',
             'type' => 'required|in:written,options,image',
             'img_name' => 'nullable|image|file|mimes:jpg,png,jpeg|max:2048',
-            'code_snippet' => 'nullable',
-            'answer_explanation' => 'nullable',
-            'more_info_link' => 'nullable|url'
+            'code_snippet' => 'nullable|string',
+            'answer_explanation' => 'nullable|string',
+            'more_info_link' => 'nullable|url',
         ], [
-            'text.required' => 'Please add Question text',
             'level.required' => 'Please add Question Grade',
             'term.required' => 'Please add Question term',
-            'section.required' => 'Please add Question lavel',
+            'section.required' => 'Please add Question level',
             'type.required' => 'Please select the type of answer',
             'type.in' => 'The selected type is invalid',
-            'code_snippet.required' => 'Please add Code snippet',
-            'answer_explanation.required' => 'Please add Answer Explanation',
-            'more_info_link.required' => 'Please add More info link',
             'img_name.image' => 'The file must be an image',
             'img_name.mimes' => 'The image must be a file of type: jpg, png, jpeg',
             'img_name.max' => 'The image may not be greater than 2MB',
-        ]);
+        ])->after(function ($validator) use ($request) {
+            $text = $request->input('text');
+            $img = $request->file('img_name');
+            if (empty($text) && empty($img)) {
+                $validator->errors()->add('text', 'Either text or image is required.');
+                $validator->errors()->add('img_name', 'Either image or text is required.');
+            }
+        });
+
+        $validated = $validator->validate();
 
         if ($validated['type'] === 'options') {
             $validatedOptions = $request->validate([
@@ -499,6 +504,8 @@ class QuestionController extends Controller
             'written_answer' => $validated['type'] === 'written' ? $validatedWritten['written_answer'] : null,
         ]);
         if ($request->hasFile('img_name')) {
+            // dd($request->all());
+
             // Retrieve the existing image file name from the database
             $oldImageName = $question->img_name;
 
@@ -514,7 +521,12 @@ class QuestionController extends Controller
                 $imgName->move(public_path('img_questions'), $fileName);
                 $question->update(['img_name' => $fileName]);
             }
+        }else {
+            # code...
+            $question->update(['img_name' => null]);
         }
+
+        // dd('no');
 
         if ($validated['type'] === 'options') {
             $question->images()->delete();
