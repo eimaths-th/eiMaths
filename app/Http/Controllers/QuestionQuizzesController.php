@@ -192,7 +192,7 @@ class QuestionQuizzesController extends Controller
 
             // Options for multiple choice
             'questions.*.options' => ['required_if:questions.*.type,options', 'array', 'min:1'],
-            'questions.*.options.*.text' => ['required', 'string'],
+            // 'questions.*.options.*.text' => ['required', 'string'],
             'questions.*.options.*.correct' => ['required', 'boolean'],
 
             // Image options
@@ -242,7 +242,7 @@ class QuestionQuizzesController extends Controller
             'questions.*.term.required' => 'term is required.',
             'questions.*.section.required' => 'section is required.',
             'questions.*.answer_explanation.required' => 'Answer explanation is required.',
-            'questions.*.options.*.text.required' => 'Each option must have text.',
+
             'questions.*.options.*.correct.required' => 'Each option must have a correct/incorrect status.',
             'questions.*.imgOptions.*.file.required' => 'Image file is required for image options.',
             'questions.*.imgOptions.*.correct.required' => 'Correct answer status is required for image options.',
@@ -262,16 +262,28 @@ class QuestionQuizzesController extends Controller
 
         // Add custom logic: must have either text or img_name
         $validator->after(function ($validator) use ($request) {
-            foreach ($request->input('questions', []) as $index => $question) {
+            foreach ($request->input('questions', []) as $qIndex => $question) {
                 $text = $question['text'] ?? null;
                 $img = $question['img_name'] ?? null;
 
+                // Require text or image
                 if (empty($text) && empty($img)) {
-                    $validator->errors()->add("questions.$index.text", 'Either text or image is required.');
-                    $validator->errors()->add("questions.$index.img_name", 'Either image or text is required.');
+                    $validator->errors()->add("questions.$qIndex.text", 'Either text or image is required.');
+                    $validator->errors()->add("questions.$qIndex.img_name", 'Either image or text is required.');
+                }
+
+                // Validate options for 'options' type questions
+                if (($question['type'] ?? null) === 'options') {
+                    $options = $question['options'] ?? [];
+                    foreach ($options as $oIndex => $option) {
+                        if (empty($option['text'])) {
+                            $validator->errors()->add("questions.$qIndex.options.$oIndex.text", 'Each option must have text.');
+                        }
+                    }
                 }
             }
         });
+
 
         $validator->validate();
         // Perform Validation

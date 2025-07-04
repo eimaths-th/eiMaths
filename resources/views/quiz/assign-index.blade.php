@@ -66,7 +66,7 @@
                                     @foreach ($assignments as $assignment)
                                         <tr>
                                             <td>{{ $loop->iteration }}</td>
-                                            <td>{{ $assignment->student->code }} {{ $assignment->student->name }}</td>
+                                            <td>{{ $assignment->student->code }} ( {{ $assignment->student->nickname }} ) {{ $assignment->student->name }}</td>
                                             <td>{{ $assignment->quiz->title }}</td>
                                             <td>{{ ucfirst($assignment->status) }}</td>
                                             <td>{{ $assignment->assigned_at }}</td>

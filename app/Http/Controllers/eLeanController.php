@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Contact;
+use App\Models\ContactQuiz;
 use App\Models\ImageOption;
 use App\Models\Option;
 use App\Models\Quiz;
@@ -19,21 +21,55 @@ class eLeanController extends Controller
     public function home()
     {
         // dd($this->level);
-        $levels = $this->level;
-        $public_quizzes_level = Quiz::whereHas('questions')->where('public', true)->orderBy('level', 'asc')->orderBy('id', 'Desc')->withCount('questions')->get()->groupBy('level');
-        $public_quizzes = Quiz::whereHas('questions')->where('public', true)->orderBy('id', 'desc')->withCount('questions')->get();
-        // $registered_only_quizzes = Quiz::whereHas('questions')->where('published', true)->orderBy('id', 'desc')->withCount('questions')->get();
-        $registered_only_quizzes = Quiz::whereHas('questions')->where('published', true)->orderBy('level', 'asc')->orderBy('id', 'Desc')->withCount('questions')->get()->groupBy('level');
-        $levelCheck = 0;
-        // $query = Quiz::whereHas('questions')
-        //     ->withCount('questions')
-        //     ->when(auth()->guest() || !auth()->user()->is_admin, function ($query) {
-        //         return $query->where('published', 1);
-        //     })
-        //     ->get();
+        $student = Contact::find(Auth::guard('student')->user()->id);
 
-        // $public_quizzes = $query->where('public', 1);
-        // $registered_only_quizzes = $query->where('public', 0);
+        if ($student) {
+            # code...
+            $id = $student->id;
+        } else {
+            # code...
+            $id = Auth::user()->id;
+        }
+
+        $getQuizAssign = ContactQuiz::where([
+            'contact_id' => $id
+        ])->get();
+        if ($getQuizAssign) {
+            # code...
+            $quizIds = $getQuizAssign->pluck('quiz_id');
+        } else {
+            # code...
+            $quizIds = [];
+        }
+        dd(
+            $student->id,
+            $getQuizAssign,
+            $quizIds,
+        );
+
+        $levels = $this->level;
+        $public_quizzes_level = Quiz::whereHas('questions')
+            ->where('public', true)
+            ->orderBy('level', 'asc')
+            ->orderBy('id', 'Desc')
+            ->withCount('questions')
+            ->get()
+            ->groupBy('level');
+        $public_quizzes = Quiz::whereHas('questions')
+            ->where('public', true)
+            ->orderBy('id', 'desc')
+            ->withCount('questions')
+            ->get();
+        // $registered_only_quizzes = Quiz::whereHas('questions')->where('published', true)->orderBy('id', 'desc')->withCount('questions')->get();
+        $registered_only_quizzes = Quiz::whereHas('questions')
+            ->where('published', true)
+            ->orderBy('level', 'asc')
+            ->orderBy('id', 'Desc')
+            ->withCount('questions')
+            ->get()
+            ->groupBy('level');
+        $levelCheck = 0;
+        
 
         $header = 'eiMaths Quiz';
         // dd($public_quizzes_level);
@@ -254,7 +290,6 @@ class eLeanController extends Controller
             $answerUser = ImageOption::find($userAnswer)->img_name ?? '';
             $answerCorrect = ImageOption::find($correctAnswer)->img_name ?? '';
             $imageUrl = asset('images_options/' . $answerCorrect);
-
         } elseif ($type === 'written') {
             $answerUser = $userAnswer;
             $answerCorrect = $correctAnswer;
@@ -266,7 +301,6 @@ class eLeanController extends Controller
         } else {
             $result = 'Incorrect. The correct answer is : ';
             $checkCorrect = 0;
-
         }
 
         return response()->json([
