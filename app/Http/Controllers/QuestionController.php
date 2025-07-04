@@ -404,10 +404,12 @@ class QuestionController extends Controller
             'img_name.max' => 'The image may not be greater than 2MB',
         ])->after(function ($validator) use ($request) {
             $text = $request->input('text');
+            $old_img_name = $request->input('old_img_name');
             $img = $request->file('img_name');
-            if (empty($text) && empty($img)) {
+            if (empty($text) && empty($img) && empty($old_img_name)) {
                 $validator->errors()->add('text', 'Either text or image is required.');
-                $validator->errors()->add('img_name', 'Either image or text is required.');
+                // $validator->errors()->add('old_img_name', 'Either text or image is required.');
+                // $validator->errors()->add('img_name', 'Either image or text is required.');
             }
         });
 
@@ -503,28 +505,37 @@ class QuestionController extends Controller
             'updated_by' => Auth::user()->id,
             'written_answer' => $validated['type'] === 'written' ? $validatedWritten['written_answer'] : null,
         ]);
+        $oldImgName = $request->input('old_img_name');
+
+        // 1. If user uploads a new image
         if ($request->hasFile('img_name')) {
-            // dd($request->all());
-
-            // Retrieve the existing image file name from the database
-            $oldImageName = $question->img_name;
-
-            // Check if the old image exists and delete it
-            if ($oldImageName && file_exists(public_path('img_questions/' . $oldImageName))) {
-                unlink(public_path('img_questions/' . $oldImageName));
+            // Delete old one if exists
+            if ($oldImgName && file_exists(public_path('img_questions/' . $oldImgName))) {
+                unlink(public_path('img_questions/' . $oldImgName));
             }
 
-            // Upload the new image
-            $imgName = $request->file('img_name');
-            if ($imgName instanceof \Illuminate\Http\UploadedFile) {
-                $fileName = time() . '_' . uniqid() . '.' . $imgName->getClientOriginalExtension();
-                $imgName->move(public_path('img_questions'), $fileName);
-                $question->update(['img_name' => $fileName]);
-            }
-        }else {
-            # code...
-            $question->update(['img_name' => null]);
+            $img = $request->file('img_name');
+            $fileName = time() . '_' . uniqid() . '.' . $img->getClientOriginalExtension();
+            $img->move(public_path('img_questions'), $fileName);
+
+            $question->img_name = $fileName;
         }
+
+        // 2. If no new image uploaded but user kept the old one
+        elseif ($oldImgName) {
+            $question->img_name = $oldImgName;
+        }
+
+        // 3. If image removed
+        else {
+            // Delete file if exists
+            if ($question->img_name && file_exists(public_path('img_questions/' . $question->img_name))) {
+                unlink(public_path('img_questions/' . $question->img_name));
+            }
+            $question->img_name = null;
+        }
+
+        $question->save();
 
         // dd('no');
 

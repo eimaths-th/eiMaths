@@ -321,8 +321,7 @@
                         $('#questions').empty();
                         $.each(options, function(id, question) {
                             // console.log(id);
-                            var selected = ({{ json_encode(old('questions', [])) }})
-                                .includes(question.id) ? 'selected' : '';
+                            var selected = 'selected';
                             $('#questions').append('<option value="' + question.id +
                                 '" ' + selected + '>' + question.code + ' ' +
                                 question.text + '</option>');

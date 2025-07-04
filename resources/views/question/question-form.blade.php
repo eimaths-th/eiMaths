@@ -61,16 +61,27 @@
 
 
                     <div class="mb-3">
-                        <label for="text" class="form-label">Question Image</label>
-                        <div id="show-image-question-container" class="form-row align-items-center">
+                        <label for="imageQuestion" class="form-label">Question Image</label>
 
+                        <!-- Image Preview -->
+                        <div id="show-image-question-container" style="display:none;">
+                            <div class="mb-2">
+                                <img id="preview-image-question" src="" alt="Question Image"
+                                    style="max-width: 200px;" class="img-thumbnail">
+                                <button type="button" class="btn btn-danger btn-sm"
+                                    id="remove-show-image-question-container">
+                                    <i class="fa fa-trash"></i>
+                                    </button>
+                            </div>
                         </div>
+
+                        <!-- File Upload Input (Initially visible if no image) -->
                         <div id="add-image-question-container">
-                            <input type="file" id="imageQuestion" name="imageQuestion" class="form-control">
-
+                            <input type="file" id="imageQuestion" name="imageQuestion" class="form-control mb-2">
+                            <input type="hidden" id="old_img_name" name="old_img_name" value="">
                         </div>
 
-                        @error('text')
+                        @error('imageQuestion')
                             <div class="text-danger mt-2">{{ $message }}</div>
                         @enderror
                     </div>
@@ -280,9 +291,9 @@
             </div>
             <div class="modal-footer">
                 <span id="btn-submit">
-                    {{-- <button type="button" class="btn btn-success" id="SubmitCreateForm">
+                    <button type="button" class="btn btn-success" id="SubmitCreateForm">
                         <i class="fas fa-download"></i> Save
-                    </button> --}}
+                    </button>
                 </span>
 
                 <button type="button" class="btn btn-danger modelClose" data-bs-dismiss="modal">
