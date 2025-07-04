@@ -163,7 +163,7 @@ Route::group(['middleware' => ['auth', 'affiliate.redirect']], function () {
     Route::post('/promotion-images/update-status', [PromotionImageController::class, 'updateStatus'])->name('promotion-images.updateStatus');
     Route::post('/promotion-images/update-status2', [PromotionImageController::class, 'updateStatus2'])->name('promotion-images.updateStatus2');
     Route::post('/promotion-images/disable-all', [PromotionImageController::class, 'disableAll'])->name('promotion-images.disableAll');
-    
+
 
 
     //parent route
@@ -209,6 +209,9 @@ Route::group(['middleware' => ['auth', 'affiliate.redirect']], function () {
     Route::post('/reciept/export', [ReceiptController::class, 'exportReciept'])->name('reciept.export');
 
     Route::get('/ei_form', [EiFormController::class, 'backEndIndex'])->name('ei_form.backEndIndex');
+
+    // Blogs
+    Route::resource('blogs', BlogController::class);
 });
 
 Route::get('/teacher', function () {
@@ -220,5 +223,3 @@ Auth::routes();
 Route::get('/auth/google', [App\Http\Controllers\GoogleController::class, 'loginWithGoogle'])->name('google.login');
 Route::get('/auth/google/callback', [App\Http\Controllers\GoogleController::class, 'callbackFromGoogle'])->name('google.callback');
 Route::get('/blank', [App\Http\Controllers\HomeController::class, 'blank'])->name('blank');
-
-Route::resource('blogs', BlogController::class);
