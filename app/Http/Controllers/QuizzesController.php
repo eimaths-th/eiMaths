@@ -53,7 +53,9 @@ class QuizzesController extends Controller
                 })
                 ->addColumn('action', function ($row) {
                     // $html = '<a href="' . route('questions.edit', $row->id) . '" class="btn btn-sm btn-warning" id="getEditData" data-id="' . $row->id . '"><<i class="fa fa-edit"></i> Edit</a>';
-                    $html = '<button type="button" class="btn btn-sm btn-warning" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit</a>';
+                    $html = '';
+                    $html .= '<a href="' . route('quizzes.show', $row->id) . '" class="btn btn-sm btn-primary" target="_blank"><i class="fa fa-eye"></i> View</a>';
+                    $html .= '<a type="button" class="btn btn-sm btn-warning" id="getEditData" style="margin-left: 5px;" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit</a>';
                     $html .= '<button type="button" class="btn btn-sm btn-danger delete-button" style="margin-left: 5px;" data-id="' . $row->id . '"><i class="fa fa-trash"></i> Delete</button>';
                     return $html;
                 })->rawColumns(['action', 'published', 'public'])->toJson();
@@ -125,7 +127,7 @@ class QuizzesController extends Controller
             'published' => 0,
             'public' => $validated['public'] ?? 0,
             'created_by' => Auth::user()->id,
-            
+
         ]);
 
         $quiz->questions()->attach($validated['questions']);
@@ -136,9 +138,17 @@ class QuizzesController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show($id)
     {
         //
+        $quizzes = Quiz::findOrFail($id);
+        $questions = $quizzes->questions; // Assuming a relationship: Quiz hasMany Questions
+
+        // dd($questions);
+        return view('quiz.quiz-view', [
+            'quizzes' => $quizzes,
+            'questions' => $questions,
+        ]);
     }
 
     /**

@@ -21,16 +21,15 @@ class eLeanController extends Controller
     public function home()
     {
         // dd($this->level);
-        $student = Contact::find(Auth::guard('student')->user()->id);
-
-        if ($student) {
-            # code...
-            $id = $student->id;
-        } else {
-            # code...
+        if (Auth::guard('student')->check()) {
+            $student = Contact::find(Auth::guard('student')->user()->id);
+            $id = $student ? $student->id : null;
+        } elseif (Auth::check()) {
             $id = Auth::user()->id;
+        } else {
+            // Not authenticated at all
+            abort(403, 'Unauthorized');
         }
-
         $getQuizAssign = ContactQuiz::where([
             'contact_id' => $id
         ])->get();
@@ -41,15 +40,11 @@ class eLeanController extends Controller
             # code...
             $quizIds = [];
         }
-        dd(
-            $student->id,
-            $getQuizAssign,
-            $quizIds,
-        );
 
         $levels = $this->level;
         $public_quizzes_level = Quiz::whereHas('questions')
             ->where('public', true)
+            ->whereIn('id', $quizIds)
             ->orderBy('level', 'asc')
             ->orderBy('id', 'Desc')
             ->withCount('questions')
@@ -57,20 +52,23 @@ class eLeanController extends Controller
             ->groupBy('level');
         $public_quizzes = Quiz::whereHas('questions')
             ->where('public', true)
+            ->whereIn('id', $quizIds)
             ->orderBy('id', 'desc')
             ->withCount('questions')
             ->get();
-        // $registered_only_quizzes = Quiz::whereHas('questions')->where('published', true)->orderBy('id', 'desc')->withCount('questions')->get();
+
         $registered_only_quizzes = Quiz::whereHas('questions')
             ->where('published', true)
+            ->whereIn('id', $quizIds)
             ->orderBy('level', 'asc')
             ->orderBy('id', 'Desc')
             ->withCount('questions')
             ->get()
             ->groupBy('level');
-        $levelCheck = 0;
+
         
 
+        $levelCheck = 0;
         $header = 'eiMaths Quiz';
         // dd($public_quizzes_level);
 

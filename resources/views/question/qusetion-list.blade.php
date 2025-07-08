@@ -128,6 +128,51 @@
             box-sizing: border-box;
             /* text-align: center; */
         }
+
+        .switch_toggle {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 28px;
+        }
+
+        .switch_toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider::before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: #ffb515;
+        }
+
+        input:checked+.slider::before {
+            transform: translateX(22px);
+        }
     </style>
     <script type="text/javascript" async
         src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
@@ -187,6 +232,12 @@
                                     });
                                 </script>
                             @endif
+                            <div>
+                                <label class="switch_toggle">
+                                    <input type="checkbox" class="my-question">
+                                    <i class="slider round"></i>
+                                </label>
+                            </div>
                             <table id="Listview" class="table table-bordered table-striped table-hover">
                                 <thead>
                                     <tr>
@@ -229,5 +280,27 @@
 @endsection
 
 @section('script')
+    <script>
+        $(document).on('change', '.my-question', function() {
+            const check = $(this).is(':checked') ? 1 : 0;
+
+            $.ajax({
+                url: '{{ route('questions') }}',
+                method: 'GET',
+                data: {
+
+                    check: check
+                },
+                success: function(res) {
+                    toastr.success(res.message || 'Status updated');
+                    $('#Listview').DataTable().ajax.reload();
+
+                },
+                error: function(err) {
+                    toastr.error('Failed to update status');
+                }
+            });
+        });
+    </script>
     @include('question.scripts')
 @endsection

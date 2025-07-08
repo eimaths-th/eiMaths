@@ -109,6 +109,8 @@ Route::group(['middleware' => ['auth', 'affiliate.redirect']], function () {
     Route::get('quizzes/edit/{question}', [QuizzesController::class, 'edit'])->name('quizzes.edit');
     Route::put('quizzes/update/{question}', [QuizzesController::class, 'update'])->name('quizzes.update');
     Route::delete('quizzes/{id}', [QuizzesController::class, 'destroy'])->name('quizzes.destroy');
+    Route::get('/quizzes/{id}', [QuizzesController::class, 'show'])->name('quizzes.show');
+
 
     Route::post('assign-quiz', [AssignQuizToStudentController::class, 'assignQuiz'])->name('assignQuiz');
     Route::get('assign', [AssignQuizToStudentController::class, 'index'])->name('assign');

@@ -209,6 +209,7 @@
         .frac span.symbol {
             display: none;
         }
+
         .bg-orange-300 {
             background-color: #ffa238;
         }

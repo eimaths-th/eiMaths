@@ -357,8 +357,8 @@
                                                 <div class="row">
                                                     <div class="col-lg-4">
                                                         <div class="mt-4">
-                                                            <label for="level" class=" form-label">Grade</label>
-                                                            <select id="level" name="level" class="form-control">
+                                                            <label for="level" class="question-grade form-label">Grade</label>
+                                                            <select id="level_1" name="level" class="question-grade form-control">
                                                                 <option value=""  selected>Select term
                                                                 </option>
                                                                 <option value="K1">K1</option>
@@ -375,8 +375,8 @@
                                                     </div>
                                                     <div class="col-lg-4">
                                                         <div class="mt-4">
-                                                            <label for="term" class=" form-label">Term</label>
-                                                            <select id="term" name="term" class="form-control">
+                                                            <label for="term" class="form-label">Term</label>
+                                                            <select id="term_1" name="term" class="question-term form-control">
                                                                 <option value=""  selected>Select term
                                                                 </option>
                                                                 <option value="1">1</option>
@@ -390,7 +390,7 @@
                                                     <div class="col-lg-4">
                                                         <div class="mt-4">
                                                             <label for="section" class=" form-label">Level</label>
-                                                            <select id="section" name="section" class="form-control">
+                                                            <select id="section_1" name="section" class="question-level form-control">
                                                                 <option value=""  selected>Select Level
                                                                 </option>
                                                                 @for ($i = 1; $i <= 20; $i++)

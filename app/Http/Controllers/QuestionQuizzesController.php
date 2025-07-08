@@ -180,7 +180,7 @@ class QuestionQuizzesController extends Controller
 
             // Either text or image (manual check later)
             'questions.*.text' => ['nullable', 'string'],
-            'questions.*.img_name' => ['nullable', 'string'],
+            'questions.*.img_name' => ['nullable|image|file|mimes:jpg,png,jpeg|max:2048'],
 
             'questions.*.type' => ['required', 'string', 'in:options,written,image,fraction'],
             'questions.*.level' => ['required', 'string'],
@@ -422,6 +422,10 @@ class QuestionQuizzesController extends Controller
         $quiz = Quiz::findOrFail($id);
         $questions = $quiz->questions;
         $questions_all = Question::all();
+
+        $quizLevel = $quiz->level;
+        $quizTerm = $quiz->term;
+        $quizSection = $quiz->section;
         $html_questions_select = '';
         foreach ($questions_all as $question) {
             $select_question = $questions->contains('id', $question->id) ? 'selected' : '';
@@ -429,7 +433,10 @@ class QuestionQuizzesController extends Controller
         }
 
         return response()->json([
-            'html_questions_select' => $html_questions_select
+            'html_questions_select' => $html_questions_select,
+            'quizLevel' => $quizLevel,
+            'quizTerm' => $quizTerm,
+            'quizSection' => $quizSection,
         ]);
     }
 

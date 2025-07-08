@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $slug
  * @property string $level
  * @property string $term
+ * @property string $section
  * @property string $description
  * @property boolean $published
  * @property boolean $public

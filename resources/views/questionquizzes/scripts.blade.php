@@ -50,9 +50,6 @@
                 $('#questions_id').trigger('change');
             }
         });
-
-
-
     });
 
     $(document).ready(function() {
@@ -67,23 +64,95 @@
         let termQuiz = '';
         let sectionQuiz = '';
         // console.log(SelectQuiz);
+
+        $(document).on('keyup', '#title', function(e) {
+            e.preventDefault();
+            var val = $('#title').val();
+            var slug = val.toLowerCase().replace(/\s+/g, '-');
+            $('#slug').val(slug);
+        });
+
+
+        $(document).on('change', '#SelectQuiz', function() {
+            SelectQuiz = $(this).val(); // Get selected quiz ID
+
+            if (SelectQuiz === 'create') {
+                $('#questions_id').val('');
+                $('#questions_id').html('');
+                $.ajax({
+                    url: '{{ route('questions.list') }}', // Adjust the route to match your setup
+                    method: 'GET',
+                    success: function(res) {
+                        var options = res.questions;
+                        $.each(options, function(id, question) {
+
+                            var selected = ({{ json_encode(old('questions', [])) }})
+                                .includes(question.id) ? 'selected' : '';
+                            $('#questions_id').append('<option value="' + question
+                                .id +
+                                '" ' + selected + '>' + question.code + ' ' +
+                                question.text + '</option>');
+                        });
+                        $('#questions_id').trigger('change');
+                    }
+                });
+                $('#quizCrate').show();
+
+            } else {
+                $('.question-grade').val('').trigger('change');
+                $('.question-term').val('').trigger('change');
+                $('.question-level').val('').trigger('change');
+
+                var url = '{{ route('questions-quizzes.selected', ':id') }}';
+                url = url.replace(':id', SelectQuiz);
+
+                $.ajax({
+                    // url: "selected/" + SelectQuiz,
+                    url: url,
+                    method: 'get',
+                    success: function(res) {
+                        $('#questions_id').html(res
+                            .html_questions_select); // Update the select options
+                        $('.question-grade').val(res.quizLevel).trigger('change');
+                        $('.question-term').val(res.quizTerm).trigger('change');
+                        $('.question-level').val(res.quizSection).trigger('change');
+                        levelQuiz = res.quizLevel;
+                        termQuiz = res.quizTerm;
+                        sectionQuiz = res.quizSection;
+
+
+                    },
+                    error: function(xhr) {
+                        console.error('Failed to fetch questions:', xhr.responseText);
+                    }
+                });
+
+                $('#quizCrate').hide();
+
+            }
+        });
+
         $(document).on('change', '#level', function() {
             levelQuiz = $(this).val(); // Get selected quiz ID
         });
+
         $(document).on('change', '#section', function() {
             sectionQuiz = $(this).val(); // Get selected quiz ID
             checkSelectionsAndFetchData();
-
         });
+
         $(document).on('change', '#term', function() {
             termQuiz = $(this).val(); // Get selected quiz ID
-
         });
 
         function checkSelectionsAndFetchData() {
 
             if (levelQuiz && termQuiz && sectionQuiz) {
                 // All 3 are selected, now fetch data
+                $('.question-grade').val(levelQuiz).trigger('change');
+                $('.question-term').val(termQuiz).trigger('change');
+                $('.question-level').val(sectionQuiz).trigger('change');
+
                 $.ajax({
                     url: '{{ route('questions.list') }}', // Adjust the route to match your setup
                     method: 'GET',
@@ -112,63 +181,6 @@
             }
 
         }
-
-
-        $(document).on('keyup', '#title', function(e) {
-            e.preventDefault();
-            var val = $('#title').val();
-            var slug = val.toLowerCase().replace(/\s+/g, '-');
-            $('#slug').val(slug);
-        });
-
-        $(document).on('change', '#SelectQuiz', function() {
-            SelectQuiz = $(this).val(); // Get selected quiz ID
-
-            if (SelectQuiz === 'create') {
-                $('#questions_id').val('');
-                $('#questions_id').html('');
-                $.ajax({
-                    url: '{{ route('questions.list') }}', // Adjust the route to match your setup
-                    method: 'GET',
-                    success: function(res) {
-                        var options = res.questions;
-                        $.each(options, function(id, question) {
-
-                            var selected = ({{ json_encode(old('questions', [])) }})
-                                .includes(question.id) ? 'selected' : '';
-                            $('#questions_id').append('<option value="' + question
-                                .id +
-                                '" ' + selected + '>' + question.code + ' ' +
-                                question.text + '</option>');
-                        });
-                        $('#questions_id').trigger('change');
-                    }
-                });
-                $('#quizCrate').show();
-
-            } else {
-
-                var url = '{{ route('questions-quizzes.selected', ':id') }}';
-                url = url.replace(':id', SelectQuiz);
-
-                $.ajax({
-                    // url: "selected/" + SelectQuiz,
-                    url: url,
-                    method: 'get',
-                    success: function(res) {
-                        $('#questions_id').html(res
-                            .html_questions_select); // Update the select options
-                    },
-                    error: function(xhr) {
-                        console.error('Failed to fetch questions:', xhr.responseText);
-                    }
-                });
-
-                $('#quizCrate').hide();
-
-            }
-        });
-
 
         function toggleTypeFields(selectedType, res) {
             if (selectedType === 'written') {
@@ -335,6 +347,8 @@
             $(`.written_type_${FormIndex}`).hide();
             $(`.image_type_${FormIndex}`).hide();
             $(`.fraction_type_${FormIndex}`).hide();
+            checkSelectionsAndFetchData();
+
 
         });
 
@@ -344,8 +358,7 @@
             for (let i = 1; i <= 20; i++) {
                 options += `<option value="${i}">${i}</option>`;
             }
-
-
+            // checkSelectionsAndFetchData()
             let newForm = `
                 <div class="question-form">
                     <div class="question-form-index">
@@ -448,7 +461,7 @@
                         <div class="col-lg-4">
                             <div class="mt-4">
                                 <label for="level" class="form-label">Grade</label>
-                                <select id="level_${FormIndex}" name="level_${FormIndex}" class="form-control">
+                                <select id="level_${FormIndex}" name="level_${FormIndex}" class="question-grade question-grade form-control">
                                     <option value="" selected>Select term</option>
                                     <option value="K1">K1</option>
                                     <option value="K2">K2</option>
@@ -464,7 +477,7 @@
                         <div class="col-lg-4">
                             <div class="mt-4">
                                 <label for="term" class="form-label">Term</label>
-                                <select id="term_${FormIndex}" name="term_${FormIndex}" class="form-control">
+                                <select id="term_${FormIndex}" name="term_${FormIndex}" class="question-term form-control">
                                     <option value="" selected>Select term</option>
                                     <option value="1">1</option>
                                     <option value="2">2</option>
@@ -476,7 +489,7 @@
                         <div class="col-lg-4">
                             <div class="mt-4">
                                 <label for="section" class="form-label">Level</label>
-                                <select id="section_${FormIndex}" name="section_${FormIndex}" class="form-control">
+                                <select id="section_${FormIndex}" name="section_${FormIndex}" class="question-level form-control">
                                     <option value="" selected>Select Level</option>
                                     ${options}
                                 </select>

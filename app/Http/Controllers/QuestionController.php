@@ -56,9 +56,16 @@ class QuestionController extends Controller
     }
     public function index(Request $request)
     {
+        $check = $request->check;
         if ($request->ajax()) {
 
-            $datas = Question::latest();
+            if ($check) {
+                # code...
+                $datas = Question::where('created_by', Auth::user()->id)->latest();
+            } else {
+                # code...
+                $datas = Question::latest();
+            }
 
             return datatables()->of($datas)
                 ->addColumn('#', function ($row) {
