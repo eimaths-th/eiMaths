@@ -180,7 +180,8 @@ class QuestionQuizzesController extends Controller
 
             // Either text or image (manual check later)
             'questions.*.text' => ['nullable', 'string'],
-            'questions.*.img_name' => ['nullable|image|file|mimes:jpg,png,jpeg|max:2048'],
+            // 'questions.*.img_name' => ['nullable|image|file|mimes:jpg,png,jpeg|max:2048'],
+            'questions.*.img_name' => ['nullable', 'image', 'file', 'mimes:jpg,png,jpeg', 'max:2048'],
 
             'questions.*.type' => ['required', 'string', 'in:options,written,image,fraction'],
             'questions.*.level' => ['required', 'string'],
