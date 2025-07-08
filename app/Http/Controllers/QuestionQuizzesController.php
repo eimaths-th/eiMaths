@@ -260,10 +260,13 @@ class QuestionQuizzesController extends Controller
 
         // Build validator
         $validator = Validator::make($request->all(), $rules, $messages);
-
+        // dd($validator);
         // Add custom logic: must have either text or img_name
         $validator->after(function ($validator) use ($request) {
-            foreach ($request->input('questions', []) as $qIndex => $question) {
+            // dd($request->all());
+
+            foreach ($request->questions as $qIndex => $question) {
+                // dd($request->all(),$question);
                 $text = $question['text'] ?? null;
                 $img = $question['img_name'] ?? null;
 
