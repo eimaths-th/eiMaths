@@ -193,8 +193,8 @@ class QuestionQuizzesController extends Controller
 
             // Options for multiple choice
             'questions.*.options' => ['required_if:questions.*.type,options', 'array', 'min:1'],
-            // 'questions.*.options.*.text' => ['required', 'string'],
-            'questions.*.options.*.correct' => ['required', 'boolean'],
+            'questions.*.options.*.text' => ['required', 'string'],
+            'questions.*.options.*.correct' => ['required', 'in:0,1'],
 
             // Image options
             'questions.*.imgOptions' => ['required_if:questions.*.type,image', 'array', 'min:1'],
@@ -246,12 +246,12 @@ class QuestionQuizzesController extends Controller
             'type.required' => 'Quiz type is required.',
             'questions.required' => 'At least one question is required.',
             'questions.*.type.required' => 'Question type is required.',
-            'questions.*.code_snippet.required' => 'Hint is required.',
+            // 'questions.*.code_snippet.required' => 'Hint is required.',
             'questions.*.level.required' => 'level is required.',
             'questions.*.term.required' => 'term is required.',
             'questions.*.section.required' => 'section is required.',
-            'questions.*.answer_explanation.required' => 'Answer explanation is required.',
-            'questions.*.written.required' => 'Answer written is required.',
+            // 'questions.*.answer_explanation.required' => 'Answer explanation is required.',
+            // 'questions.*.written.required' => 'Answer written is required.',
             'questions.*.options.*.correct.required' => 'Each option must have a correct/incorrect status.',
             'questions.*.imgOptions.*.file.required' => 'Image file is required for image options.',
             'questions.*.imgOptions.*.correct.required' => 'Correct answer status is required for image options.',
@@ -265,6 +265,7 @@ class QuestionQuizzesController extends Controller
             'term.required' => 'Term is required.',
             'section.required' => 'Section is required.',
         ];
+
 
         // Build validator
         $validator = Validator::make($request->all(), $rules, $messages);
@@ -287,15 +288,28 @@ class QuestionQuizzesController extends Controller
                 // Validate options for 'options' type questions
                 if (($question['type'] ?? null) === 'options') {
                     $options = $question['options'] ?? [];
+
+                    // 🟡 Validate each option
                     foreach ($options as $oIndex => $option) {
                         if (empty($option['text'])) {
-                            $validator->errors()->add("questions.$qIndex.options.$oIndex.text", 'Each option must have text.');
+                            $validator->errors()->add(
+                                "questions.$qIndex.options.$oIndex.text",
+                                'Question: ' . ($qIndex + 1) . ' Option: ' . ($oIndex + 1) . ' — Each option must have text.'
+                            );
                         }
+                    }
+
+                    // ✅ Check that at least one option is marked correct
+                    $correctCount = collect($options)->where('correct', 1)->count();
+                    if ($correctCount === 0) {
+                        $validator->errors()->add(
+                            "questions.$qIndex.options",
+                            'Question: ' . ($qIndex + 1) . ' — At least one option must be marked correct.'
+                        );
                     }
                 }
             }
         });
-
 
         $validator->validate();
         // Perform Validation
@@ -306,6 +320,7 @@ class QuestionQuizzesController extends Controller
         $questions_create_id = [];
         // dd($request->all());
         $questions = $request->questions;
+
 
         // dd($questions);
 
