@@ -216,10 +216,18 @@ class QuestionQuizzesController extends Controller
         }
 
         // Special rules for fraction-type questions
-        foreach ($request->input('questions', []) as $index => $question) {
+        foreach ($request->questions as $index => $question) {
+
+            if ($question['type'] === 'written') {
+                # code...
+                $rules["questions.$index.written"] = [
+                    'required',
+                    'string',
+                ];
+            }
+
             if (isset($question['type']) && $question['type'] === 'fraction') {
                 $rules["questions.$index.answer_type_fraction"] = ['required', 'string', 'in:options,written'];
-
                 if ($question['answer_type_fraction'] === 'written') {
                     $rules["questions.$index.answer_numerator"] = ['required', 'numeric'];
                     $rules["questions.$index.answer_denominator"] = ['required', 'numeric', 'not_in:0'];
@@ -243,7 +251,7 @@ class QuestionQuizzesController extends Controller
             'questions.*.term.required' => 'term is required.',
             'questions.*.section.required' => 'section is required.',
             'questions.*.answer_explanation.required' => 'Answer explanation is required.',
-
+            'questions.*.written.required' => 'Answer written is required.',
             'questions.*.options.*.correct.required' => 'Each option must have a correct/incorrect status.',
             'questions.*.imgOptions.*.file.required' => 'Image file is required for image options.',
             'questions.*.imgOptions.*.correct.required' => 'Correct answer status is required for image options.',
@@ -269,11 +277,11 @@ class QuestionQuizzesController extends Controller
                 // dd($request->all(),$question);
                 $text = $question['text'] ?? null;
                 $img = $question['img_name'] ?? null;
-
                 // Require text or image
+
                 if (empty($text) && empty($img)) {
-                    $validator->errors()->add("questions.$qIndex.text", 'Either text or image is required.');
-                    $validator->errors()->add("questions.$qIndex.img_name", 'Either image or text is required.');
+                    $validator->errors()->add("questions.$qIndex.text", 'questions : ' . $qIndex + 1 . 'Either text or image is required.');
+                    $validator->errors()->add("questions.$qIndex.img_name", 'questions : ' . $qIndex + 1 . 'Either image or text is required.');
                 }
 
                 // Validate options for 'options' type questions
@@ -292,13 +300,6 @@ class QuestionQuizzesController extends Controller
         $validator->validate();
         // Perform Validation
         // $validatedData = $request->validate($rules, $messages);
-
-        //new code validation
-
-
-
-
-        //end test
 
         $quiz_id = $request->quiz_id;
         $questions_ids = $request->questions_id ?? [];

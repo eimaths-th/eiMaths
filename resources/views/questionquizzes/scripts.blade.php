@@ -781,11 +781,8 @@
                     var formIndex = index + 1;
                     var prefix = formIndex > 1 ? `_${formIndex}` : '';
                     var prefixType = formIndex > 1 ? `-${formIndex}` : '';
-                    var fileInput = document.getElementById('imageQuestion');
-                    var file = fileInput.files[
-                        0]; // Get the first file (if multiple, you can loop)
-
-                    // Append the file to FormData
+                    var fileInput = document.getElementById(`imageQuestion${prefix}`);
+                    var file = fileInput?.files?.[0];
 
                     // Append question text, type, and other fields to FormData
                     quizData.append('questions[' + index + '][text]', $(element).find(
@@ -794,9 +791,9 @@
                         `select[name="type${prefixType}"]`).val());
                     quizData.append('questions[' + index + '][written]', $(element).find(
                         `input[name="written${prefix}"]`).val());
-                    if (file) {
-                        quizData.append('questions[' + index + '][img_name]', file);
 
+                    if (file) {
+                        quizData.append(`questions[${index}][img_name]`, file);
                     }
                     // Handle options or images
                     var questionType = $(element).find(`select[name="type${prefixType}"]`)

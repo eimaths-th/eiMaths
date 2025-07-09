@@ -226,7 +226,6 @@
                                                     <div id="add-image-question-container">
                                                         <input type="file" id="imageQuestion" name="imageQuestion"
                                                             class="form-control">
-
                                                     </div>
 
                                                     @error('text')
