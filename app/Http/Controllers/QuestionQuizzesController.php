@@ -192,56 +192,13 @@ class QuestionQuizzesController extends Controller
             'questions.*.more_info_link' => ['nullable', 'url'],
 
             // Options for multiple choice
-            'questions.*.options' => ['required_if:questions.*.type,options', 'array', 'min:1'],
-            'questions.*.options.*.text' => ['required', 'string'],
-            'questions.*.options.*.correct' => ['required', 'in:0,1'],
-
+            'questions' => ['required', 'array', 'min:1'],
             // Image options
             'questions.*.imgOptions' => ['required_if:questions.*.type,image', 'array', 'min:1'],
             'questions.*.imgOptions.*.file' => ['required', 'image'],
             'questions.*.imgOptions.*.correct' => ['required', 'boolean'],
         ];
 
-        // Additional required fields for 'create' type
-        if ($type === 'create') {
-            $rules = array_merge($rules, [
-                'title' => ['required', 'string'],
-                'slug' => ['required', 'string', 'unique:quizzes,slug'],
-                'level' => ['required', 'string'],
-                'term' => ['required', 'string'],
-                'section' => ['required', 'string'],
-                'description' => ['required', 'string'],
-                'public' => ['required', 'boolean'],
-            ]);
-        }
-
-        // Special rules for fraction-type questions
-        foreach ($request->questions as $index => $question) {
-
-            if ($question['type'] === 'written') {
-                # code...
-                $rules["questions.$index.written"] = [
-                    'required',
-                    'string',
-                ];
-            }
-
-            if (isset($question['type']) && $question['type'] === 'fraction') {
-                $rules["questions.$index.answer_type_fraction"] = ['required', 'string', 'in:options,written'];
-                if ($question['answer_type_fraction'] === 'written') {
-                    $rules["questions.$index.answer_numerator"] = ['required', 'numeric'];
-                    $rules["questions.$index.answer_denominator"] = ['required', 'numeric', 'not_in:0'];
-                } elseif ($question['answer_type_fraction'] === 'options') {
-                    $rules["questions.$index.options"] = ['required', 'array', 'min:1'];
-                    $rules["questions.$index.options.*.answer_numerator"] = ['required', 'numeric'];
-                    $rules["questions.$index.options.*.answer_denominator"] = ['required', 'numeric', 'not_in:0'];
-                    $rules["questions.$index.options.*.answer_type"] = ['required', 'string'];
-                    $rules["questions.$index.options.*.correct"] = ['required', 'boolean'];
-                }
-            }
-        }
-
-        // Custom error messages
         $messages = [
             'type.required' => 'Quiz type is required.',
             'questions.required' => 'At least one question is required.',
@@ -266,9 +223,60 @@ class QuestionQuizzesController extends Controller
             'section.required' => 'Section is required.',
         ];
 
+        // Additional required fields for 'create' type
+        if ($type === 'create') {
+            $rules = array_merge($rules, [
+                'title' => ['required', 'string'],
+                'slug' => ['required', 'string', 'unique:quizzes,slug'],
+                'level' => ['required', 'string'],
+                'term' => ['required', 'string'],
+                'section' => ['required', 'string'],
+                'description' => ['required', 'string'],
+                'public' => ['required', 'boolean'],
+            ]);
+        }
 
-        // Build validator
+        // Special rules for fraction-type questions
+        // foreach ($request->questions as $index => $question) {
+
+        //     if (($question['type'] ?? null) === 'options') {
+        //         $rules["questions.$index.options"] = ['required', 'array', 'min:1'];
+
+        //         foreach ($question['options'] as $oIndex => $option) {
+        //             $rules["questions.$index.options.$oIndex.text"] = ['required', 'string'];
+        //             $rules["questions.$index.options.$oIndex.correct"] = ['required', 'in:0,1'];
+        //         }
+        //     }
+
+
+        //     if ($question['type'] === 'written') {
+        //         # code...
+        //         $rules["questions.$index.written"] = [
+        //             'required',
+        //             'string',
+        //         ];
+        //     }
+
+        //     if (isset($question['type']) && $question['type'] === 'fraction') {
+        //         $rules["questions.$index.answer_type_fraction"] = ['required', 'string', 'in:options,written'];
+        //         if ($question['answer_type_fraction'] === 'written') {
+        //             $rules["questions.$index.answer_numerator"] = ['required', 'numeric'];
+        //             $rules["questions.$index.answer_denominator"] = ['required', 'numeric', 'not_in:0'];
+        //         } elseif ($question['answer_type_fraction'] === 'options') {
+        //             $rules["questions.$index.options"] = ['required', 'array', 'min:1'];
+        //             $rules["questions.$index.options.*.answer_numerator"] = ['required', 'numeric'];
+        //             $rules["questions.$index.options.*.answer_denominator"] = ['required', 'numeric', 'not_in:0'];
+        //             $rules["questions.$index.options.*.answer_type"] = ['required', 'string'];
+        //             $rules["questions.$index.options.*.correct"] = ['required', 'boolean'];
+        //         }
+        //     }
+        // }
+
+        // Custom error messages
+
+
         $validator = Validator::make($request->all(), $rules, $messages);
+        // Build validator
         // dd($validator);
         // Add custom logic: must have either text or img_name
         $validator->after(function ($validator) use ($request) {
@@ -281,37 +289,292 @@ class QuestionQuizzesController extends Controller
                 // Require text or image
 
                 if (empty($text) && empty($img)) {
-                    $validator->errors()->add("questions.$qIndex.text", 'questions : ' . $qIndex + 1 . 'Either text or image is required.');
-                    $validator->errors()->add("questions.$qIndex.img_name", 'questions : ' . $qIndex + 1 . 'Either image or text is required.');
+                    $validator->errors()->add("questions.$qIndex.text", 'questions : ' . $qIndex + 1 . ' — Either text or image is required.');
+                    // $validator->errors()->add("questions.$qIndex.img_name", 'questions : ' . $qIndex + 1 . 'Either image or text is required.');
                 }
 
                 // Validate options for 'options' type questions
-                if (($question['type'] ?? null) === 'options') {
-                    $options = $question['options'] ?? [];
 
-                    // 🟡 Validate each option
-                    foreach ($options as $oIndex => $option) {
-                        if (empty($option['text'])) {
-                            $validator->errors()->add(
-                                "questions.$qIndex.options.$oIndex.text",
-                                'Question: ' . ($qIndex + 1) . ' Option: ' . ($oIndex + 1) . ' — Each option must have text.'
-                            );
-                        }
-                    }
-
-                    // ✅ Check that at least one option is marked correct
-                    $correctCount = collect($options)->where('correct', 1)->count();
-                    if ($correctCount === 0) {
-                        $validator->errors()->add(
-                            "questions.$qIndex.options",
-                            'Question: ' . ($qIndex + 1) . ' — At least one option must be marked correct.'
-                        );
-                    }
-                }
             }
         });
 
         $validator->validate();
+
+        foreach ($request->questions as $index => $question) {
+            // dd($request->all(), $question['type'], $question);
+
+            // switch ($question['type']) {
+            //     case 'written':
+            //         // dd($index,$request->all(), $question['type'], $question);
+
+            //         $request->validate([
+            //             "questions.$index.written" => 'required',
+            //         ], [
+            //             "questions.$index.written.required" => 'Question: ' . ($index + 1) . ' — Please provide the written correct answer',
+            //         ]);
+            //         break;
+
+            //     case 'options':
+            //         $rules = [
+            //             "questions.$index.options" => 'required|array|min:1',
+            //         ];
+
+            //         $messages = [
+            //             "questions.$index.options.required" => 'Question: ' . ($index + 1) . ' — Please add Options',
+            //         ];
+
+            //         $options = $question['options'] ?? [];
+
+            //         // Dynamically add rules for each option's text
+            //         foreach ($options as $oIndex => $option) {
+            //             if (empty($option['text'])) {
+            //                 $rules["questions.$index.options.$oIndex.text"] = 'required|string';
+            //                 $messages["questions.$index.options.$oIndex.text.required"] = 'Question: ' . ($index + 1) . ' Option: ' . ($oIndex + 1) . ' — Each option must have text.';
+            //             }
+            //             $rules["questions.$index.options.$oIndex.correct"] = 'required|in:0,1';
+            //             $messages["questions.$index.options.$oIndex.correct.required"] = 'Question: ' . ($index + 1) . ' Option: ' . ($oIndex + 1) . ' — Please specify if the option is correct.';
+            //         }
+
+            //         // Create validator after dynamic rule building
+            //         $validator = Validator::make($request->all(), $rules, $messages);
+
+            //         // Now check if any correct answer is selected
+            //         $correctCount = collect($options)->where('correct', 1)->count();
+            //         if ($correctCount === 0) {
+            //             $validator->after(function ($validator) use ($index) {
+            //                 $validator->errors()->add(
+            //                     "questions.$index.options",
+            //                     'Question: ' . ($index + 1) . ' — At least one option must be marked correct.'
+            //                 );
+            //             });
+            //         }
+
+            //         if ($validator->fails()) {
+            //             throw new \Illuminate\Validation\ValidationException($validator);
+            //         }
+
+            //         break;
+
+            //     case 'image':
+            //         $request->validate([
+            //             'imgOptions' => 'required|array',
+            //             'imgOptions.*.file' => 'required|file|mimes:jpg,png,jpeg|max:1024',
+            //             'imgOptions.*.correct' => 'required|in:0,1',
+            //         ], [
+            //             'imgOptions.required' => 'Question: ' . ($index + 1) . ' — Please add Image Options',
+            //             'imgOptions.*.file.required' => 'Question: ' . ($index + 1) . ' — Please upload an image file',
+            //             'imgOptions.*.file.mimes' => 'Question: ' . ($index + 1) . ' — Only jpg, png, and jpeg files are allowed',
+            //             'imgOptions.*.file.max' => 'Question: ' . ($index + 1) . ' — Each image must not exceed 1 MB in size',
+            //             'imgOptions.*.correct.required' => 'Question: ' . ($index + 1) . ' — Please specify if the image option is correct',
+            //         ]);
+
+            //         $correctCount = collect($request->imgOptions)->where('correct', 1)->count();
+            //         if ($correctCount === 0) {
+            //             return response()->json(['errors' => ['imgOptions' => ['Question: ' . ($index + 1) . ' — Please add at least one correct image option']]], 422);
+            //         }
+            //         break;
+
+            //     case 'fraction':
+            //         $rules = ['fraction_type' => 'required|in:written,options'];
+            //         $messages = [
+            //             'fraction_type.required' => 'Please select a fraction type.',
+            //             'fraction_type.in' => 'Invalid fraction type.',
+            //         ];
+
+            //         if ($request->fraction_type === 'written') {
+            //             $rules += [
+            //                 'numerator' => 'required|integer',
+            //                 'denominator' => 'required|integer|min:1',
+            //                 'answer_type' => 'required|in:frac,mixed',
+            //             ];
+            //             $messages += [
+            //                 'numerator.required' => 'Numerator is required.',
+            //                 'numerator.integer' => 'Numerator must be an integer.',
+            //                 'denominator.required' => 'Denominator is required.',
+            //                 'denominator.integer' => 'Denominator must be an integer.',
+            //                 'denominator.min' => 'Denominator must be at least 1.',
+            //                 'answer_type.required' => 'Answer type is required.',
+            //                 'answer_type.in' => 'Answer type must be "frac" or "mixed".',
+            //             ];
+            //         } else {
+            //             $rules += [
+            //                 'options' => 'required|array|min:1',
+            //                 'options.*.numerator' => 'required|integer',
+            //                 'options.*.denominator' => 'required|integer|min:1',
+            //                 'options.*.answer_type' => 'required|in:frac,mixed',
+            //                 'options.*.correct' => 'required|boolean',
+            //             ];
+            //             $messages += [
+            //                 'options.required' => 'Please provide options.',
+            //                 'options.*.numerator.required' => 'Numerator is required for each option.',
+            //                 'options.*.denominator.required' => 'Denominator is required for each option.',
+            //                 'options.*.denominator.min' => 'Denominator must be at least 1.',
+            //                 'options.*.answer_type.required' => 'Answer type is required for each option.',
+            //                 'options.*.correct.required' => 'Each option must specify if it is correct.',
+            //             ];
+            //         }
+
+            //         $request->validate($rules, $messages);
+
+            //         if ($request->fraction_type === 'options') {
+            //             $correctCount = collect($request->options)->where('correct', 1)->count();
+            //             if ($correctCount === 0) {
+            //                 return response()->json([
+            //                     'errors' => ['options' => ['Question: ' . ($index + 1) . ' —    Please provide at least one correct fraction option.']]
+            //                 ], 422);
+            //             }
+            //         }
+            //         break;
+            // }
+
+            switch ($question['type']) {
+                case 'written':
+                    $rules = [
+                        "questions.$index.written" => 'required|string',
+                    ];
+                    $messages = [
+                        "questions.$index.written.required" => 'Question: ' . ($index + 1) . ' — Please provide the written answer.',
+                    ];
+                    $validator = Validator::make($request->all(), $rules, $messages);
+                    if ($validator->fails()) {
+                        throw new \Illuminate\Validation\ValidationException($validator);
+                    }
+                    break;
+
+                case 'options':
+                    $rules = [
+                        "questions.$index.options" => 'required|array|min:1',
+                    ];
+                    $messages = [
+                        "questions.$index.options.required" => 'Question: ' . ($index + 1) . ' — Please add Options.',
+                    ];
+
+                    $options = $question['options'] ?? [];
+                    foreach ($options as $oIndex => $option) {
+                        $rules["questions.$index.options.$oIndex.text"] = 'required|string';
+                        $rules["questions.$index.options.$oIndex.correct"] = 'required|in:0,1';
+                        $messages["questions.$index.options.$oIndex.text.required"] = 'Question: ' . ($index + 1) . ' Option: ' . ($oIndex + 1) . ' — Each option must have text.';
+                        $messages["questions.$index.options.$oIndex.correct.required"] = 'Question: ' . ($index + 1) . ' Option: ' . ($oIndex + 1) . ' — Please specify if the option is correct.';
+                    }
+
+                    $validator = Validator::make($request->all(), $rules, $messages);
+                    $validator->after(function ($validator) use ($options, $index) {
+                        $correctCount = collect($options)->where('correct', 1)->count();
+                        if ($correctCount === 0) {
+                            $validator->errors()->add(
+                                "questions.$index.options",
+                                'Question: ' . ($index + 1) . ' — At least one option must be marked correct.'
+                            );
+                        }
+                    });
+                    if ($validator->fails()) {
+                        throw new \Illuminate\Validation\ValidationException($validator);
+                    }
+                    break;
+
+                case 'image':
+                    $rules = [
+                        "questions.$index.imgOptions" => 'required|array|min:1',
+                    ];
+                    $messages = [
+                        "questions.$index.imgOptions.required" => 'Question: ' . ($index + 1) . ' — Please add Image Options.',
+                    ];
+
+                    $imgOptions = $question['imgOptions'] ?? [];
+                    foreach ($imgOptions as $oIndex => $option) {
+                        $rules["questions.$index.imgOptions.$oIndex.file"] = 'required|file|mimes:jpg,jpeg,png|max:1024';
+                        $rules["questions.$index.imgOptions.$oIndex.correct"] = 'required|in:0,1';
+                        $messages["questions.$index.imgOptions.$oIndex.file.required"] = 'Question: ' . ($index + 1) . ' Image Option: ' . ($oIndex + 1) . ' — Please upload an image file.';
+                        $messages["questions.$index.imgOptions.$oIndex.file.mimes"] = 'Question: ' . ($index + 1) . ' Image Option: ' . ($oIndex + 1) . ' — Invalid image type.';
+                        $messages["questions.$index.imgOptions.$oIndex.file.max"] = 'Question: ' . ($index + 1) . ' Image Option: ' . ($oIndex + 1) . ' — File too large.';
+                        $messages["questions.$index.imgOptions.$oIndex.correct.required"] = 'Question: ' . ($index + 1) . ' — Please specify if the image is correct.';
+                    }
+
+                    $validator = Validator::make($request->all(), $rules, $messages);
+                    $validator->after(function ($validator) use ($imgOptions, $index) {
+                        $correctCount = collect($imgOptions)->where('correct', 1)->count();
+                        if ($correctCount === 0) {
+                            $validator->errors()->add(
+                                "questions.$index.imgOptions",
+                                'Question: ' . ($index + 1) . ' — At least one image must be marked correct.'
+                            );
+                        }
+                    });
+                    if ($validator->fails()) {
+                        throw new \Illuminate\Validation\ValidationException($validator);
+                    }
+                    break;
+
+                case 'fraction':
+                    $fractionType = $question['answer_type_fraction'] ?? null;
+
+                    $rules = [
+                        "questions.$index.answer_type_fraction" => 'required|in:written,options',
+                    ];
+                    $messages = [
+                        "questions.$index.answer_type_fraction.required" => 'Question: ' . ($index + 1) . ' — Please select Type Answer for Fraction.',
+                        "questions.$index.answer_type_fraction.in" => 'Question: ' . ($index + 1) . ' — Invalid Type Answer for Fraction.',
+                    ];
+
+                    if ($fractionType === 'written') {
+                        $rules += [
+                            "questions.$index.answer_numerator" => 'required|integer',
+                            "questions.$index.answer_denominator" => 'required|integer|min:1',
+                            "questions.$index.answer_type" => 'required|in:frac,mixed',
+                        ];
+                        $messages += [
+                            "questions.$index.answer_numerator.required" => 'Question: ' . ($index + 1) . ' — Numerator is required.',
+                            "questions.$index.answer_denominator.required" => 'Question: ' . ($index + 1) . ' — Denominator is required.',
+                            "questions.$index.answer_denominator.min" => 'Question: ' . ($index + 1) . ' — Denominator must be at least 1.',
+                            "questions.$index.answer_type.required" => 'Question: ' . ($index + 1) . ' — Answer type is required.',
+                        ];
+                        $validator = Validator::make($request->all(), $rules, $messages);
+                        if ($validator->fails()) {
+                            throw new \Illuminate\Validation\ValidationException($validator);
+                        }
+                    } elseif ($fractionType === 'options') {
+                        $options = $question['options'] ?? [];
+                        $rules["questions.$index.options"] = 'required|array|min:1';
+                        $messages["questions.$index.options.required"] = 'Question: ' . ($index + 1) . ' — Please add fraction options.';
+                        foreach ($options as $oIndex => $option) {
+                            $rules["questions.$index.options.$oIndex.answer_numerator"] = 'required|integer';
+                            $rules["questions.$index.options.$oIndex.answer_denominator"] = 'required|integer|min:1';
+                            $rules["questions.$index.options.$oIndex.answer_type"] = 'required|in:frac,mixed';
+                            $rules["questions.$index.options.$oIndex.correct"] = 'required|in:0,1';
+
+                            $messages["questions.$index.options.$oIndex.answer_numerator.required"] = 'Question: ' . ($index + 1) . ' Option: ' . ($oIndex + 1) . ' — Numerator required.';
+                            $messages["questions.$index.options.$oIndex.answer_denominator.required"] = 'Question: ' . ($index + 1) . ' Option: ' . ($oIndex + 1) . ' — Denominator required.';
+                            $messages["questions.$index.options.$oIndex.correct.required"] = 'Question: ' . ($index + 1) . ' Option: ' . ($oIndex + 1) . ' — Mark correct/incorrect.';
+                        }
+
+                        $validator = Validator::make($request->all(), $rules, $messages);
+                        $validator->after(function ($validator) use ($options, $index) {
+                            $correctCount = collect($options)->where('correct', 1)->count();
+                            if ($correctCount === 0) {
+                                $validator->errors()->add(
+                                    "questions.$index.options",
+                                    'Question: ' . ($index + 1) . ' — At least one correct fraction option is required.'
+                                );
+                            }
+                        });
+                        if ($validator->fails()) {
+                            throw new \Illuminate\Validation\ValidationException($validator);
+                        }
+                    } else {
+                        $validator = Validator::make($request->all(), $rules, $messages);
+                        if ($validator->fails()) {
+                            throw new \Illuminate\Validation\ValidationException($validator);
+                        }
+                    }
+
+                    break;
+            }
+        }
+
+        // dd('bkb');
+
+
+        // dd($validatedData);
         // Perform Validation
         // $validatedData = $request->validate($rules, $messages);
 
@@ -322,7 +585,6 @@ class QuestionQuizzesController extends Controller
         $questions = $request->questions;
 
 
-        // dd($questions);
 
         foreach ($questions as $questionn) {
             $question = new Question();

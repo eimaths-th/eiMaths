@@ -396,7 +396,7 @@
                         </div>
                     </div>
 
-                    
+
                     <div class="mb-3 written_type_${FormIndex}">
                         <label for="written_${FormIndex}" class="form-label">Question Written</label>
                         <input type="text" class="form-control" id="written_${FormIndex}" name="written_${FormIndex}"
@@ -456,7 +456,7 @@
                         </div>
                         <hr>
                     </div>
-                    
+
                     <div class="row">
                         <div class="col-lg-4">
                             <div class="mt-4">
@@ -901,7 +901,14 @@
                             toastr.success(result.success, {
                                 timeOut: 5000
                             });
+                            $('.SelectQuiz').val('').trigger('change');
+                            $('.SelectType').val('').trigger('change');
+                            $('.questionsId').val('').trigger('change');
+                            $('.answer_type_fraction').val('').trigger('change');
+                            // $('.question-form').remove();
                             $('.form').trigger('reset');
+
+                            location.reload();
                         }
                     },
                     error: function(xhr) {

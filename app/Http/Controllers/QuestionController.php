@@ -595,7 +595,9 @@ class QuestionController extends Controller
             }
         }
         // return redirect()->route('questions')->with('success', 'Question updated successfully!');
-        return response()->json(['success' => 'Question updated successfully!']);
+        return response()->json([
+            'success' => 'Question updated successfully!'
+        ]);
     }
 
     /**

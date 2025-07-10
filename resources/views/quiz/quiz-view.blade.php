@@ -56,7 +56,9 @@
                                         <div class="col-lg-6 mb-4">
                                             <div id="question-container-{{ $question->id }}"
                                                 class="border rounded p-3 h-100">
-                                                <strong>{{ $question->text }}</strong><br>
+                                                <strong>{{ replaceMixedFractions($question->text) }}
+
+                                                </strong><br>
                                                 <small>Type: {{ $question->type }}</small><br>
 
                                                 @if ($question->img_name)
@@ -117,55 +119,28 @@
                                                         <input type="hidden"
                                                             name="currentQuestionFracAnswerType[{{ $key }}]"
                                                             value="{{ $fraction->answer_type }}">
-
+                                                        @php
+                                                            // dd($fraction);
+                                                        @endphp
                                                         @if ($fraction->answer_type === 'frac')
                                                             <div class="frac mt-3">
                                                                 <span>
-                                                                    <input type="text"
-                                                                        class="form-control d-inline-block fraction-numerator"
-                                                                        style="width: 70px;"
-                                                                        name="currentQuestionFracNumerator[{{ $key }}]"
-                                                                        placeholder="Numerator"
-                                                                        value="{{ $getAnserSessionIndexNumerator }}">
+                                                                    <strong>
+                                                                        {{ toFraction($fraction->numerator, $fraction->denominator) }}
+                                                                    </strong>
                                                                 </span>
-                                                                <span class="mx-1">/</span>
-                                                                <span>
-                                                                    <input type="text"
-                                                                        class="form-control d-inline-block fraction-denominator"
-                                                                        style="width: 70px;"
-                                                                        name="currentQuestionFracDenominator[{{ $key }}]"
-                                                                        placeholder="Denominator"
-                                                                        value="{{ $getAnserSessionIndexDenominator }}">
-                                                                </span>
+
                                                             </div>
                                                         @else
                                                             {{-- Mixed --}}
                                                             <div class="mt-3">
-                                                                <input type="text"
-                                                                    class="form-control d-inline-block mixed-whole"
-                                                                    style="width: 70px;"
-                                                                    name="currentQuestionFracWhole[{{ $key }}]"
-                                                                    placeholder="Whole"
-                                                                    value="{{ $getAnserSessionIndexWhole }}">
 
-                                                                <div class="frac d-inline-block ms-3">
+
+                                                                <div class="">
                                                                     <span>
-                                                                        <input type="text"
-                                                                            class="form-control d-inline-block fraction-numerator"
-                                                                            style="width: 70px;"
-                                                                            name="currentQuestionFracNumerator[{{ $key }}]"
-                                                                            placeholder="Numerator"
-                                                                            value="{{ $getAnserSessionIndexNumerator }}">
+                                                                        {{ toMixedFraction($fraction->numerator, $fraction->denominator) }}
                                                                     </span>
-                                                                    <span class="mx-1">/</span>
-                                                                    <span>
-                                                                        <input type="text"
-                                                                            class="form-control d-inline-block fraction-denominator"
-                                                                            style="width: 70px;"
-                                                                            name="currentQuestionFracDenominator[{{ $key }}]"
-                                                                            placeholder="Denominator"
-                                                                            value="{{ $getAnserSessionIndexDenominator }}">
-                                                                    </span>
+
                                                                 </div>
                                                             </div>
                                                         @endif

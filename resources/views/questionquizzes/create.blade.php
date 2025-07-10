@@ -70,7 +70,7 @@
                                 <h4 class="mb-4">Quiz</h4>
                                 <div class="mb-3">
                                     <label for="selectquiz" class=" form-label">Select Quiz</label>
-                                    <select id="SelectQuiz" name="SelectQuiz" class="form-control" required>
+                                    <select id="SelectQuiz" name="SelectQuiz" class="SelectQuiz form-control" required>
                                         <option value="" selected>Select Quiz</option>
                                         <option value="create">Create Quiz</option>
                                         @foreach ($quizzes as $quizze)
@@ -174,7 +174,7 @@
 
                                     <div class="my-4">
                                         <label for="questions_id" class="form-label">Select Questions</label>
-                                        <select id="questions_id" name="questions_id[]" class="select2 form-control"
+                                        <select id="questions_id" name="questions_id[]" class="questionsId select2 form-control"
                                             multiple>
                                         </select>
                                         @error('questions_id')
@@ -189,7 +189,7 @@
 
                                                 <input type="hidden" id="formMethod" name="_method" value="POST">
                                                 <div class="mb-3">
-                                                    <select name="type" id="SelectType" class="form-control">
+                                                    <select name="type" id="SelectType" class="SelectType form-control">
                                                         <option value="">Select type answer</option>
                                                         <option value="options">Options</option>
                                                         <option value="written">Written</option>
@@ -307,7 +307,7 @@
                                                     <div class="mb-3">
                                                         <label for="answer_type" class="form-label">Type Answer</label>
                                                         <select name="answer_type_fraction" id="answer_type_fraction"
-                                                            class="form-control">
+                                                            class="answer_type_fraction form-control">
                                                             <option value="">select type answer fraction</option>
                                                             <option value="written">written</option>
                                                             <option value="options">options</option>

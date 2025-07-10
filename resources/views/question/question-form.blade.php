@@ -71,7 +71,7 @@
                                 <button type="button" class="btn btn-danger btn-sm"
                                     id="remove-show-image-question-container">
                                     <i class="fa fa-trash"></i>
-                                    </button>
+                                </button>
                             </div>
                         </div>
 

@@ -68,7 +68,10 @@ class Quiz extends Model
     public function contacts()
     {
         return $this->belongsToMany(Contact::class)
-            ->withPivot('assigned_at', 'status')
+            ->withPivot(
+                'assigned_at',
+                'status'
+            )
             ->withTimestamps();
     }
 }

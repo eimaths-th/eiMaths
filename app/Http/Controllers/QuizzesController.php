@@ -143,7 +143,11 @@ class QuizzesController extends Controller
         //
         $quizzes = Quiz::findOrFail($id);
         $questions = $quizzes->questions; // Assuming a relationship: Quiz hasMany Questions
-
+        if (!empty($getAnserSessionIndex['answer']) && is_array($getAnserSessionIndex['answer'])) {
+            $getAnserSessionIndexWhole = $getAnserSessionIndex['answer']['whole'] ?? null;
+            $getAnserSessionIndexNumerator = $getAnserSessionIndex['answer']['numerator'] ?? null;
+            $getAnserSessionIndexDenominator = $getAnserSessionIndex['answer']['denominator'] ?? null;
+        }
         // dd($questions);
         return view('quiz.quiz-view', [
             'quizzes' => $quizzes,
