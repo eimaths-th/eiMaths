@@ -63,7 +63,6 @@
         let levelQuiz = '';
         let termQuiz = '';
         let sectionQuiz = '';
-        // console.log(SelectQuiz);
 
         $(document).on('keyup', '#title', function(e) {
             e.preventDefault();
@@ -162,11 +161,9 @@
                         section: sectionQuiz
                     },
                     success: function(res) {
-                        console.log(res);
                         var options = res.questions;
                         $('#questions_id').empty();
                         $.each(options, function(id, question) {
-                            // console.log(id);
                             var selected = ({{ json_encode(old('questions', [])) }})
                                 .includes(question.id) ? 'selected' : '';
                             $('#questions_id').append('<option value="' + question.id +
@@ -317,7 +314,6 @@
         });
 
         $(document).on('click', '.remove-option', function() {
-            console.log('test delete');
 
             $(this).closest('.option-item').remove();
         });
@@ -326,8 +322,6 @@
         });
 
         $(document).on('click', '.remove-fraction-option', function() {
-            console.log('test delete');
-
             $(this).closest('.fraction-item').remove();
         });
         // $('#add-fraction-container').on('click', '.remove-option', function() {
@@ -528,7 +522,8 @@
             if (event.target.id.startsWith('2-type-')) {
                 let formIndex = event.target.id.split('-').pop(); // Get the index from the ID
                 var selectedType = $(event.target).val(); // Use event.target instead of this
-
+                // console.log(selectedType);
+                // console.log(formIndex);
                 toggleTypeFields2(selectedType, formIndex); // Pass formIndex if needed
 
             }
@@ -595,20 +590,13 @@
         }
 
         function toggleTypeFractionFields2(selectedFractionType, res) {
+            console.log(selectedFractionType);
+            console.log(res);
 
             if (selectedFractionType === 'written') {
                 $(`.options_type_fraction_${FormIndex}`).hide();
                 $(`.written_type_fraction_${FormIndex}`).show();
 
-                if (res) {
-                    $(`#answer_numerator_${FormIndex}`).val(res.question
-                        .answer_numerator); // Set written answer if applicable
-                    $(`#answer_denominator_${FormIndex}`).val(res.question
-                        .answer_denominator); // Set written answer if applicable
-                    $(`#answer_type-${FormIndex}`).val(res.question
-                        .answer_type); // Set written answer if applicable
-
-                }
             } else if (selectedFractionType === 'options') {
                 $(`.written_type_fraction_${FormIndex}`).hide();
                 $(`.options_type_fraction_${FormIndex}`).show();
@@ -656,7 +644,6 @@
                 let formIndex = event.target.id.split('-').pop();
                 optionFormIndex++;
                 addOption3(formIndex, optionFormIndex);
-                // console.log(optionFormIndex + ' : opt');
 
 
             }
@@ -666,14 +653,12 @@
                 let formIndex = event.target.id.split('-').pop();
                 optionFormIndex++;
                 addOptionImg2(formIndex, optionFormIndex);
-                // console.log(optionFormIndex + ' : img');
 
             }
         });
 
         function addFractionOption2(formIndex, optionFormIndex, numerator = '', denominator = '', answerType =
             'mixed', correct = 0) {
-            console.log("Adding fraction option to form:", formIndex);
 
             $(`#add-fraction-container_${formIndex}`).append(`
                 <div class="fraction-item mt-2 form-row align-items-center">
@@ -757,7 +742,6 @@
             e.preventDefault();
             $('.alert-danger').html('').hide();
             $('.alert-success').html('').hide();
-            // console.log(SelectQuiz);
 
             var confirmed = confirm("Are you sure you want to submit the form?");
 
@@ -826,20 +810,13 @@
                             );
                         });
                     } else if (questionType === 'fraction') {
-                        quizData.append('questions[' + index + '][answer_type_fraction]', $(
-                            element).find(
-                            `select[name="answer_type_fraction${prefixType}"]`).val());
-
-                        if ($(element).find(`select[name="answer_type_fraction${prefix}"]`)
-                            .val() === 'written') {
-                            quizData.append('questions[' + index + '][answer_numerator]', $(
-                                    element).find(`input[name="answer_numerator${prefix}"]`)
-                                .val());
-                            quizData.append('questions[' + index + '][answer_denominator]', $(
-                                element).find(
-                                `input[name="answer_denominator${prefix}"]`).val());
+                        quizData.append('questions[' + index + '][answer_type_fraction]', $(element).find(`select[name="answer_type_fraction${prefixType}"]`).val());
+                        //ปัญหาอยู่ตรงนี้
+                        if ($(element).find(`select[name="answer_type_fraction${prefixType}"]`).val() === 'written') {
+                            quizData.append('questions[' + index + '][answer_numerator]', $(element).find(`input[name="answer_numerator${prefix}"]`).val());
+                            quizData.append('questions[' + index + '][answer_denominator]', $(element).find(`input[name="answer_denominator${prefix}"]`).val());
                             quizData.append('questions[' + index + '][answer_type]', $(element)
-                                .find(`select[name="answer_type${prefix}"]`).val());
+                                .find(`select[name="answer_type${prefixType}"]`).val());
 
                         } else if ($(element).find(
                                 `select[name="answer_type_fraction${prefixType}"]`).val() ===
@@ -877,7 +854,15 @@
                         .find(`textarea[name="answer_explanation${prefix}"]`).val());
                     quizData.append('questions[' + index + '][more_info_link]', $(element).find(
                         `input[name="more_info_link${prefix}"]`).val());
+
+                    console.log('formIndex' + formIndex);
+                    console.log('prefix' + prefix);
+
+                    console.log('answer_numerator' + prefix + ' :' + $(element).find(`input[name="answer_numerator${prefix}"]`).val());
+                    console.log('answer_denominator' + prefix + ' :' + $(element).find(`input[name="answer_denominator${prefix}"]`).val());
+                    console.log('answer_type' + prefix + ' :' + $(element).find(`select[name="answer_type${prefixType}"]`).val());
                 });
+
 
 
                 $.ajax({
@@ -887,7 +872,6 @@
                     processData: false, // Prevent jQuery from processing the data
                     contentType: false, // Prevent jQuery from setting the content type
                     success: function(result) {
-                        console.log(result);
 
                         if (result.errors) {
                             $('.alert-danger').html('').show().append('<strong><li>' +
