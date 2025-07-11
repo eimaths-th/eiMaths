@@ -179,24 +179,21 @@
 
         }
 
-        function toggleTypeFields(selectedType, res) {
+        function toggleTypeFields(selectedType) {
             if (selectedType === 'written') {
-                $('.options_type').hide();
                 $('.written_type').show();
+                $('.options_type').hide();
                 $('.image_type').hide();
                 $('.fraction_type').hide();
                 $('.fraction-button').hide();
 
-                if (res) {
-                    $('#written').val(res.question.written_answer); // Set written answer if applicable
-
-                }
             } else if (selectedType === 'options') {
                 $('.written_type').hide();
                 $('.options_type').show();
                 $('.image_type').hide();
                 $('.fraction_type').hide();
-                $('.fraction-button').hide();
+                // $('.fraction-button').hide();
+                $('.fraction-button').show();
 
 
             } else if (selectedType === 'image') {
@@ -520,11 +517,14 @@
         $(document).on('change', function(event) {
             optionFormIndex = 0;
             if (event.target.id.startsWith('2-type-')) {
-                let formIndex = event.target.id.split('-').pop(); // Get the index from the ID
+                let selectedIndex = event.target.id.split('-').pop(); // Get the index from the ID
                 var selectedType = $(event.target).val(); // Use event.target instead of this
                 // console.log(selectedType);
                 // console.log(formIndex);
-                toggleTypeFields2(selectedType, formIndex); // Pass formIndex if needed
+                // console.log('selectedIndex : ' + selectedIndex);
+                // console.log('selectedType : ' + selectedType);
+                // console.log('---------');
+                toggleTypeFields2(selectedType, selectedIndex); // Pass formIndex if needed
 
             }
 
@@ -534,78 +534,84 @@
             if (event.target.id.startsWith('answer_type_fraction-')) {
                 let formIndex = event.target.id.split('-').pop(); // Get the index from the ID
                 var selectedFractionType = $(event.target).val(); // Use event.target instead of this
-
+                console.log('formIndex : ' + formIndex);
+                console.log('selectedFractionType : ' + selectedFractionType);
+                console.log('---------');
                 toggleTypeFractionFields2(selectedFractionType, formIndex); // Pass formIndex if needed
 
             }
 
         });
 
-        function toggleTypeFields2(selectedType) {
+        function toggleTypeFields2(selectedType, selectedIndex) {
+            console.log('selectedIndex : ' + selectedIndex);
+            console.log('selectedType : ' + selectedType);
+
             if (selectedType === 'written') {
-                $(`.options_type_${FormIndex}`).hide();
-                $(`.written_type_${FormIndex}`).show();
-                $(`.image_type_${FormIndex}`).hide();
-                $(`#image-options-container-${FormIndex}`).html('');
-                $(`#options-container-${FormIndex}`).html('');
-                $(`.fraction_type_${FormIndex}`).hide();
-                $(`.fraction-button-${FormIndex}`).hide();
+                $(`.options_type_${selectedIndex}`).hide();
+                $(`.written_type_${selectedIndex}`).show();
+                $(`.image_type_${selectedIndex}`).hide();
+                $(`#image-options-container-${selectedIndex}`).html('');
+                $(`#options-container-${selectedIndex}`).html('');
+                $(`.fraction_type_${selectedIndex}`).hide();
+                $(`.fraction-button-${selectedIndex}`).hide();
 
             } else if (selectedType === 'options') {
-                $(`.options_type_${FormIndex}`).show();
-                $(`.written_type_${FormIndex}`).hide();
-                $(`.image_type_${FormIndex}`).hide();
-                $(`#image-options-container-${FormIndex}`).html('');
-                $(`#written_${FormIndex}`).html('');
-                $(`.fraction_type_${FormIndex}`).hide();
-                $(`.fraction-button-${FormIndex}`).hide();
+                $(`.options_type_${selectedIndex}`).show();
+                $(`.written_type_${selectedIndex}`).hide();
+                $(`.image_type_${selectedIndex}`).hide();
+                $(`#image-options-container-${selectedIndex}`).html('');
+                $(`#written_${selectedIndex}`).html('');
+                $(`.fraction_type_${selectedIndex}`).hide();
+                $(`.fraction-button-${selectedIndex}`).hide();
 
             } else if (selectedType === 'image') {
-                $(`.options_type_${FormIndex}`).hide();
-                $(`.written_type_${FormIndex}`).hide();
-                $(`.image_type_${FormIndex}`).show();
-                $(`#options-container-${FormIndex}`).html('');
-                $(`#written_${FormIndex}`).html('');
-                $(`.fraction_type_${FormIndex}`).hide();
-                $(`.fraction-button-${FormIndex}`).hide();
+                $(`.options_type_${selectedIndex}`).hide();
+                $(`.written_type_${selectedIndex}`).hide();
+                $(`.image_type_${selectedIndex}`).show();
+                $(`#options-container-${selectedIndex}`).html('');
+                $(`#written_${selectedIndex}`).html('');
+                $(`.fraction_type_${selectedIndex}`).hide();
+                $(`.fraction-button-${selectedIndex}`).hide();
 
             } else if (selectedType === 'fraction') {
-                $(`.options_type_${FormIndex}`).hide();
-                $(`.written_type_${FormIndex}`).hide();
-                $(`.image_type_${FormIndex}`).hide();
-                $(`#options-container-${FormIndex}`).html('');
-                $(`#written_${FormIndex}`).html('');
-                $(`#image-options-container-${FormIndex}`).html('');
-                $(`.fraction_type_${FormIndex}`).show();
-                $(`.fraction-button-${FormIndex}`).show();
+                $(`.options_type_${selectedIndex}`).hide();
+                $(`.written_type_${selectedIndex}`).hide();
+                $(`.image_type_${selectedIndex}`).hide();
+                $(`#options-container-${selectedIndex}`).html('');
+                $(`#written_${selectedIndex}`).html('');
+                $(`#image-options-container-${selectedIndex}`).html('');
+                $(`.fraction_type_${selectedIndex}`).show();
+                $(`.fraction-button-${selectedIndex}`).show();
 
             } else {
-                $(`.options_type_${FormIndex}`).hide();
-                $(`.written_type_${FormIndex}`).hide();
-                $(`.image_type_${FormIndex}`).hide();
-                $(`.fraction_type_${FormIndex}`).hide();
-                $(`.fraction-button-${FormIndex}`).hide();
+                $(`.options_type_${selectedIndex}`).hide();
+                $(`.written_type_${selectedIndex}`).hide();
+                $(`.image_type_${selectedIndex}`).hide();
+                $(`.fraction_type_${selectedIndex}`).hide();
+                $(`.fraction-button-${selectedIndex}`).hide();
 
             }
         }
 
-        function toggleTypeFractionFields2(selectedFractionType, res) {
-            console.log(selectedFractionType);
-            console.log(res);
-
+        function toggleTypeFractionFields2(selectedFractionType, selectedIndex) {
+            console.log('selectedFractionType : ' + selectedFractionType);
+            console.log('selectedIndex : ' + selectedIndex);
+            console.log('---------');
+            console.log('FormIndex : ' + FormIndex);
             if (selectedFractionType === 'written') {
-                $(`.options_type_fraction_${FormIndex}`).hide();
-                $(`.written_type_fraction_${FormIndex}`).show();
+                $(`.options_type_fraction_${selectedIndex}`).hide();
+                $(`.written_type_fraction_${selectedIndex}`).show();
 
             } else if (selectedFractionType === 'options') {
-                $(`.written_type_fraction_${FormIndex}`).hide();
-                $(`.options_type_fraction_${FormIndex}`).show();
+                $(`.written_type_fraction_${selectedIndex}`).hide();
+                $(`.options_type_fraction_${selectedIndex}`).show();
 
 
             } else {
 
-                $(`.written_type_fraction_${FormIndex}`).hide();
-                $(`.options_type_fraction_${FormIndex}`).hide();
+                $(`.written_type_fraction_${selectedIndex}`).hide();
+                $(`.options_type_fraction_${selectedIndex}`).hide();
             }
         }
 
@@ -810,11 +816,18 @@
                             );
                         });
                     } else if (questionType === 'fraction') {
-                        quizData.append('questions[' + index + '][answer_type_fraction]', $(element).find(`select[name="answer_type_fraction${prefixType}"]`).val());
+                        quizData.append('questions[' + index + '][answer_type_fraction]', $(
+                            element).find(
+                            `select[name="answer_type_fraction${prefixType}"]`).val());
                         //ปัญหาอยู่ตรงนี้
-                        if ($(element).find(`select[name="answer_type_fraction${prefixType}"]`).val() === 'written') {
-                            quizData.append('questions[' + index + '][answer_numerator]', $(element).find(`input[name="answer_numerator${prefix}"]`).val());
-                            quizData.append('questions[' + index + '][answer_denominator]', $(element).find(`input[name="answer_denominator${prefix}"]`).val());
+                        if ($(element).find(`select[name="answer_type_fraction${prefixType}"]`)
+                            .val() === 'written') {
+                            quizData.append('questions[' + index + '][answer_numerator]', $(
+                                    element).find(`input[name="answer_numerator${prefix}"]`)
+                                .val());
+                            quizData.append('questions[' + index + '][answer_denominator]', $(
+                                element).find(
+                                `input[name="answer_denominator${prefix}"]`).val());
                             quizData.append('questions[' + index + '][answer_type]', $(element)
                                 .find(`select[name="answer_type${prefixType}"]`).val());
 
