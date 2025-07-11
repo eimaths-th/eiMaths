@@ -186,6 +186,7 @@
                 $('.image_type').hide();
                 $('.fraction_type').hide();
                 $('.fraction-button').hide();
+                $('.fraction-button').show();
 
             } else if (selectedType === 'options') {
                 $('.written_type').hide();
@@ -202,6 +203,7 @@
                 $('.image_type').show();
                 $('.fraction_type').hide();
                 $('.fraction-button').hide();
+                $('.fraction-button').show();
 
 
             } else if (selectedType === 'fraction') {
@@ -218,6 +220,7 @@
                 $('.image_type').hide();
                 $('.fraction_type').hide();
                 $('.fraction-button').hide();
+                $('.fraction-button').show();
 
 
             }
@@ -544,8 +547,8 @@
         });
 
         function toggleTypeFields2(selectedType, selectedIndex) {
-            console.log('selectedIndex : ' + selectedIndex);
-            console.log('selectedType : ' + selectedType);
+            // console.log('selectedIndex : ' + selectedIndex);
+            // console.log('selectedType : ' + selectedType);
 
             if (selectedType === 'written') {
                 $(`.options_type_${selectedIndex}`).hide();
@@ -555,6 +558,7 @@
                 $(`#options-container-${selectedIndex}`).html('');
                 $(`.fraction_type_${selectedIndex}`).hide();
                 $(`.fraction-button-${selectedIndex}`).hide();
+                $(`.fraction-button-${selectedIndex}`).show();
 
             } else if (selectedType === 'options') {
                 $(`.options_type_${selectedIndex}`).show();
@@ -565,6 +569,8 @@
                 $(`.fraction_type_${selectedIndex}`).hide();
                 $(`.fraction-button-${selectedIndex}`).hide();
 
+                $(`.fraction-button-${selectedIndex}`).show();
+
             } else if (selectedType === 'image') {
                 $(`.options_type_${selectedIndex}`).hide();
                 $(`.written_type_${selectedIndex}`).hide();
@@ -573,6 +579,8 @@
                 $(`#written_${selectedIndex}`).html('');
                 $(`.fraction_type_${selectedIndex}`).hide();
                 $(`.fraction-button-${selectedIndex}`).hide();
+                $(`.fraction-button-${selectedIndex}`).show();
+
 
             } else if (selectedType === 'fraction') {
                 $(`.options_type_${selectedIndex}`).hide();

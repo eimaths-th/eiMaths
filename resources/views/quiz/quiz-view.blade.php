@@ -82,7 +82,7 @@
                                                                 value="{{ $option->id }}" @checked($option->correct)>
                                                             <label class="form-check-label"
                                                                 for="option-{{ $key }}-{{ $option->id }}">
-                                                                {{ $option->text }}
+                                                                {{ replaceMixedFractions($option->text) }}
                                                             </label>
                                                         </div>
                                                     @endforeach
@@ -138,7 +138,7 @@
 
                                                                 <div class="">
                                                                     <span>
-                                                                        {{ toMixedFraction($fraction->numerator, $fraction->denominator) }}
+                                                                        {{ toMixedFraction(null, $fraction->numerator, $fraction->denominator) }}
                                                                     </span>
 
                                                                 </div>
@@ -152,7 +152,7 @@
                                                                 @php
                                                                     $textOption =
                                                                         $option->answer_type === 'mixed'
-                                                                            ? toMixedFraction(
+                                                                            ? toMixedFraction(null,
                                                                                 $option->numerator,
                                                                                 $option->denominator,
                                                                             )
