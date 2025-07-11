@@ -114,12 +114,6 @@ if (!function_exists('replaceMixedFractions')) {
     function replaceMixedFractions($text)
     {
         return preg_replace_callback('/(MixFrac|Frac)\((\d+)(?:,\s*(\d+))?(?:,\s*(\d+))?\)/', function ($matches) {
-            // Debugging
-            // dd($matches);
-            // if (preg_match('/MixFrac\s*\(/', $text)) {
-            //     // You could log a warning or return an error message
-            //     return 'Invalid MixFrac syntax detected!';
-            // }
 
             $function = $matches[1]; // "MixFrac" or "Frac"
             $whole = null;
@@ -168,7 +162,8 @@ if (!function_exists('toMixedFraction')) {
     function toMixedFraction($whole = null, $numerator, $denominator)
     {
         if ($whole) {
-            $remainder = $numerator;
+            $remainder =$numerator % $denominator;
+            $whole = $whole + intdiv($numerator, $denominator);
         } else {
             if ($numerator % $denominator == 0) {
                 return (string) ($numerator / $denominator); // Whole number

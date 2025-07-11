@@ -17,14 +17,29 @@ class QuestionController extends Controller
 
     public function replaceMixedFractions($text)
     {
-        return preg_replace_callback('/(MixFrac|Frac)\((\d+),\s*(\d+)\)/', function ($matches) {
-            $function = $matches[1]; // Function name (either toMixedFraction or toFraction)
-            $numerator = (int) $matches[2];
-            $denominator = (int) $matches[3];
+        return preg_replace_callback('/(MixFrac|Frac)\((\d+)(?:,\s*(\d+))?(?:,\s*(\d+))?\)/', function ($matches) {
 
-            return $function === 'MixFrac'
-                ? $this->toMixedFraction($numerator, $denominator)
-                : $this->toFraction($numerator, $denominator);
+            $function = $matches[1]; // "MixFrac" or "Frac"
+            $whole = null;
+
+            if ($function === 'MixFrac') {
+                if (isset($matches[4])) {
+                    // MixFrac(whole, num, denom)
+                    $whole = (int)$matches[2];
+                    $numerator = (int)$matches[3];
+                    $denominator = (int)$matches[4];
+                } else {
+                    // Fallback if only 2 numbers
+                    $numerator = (int)$matches[2];
+                    $denominator = (int)$matches[3];
+                }
+                return toMixedFraction($whole, $numerator, $denominator);
+            } else {
+                // Frac(num, denom)
+                $numerator = (int)$matches[2];
+                $denominator = (int)$matches[3];
+                return toFraction($numerator, $denominator);
+            }
         }, $text);
     }
 
@@ -41,14 +56,20 @@ class QuestionController extends Controller
         return "\(\\frac{{$numerator}}{{$denominator}}\)";
     }
 
-    public function toMixedFraction($numerator, $denominator)
+    function toMixedFraction($whole = null, $numerator, $denominator)
     {
-        if ($numerator % $denominator == 0) {
-            return (string) ($numerator / $denominator); // Whole number
+        if ($whole) {
+            $remainder =$numerator % $denominator;
+            $whole = $whole + intdiv($numerator, $denominator);
+        } else {
+            if ($numerator % $denominator == 0) {
+                return (string) ($numerator / $denominator); // Whole number
+            }
+
+            $whole = intdiv($numerator, $denominator);
+            $remainder = $numerator % $denominator;
         }
 
-        $whole = intdiv($numerator, $denominator);
-        $remainder = $numerator % $denominator;
 
         return $whole > 0
             ? "\({$whole} \\frac{{$remainder}}{{$denominator}}\)"
@@ -101,7 +122,7 @@ class QuestionController extends Controller
                                 if ($fraction->answer_type === 'frac') {
                                     return $this->toFraction($fraction->numerator, $fraction->denominator);
                                 } else {
-                                    return $this->toMixedFraction($fraction->numerator, $fraction->denominator);
+                                    return $this->toMixedFraction($fraction->whole ?? null, $fraction->numerator, $fraction->denominator);
                                 }
                                 return $fraction->numerator . '/' . $fraction->denominator;
                             } else {
