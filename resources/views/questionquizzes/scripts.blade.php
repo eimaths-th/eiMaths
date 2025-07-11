@@ -855,12 +855,12 @@
                     quizData.append('questions[' + index + '][more_info_link]', $(element).find(
                         `input[name="more_info_link${prefix}"]`).val());
 
-                    console.log('formIndex' + formIndex);
-                    console.log('prefix' + prefix);
+                    // console.log('formIndex' + formIndex);
+                    // console.log('prefix' + prefix);
 
-                    console.log('answer_numerator' + prefix + ' :' + $(element).find(`input[name="answer_numerator${prefix}"]`).val());
-                    console.log('answer_denominator' + prefix + ' :' + $(element).find(`input[name="answer_denominator${prefix}"]`).val());
-                    console.log('answer_type' + prefix + ' :' + $(element).find(`select[name="answer_type${prefixType}"]`).val());
+                    // console.log('answer_numerator' + prefix + ' :' + $(element).find(`input[name="answer_numerator${prefix}"]`).val());
+                    // console.log('answer_denominator' + prefix + ' :' + $(element).find(`input[name="answer_denominator${prefix}"]`).val());
+                    // console.log('answer_type' + prefix + ' :' + $(element).find(`select[name="answer_type${prefixType}"]`).val());
                 });
 
 

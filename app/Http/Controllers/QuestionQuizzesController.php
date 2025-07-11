@@ -342,7 +342,7 @@ class QuestionQuizzesController extends Controller
                     break;
 
                 case 'fraction':
-                    dd($request->all());
+
                     $fractionType = $question['answer_type_fraction'] ?? null;
 
                     $rules = [
