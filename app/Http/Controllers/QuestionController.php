@@ -411,18 +411,18 @@ class QuestionController extends Controller
     public function update(Request $request, $id)
     {
         // dd($request->all());
-        $validator = Validator::make($request->all(), [
+        $validated = Validator::make($request->all(), [
             'text' => 'nullable|string',
+            'img_name' => 'nullable|image|file|mimes:jpg,png,jpeg|max:2048',
             'level' => 'required|string',
             'term' => 'required|string',
             'section' => 'required|string',
-            'type' => 'required|in:written,options,image',
-            'img_name' => 'nullable|image|file|mimes:jpg,png,jpeg|max:2048',
+            'type' => 'required|in:written,options,image,fraction',
             'code_snippet' => 'nullable|string',
             'answer_explanation' => 'nullable|string',
             'more_info_link' => 'nullable|url',
         ], [
-            'level.required' => 'Please add Question Grade',
+            'level.required' => 'Please add Question grade',
             'term.required' => 'Please add Question term',
             'section.required' => 'Please add Question level',
             'type.required' => 'Please select the type of answer',
@@ -441,9 +441,10 @@ class QuestionController extends Controller
             }
         });
 
-        $validated = $validator->validate();
+        $validated->validate();
+        $validatedData = $validated->validated();
 
-        if ($validated['type'] === 'options') {
+        if ($validatedData['type'] === 'options') {
             $validatedOptions = $request->validate([
                 'options' => 'required|array',
                 'options.*.text' => 'required|string',
@@ -466,13 +467,13 @@ class QuestionController extends Controller
             if ($countCorrect == 0) {
                 return response()->json(['errors' => ['Please add at least one correct option']], 422);
             }
-        } else if ($validated['type'] === 'written') {
+        } else if ($validatedData['type'] === 'written') {
             $validatedWritten = $request->validate([
                 'written_answer' => 'required',
             ], [
                 'written_answer.required' => 'Please provide the written answer',
             ]);
-        } elseif ($validated['type'] === 'image') {
+        } elseif ($validatedData['type'] === 'image') {
             if ($request->has('imgOptions')) {
                 // Validate when 'imgOptions' is present
                 $validatedImageOptions = $request->validate([
@@ -516,11 +517,47 @@ class QuestionController extends Controller
             if ($countCorrect == 0) {
                 return response()->json(['errors' => ['Please add at least one correct option']], 422);
             }
+        }else if($validatedData['type'] === 'fraction'){
+
+
+
+            $validatedFraction = $request->validate([
+                'fraction_type' => 'required|in:written,options',
+            ], [
+                'fraction_type.required' => 'Please select the type of fraction',
+                'fraction_type.in' => 'The selected fraction type is invalid',
+            ]);
+
+            if ($validatedFraction['fraction_type'] === 'written') {
+                $validatedFractionWritten = $request->validate([
+                    'numerator' => 'required',
+                    'denominator' => 'required',
+                    'answer_type' => 'required|in:frac,mixed',
+                ], [
+                    'numerator.required' => 'Numerator is required.',
+                    'denominator.required' => 'Denominator is required.',
+                    'answer_type.required' => 'Answer type is required.',
+                    'answer_type.in' => 'Answer type must be "frac" or "mixed".',
+                ]);
+            } else if ($validatedFraction['fraction_type'] === 'options') {
+                $validatedFractionOptions = $request->validate([
+                    'options' => 'required|array',
+                    'options.*.numerator' => 'required',
+                    'options.*.denominator' => 'required',
+                    'options.*.answer_type' => 'required|in:frac,mixed',
+                ], [
+                    'options.required' => 'Please add Fraction Options',
+                    'options.*.numerator.required' => 'Please add Fraction Options Text',
+                    'options.*.denominator.required' => 'Please specify if the fraction option is correct',
+                    'options.*.answer_type.required' => 'The selected option correctness is invalid',
+                ]);
+            }
+
         }
 
         $question = Question::findOrFail($id);
 
-
+        // dd($request->all());
         $question->update([
             'text' => $request->input('text'),
             'code_snippet' => $request->input('code_snippet'),
@@ -529,9 +566,9 @@ class QuestionController extends Controller
             'section' => $request->input('section'),
             'answer_explanation' => $request->input('answer_explanation'),
             'more_info_link' => $request->input('more_info_link'),
-            'type' => $validated['type'],
+            'type' => $request->input('type'),
             'updated_by' => Auth::user()->id,
-            'written_answer' => $validated['type'] === 'written' ? $validatedWritten['written_answer'] : null,
+            'written_answer' => $request->input('type') === 'written' ? $request->input('written_answer') : null,
         ]);
         $oldImgName = $request->input('old_img_name');
 
@@ -567,21 +604,26 @@ class QuestionController extends Controller
 
         // dd('no');
 
-        if ($validated['type'] === 'options') {
+        if ($request->input('type') === 'options') {
             $question->images()->delete();
+            $question->fractions()->delete();
             $question->options()->delete();
-            foreach ($validatedOptions['options'] as $option) {
+            $question->written_answer = null;
+            foreach ($request->input('options') as $option) {
                 $question->options()->create([
                     'text' => $option['text'],
                     'correct' => $option['correct'],
                 ]);
             }
-        } elseif ($validated['type'] === 'written') {
+        } elseif ($request->input('type') === 'written') {
             $question->options()->delete();
             $question->images()->delete();
-        } elseif ($validated['type'] === 'image') {
-            $question->options()->delete();
+            $question->fractions()->delete();
+        } elseif ($request->input('type') === 'image') {
 
+            $question->options()->delete();
+            $question->fractions()->delete();
+            $question->written_answer = null;
             $fileIds = collect($request->input('imgOptionsShow', []))->pluck('file_id')->toArray();
 
             $imagesToDelete = $question->images()->whereNotIn('id', $fileIds)->get();
@@ -612,6 +654,29 @@ class QuestionController extends Controller
                             'correct' => $imgOption['correct'],
                         ]);
                     }
+                }
+            }
+        }else if($request->input('type') === 'fraction'){
+            $question->written_answer = null;
+            $question->images()->delete();
+            $question->options()->delete();
+            $question->fractions()->delete();
+            if ($request->fraction_type === 'written') {
+                $question->fractions()->create([
+                    'type' => 'written',
+                    'numerator' => $request->numerator,
+                    'denominator' => $request->denominator,
+                    'answer_type' => $request->answer_type,
+                ]);
+            } else {
+                foreach ($request->options as $option) {
+                    $question->fractions()->create([
+                        'type' => 'options',
+                        'numerator' => $option['numerator'],
+                        'denominator' => $option['denominator'],
+                        'answer_type' => $option['answer_type'],
+                        'correct' => $option['correct'],
+                    ]);
                 }
             }
         }

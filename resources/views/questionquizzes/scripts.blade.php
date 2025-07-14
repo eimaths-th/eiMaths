@@ -542,6 +542,7 @@
                 console.log('---------');
                 toggleTypeFractionFields2(selectedFractionType, formIndex); // Pass formIndex if needed
 
+                
             }
 
         });

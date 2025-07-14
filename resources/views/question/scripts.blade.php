@@ -488,7 +488,7 @@
         let addImgHtml = `
     <input type="file" id="imageQuestion" name="imageQuestion" class="form-control mb-2">
     <input type="hidden" id="old_img_name" name="old_img_name" value="">
-`;
+        `;
 
         // Load data for editing
         $(document).on('click', '#getEditData', function(e) {
@@ -622,6 +622,7 @@
 
             $('.alert-danger, .alert-success').html('').hide();
             $('#loadingi').show();
+            var selectedType = $('#type').val();
 
             const formData1 = new FormData();
             formData1.append('text', $('#text').val());
@@ -631,6 +632,7 @@
             formData1.append('code_snippet', $('#code_snippet').val());
             formData1.append('answer_explanation', $('#answer_explanation').val());
             formData1.append('more_info_link', $('#more_info_link').val());
+            // formData1.append('type', selectedType);
             formData1.append('_token', token); // your CSRF token
 
             // Append either file or old image name
@@ -648,7 +650,6 @@
 
             // formData1.append('_method', 'PUT');
 
-            var selectedType = $('#type').val();
 
             if (selectedType === 'written') {
                 formData1.append('type', 'written');
@@ -680,6 +681,36 @@
                     formData1.append('imgOptionsShow[' + index + '][file_path]', filePath);
                     formData1.append('imgOptionsShow[' + index + '][correct]', isCorrect);
                 });
+            }else if(selectedType === 'fraction'){
+                formData1.append('type', 'fraction');
+                var fractionType = $('#answer_type_fraction').val();
+                var answer_type = $('#answer_type').val();
+                formData1.append('fraction_type', fractionType);
+                formData1.append('answer_type', answer_type);
+                if (fractionType === 'written') {
+                    var numerator = $('#answer_numerator').val();
+                    var denominator = $('#answer_denominator').val();
+                    var answerType = $('#answer_type').val();
+                    formData1.append('numerator', numerator);
+                    formData1.append('denominator', denominator);
+                    formData1.append('answer_type', answerType);
+                } else if (fractionType === 'options') {
+                    $('#add-fraction-container .fraction-item').each(function(index, element) {
+                        var numerator = $(element).find('input[name="answer_numerator[' +
+                            index + ']"]').val();
+                        var denominator = $(element).find('input[name="answer_denominator[' +
+                            index + ']"]').val();
+                        var answerType = $(element).find('select[name="answer_type[' + index +
+                            ']"]').val();
+                        var isCorrect = $(element).find('input[type="checkbox"]').is(
+                            ':checked') ? 1 : 0;
+
+                        formData1.append('options[' + index + '][numerator]', numerator);
+                        formData1.append('options[' + index + '][denominator]', denominator);
+                        formData1.append('options[' + index + '][answer_type]', answerType);
+                        formData1.append('options[' + index + '][correct]', isCorrect);
+                    });
+                }
             }
 
             const url = '{{ route('questions.update', ':id') }}'.replace(':id', questionId);
