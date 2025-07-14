@@ -509,6 +509,8 @@
                 url: url,
                 method: 'GET',
                 success: function(res) {
+                    console.log(res);
+
                     $('#text').val(res.question.text);
                     $('#code_snippet').val(res.question.code_snippet);
                     $('#answer_explanation').val(res.question.answer_explanation);
@@ -523,13 +525,34 @@
                     $('#options-container').html('');
                     optionIndex = 0;
                     res.options.forEach(option => addOption(option.text, option.correct));
-
                     // Handle image preview
                     if (res.question.img_name === null) {
                         $('#show-image-question-container').hide();
                         $('#add-image-question-container').html(addImgHtml).show();
                     } else {
                         showImg1(res.question.img_name);
+                    }
+
+                    if (res.question.type === 'fraction') {
+                        $('#add-fraction-container').html('');
+
+                        $('#answer_type_fraction').val(res.fractions[0].type).trigger(
+                            'change');
+                    }
+                    if (res.fractionsTypeAnswer === 'written') {
+                        $('#answer_numerator').val(res.fractions[0].numerator);
+                        $('#answer_denominator').val(res.fractions[0].denominator);
+
+                        // $('#answer_correct').val(res.fractions[0].correct);
+                    } else if (res.fractionsTypeAnswer === 'options') {
+
+                        res.fractions.forEach(fraction => addFractionOption(
+                            fraction.numerator,
+                            fraction.denominator,
+                            fraction.answer_type,
+                            fraction.correct
+                        ));
+
                     }
 
                     $('#image-options-container').html('');
@@ -681,7 +704,7 @@
                     formData1.append('imgOptionsShow[' + index + '][file_path]', filePath);
                     formData1.append('imgOptionsShow[' + index + '][correct]', isCorrect);
                 });
-            }else if(selectedType === 'fraction'){
+            } else if (selectedType === 'fraction') {
                 formData1.append('type', 'fraction');
                 var fractionType = $('#answer_type_fraction').val();
                 var answer_type = $('#answer_type').val();

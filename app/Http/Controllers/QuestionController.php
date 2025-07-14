@@ -390,10 +390,17 @@ class QuestionController extends Controller
         $question = Question::findOrFail($id);
         $options = $question->options; // Assuming you have a relationship defined
         $image_options = $question->images; // Assuming you have a relationship defined
-
+        $fractions = $question->fractions; // Assuming you have a relationship defined
+        if ($question->type === 'fraction') {
+            $fractionsTypeAnswer = $question->fractions->first()->type; // Assuming you have a relationship defined
+        } else {
+            $fractionsTypeAnswer = null;
+        }
         return response()->json([
+            'fractionsTypeAnswer' => $fractionsTypeAnswer,
             'question' => $question,
             'options' => $options,
+            'fractions' => $fractions,
             'image_options' => $image_options->map(function ($image) {
                 return [
                     'file_id' => $image->id,
