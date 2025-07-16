@@ -522,11 +522,7 @@
             if (event.target.id.startsWith('2-type-')) {
                 let selectedIndex = event.target.id.split('-').pop(); // Get the index from the ID
                 var selectedType = $(event.target).val(); // Use event.target instead of this
-                // console.log(selectedType);
-                // console.log(formIndex);
-                // console.log('selectedIndex : ' + selectedIndex);
-                // console.log('selectedType : ' + selectedType);
-                // console.log('---------');
+                
                 toggleTypeFields2(selectedType, selectedIndex); // Pass formIndex if needed
 
             }
@@ -537,9 +533,7 @@
             if (event.target.id.startsWith('answer_type_fraction-')) {
                 let formIndex = event.target.id.split('-').pop(); // Get the index from the ID
                 var selectedFractionType = $(event.target).val(); // Use event.target instead of this
-                console.log('formIndex : ' + formIndex);
-                console.log('selectedFractionType : ' + selectedFractionType);
-                console.log('---------');
+                
                 toggleTypeFractionFields2(selectedFractionType, formIndex); // Pass formIndex if needed
 
                 
@@ -548,8 +542,6 @@
         });
 
         function toggleTypeFields2(selectedType, selectedIndex) {
-            // console.log('selectedIndex : ' + selectedIndex);
-            // console.log('selectedType : ' + selectedType);
 
             if (selectedType === 'written') {
                 $(`.options_type_${selectedIndex}`).hide();
@@ -604,10 +596,7 @@
         }
 
         function toggleTypeFractionFields2(selectedFractionType, selectedIndex) {
-            console.log('selectedFractionType : ' + selectedFractionType);
-            console.log('selectedIndex : ' + selectedIndex);
-            console.log('---------');
-            console.log('FormIndex : ' + FormIndex);
+           
             if (selectedFractionType === 'written') {
                 $(`.options_type_fraction_${selectedIndex}`).hide();
                 $(`.written_type_fraction_${selectedIndex}`).show();
@@ -877,12 +866,7 @@
                     quizData.append('questions[' + index + '][more_info_link]', $(element).find(
                         `input[name="more_info_link${prefix}"]`).val());
 
-                    // console.log('formIndex' + formIndex);
-                    // console.log('prefix' + prefix);
-
-                    // console.log('answer_numerator' + prefix + ' :' + $(element).find(`input[name="answer_numerator${prefix}"]`).val());
-                    // console.log('answer_denominator' + prefix + ' :' + $(element).find(`input[name="answer_denominator${prefix}"]`).val());
-                    // console.log('answer_type' + prefix + ' :' + $(element).find(`select[name="answer_type${prefixType}"]`).val());
+                    
                 });
 
 

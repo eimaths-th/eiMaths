@@ -33,12 +33,13 @@ class eLeanController extends Controller
         $getQuizAssign = ContactQuiz::where([
             'contact_id' => $id
         ])->get();
-        if ($getQuizAssign) {
+        if ($getQuizAssign && $getQuizAssign->count() > 0) {
             # code...
             $quizIds = $getQuizAssign->pluck('quiz_id');
         } else {
             # code...
-            $quizIds = [];
+            $quizId = Quiz::all();
+            $quizIds = $quizId->pluck('id');
         }
 
         $levels = $this->level;
@@ -66,7 +67,7 @@ class eLeanController extends Controller
             ->get()
             ->groupBy('level');
 
-        
+
 
         $levelCheck = 0;
         $header = 'eiMaths Quiz';

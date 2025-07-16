@@ -193,7 +193,7 @@
                                                     'underline' => $result->option_id == $option->id,
                                                     'font-bold text-orange-500' => $option->correct == 1,
                                                 ])>
-                                                    {{ $option->text }}
+                                                    {{ replaceMixedFractions($option->text) }}
                                                     @if ($option->correct == 1)
                                                         <span class="italic">(correct answer)</span>
                                                     @endif
@@ -251,7 +251,7 @@
                                                     ])>
                                                         @if ($fractions->answer_type == 'mixed')
                                                             {{-- {{toFraction($fraction->numerator, $fraction->denominator) }} --}}
-                                                            {{ toMixedFraction($fractions->numerator, $fractions->denominator) }}
+                                                            {{ toMixedFraction(null, $fractions->numerator, $fractions->denominator) }}
                                                         @else
                                                             {{ toFraction($fractions->numerator, $fractions->denominator) }}
                                                         @endif
@@ -278,7 +278,7 @@
                                                     <li class="font-bold text-orange-500">
                                                         @if ($fraction->answer_type == 'mixed')
                                                             {{-- {{toFraction($fraction->numerator, $fraction->denominator) }} --}}
-                                                            {{ toMixedFraction($fraction->numerator, $fraction->denominator) }}
+                                                            {{ toMixedFraction(null, $fraction->numerator, $fraction->denominator) }}
                                                         @else
                                                             {{ toFraction($fraction->numerator, $fraction->denominator) }}
                                                         @endif

@@ -260,7 +260,7 @@
                                         @endphp
                                         {{ $text }}
                                     @else
-                                        {{ $currentQuestion->text ?? '' }}
+                                        {{ replaceMixedFractions($currentQuestion->text ?? '') }}
                                     @endif
                                 </h2>
                                 @if ($currentQuestion->img_name)
@@ -293,21 +293,23 @@
                                                 class="form-control" placeholder="Enter answer" autocomplete="off">
                                         </div>
                                     @elseif ($currentQuestion->type === 'options')
+                                        {{-- <div class="row"> --}}
                                         @foreach ($currentQuestion->options as $option)
-                                            <div>
+                                            <div class="col-lg-6 mt-5">
                                                 <label for="option-{{ $option->id }}">
                                                     <input type="radio" id="option-{{ $option->id }}"
                                                         name="answerOfQuestion[{{ $currentQuestionIndex }}]"
                                                         value="{{ $option->id }}">
-                                                    {{ $option->text }}
+                                                    {{ replaceMixedFractions($option->text) }}
                                                     <input type="hidden" id="optionAnswer" value="{{ $option->text }}">
                                                 </label>
                                             </div>
                                         @endforeach
+                                        {{-- </div> --}}
                                     @elseif ($currentQuestion->type === 'image')
                                         <div class="image-container">
                                             @foreach ($currentQuestion->images as $image)
-                                                <div class="image-item">
+                                                <div class="image-item mt-5">
                                                     <label for="img-option-{{ $image->id }}">
                                                         <input type="radio" id="img-option-{{ $image->id }}"
                                                             name="answerOfQuestion[{{ $currentQuestionIndex }}]"
@@ -325,7 +327,7 @@
                                         <div>
 
                                             @php
-                                                // dd($getAnserSessionIndexNumerator);
+                                                // dd($currentQuestion, $currentQuestion->fractions);
                                             @endphp
                                         </div>
                                         @if ($currentQuestion->fractions->first()->type === 'written')
@@ -377,7 +379,7 @@
                                             @endif
                                         @else
                                             <!-- answer fraction its option -->
-
+                                            {{-- <div class="row"> --}}
                                             @foreach ($currentQuestion->fractions as $option)
                                                 <div class="col-lg-6 mt-5">
                                                     <input type="hidden" id="answerOfQuestion[fraction][type_frac]"
@@ -391,6 +393,7 @@
                                                             if ($option->answer_type == 'mixed') {
                                                                 # code...
                                                                 $textOption = toMixedFraction(
+                                                                    $option->whole ?? null,
                                                                     $option->numerator,
                                                                     $option->denominator,
                                                                 );
@@ -409,7 +412,8 @@
                                                             value="{{ $option->text }}">
                                                     </label>
                                                 </div>
-                                            @endforeach
+                                            @endforeach 
+                                            {{-- </div> --}}
                                         @endif
                                     @endif
                                     <div id="answer-container">
@@ -421,10 +425,10 @@
                                                 class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md font-semibold text-xs uppercase tracking-widest shadow-sm focus:outline-none disabled:opacity-25 transition ease-in-out duration-150">
                                                 Next question
                                             </button>
-                                            <button type="button" id="nextQuestionJS"
+                                            {{-- <button type="button" id="nextQuestionJS"
                                                 class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md font-semibold text-xs uppercase tracking-widest shadow-sm focus:outline-none disabled:opacity-25 transition ease-in-out duration-150">
                                                 Next question JS
-                                            </button>
+                                            </button> --}}
                                         @else
                                             <button type="submit"
                                                 class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest transition ease-in-out duration-150">
@@ -444,7 +448,7 @@
                     <div class="grid grid-cols-5 gap-2">
                         @for ($i = 0; $i < $questionsCount; $i++)
                             <button
-                                class="quiz-nav w-10 h-10 flex items-center justify-center rounded-full text-dark font-bold 
+                                class="quiz-nav w-10 h-10 flex items-center justify-center rounded-full text-dark font-bold
                                 {{ $i == $currentQuestionIndex ? 'bg-white' : 'bg-orange-500' }}"
                                 data-question-index="{{ $i }}">
                                 {{ $i + 1 }}
