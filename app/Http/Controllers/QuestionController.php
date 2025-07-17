@@ -165,6 +165,7 @@ class QuestionController extends Controller
     public function store(Request $request)
     {
         // Validate the base fields
+        // dd($request->all());
         $validated = Validator::make($request->all(), [
             'text' => 'nullable|string',
             'img_name' => 'nullable|image|file|mimes:jpg,png,jpeg|max:2048',
@@ -225,13 +226,13 @@ class QuestionController extends Controller
             case 'image':
                 $request->validate([
                     'imgOptions' => 'required|array',
-                    'imgOptions.*.file' => 'required|file|mimes:jpg,png,jpeg|max:1024',
+                    'imgOptions.*.file' => 'required|file|mimes:jpg,png,jpeg|max:5120',
                     'imgOptions.*.correct' => 'required|in:0,1',
                 ], [
                     'imgOptions.required' => 'Please add Image Options',
                     'imgOptions.*.file.required' => 'Please upload an image file',
                     'imgOptions.*.file.mimes' => 'Only jpg, png, and jpeg files are allowed',
-                    'imgOptions.*.file.max' => 'Each image must not exceed 1 MB in size',
+                    'imgOptions.*.file.max' => 'Each image must not exceed 5 MB in size',
                     'imgOptions.*.correct.required' => 'Please specify if the image option is correct',
                 ]);
 

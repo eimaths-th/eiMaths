@@ -25,7 +25,7 @@ class QuizController extends Controller
         // dd($request->all());
         $currentQuestionIndex = (int) $request->input('currentQuestionIndex', 0);
         $answerOfQuestion = $request->input("answerOfQuestion.$currentQuestionIndex");
-        $currentQuestionId = $request->input('currentQuestionId');
+        $currentQuestionId = (int) $request->input('currentQuestionId');
         $currentQuestionType = $request->input('currentQuestionType');
         $currentQuestionFracType = $request->input('currentQuestionFracType');
         $currentQuestionFracAnswerType = $request->input('currentQuestionFracAnswerType');
@@ -104,20 +104,93 @@ class QuizController extends Controller
         ]);
     }
 
+    // public function show(Quiz $quiz, Request $request)
+    // {
+    //     // dd($request->all());
+    //     // if (!isset($answersOfQuestions['quiz_id']) || $answersOfQuestions['quiz_id'] != $quiz->id) {
+    //     //     session()->forget(['quizStartTime', 'startTimeInSeconds', 'answersOfQuestions']);
+    //     //     $answersOfQuestions = ['quiz_id' => $quiz->id]; // reinitialize
+    //     //     session()->put('answersOfQuestions', $answersOfQuestions);
+    //     // }
+    //     $currentQuestionIndex = (int) $request->input('currentQuestionIndex', 0);
+    //     $questions = $quiz->questions();
+    //     $questionsCount = $questions->count();
+    //     $currentQuestion = $questions->skip($currentQuestionIndex)->first();
+
+    //     if (!$currentQuestion) {
+    //         abort(404, 'No questions found for this quiz');
+    //     }
+
+    //     // Store start time in session if not set
+    //     // Store start time if not set
+    //     if (!session()->has('quizStartTime')) {
+    //         session(['quizStartTime' => now()->timestamp]);
+    //     }
+    //     if (!session()->has('startTimeInSeconds')) {
+    //         session(['startTimeInSeconds' => now()->timestamp]);
+    //     }
+
+    //     $quizStartTime = session('quizStartTime');
+    //     $startTimeInSeconds = session('startTimeInSeconds');
+    //     session()->put('quizStartTime', session('quizStartTime', now()->timestamp));
+    //     session()->put('startTimeInSeconds', session('startTimeInSeconds', now()->timestamp));
+
+    //     $answersOfQuestions = session('answersOfQuestions', []);
+    //     $correctAnswer = $this->getCorrectAnswer($currentQuestion);
+    //     if (!isset($answersOfQuestions['quiz_id']) || $answersOfQuestions['quiz_id'] != $quiz->id) {
+    //         session()->forget(['quizStartTime', 'startTimeInSeconds', 'answersOfQuestions']);
+    //         $answersOfQuestions = ['quiz_id' => $quiz->id]; // reinitialize
+    //         session()->put('answersOfQuestions', $answersOfQuestions);
+    //     }
+    //     $answers = session()->get('answersOfQuestions', []);
+    //     $getAnserSessionIndex = $answers[$currentQuestionIndex] ?? null;
+
+    //     $getAnserSessionIndexWhole = null;
+    //     $getAnserSessionIndexNumerator = null;
+    //     $getAnserSessionIndexDenominator = null;
+
+    //     if (!empty($getAnserSessionIndex['answer']) && is_array($getAnserSessionIndex['answer'])) {
+    //         $getAnserSessionIndexWhole = $getAnserSessionIndex['answer']['whole'] ?? null;
+    //         $getAnserSessionIndexNumerator = $getAnserSessionIndex['answer']['numerator'] ?? null;
+    //         $getAnserSessionIndexDenominator = $getAnserSessionIndex['answer']['denominator'] ?? null;
+    //     }
+    //     dd($answers);
+    //     return view('home.quiz-show', compact(
+    //         'quiz',
+    //         'getAnserSessionIndex',
+    //         'currentQuestionIndex',
+    //         'questionsCount',
+    //         'currentQuestion',
+    //         'answersOfQuestions',
+    //         'correctAnswer',
+    //         'quizStartTime',
+    //         'startTimeInSeconds',
+    //         'getAnserSessionIndexWhole',
+    //         'getAnserSessionIndexNumerator',
+    //         'getAnserSessionIndexDenominator',
+    //     ))->with('header', 'Quiz: ' . $quiz->title);
+    // }
+
     public function show(Quiz $quiz, Request $request)
     {
-        // dd($request->all());
         $currentQuestionIndex = (int) $request->input('currentQuestionIndex', 0);
         $questions = $quiz->questions();
         $questionsCount = $questions->count();
         $currentQuestion = $questions->skip($currentQuestionIndex)->first();
-
+        $correctAnswer = $this->getCorrectAnswer($currentQuestion);
         if (!$currentQuestion) {
             abort(404, 'No questions found for this quiz');
         }
 
-        // Store start time in session if not set
-        // Store start time if not set
+        // 🟡 Check and reset session if quiz_id has changed
+        $answersOfQuestions = session('answersOfQuestions', []);
+        if (!isset($answersOfQuestions['quiz_id']) || $answersOfQuestions['quiz_id'] != $quiz->id) {
+            session()->forget(['quizStartTime', 'startTimeInSeconds', 'answersOfQuestions']);
+            $answersOfQuestions = ['quiz_id' => $quiz->id];
+            session()->put('answersOfQuestions', $answersOfQuestions);
+        }
+
+        // 🕒 Store start time if not set
         if (!session()->has('quizStartTime')) {
             session(['quizStartTime' => now()->timestamp]);
         }
@@ -127,24 +200,39 @@ class QuizController extends Controller
 
         $quizStartTime = session('quizStartTime');
         $startTimeInSeconds = session('startTimeInSeconds');
-        session()->put('quizStartTime', session('quizStartTime', now()->timestamp));
-        session()->put('startTimeInSeconds', session('startTimeInSeconds', now()->timestamp));
 
-        $answersOfQuestions = session('answersOfQuestions', []);
-        $correctAnswer = $this->getCorrectAnswer($currentQuestion);
+        // 💾 Store again just in case (not strictly necessary, but okay)
+        session()->put('quizStartTime', $quizStartTime);
+        session()->put('startTimeInSeconds', $startTimeInSeconds);
+
+        // 🔁 Answer session
         $answers = session()->get('answersOfQuestions', []);
         $getAnserSessionIndex = $answers[$currentQuestionIndex] ?? null;
 
+        $getAnserSessionIndexWritten = null;
         $getAnserSessionIndexWhole = null;
         $getAnserSessionIndexNumerator = null;
         $getAnserSessionIndexDenominator = null;
 
-        if (!empty($getAnserSessionIndex['answer']) && is_array($getAnserSessionIndex['answer'])) {
-            $getAnserSessionIndexWhole = $getAnserSessionIndex['answer']['whole'] ?? null;
-            $getAnserSessionIndexNumerator = $getAnserSessionIndex['answer']['numerator'] ?? null;
-            $getAnserSessionIndexDenominator = $getAnserSessionIndex['answer']['denominator'] ?? null;
+        if (!empty($getAnserSessionIndex['answer'])) {
+            $getAnserSessionIndexWritten = $getAnserSessionIndex['answer'] ?? null;
+            // $getAnserSessionIndexWritten = $getAnserSessionIndex['answer'] ?? null;
+
+            if (is_array($getAnserSessionIndex['answer'])) {
+                # code...
+                $getAnserSessionIndexWhole = $getAnserSessionIndex['answer']['whole'] ?? null;
+                $getAnserSessionIndexNumerator = $getAnserSessionIndex['answer']['numerator'] ?? null;
+                $getAnserSessionIndexDenominator = $getAnserSessionIndex['answer']['denominator'] ?? null;
+            }
         }
-        // dd($answers);
+
+        // 🔍 Optional debug
+        // dd(
+        //     $answers,
+        //     $getAnserSessionIndex['answer'],
+        //     // $getAnserSessionIndexWritten
+        // );
+
         return view('home.quiz-show', compact(
             'quiz',
             'getAnserSessionIndex',
@@ -158,14 +246,16 @@ class QuizController extends Controller
             'getAnserSessionIndexWhole',
             'getAnserSessionIndexNumerator',
             'getAnserSessionIndexDenominator',
+            'getAnserSessionIndexWritten',
         ))->with('header', 'Quiz: ' . $quiz->title);
     }
+
 
     public function nextQuestion(Request $request, Quiz $quiz)
     {
         $currentQuestionIndex = (int) $request->input('currentQuestionIndex', 0);
         $answerOfQuestion = $request->input("answerOfQuestion.$currentQuestionIndex");
-        $currentQuestionId = $request->input('currentQuestionId');
+        $currentQuestionId = (int) $request->input('currentQuestionId');
         $currentQuestionType = $request->input('currentQuestionType');
         $currentQuestionFracType = $request->input('currentQuestionFracType');
         $currentQuestionFracAnswerType = $request->input('currentQuestionFracAnswerType');
@@ -246,6 +336,8 @@ class QuizController extends Controller
         $typeUser = $user instanceof Contact ? 'student' : 'user';
         $typeReturn = ($user instanceof Contact && optional($user->contact)->type === 'demo') ? 0 : 1;
 
+
+        // dd($answersOfQuestions);
         // Create Test record
         $test = Test::create([
             'user_id' => $user->id,
@@ -260,7 +352,10 @@ class QuizController extends Controller
         // dd('submit', $request->all(), $answersOfQuestions);
 
         foreach ($answersOfQuestions as $answerData) {
-            $question = Question::find($answerData['question_id']);
+            if (!is_array($answerData)) continue;
+
+            $questionId = (int) $answerData['question_id'];
+            $question = Question::find($questionId);
             $type = $answerData['type'];
             if ($type === 'fraction') {
                 # code...
@@ -320,7 +415,7 @@ class QuizController extends Controller
             # code...
         } else {
             # code...
-            //ex Frac(1,2),MixFrac(5,3) 
+            //ex Frac(1,2),MixFrac(5,3)
             $textAnswerFactions = $answerData['answer'];
         }
 
@@ -583,11 +678,11 @@ class QuizController extends Controller
 //     public function show(Quiz $quiz, Request $request)
 //     {
 
-//         // dd($request->all());    
+//         // dd($request->all());
 //         $currentQuestionIndex = $request->input('currentQuestionIndex', 0);
 //         $questionsCount = $quiz->questions()->count();
 //         $currentQuestion = $quiz->questions()->skip($currentQuestionIndex)->first();
-        
+
 
 //         // dd($currentQuestion);
 
@@ -628,7 +723,7 @@ class QuizController extends Controller
 //         //     # code...
 //         // }
 //         // $quizStartTime = '';
-        
+
 //         // dd($quizStartTime);
 //         session()->forget('quizStartTime');
 
@@ -650,7 +745,7 @@ class QuizController extends Controller
 //     public function nextQuestion(Request $request, Quiz $quiz)
 //     {
 //         // dd($request->all());
-    
+
 //         $quizStartTime = $request->input('quizStartTime');
 //         $currentQuestionIndex = $request->input('currentQuestionIndex', 0);
 //         $questionsCount = $quiz->questions()->count();
@@ -687,7 +782,7 @@ class QuizController extends Controller
 //         }
 
 //         $nextQuestionIndex = $currentQuestionIndex + 1;
- 
+
 //         return redirect()->route('quiz.show', [
 //             'quiz' => $quiz,
 //             'currentQuestionIndex' => $nextQuestionIndex,
@@ -699,7 +794,7 @@ class QuizController extends Controller
 //     public function submit(Request $request, Quiz $quiz)
 //     {
 //         dd($request->all());
-    
+
 //         $startTimeInSeconds = session('startTimeInSeconds');
 //         $time_spent = now()->timestamp - $startTimeInSeconds;
 //         $result = 0;

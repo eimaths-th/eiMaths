@@ -223,10 +223,12 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <!-- Flex container for quiz and progress -->
-            <div class="flex flex-col lg:flex-row gap-6 ">
+            <div class="flex flex-col lg:flex-row gap-6">
                 <!-- Quiz Section -->
-                <div class="lg:w-2/3 bg-white overflow-hidden shadow-sm sm:rounded-lg col-lg-8">
-                    <div class="p-6 text-gray-900">
+                <div class="w-full lg:w-2/3 bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 text-gray-900">
+                    <!-- Your quiz content here -->
+                    <div class="col-lg-6 p-6 text-gray-900 ">
+
                         @if (!$quiz->public && !auth()->check())
                             <div class="text-white px-6 py-4 border-0 rounded relative mb-4 bg-red-700">
                                 <span class="inline-block align-middle mr-8">
@@ -290,16 +292,22 @@
                                     @if ($currentQuestion->type === 'written')
                                         <div>
                                             <input type="text" name="answerOfQuestion[{{ $currentQuestionIndex }}]"
-                                                class="form-control" placeholder="Enter answer" autocomplete="off">
+                                                class="form-control" placeholder="Enter answer" autocomplete="off"
+                                                value="{{ $getAnserSessionIndexWritten }}">
                                         </div>
                                     @elseif ($currentQuestion->type === 'options')
                                         {{-- <div class="row"> --}}
                                         @foreach ($currentQuestion->options as $option)
+                                            @php
+                                                $checked =
+                                                    $option->id === (int) $getAnserSessionIndexWritten ? 'checked' : '';
+                                            @endphp
+
                                             <div class="col-lg-6 mt-5">
                                                 <label for="option-{{ $option->id }}">
                                                     <input type="radio" id="option-{{ $option->id }}"
                                                         name="answerOfQuestion[{{ $currentQuestionIndex }}]"
-                                                        value="{{ $option->id }}">
+                                                        value="{{ $option->id }}" {{ $checked }}>
                                                     {{ replaceMixedFractions($option->text) }}
                                                     <input type="hidden" id="optionAnswer" value="{{ $option->text }}">
                                                 </label>
@@ -309,11 +317,17 @@
                                     @elseif ($currentQuestion->type === 'image')
                                         <div class="image-container">
                                             @foreach ($currentQuestion->images as $image)
+                                                @php
+                                                    $checked =
+                                                        $image->id === (int) $getAnserSessionIndexWritten
+                                                            ? 'checked'
+                                                            : '';
+                                                @endphp
                                                 <div class="image-item mt-5">
                                                     <label for="img-option-{{ $image->id }}">
                                                         <input type="radio" id="img-option-{{ $image->id }}"
                                                             name="answerOfQuestion[{{ $currentQuestionIndex }}]"
-                                                            value="{{ $image->id }}">
+                                                            value="{{ $image->id }}" {{ $checked }}>
                                                         <img src="{{ asset('images_options/' . $image->img_name) }}"
                                                             id="img-option-{{ $image->id }}" alt="Image option">
                                                         <input type="hidden" id="imgOptionAnswer"
@@ -381,14 +395,20 @@
                                             <!-- answer fraction its option -->
                                             {{-- <div class="row"> --}}
                                             @foreach ($currentQuestion->fractions as $option)
+                                                @php
+                                                    $checked =
+                                                        $option->id === (int) $getAnserSessionIndexWritten
+                                                            ? 'checked'
+                                                            : '';
+                                                @endphp
                                                 <div class="col-lg-6 mt-5">
                                                     <input type="hidden" id="answerOfQuestion[fraction][type_frac]"
                                                         name="currentQuestionFracType" value="options">
 
-                                                    <label for="option-{{ $option->id }}">
-                                                        <input type="radio" id="frationOption-{{ $option->id }}"
+                                                    <label for="fractioption-{{ $option->id }}">
+                                                        <input type="radio" id="fractionOption-{{ $option->id }}"
                                                             name="answerOfQuestion[{{ $currentQuestionIndex }}]"
-                                                            value="{{ $option->id }}">
+                                                            value="{{ $option->id }}" {{ $checked }}>
                                                         @php
                                                             if ($option->answer_type == 'mixed') {
                                                                 # code...
@@ -412,7 +432,7 @@
                                                             value="{{ $option->text }}">
                                                     </label>
                                                 </div>
-                                            @endforeach 
+                                            @endforeach
                                             {{-- </div> --}}
                                         @endif
                                     @endif
@@ -426,9 +446,9 @@
                                                 Next question
                                             </button>
                                             {{-- <button type="button" id="nextQuestionJS"
-                                                class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md font-semibold text-xs uppercase tracking-widest shadow-sm focus:outline-none disabled:opacity-25 transition ease-in-out duration-150">
-                                                Next question JS
-                                            </button> --}}
+                                            class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md font-semibold text-xs uppercase tracking-widest shadow-sm focus:outline-none disabled:opacity-25 transition ease-in-out duration-150">
+                                            Next question JS
+                                        </button> --}}
                                         @else
                                             <button type="submit"
                                                 class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest transition ease-in-out duration-150">
@@ -441,10 +461,38 @@
                         @endif
 
                     </div>
+
                 </div>
+
                 <!-- Quiz Progress Section -->
-                <div class="w-1/3 p-4 bg-orange-300 rounded-lg shadow-md col-lg-4">
+                {{-- <div class="w-1/3 p-6 bg-orange-300 overflow-hidden shadow-sm sm:rounded-lg">
+                    <div
+                        class="flex items-center justify-center lg:ml-auto text-xl font-bold text-white bg-gray-800 rounded-lg px-4 py-2 h-12">
+                        <div id="quiz-timer" class="quiz-timer">0:00</div>
+                    </div>
                     <h3 class="text-lg font-semibold mb-3">Quiz Progress</h3>
+                    <div class="grid grid-cols-5 gap-2">
+                        @for ($i = 0; $i < $questionsCount; $i++)
+                            <button
+                                class="quiz-nav w-10 h-10 flex items-center justify-center rounded-full text-dark font-bold
+                            {{ $i == $currentQuestionIndex ? 'bg-white' : 'bg-orange-500' }}"
+                                data-question-index="{{ $i }}">
+                                {{ $i + 1 }}
+                            </button>
+                        @endfor
+                    </div>
+                </div> --}}
+
+                <div class="w-1/3 p-6 bg-orange-300 overflow-hidden shadow-sm sm:rounded-lg">
+                    <!-- Timer and Title in a row -->
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold">Quiz Progress</h3>
+                        <div class="text-white bg-gray-800 rounded-full px-4 py-2 text-sm font-bold" id="quiz-timer">
+                            0:00
+                        </div>
+                    </div>
+
+                    <!-- Navigation Buttons -->
                     <div class="grid grid-cols-5 gap-2">
                         @for ($i = 0; $i < $questionsCount; $i++)
                             <button
@@ -457,9 +505,9 @@
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
+
 @endsection
 @push('scripts')
     <script>
@@ -518,19 +566,14 @@
             }
         });
     </script>
-    {{-- <script>
-        function navigateToQuestion(event, index) {
-            event.preventDefault();
-            let form = document.getElementById('quiz-form');
-            form.action = `{{ route('quiz.next', ['quiz' => $quiz, 'currentQuestionIndex' => '__INDEX__']) }}`.replace(
-                '__INDEX__', index);
-            form.submit();
-        }
-    </script> --}}
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            let quizStartTime = @json($quizStartTime) ? @json($quizStartTime) * 1000 : new Date()
-                .getTime();
+            let quizStartTime = {{ $quizStartTime ?? 'null' }};
+            if (!quizStartTime) {
+                quizStartTime = new Date().getTime(); // fallback
+            } else {
+                quizStartTime = quizStartTime * 1000; // convert to milliseconds
+            }
 
             let timerDisplay = document.getElementById("quiz-timer");
 
@@ -597,9 +640,6 @@
                     correctAnswer: correctAnswer,
                     _token: '{{ csrf_token() }}'
                 };
-                console.log('User Answer:', userAnswer);
-                console.log('Correct Answer:', correctAnswer);
-                console.log('Question Type:', questionType);
 
                 var url = '{{ route('check.answer') }}';
 
@@ -608,7 +648,6 @@
                     method: 'POST',
                     data: data,
                     success: function(result) {
-                        console.log(result);
                         // alert(result.result);
                         if (result.type === 'written') {
                             $('input[name="answerOfQuestion[{{ $currentQuestionIndex }}]"]')

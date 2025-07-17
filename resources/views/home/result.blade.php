@@ -192,6 +192,7 @@
                                                 <li @class([
                                                     'underline' => $result->option_id == $option->id,
                                                     'font-bold text-orange-500' => $option->correct == 1,
+                                                    'mt-5',
                                                 ])>
                                                     {{ replaceMixedFractions($option->text) }}
                                                     @if ($option->correct == 1)
@@ -210,6 +211,7 @@
                                                 <li @class([
                                                     'underline' => $result->image_id == $image->id,
                                                     'font-bold text-orange-500' => $image->correct == 1,
+                                                    'mt-5',
                                                 ])>
                                                     @if ($image->img_name)
                                                         <img class="img-custom"
@@ -233,6 +235,7 @@
                                             <li @class([
                                                 'underline' => $result->correct != 1,
                                                 'font-bold text-orange-500' => $result->correct == 1,
+                                                'mt-5',
                                             ])>
                                                 {{ $result->written_answer }} (your answer)
                                             </li>
@@ -248,6 +251,7 @@
                                                     <li @class([
                                                         'underline' => $result->fraction == $fractions->id,
                                                         'font-bold text-orange-500' => $fractions->correct == 1,
+                                                        'mt-5',
                                                     ])>
                                                         @if ($fractions->answer_type == 'mixed')
                                                             {{-- {{toFraction($fraction->numerator, $fraction->denominator) }} --}}
@@ -272,10 +276,11 @@
                                                     <li @class([
                                                         'underline' => $result->correct != 1,
                                                         'font-bold text-orange-500' => $result->correct == 1,
+                                                        'mt-5',
                                                     ])>
                                                         {{ replaceMixedFractions($result->fraction) }} (your answer)
                                                     </li>
-                                                    <li class="font-bold text-orange-500">
+                                                    <li class="font-bold text-orange-500 mt-5">
                                                         @if ($fraction->answer_type == 'mixed')
                                                             {{-- {{toFraction($fraction->numerator, $fraction->denominator) }} --}}
                                                             {{ toMixedFraction(null, $fraction->numerator, $fraction->denominator) }}
