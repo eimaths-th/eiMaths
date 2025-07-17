@@ -483,27 +483,38 @@
                     </div>
                 </div> --}}
 
-                <div class="w-1/3 p-6 bg-orange-300 overflow-hidden shadow-sm sm:rounded-lg">
+                <div
+                    style="width: 33.3333%; padding: 1.5rem; background-color: #fdba74; overflow: hidden; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); border-radius: 0.5rem;">
                     <!-- Timer and Title in a row -->
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg font-semibold">Quiz Progress</h3>
-                        <div class="text-white bg-gray-800 rounded-full px-4 py-2 text-sm font-bold" id="quiz-timer">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+                        <h3 style="font-size: 1.125rem; font-weight: 600;">Quiz Progress</h3>
+                        <div id="quiz-timer"
+                            style="color: white; background-color: #1f2937; border-radius: 9999px; padding: 0.5rem 1rem; font-size: 0.875rem; font-weight: 700;">
                             0:00
                         </div>
                     </div>
 
                     <!-- Navigation Buttons -->
-                    <div class="grid grid-cols-5 gap-2">
+                    <div style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0.5rem;">
                         @for ($i = 0; $i < $questionsCount; $i++)
-                            <button
-                                class="quiz-nav w-10 h-10 flex items-center justify-center rounded-full text-dark font-bold
-                                {{ $i == $currentQuestionIndex ? 'bg-white' : 'bg-orange-500' }}"
-                                data-question-index="{{ $i }}">
+                            <button class="quiz-nav" data-question-index="{{ $i }}"
+                                style="
+                                    width: 2.5rem;
+                                    height: 2.5rem;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    border-radius: 9999px;
+                                    font-weight: 700;
+                                    color: #1f2937;
+                                    background-color: {{ $i == $currentQuestionIndex ? '#ffffff' : '#f97316' }};
+                                ">
                                 {{ $i + 1 }}
                             </button>
                         @endfor
                     </div>
                 </div>
+
             </div>
         </div>
     </div>
