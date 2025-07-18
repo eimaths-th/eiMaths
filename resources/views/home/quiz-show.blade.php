@@ -149,8 +149,7 @@
             background: linear-gradient(135deg, #3b82f6, #1d4ed8);
         }
     </style>
-    <script type="text/javascript" async
-        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
 @endpush
 @push('script')
 @endpush
@@ -1043,9 +1042,14 @@
             });
 
             // Close modal on overlay click
-            mathModal.addEventListener('click', (e) => {
-                closeModal();
-            });
+            // mathModal.addEventListener('click', (e) => {
+            //     console.log(e.target);
+            //     console.log(mathModal);
+
+            //     if (e.target === mathModal) {
+            //         closeModal();
+            //     }
+            // });
 
             // Close modal on Escape key
             document.addEventListener('keydown', (e) => {
@@ -1088,12 +1092,18 @@
                         `<span style="font-family: 'Times New Roman', serif; font-size: 18px; color: #374151;">${preview}</span>`;
                     previewElement.parentElement.style.display = 'block';
 
-                    // เรียก MathJax เพื่อ render LaTeX
-                    if (typeof MathJax !== 'undefined' && MathJax.typesetPromise) {
-                        MathJax.typesetPromise([previewElement]).catch(function(err) {
+                    // เรียก MathJax เพื่อ render LaTeX (รอให้ MathJax โหลดเสร็จก่อน)
+                    if (typeof MathJax !== 'undefined') {
+                        // ใช้ MathJax.startup.promise เพื่อรอให้ MathJax โหลดเสร็จ
+                        MathJax.startup.promise.then(function() {
+                            if (MathJax.typesetPromise) {
+                                return MathJax.typesetPromise([previewElement]);
+                            }
+                        }).catch(function(err) {
                             console.log('MathJax typeset error:', err);
                         });
                     }
+                    closeModal();
                 } else {
                     // ซ่อน preview ถ้าไม่มี value
                     previewElement.innerHTML = '';
@@ -1433,6 +1443,12 @@
             },
             options: {
                 skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+            },
+            startup: {
+                ready: function () {
+                    console.log('MathJax is loaded and ready.');
+                    MathJax.startup.defaultReady();
+                }
             }
         };
     </script>
