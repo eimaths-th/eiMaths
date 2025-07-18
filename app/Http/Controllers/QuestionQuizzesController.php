@@ -543,7 +543,7 @@ class QuestionQuizzesController extends Controller
 
             return response()->json([
                 'error' => 'An error occurred while creating the quiz',
-                'message' => config('app.debug') ? $e->getMessage() : 'Internal server error'
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
