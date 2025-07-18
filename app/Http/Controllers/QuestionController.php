@@ -110,7 +110,7 @@ class QuestionController extends Controller
                 ->addColumn('option', function ($row) {
                     if ($row->type === 'written') {
                         # code...
-                        return $row->written_answer;
+                        return replaceMixedFractions($row->written_answer);
                     } elseif ($row->type === 'image') {
                         # code...
                         return $row->images()->count();

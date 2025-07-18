@@ -6,6 +6,7 @@ use App\Models\Question;
 use App\Models\Quiz;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
@@ -169,9 +170,10 @@ class QuestionQuizzesController extends Controller
 
     public function store(Request $request)
     {
-        // Validate the incoming request
-        // dd($request->all());
-        $type = $request->type;
+        try {
+            // Validate the incoming request
+            // dd($request->all());
+            $type = $request->type;
 
         //แก้ไข validate ให้เป็น array ที่มี key ตามชื่อของ field ที่ต้องการ validate
         $rules = [
@@ -521,9 +523,29 @@ class QuestionQuizzesController extends Controller
             }
         }
 
-        $quiz->questions()->syncWithoutDetaching($questions_ids);
+            $quiz->questions()->syncWithoutDetaching($questions_ids);
 
-        return response()->json(['success' => 'Quiz created successfully!']);
+            return response()->json(['success' => 'Quiz created successfully!']);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Handle validation errors
+            return response()->json([
+                'errors' => $e->errors(),
+                'message' => 'Validation failed'
+            ], 422);
+
+        } catch (\Exception $e) {
+            // Handle general exceptions
+            Log::error('Quiz store error: ' . $e->getMessage(), [
+                'request' => $request->all(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'error' => 'An error occurred while creating the quiz',
+                'message' => config('app.debug') ? $e->getMessage() : 'Internal server error'
+            ], 500);
+        }
     }
 
 
