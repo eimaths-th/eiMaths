@@ -325,7 +325,8 @@
                                             @endforeach
                                         </div>
                                     @elseif ($currentQuestion->type === 'image')
-                                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 1.5rem;">
+                                        <div
+                                            style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 1.5rem;">
                                             @foreach ($currentQuestion->images as $index => $image)
                                                 @php
                                                     $checked =
@@ -360,35 +361,61 @@
                                                     name="currentQuestionFracAnswerType"
                                                     value="{{ $currentQuestion->fractions->first()->answer_type }}">
 
+                                                <style>
+                                                    .frac-inputs {
+                                                        display: flex;
+                                                        align-items: center;
+                                                        justify-content: center;
+                                                        gap: 0.5rem;
+                                                    }
+
+                                                    .frac-inputs input {
+                                                        width: 5.5rem;
+                                                        text-align: center;
+                                                        border: 1px solid #e5e7eb;
+                                                        border-radius: 0.25rem;
+                                                        padding: 0.5rem;
+                                                        font-size: 1rem;
+                                                    }
+
+                                                    .frac-inputs input:focus {
+                                                        outline: none;
+                                                        border-color: #f97316;
+                                                        box-shadow: 0 0 0 2px #f97316;
+                                                    }
+
+                                                    /* .frac-inputs .frac-whole {
+                                                                    width: 5rem;
+                                                                } */
+
+                                                    .frac-inputs .frac-line {
+                                                        width: 5.5rem;
+                                                        height: 2px;
+                                                        background-color: #e5e7eb;
+                                                    }
+                                                </style>
                                                 @if ($currentQuestion->fractions->first()->answer_type === 'frac')
-                                                    <div class="flex items-center justify-center space-x-2">
-                                                        <div class="flex flex-col items-center">
-                                                            <input type='text' name='currentQuestionFracNumerator'
-                                                                placeholder='เศษ'
-                                                                class='w-16 px-2 py-1 text-center border border-gray-300 rounded focus:ring-2 focus:ring-orange-500 focus:border-orange-500'
-                                                                value="{{ $getAnserSessionIndexNumerator }}">
-                                                            <div class="w-16 h-px bg-gray-400 my-1"></div>
-                                                            <input type='text' name='currentQuestionFracDenominator'
-                                                                placeholder='ส่วน'
-                                                                class='w-16 px-2 py-1 text-center border border-gray-300 rounded focus:ring-2 focus:ring-orange-500 focus:border-orange-500'
-                                                                value="{{ $getAnserSessionIndexDenominator }}">
-                                                        </div>
+                                                    <div class="frac-inputs">
+                                                        <input type="text" name="currentQuestionFracNumerator"
+                                                            placeholder="เศษ"
+                                                            value="{{ $getAnserSessionIndexNumerator }}">
+                                                        <div class="frac-line"></div>
+                                                        <input type="text" name="currentQuestionFracDenominator"
+                                                            placeholder="ส่วน"
+                                                            value="{{ $getAnserSessionIndexDenominator }}">
                                                     </div>
                                                 @else
-                                                    <div class="flex items-center justify-center space-x-3">
-                                                        <input type='text' name='currentQuestionFracWhole'
-                                                            placeholder='จำนวนเต็ม'
-                                                            class='w-20 px-2 py-1 text-center border border-gray-300 rounded focus:ring-2 focus:ring-orange-500 focus:border-orange-500'
+                                                    <div class="frac-inputs">
+                                                        <input type="text" name="currentQuestionFracWhole"
+                                                            placeholder="จำนวนเต็ม" class="frac-whole"
                                                             value="{{ $getAnserSessionIndexWhole }}" />
-                                                        <div class="flex flex-col items-center">
-                                                            <input type='text' name='currentQuestionFracNumerator'
-                                                                placeholder='เศษ'
-                                                                class='w-16 px-2 py-1 text-center border border-gray-300 rounded focus:ring-2 focus:ring-orange-500 focus:border-orange-500'
+                                                        <div class="flex flex-col gap-3">
+                                                            <input type="text" name="currentQuestionFracNumerator"
+                                                                placeholder="เศษ"
                                                                 value="{{ $getAnserSessionIndexNumerator }}">
-                                                            <div class="w-16 h-px bg-gray-400 my-1"></div>
-                                                            <input type='text' name='currentQuestionFracDenominator'
-                                                                placeholder='ส่วน'
-                                                                class='w-16 px-2 py-1 text-center border border-gray-300 rounded focus:ring-2 focus:ring-orange-500 focus:border-orange-500'
+                                                            <div class="frac-line"></div>
+                                                            <input type="text" name="currentQuestionFracDenominator"
+                                                                placeholder="ส่วน"
                                                                 value="{{ $getAnserSessionIndexDenominator }}">
                                                         </div>
                                                     </div>
@@ -461,8 +488,6 @@
             </div>
         </div>
     </div>
-    </div>
-
 
 @endsection
 @push('scripts')
