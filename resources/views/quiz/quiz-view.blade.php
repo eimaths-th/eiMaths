@@ -69,7 +69,10 @@
 
                                                 {{-- WRITTEN TYPE --}}
                                                 @if ($question->type === 'written')
-                                                    <p>answer:  {{ replaceMixedFractions($question->written_answer) }}</p>
+
+                                                    <p class="mt-2">
+                                                        <strong>Answer: </strong> {{ replaceMixedFractions($question->written_answer) }}
+                                                    </p>
                                                     {{-- <input type="text" class="form-control mt-3"
                                                         value="{{ $question->written_answer }}" readonly> --}}
 

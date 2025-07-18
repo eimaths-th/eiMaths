@@ -4,182 +4,130 @@
 
 @push('css')
     <style>
-        /* Container for all images */
-        .image-container {
-            display: flex;
-            /* Use flexbox to handle layout */
-            flex-wrap: wrap;
-            /* Wrap items to new rows as needed */
-            gap: 10px;
-            /* Space between items */
+        /* Modern Quiz Styles */
+        .quiz-nav {
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            outline: none;
         }
 
-        /* Container for each image item */
-        .image-item {
-            flex: 1 1 calc(50% - 10px);
-            /* Take up half of the container width minus gap */
-            box-sizing: border-box;
-            /* Include padding and borders in width */
-            display: flex;
-            /* align-items: center; */
-            /* Center content vertically */
-            /* justify-content: center; */
-            /* Center content horizontally */
-            padding: 5px;
-            /* Optional padding around images */
-            text-align: center;
-            /* Center-align text and content */
+        .quiz-nav:hover {
+            transform: scale(1.05);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        /* Style for images */
-        .image-item img {
-            width: 100%;
-            /* Image will take up the full width of its container */
-            height: auto;
-            /* Maintain aspect ratio */
-            max-height: 75px;
-            /* Optional: limit the height to prevent overly large images */
-            object-fit: cover;
-            /* Ensure image covers the container without stretching */
+        .quiz-nav:focus {
+            outline: 2px solid #f97316;
+            outline-offset: 2px;
         }
 
-        .img-container {
-            display: flex;
-            justify-content: center;
-            /* Center horizontally */
-            align-items: center;
-            /* Center vertically */
-            height: 100%;
-            /* Ensure the container takes up available space */
+        /* Radio button custom styling */
+        input[type="radio"]:checked {
+            background-color: #f97316;
+            border-color: #f97316;
         }
 
-        .img-custom {
-            max-height: 300px;
-            max-width: 100%;
-            /* Ensure the image scales correctly */
-            height: auto;
-            width: auto;
+        input[type="radio"]:focus {
+            ring-color: #f97316;
+            ring-offset-color: #ffffff;
         }
 
-        label {
-            display: flex;
-            align-items: center;
-        }
-
-        input[type="radio"] {
-            margin-right: 10px;
-            /* Space between the radio button and the image */
-        }
-
-        #answer-container {
-            position: relative;
-            text-align: left;
-
-            padding: 10px;
-            margin-top: 15px;
-            background-color: #ffffff;
-            border-radius: 5px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-            /* Subtle shadow */
-            position: relative;
-            border-radius: 8px;
-
-        }
-
-
-        .image-answer-container {
-            display: flex;
-            /* Align children horizontally */
-            justify-content: left;
-            /* Center content horizontally */
-            align-items: left;
-        }
-
-        .image-answer-item {
-            max-width: 100%;
-            max-height: 100%;
-        }
-
-        .image-answer-item img {
-            display: block;
-            /* Remove bottom margin/space */
-            max-width: 100px;
-            /* Make image responsive */
-            height: auto;
-            /* Maintain aspect ratio */
-            border-radius: 4px;
-            /* Rounded corners for the image */
-        }
-
-        .answer-wrapper {}
-
-
-        .answer-label {
-            text-align: left;
-            position: absolute;
-            top: -15px;
-            left: 15px;
-            background-color: #fff;
-            padding: 0 10px;
-            font-weight: bold;
-            font-size: 14px;
-            color: #333;
-            /* border: 1px solid #ffbb00; */
-            /* Matching border */
-            border-radius: 5px;
-            /* Rounded label */
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-
-        }
-
-        .answer-box {
-            font-size: 16px;
-            color: #333;
-        }
-
-
-        .text-answer {
-            padding: 10px;
-            font-size: 16px;
-        }
-    </style>
-    <style>
-        .pagination {
-            justify-content: center;
-        }
-    </style>
-
-    <style>
-        /* Style for regular fraction inputs */
+        /* Fraction input styling */
         .fraction-input {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
+            transition: all 0.2s ease;
         }
 
-        .fraction-numerator,
-        .fraction-denominator {
-            width: 40px;
-            text-align: center;
+        .fraction-input:focus {
+            transform: scale(1.02);
+            box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
         }
 
-        .fraction-input span {
-            font-size: 18px;
-            padding: 0 5px;
+        /* Answer option hover effects */
+        .answer-option {
+            transition: all 0.2s ease;
         }
 
-        /* Style for mixed fraction inputs */
-        .mixed-fraction-input {
-            display: flex;
-            gap: 5px;
-            align-items: center;
+        .answer-option:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
-        .mixed-whole {
-            width: 40px;
-            text-align: center;
+        /* Progress bar animation */
+        .progress-bar {
+            transition: width 0.5s ease-in-out;
         }
 
+        /* Timer styling */
+        #quiz-timer {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .w-64 {
+                width: 100%;
+                margin-bottom: 1rem;
+            }
+
+            .flex {
+                flex-direction: column;
+            }
+
+            .grid-cols-5 {
+                grid-template-columns: repeat(10, minmax(0, 1fr));
+            }
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #f97316;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #ea580c;
+        }
+
+        /* Loading animation for buttons */
+        .btn-loading {
+            position: relative;
+            pointer-events: none;
+        }
+
+        .btn-loading::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            margin: auto;
+            border: 2px solid transparent;
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+    <style>
         /* Optional: Adjust overall input appearance */
         input[type="text"] {
             font-size: 16px;
@@ -188,63 +136,106 @@
             border-radius: 4px;
         }
     </style>
-    <style>
-        .frac {
-            display: inline-block;
-            position: relative;
-            vertical-align: middle;
-            letter-spacing: 0.001em;
-            text-align: center;
-        }
-
-        .frac>span {
-            display: block;
-            padding: 0.1em;
-        }
-
-        .frac span.bottom {
-            border-top: thin solid black;
-        }
-
-        .frac span.symbol {
-            display: none;
-        }
-
-        .bg-orange-300 {
-            background-color: #ffa238;
-        }
-    </style>
     <script type="text/javascript" async
         src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 @endpush
 @push('script')
 @endpush
 @section('content')
+    <div style="min-height: 100vh; background-color: #f9fafb;">
+        <!-- Top Progress Bar -->
+        <div style="background-color: white; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1); border-bottom: 1px solid #e5e7eb;">
+            <div style="max-width: 80rem; margin: 0 auto; padding: 1rem;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
+                    <h1 style="font-size: 1.125rem; font-weight: 600; color: #1f2937;">คณิตศาสตร์</h1>
+                    <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; color: #4b5563;">
+                        <svg style="width: 1rem; height: 1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span id="quiz-timer">20:05</span>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span style="font-size: 0.875rem; color: #4b5563;">{{ $currentQuestionIndex + 1 }} /
+                        {{ $questionsCount }} ข้อ</span>
+                    <div
+                        style="flex: 1; background-color: #e5e7eb; border-radius: 9999px; height: 0.5rem; margin-left: 0.75rem;">
+                        <div
+                            style="background-color: #f97316; height: 0.5rem; border-radius: 9999px; transition: all 0.3s; width: {{ (($currentQuestionIndex + 1) / $questionsCount) * 100 }}%;">
+                        </div>
+                    </div>
+                    <span
+                        style="font-size: 0.875rem; color: #4b5563;">{{ round((($currentQuestionIndex + 1) / $questionsCount) * 100) }}%
+                        เสร็จสิ้น</span>
+                </div>
+            </div>
+        </div>
 
-    <div style="padding-top: 3rem; padding-bottom: 3rem;">
-        <div style="max-width: 100rem; margin-left: auto; margin-right: auto; padding-left: 1.5rem; padding-right: 1.5rem;">
-            <!-- Flex container for quiz and progress -->
-            <div style="display: flex; flex-direction: row; gap: 1.5rem; align-items: flex-start;">
-
-                <!-- Quiz Section -->
+        <!-- Main Content -->
+        <div style="max-width: 80rem; margin: 0 auto; padding: 1.5rem;">
+            <div style="display: flex; gap: 1.5rem;">
+                <!-- Left Sidebar - Question Navigation -->
                 <div
-                    style="
-                        flex: 5;
-                        background-color: #ffffff;
-                        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-                        border-radius: 0.5rem;
-                        padding: 1.5rem;
-                        color: #111827;
-                    ">
-                    <!-- Quiz content auto height -->
-                    <div style="color: #111827;">
+                    style="width: 16rem; background-color: white; border-radius: 0.5rem; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1); padding: 1rem;">
+                    <h3 style="font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 1rem;">ข้อคำถาม</h3>
+                    <div
+                        style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0.5rem; margin-bottom: 1rem;">
+                        @for ($i = 0; $i < $questionsCount; $i++)
+                            @php
+                                $isAnswered =
+                                    isset($answersOfQuestions[$i]) && !empty($answersOfQuestions[$i]['answer']);
+                                $isCurrent = $i == $currentQuestionIndex;
+                            @endphp
+                            <button
+                                style="width: 2rem; height: 2rem; border-radius: 0.25rem; font-size: 0.875rem; font-weight: 500; transition: all 0.3s; border: none; cursor: pointer; {{ $isCurrent ? 'background-color: rgb(255, 165, 0); color: white' : ($isAnswered ? 'background-color: rgb(76, 175, 80); color: white' : 'background-color: rgb(229, 231, 235); color: rgb(75, 85, 99)') }}"
+                                class="quiz-nav" data-question-index="{{ $i }}">
+                                {{ $i + 1 }}
+                            </button>
+                        @endfor
+                    </div>
+                    <div style="font-size: 0.75rem; color: #6b7280; display: flex; flex-direction: column; gap: 0.25rem;">
+                        <div style="display: flex; align-items: center;">
+                            <div
+                                style="width: 0.75rem; height: 0.75rem; background-color: rgb(76, 175, 80); border-radius: 0.25rem; margin-right: 0.5rem;">
+                            </div>
+                            <span>ตอบแล้ว</span>
+                        </div>
+                        <div style="display: flex; align-items: center;">
+                            <div
+                                style="width: 0.75rem; height: 0.75rem; background-color: #f97316; border-radius: 0.25rem; margin-right: 0.5rem;">
+                            </div>
+                            <span>กำลังตอบ</span>
+                        </div>
+                        <div style="display: flex; align-items: center;">
+                            <div
+                                style="width: 0.75rem; height: 0.75rem; background-color: #f3f4f6; border-radius: 0.25rem; margin-right: 0.5rem;">
+                            </div>
+                            <span>ยังไม่ตอบ</span>
+                        </div>
+                    </div>
+
+                    <button
+                        style="width: 100%; margin-top: 1.5rem; background-color: #f97316; color: white; padding: 0.5rem 1rem; border-radius: 0.5rem; font-weight: 500; border: none; cursor: pointer; transition: background-color 0.3s;"
+                        onmouseover="this.style.backgroundColor='#ea580c'" onmouseout="this.style.backgroundColor='#f97316'"
+                        onclick="document.getElementById('quiz-form').submit()">
+                        ส่งคำตอบ
+                    </button>
+                </div>
+
+                <!-- Main Quiz Content -->
+                <div
+                    style="flex: 1; background-color: white; border-radius: 0.5rem; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1); padding: 1.5rem;">
+                    <div style="width: 100%;">
 
                         @if (!$quiz->public && !auth()->check())
-                            <div class="text-white px-6 py-4 border-0 rounded relative mb-4 bg-red-700">
-                                <span class="inline-block align-middle mr-8">
+                            <div
+                                style="background-color: #fef2f2; border: 1px solid #fca5a5; color: #b91c1c; padding: 0.75rem 1rem; border-radius: 0.25rem; margin-bottom: 1rem;">
+                                <span style="display: block;">
                                     This test is available only for registered users. Please <a href="{{ route('login') }}"
-                                        class="hover:underline">Log in</a> or <a href="{{ route('register') }}"
-                                        class="hover:underline">Register</a>
+                                        style="text-decoration: underline; color: #b91c1c;">Log in</a> or <a
+                                        href="{{ route('register') }}"
+                                        style="text-decoration: underline; color: #b91c1c;">Register</a>
                                 </span>
                             </div>
                         @else
@@ -253,39 +244,39 @@
                             @endphp
 
                             <div id="quiz-container" data-seconds-left="0">
-                                <div class="mb-2">
-                                    Time elapsed:
-                                    <span id="time-elapsed" class="font-bold">
-                                        00:00:00
-                                    </span>
-                                    sec.
+                                <!-- Question Header -->
+                                <div style="margin-bottom: 1.5rem;">
+                                    <div
+                                        style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
+                                        <span style="font-size: 0.875rem; font-weight: 500; color: #4b5563;">ข้อที่
+                                            {{ $currentQuestionIndex + 1 }}</span>
+                                        <span
+                                            style="font-size: 0.75rem; color: #6b7280;">{{ str_pad($currentQuestionIndex + 1, 6, '0', STR_PAD_LEFT) }}</span>
+                                    </div>
+                                    <h2 style="font-size: 1.125rem; font-weight: 500; color: #111827; line-height: 1.75;">
+                                        @if ($currentQuestion->type === 'fraction')
+                                            @php
+                                                $text = replaceMixedFractions($currentQuestion->text);
+                                            @endphp
+                                            {!! $text !!}
+                                        @else
+                                            {!! replaceMixedFractions($currentQuestion->text ?? '') !!}
+                                        @endif
+                                    </h2>
                                 </div>
-
-                                <span class="text-bold">Question {{ $currentQuestionIndex + 1 }} of
-                                    {{ $questionsCount }}:</span>
-                                <h2 class="mb-4 text-2xl">
-                                    @if ($currentQuestion->type === 'fraction')
-                                        @php
-
-                                            $text = replaceMixedFractions($currentQuestion->text);
-
-                                        @endphp
-                                        {{ $text }}
-                                    @else
-                                        {{ replaceMixedFractions($currentQuestion->text ?? '') }}
-                                    @endif
-                                </h2>
                                 @if ($currentQuestion->img_name)
-                                    <div class="img-container mb-4">
-                                        <img class="img-custom"
+                                    <div style="margin-bottom: 1.5rem; display: flex; justify-content: center;">
+                                        <img style="max-width: 100%; height: auto; border-radius: 0.5rem; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);"
                                             src="{{ asset('img_questions/' . $currentQuestion->img_name) }}"
-                                            alt="Image option">
+                                            alt="Question image">
                                     </div>
                                 @endif
                                 @if ($currentQuestion->code_snippet)
-                                    <pre class="mb-4 border-2 border-solid bg-gray-50 p-2">{{ $currentQuestion->code_snippet }}</pre>
+                                    <pre
+                                        style="margin-bottom: 1.5rem; background-color: #f9fafb; border: 1px solid #e5e7eb; border-radius: 0.5rem; padding: 1rem; font-size: 0.875rem; overflow-x: auto;">{{ $currentQuestion->code_snippet }}</pre>
                                 @endif
 
+                                <!-- Answer Options -->
                                 <form id="quiz-form"
                                     action="{{ route('quiz.next', ['quiz' => $quiz, 'currentQuestionIndex' => $currentQuestionIndex, 'quizStartTime' => $quizStartTime]) }}"
                                     method="POST">
@@ -300,161 +291,164 @@
                                         value="{{ $currentQuestion->type }}">
                                     <input type="hidden" id="correctAnswer" value="{{ $correctAnswer }}">
                                     @if ($currentQuestion->type === 'written')
-                                        <div>
+                                        <div style="margin-bottom: 1.5rem;">
                                             <input type="text" name="answerOfQuestion[{{ $currentQuestionIndex }}]"
-                                                class="form-control" placeholder="Enter answer" autocomplete="off"
+                                                style="width: 100%; padding: 0.75rem 1rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none; transition: all 0.3s;"
+                                                onfocus="this.style.borderColor='#f97316'; this.style.boxShadow='0 0 0 2px rgba(249, 115, 22, 0.2)'"
+                                                onblur="this.style.borderColor='#d1d5db'; this.style.boxShadow='none'"
+                                                placeholder="กรอกคำตอบของคุณ" autocomplete="off"
                                                 value="{{ $getAnserSessionIndexWritten }}">
                                         </div>
                                     @elseif ($currentQuestion->type === 'options')
-                                        @foreach ($currentQuestion->options as $option)
-                                            @php
-                                                $checked =
-                                                    $option->id === (int) $getAnserSessionIndexWritten ? 'checked' : '';
-                                            @endphp
-
-                                            <div class="col-lg-6 mt-5">
-                                                <label for="option-{{ $option->id }}">
-                                                    <input type="radio" id="option-{{ $option->id }}"
-                                                        name="answerOfQuestion[{{ $currentQuestionIndex }}]"
-                                                        value="{{ $option->id }}" {{ $checked }}>
-                                                    {{ replaceMixedFractions($option->text) }}
-                                                    <input type="hidden" id="optionAnswer" value="{{ $option->text }}">
-                                                </label>
-                                            </div>
-                                        @endforeach
-                                    @elseif ($currentQuestion->type === 'image')
-                                        <div class="image-container">
-                                            @foreach ($currentQuestion->images as $image)
-                                                @php
-                                                    $checked =
-                                                        $image->id === (int) $getAnserSessionIndexWritten
-                                                            ? 'checked'
-                                                            : '';
-                                                @endphp
-                                                <div class="image-item mt-5">
-                                                    <label for="img-option-{{ $image->id }}">
-                                                        <input type="radio" id="img-option-{{ $image->id }}"
-                                                            name="answerOfQuestion[{{ $currentQuestionIndex }}]"
-                                                            value="{{ $image->id }}" {{ $checked }}>
-                                                        <img src="{{ asset('images_options/' . $image->img_name) }}"
-                                                            id="img-option-{{ $image->id }}" alt="Image option">
-                                                        <input type="hidden" id="imgOptionAnswer"
-                                                            value="{{ $image->img_name }}">
-
-                                                    </label>
-                                                </div>
-                                            @endforeach
-                                        </div>
-                                    @elseif ($currentQuestion->type === 'fraction')
-                                        <div>
-
-                                            @php
-                                                // dd($currentQuestion, $currentQuestion->fractions);
-                                            @endphp
-                                        </div>
-                                        @if ($currentQuestion->fractions->first()->type === 'written')
-                                            @if ($currentQuestion->fractions->first()->answer_type === 'frac')
-                                                <div class='frac'>
-                                                    <input type="hidden" id="type_frac" name="currentQuestionFracType"
-                                                        value="{{ $currentQuestion->fractions->first()->type }}">
-                                                    <input type="hidden" id="answer_type_frac"
-                                                        name="currentQuestionFracAnswerType"
-                                                        value="{{ $currentQuestion->fractions->first()->answer_type }}">
-                                                    <span>
-                                                        <input type='text' name='currentQuestionFracNumerator'
-                                                            placeholder='Numerator' class='fraction-numerator'
-                                                            value="{{ $getAnserSessionIndexNumerator }}">
-                                                    </span>
-                                                    <span class='symbol'>/</span>
-                                                    <span class='bottom'>
-                                                        <input type='text' name='currentQuestionFracDenominator'
-                                                            placeholder='Denominator' class='fraction-denominator'
-                                                            value="{{ $getAnserSessionIndexDenominator }}">
-
-                                                    </span>
-
-
-                                                </div>
-                                            @else
-                                                <input type="hidden" id="type_frac" name="currentQuestionFracType"
-                                                    value="{{ $currentQuestion->fractions->first()->type }}">
-                                                <input type="hidden" id="answer_type_frac"
-                                                    name="currentQuestionFracAnswerType"
-                                                    value="{{ $currentQuestion->fractions->first()->answer_type }}">
-
-                                                <input type='text' name='currentQuestionFracWhole'
-                                                    placeholder='Whole Number' class='mixed-whole'
-                                                    value="{{ $getAnserSessionIndexWhole }}" />
-                                                <div class='frac'>
-                                                    <span>
-                                                        <input type='text' name='currentQuestionFracNumerator'
-                                                            placeholder='Numerator' class='fraction-numerator'
-                                                            value="{{ $getAnserSessionIndexNumerator }}">
-                                                    </span>
-                                                    <span class='symbol'>/</span>
-                                                    <span class='bottom'>
-                                                        <input type='text' name='currentQuestionFracDenominator'
-                                                            placeholder='Denominator' class='fraction-denominator'
-                                                            value="{{ $getAnserSessionIndexDenominator }}">
-                                                    </span>
-                                                </div>
-                                            @endif
-                                        @else
-                                            <!-- answer fraction its option -->
-                                            @foreach ($currentQuestion->fractions as $option)
+                                        <div
+                                            style="display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1.5rem;">
+                                            @foreach ($currentQuestion->options as $index => $option)
                                                 @php
                                                     $checked =
                                                         $option->id === (int) $getAnserSessionIndexWritten
                                                             ? 'checked'
                                                             : '';
                                                 @endphp
-                                                <div class="col-lg-6 mt-5">
-                                                    <input type="hidden" id="answerOfQuestion[fraction][type_frac]"
-                                                        name="currentQuestionFracType" value="options">
+                                                <label for="option-{{ $option->id }}"
+                                                    style="display: flex; align-items: center; padding: 1rem; border: 1px solid {{ $checked ? '#f97316' : '#e5e7eb' }}; border-radius: 0.5rem; cursor: pointer; transition: all 0.3s; background-color: {{ $checked ? '#fff7ed' : 'white' }};"
+                                                    onmouseover="if (!this.querySelector('input').checked) { this.style.backgroundColor='#f9fafb'; }"
+                                                    onmouseout="if (!this.querySelector('input').checked) { this.style.backgroundColor='white'; }">
+                                                    <input type="radio" id="option-{{ $option->id }}"
+                                                        name="answerOfQuestion[{{ $currentQuestionIndex }}]"
+                                                        value="{{ $option->id }}" {{ $checked }}
+                                                        style="width: 1rem; height: 1rem; accent-color: #f97316; margin-right: 0.75rem;">
+                                                    <span style="color: #111827;">
+                                                        {!! replaceMixedFractions($option->text) !!}
+                                                    </span>
+                                                    <input type="hidden" id="optionAnswer" value="{{ $option->text }}">
+                                                </label>
+                                            @endforeach
+                                        </div>
+                                    @elseif ($currentQuestion->type === 'image')
+                                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 1.5rem;">
+                                            @foreach ($currentQuestion->images as $index => $image)
+                                                @php
+                                                    $checked =
+                                                        $image->id === (int) $getAnserSessionIndexWritten
+                                                            ? 'checked'
+                                                            : '';
+                                                @endphp
+                                                <label for="img-option-{{ $image->id }}"
+                                                    style="display: flex; align-items: center; gap: 1rem; border: 2px solid {{ $checked ? '#f97316' : '#e5e7eb' }}; border-radius: 0.5rem; padding: 1rem; cursor: pointer; transition: all 0.3s; background-color: {{ $checked ? '#fff7ed' : 'white' }};"
+                                                    onmouseover="if (!this.querySelector('input').checked) { this.style.backgroundColor='#f9fafb'; }"
+                                                    onmouseout="if (!this.querySelector('input').checked) { this.style.backgroundColor='white'; }">
+                                                    <input type="radio" id="img-option-{{ $image->id }}"
+                                                        name="answerOfQuestion[{{ $currentQuestionIndex }}]"
+                                                        value="{{ $image->id }}" {{ $checked }}
+                                                        style="flex-shrink: 0; width: 1rem; height: 1rem; accent-color: #f97316;">
+                                                    <div style="text-align: center; flex-grow: 1;">
+                                                        <img src="{{ asset('images_options/' . $image->img_name) }}"
+                                                            style="max-width: 100%; height: auto; max-height: 8rem; object-fit: contain; border-radius: 0.25rem;"
+                                                            alt="Image option">
+                                                    </div>
+                                                    <input type="hidden" id="imgOptionAnswer"
+                                                        value="{{ $image->img_name }}">
+                                                </label>
+                                            @endforeach
+                                        </div>
+                                    @elseif ($currentQuestion->type === 'fraction')
+                                        @if ($currentQuestion->fractions->first()->type === 'written')
+                                            <div class="mb-6">
+                                                <input type="hidden" id="type_frac" name="currentQuestionFracType"
+                                                    value="{{ $currentQuestion->fractions->first()->type }}">
+                                                <input type="hidden" id="answer_type_frac"
+                                                    name="currentQuestionFracAnswerType"
+                                                    value="{{ $currentQuestion->fractions->first()->answer_type }}">
 
-                                                    <label for="fractioption-{{ $option->id }}">
+                                                @if ($currentQuestion->fractions->first()->answer_type === 'frac')
+                                                    <div class="flex items-center justify-center space-x-2">
+                                                        <div class="flex flex-col items-center">
+                                                            <input type='text' name='currentQuestionFracNumerator'
+                                                                placeholder='เศษ'
+                                                                class='w-16 px-2 py-1 text-center border border-gray-300 rounded focus:ring-2 focus:ring-orange-500 focus:border-orange-500'
+                                                                value="{{ $getAnserSessionIndexNumerator }}">
+                                                            <div class="w-16 h-px bg-gray-400 my-1"></div>
+                                                            <input type='text' name='currentQuestionFracDenominator'
+                                                                placeholder='ส่วน'
+                                                                class='w-16 px-2 py-1 text-center border border-gray-300 rounded focus:ring-2 focus:ring-orange-500 focus:border-orange-500'
+                                                                value="{{ $getAnserSessionIndexDenominator }}">
+                                                        </div>
+                                                    </div>
+                                                @else
+                                                    <div class="flex items-center justify-center space-x-3">
+                                                        <input type='text' name='currentQuestionFracWhole'
+                                                            placeholder='จำนวนเต็ม'
+                                                            class='w-20 px-2 py-1 text-center border border-gray-300 rounded focus:ring-2 focus:ring-orange-500 focus:border-orange-500'
+                                                            value="{{ $getAnserSessionIndexWhole }}" />
+                                                        <div class="flex flex-col items-center">
+                                                            <input type='text' name='currentQuestionFracNumerator'
+                                                                placeholder='เศษ'
+                                                                class='w-16 px-2 py-1 text-center border border-gray-300 rounded focus:ring-2 focus:ring-orange-500 focus:border-orange-500'
+                                                                value="{{ $getAnserSessionIndexNumerator }}">
+                                                            <div class="w-16 h-px bg-gray-400 my-1"></div>
+                                                            <input type='text' name='currentQuestionFracDenominator'
+                                                                placeholder='ส่วน'
+                                                                class='w-16 px-2 py-1 text-center border border-gray-300 rounded focus:ring-2 focus:ring-orange-500 focus:border-orange-500'
+                                                                value="{{ $getAnserSessionIndexDenominator }}">
+                                                        </div>
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        @else
+                                            <!-- Fraction options -->
+                                            <div class="space-y-3 mb-6">
+                                                <input type="hidden" name="currentQuestionFracType" value="options">
+                                                @foreach ($currentQuestion->fractions as $index => $option)
+                                                    @php
+                                                        $checked =
+                                                            $option->id === (int) $getAnserSessionIndexWritten
+                                                                ? 'checked'
+                                                                : '';
+                                                        if ($option->answer_type == 'mixed') {
+                                                            $textOption = toMixedFraction(
+                                                                $option->whole ?? null,
+                                                                $option->numerator,
+                                                                $option->denominator,
+                                                            );
+                                                        } else {
+                                                            $textOption = toFraction(
+                                                                $option->numerator,
+                                                                $option->denominator,
+                                                            );
+                                                        }
+                                                    @endphp
+                                                    <label for="fractionOption-{{ $option->id }}"
+                                                        class="flex items-center p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors {{ $checked ? 'border-orange-500 bg-orange-50' : '' }}">
                                                         <input type="radio" id="fractionOption-{{ $option->id }}"
                                                             name="answerOfQuestion[{{ $currentQuestionIndex }}]"
-                                                            value="{{ $option->id }}" {{ $checked }}>
-                                                        @php
-                                                            if ($option->answer_type == 'mixed') {
-                                                                # code...
-                                                                $textOption = toMixedFraction(
-                                                                    $option->whole ?? null,
-                                                                    $option->numerator,
-                                                                    $option->denominator,
-                                                                );
-                                                            } else {
-                                                                $textOption = toFraction(
-                                                                    $option->numerator,
-                                                                    $option->denominator,
-                                                                );
-                                                            }
-
-                                                        @endphp
-
-                                                        {{ $textOption }}
-
+                                                            value="{{ $option->id }}" {{ $checked }}
+                                                            class="w-4 h-4 text-orange-500 border-gray-300 focus:ring-orange-500">
+                                                        <span class="ml-3 text-gray-900">
+                                                            {!! $textOption !!}
+                                                        </span>
                                                         <input type="hidden" id="optionFracAnswer"
                                                             value="{{ $option->text }}">
                                                     </label>
-                                                </div>
-                                            @endforeach
+                                                @endforeach
+                                            </div>
                                         @endif
                                     @endif
                                     <div id="answer-container">
 
                                     </div>
-                                    <div class="mt-4">
+                                    <!-- Navigation Buttons -->
+                                    <div class="flex justify-center mt-8">
                                         @if ($currentQuestionIndex < $questionsCount - 1)
                                             <button type="submit" id="nextQuestion"
-                                                class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md font-semibold text-xs uppercase tracking-widest shadow-sm focus:outline-none disabled:opacity-25 transition ease-in-out duration-150">
-                                                Next question
+                                                style="background-color: #f97316; color: white; font-weight: 500; padding: 0.75rem 1.5rem; border-radius: 0.5rem; transition: all 0.3s; cursor: pointer;"
+                                                class="hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2">
+                                                ถัดไป
                                             </button>
                                         @else
                                             <button type="submit"
-                                                class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest transition ease-in-out duration-150">
-                                                Submit
+                                                style="background-color: #34C759; color: white; font-weight: 500; padding: 0.75rem 1.5rem; border-radius: 0.5rem; transition: all 0.3s; cursor: pointer;"
+                                                class="hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+                                                ส่งคำตอบ
                                             </button>
                                         @endif
                                     </div>
@@ -464,49 +458,9 @@
 
                     </div>
                 </div>
-
-                <!-- Quiz Progress Section -->
-                <div
-                    style="
-                        flex: 1;
-                        padding: 1.5rem;
-                        background-color: #fdba74;
-                        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-                        border-radius: 0.5rem;
-                    ">
-
-                    <!-- Timer and Title -->
-                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
-                        <h3 style="font-size: 1.125rem; font-weight: 600;">Quiz Progress</h3>
-                        <div id="quiz-timer"
-                            style="color: white; background-color: #1f2937; border-radius: 9999px; padding: 0.5rem 1rem; font-size: 0.875rem; font-weight: 700;">
-                            0:00
-                        </div>
-                    </div>
-
-                    <!-- Navigation Buttons -->
-                    <div style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0.5rem;">
-                        @for ($i = 0; $i < $questionsCount; $i++)
-                            <button class="quiz-nav" data-question-index="{{ $i }}"
-                                style="
-                                    width: 2.5rem;
-                                    height: 2.5rem;
-                                    display: flex;
-                                    align-items: center;
-                                    justify-content: center;
-                                    border-radius: 9999px;
-                                    font-weight: 700;
-                                    color: #1f2937;
-                                    background-color: {{ $i == $currentQuestionIndex ? '#ffffff' : '#f97316' }};
-                                ">
-                                {{ $i + 1 }}
-                            </button>
-                        @endfor
-                    </div>
-                </div>
-
             </div>
         </div>
+    </div>
     </div>
 
 
