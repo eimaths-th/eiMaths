@@ -135,6 +135,19 @@
             border: 1px solid #ccc;
             border-radius: 4px;
         }
+
+        .modal-overlay {
+            backdrop-filter: blur(4px);
+        }
+
+        .symbol-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .tab-button.active {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        }
     </style>
     <script type="text/javascript" async
         src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
@@ -292,12 +305,39 @@
                                     <input type="hidden" id="correctAnswer" value="{{ $correctAnswer }}">
                                     @if ($currentQuestion->type === 'written')
                                         <div style="margin-bottom: 1.5rem;">
-                                            <input type="text" name="answerOfQuestion[{{ $currentQuestionIndex }}]"
-                                                style="width: 100%; padding: 0.75rem 1rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none; transition: all 0.3s;"
-                                                onfocus="this.style.borderColor='#f97316'; this.style.boxShadow='0 0 0 2px rgba(249, 115, 22, 0.2)'"
-                                                onblur="this.style.borderColor='#d1d5db'; this.style.boxShadow='none'"
-                                                placeholder="กรอกคำตอบของคุณ" autocomplete="off"
-                                                value="{{ $getAnserSessionIndexWritten }}">
+                                            <div class="flex gap-3">
+                                                <input type="text" name="answerOfQuestion[{{ $currentQuestionIndex }}]"
+                                                    id="answerOfQuestion_{{ $currentQuestionIndex }}"
+                                                    class="shadow-md hover:shadow-lg"
+                                                    style="width: 100%; padding: 0.75rem 1rem; border: 1px solid #d1d5db; border-radius: 0.5rem; outline: none; transition: all 0.3s;"
+                                                    onfocus="this.style.borderColor='#f97316'; this.style.boxShadow='0 0 0 2px rgba(249, 115, 22, 0.2)'"
+                                                    onblur="this.style.borderColor='#d1d5db'; this.style.boxShadow='none'"
+                                                    placeholder="กรอกคำตอบของคุณ" autocomplete="off"
+                                                    value="{{ $getAnserSessionIndexWritten }}">
+                                                {{-- <input type="text" id="mathInput"
+                                                    class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg"
+                                                    placeholder="คลิกปุ่มเพื่อเลือกสัญลักษณ์ทางคณิตศาสตร์..." /> --}}
+                                                <button id="openModalBtn" type="button"
+                                                    style="padding: 0.75rem 1rem; background-color: #3b82f6; color: #ffffff; border-radius: 0.5rem; font-weight: 500; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); transition: all 0.3s; cursor: pointer; hover:background-color: #1d4ed8; hover:box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);">
+                                                    เลือกสัญลักษณ์
+                                                </button>
+
+                                                <button id="clearBtn"type="button"
+                                                    class="px-4 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all duration-200 shadow-md hover:shadow-lg">
+                                                    ล้าง
+                                                </button>
+                                            </div>
+                                            <div class="preview-answer"
+                                                style="margin-top: 1rem; padding: 1rem; background-color: #f9fafb; border: 1px solid #e5e7eb; border-radius: 0.5rem; display: none;">
+                                                <h3
+                                                    style="margin: 0 0 0.5rem 0; font-size: 14px; font-weight: 600; color: #6b7280;">
+                                                    Preview:</h3>
+                                                <p id="preview"
+                                                    style="margin: 0; padding: 0.5rem; background-color: white; border: 1px solid #d1d5db; border-radius: 0.375rem; min-height: 2rem; display: flex; align-items: center;">
+
+                                                </p>
+                                            </div>
+
                                         </div>
                                     @elseif ($currentQuestion->type === 'options')
                                         <div
@@ -385,8 +425,8 @@
                                                     }
 
                                                     /* .frac-inputs .frac-whole {
-                                                                    width: 5rem;
-                                                                } */
+                                                                                                            width: 5rem;
+                                                                                                        } */
 
                                                     .frac-inputs .frac-line {
                                                         width: 5.5rem;
@@ -488,9 +528,11 @@
             </div>
         </div>
     </div>
-
+    @include('home.modal_math')
 @endsection
 @push('scripts')
+    <script src="https://cdn.tailwindcss.com"></script>
+
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             const quizForm = document.getElementById("quiz-form");
@@ -574,23 +616,23 @@
     </script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            let secondsLeft = 0;
-            const timeElapsedSpan = document.getElementById('time-elapsed');
-            const quizForm = document.getElementById('quiz-form');
+        // document.addEventListener('DOMContentLoaded', function() {
+        //     let secondsLeft = 0;
+        //     const timeElapsedSpan = document.getElementById('time-elapsed');
+        //     const quizForm = document.getElementById('quiz-form');
 
-            setInterval(() => {
-                secondsLeft++;
-                let hours = Math.floor(secondsLeft / 3600).toString().padStart(2, '0');
-                let minutes = Math.floor((secondsLeft % 3600) / 60).toString().padStart(2, '0');
-                let seconds = (secondsLeft % 60).toString().padStart(2, '0');
-                timeElapsedSpan.textContent = `${hours}:${minutes}:${seconds}`;
-            }, 1000);
+        //     setInterval(() => {
+        //         secondsLeft++;
+        //         let hours = Math.floor(secondsLeft / 3600).toString().padStart(2, '0');
+        //         let minutes = Math.floor((secondsLeft % 3600) / 60).toString().padStart(2, '0');
+        //         let seconds = (secondsLeft % 60).toString().padStart(2, '0');
+        //         timeElapsedSpan.textContent = `${hours}:${minutes}:${seconds}`;
+        //     }, 1000);
 
-            quizForm.addEventListener('submit', () => {
-                document.getElementById('startTimeInSeconds').value = Math.floor(Date.now() / 1000);
-            });
-        });
+        //     quizForm.addEventListener('submit', () => {
+        //         document.getElementById('startTimeInSeconds').value = Math.floor(Date.now() / 1000);
+        //     });
+        // });
 
         $(document).ready(function() {
             // $('#nextQuestion').hide();
@@ -704,72 +746,696 @@
 
 
         });
-
-        // $(document).ready(function() {
-        //     $('#nextQuestion').hide();
-        //     $('#answer-container').hide();
-
-        //     $('#showAnswer').click(function() {
-        //         var userAnswer;
-        //         var correctAnswer = $('#correctAnswer').val();
-        //         var questionType = $('#currentQuestionType').val();
-
-        //         if (questionType === 'written') {
-        //             userAnswer = $(
-        //                     'input[name="answerOfQuestion[{{ $currentQuestionIndex }}]"]')
-        //                 .val();
-        //             $('input[name="answerOfQuestion[{{ $currentQuestionIndex }}]"]').prop(
-        //                 'disabled',
-        //                 true); // Disable text input
-        //         } else if (questionType === 'options' || questionType === 'image') {
-        //             userAnswer = $(
-        //                     'input[name="answerOfQuestion[{{ $currentQuestionIndex }}]"]:checked'
-        //                 )
-        //                 .val();
-        //             $('input[name="answerOfQuestion[{{ $currentQuestionIndex }}]"]').prop(
-        //                 'disabled',
-        //                 true); // Disable radio inputs
-        //         }
-        //         if (!userAnswer) {
-        //             alert('Please select an answer.');
-        //             return;
-        //         }
-        //         var data = {
-        //             userAnswer: userAnswer,
-        //             type: questionType,
-        //             correctAnswer: correctAnswer,
-        //             _token: '{{ csrf_token() }}'
-        //         };
-
-        //         var url = '{{ route('check.answer') }}';
-
-        //         $.ajax({
-        //             url: url,
-        //             method: 'POST',
-        //             data: data,
-        //             headers: {
-        //                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr(
-        //                     'content') // Include CSRF token
-        //             },
-        //             success: function(result) {
-        //                 console.log(result);
-        //                 if (result.checkCorrect == 1) {
-        //                     $('#answer-container').css('background-color',
-        //                         'lightgreen');
-        //                 } else {
-        //                     $('#answer-container').css('background-color',
-        //                         'lightcoral');
-        //                 }
-        //                 $('#answer-container').html(result.result);
-        //             },
-        //         });
-
-        //         // Show the "Next Question" button and hide the "Show Answer" button
-        //         $('#nextQuestion').show();
-        //         $('#answer-container').show();
-        //         $('#showAnswer').hide();
-        //     });
-
-        // });
     </script>
+    <script>
+        // Math symbols data
+        const mathSymbols = {
+            arithmetic: {
+                title: 'การคำนวณพื้นฐาน (Basic Arithmetic)',
+                symbols: [{
+                        symbol: '+',
+                        name: 'บวก (Addition)'
+                    },
+                    {
+                        symbol: '−',
+                        name: 'ลบ (Subtraction)'
+                    },
+                    {
+                        symbol: '×',
+                        name: 'คูณ (Multiplication)'
+                    },
+                    {
+                        symbol: '⋅',
+                        name: 'คูณ (Dot Multiplication)'
+                    },
+                    {
+                        symbol: '÷',
+                        name: 'หาร (Division)'
+                    },
+                    {
+                        symbol: '/',
+                        name: 'เศษส่วน (Slash Division)'
+                    },
+                    {
+                        symbol: '=',
+                        name: 'เท่ากับ (Equal)'
+                    },
+                    {
+                        symbol: '%',
+                        name: 'เปอร์เซ็นต์ (Percent)'
+                    },
+                    {
+                        symbol: '!',
+                        name: 'แฟกทอเรียล (Factorial)'
+                    },
+                    {
+                        symbol: '°',
+                        name: 'องศา (Degree)'
+                    }
+                ]
+            },
+            comparison: {
+                title: 'การเปรียบเทียบ (Comparison)',
+                symbols: [{
+                        symbol: '≠',
+                        name: 'ไม่เท่ากับ (Not Equal)'
+                    },
+                    {
+                        symbol: '<',
+                        name: 'น้อยกว่า (Less Than)'
+                    },
+                    {
+                        symbol: '>',
+                        name: 'มากกว่า (Greater Than)'
+                    },
+                    {
+                        symbol: '≤',
+                        name: 'น้อยกว่าหรือเท่ากับ (Less Than or Equal)'
+                    },
+                    {
+                        symbol: '≥',
+                        name: 'มากกว่าหรือเท่ากับ (Greater Than or Equal)'
+                    },
+                    {
+                        symbol: '≈',
+                        name: 'ประมาณ (Approximately)'
+                    }
+                ]
+            },
+            sets: {
+                title: 'ทฤษฎีเซต (Set Theory)',
+                symbols: [{
+                        symbol: '{ }',
+                        name: 'วงเล็บปีกกา (Set Brackets)'
+                    },
+                    {
+                        symbol: '∈',
+                        name: 'เป็นสมาชิกของ (Element Of)'
+                    },
+                    {
+                        symbol: '∉',
+                        name: 'ไม่เป็นสมาชิกของ (Not Element Of)'
+                    },
+                    {
+                        symbol: '⊂',
+                        name: 'เป็นสับเซตของ (Subset)'
+                    },
+                    {
+                        symbol: '⊃',
+                        name: 'เป็นซูเปอร์เซตของ (Superset)'
+                    },
+                    {
+                        symbol: '∪',
+                        name: 'ยูเนียน (Union)'
+                    },
+                    {
+                        symbol: '∩',
+                        name: 'อินเตอร์เซกชัน (Intersection)'
+                    },
+                    {
+                        symbol: '∅',
+                        name: 'เซตว่าง (Empty Set)'
+                    }
+                ]
+            },
+            logic: {
+                title: 'ตรรกศาสตร์ (Logic)',
+                symbols: [{
+                        symbol: '∀',
+                        name: 'สำหรับทุกตัว (For All)'
+                    },
+                    {
+                        symbol: '∃',
+                        name: 'มีบางตัว (There Exists)'
+                    },
+                    {
+                        symbol: '¬',
+                        name: 'นิเสธ (Not)'
+                    },
+                    {
+                        symbol: '∧',
+                        name: 'และ (And)'
+                    },
+                    {
+                        symbol: '∨',
+                        name: 'หรือ (Or)'
+                    },
+                    {
+                        symbol: '→',
+                        name: 'ถ้า...แล้ว... (If...Then)'
+                    },
+                    {
+                        symbol: '↔',
+                        name: 'ก็ต่อเมื่อ (If and Only If)'
+                    }
+                ]
+            },
+            calculus: {
+                title: 'แคลคูลัสและพีชคณิตขั้นสูง (Calculus & Advanced Algebra)',
+                symbols: [{
+                        symbol: '∑',
+                        name: 'ซิกมา (Summation)'
+                    },
+                    {
+                        symbol: '∏',
+                        name: 'พายตัวใหญ่ (Product)'
+                    },
+                    {
+                        symbol: '∫',
+                        name: 'อินทิกรัล (Integral)'
+                    },
+                    {
+                        symbol: 'd/dx',
+                        name: 'อนุพันธ์ (Derivative)'
+                    },
+                    {
+                        symbol: '∂',
+                        name: 'อนุพันธ์ย่อย (Partial Derivative)'
+                    },
+                    {
+                        symbol: '∞',
+                        name: 'อนันต์ (Infinity)'
+                    },
+                    {
+                        symbol: '√',
+                        name: 'รากที่สอง (Square Root)'
+                    },
+                    {
+                        symbol: '∛',
+                        name: 'รากที่สาม (Cube Root)'
+                    },
+                    {
+                        symbol: '|x|',
+                        name: 'ค่าสัมบูรณ์ (Absolute Value)'
+                    }
+                ]
+            },
+            greek: {
+                title: 'อักษรกรีก (Greek Letters)',
+                symbols: [{
+                        symbol: 'π',
+                        name: 'พาย (Pi)'
+                    },
+                    {
+                        symbol: 'θ',
+                        name: 'ทีตา (Theta)'
+                    },
+                    {
+                        symbol: 'α',
+                        name: 'อัลฟา (Alpha)'
+                    },
+                    {
+                        symbol: 'β',
+                        name: 'เบตา (Beta)'
+                    },
+                    {
+                        symbol: 'γ',
+                        name: 'แกมมา (Gamma)'
+                    },
+                    {
+                        symbol: 'Δ',
+                        name: 'เดลตาตัวใหญ่ (Delta)'
+                    },
+                    {
+                        symbol: 'δ',
+                        name: 'เดลตาตัวเล็ก (delta)'
+                    },
+                    {
+                        symbol: 'λ',
+                        name: 'แลมบ์ดา (Lambda)'
+                    },
+                    {
+                        symbol: 'μ',
+                        name: 'มิว (Mu)'
+                    },
+                    {
+                        symbol: 'σ',
+                        name: 'ซิกมาตัวเล็ก (sigma)'
+                    }
+                ]
+            },
+            fraction: {
+                title: 'เศษส่วน (Fraction)',
+                symbols: [{
+                        symbol: 'เศษส่วนธรรมดา',
+                        name: 'เศษส่วนธรรมดา (Simple Fraction)',
+                        type: 'fraction',
+                        fractionType: 'simple'
+                    },
+                    {
+                        symbol: 'จำนวนคละ',
+                        name: 'จำนวนคละ (Mixed Number)',
+                        type: 'fraction',
+                        fractionType: 'mixed'
+                    }
+                ]
+            }
+        };
+
+        // DOM elements
+        const mathInput = document.getElementById('answerOfQuestion_{{ $currentQuestionIndex }}');
+        const mathModal = document.getElementById('mathModal');
+        const openModalBtn = document.getElementById('openModalBtn');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const closeModalFooterBtn = document.getElementById('closeModalFooterBtn');
+
+        // เพิ่ม event listener สำหรับ realtime preview
+        if (mathInput) {
+            // แสดง preview เมื่อเริ่มต้น
+            updatePreview();
+
+            // แสดง preview แบบ realtime เมื่อพิมพ์
+            mathInput.addEventListener('input', updatePreview);
+            mathInput.addEventListener('keyup', updatePreview);
+            mathInput.addEventListener('paste', () => {
+                setTimeout(updatePreview, 10); // delay เล็กน้อยสำหรับ paste
+            });
+        }
+        const clearBtn = document.getElementById('clearBtn');
+        const previewText = document.getElementById('previewText');
+        const categoryTitle = document.getElementById('categoryTitle');
+        const symbolsGrid = document.getElementById('symbolsGrid');
+        const categoryTabs = document.getElementById('categoryTabs');
+
+        let activeCategory = 'arithmetic';
+
+        // Initialize
+        function init() {
+            renderSymbols(activeCategory);
+            setupEventListeners();
+            updatePreview();
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            openModalBtn.addEventListener('click', openModal);
+            closeModalBtn.addEventListener('click', closeModal);
+            closeModalFooterBtn.addEventListener('click', closeModal);
+            clearBtn.addEventListener('click', clearInput);
+            mathInput.addEventListener('input', updatePreview);
+
+            // Category tabs
+            categoryTabs.addEventListener('click', (e) => {
+                if (e.target.classList.contains('tab-button')) {
+                    const category = e.target.dataset.category;
+                    setActiveCategory(category);
+                }
+            });
+
+            // Close modal on overlay click
+            mathModal.addEventListener('click', (e) => {
+                closeModal();
+            });
+
+            // Close modal on Escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && !mathModal.classList.contains('hidden')) {
+                    closeModal();
+                }
+            });
+        }
+
+        // Open modal
+        function openModal() {
+            mathModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Close modal
+        function closeModal() {
+            mathModal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Clear input
+        function clearInput() {
+            mathInput.value = '';
+            updatePreview();
+        }
+
+
+
+        // Update preview
+        function updatePreview() {
+            const value = mathInput.value.trim();
+            const previewElement = document.getElementById('preview');
+
+            var preview = replaceMixedFractions(value);
+            if (previewElement) {
+                if (value) {
+                    // แสดง preview ของ input value
+                    previewElement.innerHTML =
+                        `<span style="font-family: 'Times New Roman', serif; font-size: 18px; color: #374151;">${preview}</span>`;
+                    previewElement.parentElement.style.display = 'block';
+
+                    // เรียก MathJax เพื่อ render LaTeX
+                    if (typeof MathJax !== 'undefined' && MathJax.typesetPromise) {
+                        MathJax.typesetPromise([previewElement]).catch(function(err) {
+                            console.log('MathJax typeset error:', err);
+                        });
+                    }
+                } else {
+                    // ซ่อน preview ถ้าไม่มี value
+                    previewElement.innerHTML = '';
+                    previewElement.parentElement.style.display = 'none';
+                }
+            }
+        }
+
+        // JavaScript functions for fraction conversion
+        function replaceMixedFractions(text) {
+            return text.replace(/(MixFrac|Frac)\((\d+)(?:,\s*(\d+))?(?:,\s*(\d+))?\)/g, function(match, func, arg1, arg2,
+                arg3) {
+                const functionName = func; // "MixFrac" or "Frac"
+                let whole = null;
+                let numerator, denominator;
+
+                if (functionName === 'MixFrac') {
+                    if (arg3 !== undefined) {
+                        // MixFrac(whole, num, denom)
+                        whole = parseInt(arg1);
+                        numerator = parseInt(arg2);
+                        denominator = parseInt(arg3);
+                    } else {
+                        // Fallback if only 2 numbers - MixFrac(num, denom)
+                        numerator = parseInt(arg1);
+                        denominator = parseInt(arg2);
+                    }
+                    return toMixedFraction(whole, numerator, denominator);
+                } else {
+                    // Frac(num, denom)
+                    numerator = parseInt(arg1);
+                    denominator = parseInt(arg2);
+                    return toFraction(numerator, denominator);
+                }
+            });
+        }
+
+        function textFraction(numerator, denominator) {
+            // This generates LaTeX syntax for the fraction
+            return `\\(\\frac{${numerator}}{${denominator}}\\)`;
+        }
+
+        function toFraction(numerator, denominator) {
+            // if (numerator % denominator === 0) {
+            //     return (numerator / denominator).toString(); // Whole number
+            // }
+            return `\\(\\frac{${numerator}}{${denominator}}\\)`;
+        }
+
+        function toMixedFraction(whole = null, numerator, denominator) {
+            let remainder;
+
+            if (whole !== null && whole !== undefined) {
+                remainder = numerator % denominator;
+                whole = whole + Math.floor(numerator / denominator);
+            } else {
+                if (numerator % denominator === 0) {
+                    return (numerator / denominator).toString(); // Whole number
+                }
+
+                whole = Math.floor(numerator / denominator);
+                remainder = numerator % denominator;
+            }
+
+            return whole > 0 ?
+                `\\(${whole} \\frac{${remainder}}{${denominator}}\\)` :
+                `\\(\\frac{${remainder}}{${denominator}}\\)`;
+        }
+        // Set active category
+        function setActiveCategory(category) {
+            activeCategory = category;
+
+            // Update tab buttons
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                if (btn.dataset.category === category) {
+                    btn.classList.add('active', 'text-white');
+                    btn.classList.remove('text-gray-600', 'hover:text-blue-600', 'hover:bg-gray-100');
+                } else {
+                    btn.classList.remove('active', 'text-white');
+                    btn.classList.add('text-gray-600', 'hover:text-blue-600', 'hover:bg-gray-100');
+                }
+            });
+
+            renderSymbols(category);
+        }
+
+        // Render symbols
+        function renderSymbols(category) {
+            const categoryData = mathSymbols[category];
+            categoryTitle.textContent = categoryData.title;
+
+            symbolsGrid.innerHTML = '';
+
+            categoryData.symbols.forEach(item => {
+                const button = document.createElement('button');
+                button.className =
+                    'symbol-button p-4 border border-gray-200 rounded-lg hover:bg-blue-50 hover:border-blue-300 transition-all duration-200 group';
+                button.title = item.name;
+                button.innerHTML = `
+                    <div class="text-2xl font-bold text-center mb-2 text-gray-800 group-hover:text-blue-600">
+                        ${item.symbol}
+                    </div>
+                    <div class="text-xs text-gray-600 text-center leading-tight">
+                        ${item.name}
+                    </div>
+                `;
+
+                button.addEventListener('click', () => {
+                    if (item.type === 'fraction') {
+                        insertFraction(item.fractionType);
+                    } else {
+                        insertSymbol(item.symbol);
+                    }
+                });
+
+                symbolsGrid.appendChild(button);
+            });
+        }
+
+        // Insert symbol into input
+        function insertSymbol(symbol) {
+            const cursorPosition = mathInput.selectionStart;
+            const currentValue = mathInput.value;
+            const newValue = currentValue.slice(0, cursorPosition) + symbol + currentValue.slice(cursorPosition);
+
+            mathInput.value = newValue;
+            mathInput.focus();
+            mathInput.setSelectionRange(cursorPosition + symbol.length, cursorPosition + symbol.length);
+
+            updatePreview();
+        }
+
+        // Insert fraction form
+        function insertFraction(fractionType) {
+            // Close the modal first
+            closeModal();
+
+            // Create fraction form container
+            const fractionContainer = document.createElement('div');
+            fractionContainer.className = 'fraction-form-container';
+            fractionContainer.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: white;
+                padding: 30px;
+                border-radius: 12px;
+                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+                z-index: 1000;
+                min-width: 400px;
+            `;
+
+            let formHTML = '';
+            if (fractionType === 'mixed') {
+                formHTML = `
+                    <h3 style="margin-bottom: 20px; color: #374151; font-size: 18px; font-weight: 600;">จำนวนคละ (Mixed Number)</h3>
+                    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+                        <input type="text" id="fracWhole" placeholder="จำนวนเต็ม" style="
+                            width: 80px;
+                            padding: 10px;
+                            border: 2px solid #d1d5db;
+                            border-radius: 6px;
+                            text-align: center;
+                            font-size: 16px;
+                        " />
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            <input type="text" id="fracNumerator" placeholder="เศษ" style="
+                                width: 80px;
+                                padding: 8px;
+                                border: 2px solid #d1d5db;
+                                border-radius: 6px;
+                                text-align: center;
+                                font-size: 16px;
+                            " />
+                            <div style="height: 2px; background: #374151; margin: 0 5px;"></div>
+                            <input type="text" id="fracDenominator" placeholder="ส่วน" style="
+                                width: 80px;
+                                padding: 8px;
+                                border: 2px solid #d1d5db;
+                                border-radius: 6px;
+                                text-align: center;
+                                font-size: 16px;
+                            " />
+                        </div>
+                    </div>
+                `;
+            } else {
+                formHTML = `
+                    <h3 style="margin-bottom: 20px; color: #374151; font-size: 18px; font-weight: 600;">เศษส่วนธรรมดา (Simple Fraction)</h3>
+                    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px; justify-content: center;">
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            <input type="text" id="fracNumerator" placeholder="เศษ" style="
+                                width: 100px;
+                                padding: 10px;
+                                border: 2px solid #d1d5db;
+                                border-radius: 6px;
+                                text-align: center;
+                                font-size: 16px;
+                            " />
+                            <div style="height: 2px; background: #374151; margin: 0 10px;"></div>
+                            <input type="text" id="fracDenominator" placeholder="ส่วน" style="
+                                width: 100px;
+                                padding: 10px;
+                                border: 2px solid #d1d5db;
+                                border-radius: 6px;
+                                text-align: center;
+                                font-size: 16px;
+                            " />
+                        </div>
+                    </div>
+                `;
+            }
+
+            formHTML += `
+                <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                    <button id="cancelFraction" style="
+                        padding: 10px 20px;
+                        background: #6b7280;
+                        color: white;
+                        border: none;
+                        border-radius: 6px;
+                        cursor: pointer;
+                        font-size: 14px;
+                    ">ยกเลิก</button>
+                    <button id="insertFractionBtn" style="
+                        padding: 10px 20px;
+                        background: #f97316;
+                        color: white;
+                        border: none;
+                        border-radius: 6px;
+                        cursor: pointer;
+                        font-size: 14px;
+                    ">เพิ่มเศษส่วน</button>
+                </div>
+            `;
+
+            fractionContainer.innerHTML = formHTML;
+
+            // Create overlay
+            const overlay = document.createElement('div');
+            overlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 999;
+            `;
+
+            document.body.appendChild(overlay);
+            document.body.appendChild(fractionContainer);
+
+            // Event listeners
+            document.getElementById('cancelFraction').addEventListener('click', () => {
+                document.body.removeChild(overlay);
+                document.body.removeChild(fractionContainer);
+            });
+
+            document.getElementById('insertFractionBtn').addEventListener('click', () => {
+                const numerator = document.getElementById('fracNumerator').value.trim();
+                const denominator = document.getElementById('fracDenominator').value.trim();
+
+                if (!numerator || !denominator) {
+                    alert('กรุณากรอกข้อมูลเศษและส่วน');
+                    return;
+                }
+
+                let output = '';
+                if (fractionType === 'mixed') {
+                    const whole = document.getElementById('fracWhole').value.trim();
+                    if (whole) {
+                        // คำนวณจำนวนคละให้เป็นเศษส่วนธรรมดา
+                        // สูตร: (จำนวนเต็ม × ส่วน + เศษ) / ส่วน
+                        const wholeNum = parseInt(whole);
+                        const numeratorNum = parseInt(numerator);
+                        const denominatorNum = parseInt(denominator);
+
+                        if (isNaN(wholeNum) || isNaN(numeratorNum) || isNaN(denominatorNum)) {
+                            alert('กรุณากรอกตัวเลขที่ถูกต้อง');
+                            return;
+                        }
+
+                        const newNumerator = (wholeNum * denominatorNum) + numeratorNum;
+                        output = `MixFrac(${newNumerator},${denominatorNum})`;
+                    } else {
+                        output = `Frac(${numerator},${denominator})`;
+                    }
+                } else {
+                    output = `Frac(${numerator},${denominator})`;
+                }
+
+                // Insert into math input
+                const cursorPosition = mathInput.selectionStart;
+                const currentValue = mathInput.value;
+                const newValue = currentValue.slice(0, cursorPosition) + output + currentValue.slice(
+                    cursorPosition);
+
+                mathInput.value = newValue;
+                mathInput.focus();
+                mathInput.setSelectionRange(cursorPosition + output.length, cursorPosition + output.length);
+
+                // Clean up
+                document.body.removeChild(overlay);
+                document.body.removeChild(fractionContainer);
+
+                updatePreview();
+            });
+
+            // Focus on first input
+            setTimeout(() => {
+                if (fractionType === 'mixed') {
+                    document.getElementById('fracWhole').focus();
+                } else {
+                    document.getElementById('fracNumerator').focus();
+                }
+            }, 100);
+        }
+
+        // Initialize the app
+        init();
+    </script>
+
+    <!-- MathJax Configuration and CDN -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [
+                    ['\\(', '\\)']
+                ],
+                displayMath: [
+                    ['\\[', '\\]']
+                ],
+                processEscapes: true,
+                processEnvironments: true
+            },
+            options: {
+                skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+            }
+        };
+    </script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 @endpush
