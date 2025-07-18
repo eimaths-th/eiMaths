@@ -151,9 +151,9 @@ if (!function_exists('textFraction')) {
 if (!function_exists('toFraction')) {
     function toFraction($numerator, $denominator)
     {
-        if ($numerator % $denominator == 0) {
-            return (string) ($numerator / $denominator); // Whole number
-        }
+        // if ($numerator % $denominator == 0) {
+        //     return (string) ($numerator / $denominator); // Whole number
+        // }
         return "\(\\frac{{$numerator}}{{$denominator}}\)";
     }
 }

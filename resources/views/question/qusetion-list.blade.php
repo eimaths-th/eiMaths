@@ -270,13 +270,8 @@
 
     </section>
 
-    {{-- @include('question.question-form', ['editing' => false, 'question' => null, 'options' => []]) --}}
     @include('question.question-form', ['editing' => true, 'question' => null, 'options' => []])
 
-
-    {{-- @include('question.edit') --}}
-
-    {{--  {!! $data->render() !!} --}}
 @endsection
 
 @section('script')
