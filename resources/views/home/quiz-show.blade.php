@@ -147,7 +147,7 @@
         <div style="background-color: white; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1); border-bottom: 1px solid #e5e7eb;">
             <div style="max-width: 80rem; margin: 0 auto; padding: 1rem;">
                 <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
-                    <h1 style="font-size: 1.125rem; font-weight: 600; color: #1f2937;">คณิตศาสตร์</h1>
+                    <h1 style="font-size: 1.125rem; font-weight: 600; color: #1f2937;"></h1>
                     <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; color: #4b5563;">
                         <svg style="width: 1rem; height: 1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

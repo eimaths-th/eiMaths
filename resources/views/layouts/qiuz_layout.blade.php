@@ -8,7 +8,7 @@
 <body class="font-sans antialiased" style="display: flex; flex-direction: column; min-height: 100vh; margin: 0;">
     <div class="min-h-screen bg-gray-100">
         @include('layouts.nav-bar')
-
+        <hr>
         <!-- Page Heading -->
         @if (isset($header))
             <header class="bg-white shadow">
@@ -18,6 +18,7 @@
                     </h2>
                 </div>
             </header>
+            <hr>
         @endif
 
         <!-- Page Content -->
