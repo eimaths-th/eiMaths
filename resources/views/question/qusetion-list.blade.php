@@ -130,40 +130,37 @@
         }
 
         .switch_toggle {
-            position: relative;
-            display: inline-block;
-            width: 50px;
-            height: 28px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            /* spacing between text and toggle */
         }
 
-        .switch_toggle input {
-            opacity: 0;
-            width: 0;
-            height: 0;
+        .switch_toggle input[type="checkbox"] {
+            display: none;
         }
 
         .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 20px;
             background-color: #ccc;
-            transition: .4s;
             border-radius: 34px;
+            cursor: pointer;
+            transition: 0.4s;
         }
 
         .slider::before {
-            position: absolute;
             content: "";
-            height: 22px;
-            width: 22px;
-            left: 3px;
-            bottom: 3px;
+            position: absolute;
+            height: 16px;
+            width: 16px;
+            left: 2px;
+            bottom: 2px;
             background-color: white;
-            transition: .4s;
             border-radius: 50%;
+            transition: 0.4s;
         }
 
         input:checked+.slider {
@@ -171,7 +168,7 @@
         }
 
         input:checked+.slider::before {
-            transform: translateX(22px);
+            transform: translateX(20px);
         }
     </style>
     <script type="text/javascript" async
@@ -232,12 +229,51 @@
                                     });
                                 </script>
                             @endif
-                            <div>
-                                <label class="switch_toggle">
-                                    <input type="checkbox" class="my-question">
-                                    <i class="slider round"></i>
-                                </label>
+
+                            {{-- center between checkbox and text    --}}
+
+                            {{-- i want to add 3 select box for grade, term, level and script for search --}}
+
+                            <div class="row searchQuestion mb-3">
+                                <div class="col-md-3">
+                                    <label class="switch_toggle">
+                                        <span>My Question</span>
+                                        <input type="checkbox" class="my-question">
+                                        <span class="slider round"></span>
+                                    </label>
+                                </div>
+                                <div class="col-md-3">
+                                    <select id="filter-grade" class="form-control">
+                                        <option value="">All Grades</option>
+                                        <option value="K1">K1</option>
+                                        <option value="K2">K2</option>
+                                        <option value="P1">P1</option>
+                                        <option value="P2">P2</option>
+                                        <option value="P3">P3</option>
+                                        <option value="P4">P4</option>
+                                        <option value="P5">P5</option>
+                                        <option value="P6">P6</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <select id="filter-term" class="form-control">
+                                        <option value="">All Terms</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <select id="filter-section" class="form-control">
+                                        <option value="">All Level</option>
+                                        @for ($i = 1; $i <= 20; $i++)
+                                            <option value="{{ $i }}">{{ $i }}</option>
+                                        @endfor
+                                    </select>
+                                </div>
                             </div>
+
                             <table id="Listview" class="table table-bordered table-striped table-hover">
                                 <thead>
                                     <tr>
@@ -271,30 +307,127 @@
     </section>
 
     @include('question.question-form', ['editing' => true, 'question' => null, 'options' => []])
-
 @endsection
 
 @section('script')
     <script>
+        // Function to reload DataTable with given parameters
+        function reloadDataTable(check, grade, term, section) {
+            if ($.fn.DataTable.isDataTable('#Listview')) {
+                $('#Listview').DataTable().destroy();
+            }
+
+            $('#Listview').DataTable({
+                processing: true,
+                serverSide: true,
+                drawCallback: function() {
+                    if (typeof MathJax !== "undefined") {
+                        MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+                    }
+                },
+                ajax: {
+                    url: '{{ route('questions') }}',
+                    data: {
+                        check: check,
+                        grade: grade,
+                        term: term,
+                        section: section
+                    }
+                },
+                columns: [{
+                        data: '#',
+                        name: '#',
+                        createdCell: function(td, cellData, rowData, row, col) {
+                            $(td).addClass('text-nowrap').css('width', '1%');
+                        }
+                    },
+                    {
+                        data: 'code',
+                        name: 'code',
+                        createdCell: function(td, cellData, rowData, row, col) {
+                            $(td).addClass('text-nowrap').css('width', '1%');
+                        }
+                    },
+                    {
+                        data: 'text',
+                        name: 'text',
+                        render: function(data, type, row) {
+                            // if (type === 'display' && data.length > 500) {
+                            //     return '<div style="max-width: 500px; word-wrap: break-word; white-space: normal;">' +
+                            //         data.substring(0, 500) + '...' +
+                            //         '</div>';
+                            // }
+                            return '<div style="max-width: 750px; word-wrap: break-word; white-space: normal;">' +
+                                data + '</div>';
+                        }
+                    },
+                    {
+                        data: 'level',
+                        name: 'level'
+                    },
+                    {
+                        data: 'term',
+                        name: 'term'
+                    },
+                    {
+                        data: 'section',
+                        name: 'section'
+                    },
+                    {
+                        data: 'type',
+                        name: 'type'
+                    },
+                    {
+                        data: 'option',
+                        name: 'option'
+                    },
+                    {
+                        data: 'action',
+                        name: 'action',
+                        orderable: false,
+                        searchable: false,
+                        createdCell: function(td, cellData, rowData, row, col) {
+                            $(td).addClass('text-nowrap').css('width', '1%');
+                        }
+                    }
+                ]
+            });
+        }
+        // Function to get current filter values
+        function getCurrentFilters() {
+            return {
+                check: $('.my-question').is(':checked') ? 1 : 0,
+                grade: $('#filter-grade').val(),
+                term: $('#filter-term').val(),
+                section: $('#filter-section').val()
+            };
+        }
+
+        // Event handler for My Question checkbox
         $(document).on('change', '.my-question', function() {
-            const check = $(this).is(':checked') ? 1 : 0;
+            const filters = getCurrentFilters();
 
             $.ajax({
                 url: '{{ route('questions') }}',
                 method: 'GET',
                 data: {
-
-                    check: check
+                    check: filters.check
                 },
                 success: function(res) {
                     toastr.success(res.message || 'Status updated');
-                    $('#Listview').DataTable().ajax.reload();
-
+                    (filters.check, filters.grade, filters.term, filters.section);
+                    reloadDataTable(filters.check, filters.grade, filters.term, filters.section);
                 },
                 error: function(err) {
                     toastr.error('Failed to update status');
                 }
             });
+        });
+
+        // Event handlers for filter select boxes
+        $(document).on('change', '#filter-grade, #filter-term, #filter-section', function() {
+            const filters = getCurrentFilters();
+            reloadDataTable(filters.check, filters.grade, filters.term, filters.section);
         });
     </script>
     @include('question.scripts')

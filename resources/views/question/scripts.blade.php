@@ -149,7 +149,11 @@
                 },
                 {
                     data: 'text',
-                    name: 'text'
+                    name: 'text',
+                    render: function(data, type, row) {
+                        return '<div style="max-width: 750px; word-wrap: break-word; white-space: normal;">' +
+                            data + '</div>';
+                    }
                 },
                 {
                     data: 'level',
@@ -301,6 +305,7 @@
                             toastr.success(data.message, {
                                 timeOut: 5000
                             });
+
                             table.row(el.parents('tr')).remove().draw();
                         } else {
                             toastr.error(data.message, {
@@ -330,6 +335,12 @@
             var btn =
                 '<button type="button" class="btn btn-success" id="SubmitCreateForm"> <i class="fas fa-download"></i> Save  </button>';
             $('#btn-submit').html(btn);
+            //how to clear image preview
+            $('#show-image-question-container').hide();
+            $('#add-image-question-container').html(addImgHtml).show();
+            $('#show-image-answer-explanation-container').hide();
+            $('#add-image-answer-explanation-container').html(addAnswerExplanationImgHtml).show();
+
 
             $('#CreateModal').modal('show');
         });
@@ -352,12 +363,21 @@
             formData.append('answer_explanation', $('#answer_explanation').val());
             formData.append('more_info_link', $("#more_info_link").val());
 
+            // Append main question image
             var fileInput = document.getElementById('imageQuestion');
-            var file = fileInput.files[0]; // Get the first file (if multiple, you can loop)
+            var file = fileInput.files[0];
+
 
             // Append the file to FormData
             if (file) {
                 formData.append('img_name', file);
+            }
+
+            // Append answer explanation image
+            var answerExplanationImageInput = document.getElementById('answer_explanation_image');
+            var file = answerExplanationImageInput.files[0];
+            if (file) {
+                formData.append('answer_explanation_image', file);
             }
 
             var written = $('#written').val();
@@ -490,6 +510,11 @@
     <input type="hidden" id="old_img_name" name="old_img_name" value="">
         `;
 
+        let addAnswerExplanationImgHtml = `
+    <input type="file" id="answer_explanation_image" name="answer_explanation_image" class="form-control mb-2">
+    <input type="hidden" id="old_answer_explanation_img_name" name="old_answer_explanation_img_name" value="">
+        `;
+
         // Load data for editing
         $(document).on('click', '#getEditData', function(e) {
             e.preventDefault();
@@ -531,6 +556,15 @@
                         $('#add-image-question-container').html(addImgHtml).show();
                     } else {
                         showImg1(res.question.img_name);
+                    }
+
+                    // Handle answer explanation image preview
+                    if (res.question.answer_explanation_image === null) {
+                        $('#show-image-answer-explanation-container').hide();
+                        $('#add-image-answer-explanation-container').html(
+                            addAnswerExplanationImgHtml).show();
+                    } else {
+                        showAnswerExplanationImg(res.question.answer_explanation_image);
                     }
 
                     if (res.question.type === 'fraction') {
@@ -576,6 +610,25 @@
         $(document).on('click', '#remove-show-image-question-container', function() {
             $('#show-image-question-container').hide();
             $('#add-image-question-container').html(addImgHtml).show();
+        });
+
+        // Show answer explanation image preview and hide file input
+        function showAnswerExplanationImg(filename) {
+            if (!filename) {
+                return;
+            }
+            const imageUrl = `/img_questions/${filename}`;
+            $('#preview-image-answer-explanation').attr('src', imageUrl);
+            $('#show-image-answer-explanation-container').show();
+            $('#add-image-answer-explanation-container').html(
+                `<input type="hidden" id="old_answer_explanation_img_name" name="old_answer_explanation_img_name" value="${filename}">`
+            );
+        }
+
+        // Handle "Remove Answer Explanation Image" button
+        $(document).on('click', '#remove-show-image-answer-explanation-btn', function() {
+            $('#show-image-answer-explanation-container').hide();
+            $('#add-image-answer-explanation-container').html(addAnswerExplanationImgHtml).show();
         });
 
         // function showImg1(imgName) {
@@ -654,6 +707,7 @@
             formData1.append('section', $('#section').val());
             formData1.append('code_snippet', $('#code_snippet').val());
             formData1.append('answer_explanation', $('#answer_explanation').val());
+
             formData1.append('more_info_link', $('#more_info_link').val());
             // formData1.append('type', selectedType);
             formData1.append('_token', token); // your CSRF token
@@ -668,6 +722,21 @@
                     formData1.append('old_img_name', oldImage);
                 }
             }
+
+            // Append answer explanation image file or old image name
+            const answerExplanationImageInput = document.getElementById('answer_explanation_image');
+            if (answerExplanationImageInput && answerExplanationImageInput.files.length > 0) {
+                formData1.append('answer_explanation_image', answerExplanationImageInput.files[0]);
+            } else {
+                const oldAnswerExplanationImage = $('#old_answer_explanation_img_name').val();
+                if (oldAnswerExplanationImage) {
+                    formData1.append('old_answer_explanation_image', oldAnswerExplanationImage);
+                }
+            }
+
+            // Append the remove flag for the answer explanation image
+            formData1.append('remove_answer_explanation_image', $('#remove_answer_explanation_image')
+                .val());
 
 
 

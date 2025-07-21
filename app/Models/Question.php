@@ -23,6 +23,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string $created_at
  * @property string $updated_at
  * @property string $deleted_at
+ * @property string $created_by
+ * @property string $updated_by
  * @property Answer[] $answers
  * @property Option[] $options
  * @property Quiz[] $quizzes
@@ -42,6 +44,7 @@ class Question extends Model
         'section',
         'code_snippet',
         'answer_explanation',
+        'answer_explanation_image',
         'more_info_link',
         'written_answer',
         'type',

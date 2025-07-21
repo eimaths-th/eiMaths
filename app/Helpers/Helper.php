@@ -83,7 +83,7 @@ use Nwidart\Modules\Facades\Module;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 
 
-
+// clean my code
 
 
 //fractional drisplay
@@ -113,6 +113,10 @@ if (!function_exists('generateQrCode')) {
 if (!function_exists('replaceMixedFractions')) {
     function replaceMixedFractions($text)
     {
+        // dd($text);
+        //how to delete space from the text
+        $text = str_replace(' ', '', $text);
+        // dd($text);
         return preg_replace_callback('/(MixFrac|Frac)\((\d+)(?:,\s*(\d+))?(?:,\s*(\d+))?\)/', function ($matches) {
 
             $function = $matches[1]; // "MixFrac" or "Frac"
@@ -124,6 +128,7 @@ if (!function_exists('replaceMixedFractions')) {
                     $whole = (int)$matches[2];
                     $numerator = (int)$matches[3];
                     $denominator = (int)$matches[4];
+                    // dd($whole, $numerator, $denominator);
                 } else {
                     // Fallback if only 2 numbers
                     $numerator = (int)$matches[2];
@@ -172,8 +177,9 @@ if (!function_exists('toMixedFraction')) {
             $whole = intdiv($numerator, $denominator);
             $remainder = $numerator % $denominator;
         }
-
-
+        // dd(\({$whole} \\frac{{$remainder}}{{$denominator}}\));
+        // echo "\({$whole} \\frac{{$remainder}}{{$denominator}}\)";
+        // dd('test');
         return $whole > 0
             ? "\({$whole} \\frac{{$remainder}}{{$denominator}}\)"
             : "\(\\frac{{$remainder}}{{$denominator}}\)";
@@ -302,15 +308,6 @@ if (!function_exists('create_commmission_list')) {
         checkCourseCurrent($user->id, $year, $month, $config_commission, $userCourseCount);
         incrementUserCourseCount($user->id, $countingCourse, $year, $month);
 
-        // return AffiliateCommissionList::create([
-        //     'payment_to' => $user->id,
-        //     'courses_pending_id' => $courses_pending_id,
-        //     'order_id' => $order_id,
-        //     'month' => $month,
-        //     'year' => $year,
-        //     'status' => 'pending',
-        //     'commission_amount' => $resultCommission,
-        // ]);
     }
 }
 

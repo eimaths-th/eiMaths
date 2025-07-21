@@ -43,11 +43,11 @@ class QuestionController extends Controller
         }, $text);
     }
 
-    public function textFraction($numerator, $denominator)
-    {
-        // This generates LaTeX syntax for the fraction
-        return "\\(\\frac{{$numerator}}{{$denominator}}\\)";
-    }
+        public function textFraction($numerator, $denominator)
+        {
+            // This generates LaTeX syntax for the fraction
+            return "\\(\\frac{{$numerator}}{{$denominator}}\\)";
+        }
     public function toFraction($numerator, $denominator)
     {
         if ($numerator % $denominator == 0) {
@@ -59,7 +59,7 @@ class QuestionController extends Controller
     function toMixedFraction($whole = null, $numerator, $denominator)
     {
         if ($whole) {
-            $remainder =$numerator % $denominator;
+            $remainder = $numerator % $denominator;
             $whole = $whole + intdiv($numerator, $denominator);
         } else {
             if ($numerator % $denominator == 0) {
@@ -78,15 +78,33 @@ class QuestionController extends Controller
     public function index(Request $request)
     {
         $check = $request->check;
-        if ($request->ajax()) {
+        $grade = $request->grade;
+        $term = $request->term;
+        $section = $request->section;
 
+        if ($request->ajax()) {
+            // Start with base query
             if ($check) {
-                # code...
-                $datas = Question::where('created_by', Auth::user()->id)->latest();
+                $datas = Question::where('created_by', Auth::user()->id);
             } else {
-                # code...
-                $datas = Question::latest();
+                $datas = Question::query();
             }
+
+            // Apply filters if provided
+            if (!empty($grade)) {
+                $datas->where('level', $grade);
+            }
+
+            if (!empty($term)) {
+                $datas->where('term', $term);
+            }
+
+            if (!empty($section)) {
+                $datas->where('section', $section);
+            }
+
+            // Apply ordering
+            $datas = $datas->latest();
 
             return datatables()->of($datas)
                 ->addColumn('#', function ($row) {
@@ -320,6 +338,14 @@ class QuestionController extends Controller
             $question->update(['img_name' => $fileName]);
         }
 
+        // Save answer explanation image
+        if ($request->hasFile('answer_explanation_image')) {
+            $file = $request->file('answer_explanation_image');
+            $fileName = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('img_questions'), $fileName);
+            $question->update(['answer_explanation_image' => $fileName]);
+        }
+
         // Store answer options
         if ($validatedData['type'] === 'options') {
             foreach ($request->options as $option) {
@@ -525,7 +551,7 @@ class QuestionController extends Controller
             if ($countCorrect == 0) {
                 return response()->json(['errors' => ['Please add at least one correct option']], 422);
             }
-        }else if($validatedData['type'] === 'fraction'){
+        } else if ($validatedData['type'] === 'fraction') {
 
 
 
@@ -560,13 +586,13 @@ class QuestionController extends Controller
                     'options.*.answer_type.required' => 'The selected option correctness is invalid',
                 ]);
             }
-
         }
 
         $question = Question::findOrFail($id);
 
         // dd($request->all());
-        $question->update([
+        // Update the question with basic fields
+        $updateData = [
             'text' => $request->input('text'),
             'code_snippet' => $request->input('code_snippet'),
             'term' => $request->input('term'),
@@ -577,7 +603,40 @@ class QuestionController extends Controller
             'type' => $request->input('type'),
             'updated_by' => Auth::user()->id,
             'written_answer' => $request->input('type') === 'written' ? $request->input('written_answer') : null,
-        ]);
+        ];
+
+        // Handle answer explanation image
+        $oldAnswerExplanationImage = $question->answer_explanation_image;
+        $removeAnswerExplanationImage = $request->input('remove_answer_explanation_image') === '1';
+
+        // 1. If user uploads a new answer explanation image
+        if ($request->hasFile('answer_explanation_image')) {
+            // Delete old answer explanation image if exists
+            if ($oldAnswerExplanationImage && file_exists(public_path('img_questions/' . $oldAnswerExplanationImage))) {
+                unlink(public_path('img_questions/' . $oldAnswerExplanationImage));
+            }
+
+            $file = $request->file('answer_explanation_image');
+            $fileName = 'explanation_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('img_questions'), $fileName);
+            $updateData['answer_explanation_image'] = $fileName;
+        }
+        // 2. If user removes the existing answer explanation image
+        elseif ($removeAnswerExplanationImage && $oldAnswerExplanationImage) {
+            // Delete the file
+            if (file_exists(public_path('img_questions/' . $oldAnswerExplanationImage))) {
+                unlink(public_path('img_questions/' . $oldAnswerExplanationImage));
+            }
+            $updateData['answer_explanation_image'] = null;
+        }
+        // 3. If no new image uploaded but user kept the old one
+        elseif ($oldAnswerExplanationImage && !$removeAnswerExplanationImage) {
+            $updateData['answer_explanation_image'] = $oldAnswerExplanationImage;
+        }
+        // 4. No action needed if there was no image and none is being added
+
+        // Update the question with all fields
+        $question->update($updateData);
         $oldImgName = $request->input('old_img_name');
 
         // 1. If user uploads a new image
@@ -664,7 +723,7 @@ class QuestionController extends Controller
                     }
                 }
             }
-        }else if($request->input('type') === 'fraction'){
+        } else if ($request->input('type') === 'fraction') {
             $question->written_answer = null;
             $question->images()->delete();
             $question->options()->delete();
