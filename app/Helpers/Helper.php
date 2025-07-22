@@ -126,8 +126,14 @@ if (!function_exists('replaceMixedFractions')) {
                     return toMixedFraction($whole, $numerator, $denominator);
                 } else if (count($parts) === 2) {
                     // Fallback in case only numerator and denominator are provided
+
+
                     $numerator = (int)$parts[0];
                     $denominator = (int)$parts[1];
+                    if ($numerator == 0 && $denominator == 0) {
+                        // Whole number
+                        return "\(\\frac{{$parts[0]}}{{$parts[1]}}\)";
+                    }
                     return toMixedFraction(null, $numerator, $denominator);
                 }
             } else {
@@ -135,6 +141,10 @@ if (!function_exists('replaceMixedFractions')) {
                 if (count($parts) === 2) {
                     $numerator = (int)$parts[0];
                     $denominator = (int)$parts[1];
+                    if ($numerator == 0 && $denominator == 0) {
+                        // Whole number
+                        return "\(\\frac{{$parts[0]}}{{$parts[1]}}\)";
+                    }
                     return toFraction($numerator, $denominator);
                 }
             }
@@ -166,10 +176,12 @@ if (!function_exists('toFraction')) {
 if (!function_exists('toMixedFraction')) {
     function toMixedFraction($whole = null, $numerator, $denominator)
     {
+
         if ($whole) {
-            $remainder =$numerator % $denominator;
+            $remainder = $numerator % $denominator;
             $whole = $whole + intdiv($numerator, $denominator);
         } else {
+
             if ($numerator % $denominator == 0) {
                 return (string) ($numerator / $denominator); // Whole number
             }
@@ -177,9 +189,7 @@ if (!function_exists('toMixedFraction')) {
             $whole = intdiv($numerator, $denominator);
             $remainder = $numerator % $denominator;
         }
-        // dd(\({$whole} \\frac{{$remainder}}{{$denominator}}\));
-        // echo "\({$whole} \\frac{{$remainder}}{{$denominator}}\)";
-        // dd('test');
+
         return $whole > 0
             ? "\({$whole} \\frac{{$remainder}}{{$denominator}}\)"
             : "\(\\frac{{$remainder}}{{$denominator}}\)";
@@ -307,7 +317,6 @@ if (!function_exists('create_commmission_list')) {
         // $resultCommission = $countingCourse * $commission_rate;
         checkCourseCurrent($user->id, $year, $month, $config_commission, $userCourseCount);
         incrementUserCourseCount($user->id, $countingCourse, $year, $month);
-
     }
 }
 
