@@ -113,10 +113,23 @@ if (!function_exists('generateQrCode')) {
 if (!function_exists('replaceMixedFractions')) {
     function replaceMixedFractions($text)
     {
+
+        // $text = "asdfsdfsdfsdf F ra c(2,3) sdfs Frac(4,5) sdfsdf M i x F r a c ( 1 , 2 , 3 ) test MixFrac(4,5,6)";
+
+        // Pattern ที่รองรับทั้งตัวเลขและภาษาไทย
+        preg_match_all('/(M\s*i\s*x\s*)?F\s*r\s*a\s*c\s*\(\s*[^,\)]+\s*,\s*[^,\)]+\s*(?:,\s*[^,\)]+\s*)?\)/iu', $text, $matches);
+
+        $combined = '';
+        foreach ($matches[0] as $match) {
+            $clean = preg_replace('/\s+/', '', $match); // ลบช่องว่างทั้งหมด
+            $combined .= $clean;
+        }
+
         return preg_replace_callback('/(MixFrac|Frac)\s*\(\s*([^\)]+)\s*\)/', function ($matches) {
             $function = $matches[1]; // MixFrac or Frac
             $args = preg_replace('/\s+/', '', $matches[2]); // Remove all spaces inside arguments
             $parts = explode(',', $args);
+
 
             if ($function === 'MixFrac') {
                 if (count($parts) === 3) {
