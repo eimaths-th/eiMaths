@@ -123,6 +123,9 @@ if (!function_exists('replaceMixedFractions')) {
                     $whole = (int)$parts[0];
                     $numerator = (int)$parts[1];
                     $denominator = (int)$parts[2];
+                    if ($numerator == 0 && $denominator == 0) {
+                        return "\({$parts[0]} \\frac{{$parts[1]}}{{$parts[2]}}\)";
+                    }
                     return toMixedFraction($whole, $numerator, $denominator);
                 } else if (count($parts) === 2) {
                     // Fallback in case only numerator and denominator are provided
