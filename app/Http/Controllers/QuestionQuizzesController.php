@@ -183,6 +183,7 @@ class QuestionQuizzesController extends Controller
                 // Either text or image (manual check later)
                 'questions.*.text' => ['nullable', 'string'],
                 'questions.*.img_name' => ['nullable', 'image', 'file', 'mimes:jpg,png,jpeg', 'max:2048'],
+                'questions.*.answer_explanation_image' => ['nullable', 'image', 'file', 'mimes:jpg,png,jpeg', 'max:2048'],
 
                 'questions.*.code_snippet' => ['nullable', 'string'],
                 'questions.*.answer_explanation' => ['nullable', 'string'],
@@ -410,13 +411,6 @@ class QuestionQuizzesController extends Controller
                 }
             }
 
-            // dd('bkb');
-
-
-            // dd($validatedData);
-            // Perform Validation
-            // $validatedData = $request->validate($rules, $messages);
-
             $quiz_id = $request->quiz_id;
             $questions_ids = $request->questions_id ?? [];
             $questions_create_id = [];
@@ -445,6 +439,15 @@ class QuestionQuizzesController extends Controller
                         $fileName = time() . '_' . uniqid() . '.' . $imgName->getClientOriginalExtension();
                         $imgName->move(public_path('img_questions'), $fileName);
                         $question->update(['img_name' => $fileName]);
+                    }
+                }
+
+                if (isset($questionn['answer_explanation_image']) && $questionn['answer_explanation_image'] instanceof \Illuminate\Http\UploadedFile) {
+                    $answerExplanationImage = $questionn['answer_explanation_image'];
+                    if ($answerExplanationImage instanceof \Illuminate\Http\UploadedFile) {
+                        $fileName = time() . '_' . uniqid() . '.' . $answerExplanationImage->getClientOriginalExtension();
+                        $answerExplanationImage->move(public_path('img_questions'), $fileName);
+                        $question->update(['answer_explanation_image' => $fileName]);
                     }
                 }
 

@@ -2,9 +2,47 @@
 
 @section('style')
     @include('users.style')
+    <style>
+        #loading {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+        }
+
+        .loading-spinner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: translate(-50%, -50%) rotate(0deg);
+            }
+
+            100% {
+                transform: translate(-50%, -50%) rotate(360deg);
+            }
+        }
+    </style>
 @endsection
 
 @section('content')
+    <div id="loading" style="display: none;">
+        <div class="loading-spinner"></div>
+    </div>
     <section class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">
@@ -26,6 +64,9 @@
             </div>
         </div>
     </section>
+
+    {{-- add loading --}}
+
 
     <section class="content">
         <div class="container-fluid">
@@ -174,8 +215,8 @@
 
                                     <div class="my-4">
                                         <label for="questions_id" class="form-label">Select Questions</label>
-                                        <select id="questions_id" name="questions_id[]" class="questionsId select2 form-control"
-                                            multiple>
+                                        <select id="questions_id" name="questions_id[]"
+                                            class="questionsId select2 form-control" multiple>
                                         </select>
                                         @error('questions_id')
                                             <span class="text-red-600 text-sm mt-2">{{ $message }}</span>
@@ -189,7 +230,8 @@
 
                                                 <input type="hidden" id="formMethod" name="_method" value="POST">
                                                 <div class="mb-3">
-                                                    <select name="type" id="SelectType" class="SelectType form-control">
+                                                    <select name="type" id="SelectType"
+                                                        class="SelectType form-control">
                                                         <option value="">Select type answer</option>
                                                         <option value="options">Options</option>
                                                         <option value="written">Written</option>
@@ -225,17 +267,25 @@
                                                     <label for="text" class="form-label">Question Image</label>
                                                     <div id="add-image-question-container">
                                                         <input type="file" id="imageQuestion" name="imageQuestion"
-                                                            class="form-control">
+                                                            class="form-control" accept="image/*"
+                                                            onchange="showQuestionImg(this)">
                                                     </div>
 
                                                     @error('text')
                                                         <div class="text-danger mt-2">{{ $message }}</div>
                                                     @enderror
+                                                    <!-- Image Preview -->
+                                                    <div id="question_img_preview" class="mt-2"
+                                                        style="{{ isset($question->img_name) && $question->img_name ? '' : 'display: none;' }}">
+                                                        <img id="question_img_thumbnail"
+                                                            src="{{ isset($question->img_name) && $question->img_name ? asset('img_questions/' . $question->img_name) : '' }}"
+                                                            alt="Answer Explanation Image"
+                                                            style="max-width: 200px; max-height: 200px; border: 1px solid #ddd; border-radius: 4px; padding: 5px;">
+                                                        <br>
+                                                        <button type="button" class="btn btn-sm btn-danger mt-2"
+                                                            onclick="removeQuestionImg()">Remove Image</button>
+                                                    </div>
                                                 </div>
-                                                @php
-                                                    // dd($question);
-                                                @endphp
-
 
                                                 <div class="mb-3 written_type">
                                                     <label for="written" class="form-label">Question Written</label>
@@ -356,9 +406,11 @@
                                                 <div class="row">
                                                     <div class="col-lg-4">
                                                         <div class="mt-4">
-                                                            <label for="level" class="question-grade form-label">Grade</label>
-                                                            <select id="level_1" name="level" class="question-grade form-control">
-                                                                <option value=""  selected>Select term
+                                                            <label for="level"
+                                                                class="question-grade form-label">Grade</label>
+                                                            <select id="level_1" name="level"
+                                                                class="question-grade form-control">
+                                                                <option value="" selected>Select term
                                                                 </option>
                                                                 <option value="K1">K1</option>
                                                                 <option value="K2">K2</option>
@@ -375,8 +427,9 @@
                                                     <div class="col-lg-4">
                                                         <div class="mt-4">
                                                             <label for="term" class="form-label">Term</label>
-                                                            <select id="term_1" name="term" class="question-term form-control">
-                                                                <option value=""  selected>Select term
+                                                            <select id="term_1" name="term"
+                                                                class="question-term form-control">
+                                                                <option value="" selected>Select term
                                                                 </option>
                                                                 <option value="1">1</option>
                                                                 <option value="2">2</option>
@@ -389,8 +442,9 @@
                                                     <div class="col-lg-4">
                                                         <div class="mt-4">
                                                             <label for="section" class=" form-label">Level</label>
-                                                            <select id="section_1" name="section" class="question-level form-control">
-                                                                <option value=""  selected>Select Level
+                                                            <select id="section_1" name="section"
+                                                                class="question-level form-control">
+                                                                <option value="" selected>Select Level
                                                                 </option>
                                                                 @for ($i = 1; $i <= 20; $i++)
                                                                     <option value="{{ $i }}">
@@ -419,6 +473,32 @@
                                                     @error('answer_explanation')
                                                         <div class="text-danger mt-2">{{ $message }}</div>
                                                     @enderror
+                                                </div>
+
+                                                <!-- Answer Explanation Image -->
+                                                <div class="mb-3">
+                                                    <label for="answer_explanation_image" class="form-label">Answer
+                                                        Explanation Image</label>
+                                                    <input type="file" id="answer_explanation_image"
+                                                        class="form-control" name="answer_explanation_image"
+                                                        accept="image/*" onchange="showAnswerExplanationImg(this)">
+                                                    <input type="hidden" name="old_answer_explanation_image"
+                                                        value="{{ $question->answer_explanation_image ?? '' }}">
+                                                    @error('answer_explanation_image')
+                                                        <div class="text-danger mt-2">{{ $message }}</div>
+                                                    @enderror
+
+                                                    <!-- Image Preview -->
+                                                    <div id="answer_explanation_img_preview" class="mt-2"
+                                                        style="{{ isset($question->answer_explanation_image) && $question->answer_explanation_image ? '' : 'display: none;' }}">
+                                                        <img id="answer_explanation_img_thumbnail"
+                                                            src="{{ isset($question->answer_explanation_image) && $question->answer_explanation_image ? asset('img_questions/' . $question->answer_explanation_image) : '' }}"
+                                                            alt="Answer Explanation Image"
+                                                            style="max-width: 200px; max-height: 200px; border: 1px solid #ddd; border-radius: 4px; padding: 5px;">
+                                                        <br>
+                                                        <button type="button" class="btn btn-sm btn-danger mt-2"
+                                                            onclick="removeAnswerExplanationImg()">Remove Image</button>
+                                                    </div>
                                                 </div>
 
                                                 <!-- More info link -->
@@ -463,7 +543,7 @@
 
     </section>
 
-    {{-- @include('question.question-form', ['editing' => false, 'question' => null, 'options' => []]) ---}}
+    {{-- @include('question.question-form', ['editing' => false, 'question' => null, 'options' => []]) - --}}
     @include('questionquizzes.form', ['editing' => true, 'question' => null, 'options' => []])
 
 

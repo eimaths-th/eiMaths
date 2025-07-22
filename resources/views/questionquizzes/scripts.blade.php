@@ -1,4 +1,75 @@
 <script>
+    // Answer Explanation Image functions
+    function showAnswerExplanationImg(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('answer_explanation_img_thumbnail').src = e.target.result;
+                document.getElementById('answer_explanation_img_preview').style.display = 'block';
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+    function showQuestionImg(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('question_img_thumbnail').src = e.target.result;
+                document.getElementById('question_img_preview').style.display = 'block';
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function removeAnswerExplanationImg() {
+        document.getElementById('answer_explanation_image').value = '';
+        document.getElementById('answer_explanation_img_preview').style.display = 'none';
+        document.getElementById('answer_explanation_img_thumbnail').src = '';
+        // Set hidden field to indicate image should be removed
+        document.querySelector('input[name="old_answer_explanation_image"]').value = '';
+    }
+    function removeQuestionImg() {
+        document.getElementById('imageQuestion').value = '';
+        document.getElementById('question_img_preview').style.display = 'none';
+        document.getElementById('question_img_thumbnail').src = '';
+        // Set hidden field to indicate image should be removed
+        document.querySelector('input[name="old_question_img"]').value = '';
+    }
+
+    // Dynamic Answer Explanation Image functions for dynamically added forms
+    function showAnswerExplanationImgDynamic(input, formIndex) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('answer_explanation_img_thumbnail_' + formIndex).src = e.target.result;
+                document.getElementById('answer_explanation_img_preview_' + formIndex).style.display = 'block';
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+    function showQuestionImgDynamic(input, formIndex) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('question_img_thumbnail_' + formIndex).src = e.target.result;
+                document.getElementById('question_img_preview_' + formIndex).style.display = 'block';
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function removeAnswerExplanationImgDynamic(formIndex) {
+        document.getElementById('answer_explanation_image_' + formIndex).value = '';
+        document.getElementById('answer_explanation_img_preview_' + formIndex).style.display = 'none';
+        document.getElementById('answer_explanation_img_thumbnail_' + formIndex).src = '';
+    }
+    function removeQuestionImgDynamic(formIndex) {
+
+        document.getElementById('imageQuestion_' + formIndex).value = '';
+        document.getElementById('question_img_preview_' + formIndex).style.display = 'none';
+        document.getElementById('question_img_thumbnail_' + formIndex).src = '';
+    }
+
     function insertFrac() {
         let question_text = document.querySelector('#text');
         if (question_text) {
@@ -386,7 +457,12 @@
                     <div class="mb-3">
                         <label for="imageQuestion_${FormIndex}" class="form-label">Question Image</label>
                         <div id="add-image-question-container_${FormIndex}">
-                            <input type="file" id="imageQuestion_${FormIndex}" name="imageQuestion_${FormIndex}" class="form-control">
+                            <input type="file" id="imageQuestion_${FormIndex}" class="form-control" name="imageQuestion_${FormIndex}" accept="image/*" onchange="showQuestionImgDynamic(this, ${FormIndex})">
+                        </div>
+                        <div id="question_img_preview_${FormIndex}" class="mt-2" style="display: none;">
+                            <img id="question_img_thumbnail_${FormIndex}" src="" alt="Question Image" style="max-width: 200px; max-height: 200px; border: 1px solid #ddd; border-radius: 4px; padding: 5px;">
+                            <br>
+                            <button type="button" class="btn btn-sm btn-danger mt-2" onclick="removeQuestionImgDynamic(${FormIndex})">Remove Image</button>
                         </div>
                     </div>
 
@@ -499,6 +575,17 @@
                         <label for="answer_explanation_${FormIndex}" class="form-label">Answer explanation</label>
                         <textarea id="answer_explanation_${FormIndex}" class="form-control" name="answer_explanation_${FormIndex}"></textarea>
                     </div>
+
+                    <div class="mb-3">
+                        <label for="answer_explanation_image_${FormIndex}" class="form-label">Answer Explanation Image</label>
+                        <input type="file" id="answer_explanation_image_${FormIndex}" class="form-control" name="answer_explanation_image_${FormIndex}" accept="image/*" onchange="showAnswerExplanationImgDynamic(this, ${FormIndex})">
+                        <div id="answer_explanation_img_preview_${FormIndex}" class="mt-2" style="display: none;">
+                            <img id="answer_explanation_img_thumbnail_${FormIndex}" src="" alt="Answer Explanation Image" style="max-width: 200px; max-height: 200px; border: 1px solid #ddd; border-radius: 4px; padding: 5px;">
+                            <br>
+                            <button type="button" class="btn btn-sm btn-danger mt-2" onclick="removeAnswerExplanationImgDynamic(${FormIndex})">Remove Image</button>
+                        </div>
+                    </div>
+
                     <div class="mb-3">
                         <label for="more_info_link_${FormIndex}" class="form-label">More info link</label>
                         <input type="text" id="more_info_link_${FormIndex}" class="form-control"
@@ -522,7 +609,7 @@
             if (event.target.id.startsWith('2-type-')) {
                 let selectedIndex = event.target.id.split('-').pop(); // Get the index from the ID
                 var selectedType = $(event.target).val(); // Use event.target instead of this
-                
+
                 toggleTypeFields2(selectedType, selectedIndex); // Pass formIndex if needed
 
             }
@@ -533,10 +620,10 @@
             if (event.target.id.startsWith('answer_type_fraction-')) {
                 let formIndex = event.target.id.split('-').pop(); // Get the index from the ID
                 var selectedFractionType = $(event.target).val(); // Use event.target instead of this
-                
+
                 toggleTypeFractionFields2(selectedFractionType, formIndex); // Pass formIndex if needed
 
-                
+
             }
 
         });
@@ -596,7 +683,7 @@
         }
 
         function toggleTypeFractionFields2(selectedFractionType, selectedIndex) {
-           
+
             if (selectedFractionType === 'written') {
                 $(`.options_type_fraction_${selectedIndex}`).hide();
                 $(`.written_type_fraction_${selectedIndex}`).show();
@@ -742,6 +829,8 @@
 
         });
 
+        // $('#loading').show();
+
         $(document).on('click', '#SubmitQuestionForm', function(e) {
             e.preventDefault();
             $('.alert-danger').html('').hide();
@@ -863,13 +952,21 @@
                         `select[name="section${prefix}"]`).val());
                     quizData.append('questions[' + index + '][answer_explanation]', $(element)
                         .find(`textarea[name="answer_explanation${prefix}"]`).val());
+
+                    // Handle answer explanation image
+                    var answerExplanationImageInput = document.getElementById(`answer_explanation_image${prefix}`);
+                    if (answerExplanationImageInput && answerExplanationImageInput.files && answerExplanationImageInput.files[0]) {
+                        quizData.append(`questions[${index}][answer_explanation_image]`, answerExplanationImageInput.files[0]);
+                    }
+
                     quizData.append('questions[' + index + '][more_info_link]', $(element).find(
                         `input[name="more_info_link${prefix}"]`).val());
 
-                    
+
                 });
 
-
+                //add loading
+                $('#loading').show();
 
                 $.ajax({
                     url: "{{ route('questions-quizzes.store') }}",
@@ -897,7 +994,7 @@
                             $('.answer_type_fraction').val('').trigger('change');
                             // $('.question-form').remove();
                             $('.form').trigger('reset');
-
+                            $('#loading').hide();
                             location.reload();
                         }
                     },
@@ -914,6 +1011,7 @@
                         toastr.error(errorList, {
                             timeOut: 5000
                         });
+                        $('#loading').hide();
                     }
                 });
             }
