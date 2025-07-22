@@ -10,6 +10,7 @@
             reader.readAsDataURL(input.files[0]);
         }
     }
+
     function showQuestionImg(input) {
         if (input.files && input.files[0]) {
             var reader = new FileReader();
@@ -28,6 +29,7 @@
         // Set hidden field to indicate image should be removed
         document.querySelector('input[name="old_answer_explanation_image"]').value = '';
     }
+
     function removeQuestionImg() {
         document.getElementById('imageQuestion').value = '';
         document.getElementById('question_img_preview').style.display = 'none';
@@ -47,6 +49,7 @@
             reader.readAsDataURL(input.files[0]);
         }
     }
+
     function showQuestionImgDynamic(input, formIndex) {
         if (input.files && input.files[0]) {
             var reader = new FileReader();
@@ -63,6 +66,7 @@
         document.getElementById('answer_explanation_img_preview_' + formIndex).style.display = 'none';
         document.getElementById('answer_explanation_img_thumbnail_' + formIndex).src = '';
     }
+
     function removeQuestionImgDynamic(formIndex) {
 
         document.getElementById('imageQuestion_' + formIndex).value = '';
@@ -100,7 +104,12 @@
         }
     }
 
+    // Auto-save functionality
+
+
     $(document).ready(function() {
+        // Initialize auto-save
+
         $('.select2').select2({
             placeholder: "Select Questions",
             allowClear: true
@@ -124,6 +133,8 @@
     });
 
     $(document).ready(function() {
+        setupAutoSave();
+
         $('#quizCrate').hide();
         $('.written_type').hide();
         $('.options_type').hide();
@@ -418,13 +429,14 @@
         });
 
         function addForm2() {
-            FormIndex++;
-            let options = '';
-            for (let i = 1; i <= 20; i++) {
-                options += `<option value="${i}">${i}</option>`;
-            }
-            // checkSelectionsAndFetchData()
-            let newForm = `
+            return new Promise((resolve) => {
+                FormIndex++;
+                let options = '';
+                for (let i = 1; i <= 20; i++) {
+                    options += `<option value="${i}">${i}</option>`;
+                }
+                // checkSelectionsAndFetchData()
+                let newForm = `
                 <div class="question-form">
                     <div class="question-form-index">
                     <h4 class="mb-4">Create Question #${FormIndex}</h4>
@@ -599,7 +611,13 @@
                 </div>
             `;
 
-            $('#questionCreate').append(newForm);
+                $('#questionCreate').append(newForm);
+
+                // Wait for DOM to be updated, then resolve
+                setTimeout(() => {
+                    resolve(FormIndex);
+                }, 100);
+            });
         }
 
         let optionFormIndex = 0; // Initialize optionIndex
@@ -750,7 +768,7 @@
 
         function addFractionOption2(formIndex, optionFormIndex, numerator = '', denominator = '', answerType =
             'mixed', correct = 0) {
-
+            console.log('formIndex: ' + formIndex);
             $(`#add-fraction-container_${formIndex}`).append(`
                 <div class="fraction-item mt-2 form-row align-items-center">
                     <div class="col-xs-3 col-sm-3 col-md-3 text-center">
@@ -824,10 +842,126 @@
             $(this).closest('.img-option-item').remove();
         });
         $(document).on('click', '.DeleteQuestionForm', function() {
-            FormIndex--;
-            $(this).closest('.question-form').remove();
+            var questionForm = $(this).closest('.question-form');
+            var questionIndex = $('.question-form').index(questionForm);
 
+            // Remove the form
+            questionForm.remove();
+
+            // Update FormIndex to match actual number of forms
+            FormIndex = $('.question-form').length;
+
+            // Renumber all remaining question forms
+            renumberQuestionForms();
         });
+
+        function renumberQuestionForms() {
+            $('.question-form').each(function(index, element) {
+                var newIndex = index + 1;
+                var $form = $(element);
+
+                // Update the question title
+                $form.find('h4').text(`Create Question #${newIndex}`);
+
+                // Update all form field names and IDs to match the new index
+                updateFormFieldIndices($form, newIndex);
+            });
+        }
+
+        function updateFormFieldIndices($form, newIndex) {
+            var oldPrefix = newIndex > 1 ? `_${newIndex}` : '';
+            var oldPrefixType = newIndex > 1 ? `-${newIndex}` : '';
+
+            // Update select type field
+            $form.find(`select[name^="type-"]`).attr('name', `type-${newIndex}`).attr('id',
+                `2-type-${newIndex}`);
+
+            // Update text area
+            $form.find(`textarea[name^="text_"]`).attr('name', `text_${newIndex}`).attr('id',
+                `text_${newIndex}`);
+
+            // Update image question field
+            $form.find(`input[name^="imageQuestion_"]`).attr('name', `imageQuestion_${newIndex}`).attr('id',
+                `imageQuestion_${newIndex}`);
+
+            // Update written field
+            $form.find(`input[name^="written_"]`).attr('name', `written_${newIndex}`).attr('id',
+                `written_${newIndex}`);
+
+            // Update grade, term, section fields
+            $form.find(`select[name^="level_"]`).attr('name', `level_${newIndex}`).attr('id',
+                `level_${newIndex}`);
+            $form.find(`select[name^="term_"]`).attr('name', `term_${newIndex}`).attr('id', `term_${newIndex}`);
+            $form.find(`select[name^="section_"]`).attr('name', `section_${newIndex}`).attr('id',
+                `section_${newIndex}`);
+
+            // Update other fields
+            $form.find(`textarea[name^="code_snippet_"]`).attr('name', `code_snippet_${newIndex}`).attr('id',
+                `code_snippet_${newIndex}`);
+            $form.find(`textarea[name^="answer_explanation_"]`).attr('name', `answer_explanation_${newIndex}`)
+                .attr('id', `answer_explanation_${newIndex}`);
+            $form.find(`input[name^="answer_explanation_image_"]`).attr('name',
+                `answer_explanation_image_${newIndex}`).attr('id', `answer_explanation_image_${newIndex}`);
+            $form.find(`input[name^="more_info_link_"]`).attr('name', `more_info_link_${newIndex}`).attr('id',
+                `more_info_link_${newIndex}`);
+
+            // Update fraction fields
+            $form.find(`select[name^="answer_type_fraction-"]`).attr('name', `answer_type_fraction-${newIndex}`)
+                .attr('id', `answer_type_fraction-${newIndex}`);
+            $form.find(`input[name^="answer_numerator_"]`).attr('name', `answer_numerator_${newIndex}`).attr(
+                'id', `answer_numerator_${newIndex}`);
+            $form.find(`input[name^="answer_denominator_"]`).attr('name', `answer_denominator_${newIndex}`)
+                .attr('id', `answer_denominator_${newIndex}`);
+            $form.find(`select[name^="answer_type-"]`).attr('name', `answer_type-${newIndex}`).attr('id',
+                `answer_type-${newIndex}`);
+
+            // Update container IDs
+            $form.find(`[id^="options-container-"]`).attr('id', `options-container-${newIndex}`);
+            $form.find(`[id^="image-options-container-"]`).attr('id', `image-options-container-${newIndex}`);
+            $form.find(`[id^="add-fraction-container_"]`).attr('id', `add-fraction-container_${newIndex}`);
+
+            // Update button IDs
+            $form.find(`[id^="add-option-"]`).attr('id', `add-option-${newIndex}`);
+            $form.find(`[id^="add-img-option-"]`).attr('id', `add-img-option-${newIndex}`);
+            $form.find(`[id^="add-fraction-option-"]`).attr('id', `add-fraction-option-${newIndex}`);
+
+            // Update CSS classes for type fields
+            $form.find(`[class*="_${newIndex}"]`).each(function() {
+                var $this = $(this);
+                var classes = $this.attr('class').split(' ');
+                var newClasses = classes.map(function(cls) {
+                    if (cls.match(/_\d+$/)) {
+                        return cls.replace(/_\d+$/, `_${newIndex}`);
+                    }
+                    return cls;
+                });
+                $this.attr('class', newClasses.join(' '));
+            });
+
+            // Update fraction button onclick attributes
+            $form.find(`[onclick*="insertFracIndex"]`).attr('onclick', `insertFracIndex(${newIndex})`);
+            $form.find(`[onclick*="insertMixedIndex"]`).attr('onclick', `insertMixedIndex(${newIndex})`);
+
+            // Update image preview elements
+            $form.find(`[id*="question_img_preview_"]`).attr('id', `question_img_preview_${newIndex}`);
+            $form.find(`[id*="question_img_thumbnail_"]`).attr('id', `question_img_thumbnail_${newIndex}`);
+            $form.find(`[id*="answer_explanation_img_preview_"]`).attr('id',
+                `answer_explanation_img_preview_${newIndex}`);
+            $form.find(`[id*="answer_explanation_img_thumbnail_"]`).attr('id',
+                `answer_explanation_img_thumbnail_${newIndex}`);
+
+            // Update onchange attributes for image inputs
+            $form.find(`input[onchange*="showQuestionImgDynamic"]`).attr('onchange',
+                `showQuestionImgDynamic(this, ${newIndex})`);
+            $form.find(`input[onchange*="showAnswerExplanationImgDynamic"]`).attr('onchange',
+                `showAnswerExplanationImgDynamic(this, ${newIndex})`);
+
+            // Update onclick attributes for remove image buttons
+            $form.find(`button[onclick*="removeQuestionImgDynamic"]`).attr('onclick',
+                `removeQuestionImgDynamic(${newIndex})`);
+            $form.find(`button[onclick*="removeAnswerExplanationImgDynamic"]`).attr('onclick',
+                `removeAnswerExplanationImgDynamic(${newIndex})`);
+        }
 
         // $('#loading').show();
 
@@ -844,7 +978,6 @@
                 // Add basic quiz information to quizData
                 quizData.append('type', SelectQuiz);
                 quizData.append('quiz_id', SelectQuiz === 'create' ? null : SelectQuiz);
-
                 quizData.append('title', $('#title').val());
                 quizData.append('slug', $('#slug').val());
                 quizData.append('description', $('#description').val());
@@ -954,9 +1087,12 @@
                         .find(`textarea[name="answer_explanation${prefix}"]`).val());
 
                     // Handle answer explanation image
-                    var answerExplanationImageInput = document.getElementById(`answer_explanation_image${prefix}`);
-                    if (answerExplanationImageInput && answerExplanationImageInput.files && answerExplanationImageInput.files[0]) {
-                        quizData.append(`questions[${index}][answer_explanation_image]`, answerExplanationImageInput.files[0]);
+                    var answerExplanationImageInput = document.getElementById(
+                        `answer_explanation_image${prefix}`);
+                    if (answerExplanationImageInput && answerExplanationImageInput.files &&
+                        answerExplanationImageInput.files[0]) {
+                        quizData.append(`questions[${index}][answer_explanation_image]`,
+                            answerExplanationImageInput.files[0]);
                     }
 
                     quizData.append('questions[' + index + '][more_info_link]', $(element).find(
@@ -966,7 +1102,7 @@
                 });
 
                 //add loading
-                $('#loading').show();
+                // $('#loading').show();
 
                 $.ajax({
                     url: "{{ route('questions-quizzes.store') }}",
@@ -974,28 +1110,24 @@
                     data: quizData,
                     processData: false, // Prevent jQuery from processing the data
                     contentType: false, // Prevent jQuery from setting the content type
-                    success: function(result) {
+                    success: function(response) {
+                        console.log('Response:', response);
+                        if (response.success) {
+                            // Clear auto-saved data on successful submission
+                            clearAutoSavedData();
 
-                        if (result.errors) {
-                            $('.alert-danger').html('').show().append('<strong><li>' +
-                                result
-                                .errors.join('</li><li>') + '</li></strong>');
+                            toastr.success(response.message, {
+                                timeOut: 3000
+                            });
+                            setTimeout(function() {
+                                window.location.href =
+                                    "{{ route('questions-quizzes.index') }}";
+                            }, 2000);
                         } else {
-                            $('.alert-danger').hide();
-                            $('.alert-success').show().append('<strong><li>' + result
-                                .success +
-                                '</li></strong>');
-                            toastr.success(result.success, {
+                            toastr.error(response.message || 'เกิดข้อผิดพลาด', {
                                 timeOut: 5000
                             });
-                            $('.SelectQuiz').val('').trigger('change');
-                            $('.SelectType').val('').trigger('change');
-                            $('.questionsId').val('').trigger('change');
-                            $('.answer_type_fraction').val('').trigger('change');
-                            // $('.question-form').remove();
-                            $('.form').trigger('reset');
-                            $('#loading').hide();
-                            location.reload();
+                            // location.reload();
                         }
                     },
                     error: function(xhr) {
@@ -1011,11 +1143,361 @@
                         toastr.error(errorList, {
                             timeOut: 5000
                         });
-                        $('#loading').hide();
+                        // $('#loading').hide();
                     }
                 });
             }
         });
+
+
+        const AUTO_SAVE_KEY = 'questionquiz_autosave_data';
+        const AUTO_SAVE_INTERVAL = 2000; // Save every 2 seconds
+        let autoSaveTimer;
+
+        // Load saved data on page load
+        async function loadAutoSavedData() {
+            try {
+                const savedData = localStorage.getItem(AUTO_SAVE_KEY);
+                if (savedData) {
+                    const data = JSON.parse(savedData);
+                    console.log('Loading auto-saved data:', data);
+
+                    // Restore basic quiz data
+                    if (data.title) $('#title').val(data.title);
+                    if (data.slug) $('#slug').val(data.slug);
+                    if (data.description) $('#description').val(data.description);
+                    if (data.level) $('#level').val(data.level);
+                    if (data.term) $('#term').val(data.term);
+                    if (data.section) $('#section').val(data.section);
+                    if (data.public !== undefined) $('#public').prop('checked', data.public);
+                    if (data.SelectQuiz) $('#SelectQuiz').val(data.SelectQuiz);
+
+                    // Restore questions data
+                    if (data.questions && data.questions.length > 0) {
+                        console.log('Starting to restore questions data...');
+                        await restoreQuestionsData(data.questions);
+                        console.log('Questions data restoration completed');
+                    }
+
+                    toastr.info('ข้อมูลที่บันทึกไว้ถูกกู้คืนแล้ว', {
+                        timeOut: 3000
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading auto-saved data:', error);
+                toastr.error('เกิดข้อผิดพลาดในการโหลดข้อมูลที่บันทึกไว้', {
+                    timeOut: 3000
+                });
+            }
+        }
+
+        // Save form data to localStorage
+        function saveFormData() {
+            try {
+                const formData = {
+                    title: $('#title').val(),
+                    slug: $('#slug').val(),
+                    description: $('#description').val(),
+                    level: $('#level').val(),
+                    term: $('#term').val(),
+                    section: $('#section').val(),
+                    public: $('#public').is(':checked'),
+                    SelectQuiz: $('#SelectQuiz').val(),
+                    questions: collectQuestionsData(),
+                    timestamp: new Date().toISOString()
+                };
+
+                localStorage.setItem(AUTO_SAVE_KEY, JSON.stringify(formData));
+                console.log('Form data auto-saved');
+            } catch (error) {
+                console.error('Error saving form data:', error);
+            }
+        }
+
+        // Collect all questions data
+        function collectQuestionsData() {
+            const questions = [];
+            $('.question-form .question-form-index').each(function(index, element) {
+                const formIndex = index + 1;
+                const prefix = formIndex > 1 ? `_${formIndex}` : '';
+                const prefixType = formIndex > 1 ? `-${formIndex}` : '';
+
+                const questionData = {
+                    text: $(element).find(`textarea[name="text${prefix}"]`).val(),
+                    type: $(element).find(`select[name="type${prefixType}"]`).val(),
+                    written: $(element).find(`input[name="written${prefix}"]`).val(),
+                    level: $(element).find(`select[name="level${prefix}"]`).val(),
+                    term: $(element).find(`select[name="term${prefix}"]`).val(),
+                    section: $(element).find(`select[name="section${prefix}"]`).val(),
+                    code_snippet: $(element).find(`textarea[name="code_snippet${prefix}"]`).val(),
+                    answer_explanation: $(element).find(
+                        `textarea[name="answer_explanation${prefix}"]`).val(),
+                    more_info_link: $(element).find(`input[name="more_info_link${prefix}"]`).val(),
+                    options: [],
+                    fractionData: {}
+                };
+
+                // Collect options
+                $(element).find('.option-item').each(function(optIndex, optElement) {
+                    questionData.options.push({
+                        text: $(optElement).find('input[type="text"]').val(),
+                        correct: $(optElement).find('input[type="checkbox"]').is(
+                            ':checked')
+                    });
+                });
+
+                // Collect fraction data
+                const questionType = questionData.type;
+                if (questionType === 'fraction') {
+                    questionData.fractionData = {
+                        answer_type_fraction: $(element).find(
+                            `select[name="answer_type_fraction${prefixType}"]`).val(),
+                        answer_numerator: $(element).find(`input[name="answer_numerator${prefix}"]`)
+                            .val(),
+                        answer_denominator: $(element).find(
+                            `input[name="answer_denominator${prefix}"]`).val(),
+                        answer_type: $(element).find(`select[name="answer_type${prefixType}"]`)
+                            .val(),
+                        fractionOptions: []
+                    };
+
+                    $(element).find('.fraction-item').each(function(optIndex, optElement) {
+                        questionData.fractionData.fractionOptions.push({
+                            answer_numerator: $(optElement).find(
+                                    `input[name^="answer_numerator"]`)
+                                .val(),
+                            answer_denominator: $(optElement).find(
+                                `input[name^="answer_denominator"]`).val(),
+                            answer_type: $(optElement).find(
+                                `select[name^="answer_type"]`).val(),
+                            correct: $(optElement).find('input[type="checkbox"]').is(
+                                ':checked')
+                        });
+                    });
+                }
+
+                questions.push(questionData);
+            });
+
+            return questions;
+        }
+
+        // Restore questions data
+        async function restoreQuestionsData(questions) {
+            // Clear existing questions first (except the first one)
+            $('.question-form').not(':first').remove();
+
+            // Reset FormIndex to start from 1
+            FormIndex = 1;
+
+            // Reset option form indexes
+            optionFormIndex = 0;
+            if (typeof optionFormIndexes !== 'undefined') {
+                optionFormIndexes = {};
+            }
+
+            // Process questions sequentially to ensure proper form creation
+            for (let index = 0; index < questions.length; index++) {
+                const questionData = questions[index];
+                console.log(questions);
+
+                console.log(questionData);
+
+                if (index > 0) {
+
+                    console.log('test');
+                    try {
+                        await addForm2();
+                        console.log(`Form ${FormIndex} created successfully`);
+                    } catch (error) {
+                        console.error('Error creating form:', error);
+                        return;
+                    }
+                }
+
+                const formIndex = index + 1;
+                const prefix = formIndex > 1 ? `_${formIndex}` : '';
+                const prefixType = formIndex > 1 ? `-${formIndex}` : '';
+                const element = $('.question-form').eq(index).find('.question-form-index');
+
+                // Wait a bit for DOM to be ready
+                await new Promise(resolve => setTimeout(resolve, 200));
+
+                // Restore basic question data
+                if (questionData.text) element.find(`textarea[name="text${prefix}"]`).val(questionData
+                    .text);
+                if (questionData.type) {
+                    element.find(`select[name="type${prefixType}"]`).val(questionData.type).trigger(
+                        'change');
+
+                    // Wait for type change to process, then toggle fields
+                    await new Promise(resolve => {
+                        setTimeout(() => {
+                            if (typeof toggleTypeFields2 === 'function') {
+                                toggleTypeFields2(questionData.type, formIndex);
+                            }
+                            resolve();
+                        }, 300);
+                    });
+                }
+                if (questionData.written) element.find(`input[name="written${prefix}"]`).val(questionData
+                    .written);
+                if (questionData.level) element.find(`select[name="level${prefix}"]`).val(questionData
+                    .level);
+                if (questionData.term) element.find(`select[name="term${prefix}"]`).val(questionData.term);
+                if (questionData.section) element.find(`select[name="section${prefix}"]`).val(questionData
+                    .section);
+                if (questionData.code_snippet) element.find(`textarea[name="code_snippet${prefix}"]`).val(
+                    questionData
+                    .code_snippet);
+                if (questionData.answer_explanation) element.find(
+                    `textarea[name="answer_explanation${prefix}"]`).val(
+                    questionData.answer_explanation);
+                if (questionData.more_info_link) element.find(`input[name="more_info_link${prefix}"]`).val(
+                    questionData
+                    .more_info_link);
+
+                // Restore options
+                if (questionData.options && questionData.options.length > 0) {
+                    // Initialize option index for this form if not exists
+                    if (!optionFormIndexes[formIndex]) {
+                        optionFormIndexes[formIndex] = 0;
+                    }
+
+                    // Wait a bit more for type fields to be ready
+                    await new Promise(resolve => setTimeout(resolve, 400));
+
+                    for (let optIndex = 0; optIndex < questionData.options.length; optIndex++) {
+                        const option = questionData.options[optIndex];
+                        console.log('typeof addOption3 : ' + typeof addOption3);
+
+                        if (index > 0) {
+                            optionFormIndexes[formIndex]++;
+                            if (typeof addOption3 === 'function') {
+
+                                await addOption3(formIndex, optionFormIndexes[formIndex]);
+                                // Wait for option to be added to DOM
+                                await new Promise(resolve => setTimeout(resolve, 100));
+                                console.log('Option ' + optionFormIndexes[formIndex] +
+                                    ' added successfully');
+                            } else {
+                                console.warn('addOption3 function not available');
+                            }
+                        } else {
+                            optionFormIndexes[formIndex]++;
+                            if (typeof addOption2 === 'function') {
+
+                                await addOption2(formIndex, optionFormIndexes[formIndex]);
+                                // Wait for option to be added to DOM
+                                await new Promise(resolve => setTimeout(resolve, 100));
+                                console.log('Option ' + optionFormIndexes[formIndex] +
+                                    ' added successfully');
+                            } else {
+                                console.warn('addOption2 function not available');
+                            }
+
+                        }
+
+                        const optionElement = element.find('.option-item').eq(optIndex);
+                        optionElement.find('input[type="text"]').val(option.text);
+                        optionElement.find('input[type="checkbox"]').prop('checked', option.correct);
+                    }
+                }
+
+                // Restore fraction data
+                if (questionData.fractionData && questionData.type === 'fraction') {
+                    // Wait for fraction fields to be ready
+                    await new Promise(resolve => setTimeout(resolve, 500));
+
+                    if (questionData.fractionData.answer_type_fraction) {
+                        element.find(`select[name="answer_type_fraction${prefixType}"]`).val(questionData
+                            .fractionData
+                            .answer_type_fraction).trigger('change');
+                        if (typeof toggleTypeFractionFields2 === 'function') {
+                            toggleTypeFractionFields2(questionData.fractionData.answer_type_fraction,
+                                formIndex);
+                        }
+                    }
+
+                    if (questionData.fractionData.answer_numerator) element.find(
+                        `input[name="answer_numerator${prefix}"]`).val(questionData.fractionData
+                        .answer_numerator);
+                    if (questionData.fractionData.answer_denominator) element.find(
+                        `input[name="answer_denominator${prefix}"]`).val(questionData.fractionData
+                        .answer_denominator);
+                    if (questionData.fractionData.answer_type) element.find(
+                            `select[name="answer_type${prefixType}"]`)
+                        .val(questionData.fractionData.answer_type);
+
+                    // Restore fraction options
+                    if (questionData.fractionData.fractionOptions && questionData.fractionData
+                        .fractionOptions.length >
+                        0) {
+                        for (let optIndex = 0; optIndex < questionData.fractionData.fractionOptions
+                            .length; optIndex++) {
+                            const fractionOption = questionData.fractionData.fractionOptions[optIndex];
+                            console.log('index: ' + index);
+
+                            if (index > 0) {
+                                addFractionOption2(index + 1, optIndex);
+                                console.log('optIndex2: ' + optIndex);
+
+                            } else {
+                                addFractionOption();
+                                console.log('optIndex1: ' + optIndex);
+
+                            }
+
+                            await new Promise(resolve => setTimeout(resolve, 100));
+
+
+                            const fractionElement = element.find('.fraction-item').eq(optIndex);
+                            fractionElement.find(`input[name^="answer_numerator"]`).val(fractionOption
+                                .answer_numerator);
+                            fractionElement.find(`input[name^="answer_denominator"]`).val(fractionOption
+                                .answer_denominator);
+                            fractionElement.find(`select[name^="answer_type"]`).val(fractionOption
+                                .answer_type);
+                            fractionElement.find('input[type="checkbox"]').prop('checked', fractionOption
+                                .correct);
+
+                        }
+
+                    }
+                }
+            }
+        }
+
+        // Clear auto-saved data
+        function clearAutoSavedData() {
+            try {
+                localStorage.removeItem(AUTO_SAVE_KEY);
+                console.log('Auto-saved data cleared');
+            } catch (error) {
+                console.error('Error clearing auto-saved data:', error);
+            }
+        }
+
+        // Setup auto-save listeners
+        function setupAutoSave() {
+            // Save on form field changes
+            $(document).on('input change', 'input, textarea, select', function() {
+                clearTimeout(autoSaveTimer);
+                autoSaveTimer = setTimeout(saveFormData, AUTO_SAVE_INTERVAL);
+            });
+
+            // Save when adding/removing options or questions
+            $(document).on('click',
+                '.addOption2, .remove-option, #AddQuestionForm, .DeleteQuestionForm, #add-fraction-option, .remove-fraction-option',
+                function() {
+                    setTimeout(saveFormData, 500); // Delay to allow DOM updates
+                });
+
+            // Save before page unload
+            $(window).on('beforeunload', function() {
+                saveFormData();
+            });
+        }
 
         // $(document).on('click', '#SubmitQuestionForm', function(e) {
         //     e.preventDefault();
@@ -1165,6 +1647,12 @@
         //     });
         // });
 
+        // Load auto-saved data after all functions are defined
+        setTimeout(function() {
+            if (typeof loadAutoSavedData === 'function') {
+                loadAutoSavedData();
+            }
+        }, 2000); // Delay to ensure all functions are loaded
 
     });
 </script>

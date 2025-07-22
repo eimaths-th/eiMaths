@@ -67,7 +67,6 @@
 
     {{-- add loading --}}
 
-
     <section class="content">
         <div class="container-fluid">
             <div class="row">
@@ -546,10 +545,6 @@
     {{-- @include('question.question-form', ['editing' => false, 'question' => null, 'options' => []]) - --}}
     @include('questionquizzes.form', ['editing' => true, 'question' => null, 'options' => []])
 
-
-    {{-- @include('question.edit') --}}
-
-    {{--  {!! $data->render() !!} --}}
 @endsection
 
 @section('script')
