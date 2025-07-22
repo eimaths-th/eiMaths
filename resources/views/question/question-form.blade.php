@@ -62,6 +62,12 @@
 
                     <div class="mb-3">
                         <label for="imageQuestion" class="form-label">Question Image</label>
+                        <!-- File Upload Input (Initially visible if no image) -->
+                        <div id="add-image-question-container">
+                            <input type="file" id="imageQuestion" name="imageQuestion" class="form-control mb-2"
+                                accept="image/*">
+                            <input type="hidden" id="old_img_name" name="old_img_name" value="">
+                        </div>
 
                         <!-- Image Preview -->
                         <div id="show-image-question-container" style="display:none;">
@@ -75,11 +81,7 @@
                             </div>
                         </div>
 
-                        <!-- File Upload Input (Initially visible if no image) -->
-                        <div id="add-image-question-container">
-                            <input type="file" id="imageQuestion" name="imageQuestion" class="form-control mb-2">
-                            <input type="hidden" id="old_img_name" name="old_img_name" value="">
-                        </div>
+
 
                         @error('imageQuestion')
                             <div class="text-danger mt-2">{{ $message }}</div>
@@ -281,22 +283,23 @@
                     <div class="mb-3">
                         <label for="answer_explanation_image" class="form-label">Answer Explanation Image</label>
 
+                        <!-- File Upload Input (Initially visible if no image) -->
+                        <div id="add-image-answer-explanation-container">
+                            <input type="file" id="answer_explanation_image" name="answer_explanation_image"
+                                class="form-control mb-2">
+                            <input type="hidden" id="old_answer_explanation_img_name"
+                                name="old_answer_explanation_img_name" value="">
+                        </div>
                         <!-- Image Preview -->
                         <div id="show-image-answer-explanation-container" style="display:none;">
                             <div class="mb-2">
-                                <img id="preview-image-answer-explanation" src="" alt="Answer Explanation Image"
-                                    style="max-width: 200px;" class="img-thumbnail">
+                                <img id="preview-image-answer-explanation" src=""
+                                    alt="Answer Explanation Image" style="max-width: 200px;" class="img-thumbnail">
                                 <button type="button" class="btn btn-danger btn-sm"
                                     id="remove-show-image-answer-explanation-container">
                                     <i class="fa fa-trash"></i>
                                 </button>
                             </div>
-                        </div>
-
-                        <!-- File Upload Input (Initially visible if no image) -->
-                        <div id="add-image-answer-explanation-container">
-                            <input type="file" id="answer_explanation_image" name="answer_explanation_image" class="form-control mb-2">
-                            <input type="hidden" id="old_answer_explanation_img_name" name="old_answer_explanation_img_name" value="">
                         </div>
 
                         @error('answer_explanation_image')

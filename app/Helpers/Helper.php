@@ -113,34 +113,34 @@ if (!function_exists('generateQrCode')) {
 if (!function_exists('replaceMixedFractions')) {
     function replaceMixedFractions($text)
     {
-        // dd($text);
-        //how to delete space from the text
-        $text = str_replace(' ', '', $text);
-        // dd($text);
-        return preg_replace_callback('/(MixFrac|Frac)\((\d+)(?:,\s*(\d+))?(?:,\s*(\d+))?\)/', function ($matches) {
-
-            $function = $matches[1]; // "MixFrac" or "Frac"
-            $whole = null;
+        return preg_replace_callback('/(MixFrac|Frac)\s*\(\s*([^\)]+)\s*\)/', function ($matches) {
+            $function = $matches[1]; // MixFrac or Frac
+            $args = preg_replace('/\s+/', '', $matches[2]); // Remove all spaces inside arguments
+            $parts = explode(',', $args);
 
             if ($function === 'MixFrac') {
-                if (isset($matches[4])) {
-                    // MixFrac(whole, num, denom)
-                    $whole = (int)$matches[2];
-                    $numerator = (int)$matches[3];
-                    $denominator = (int)$matches[4];
-                    // dd($whole, $numerator, $denominator);
-                } else {
-                    // Fallback if only 2 numbers
-                    $numerator = (int)$matches[2];
-                    $denominator = (int)$matches[3];
+                if (count($parts) === 3) {
+                    $whole = (int)$parts[0];
+                    $numerator = (int)$parts[1];
+                    $denominator = (int)$parts[2];
+                    return toMixedFraction($whole, $numerator, $denominator);
+                } else if (count($parts) === 2) {
+                    // Fallback in case only numerator and denominator are provided
+                    $numerator = (int)$parts[0];
+                    $denominator = (int)$parts[1];
+                    return toMixedFraction(null, $numerator, $denominator);
                 }
-                return toMixedFraction($whole, $numerator, $denominator);
             } else {
                 // Frac(num, denom)
-                $numerator = (int)$matches[2];
-                $denominator = (int)$matches[3];
-                return toFraction($numerator, $denominator);
+                if (count($parts) === 2) {
+                    $numerator = (int)$parts[0];
+                    $denominator = (int)$parts[1];
+                    return toFraction($numerator, $denominator);
+                }
             }
+
+            // Return original if something went wrong
+            return $matches[0];
         }, $text);
     }
 }

@@ -242,6 +242,37 @@
             optionIndex++;
         }
 
+        // imageQuestion on change
+        $(document).on('change', '#imageQuestion', function() {
+            showQuestionImg(this);
+        });
+        $(document).on('change', '#answer_explanation_image', function() {
+            showAnswerExplanationImgCreate(this);
+        });
+
+        function showQuestionImg(input) {
+
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('preview-image-question').src = e.target.result;
+                    document.getElementById('show-image-question-container').style.display = 'block';
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+        function showAnswerExplanationImgCreate(input) {
+
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('preview-image-answer-explanation').src = e.target.result;
+                    document.getElementById('show-image-answer-explanation-container').style.display = 'block';
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
         $(document).on('change', 'input[type="file"]', function() {
             var fileName = $(this).val().split('\\').pop();
             $(this).siblings('.file-name').text(fileName);
