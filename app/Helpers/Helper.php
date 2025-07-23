@@ -87,46 +87,138 @@ use PhpOffice\PhpSpreadsheet\Shared\Date;
 
 
 //fractional drisplay
+if (!function_exists('generateQrCode')) {
+    function generateQrCode($amount)
+    {
+        $qr = QRCodePayMent::first();
+        $promptpay_number = $qr->promptpay_numbers;
+        // $promptpay_number = "1103702601675";
+        $qrCodeData = new PromptPay();
+        $savePath = public_path('img/qrcode/qr.png');
+
+        if ($amount) {
+            # code...
+            $qrCodeData->generatePayload($promptpay_number, $amount);
+            $qrCodeData->generateQrCode($savePath, $promptpay_number, $amount);
+        } else {
+            $qrCodeData->generatePayload($promptpay_number);
+            $qrCodeData->generateQrCode($savePath, $promptpay_number);
+        }
 
 
-
+        $qrCodeImage = asset('img/qrcode/qr.png');
+        return $qrCodeImage;
+    }
+}
 if (!function_exists('replaceMixedFractions')) {
     function replaceMixedFractions($text)
     {
-        // $text = "asdfsdfsdfsdf F ra c(2,3) sdfs Frac(4,5) sdfsdf M i x F r a c ( 1 , 2 , 3 ) test MixFrac(4,5,6) MixFrac(null,(1+g) , 3) Frac((1+g) , 3) Frac(เศษ,ส่วน) + MixFrac(เศษ,ส่วน)";
-        return preg_replace_callback('/(MixFrac|Frac)\s*\(\s*([^\)]+)\s*\)/', function ($matches) {
+        // MixFrac((1+g) , 3)
+        // $text = "asdfsdfsdfsdf F ra c(2,3) sdfs Frac(4,5) sdfsdf M i x F r a c ( 1 , 2 , 3 ) test MixFrac(4,5,6)";
+
+        // Pattern ที่รองรับทั้งตัวเลขและภาษาไทย รวมถึง parentheses ที่ซ้อนกัน
+        preg_match_all('/(M\s*i\s*x\s*)?F\s*r\s*a\s*c\s*\(\s*(?:[^(),]+|\([^()]*\))+\s*(?:,\s*(?:[^(),]+|\([^()]*\))+\s*)*\)/iu', $text, $matches);
+
+        $combined = '';
+        foreach ($matches[0] as $match) {
+            $clean = preg_replace('/\s+/', '', $match); // ลบช่องว่างทั้งหมด
+            $combined .= $clean;
+        }
+
+        return preg_replace_callback('/(MixFrac|Frac)\s*\(\s*(.+)\s*\)/', function ($matches) {
             $function = $matches[1]; // MixFrac or Frac
-            $args = preg_replace('/\s+/', '', $matches[2]); // Remove all spaces inside arguments
-            $parts = explode(',', $args);
+            $args = $matches[2]; // Keep original arguments with parentheses
+            
+            // Split arguments while respecting nested parentheses
+            $parts = [];
+            $current = '';
+            $depth = 0;
+            $len = strlen($args);
+            
+            for ($i = 0; $i < $len; $i++) {
+                $char = $args[$i];
+                
+                if ($char === '(') {
+                    $depth++;
+                    $current .= $char;
+                } elseif ($char === ')') {
+                    $depth--;
+                    $current .= $char;
+                } elseif ($char === ',' && $depth === 0) {
+                    $parts[] = trim($current);
+                    $current = '';
+                } else {
+                    $current .= $char;
+                }
+            }
+            
+            if ($current !== '') {
+                $parts[] = trim($current);
+            }
+
 
             if ($function === 'MixFrac') {
                 if (count($parts) === 3) {
-                    $whole = (int)$parts[0];
-                    $numerator = (int)$parts[1];
-                    $denominator = (int)$parts[2];
-                    return toMixedFraction($whole, $numerator, $denominator);
-                } else if (count($parts) === 2) {
-                    // Fallback in case only numerator and denominator are provided
-
-
-                    $numerator = (int)$parts[0];
-                    $denominator = (int)$parts[1];
-                    if ($numerator == 0 && $denominator == 0) {
-                        // Whole number
-                        return "\(\\frac{{$parts[0]}}{{$parts[1]}}\)";
+                    // Check if parts contain expressions (parentheses or variables)
+                    $hasExpression = false;
+                    foreach ($parts as $part) {
+                        if (preg_match('/[()a-zA-Z+\-*\/]/', $part)) {
+                            $hasExpression = true;
+                            break;
+                        }
                     }
-                    return toMixedFraction(null, $numerator, $denominator);
+                    
+                    if ($hasExpression) {
+                        // Return LaTeX with original expressions
+                        return "\({$parts[0]} \\frac{{$parts[1]}}{{$parts[2]}}\)";
+                    } else {
+                        // Process as numbers
+                        $whole = (int)$parts[0];
+                        $numerator = (int)$parts[1];
+                        $denominator = (int)$parts[2];
+                        return toMixedFraction($whole, $numerator, $denominator);
+                    }
+                } else if (count($parts) === 2) {
+                    // Check if parts contain expressions
+                    $hasExpression = false;
+                    foreach ($parts as $part) {
+                        if (preg_match('/[()a-zA-Z+\-*\/]/', $part)) {
+                            $hasExpression = true;
+                            break;
+                        }
+                    }
+                    
+                    if ($hasExpression) {
+                        // Return LaTeX with original expressions
+                        return "\(\\frac{{$parts[0]}}{{$parts[1]}}\)";
+                    } else {
+                        // Process as numbers
+                        $numerator = (int)$parts[0];
+                        $denominator = (int)$parts[1];
+                        return toMixedFraction(null, $numerator, $denominator);
+                    }
                 }
             } else {
                 // Frac(num, denom)
                 if (count($parts) === 2) {
-                    $numerator = (int)$parts[0];
-                    $denominator = (int)$parts[1];
-                    if ($numerator == 0 && $denominator == 0) {
-                        // Whole number
-                        return "\(\\frac{{$parts[0]}}{{$parts[1]}}\)";
+                    // Check if parts contain expressions
+                    $hasExpression = false;
+                    foreach ($parts as $part) {
+                        if (preg_match('/[()a-zA-Z+\-*\/]/', $part)) {
+                            $hasExpression = true;
+                            break;
+                        }
                     }
-                    return toFraction($numerator, $denominator);
+                    
+                    if ($hasExpression) {
+                        // Return LaTeX with original expressions
+                        return "\(\\frac{{$parts[0]}}{{$parts[1]}}\)";
+                    } else {
+                        // Process as numbers
+                        $numerator = (int)$parts[0];
+                        $denominator = (int)$parts[1];
+                        return toFraction($numerator, $denominator);
+                    }
                 }
             }
 
@@ -177,31 +269,6 @@ if (!function_exists('toMixedFraction')) {
     }
 }
 //end fractional drisplay
-
-if (!function_exists('generateQrCode')) {
-    function generateQrCode($amount)
-    {
-        $qr = QRCodePayMent::first();
-        $promptpay_number = $qr->promptpay_numbers;
-        // $promptpay_number = "1103702601675";
-        $qrCodeData = new PromptPay();
-        $savePath = public_path('img/qrcode/qr.png');
-
-        if ($amount) {
-            # code...
-            $qrCodeData->generatePayload($promptpay_number, $amount);
-            $qrCodeData->generateQrCode($savePath, $promptpay_number, $amount);
-        } else {
-            $qrCodeData->generatePayload($promptpay_number);
-            $qrCodeData->generateQrCode($savePath, $promptpay_number);
-        }
-
-
-        $qrCodeImage = asset('img/qrcode/qr.png');
-        return $qrCodeImage;
-    }
-}
-
 
 if (!function_exists('create_commmission_list')) {
     function create_commmission_list($order_id, $reqRef, $courses_pending_id = null)
