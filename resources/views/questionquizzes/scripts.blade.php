@@ -1116,13 +1116,15 @@
                             // Clear auto-saved data on successful submission
                             clearAutoSavedData();
 
-                            toastr.success(response.message, {
+                            toastr.success(response.success, {
                                 timeOut: 3000
                             });
                             setTimeout(function() {
                                 window.location.href =
-                                    "{{ route('questions-quizzes.index') }}";
-                            }, 2000);
+                                    "{{ route('questions-quizzes.create') }}";
+                                console.log(localStorage.getItem(AUTO_SAVE_KEY));
+                            }, 3000);
+
                         } else {
                             toastr.error(response.message || 'เกิดข้อผิดพลาด', {
                                 timeOut: 5000
@@ -1153,6 +1155,8 @@
         const AUTO_SAVE_KEY = 'questionquiz_autosave_data';
         const AUTO_SAVE_INTERVAL = 2000; // Save every 2 seconds
         let autoSaveTimer;
+        let autoSaveEnabled = true; // Flag to control auto-save
+        let formSubmitted = false; // Flag to track if form has been submitted
 
         // Load saved data on page load
         async function loadAutoSavedData() {
@@ -1170,7 +1174,11 @@
                     if (data.term) $('#term').val(data.term);
                     if (data.section) $('#section').val(data.section);
                     if (data.public !== undefined) $('#public').prop('checked', data.public);
-                    if (data.SelectQuiz) $('#SelectQuiz').val(data.SelectQuiz);
+                    if (data.SelectQuiz) {
+                        $('#SelectQuiz').val(data.SelectQuiz).trigger('change');
+                        // Update the global SelectQuiz variable
+                        SelectQuiz = data.SelectQuiz;
+                    }
 
                     // Restore questions data
                     if (data.questions && data.questions.length > 0) {
@@ -1193,6 +1201,12 @@
 
         // Save form data to localStorage
         function saveFormData() {
+            // Don't save if form has been submitted or auto-save is disabled
+            if (formSubmitted || !autoSaveEnabled) {
+                console.log('Auto-save skipped: form submitted or auto-save disabled');
+                return;
+            }
+
             try {
                 const formData = {
                     title: $('#title').val(),
@@ -1471,8 +1485,18 @@
         // Clear auto-saved data
         function clearAutoSavedData() {
             try {
+                // Set flags to prevent further auto-saving
+                formSubmitted = true;
+                autoSaveEnabled = false;
+
+                // Clear any pending auto-save timers
+                if (autoSaveTimer) {
+                    clearTimeout(autoSaveTimer);
+                }
+
+                // Remove the saved data from localStorage
                 localStorage.removeItem(AUTO_SAVE_KEY);
-                console.log('Auto-saved data cleared');
+                console.log('Auto-saved data cleared and auto-save disabled');
             } catch (error) {
                 console.error('Error clearing auto-saved data:', error);
             }
@@ -1482,20 +1506,26 @@
         function setupAutoSave() {
             // Save on form field changes
             $(document).on('input change', 'input, textarea, select', function() {
-                clearTimeout(autoSaveTimer);
-                autoSaveTimer = setTimeout(saveFormData, AUTO_SAVE_INTERVAL);
+                if (!formSubmitted && autoSaveEnabled) {
+                    clearTimeout(autoSaveTimer);
+                    autoSaveTimer = setTimeout(saveFormData, AUTO_SAVE_INTERVAL);
+                }
             });
 
             // Save when adding/removing options or questions
             $(document).on('click',
                 '.addOption2, .remove-option, #AddQuestionForm, .DeleteQuestionForm, #add-fraction-option, .remove-fraction-option',
                 function() {
-                    setTimeout(saveFormData, 500); // Delay to allow DOM updates
+                    if (!formSubmitted && autoSaveEnabled) {
+                        setTimeout(saveFormData, 500); // Delay to allow DOM updates
+                    }
                 });
 
-            // Save before page unload
+            // Save before page unload (only if form hasn't been submitted)
             $(window).on('beforeunload', function() {
-                saveFormData();
+                if (!formSubmitted && autoSaveEnabled) {
+                    saveFormData();
+                }
             });
         }
 
