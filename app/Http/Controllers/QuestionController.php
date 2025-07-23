@@ -780,4 +780,49 @@ class QuestionController extends Controller
 
         return response()->json(['success' => true, 'message' => 'Delete Question Success']);
     }
+
+    /**
+     * Quick update for inline editing - only updates question text
+     */
+    public function quickUpdate(Request $request, $id)
+    {
+        try {
+            // Validate the request
+            $request->validate([
+                'text' => 'required|string|max:1000',
+            ]);
+
+            // Find the question
+            $question = Question::findOrFail($id);
+
+            // Update only the text field
+            $question->update([
+                'text' => $request->text,
+                'updated_by' => Auth::user()->id ?? null,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Question updated successfully',
+                'data' => [
+                    'id' => $question->id,
+                    'text' => $question->text,
+                ]
+            ]);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+
+        } catch (\Exception $e) {
+            Log::error('Error updating question: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while updating the question'
+            ], 500);
+        }
+    }
 }

@@ -210,6 +210,10 @@ Route::group(['middleware' => ['auth', 'affiliate.redirect']], function () {
 
     Route::get('/ei_form', [EiFormController::class, 'backEndIndex'])->name('ei_form.backEndIndex');
 
+    // Questions
+    Route::resource('questions', App\Http\Controllers\QuestionController::class);
+    Route::put('/questions/{id}/quick-update', [App\Http\Controllers\QuestionController::class, 'quickUpdate'])->name('questions.quick-update');
+
     // Blogs
     Route::resource('blogs', BlogController::class);
 });
