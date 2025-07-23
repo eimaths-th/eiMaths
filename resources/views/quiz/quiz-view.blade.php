@@ -9,6 +9,7 @@
             background-color: #f8fafc;
             font-family: 'Sarabun', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
+
         .quiz-header {
             background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
             color: white;
@@ -17,6 +18,7 @@
             margin-bottom: 24px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
+
         .question-card {
             background: white;
             border-radius: 12px;
@@ -26,10 +28,12 @@
             border: 1px solid #e5e7eb;
             transition: all 0.3s ease;
         }
+
         .question-card:hover {
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
             transform: translateY(-2px);
         }
+
         .question-number {
             background: #f97316;
             color: white;
@@ -42,6 +46,7 @@
             font-weight: bold;
             margin-bottom: 12px;
         }
+
         .question-type-badge {
             background: #fef3c7;
             color: #92400e;
@@ -52,6 +57,7 @@
             display: inline-block;
             margin-bottom: 12px;
         }
+
         .option-item {
             background: #f9fafb;
             border: 2px solid #e5e7eb;
@@ -61,14 +67,17 @@
             transition: all 0.3s ease;
             cursor: pointer;
         }
+
         .option-item:hover {
             border-color: #f97316;
             background: #fff7ed;
         }
+
         .option-item.correct {
             background: #dcfce7;
             border-color: #16a34a;
         }
+
         .check-btn {
             background: #f97316;
             color: white;
@@ -77,12 +86,13 @@
             border-radius: 6px;
             font-weight: 500;
             transition: all 0.3s ease;
-            cursor: pointer;
         }
+
         .check-btn:hover {
             background: #ea580c;
             transform: translateY(-1px);
         }
+
         .answer-display {
             background: #f0f9ff;
             border: 2px solid #0ea5e9;
@@ -90,6 +100,7 @@
             padding: 12px;
             margin-top: 12px;
         }
+
         .fraction-display {
             font-size: 18px;
             font-weight: bold;
@@ -108,19 +119,23 @@
                     <div style="margin-top: 12px; display: flex; gap: 24px; flex-wrap: wrap;">
                         <div style="display: flex; align-items: center; gap: 8px;">
                             <svg style="width: 20px; height: 20px; fill: currentColor;" viewBox="0 0 20 20">
-                                <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z"/>
+                                <path
+                                    d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z" />
                             </svg>
                             <span style="font-weight: 500;">ระดับชั้น: {{ $quizzes->level }}</span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 8px;">
                             <svg style="width: 20px; height: 20px; fill: currentColor;" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
+                                <path fill-rule="evenodd"
+                                    d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
+                                    clip-rule="evenodd" />
                             </svg>
                             <span style="font-weight: 500;">เทอม: {{ $quizzes->term }}</span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 8px;">
                             <svg style="width: 20px; height: 20px; fill: currentColor;" viewBox="0 0 20 20">
-                                <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"/>
+                                <path
+                                    d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z" />
                             </svg>
                             <span style="font-weight: 500;">หมวด: {{ $quizzes->section }}</span>
                         </div>
@@ -135,16 +150,22 @@
 
         <!-- Questions Section -->
         <div style="margin-bottom: 24px;">
-            <h2 style="color: #1f2937; font-size: 24px; font-weight: bold; margin-bottom: 20px; display: flex; align-items: center; gap: 12px;">
+            <h2
+                style="color: #1f2937; font-size: 24px; font-weight: bold; margin-bottom: 20px; display: flex; align-items: center; gap: 12px;">
                 <svg style="width: 28px; height: 28px; fill: #f97316;" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"/>
+                    <path fill-rule="evenodd"
+                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z"
+                        clip-rule="evenodd" />
                 </svg>
                 รายการคำถาม
             </h2>
             @if ($questions->isEmpty())
-                <div style="text-align: center; padding: 60px 20px; background: white; border-radius: 12px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+                <div
+                    style="text-align: center; padding: 60px 20px; background: white; border-radius: 12px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
                     <svg style="width: 64px; height: 64px; fill: #d1d5db; margin-bottom: 16px;" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"/>
+                        <path fill-rule="evenodd"
+                            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z"
+                            clip-rule="evenodd" />
                     </svg>
                     <h3 style="color: #6b7280; margin: 0; font-size: 18px;">ไม่พบคำถาม</h3>
                     <p style="color: #9ca3af; margin: 8px 0 0 0;">ยังไม่มีคำถามในแบบทดสอบนี้</p>
@@ -152,12 +173,12 @@
             @else
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)); gap: 20px;">
                     @foreach ($questions as $key => $question)
-                        <div class="question-card">
+                        <div class="question-card" id="question-container-{{ $question->id }}">
                             <div style="display: flex; align-items: flex-start; gap: 16px; margin-bottom: 16px;">
                                 <div class="question-number">{{ $key + 1 }}</div>
                                 <div style="flex: 1;">
                                     <div class="question-type-badge">
-                                        @if($question->type === 'written')
+                                        @if ($question->type === 'written')
                                             คำตอบเขียน
                                         @elseif($question->type === 'options')
                                             ตัวเลือก
@@ -169,7 +190,8 @@
                                             {{ $question->type }}
                                         @endif
                                     </div>
-                                    <div style="font-size: 16px; font-weight: 500; color: #1f2937; line-height: 1.5; margin-bottom: 12px;">
+                                    <div
+                                        style="font-size: 16px; font-weight: 500; color: #1f2937; line-height: 1.5; margin-bottom: 12px;">
                                         {{ replaceMixedFractions($question->text) }}
                                     </div>
 
@@ -188,7 +210,9 @@
                                 <div class="answer-display">
                                     <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
                                         <svg style="width: 16px; height: 16px; fill: #0ea5e9;" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                            <path fill-rule="evenodd"
+                                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                                clip-rule="evenodd" />
                                         </svg>
                                         <span style="font-weight: 600; color: #0369a1;">คำตอบที่ถูกต้อง:</span>
                                     </div>
@@ -197,40 +221,48 @@
                                     </div>
                                 </div>
 
-                            {{-- OPTIONS TYPE --}}
+                                {{-- OPTIONS TYPE --}}
                             @elseif ($question->type === 'options')
                                 <div style="margin-top: 16px;">
                                     @foreach ($question->options as $optionIndex => $option)
-                                        <div class="option-item {{ $option->correct ? 'correct' : '' }}" 
-                                             style="display: flex; align-items: center; gap: 12px;">
-                                            <div style="width: 24px; height: 24px; border-radius: 50%; background: {{ $option->correct ? '#16a34a' : '#e5e7eb' }}; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 14px;">
+                                        <div class="option-item {{ $option->correct ? 'correct' : '' }}"
+                                            style="display: flex; align-items: center; gap: 12px;">
+                                            <div
+                                                style="width: 24px; height: 24px; border-radius: 50%; background: {{ $option->correct ? '#16a34a' : '#e5e7eb' }}; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 14px;">
                                                 {{ chr(65 + $optionIndex) }}
                                             </div>
                                             <div style="flex: 1; font-size: 15px; color: #1f2937;">
                                                 {{ replaceMixedFractions($option->text) }}
                                             </div>
-                                            @if($option->correct)
+                                            @if ($option->correct)
                                                 <svg style="width: 20px; height: 20px; fill: #16a34a;" viewBox="0 0 20 20">
-                                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                                    <path fill-rule="evenodd"
+                                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                                        clip-rule="evenodd" />
                                                 </svg>
                                             @endif
                                         </div>
                                     @endforeach
                                 </div>
 
-                            {{-- IMAGE TYPE --}}
+                                {{-- IMAGE TYPE --}}
                             @elseif ($question->type === 'image')
-                                <div style="margin-top: 16px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;">
+                                <div
+                                    style="margin-top: 16px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;">
                                     @foreach ($question->images as $imgIndex => $image)
-                                        <div class="option-item {{ $image->correct ? 'correct' : '' }}" 
-                                             style="text-align: center; padding: 16px; position: relative;">
-                                            <div style="position: absolute; top: 8px; left: 8px; width: 24px; height: 24px; border-radius: 50%; background: {{ $image->correct ? '#16a34a' : '#e5e7eb' }}; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 12px;">
+                                        <div class="option-item {{ $image->correct ? 'correct' : '' }}"
+                                            style="text-align: center; padding: 16px; position: relative;">
+                                            <div
+                                                style="position: absolute; top: 8px; left: 8px; width: 24px; height: 24px; border-radius: 50%; background: {{ $image->correct ? '#16a34a' : '#e5e7eb' }}; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 12px;">
                                                 {{ chr(65 + $imgIndex) }}
                                             </div>
-                                            @if($image->correct)
+                                            @if ($image->correct)
                                                 <div style="position: absolute; top: 8px; right: 8px;">
-                                                    <svg style="width: 20px; height: 20px; fill: #16a34a;" viewBox="0 0 20 20">
-                                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                                    <svg style="width: 20px; height: 20px; fill: #16a34a;"
+                                                        viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd"
+                                                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                                            clip-rule="evenodd" />
                                                     </svg>
                                                 </div>
                                             @endif
@@ -241,7 +273,7 @@
                                     @endforeach
                                 </div>
 
-                            {{-- FRACTION TYPE --}}
+                                {{-- FRACTION TYPE --}}
                             @elseif ($question->type === 'fraction')
                                 @php $fraction = $question->fractions->first(); @endphp
 
@@ -250,22 +282,26 @@
                                     <div class="answer-display">
                                         <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
                                             <svg style="width: 16px; height: 16px; fill: #0ea5e9;" viewBox="0 0 20 20">
-                                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                                <path fill-rule="evenodd"
+                                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                                    clip-rule="evenodd" />
                                             </svg>
                                             <span style="font-weight: 600; color: #0369a1;">คำตอบที่ถูกต้อง:</span>
                                         </div>
                                         @if ($fraction->answer_type === 'frac')
-                                            <div class="fraction-display" style="text-align: center; padding: 12px; background: #f8fafc; border-radius: 8px;">
+                                            <div class="fraction-display"
+                                                style="text-align: center; padding: 12px; background: #f8fafc; border-radius: 8px;">
                                                 {{ toFraction($fraction->numerator, $fraction->denominator) }}
                                             </div>
                                         @else
-                                            <div class="fraction-display" style="text-align: center; padding: 12px; background: #f8fafc; border-radius: 8px;">
+                                            <div class="fraction-display"
+                                                style="text-align: center; padding: 12px; background: #f8fafc; border-radius: 8px;">
                                                 {{ toMixedFraction(null, $fraction->numerator, $fraction->denominator) }}
                                             </div>
                                         @endif
                                     </div>
 
-                                {{-- Option-based Fraction --}}
+                                    {{-- Option-based Fraction --}}
                                 @else
                                     <div style="margin-top: 16px;">
                                         @foreach ($question->fractions as $fracIndex => $option)
@@ -277,25 +313,27 @@
                                                             $option->numerator,
                                                             $option->denominator,
                                                         )
-                                                        : toFraction(
-                                                            $option->numerator,
-                                                            $option->denominator,
-                                                        );
+                                                        : toFraction($option->numerator, $option->denominator);
                                             @endphp
 
-                                            <div class="option-item {{ $option->correct ? 'correct' : '' }}" 
-                                                 style="display: flex; align-items: center; gap: 12px;">
-                                                <div style="width: 24px; height: 24px; border-radius: 50%; background: {{ $option->correct ? '#16a34a' : '#e5e7eb' }}; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 14px;">
+                                            <div class="option-item {{ $option->correct ? 'correct' : '' }}"
+                                                style="display: flex; align-items: center; gap: 12px;">
+                                                <div
+                                                    style="width: 24px; height: 24px; border-radius: 50%; background: {{ $option->correct ? '#16a34a' : '#e5e7eb' }}; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 14px;">
                                                     {{ chr(65 + $fracIndex) }}
                                                 </div>
                                                 <div style="flex: 1; font-size: 15px; color: #1f2937; text-align: center;">
-                                                    <div class="fraction-display" style="padding: 8px; background: #f8fafc; border-radius: 6px; display: inline-block;">
+                                                    <div class="fraction-display"
+                                                        style="padding: 8px; background: #f8fafc; border-radius: 6px; display: inline-block;">
                                                         {{ $textOption }}
                                                     </div>
                                                 </div>
-                                                @if($option->correct)
-                                                    <svg style="width: 20px; height: 20px; fill: #16a34a;" viewBox="0 0 20 20">
-                                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                                @if ($option->correct)
+                                                    <svg style="width: 20px; height: 20px; fill: #16a34a;"
+                                                        viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd"
+                                                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                                            clip-rule="evenodd" />
                                                     </svg>
                                                 @endif
                                             </div>
@@ -305,19 +343,72 @@
                             @endif
 
                             {{-- Action Buttons --}}
-                            <div style="margin-top: 20px; text-align: right; border-top: 1px solid #e5e7eb; padding-top: 16px;">
-                                <button class="check-btn check-button" data-question-id="{{ $question->id }}" style="margin-right: 8px;">
-                                    <svg style="width: 16px; height: 16px; fill: currentColor; margin-right: 4px;" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                                    </svg>
-                                    ตรวจสอบ
-                                </button>
-                                <button class="check-btn uncheck-button" data-question-id="{{ $question->id }}" style="display: none; background: #dc2626;">
-                                    <svg style="width: 16px; height: 16px; fill: currentColor; margin-right: 4px;" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
-                                    </svg>
-                                    ยกเลิก
-                                </button>
+                            <div
+                                style="margin-top: 20px; text-align: right; border-top: 1px solid #e5e7eb; padding-top: 16px; display: flex; justify-content: space-between;">
+                                <div>
+                                    <button type="button" class="edit-question-btn" id="getEditQuestionData"
+                                        data-id="{{ $question->id }}"
+                                        style="
+                                                background: linear-gradient(135deg, #3b82f6, #2563eb);
+                                                color: white;
+                                                border: none;
+                                                padding: 8px 16px;
+                                                border-radius: 6px;
+                                                font-weight: 500;
+                                                cursor: pointer;
+                                                transition: all 0.2s ease;
+                                                box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+                                            "
+                                        onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 8px rgba(59, 130, 246, 0.4)';"
+                                        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(59, 130, 246, 0.3)';"
+                                        onmousedown="this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 2px rgba(59, 130, 246, 0.3)';"
+                                        onmouseup="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 8px rgba(59, 130, 246, 0.4)';">
+                                        <i class="fas fa-edit"></i> แก้ไขคำถาม
+                                    </button>
+                                </div>
+                                <div>
+                                    <button class="check-btn check-button" data-question-id="{{ $question->id }}"
+                                        style="
+                                                background: linear-gradient(135deg, #10b981, #059669);
+                                                color: white;
+                                                border: none;
+                                                padding: 8px 16px;
+                                                border-radius: 6px;
+                                                font-weight: 500;
+                                                cursor: pointer;
+                                                transition: all 0.2s ease;
+                                                box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);
+                                                margin-left: 8px;
+                                            "
+                                        onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 8px rgba(16, 185, 129, 0.4)';"
+                                        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(16, 185, 129, 0.3)';"
+                                        onmousedown="this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 2px rgba(16, 185, 129, 0.3)';"
+                                        onmouseup="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 8px rgba(16, 185, 129, 0.4)';"
+                                        onclick="checkAnswer({{ $question->id }})">
+                                        <i class="fas fa-check-circle"></i> ตรวจคำตอบ
+                                    </button>
+                                    <button class="uncheck-button" data-question-id="{{ $question->id }}"
+                                        style="
+                                                display: none;
+                                                background: linear-gradient(135deg, #ef4444, #dc2626);
+                                                color: white;
+                                                border: none;
+                                                padding: 8px 16px;
+                                                border-radius: 6px;
+                                                font-weight: 500;
+                                                cursor: pointer;
+                                                transition: all 0.2s ease;
+                                                box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
+                                                margin-left: 8px;
+                                            "
+                                        onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 8px rgba(239, 68, 68, 0.4)';"
+                                        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(239, 68, 68, 0.3)';"
+                                        onmousedown="this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 2px rgba(239, 68, 68, 0.3)';"
+                                        onmouseup="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 8px rgba(239, 68, 68, 0.4)';"
+                                        onclick="uncheckAnswer({{ $question->id }})">
+                                        <i class="fas fa-times-circle"></i> ยกเลิก
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     @endforeach
@@ -326,17 +417,17 @@
         </div>
     </div>
 
-    {{-- @include('question.question-form', ['editing' => false, 'question' => null, 'options' => []]) --}}
-    {{-- @include('quiz.quiz-form', [ 'editing' => false,'quiz' => null, 'options' => []])
-    @include('quiz.quiz-assign') --}}
+    @include('question.question-form', ['editing' => true, 'question' => null, 'options' => []])
 
-    {{-- @include('question.edit') --}}
-
-    {{--  {!! $data->render() !!} --}}
 @endsection
 
 @section('script')
     @include('quiz.scripts')
+    @include('question.scripts')
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+
+    </script>
     <script>
         let checkedQuestions = new Set(JSON.parse(localStorage.getItem('checkedQuestions')) || []);
 
@@ -346,11 +437,34 @@
             const $uncheckBtn = $('.uncheck-button[data-question-id="' + questionId + '"]');
 
             if (isChecked) {
-                $container.addClass('bg-success text-white');
+                // Add checked styling to the question card
+                $container.css({
+                    'background': 'linear-gradient(135deg, #ecfdf5, #d1fae5)',
+                    'border': '2px solid #10b981',
+                    'box-shadow': '0 8px 25px rgba(16, 185, 129, 0.15)'
+                });
+
+                // Add a checkmark badge to the question number
+                const $questionNumber = $container.find('.question-number');
+                if (!$questionNumber.find('.check-badge').length) {
+                    $questionNumber.append(
+                        '<div class="check-badge" style="position: absolute; top: -8px; right: -8px; background: #10b981; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold;">✓</div>'
+                    );
+                }
+
                 $checkBtn.hide();
-                $uncheckBtn.show();
+                $uncheckBtn.css('display', 'inline-flex');
             } else {
-                $container.removeClass('bg-success text-white');
+                // Remove checked styling
+                $container.css({
+                    'background': 'white',
+                    'border': '1px solid #e5e7eb',
+                    'box-shadow': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
+                });
+
+                // Remove checkmark badge
+                $container.find('.check-badge').remove();
+
                 $checkBtn.show();
                 $uncheckBtn.hide();
             }
@@ -376,4 +490,278 @@
             updateUI(questionId, false);
         });
     </script>
+    {{-- <script>
+        // Handle edit question button click
+        $(document).on('click', '.edit-question-btn', function() {
+            const questionId = $(this).data('question-id');
+            loadQuestionData(questionId);
+        });
+
+        // Function to load question data into the form
+        function loadQuestionData(questionId) {
+            // Show loading state
+            $('#question-title').text('กำลังโหลด...');
+            $('#CreateModal').modal('show');
+
+            // Fetch question data
+            $.ajax({
+                url: `/questions/edit/${questionId}`,
+                method: 'GET',
+                success: function(response) {
+                    // Update form with question data
+                    console.log(response);
+                    $('#question-title').text('แก้ไขคำถาม');
+                    $('#formMethod').val('PUT');
+                    $('#questionForm').attr('action', `/questions/${questionId}`);
+
+                    // Set basic question data
+                    $('#text').val(response.question.text);
+                    $('#type').val(response.question.type).trigger('change');
+                    $('#level').val(response.question.level).trigger('change');
+                    $('#term').val(response.question.term).trigger('change');
+                    $('#section').val(response.question.section).trigger('change');
+                    $('#answer_explanation').val(response.question.answer_explanation);
+                    $('#code_snippet').val(response.question.code_snippet);
+
+                    // Set question type specific data
+                    if (response.type === 'options') {
+                        // Clear existing options
+                        $('#options-container').empty();
+
+                        // Add options
+                        response.question.options.forEach((option, index) => {
+                            addOption(option.text, option.correct, option.id);
+                        });
+                    } else if (response.type === 'fraction' && response.question.fractions.length > 0) {
+                        const fraction = response.question.fractions[0];
+                        $('input[name="answer_type"]').val([fraction.answer_type]);
+                        $('input[name="numerator"]').val(fraction.numerator);
+                        $('input[name="denominator"]').val(fraction.denominator);
+                        if (fraction.answer_type === 'mixed') {
+                            $('input[name="whole_number"]').val(fraction.whole_number);
+                        }
+                    } else if (response.question.type === 'image' && response.question.options) {
+                        // Handle image options
+                        $('#image-options-container').empty();
+                        response.question.options.forEach((option, index) => {
+                            addImageOption(option.text, option.correct, option.image, option.id);
+                        });
+                    }
+
+                    // Show the modal
+                    $('#CreateModal').modal('show');
+                },
+                error: function(xhr) {
+                    console.error('Error loading question:', xhr);
+                    Swal.fire({
+                        title: 'เกิดข้อผิดพลาด',
+                        text: 'ไม่สามารถโหลดข้อมูลคำถามได้',
+                        icon: 'error',
+                        confirmButtonText: 'ตกลง'
+                    });
+                }
+            });
+        }
+
+        // Handle form submission
+        $(document).on('click', '#SubmitCreateForm', function(e) {
+            e.preventDefault();
+
+            const form = $('#questionForm');
+            const formData = new FormData(form[0]);
+            const url = form.attr('action');
+            const method = form.find('input[name="_method"]').val() || 'POST';
+
+            // Add CSRF token
+            formData.append('_token', $('meta[name="csrf-token"]').attr('content'));
+
+            // Show loading state
+            const submitBtn = $(this);
+            const originalText = submitBtn.html();
+            submitBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> กำลังบันทึก...');
+
+            // Submit the form
+            $.ajax({
+                url: url,
+                method: method === 'PUT' ? 'POST' : 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    // Close the modal
+                    $('#CreateModal').modal('hide');
+
+                    // Show success message
+                    Swal.fire({
+                        title: 'สำเร็จ',
+                        text: 'บันทึกข้อมูลเรียบร้อยแล้ว',
+                        icon: 'success',
+                        confirmButtonText: 'ตกลง'
+                    }).then(() => {
+                        // Reload the page to see changes
+                        window.location.reload();
+                    });
+                },
+                error: function(xhr) {
+                    console.error('Error saving question:', xhr);
+                    let errorMessage = 'เกิดข้อผิดพลาดในการบันทึกข้อมูล';
+
+                    if (xhr.responseJSON && xhr.responseJSON.errors) {
+                        // Show validation errors
+                        let errorHtml = '<ul>';
+                        $.each(xhr.responseJSON.errors, function(key, value) {
+                            errorHtml += '<li>' + value[0] + '</li>';
+                        });
+                        errorHtml += '</ul>';
+
+                        errorMessage = errorHtml;
+                    }
+
+                    Swal.fire({
+                        title: 'เกิดข้อผิดพลาด',
+                        html: errorMessage,
+                        icon: 'error',
+                        confirmButtonText: 'ตกลง'
+                    });
+                },
+                complete: function() {
+                    // Reset button state
+                    submitBtn.prop('disabled', false).html(originalText);
+                }
+            });
+        });
+
+        // Helper function to add option to the form
+        function addOption(text = '', isCorrect = false, optionId = null) {
+            const index = $('.option-row').length;
+            const optionHtml = `
+                <div class="option-row mb-2" data-index="${index}">
+                    <div class="input-group">
+                        <div class="input-group-text">
+                            <input class="form-check-input mt-0" type="radio" name="correct_option" value="${index}" ${isCorrect ? 'checked' : ''}>
+                        </div>
+                        <input type="text" class="form-control" name="options[${index}]" value="${text}" placeholder="ตัวเลือก">
+                        <input type="hidden" name="option_ids[${index}]" value="${optionId || ''}">
+                        <button type="button" class="btn btn-danger remove-option" data-index="${index}">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            $('#options-container').append(optionHtml);
+        }
+
+        // Helper function to add image option to the form
+        function addImageOption(text = '', isCorrect = false, image = null, optionId = null) {
+            const index = $('.image-option-row').length;
+            const imagePreview = image ?
+                `<img src="/storage/${image}" style="max-width: 100px; max-height: 100px; margin-top: 10px; display: block;" class="img-preview-${index}">` :
+                '';
+
+            const optionHtml = `
+                <div class="image-option-row mb-3 p-3 border rounded" data-index="${index}">
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="radio" name="correct_option" value="${index}" ${isCorrect ? 'checked' : ''}>
+                        <label class="form-check-label">คำตอบที่ถูกต้อง</label>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">ข้อความตัวเลือก</label>
+                        <input type="text" class="form-control" name="image_options[${index}]" value="${text}" placeholder="ข้อความตัวเลือก">
+                        <input type="hidden" name="image_option_ids[${index}]" value="${optionId || ''}">
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">รูปภาพ</label>
+                        <input type="file" class="form-control image-upload" data-index="${index}" name="option_images[${index}]">
+                        ${imagePreview}
+                    </div>
+                    <button type="button" class="btn btn-sm btn-danger remove-image-option" data-index="${index}">
+                        <i class="fas fa-trash"></i> ลบตัวเลือกนี้
+                    </button>
+                </div>
+            `;
+            $('#image-options-container').append(optionHtml);
+        }
+
+        // Initialize event handlers for dynamic elements
+        $(document).on('click', '.remove-option', function() {
+            $(this).closest('.option-row').remove();
+        });
+
+        $(document).on('click', '.remove-image-option', function() {
+            $(this).closest('.image-option-row').remove();
+        });
+
+        // Handle image preview
+        $(document).on('change', '.image-upload', function() {
+            const index = $(this).data('index');
+            const file = this.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                $(`.img-preview-${index}`).attr('src', e.target.result).show();
+            }
+
+            if (file) {
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Handle form reset when modal is closed
+        $('#CreateModal').on('hidden.bs.modal', function() {
+            // Reset form
+            $('#questionForm')[0].reset();
+            $('#options-container').empty();
+            $('#image-options-container').empty();
+            $('.fraction_type').hide();
+            $('.options_type').hide();
+            $('.image_type').hide();
+            $('#formMethod').val('POST');
+            $('#questionForm').attr('action', '/questions');
+            $('#question-title').text('สร้างคำถามใหม่');
+        });
+
+        // Handle question type change
+        $('#type').on('change', function() {
+            const type = $(this).val();
+
+            // Hide all type-specific sections
+            $('.fraction_type, .options_type, .image_type').hide();
+
+            // Show the selected type section
+            if (type === 'fraction') {
+                $('.fraction_type').show();
+            } else if (type === 'options') {
+                $('.options_type').show();
+                // Add at least one option if none exists
+                if ($('.option-row').length === 0) {
+                    addOption();
+                }
+            } else if (type === 'image') {
+                $('.image_type').show();
+                // Add at least one image option if none exists
+                if ($('.image-option-row').length === 0) {
+                    addImageOption();
+                }
+            }
+        });
+
+        // Add option button
+        $('#add-option').on('click', function() {
+            addOption();
+        });
+
+        // Add image option button
+        $('#add-option-img').on('click', function() {
+            addImageOption();
+        });
+
+        // Handle answer type change for fractions
+        $('input[name="answer_type"]').on('change', function() {
+            if ($(this).val() === 'mixed') {
+                $('.whole-number-field').show();
+            } else {
+                $('.whole-number-field').hide();
+            }
+        });
+    </script> --}}
 @endsection

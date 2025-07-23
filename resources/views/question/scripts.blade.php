@@ -261,13 +261,15 @@
                 reader.readAsDataURL(input.files[0]);
             }
         }
+
         function showAnswerExplanationImgCreate(input) {
 
             if (input.files && input.files[0]) {
                 var reader = new FileReader();
                 reader.onload = function(e) {
                     document.getElementById('preview-image-answer-explanation').src = e.target.result;
-                    document.getElementById('show-image-answer-explanation-container').style.display = 'block';
+                    document.getElementById('show-image-answer-explanation-container').style.display =
+                        'block';
                 };
                 reader.readAsDataURL(input.files[0]);
             }
@@ -627,6 +629,86 @@
                 }
             });
         });
+        $(document).on('click', '#getEditQuestionData', function(e) {
+            e.preventDefault();
+
+            // Reset alerts
+            $('.alert-danger, .alert-success').html('').hide();
+
+            var btn =
+                '<button type="button" class="btn btn-success" id="SubmitEditQuestionForm"> <i class="fas fa-download"></i> Save  </button>';
+            $('#btn-submit').html(btn);
+            $('#question-title').text('Edit Question');
+            id = $(this).data('id');
+            questionId = $(this).data('id');
+            var url = '{{ route('questions.edit', ':id') }}';
+            url = url.replace(':id', questionId);
+            $.ajax({
+                url: url,
+                method: 'GET',
+                success: function(res) {
+                    console.log(res);
+
+                    $('#text').val(res.question.text);
+                    $('#code_snippet').val(res.question.code_snippet);
+                    $('#answer_explanation').val(res.question.answer_explanation);
+                    $('#more_info_link').val(res.question.more_info_link);
+                    $('#type').val(res.question.type);
+                    $('#level').val(res.question.level).trigger('change');
+                    $('#term').val(res.question.term).trigger('change');
+                    $('#section').val(res.question.section).trigger('change');
+
+                    toggleTypeFields(res.question.type, res);
+
+                    $('#options-container').html('');
+                    optionIndex = 0;
+                    res.options.forEach(option => addOption(option.text, option.correct));
+                    // Handle image preview
+                    if (res.question.img_name === null) {
+                        $('#show-image-question-container').hide();
+                        $('#add-image-question-container').html(addImgHtml).show();
+                    } else {
+                        showImg1(res.question.img_name);
+                    }
+
+                    // Handle answer explanation image preview
+                    if (res.question.answer_explanation_image === null) {
+                        $('#show-image-answer-explanation-container').hide();
+                        $('#add-image-answer-explanation-container').html(
+                            addAnswerExplanationImgHtml).show();
+                    } else {
+                        showAnswerExplanationImg(res.question.answer_explanation_image);
+                    }
+
+                    if (res.question.type === 'fraction') {
+                        $('#add-fraction-container').html('');
+
+                        $('#answer_type_fraction').val(res.fractions[0].type).trigger(
+                            'change');
+                    }
+                    if (res.fractionsTypeAnswer === 'written') {
+                        $('#answer_numerator').val(res.fractions[0].numerator);
+                        $('#answer_denominator').val(res.fractions[0].denominator);
+
+                        // $('#answer_correct').val(res.fractions[0].correct);
+                    } else if (res.fractionsTypeAnswer === 'options') {
+
+                        res.fractions.forEach(fraction => addFractionOption(
+                            fraction.numerator,
+                            fraction.denominator,
+                            fraction.answer_type,
+                            fraction.correct
+                        ));
+
+                    }
+
+                    $('#image-options-container').html('');
+                    res.image_options.forEach(imgOption => showImg2(imgOption));
+
+                    $('#CreateModal').modal('show');
+                }
+            });
+        });
 
         // Show image preview and hide file input
         function showImg1(filename) {
@@ -769,10 +851,153 @@
             formData1.append('remove_answer_explanation_image', $('#remove_answer_explanation_image')
                 .val());
 
-
-
             // formData1.append('_method', 'PUT');
 
+            if (selectedType === 'written') {
+                formData1.append('type', 'written');
+                formData1.append('written_answer', $('#written').val());
+            } else if (selectedType === 'options') {
+                formData1.append('type', 'options');
+                $('#options-container .option-item').each(function(index, element) {
+                    var optionText = $(element).find('input[type="text"]').val();
+                    var isCorrect = $(element).find('input[type="checkbox"]').is(':checked') ?
+                        1 : 0;
+                    formData1.append('options[' + index + '][text]', optionText);
+                    formData1.append('options[' + index + '][correct]', isCorrect);
+                });
+            } else if (selectedType === 'image') {
+                formData1.append('type', 'image');
+                $('#image-options-container .img-option-item').each(function(index, element) {
+                    var fileInput = $(element).find('input[type="file"]')[0];
+                    var isCorrect = $(element).find('input[type="checkbox"]').is(':checked') ?
+                        1 : 0;
+                    formData1.append('imgOptions[' + index + '][file]', fileInput.files[0]);
+                    formData1.append('imgOptions[' + index + '][correct]', isCorrect);
+                });
+                $('#image-options-container .show-img-option-item').each(function(index, element) {
+                    var fileId = $(element).find('input[name$="[file_id]"]').val();
+                    var filePath = $(element).find('input[name$="[file_path]"]').val();
+                    var isCorrect = $(element).find('input[type="checkbox"]').is(':checked') ?
+                        1 : 0;
+                    formData1.append('imgOptionsShow[' + index + '][file_id]', fileId);
+                    formData1.append('imgOptionsShow[' + index + '][file_path]', filePath);
+                    formData1.append('imgOptionsShow[' + index + '][correct]', isCorrect);
+                });
+            } else if (selectedType === 'fraction') {
+                formData1.append('type', 'fraction');
+                var fractionType = $('#answer_type_fraction').val();
+                var answer_type = $('#answer_type').val();
+                formData1.append('fraction_type', fractionType);
+                formData1.append('answer_type', answer_type);
+                if (fractionType === 'written') {
+                    var numerator = $('#answer_numerator').val();
+                    var denominator = $('#answer_denominator').val();
+                    var answerType = $('#answer_type').val();
+                    formData1.append('numerator', numerator);
+                    formData1.append('denominator', denominator);
+                    formData1.append('answer_type', answerType);
+                } else if (fractionType === 'options') {
+                    $('#add-fraction-container .fraction-item').each(function(index, element) {
+                        var numerator = $(element).find('input[name="answer_numerator[' +
+                            index + ']"]').val();
+                        var denominator = $(element).find('input[name="answer_denominator[' +
+                            index + ']"]').val();
+                        var answerType = $(element).find('select[name="answer_type[' + index +
+                            ']"]').val();
+                        var isCorrect = $(element).find('input[type="checkbox"]').is(
+                            ':checked') ? 1 : 0;
+
+                        formData1.append('options[' + index + '][numerator]', numerator);
+                        formData1.append('options[' + index + '][denominator]', denominator);
+                        formData1.append('options[' + index + '][answer_type]', answerType);
+                        formData1.append('options[' + index + '][correct]', isCorrect);
+                    });
+                }
+            }
+
+            const url = '{{ route('questions.update', ':id') }}'.replace(':id', questionId);
+            $('#loadingi').show();
+            $.ajax({
+                url: url,
+                method: 'POST',
+                data: formData1,
+                processData: false,
+                contentType: false,
+                success: function(res) {
+                    $('#loadingi').hide();
+                    if (res.errors) {
+                        const errorMessages = Array.isArray(res.errors) ? res.errors.join(
+                            '<br>') : res.errors;
+                        $('.alert-danger').html(
+                            `<strong><li>${errorMessages}</li></strong>`).show();
+                        toastr.error(errorMessages);
+                    } else {
+                        $('.alert-success').html(`<strong><li>${res.success}</li></strong>`)
+                            .show();
+                        toastr.success(res.success);
+                        $('#Listview').DataTable().ajax.reload();
+                        $('#CreateModal').modal('hide');
+                        $('.form').trigger('reset');
+                    }
+                },
+                error: function(xhr) {
+                    $('#loadingi').hide();
+                    const errors = xhr.responseJSON.errors || [];
+                    let errorMessages = '';
+                    $.each(errors, (key, value) => {
+                        errorMessages += `<li>${value}</li>`;
+                    });
+                    $('.alert-danger').html(`<strong>${errorMessages}</strong>`).show();
+                    toastr.error(errorMessages);
+                }
+            });
+        });
+        $(document).on('click', '#SubmitEditQuestionForm', function(e) {
+            e.preventDefault();
+
+            $('.alert-danger, .alert-success').html('').hide();
+            $('#loadingi').show();
+            var selectedType = $('#type').val();
+
+            const formData1 = new FormData();
+            formData1.append('text', $('#text').val());
+            formData1.append('level', $('#level').val());
+            formData1.append('term', $('#term').val());
+            formData1.append('section', $('#section').val());
+            formData1.append('code_snippet', $('#code_snippet').val());
+            formData1.append('answer_explanation', $('#answer_explanation').val());
+
+            formData1.append('more_info_link', $('#more_info_link').val());
+            // formData1.append('type', selectedType);
+            formData1.append('_token', token); // your CSRF token
+
+            // Append either file or old image name
+            const fileInput = document.getElementById('imageQuestion');
+            if (fileInput && fileInput.files.length > 0) {
+                formData1.append('img_name', fileInput.files[0]);
+            } else {
+                const oldImage = $('#old_img_name').val();
+                if (oldImage) {
+                    formData1.append('old_img_name', oldImage);
+                }
+            }
+
+            // Append answer explanation image file or old image name
+            const answerExplanationImageInput = document.getElementById('answer_explanation_image');
+            if (answerExplanationImageInput && answerExplanationImageInput.files.length > 0) {
+                formData1.append('answer_explanation_image', answerExplanationImageInput.files[0]);
+            } else {
+                const oldAnswerExplanationImage = $('#old_answer_explanation_img_name').val();
+                if (oldAnswerExplanationImage) {
+                    formData1.append('old_answer_explanation_image', oldAnswerExplanationImage);
+                }
+            }
+
+            // Append the remove flag for the answer explanation image
+            formData1.append('remove_answer_explanation_image', $('#remove_answer_explanation_image')
+                .val());
+
+            // formData1.append('_method', 'PUT');
 
             if (selectedType === 'written') {
                 formData1.append('type', 'written');
@@ -874,96 +1099,5 @@
             });
         });
 
-
-
-
-        // $('#SubmitEditForm').click(function(e) {
-        //     if (!confirm("Confirm Save ?")) return;
-        //     e.preventDefault();
-
-        //     $('.alert-danger').html('');
-        //     $('.alert-danger').hide();
-        //     $('.alert-success').html('');
-        //     $('.alert-success').hide();
-
-        //     var questionId = $(this).data('id');
-        //     var url = '{{ route('questions.update', ':id') }}';
-        //     url = url.replace(':id', questionId);
-
-        //     $.ajax({
-        //         url: url,
-        //         method: 'PUT',
-        //         data: {
-        //             name: $('#editName').val(),
-        //             password: $('#EditPassword').val(),
-        //             password_confirmation: $('#EditPasswordC').val(),
-        //             email: $('#editEmail').val(),
-        //             role: $('#editRole').val(),
-        //             department: $("#EditDepartment").val()[0],
-        //             position: $("#EditPosition").val()[0],
-        //             disable: esstatus
-
-        //         },
-
-        //         success: function(result) {
-        //             //console.log(result);
-        //             if (result.errors) {
-        //                 $('.alert-danger').html('');
-        //                 $.each(result.errors, function(key, value) {
-        //                     $('.alert-danger').show();
-        //                     $('.alert-danger').append('<strong><li>' + value +
-        //                         '</li></strong>');
-        //                 });
-        //             } else {
-        //                 $('.alert-danger').hide();
-        //                 $('.alert-success').show();
-        //                 $('.alert-success').append('<strong><li>' + result.success +
-        //                     '</li></strong>');
-        //                 $('#EditModal').modal('hide');
-        //                 toastr.success(result.success, {
-        //                     timeOut: 5000
-        //                 });
-        //                 $('#Listview').DataTable().ajax.reload();
-        //                 //setTimeout(function() {
-        //                 //$('.alert-success').hide();
-
-        //                 //}, 10000);
-
-        //             }
-        //         }
-        //     });
-        // });
-
-
     });
-
-
-    // document.addEventListener('DOMContentLoaded', function() {
-    //     let optionIndex = {{ count(old('options', $options ?? [])) }};
-
-    //     document.getElementById('add-option').addEventListener('click', function() {
-    //         let optionsContainer = document.getElementById('options-container');
-
-    //         let newOption = `
-    //             <div class="option-item mt-2 form-row align-items-center">
-    //                 <div class="col-xs-10 col-sm-10 col-md-10 text-center">
-    //                     <input type="text" class="form-control" name="options[${optionIndex}][text]" id="options_${optionIndex}" autocomplete="off" />
-    //                 </div>
-    //                 <div class="col-auto text-nowrap">
-    //                     <input type="hidden" name="options[${optionIndex}][correct]" value="0">
-    //                     <input type="checkbox" class="text-left" name="options[${optionIndex}][correct]" value="1"> Correct&nbsp
-    //                     <button type="button" class="btn btn-danger btn-sm  remove-option">&nbsp&nbsp<i class="fa fa-trash"></i>&nbsp&nbsp</button>
-    //                 </div>
-    //             </div>
-    //         `;
-    //         optionsContainer.insertAdjacentHTML('beforeend', newOption);
-    //         optionIndex++;
-    //     });
-
-    //     document.addEventListener('click', function(e) {
-    //         if (e.target.classList.contains('remove-option')) {
-    //             e.target.closest('.row').remove();
-    //         }
-    //     });
-    // });
 </script>

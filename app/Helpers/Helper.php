@@ -110,34 +110,89 @@ if (!function_exists('generateQrCode')) {
         return $qrCodeImage;
     }
 }
+
+
 if (!function_exists('replaceMixedFractions')) {
     function replaceMixedFractions($text)
     {
-        // MixFrac((1+g) , 3)
-        // $text = "asdfsdfsdfsdf F ra c(2,3) sdfs Frac(4,5) sdfsdf M i x F r a c ( 1 , 2 , 3 ) test MixFrac(4,5,6)";
-
-        // Pattern ที่รองรับทั้งตัวเลขและภาษาไทย รวมถึง parentheses ที่ซ้อนกัน
-        preg_match_all('/(M\s*i\s*x\s*)?F\s*r\s*a\s*c\s*\(\s*(?:[^(),]+|\([^()]*\))+\s*(?:,\s*(?:[^(),]+|\([^()]*\))+\s*)*\)/iu', $text, $matches);
+        // $text = "asdfsdfsdfsdf F ra c(2,3) sdfs Frac(4,5) sdfsdf M i x F r a c ( 1 , 2 , 3 ) test MixFrac(4,5,6) MixFrac(null,(1+g) , 3) Frac((1+g) , 3) Frac(เศษ,ส่วน) + MixFrac(เศษ,ส่วน)";
 
         $combined = '';
-        foreach ($matches[0] as $match) {
-            $clean = preg_replace('/\s+/', '', $match); // ลบช่องว่างทั้งหมด
-            $combined .= $clean;
+        $length = strlen($text);
+        $i = 0;
+        $last_end = 0; // เก็บตำแหน่งสุดท้ายที่ประมวลผลแล้ว
+
+        while ($i < $length) {
+            // หา pattern เริ่มต้น (รองรับทั้ง Frac และ MixFrac)
+            if (preg_match('/(M\s*i\s*x\s*)?F\s*r\s*a\s*c\s*/iu', $text, $matches, PREG_OFFSET_CAPTURE, $i)) {
+                $start_pos = $matches[0][1];
+                $pattern_length = strlen($matches[0][0]);
+
+                // เพิ่มข้อความที่อยู่ก่อนหน้า pattern
+                if ($start_pos > $last_end) {
+                    $combined .= substr($text, $last_end, $start_pos - $last_end);
+                }
+
+                // ข้ามไปหาวงเล็บเปิด
+                $pos = $start_pos + $pattern_length;
+                while ($pos < $length && $text[$pos] !== '(') {
+                    $pos++;
+                }
+
+                if ($pos < $length && $text[$pos] === '(') {
+                    // นับวงเล็บเพื่อหาจุดปิด (รองรับวงเล็บซ้อน)
+                    $bracket_count = 1;
+                    $end_pos = $pos + 1;
+
+                    while ($end_pos < $length && $bracket_count > 0) {
+                        if ($text[$end_pos] === '(') {
+                            $bracket_count++;
+                        } elseif ($text[$end_pos] === ')') {
+                            $bracket_count--;
+                        }
+                        $end_pos++;
+                    }
+
+                    if ($bracket_count === 0) {
+                        $match = substr($text, $start_pos, $end_pos - $start_pos);
+                        $clean = preg_replace('/\s+/', '', $match);
+                        $combined .= $clean;
+                        $last_end = $end_pos; // อัปเดตตำแหน่งสุดท้าย
+                    }
+
+                    $i = $end_pos;
+                } else {
+                    // ถ้าไม่เจอวงเล็บเปิด ให้เพิ่มข้อความตามเดิม
+                    $combined .= substr($text, $start_pos, $pattern_length);
+                    $last_end = $start_pos + $pattern_length;
+                    $i = $start_pos + 1;
+                }
+            } else {
+                break;
+            }
         }
 
-        return preg_replace_callback('/(MixFrac|Frac)\s*\(\s*(.+)\s*\)/', function ($matches) {
+        // เพิ่มข้อความที่เหลือท้ายสุด
+        if ($last_end < $length) {
+            $combined .= substr($text, $last_end);
+        }
+
+
+        $text = $combined;
+
+        return preg_replace_callback('/(MixFrac|Frac)\s*\(\s*([^\)]+)\s*\)/', function ($matches) {
             $function = $matches[1]; // MixFrac or Frac
             $args = $matches[2]; // Keep original arguments with parentheses
-            
+
             // Split arguments while respecting nested parentheses
             $parts = [];
             $current = '';
             $depth = 0;
             $len = strlen($args);
-            
+
             for ($i = 0; $i < $len; $i++) {
                 $char = $args[$i];
-                
+
                 if ($char === '(') {
                     $depth++;
                     $current .= $char;
@@ -151,7 +206,7 @@ if (!function_exists('replaceMixedFractions')) {
                     $current .= $char;
                 }
             }
-            
+
             if ($current !== '') {
                 $parts[] = trim($current);
             }
@@ -167,7 +222,7 @@ if (!function_exists('replaceMixedFractions')) {
                             break;
                         }
                     }
-                    
+
                     if ($hasExpression) {
                         // Return LaTeX with original expressions
                         return "\({$parts[0]} \\frac{{$parts[1]}}{{$parts[2]}}\)";
@@ -187,7 +242,7 @@ if (!function_exists('replaceMixedFractions')) {
                             break;
                         }
                     }
-                    
+
                     if ($hasExpression) {
                         // Return LaTeX with original expressions
                         return "\(\\frac{{$parts[0]}}{{$parts[1]}}\)";
@@ -195,6 +250,10 @@ if (!function_exists('replaceMixedFractions')) {
                         // Process as numbers
                         $numerator = (int)$parts[0];
                         $denominator = (int)$parts[1];
+                        if ($numerator == 0 && $denominator == 0) {
+                            // Whole number
+                            return "\(\\frac{{$parts[0]}}{{$parts[1]}}\)";
+                        }
                         return toMixedFraction(null, $numerator, $denominator);
                     }
                 }
@@ -209,7 +268,7 @@ if (!function_exists('replaceMixedFractions')) {
                             break;
                         }
                     }
-                    
+
                     if ($hasExpression) {
                         // Return LaTeX with original expressions
                         return "\(\\frac{{$parts[0]}}{{$parts[1]}}\)";
@@ -217,6 +276,10 @@ if (!function_exists('replaceMixedFractions')) {
                         // Process as numbers
                         $numerator = (int)$parts[0];
                         $denominator = (int)$parts[1];
+                        if ($numerator == 0 && $denominator == 0) {
+                            // Whole number
+                            return "\(\\frac{{$parts[0]}}{{$parts[1]}}\)";
+                        }
                         return toFraction($numerator, $denominator);
                     }
                 }
@@ -227,6 +290,9 @@ if (!function_exists('replaceMixedFractions')) {
         }, $text);
     }
 }
+
+
+
 
 if (!function_exists('textFraction')) {
     function textFraction($numerator, $denominator)
