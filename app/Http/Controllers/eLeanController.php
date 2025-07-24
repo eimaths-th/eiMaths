@@ -18,9 +18,9 @@ class eLeanController extends Controller
      */
     public $level = ['K1', 'K2', 'P1', 'P2', 'P3', 'P4', 'P5', 'P6',];
     public $term = ['1', '2', '3', '4'];
-    public function home()
+
+    public function getQuizId()
     {
-        // dd($this->level);
         if (Auth::guard('student')->check()) {
             $student = Contact::find(Auth::guard('student')->user()->id);
             $id = $student ? $student->id : null;
@@ -41,8 +41,17 @@ class eLeanController extends Controller
             $quizId = Quiz::all();
             $quizIds = $quizId->pluck('id');
         }
+        return $quizIds;
+    }
+
+    public function home()
+    {
+        // dd($this->level);
+        $quizIds = $this->getQuizId();
 
         $levels = $this->level;
+        // dd($getQuizAssign,$quizIds,$levels);
+
         $public_quizzes_level = Quiz::whereHas('questions')
             ->where('public', true)
             ->whereIn('id', $quizIds)
@@ -51,6 +60,7 @@ class eLeanController extends Controller
             ->withCount('questions')
             ->get()
             ->groupBy('level');
+
         $public_quizzes = Quiz::whereHas('questions')
             ->where('public', true)
             ->whereIn('id', $quizIds)
@@ -78,10 +88,11 @@ class eLeanController extends Controller
 
     public function homeLevel($level)
     {
-
+        $quizIds = $this->getQuizId();
         $public_quizzes = Quiz::whereHas('questions')->where('public', true)->orderBy('id', 'desc')->withCount('questions')->get();
         $public_quizzes_term = Quiz::whereHas('questions')
             ->where(['public' => true, 'level' => $level])
+            ->whereIn('id', $quizIds)
             ->orderBy('term', 'asc')
             ->orderBy('id', 'Desc')
             ->withCount('questions')
@@ -89,6 +100,7 @@ class eLeanController extends Controller
             ->groupBy('term');
         $registered_only_quizzes = Quiz::whereHas('questions')
             ->where(['published' => true, 'level' => $level])
+            ->whereIn('id', $quizIds)
             ->orderBy('term', 'asc')
             ->orderBy('id', 'Desc')
             ->withCount('questions')
@@ -102,10 +114,12 @@ class eLeanController extends Controller
     }
     public function homeTerm($level, $term)
     {
+        $quizIds = $this->getQuizId();
 
         $public_quizzes = Quiz::whereHas('questions')->where('public', true)->orderBy('id', 'desc')->withCount('questions')->get();
         $public_quizzes_term = Quiz::whereHas('questions')
             ->where(['public' => true, 'level' => $level, 'term' => $term])
+            ->whereIn('id', $quizIds)
             // ->orderBy('term', 'asc')
             // ->orderBy('term', 'asc')
             ->orderBy('id', 'Desc')
@@ -115,6 +129,7 @@ class eLeanController extends Controller
         // ->groupBy('term');
         $registered_only_quizzes = Quiz::whereHas('questions')
             ->where(['published' => true, 'level' => $level, 'term' => $term])
+            ->whereIn('id', $quizIds)
             // ->orderBy('term', 'asc')
             ->orderBy('id', 'Desc')
             ->withCount('questions')
@@ -131,10 +146,12 @@ class eLeanController extends Controller
 
     public function homeSection($level, $term, $section)
     {
+        $quizIds = $this->getQuizId();
 
         $public_quizzes = Quiz::whereHas('questions')->where('public', true)->orderBy('id', 'desc')->withCount('questions')->get();
         $public_quizzes_term = Quiz::whereHas('questions')
             ->where(['public' => true, 'level' => $level, 'term' => $term, 'section' => $section])
+            ->whereIn('id', $quizIds)
             // ->orderBy('term', 'asc')
             ->orderBy('id', 'Desc')
             ->withCount('questions')
@@ -142,6 +159,7 @@ class eLeanController extends Controller
         // ->groupBy('term');
         $registered_only_quizzes = Quiz::whereHas('questions')
             ->where(['published' => true, 'level' => $level, 'term' => $term, 'section' => $section])
+            ->whereIn('id', $quizIds)
             // ->orderBy('term', 'asc')
             ->orderBy('id', 'Desc')
             ->withCount('questions')

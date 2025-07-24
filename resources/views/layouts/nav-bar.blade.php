@@ -13,7 +13,7 @@
                 <div class="shrink-0 flex items-center">
                     @php
                         if (isset($student) && $student->type === 'demo') {
-                            $route = route('home.section', ['P6', '4', '20']);
+                            $route = route('home3');
                         } else {
                             $route = route('home3');
                         }
