@@ -20,45 +20,46 @@ class QuizzesController extends Controller
         //
 
         if ($request->ajax()) {
+            $query = Quiz::select('quizzes.*')
+                ->withCount('questions')
+                ->latest();
 
-            // $datas = Quiz::latest();
-            $datas = Quiz::withCount('questions')->latest();
-            return datatables()->of($datas)
+            return datatables()->eloquent($query)
                 ->addColumn('#', function ($row) {
-                    return $row->id; // Adjust based on your need
+                    return $row->id;
                 })
-
                 ->editColumn('level', function ($row) {
                     return $row->level;
                 })
                 ->editColumn('term', function ($row) {
                     return $row->term;
                 })
-                // ->editColumn('published', function ($row) {
-                //     $class = $row->published ? 'success' : 'danger';
-                //     $text = $row->published ? 'Yes' : 'No';
-                //     // $html = '<input class="disabled:opacity-50 disabled:cursor-not-allowed" type="checkbox" disabled ' . $checked . '>';
-                //     $html = '<span class="badge border border-' . $class . ' text-' . $class . ' px-2 pt-5px pb-5px rounded fs-12px d-inline-flex align-items-center"><i class="fa fa-circle fs-9px fa-fw me-5px"></i>&nbsp' . $text . '</span>';
-                //     return $html;
-                // })
                 ->editColumn('public', function ($row) {
                     $class = $row->public ? 'success' : 'danger';
                     $text = $row->public ? 'Yes' : 'No';
-                    // $html = '<input class="disabled:opacity-50 disabled:cursor-not-allowed" type="checkbox" disabled ' . $checked . '>';
-                    $html = '<span class="badge border border-' . $class . ' text-' . $class . ' px-2 pt-5px pb-5px rounded fs-12px d-inline-flex align-items-center"><i class="fa fa-circle fs-9px fa-fw me-5px"></i>&nbsp' . $text . '</span>';
-                    return $html;
+                    return '<span class="badge border border-' . $class . ' text-' . $class . ' px-2 pt-5px pb-5px rounded fs-12px d-inline-flex align-items-center"><i class="fa fa-circle fs-9px fa-fw me-5px"></i>&nbsp' . $text . '</span>';
                 })
                 ->editColumn('questions_count', function ($row) {
                     return $row->questions_count;
                 })
                 ->addColumn('action', function ($row) {
-                    // $html = '<a href="' . route('questions.edit', $row->id) . '" class="btn btn-sm btn-warning" id="getEditData" data-id="' . $row->id . '"><<i class="fa fa-edit"></i> Edit</a>';
                     $html = '';
                     $html .= '<a href="' . route('quizzes.show', $row->id) . '" class="btn btn-sm btn-primary" target="_blank"><i class="fa fa-eye"></i> View</a>';
                     $html .= '<a type="button" class="btn btn-sm btn-warning" id="getEditData" style="margin-left: 5px;" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit</a>';
                     $html .= '<button type="button" class="btn btn-sm btn-danger delete-button" style="margin-left: 5px;" data-id="' . $row->id . '"><i class="fa fa-trash"></i> Delete</button>';
                     return $html;
-                })->rawColumns(['action', 'published', 'public'])->toJson();
+                })
+                ->filterColumn('questions_count', function($query, $keyword) {
+                    // Remove questions_count from search since it's a derived column
+                    // The search will still work on other columns
+                    return $query;
+                })
+                ->orderColumn('questions_count', function($query, $order) {
+                    // Properly order by the questions count
+                    $query->orderByRaw('(SELECT COUNT(*) FROM question_quiz WHERE question_quiz.quiz_id = quizzes.id) ' . $order);
+                })
+                ->rawColumns(['action', 'public'])
+                ->toJson();
         }
 
         $students = Contact::all();

@@ -65,81 +65,7 @@
                 });
             }
         });
-        // var table = $('#Listview2').DataTable({
-        //     ajax: '',
-        //     serverSide: true,
-        //     processing: true,
-        //     language: {
-        //         loadingRecords: '&nbsp;',
-        //         processing: `<div class="spinner-border text-primary"></div>`,
-        //         "sProcessing": "Processcing...",
-        //         "sLengthMenu": "Display_MENU_ Row",
-        //         "sZeroRecords": "No Data Fount",
-        //         "sInfo": "Display _START_ To _END_ From _TOTAL_ Records",
-        //         "sInfoEmpty": "Display 0 To 0 From 0 Records",
-        //         "sInfoFiltered": "(Filters _MAX_ Row)",
-        //         "sInfoPostFix": "",
-        //         "sSearch": "Search:",
-        //         "sUrl": "",
-        //         "oPaginate": {
-        //             "sFirst": "First",
-        //             "sPrevious": "Previous",
-        //             "sNext": "Next",
-        //             "sLast": "Last"
-        //         }
-        //     },
-        //     aaSorting: [
-        //         [0, "desc"]
-        //     ],
-        //     iDisplayLength: 10,
-        //     lengthMenu: [10, 25, 50, 75, 100],
-        //     stateSave: true,
-        //     autoWidth: false,
-        //     responsive: true,
-        //     sPaginationType: "full_numbers",
-        //     dom: 'T<"clear">lfrtip',
-        //     columns: [{
-        //             data: '#',
-        //             name: '#',
-        //             createdCell: function(td, cellData, rowData, row, col) {
-        //                 $(td).addClass('text-nowrap').css('width', '1%');
-        //             }
-        //         },
-        //         {
-        //             data: 'student',
-        //             name: 'student'
-        //         },
-        //         {
-        //             data: 'quiz',
-        //             name: 'quiz'
-        //         },
-        //         {
-        //             data: 'status',
-        //             name: 'status'
-        //         },
-        //         {
-        //             data: 'assign_at',
-        //             name: 'assign_at',
-        //             createdCell: function(td, cellData, rowData, row, col) {
-        //                 $(td).addClass('text-nowrap').css('width', '1%');
-        //             }
-        //         },
-        //         {
-        //             data: 'action',
-        //             name: 'action',
-        //             orderable: false,
-        //             searchable: false,
-        //             createdCell: function(td, cellData, rowData, row, col) {
-        //                 $(td).addClass('text-nowrap').css('width', '1%');
-        //             }
-        //         }
-        //     ],
-        //     createdRow: function(row, data, dataIndex) {
-        //         // Sequential numbering
-        //         var info = table.page.info();
-        //         $('td:eq(0)', row).html(info.start + dataIndex + 1);
-        //     }
-        // });
+
         var table = $('#Listview').DataTable({
             ajax: '',
             serverSide: true,
@@ -333,23 +259,6 @@
 
             }
         }
-
-        // $("#level").change(function() {
-        //     let level = $('#level').val();
-
-        //     // console.log(level);
-
-
-        //     // $.ajax({
-        //     //     method: "GET",
-        //     //     url: "histories/running/" + centre,
-        //     //     async: false,
-        //     //     success: function(res) {
-        //     //         //$('#AddCode').prop('readonly', false);
-        //     //         $('#s_student').html(res.html_std);
-        //     //     }
-        //     // });
-        // })
 
         $('#level, #term, #section').on('change', function() {
             checkSelectionsAndFetchData();
@@ -573,61 +482,5 @@
                 }
             });
         });
-
-        // $('#SubmitEditForm').click(function(e) {
-        //     if (!confirm("Confirm Save ?")) return;
-        //     e.preventDefault();
-        //     // $('#quizForm').submit();
-        //     var quiz = $(this).data('id');
-        //     var url = '{{ route('quizzes.update', ':id') }}';
-        //     url = url.replace(':id', quiz);
-        //     $.ajax({
-        //         url: url,
-        //         method: 'PUT',
-        //         data: {
-        //             title: $('#title').val(),
-        //             _token: token,
-        //         },
-
-        //         success: function(result) {
-        //             //console.log(result);
-        //             if (result.errors) {
-        //                 $('.alert-danger').html('');
-        //                 $.each(result.errors, function(key, value) {
-        //                     $('.alert-danger').show();
-        //                     $('.alert-danger').append('<strong><li>' + value +
-        //                         '</li></strong>');
-        //                 });
-        //             } else {
-        //                 $('.alert-danger').hide();
-        //                 $('.alert-success').show();
-        //                 $('.alert-success').append('<strong><li>' + result.success +
-        //                     '</li></strong>');
-        //                 $('#EditModal').modal('hide');
-        //                 toastr.success(result.success, {
-        //                     timeOut: 5000
-        //                 });
-        //                 $('#Listview').DataTable().ajax.reload();
-        //                 //setTimeout(function() {
-        //                 //$('.alert-success').hide();
-
-        //                 //}, 10000);
-
-        //             }
-        //         }
-        //     });
-        // });
-
-        // $('#SubmitEditForm').click(function(e) {
-        //     if (!confirm("Confirm Save ?")) return;
-        //     e.preventDefault();
-
-        //     $('.alert-danger').html('');
-        //     $('.alert-danger').hide();
-        //     $('.alert-success').html('');
-        //     $('.alert-success').hide();
-
-        // });
-
     });
 </script>
