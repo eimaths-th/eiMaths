@@ -43,11 +43,11 @@ class QuestionController extends Controller
         }, $text);
     }
 
-        public function textFraction($numerator, $denominator)
-        {
-            // This generates LaTeX syntax for the fraction
-            return "\\(\\frac{{$numerator}}{{$denominator}}\\)";
-        }
+    public function textFraction($numerator, $denominator)
+    {
+        // This generates LaTeX syntax for the fraction
+        return "\\(\\frac{{$numerator}}{{$denominator}}\\)";
+    }
     public function toFraction($numerator, $denominator)
     {
         if ($numerator % $denominator == 0) {

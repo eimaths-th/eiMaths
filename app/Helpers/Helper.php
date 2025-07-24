@@ -115,7 +115,9 @@ if (!function_exists('generateQrCode')) {
 if (!function_exists('replaceMixedFractions')) {
     function replaceMixedFractions($text)
     {
-        // $text = "asdfsdfsdfsdf F ra c(2,3) sdfs Frac(4,5) sdfsdf M i x F r a c ( 1 , 2 , 3 ) test MixFrac(4,5,6) MixFrac(null,(1+g) , 3) Frac((1+g) , 3) Frac(เศษ,ส่วน) + MixFrac(เศษ,ส่วน)";
+        // Remove the test string to avoid conflicts
+        // $text = "test string removed";
+        // $text = "text F ra c(2,3) | Frac(4,5) | M i x F r a c ( 1 , 2 , 3 ) | MixFrac(4,5,6) | testDSD MixFrac(5,(1+g) , 3) | MixFrac(null,(1+x) , 3) | MixFrac((1+y) , 3) | Fr ac( ( 1 + z) , 3) | Frac(เศษ,ส่วน) | + MixFrac(เศษ,ส่วน)";
 
         $combined = '';
         $length = strlen($text);
@@ -177,119 +179,303 @@ if (!function_exists('replaceMixedFractions')) {
             $combined .= substr($text, $last_end);
         }
 
-
         $text = $combined;
-
-        return preg_replace_callback('/(MixFrac|Frac)\s*\(\s*([^\)]+)\s*\)/', function ($matches) {
+        return preg_replace_callback('/(MixFrac|Frac)\s*\(([^()]*(?:\([^()]*(?:\([^()]*\)[^()]*)*\))?[^()]*)\)/i', function ($matches) {
             $function = $matches[1]; // MixFrac or Frac
-            $args = $matches[2]; // Keep original arguments with parentheses
+            $args = $matches[2];
 
-            // Split arguments while respecting nested parentheses
+            // Split arguments while respecting nested parentheses and quotes
             $parts = [];
             $current = '';
             $depth = 0;
+            $inQuotes = false;
+            $args = trim($args);
             $len = strlen($args);
 
             for ($i = 0; $i < $len; $i++) {
                 $char = $args[$i];
+                $nextChar = $i < $len - 1 ? $args[$i + 1] : '';
+                $prevChar = $i > 0 ? $args[$i - 1] : '';
 
-                if ($char === '(') {
-                    $depth++;
+                if ($char === '"' || $char === "'") {
+                    $inQuotes = !$inQuotes;
                     $current .= $char;
-                } elseif ($char === ')') {
-                    $depth--;
-                    $current .= $char;
-                } elseif ($char === ',' && $depth === 0) {
-                    $parts[] = trim($current);
-                    $current = '';
+                } elseif (!$inQuotes) {
+                    if ($char === '(') {
+                        $depth++;
+                        $current .= $char;
+                    } elseif ($char === ')') {
+                        $depth--;
+                        $current .= $char;
+                    } elseif ($char === ',' && $depth === 0) {
+                        $parts[] = trim($current);
+                        $current = '';
+                        // Skip whitespace after comma
+                        while ($i + 1 < $len && trim($args[$i + 1]) === '') {
+                            $i++;
+                        }
+                    } else {
+                        $current .= $char;
+                    }
                 } else {
                     $current .= $char;
                 }
             }
 
-            if ($current !== '') {
+            if (trim($current) !== '') {
                 $parts[] = trim($current);
             }
 
+            // Helper to check if string is null/empty (case-insensitive)
+            $isNull = function ($str) {
+                $str = trim($str);
+                return $str === '' || strtolower($str) === 'null';
+            };
+            // Helper to check if string is numeric (including negatives and decimals)
+            $isNumeric = function ($str) {
+                $str = trim($str);
+                return is_numeric($str);
+            };
+            // Helper to check if part is an expression (contains operators, letters, or parentheses)
+            $isExpr = function ($str) use ($isNull, $isNumeric) {
+                $s = trim($str);
+                if ($isNull($s) || $isNumeric($s)) return false;
+                return true; // Anything not null or numeric is considered an expression
+            };
 
             if ($function === 'MixFrac') {
-                if (count($parts) === 3) {
-                    // Check if parts contain expressions (parentheses or variables)
-                    $hasExpression = false;
-                    foreach ($parts as $part) {
-                        if (preg_match('/[()a-zA-Z+\-*\/]/', $part)) {
-                            $hasExpression = true;
-                            break;
+                $parts = array_map('trim', $parts);
+                $numParts = count($parts);
+
+                // Handle different argument counts
+                if ($numParts === 3) {
+                    // Case: MixFrac(whole, num, denom)
+                    list($whole, $numerator, $denominator) = $parts;
+
+                    // If first argument is null/empty, treat as Frac(num, denom)
+                    if ($isNull($whole)) {
+                        if ($isNull($numerator) || $isNull($denominator)) {
+                            return $matches[0]; // Invalid fraction
                         }
+                        return "\\(\\frac{{$numerator}}{{$denominator}}\\)";
                     }
 
-                    if ($hasExpression) {
-                        // Return LaTeX with original expressions
-                        return "\({$parts[0]} \\frac{{$parts[1]}}{{$parts[2]}}\)";
-                    } else {
-                        // Process as numbers
-                        $whole = (int)$parts[0];
-                        $numerator = (int)$parts[1];
-                        $denominator = (int)$parts[2];
-                        return toMixedFraction($whole, $numerator, $denominator);
-                    }
-                } else if (count($parts) === 2) {
-                    // Check if parts contain expressions
-                    $hasExpression = false;
-                    foreach ($parts as $part) {
-                        if (preg_match('/[()a-zA-Z+\-*\/]/', $part)) {
-                            $hasExpression = true;
-                            break;
+                    // If first argument is numeric, it's a mixed fraction
+                    if ($isNumeric($whole)) {
+                        if ($isNull($numerator) || $isNull($denominator)) {
+                            return $matches[0]; // Invalid fraction
                         }
+                        return "\\({$whole} \\frac{{$numerator}}{{$denominator}}\\)";
                     }
 
-                    if ($hasExpression) {
-                        // Return LaTeX with original expressions
-                        return "\(\\frac{{$parts[0]}}{{$parts[1]}}\)";
-                    } else {
-                        // Process as numbers
-                        $numerator = (int)$parts[0];
-                        $denominator = (int)$parts[1];
-                        if ($numerator == 0 && $denominator == 0) {
-                            // Whole number
-                            return "\(\\frac{{$parts[0]}}{{$parts[1]}}\)";
-                        }
-                        return toMixedFraction(null, $numerator, $denominator);
+                    // If we get here, first argument is an expression - treat as MixFrac(null, expr1, expr2)
+                    if ($isNull($numerator) || $isNull($denominator)) {
+                        return $matches[0]; // Invalid fraction
                     }
+                    return "\\(\\frac{{$whole}}{{$numerator}}\\)";
+
+                } elseif ($numParts === 2) {
+                    // Case: MixFrac(expr1, expr2) - treat as Frac(expr1, expr2)
+                    list($numerator, $denominator) = $parts;
+                    if ($isNull($numerator) || $isNull($denominator)) {
+                        return $matches[0];
+                    }
+                    return "\\(\\frac{{$numerator}}{{$denominator}}\\)";
                 }
-            } else {
-                // Frac(num, denom)
+            } elseif ($function === 'Frac') {
                 if (count($parts) === 2) {
-                    // Check if parts contain expressions
-                    $hasExpression = false;
-                    foreach ($parts as $part) {
-                        if (preg_match('/[()a-zA-Z+\-*\/]/', $part)) {
-                            $hasExpression = true;
-                            break;
-                        }
+                    list($numerator, $denominator) = array_map('trim', $parts);
+                    if ($isNull($numerator) || $isNull($denominator)) {
+                        return $matches[0];
                     }
-
-                    if ($hasExpression) {
-                        // Return LaTeX with original expressions
-                        return "\(\\frac{{$parts[0]}}{{$parts[1]}}\)";
-                    } else {
-                        // Process as numbers
-                        $numerator = (int)$parts[0];
-                        $denominator = (int)$parts[1];
-                        if ($numerator == 0 && $denominator == 0) {
-                            // Whole number
-                            return "\(\\frac{{$parts[0]}}{{$parts[1]}}\)";
-                        }
-                        return toFraction($numerator, $denominator);
-                    }
+                    // For Frac, always use LaTeX formatting to preserve expressions
+                    return "\\(\\frac{{$numerator}}{{$denominator}}\\)";
                 }
             }
-
             // Return original if something went wrong
             return $matches[0];
         }, $text);
     }
 }
+
+// if (!function_exists('replaceMixedFractions1')) {
+//     function replaceMixedFractions1($text)
+//     {
+//         $text = "asdfsdfsdfsdf F ra c(2,3) sdfs Frac(4,5) sdfsdf M i x F r a c ( 1 , 2 , 3 ) test MixFrac(4,5,6) MixFrac(null,(1+g) , 3) Frac((1+g) , 3) Frac(เศษ,ส่วน) + MixFrac(เศษ,ส่วน)";
+
+//         $combined = '';
+//         $length = strlen($text);
+//         $i = 0;
+//         $last_end = 0; // เก็บตำแหน่งสุดท้ายที่ประมวลผลแล้ว
+
+//         while ($i < $length) {
+//             // หา pattern เริ่มต้น (รองรับทั้ง Frac และ MixFrac)
+//             if (preg_match('/(M\s*i\s*x\s*)?F\s*r\s*a\s*c\s*/iu', $text, $matches, PREG_OFFSET_CAPTURE, $i)) {
+//                 $start_pos = $matches[0][1];
+//                 $pattern_length = strlen($matches[0][0]);
+
+//                 // เพิ่มข้อความที่อยู่ก่อนหน้า pattern
+//                 if ($start_pos > $last_end) {
+//                     $combined .= substr($text, $last_end, $start_pos - $last_end);
+//                 }
+
+//                 // ข้ามไปหาวงเล็บเปิด
+//                 $pos = $start_pos + $pattern_length;
+//                 while ($pos < $length && $text[$pos] !== '(') {
+//                     $pos++;
+//                 }
+
+//                 if ($pos < $length && $text[$pos] === '(') {
+//                     // นับวงเล็บเพื่อหาจุดปิด (รองรับวงเล็บซ้อน)
+//                     $bracket_count = 1;
+//                     $end_pos = $pos + 1;
+
+//                     while ($end_pos < $length && $bracket_count > 0) {
+//                         if ($text[$end_pos] === '(') {
+//                             $bracket_count++;
+//                         } elseif ($text[$end_pos] === ')') {
+//                             $bracket_count--;
+//                         }
+//                         $end_pos++;
+//                     }
+
+//                     if ($bracket_count === 0) {
+//                         $match = substr($text, $start_pos, $end_pos - $start_pos);
+//                         $clean = preg_replace('/\s+/', '', $match);
+//                         $combined .= $clean;
+//                         $last_end = $end_pos; // อัปเดตตำแหน่งสุดท้าย
+//                     }
+
+//                     $i = $end_pos;
+//                 } else {
+//                     // ถ้าไม่เจอวงเล็บเปิด ให้เพิ่มข้อความตามเดิม
+//                     $combined .= substr($text, $start_pos, $pattern_length);
+//                     $last_end = $start_pos + $pattern_length;
+//                     $i = $start_pos + 1;
+//                 }
+//             } else {
+//                 break;
+//             }
+//         }
+
+//         // เพิ่มข้อความที่เหลือท้ายสุด
+//         if ($last_end < $length) {
+//             $combined .= substr($text, $last_end);
+//         }
+
+
+//         $text = $combined;
+
+//         return preg_replace_callback('/(MixFrac|Frac)\s*\(\s*([^\)]+)\s*\)/', function ($matches) {
+//             $function = $matches[1]; // MixFrac or Frac
+//             $args = $matches[2]; // Keep original arguments with parentheses
+
+//             // Split arguments while respecting nested parentheses
+//             $parts = [];
+//             $current = '';
+//             $depth = 0;
+//             $len = strlen($args);
+
+//             for ($i = 0; $i < $len; $i++) {
+//                 $char = $args[$i];
+
+//                 if ($char === '(') {
+//                     $depth++;
+//                     $current .= $char;
+//                 } elseif ($char === ')') {
+//                     $depth--;
+//                     $current .= $char;
+//                 } elseif ($char === ',' && $depth === 0) {
+//                     $parts[] = trim($current);
+//                     $current = '';
+//                 } else {
+//                     $current .= $char;
+//                 }
+//             }
+
+//             if ($current !== '') {
+//                 $parts[] = trim($current);
+//             }
+
+
+//             if ($function === 'MixFrac') {
+//                 if (count($parts) === 3) {
+//                     // Check if parts contain expressions (parentheses or variables)
+//                     $hasExpression = false;
+//                     foreach ($parts as $part) {
+//                         if (preg_match('/[()a-zA-Z+\-*\/]/', $part)) {
+//                             $hasExpression = true;
+//                             break;
+//                         }
+//                     }
+
+//                     if ($hasExpression) {
+//                         // Return LaTeX with original expressions
+//                         return "\({$parts[0]} \\frac{{$parts[1]}}{{$parts[2]}}\)";
+//                     } else {
+//                         // Process as numbers
+//                         $whole = (int)$parts[0];
+//                         $numerator = (int)$parts[1];
+//                         $denominator = (int)$parts[2];
+//                         return toMixedFraction($whole, $numerator, $denominator);
+//                     }
+//                 } else if (count($parts) === 2) {
+//                     // Check if parts contain expressions
+//                     $hasExpression = false;
+//                     foreach ($parts as $part) {
+//                         if (preg_match('/[()a-zA-Z+\-*\/]/', $part)) {
+//                             $hasExpression = true;
+//                             break;
+//                         }
+//                     }
+
+//                     if ($hasExpression) {
+//                         // Return LaTeX with original expressions
+//                         return "\(\\frac{{$parts[0]}}{{$parts[1]}}\)";
+//                     } else {
+//                         // Process as numbers
+//                         $numerator = (int)$parts[0];
+//                         $denominator = (int)$parts[1];
+//                         if ($numerator == 0 && $denominator == 0) {
+//                             // Whole number
+//                             return "\(\\frac{{$parts[0]}}{{$parts[1]}}\)";
+//                         }
+//                         return toMixedFraction(null, $numerator, $denominator);
+//                     }
+//                 }
+//             } else {
+//                 // Frac(num, denom)
+//                 if (count($parts) === 2) {
+//                     // Check if parts contain expressions
+//                     $hasExpression = false;
+//                     foreach ($parts as $part) {
+//                         if (preg_match('/[()a-zA-Z+\-*\/]/', $part)) {
+//                             $hasExpression = true;
+//                             break;
+//                         }
+//                     }
+
+//                     if ($hasExpression) {
+//                         // Return LaTeX with original expressions
+//                         return "\(\\frac{{$parts[0]}}{{$parts[1]}}\)";
+//                     } else {
+//                         // Process as numbers
+//                         $numerator = (int)$parts[0];
+//                         $denominator = (int)$parts[1];
+//                         if ($numerator == 0 && $denominator == 0) {
+//                             // Whole number
+//                             return "\(\\frac{{$parts[0]}}{{$parts[1]}}\)";
+//                         }
+//                         return toFraction($numerator, $denominator);
+//                     }
+//                 }
+//             }
+
+//             // Return original if something went wrong
+//             return $matches[0];
+//         }, $text);
+//     }
+// }
 
 
 

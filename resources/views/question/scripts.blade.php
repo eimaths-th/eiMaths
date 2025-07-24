@@ -739,9 +739,13 @@
         }
 
         // Handle "Remove Answer Explanation Image" button
-        $(document).on('click', '#remove-show-image-answer-explanation-btn', function() {
+        $(document).on('click', '#remove-show-image-answer-explanation-container', function() {
             $('#show-image-answer-explanation-container').hide();
             $('#add-image-answer-explanation-container').html(addAnswerExplanationImgHtml).show();
+            $('#preview-image-answer-explanation').attr('src', '');
+
+            //clear input file
+            $('#answer_explanation_image').val('');
         });
 
         // function showImg1(imgName) {
