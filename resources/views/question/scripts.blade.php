@@ -840,7 +840,6 @@
                 }
             }
 
-            // Append answer explanation image file or old image name
             const answerExplanationImageInput = document.getElementById('answer_explanation_image');
             if (answerExplanationImageInput && answerExplanationImageInput.files.length > 0) {
                 formData1.append('answer_explanation_image', answerExplanationImageInput.files[0]);
@@ -849,11 +848,10 @@
                 if (oldAnswerExplanationImage) {
                     formData1.append('old_answer_explanation_image', oldAnswerExplanationImage);
                 }
+                formData1.append('remove_answer_explanation_image', '1');
+                formData1.append('answer_explanation_image', '');
             }
 
-            // Append the remove flag for the answer explanation image
-            formData1.append('remove_answer_explanation_image', $('#remove_answer_explanation_image')
-                .val());
 
             // formData1.append('_method', 'PUT');
 
@@ -996,10 +994,9 @@
                     formData1.append('old_answer_explanation_image', oldAnswerExplanationImage);
                 }
             }
-
+            formData1.append('answer_explanation_image', answerExplanationImageInput.files[0]);
             // Append the remove flag for the answer explanation image
-            formData1.append('remove_answer_explanation_image', $('#remove_answer_explanation_image')
-                .val());
+            formData1.append('remove_answer_explanation_image', '1');
 
             // formData1.append('_method', 'PUT');
 
