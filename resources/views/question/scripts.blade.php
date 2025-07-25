@@ -21,7 +21,7 @@
                 $('.written_type').show();
                 $('.image_type').hide();
                 $('.fraction_type').hide();
-                $('.fraction-button').hide();
+                $('.fraction-button').show();
 
                 if (res) {
                     $('#written').val(res.question.written_answer); // Set written answer if applicable
@@ -32,7 +32,7 @@
                 $('.options_type').show();
                 $('.image_type').hide();
                 $('.fraction_type').hide();
-                $('.fraction-button').hide();
+                $('.fraction-button').show();
 
 
             } else if (selectedType === 'image') {
@@ -40,7 +40,7 @@
                 $('.options_type').hide();
                 $('.image_type').show();
                 $('.fraction_type').hide();
-                $('.fraction-button').hide();
+                $('.fraction-button').show();
 
 
             } else if (selectedType === 'fraction') {
@@ -56,7 +56,8 @@
                 $('.options_type').hide();
                 $('.image_type').hide();
                 $('.fraction_type').hide();
-                $('.fraction-button').hide();
+                $('.fraction-button').show();
+
 
 
             }
