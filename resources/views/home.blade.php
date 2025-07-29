@@ -13,7 +13,11 @@
         <div class="container-fluid">
             <div class="row mb-2 justify-content-end">
                 <div class="col-sm-7">
-                    <h4><i class="fa-solid fa-chart-pie"></i> eiMaths {{--  [{{ Auth::user()->department->name }}]  --}}Stats</h4>
+                    <h4><i class="fa-solid fa-chart-pie"></i>
+                        eiMaths
+                        {{-- <span class="badge badge-primary">{{ Auth::user()->department->name }}</span> --}}
+                        Stats
+                    </h4>
                 </div>
                 <div class="col-sm-2">
                     <div class="form-group">
@@ -26,10 +30,13 @@
                             <select name="dcentre" id="dcentre" class="form-control"
                                 @cannot('all-centre') disabled @endcannot>
                                 @foreach ($centre as $key2)
-                                    <option value="{{ $key2->id }}" @if (Auth::user()->department->id == (int) $key2->id) selected @endif>
-                                        {{-- {{ $key2->code }} --}}
-                                        {{ $key2->name }}
-                                    </option>
+                                    @if ($key2->id != 4 && $key2->id != 5)
+                                        <option value="{{ $key2->id }}"
+                                            @if (Auth::user()->department->id == (int) $key2->id) selected @endif>
+                                            {{-- {{ $key2->code }} --}}
+                                            {{ $key2->name }}
+                                        </option>
+                                    @endif
                                 @endforeach
                             </select>
                             {{-- {{ dd((int) $key2->id) }} --}}
@@ -37,7 +44,8 @@
 
                     </div>
                 </div>
-                 <div class="col-sm-2">
+                <div class="col-sm-2">
+
                     <div class="form-group">
                         <div class="input-group">
                             <div class="input-group-prepend">
@@ -56,7 +64,7 @@
 
                     </div>
                 </div>
-               {{--  <div class="col-xs-1 col-sm-1 col-md-1" style="align-items: flex-end;">
+                {{--  <div class="col-xs-1 col-sm-1 col-md-1" style="align-items: flex-end;">
                     <div class="form-group">
                         <button type="button" class="form-control btn bg-gradient-warning" id="resetSearchButton"><i
                                 class="fa-solid fa-rotate"></i></button>
@@ -73,15 +81,18 @@
                 <div class="col-12">
 
                     <div class="row">
-                        <div class="col-md-6 col-sm-6 col-lg-6  col-xl-3 col-12">
-                            <div class="info-box">
-                                <span class="info-box-icon bg-warning"><i class="fa-solid fa-building"></i></span>
-                                <div class="info-box-content">
-                                    <span class="info-box-text">Total Centre</span>
-                                    <span class="info-box-number" id="tcentre">0</span>
-                                </div>
 
-                            </div>
+                        <div class="col-md-6 col-sm-6 col-lg-6  col-xl-3 col-12">
+                            <a href="">
+                                <div class="info-box">
+                                    <span class="info-box-icon bg-warning"><i class="fa-solid fa-building"></i></span>
+                                    <div class="info-box-content">
+                                        <span class="info-box-text">Total Centre</span>
+                                        <span class="info-box-number" id="tcentre">0</span>
+                                    </div>
+
+                                </div>
+                            </a>
                         </div>
                         <div class="col-md-6 col-sm-6 col-lg-6  col-xl-3 col-12">
                             <div class="info-box">

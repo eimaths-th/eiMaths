@@ -730,7 +730,7 @@
                 type: 'category',
                 data: labels
             },
-            color: ['#3ba272','#fc8452', '#96BFFF', '#fac858', '#ee6666', '#73c0de', '#5470c6',
+            color: ['#3ba272', '#fc8452', '#96BFFF', '#fac858', '#ee6666', '#73c0de', '#5470c6',
                 '#9a60b4', '#ea7ccc', '#91c7ae',
                 '#fb7293',
                 '#91cc75',
@@ -807,5 +807,12 @@
         study_by_centre();
 
 
+    });
+</script>
+<script>
+    let centre = '';
+    centre = $('#dcentre').val();
+    $('#dcentre').change(function() {
+        centre = $('#dcentre').val();
     });
 </script>
