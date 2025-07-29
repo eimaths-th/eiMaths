@@ -111,7 +111,7 @@
         function datesearch() {
             var currentDate = moment();
             // Set the start date to 7 days before today
-            startDate = moment(currentDate).subtract(365, 'days').format('YYYY-MM-DD');
+            startDate = moment('2023-01-01').format('YYYY-MM-DD');
             // Set the end date to the end of the current month
             endDate = moment(currentDate).endOf('year').format('YYYY-MM-DD');
         }
@@ -450,7 +450,7 @@
             let term = $('#ReceiptTerm2').val();
             let book = $('#ReceiptBook').val();
             let book2 = $('#ReceiptBook2').val();
-            
+
             // $('#ReceiptBook2').html('');
             if (level.length !== 0 && term.length !== 0) {
                 $.ajax({
@@ -479,7 +479,7 @@
             let term = $('#AddTerm2').val();
             let book = $('#AddBook').val();
             let book2 = $('#AddBook2').val();
-            
+
             // $('#ReceiptBook2').html('');
             if (level.length !== 0 && term.length !== 0) {
                 $.ajax({
@@ -1224,7 +1224,7 @@
                 url: "contacts/getRef/" + std_id,
                 method: 'GET',
                 success: function(res) {
-                    
+
                     if (res.ref) {
                         $('#getRef').prop('readonly', true);
                         $('#getRef').val(res.ref);
@@ -1235,7 +1235,7 @@
 
                 }
             });
-            // console.log($(this).val());      
+            // console.log($(this).val());
         });
 
         // Create product Ajax request.
