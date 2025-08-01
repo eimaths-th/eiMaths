@@ -368,7 +368,7 @@
                                     {{-- Explanation Image --}}
                                     @if($question->answer_explanation_image)
                                         <div style="text-align: center; margin-top: 16px;">
-                                            <div style="display: inline-block; position: relative; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; max-width: 250px;"
+                                            <div style="display: inline-block; position: relative; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; min-width: 200px; max-width: 400px;"
                                                  onmouseover="this.style.transform='scale(1.02)'; this.style.boxShadow='0 8px 24px rgba(0, 0, 0, 0.15)';"
                                                  onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 16px rgba(0, 0, 0, 0.1)';">
                                                 <img src="{{ asset('img_questions/' . $question->answer_explanation_image) }}"
