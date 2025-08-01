@@ -180,13 +180,13 @@
                                                     <th>Code</th>
                                                     <th>Referal</th>
                                                     <th>Student Name</th>
-                                                    <th>Student Nick Name</th>
                                                     <th>Register Date</th>
                                                     <th>Start Date - End Date</th>
+                                                    <th>Remaining</th>
                                                     <th>Level</th>
+                                                    <th>Term</th>
                                                     <th>BookUse </th>
                                                     {{-- <th>Start Term</th> --}}
-                                                    <th>Term</th>
                                                     <th {{-- class="none" --}}>Telephone</th>
                                                     <th>Father Mobile</th>
                                                     <th>Mother Mobile</th>
@@ -215,7 +215,7 @@
     @include('contacts.course')
 
     @include('contacts.create')
-    
+
     @include('contacts.create_demo')
 
     @include('contacts.edit')

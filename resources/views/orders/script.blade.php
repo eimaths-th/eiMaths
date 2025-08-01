@@ -239,11 +239,21 @@
             }
         });
 
-        var table_option = {
+        let reservationChanged = false;
+
+        $("#reservation").change(function() {
+            reservationChanged = true;
+            table.draw();
+        });
+
+        const table_option = {
             ajax: {
                 data: function(d) {
-                    d.sdate = $('#reservation').val();
-                    //d.search = $('input[type="search"]').val();
+
+                    if (reservationChanged && $('#reservation').val()) {
+                        d.sdate = $('#reservation').val();
+                    }
+
                 }
             },
             serverSide: true,
@@ -285,13 +295,15 @@
                     }
                 },
                 columnDefs: [{
-                    className: 'control',
-                    orderable: false,
-                    targets: -1
-                }/* , {
-                    targets: [6, 8],
-                    className: 'text-center'
-                } */],
+                        className: 'control',
+                        orderable: false,
+                        targets: -1
+                    }
+                    /* , {
+                                        targets: [6, 8],
+                                        className: 'text-center'
+                                    } */
+                ],
             @endif
             sPaginationType: "full_numbers",
             dom: 'T<"clear">lfrtip',
@@ -605,7 +617,7 @@
         htmlToPrint +=
             '<link rel="stylesheet" href="dist/css/print.css"><link rel="stylesheet" href="dist/css/adminlte.css?v=3.2.0">';
         htmlToPrint += '</head><body>' + prtContent + '</body></html>';
-        
+
         var WinPrint = window.open();
         WinPrint.document.write(htmlToPrint);
         WinPrint.document.close();

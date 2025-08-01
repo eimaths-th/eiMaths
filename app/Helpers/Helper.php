@@ -81,7 +81,8 @@ use Modules\SystemSetting\Entities\EmailTemplate;
 use Modules\SystemSetting\Entities\Message;
 use Nwidart\Modules\Facades\Module;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
-
+use Milon\Barcode\DNS1D;
+use Milon\Barcode\DNS2D;
 
 // clean my code
 
@@ -180,6 +181,8 @@ if (!function_exists('replaceMixedFractions')) {
         }
 
         $text = $combined;
+
+        // dd($text);
         return preg_replace_callback('/(MixFrac|Frac)\s*\(([^()]*(?:\([^()]*(?:\([^()]*\)[^()]*)*\))?[^()]*)\)/i', function ($matches) {
             $function = $matches[1]; // MixFrac or Frac
             $args = $matches[2];
@@ -250,14 +253,23 @@ if (!function_exists('replaceMixedFractions')) {
                 // Handle different argument counts
                 if ($numParts === 3) {
                     // Case: MixFrac(whole, num, denom)
-                    list($whole, $numerator, $denominator) = $parts;
+                    $whole = (int)$parts[0];
+                    $numerator = (int)$parts[1];
+                    $denominator = (int)$parts[2];
+                    // dd($whole, $numerator, $denominator);
+
+                    if ($whole == 0 || $denominator == 0) {
+                        return "\\({$parts[0]} \\frac{{$parts[1]}}{{$parts[2]}}\\)";
+                    }
+                    // list($whole, $numerator, $denominator) = $parts;
 
                     // If first argument is null/empty, treat as Frac(num, denom)
                     if ($isNull($whole)) {
                         if ($isNull($numerator) || $isNull($denominator)) {
                             return $matches[0]; // Invalid fraction
                         }
-                        return "\\(\\frac{{$numerator}}{{$denominator}}\\)";
+                        // dd($parts);
+                        return "\\(\\frac{{$parts[1]}}{{$parts[2]}}\\)";
                     }
 
                     // If first argument is numeric, it's a mixed fraction
@@ -265,7 +277,7 @@ if (!function_exists('replaceMixedFractions')) {
                         if ($isNull($numerator) || $isNull($denominator)) {
                             return $matches[0]; // Invalid fraction
                         }
-                        return "\\({$whole} \\frac{{$numerator}}{{$denominator}}\\)";
+                        return "\\({$parts[0]} \\frac{{$parts[1]}}{{$parts[2]}}\\)";
                     }
 
                     // If we get here, first argument is an expression - treat as MixFrac(null, expr1, expr2)
@@ -273,14 +285,19 @@ if (!function_exists('replaceMixedFractions')) {
                         return $matches[0]; // Invalid fraction
                     }
                     return "\\(\\frac{{$whole}}{{$numerator}}\\)";
-
                 } elseif ($numParts === 2) {
                     // Case: MixFrac(expr1, expr2) - treat as Frac(expr1, expr2)
-                    list($numerator, $denominator) = $parts;
+                    $numerator = (int)$parts[0];
+                    $denominator = (int)$parts[1];
                     if ($isNull($numerator) || $isNull($denominator)) {
                         return $matches[0];
                     }
-                    return "\\(\\frac{{$numerator}}{{$denominator}}\\)";
+
+                    if ($numerator == 0 || $denominator == 0) {
+                        // Whole number
+                        return "\(\\frac{{$parts[0]}}{{$parts[1]}}\)";
+                    }
+                    return toMixedFraction(null, $numerator, $denominator);
                 }
             } elseif ($function === 'Frac') {
                 if (count($parts) === 2) {
@@ -522,6 +539,32 @@ if (!function_exists('toMixedFraction')) {
 }
 //end fractional drisplay
 
+
+// // generate barcode
+// if (!function_exists('generateBarcode')) {
+//     function generateBarcode($code)
+//     {
+//         $barcode = new DNS1D();
+//         $barcodeData = $barcode->getBarcodeHTML($code, 'C39', 1, 50, 'black', false);
+
+//         return $barcodeData;
+//     }
+// }
+// //end generate barcode
+
+// // generate qrcode
+// if (!function_exists('generateQrcode')) {
+//     function generateQrcode($code)
+//     {
+//         $qrcode = new DNS2D();
+//         $qrcodeData = $qrcode->getBarcodeHTML($code, 'QRCODE', 5, 5, 'black', false);
+
+//         return $qrcodeData;
+//     }
+// }
+// //end generate qrcode
+
+// create commission list
 if (!function_exists('create_commmission_list')) {
     function create_commmission_list($order_id, $reqRef, $courses_pending_id = null)
     {

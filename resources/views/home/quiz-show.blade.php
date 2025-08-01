@@ -149,7 +149,6 @@
             background: linear-gradient(135deg, #3b82f6, #1d4ed8);
         }
     </style>
-
 @endpush
 @push('script')
 @endpush
@@ -170,7 +169,7 @@
                 </div>
                 <div style="display: flex; align-items: center; gap: 0.5rem;">
                     <span style="font-size: 0.875rem; color: #4b5563;">{{ $currentQuestionIndex + 1 }} /
-                        {{ $questionsCount }} ข้อ</span>
+                        {{ $questionsCount }} Questions</span>
                     <div
                         style="flex: 1; background-color: #e5e7eb; border-radius: 9999px; height: 0.5rem; margin-left: 0.75rem;">
                         <div
@@ -179,7 +178,7 @@
                     </div>
                     <span
                         style="font-size: 0.875rem; color: #4b5563;">{{ round((($currentQuestionIndex + 1) / $questionsCount) * 100) }}%
-                        เสร็จสิ้น</span>
+                        Completed</span>
                 </div>
             </div>
         </div>
@@ -190,7 +189,7 @@
                 <!-- Left Sidebar - Question Navigation -->
                 <div
                     style="width: 16rem; background-color: white; border-radius: 0.5rem; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1); padding: 1rem;">
-                    <h3 style="font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 1rem;">ข้อคำถาม</h3>
+                    <h3 style="font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 1rem;">Questions</h3>
                     <div
                         style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0.5rem; margin-bottom: 1rem;">
                         @for ($i = 0; $i < $questionsCount; $i++)
@@ -211,19 +210,19 @@
                             <div
                                 style="width: 0.75rem; height: 0.75rem; background-color: rgb(76, 175, 80); border-radius: 0.25rem; margin-right: 0.5rem;">
                             </div>
-                            <span>ตอบแล้ว</span>
+                            <span>Answered</span>
                         </div>
                         <div style="display: flex; align-items: center;">
                             <div
                                 style="width: 0.75rem; height: 0.75rem; background-color: #f97316; border-radius: 0.25rem; margin-right: 0.5rem;">
                             </div>
-                            <span>กำลังตอบ</span>
+                            <span>Answering</span>
                         </div>
                         <div style="display: flex; align-items: center;">
                             <div
                                 style="width: 0.75rem; height: 0.75rem; background-color: #f3f4f6; border-radius: 0.25rem; margin-right: 0.5rem;">
                             </div>
-                            <span>ยังไม่ตอบ</span>
+                            <span>Not Answered</span>
                         </div>
                     </div>
 
@@ -231,7 +230,7 @@
                         style="width: 100%; margin-top: 1.5rem; background-color: #f97316; color: white; padding: 0.5rem 1rem; border-radius: 0.5rem; font-weight: 500; border: none; cursor: pointer; transition: background-color 0.3s;"
                         onmouseover="this.style.backgroundColor='#ea580c'" onmouseout="this.style.backgroundColor='#f97316'"
                         onclick="document.getElementById('quiz-form').submit()">
-                        ส่งคำตอบ
+                        Submit Answer
                     </button>
                 </div>
 
@@ -260,8 +259,7 @@
                                 <div style="margin-bottom: 1.5rem;">
                                     <div
                                         style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
-                                        <span style="font-size: 0.875rem; font-weight: 500; color: #4b5563;">ข้อที่
-                                            {{ $currentQuestionIndex + 1 }}</span>
+                                        <span style="font-size: 0.875rem; font-weight: 500; color: #4b5563;">Question {{ $currentQuestionIndex + 1 }}</span>
                                         <span
                                             style="font-size: 0.75rem; color: #6b7280;">{{ str_pad($currentQuestionIndex + 1, 6, '0', STR_PAD_LEFT) }}</span>
                                     </div>
@@ -318,22 +316,21 @@
                                                     placeholder="คลิกปุ่มเพื่อเลือกสัญลักษณ์ทางคณิตศาสตร์..." /> --}}
                                                 <button id="openModalBtn" type="button"
                                                     style="padding: 0.75rem 1rem; background-color: #3b82f6; color: #ffffff; border-radius: 0.5rem; font-weight: 500; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); transition: all 0.3s; cursor: pointer; hover:background-color: #1d4ed8; hover:box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);">
-                                                    เลือกสัญลักษณ์
+                                                    Select Math Symbols
                                                 </button>
 
                                                 <button id="clearBtn"type="button"
                                                     class="px-4 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all duration-200 shadow-md hover:shadow-lg">
-                                                    ล้าง
+                                                    Clear
                                                 </button>
                                             </div>
                                             <div class="preview-answer"
                                                 style="margin-top: 1rem; padding: 1rem; background-color: #f9fafb; border: 1px solid #e5e7eb; border-radius: 0.5rem; display: none;">
                                                 <h3
                                                     style="margin: 0 0 0.5rem 0; font-size: 14px; font-weight: 600; color: #6b7280;">
-                                                    Preview:</h3>
-                                                <p id="preview"
-                                                    style="margin: 0; padding: 0.5rem; background-color: white; border: 1px solid #d1d5db; border-radius: 0.375rem; min-height: 2rem; display: flex; align-items: center;">
-
+                                                    Your Answer : </h3>
+                                                <p id="preview" {{-- style="margin: 0; padding: 0.5rem; background-color: white; border: 1px solid #d1d5db; border-radius: 0.375rem; min-height: 2rem; display: flex; align-items: center;"> --}}
+                                                    style="margin: 0 0 0.5rem 0; font-size: 14px; font-weight: 600; color: #6b7280;">
                                                 </p>
                                             </div>
 
@@ -424,8 +421,8 @@
                                                     }
 
                                                     /* .frac-inputs .frac-whole {
-                                                                                                            width: 5rem;
-                                                                                                        } */
+                                                                                                                        width: 5rem;
+                                                                                                                    } */
 
                                                     .frac-inputs .frac-line {
                                                         width: 5.5rem;
@@ -508,13 +505,13 @@
                                             <button type="submit" id="nextQuestion"
                                                 style="background-color: #f97316; color: white; font-weight: 500; padding: 0.75rem 1.5rem; border-radius: 0.5rem; transition: all 0.3s; cursor: pointer;"
                                                 class="hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2">
-                                                ถัดไป
+                                                Next
                                             </button>
                                         @else
                                             <button type="submit"
                                                 style="background-color: #34C759; color: white; font-weight: 500; padding: 0.75rem 1.5rem; border-radius: 0.5rem; transition: all 0.3s; cursor: pointer;"
                                                 class="hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
-                                                ส่งคำตอบ
+                                                Submit Answer
                                             </button>
                                         @endif
                                     </div>
@@ -527,7 +524,8 @@
             </div>
         </div>
     </div>
-    @include('home.modal_math')
+    {{-- @include('home.modal_math') --}}
+    @include('home.modal_math2')
 @endsection
 @push('scripts')
     <script src="https://cdn.tailwindcss.com"></script>
@@ -748,7 +746,7 @@
     </script>
     <script>
         // Math symbols data
-        const mathSymbols = {
+        const mathSymbolsSave = {
             arithmetic: {
                 title: 'การคำนวณพื้นฐาน (Basic Arithmetic)',
                 symbols: [{
@@ -991,9 +989,291 @@
             }
         };
 
+        const mathSymbols = {
+            arithmetic: {
+                title: 'Basic Arithmetic',
+                symbols: [{
+                        symbol: 'Simple Fraction',
+                        name: 'Simple Fraction',
+                        type: 'fraction',
+                        fractionType: 'simple'
+                    },
+                    {
+                        symbol: 'Mixed Number',
+                        name: 'Mixed Number',
+                        type: 'fraction',
+                        fractionType: 'mixed'
+                    },
+                    {
+                        symbol: '+',
+                        name: 'Addition'
+                    },
+                    {
+                        symbol: '−',
+                        name: 'Subtraction'
+                    },
+                    {
+                        symbol: '×',
+                        name: 'Multiplication'
+                    },
+                    {
+                        symbol: '⋅',
+                        name: 'Dot Multiplication'
+                    },
+                    {
+                        symbol: '÷',
+                        name: 'Division'
+                    },
+                    {
+                        symbol: '/',
+                        name: 'Slash Division'
+                    },
+                    {
+                        symbol: '=',
+                        name: 'Equal'
+                    },
+                    {
+                        symbol: '%',
+                        name: 'Percent'
+                    },
+                    {
+                        symbol: '!',
+                        name: 'Factorial'
+                    },
+                    {
+                        symbol: '°',
+                        name: 'Degree'
+                    }, {
+                        symbol: '≠',
+                        name: 'Not Equal'
+                    },
+                    {
+                        symbol: '<',
+                        name: 'Less Than'
+                    },
+                    {
+                        symbol: '>',
+                        name: 'Greater Than'
+                    },
+                    {
+                        symbol: '≤',
+                        name: 'Less Than or Equal'
+                    },
+                    {
+                        symbol: '≥',
+                        name: 'Greater Than or Equal'
+                    },
+                    {
+                        symbol: '≈',
+                        name: 'Approximately'
+                    }, {
+                        symbol: '{ }',
+                        name: 'Set Brackets'
+                    },
+                    {
+                        symbol: '∈',
+                        name: 'Element Of'
+                    },
+                    {
+                        symbol: '∉',
+                        name: 'Not Element Of'
+                    },
+                    {
+                        symbol: '⊂',
+                        name: 'Subset'
+                    },
+                    {
+                        symbol: '⊃',
+                        name: 'Superset'
+                    },
+                    {
+                        symbol: '∪',
+                        name: 'Union'
+                    },
+                    {
+                        symbol: '∩',
+                        name: 'Intersection'
+                    },
+                    {
+                        symbol: '∅',
+                        name: 'Empty Set'
+                    },
+                    {
+                        symbol: '∀',
+                        name: 'For All'
+                    },
+                    {
+                        symbol: '∃',
+                        name: 'There Exists'
+                    },
+                    {
+                        symbol: '¬',
+                        name: 'Not'
+                    },
+                    {
+                        symbol: '∧',
+                        name: 'And'
+                    },
+                    {
+                        symbol: '∨',
+                        name: 'Or'
+                    },
+                    {
+                        symbol: '→',
+                        name: 'If...Then'
+                    },
+                    {
+                        symbol: '↔',
+                        name: 'If and Only If'
+                    },
+                    {
+                        symbol: '∑',
+                        name: 'Summation'
+                    },
+                    {
+                        symbol: '∏',
+                        name: 'Product'
+                    },
+                    {
+                        symbol: '∫',
+                        name: 'Integral'
+                    },
+                    {
+                        symbol: 'd/dx',
+                        name: 'Derivative'
+                    },
+                    {
+                        symbol: '∂',
+                        name: 'Partial Derivative'
+                    },
+                    {
+                        symbol: '∞',
+                        name: 'Infinity'
+                    },
+                    {
+                        symbol: '√',
+                        name: 'Square Root'
+                    },
+                    {
+                        symbol: '∛',
+                        name: 'Cube Root'
+                    },
+                    {
+                        symbol: '|x|',
+                        name: 'Absolute Value'
+                    },
+                    {
+                        symbol: 'π',
+                        name: 'Pi'
+                    },
+                    {
+                        symbol: 'θ',
+                        name: 'Theta'
+                    },
+                    {
+                        symbol: 'α',
+                        name: 'Alpha'
+                    },
+                    {
+                        symbol: 'β',
+                        name: 'Beta'
+                    },
+                    {
+                        symbol: 'γ',
+                        name: 'Gamma'
+                    },
+                    {
+                        symbol: 'Δ',
+                        name: 'Delta (uppercase)'
+                    },
+                    {
+                        symbol: 'δ',
+                        name: 'Delta (lowercase)'
+                    },
+                    {
+                        symbol: 'λ',
+                        name: 'Lambda'
+                    },
+                    {
+                        symbol: 'μ',
+                        name: 'Mu'
+                    },
+                    {
+                        symbol: 'σ',
+                        name: 'Sigma (lowercase)'
+                    },
+                ]
+            },
+
+        };
+        // Render symbols
+        function renderSymbols2(category) {
+            const categoryData = mathSymbols[category];
+            categoryTitle.textContent = categoryData.title;
+
+            symbolsGrid.innerHTML = '';
+
+            categoryData.symbols.forEach(item => {
+                const button = document.createElement('button');
+                button.className =
+                    'symbol-button p-4 border border-gray-200 rounded-lg hover:bg-blue-50 hover:border-blue-300 transition-all duration-200 group';
+                button.title = item.name;
+                button.innerHTML = `
+                    <div class="text-2xl font-bold text-center mb-2 text-gray-800 group-hover:text-blue-600">
+                        ${item.symbol}
+                    </div>
+                    <div class="text-xs text-gray-600 text-center leading-tight">
+                        ${item.name}
+                    </div>
+                `;
+
+                button.addEventListener('click', () => {
+                    if (item.type === 'fraction') {
+                        insertFraction(item.fractionType);
+                    } else {
+                        insertSymbol(item.symbol);
+                    }
+                });
+
+                symbolsGrid.appendChild(button);
+            });
+        }
+
+        function renderSymbols(category) {
+            const categoryData = mathSymbols[category];
+            categoryTitle.textContent = categoryData.title;
+
+            symbolsGrid.innerHTML = '';
+
+            categoryData.symbols.forEach(item => {
+                const button = document.createElement('button');
+                button.className =
+                    'symbol-button p-4 border border-gray-200 rounded-lg hover:bg-blue-50 hover:border-blue-300 transition-all duration-200 group';
+                button.title = item.name;
+                button.innerHTML = `
+                    <div class="text-2xl font-bold text-center mb-2 text-gray-800 group-hover:text-blue-600">
+                        ${item.symbol}
+                    </div>
+                    <div class="text-xs text-gray-600 text-center leading-tight">
+                        ${item.name}
+                    </div>
+                `;
+
+                button.addEventListener('click', () => {
+                    if (item.type === 'fraction') {
+                        insertFraction(item.fractionType);
+                    } else {
+                        insertSymbol(item.symbol);
+                    }
+                });
+
+                symbolsGrid.appendChild(button);
+            });
+        }
+
         // DOM elements
         const mathInput = document.getElementById('answerOfQuestion_{{ $currentQuestionIndex }}');
-        const mathModal = document.getElementById('mathModal');
+        const mathModal = document.getElementById('mathModal2');
         const openModalBtn = document.getElementById('openModalBtn');
         const closeModalBtn = document.getElementById('closeModalBtn');
         const closeModalFooterBtn = document.getElementById('closeModalFooterBtn');
@@ -1190,38 +1470,7 @@
             renderSymbols(category);
         }
 
-        // Render symbols
-        function renderSymbols(category) {
-            const categoryData = mathSymbols[category];
-            categoryTitle.textContent = categoryData.title;
 
-            symbolsGrid.innerHTML = '';
-
-            categoryData.symbols.forEach(item => {
-                const button = document.createElement('button');
-                button.className =
-                    'symbol-button p-4 border border-gray-200 rounded-lg hover:bg-blue-50 hover:border-blue-300 transition-all duration-200 group';
-                button.title = item.name;
-                button.innerHTML = `
-                    <div class="text-2xl font-bold text-center mb-2 text-gray-800 group-hover:text-blue-600">
-                        ${item.symbol}
-                    </div>
-                    <div class="text-xs text-gray-600 text-center leading-tight">
-                        ${item.name}
-                    </div>
-                `;
-
-                button.addEventListener('click', () => {
-                    if (item.type === 'fraction') {
-                        insertFraction(item.fractionType);
-                    } else {
-                        insertSymbol(item.symbol);
-                    }
-                });
-
-                symbolsGrid.appendChild(button);
-            });
-        }
 
         // Insert symbol into input
         function insertSymbol(symbol) {
@@ -1445,7 +1694,7 @@
                 skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
             },
             startup: {
-                ready: function () {
+                ready: function() {
                     console.log('MathJax is loaded and ready.');
                     MathJax.startup.defaultReady();
                 }

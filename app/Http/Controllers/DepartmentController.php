@@ -40,6 +40,8 @@ class DepartmentController extends Controller
             //sleep(2);
 
             $datas = Department::orderBy("id", "desc");
+            //ยกเว้น id = 4,5
+            $datas->whereNotIn('id', [4, 5]);
             if (!Gate::allows('all-centre')) {
                 $datas->where('id', Auth::user()->department->id);
             }

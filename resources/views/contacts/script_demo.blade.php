@@ -182,11 +182,21 @@
             }
         });
 
+        let reservationChanged = false;
+
+        $("#reservation").change(function() {
+            reservationChanged = true;
+            table.draw();
+        });
+
         const table_option = {
             ajax: {
                 data: function(d) {
-                    d.sdate = $('#reservation').val();
-                    //d.search = $('input[type="search"]').val();
+
+                    if (reservationChanged && $('#reservation').val()) {
+                        d.sdate = $('#reservation').val();
+                    }
+
                 }
             },
             serverSide: true,

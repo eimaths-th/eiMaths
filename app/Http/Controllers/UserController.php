@@ -46,6 +46,7 @@ class UserController extends Controller
         return view('users.index', compact('data'))
             ->with('i', ($request->input('page', 1) - 1) * 5)
             ->with('roles', $roles); */
+
         if (!Gate::allows('all-centre')) {
             $roles = Role::pluck('name', 'id')->except([1, 4])->all();
         } else {
@@ -55,12 +56,27 @@ class UserController extends Controller
         if ($request->ajax()) {
             //sleep(2);
 
-            $datas = User::with('department', 'position')->orderBy("id", "desc")
+            $role = $request->get('role');
+            $centre = $request->get('centre');
+
+            $datas = User::with('department', 'position')
                 ->where(function ($query) {
                     $query->where('affiliate_request', '!=', 1)
                         ->orWhereNull('affiliate_request');
                 })
+                ->when($role, function ($query) use ($role) {
+                    $query->whereHas('roles', function ($q) use ($role) {
+                        $q->where('name', $role);
+                    });
+                })
+                ->when($centre, function ($query) use ($centre) {
+                    $query->whereHas('department', function ($q) use ($centre) {
+                        $q->where('id', $centre);
+                    });
+                })
+                ->orderBy("id", "desc")
                 ->get();
+
             if (!Gate::allows('all-centre')) {
                 $datas->whereHas('department', function ($query) {
                     $query->where('id', Auth::user()->department->id);
@@ -133,8 +149,8 @@ class UserController extends Controller
             //sleep(2);
 
             $datas = User::with('department', 'position')->orderBy("id", "desc")
-            ->where('affiliate_request', 1)
-            ->get();
+                ->where('affiliate_request', 1)
+                ->get();
             if (!Gate::allows('all-centre')) {
                 $datas->whereHas('department', function ($query) {
                     $query->where('id', Auth::user()->department->id);

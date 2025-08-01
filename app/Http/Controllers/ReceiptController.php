@@ -200,6 +200,7 @@ class ReceiptController extends Controller
         // $centre = Auth::user()->department->id;
         // $type = strtoupper(Department::getDepartmentCodeById($centre));
         // dd($type);
+
         if ($request->ajax()) {
             //sleep(2);
             if ($request->get('type')) {
@@ -207,6 +208,9 @@ class ReceiptController extends Controller
             } else {
                 $type = 0;
             }
+
+            $centre = $request->get('centre');
+            $reservationValue = $request->get('date');
 
             $query = Receipt::select(
                 "receipts.id as id",
@@ -232,6 +236,12 @@ class ReceiptController extends Controller
                 ->join("bookuses", "bookuses.id", "=", "order_detail.product_id")
                 ->join("levels", "levels.id", "=", "bookuses.level_id")
                 ->where('receipts.type', $type);
+            if ($centre) {
+                $query->where('receipts.centre', $centre);
+            }
+            if ($reservationValue) {
+                $query->where('receipts.payment_date', 'like', $reservationValue . '%');
+            }
 
             if (!Gate::allows('all-centre')) {
                 $query->where('receipts.centre', Auth::user()->department->id);
@@ -448,6 +458,9 @@ class ReceiptController extends Controller
     {
         $new = $request->query('new');
 
+        $centre = $request->get('centre');
+        $reservationValue = $request->get('date');
+
         if ($request->ajax()) {
             //sleep(2);
             $query = Order::select(
@@ -477,6 +490,11 @@ class ReceiptController extends Controller
 
             if (!Gate::allows('all-centre')) {
                 $query->where('orders.centre', Auth::user()->department->id);
+            }
+
+            if ($centre && $reservationValue) {
+                $query->where('orders.centre', $centre);
+                $query->where('orders.created_at', 'like', $reservationValue . '%');
             }
 
             if (!empty($request->get('sdate'))) {

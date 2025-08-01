@@ -108,13 +108,13 @@
         var startDate;
         var endDate;
 
-        function datesearch() {
-            var currentDate = moment();
-            // Set the start date to 7 days before today
-            startDate = moment('2023-01-01').format('YYYY-MM-DD');
-            // Set the end date to the end of the current month
-            endDate = moment(currentDate).endOf('year').format('YYYY-MM-DD');
-        }
+        // function datesearch() {
+        //     var currentDate = moment();
+        //     // Set the start date to 7 days before today
+        //     startDate = moment('2023-01-01').format('YYYY-MM-DD');
+        //     // Set the end date to the end of the current month
+        //     endDate = moment(currentDate).endOf('year').format('YYYY-MM-DD');
+        // }
 
         function retrieveFieldValues() {
             var saveddateStart = localStorage.getItem('dateStart');
@@ -126,9 +126,10 @@
                 var dateParts = saveddateStart.split(' - ');
                 startDate = dateParts[0];
                 endDate = dateParts[1];
-            } else {
-                datesearch();
             }
+            // else {
+            //     datesearch();
+            // }
             if (savedSearchType) {
                 $('#search_type').val(savedSearchType);
             }
@@ -535,11 +536,23 @@
             }
         }
 
+
+
+        let reservationChanged = false;
+
+        $("#reservation").change(function() {
+            reservationChanged = true;
+            table.draw();
+        });
+
         const table_option = {
             ajax: {
                 data: function(d) {
-                    d.sdate = $('#reservation').val();
-                    //d.search = $('input[type="search"]').val();
+
+                    if (reservationChanged && $('#reservation').val()) {
+                        d.sdate = $('#reservation').val();
+                    }
+                    
                 }
             },
             serverSide: true,
@@ -608,10 +621,6 @@
                     name: 'name'
                 },
                 {
-                    data: 'nickname',
-                    name: 'nickname'
-                },
-                {
                     data: 'start_date',
                     name: 'start_date'
                 },
@@ -620,8 +629,16 @@
                     name: 'end_date'
                 },
                 {
+                    data: 'remaining',
+                    name: 'remaining'
+                },
+                {
                     data: 'level_name',
                     name: 'level_name'
+                },
+                {
+                    data: 'term',
+                    name: 'term'
                 },
                 {
                     data: 'bookuse_name',
@@ -631,10 +648,7 @@
                      data: 'start_term_name',
                      name: 'start_term_name'
                  }, */
-                {
-                    data: 'term_name',
-                    name: 'term_name'
-                },
+
                 {
                     data: 'telephone',
                     name: 'telephone'

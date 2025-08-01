@@ -810,9 +810,71 @@
     });
 </script>
 <script>
-    let centre = '';
-    centre = $('#dcentre').val();
-    $('#dcentre').change(function() {
-        centre = $('#dcentre').val();
+    $(document).ready(function() {
+        const dcentre = $('#dcentre');
+        const reservation = $('#reservation');
+        let centre = dcentre.val();
+        let reservationValue = reservation.val();
+
+        console.log('ready centre', centre);
+        console.log('ready reservation', reservationValue);
+
+        // Define routes and element selectors in one place
+        const routes = [
+            { 
+                selector: '#contacts-link', 
+                route: "{{ route('contacts') }}",
+                params: ['centre', 'date']
+            },
+            { 
+                selector: '#teacher-link', 
+                route: "{{ route('users.index') }}",
+                params: ['role=Teacher', 'centre', 'date']
+            },
+            { 
+                selector: '.receipt-link', 
+                route: "{{ route('receipts') }}",
+                params: ['centre', 'date']
+            },
+            { 
+                selector: '#receipts-pending-link', 
+                route: "{{ route('receipts_pending') }}",
+                params: ['centre', 'date']
+            },
+        ];
+
+        function updateLinks(centre, reservationValue) {
+            routes.forEach(item => {
+                let url = new URL(item.route);
+                
+                // Add parameters to URL
+                item.params.forEach(param => {
+                    if (param.includes('=')) {
+                        // Handle parameters with static values (like role=Teacher)
+                        const [key, value] = param.split('=');
+                        url.searchParams.set(key, value);
+                    } else if (param === 'centre' && centre) {
+                        url.searchParams.set('centre', centre);
+                    } else if (param === 'date' && reservationValue) {
+                        url.searchParams.set('date', reservationValue);
+                    }
+                });
+                
+                // Update the href attribute with the properly encoded URL
+                $(item.selector).attr('href', url.toString());
+            });
+        }
+
+        updateLinks(centre, reservationValue);
+
+        dcentre.on('change', function() {
+            centre = $(this).val();
+            updateLinks(centre, reservationValue);
+        });
+
+        reservation.on('change', function() {
+            reservationValue = $(this).val();
+            updateLinks(centre, reservationValue);
+        });
     });
 </script>

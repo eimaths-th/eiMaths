@@ -74,6 +74,68 @@
                         {{-- <li class="breadcrumb-item"><a href="#">Home</a></li>
                         <li class="breadcrumb-item active">Users Management</li> --}}
 
+                        {{-- btn print product --}}
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#printOptionsModal">
+                            <i class="fas fa-print"></i> Print Product
+                        </button>
+
+                        <!-- Print Options Modal -->
+                        <div class="modal fade" id="printOptionsModal" tabindex="-1" role="dialog"
+                            aria-labelledby="printOptionsModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header bg-primary text-white">
+                                        <h5 class="modal-title" id="printOptionsModalLabel">Print Options</h5>
+                                        <button type="button" class="close text-white" data-dismiss="modal"
+                                            aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <form id="printOptionsForm" action="{{ route('products.print') }}" method="GET">
+                                        <div class="modal-body">
+                                            <div class="form-group">
+                                                <label for="centre">Select Centre</label>
+                                                <select class="form-control" id="centre" name="centre" required>
+                                                    @role('SystemAdmin')
+                                                        <option value="all">All Centres</option>
+                                                        @foreach ($centre as $dept)
+                                                            <option value="{{ $dept->id }}">{{ $dept->name }}</option>
+                                                        @endforeach
+                                                    @else
+                                                        <option value="{{ Auth::user()->department->id }}" selected>
+                                                            {{ Auth::user()->department->name }}</option>
+                                                    @endrole
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Select Code Type</label>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="code_type"
+                                                        id="barcode" value="barcode" checked>
+                                                    <label class="form-check-label" for="barcode">
+                                                        Barcode
+                                                    </label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="code_type"
+                                                        id="qrcode" value="qrcode">
+                                                    <label class="form-check-label" for="qrcode">
+                                                        QR Code
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <input type="hidden" name="type" value="view">
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary"
+                                                data-dismiss="modal">Cancel</button>
+                                            <button type="submit" class="btn btn-primary">Print</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        &nbsp;
                         @can('product-create')
                             <button type="button" class="btn btn-success" id="CreateButton">
                                 <i class="fas fa-cubes"></i> Add Acceseries </button>
@@ -86,7 +148,8 @@
                         @endcan &nbsp;
 
                         @can('product-delete')
-                            <button type="button" class="btn btn-danger delete_all_button"><i class="fa fa-trash"></i> Delete
+                            <button type="button" class="btn btn-danger delete_all_button"><i class="fa fa-trash"></i>
+                                Delete
                                 All</button>
                         @else
                             <span class="d-inline-block" tabindex="0" data-toggle="tooltip" data-placement="bottom"
@@ -111,7 +174,8 @@
                         <div class="card-header">
                             <h3 class="card-title"><i class="fas fa-cubes"></i> Education Acceseries</h3>
                             <div class="card-tools">
-                                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                                <button type="button" class="btn btn-tool" data-card-widget="collapse"
+                                    title="Collapse">
                                     <i class="fas fa-minus"></i>
                                 </button>
                                 {{-- <button type="button" class="btn btn-tool" data-card-widget="remove" title="Remove">

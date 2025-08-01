@@ -6,117 +6,194 @@
     <style>
         .img-container {
             display: flex;
-            justify-content: left;
-            /* Center horizontally */
-            align-items: left;
-            /* Center vertically */
+            justify-content: flex-start;
+            align-items: flex-start;
             width: 100%;
-            /* Ensure the container takes up available width */
             height: auto;
-            /* Ensure the container adjusts to the content's height */
         }
 
         .img-custom {
-            max-height: 75px;
+            max-height: 100px;
             max-width: 100%;
             height: auto;
             width: auto;
             display: inline-block;
-            /* Ensures the image stays on the same line */
             vertical-align: middle;
-            /* Aligns the image vertically in the middle of the text */
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease;
+        }
+
+        .img-custom:hover {
+            transform: scale(1.05);
         }
 
         li span {
             display: inline-block;
-            /* Ensures the text stays on the same line */
             vertical-align: middle;
-            /* Aligns the text vertically in the middle of the image */
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(249, 115, 22, 0.1);
+            overflow: hidden;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .result-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
         }
     </style>
-    <script type="text/javascript" async
-        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 @endpush
 @push('script')
 @endpush
 @section('content')
-    <div class="py-12">
-        <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-            <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
-                    <h6 class="text-xl font-bold">Test Results</h6>
+    <!-- Results Header Section -->
+    <div
+        style="background: linear-gradient(135deg, #f97316 0%, #fb923c 100%); padding: 40px 0; position: relative; overflow: hidden;">
+        <!-- Header Background Pattern -->
+        <div
+            style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.1; background-image: radial-gradient(circle at 20px 20px, #ffffff 2px, transparent 0); background-size: 40px 40px;">
+        </div>
 
-                    <table class="mt-4 table w-full table-view">
-                        <tbody class="bg-white">
-                            {{-- @if (auth()->user()?->is_admin) --}}
-                            <tr class="w-28">
-                            <tr class="w-28">
-                                <th
-                                    class="border border-solid bg-gray-100 px-6 py-3 text-left text-sm font-semibold uppercase text-slate-600">
-                                    Quiz
-                                </th>
-                                <td class="border border-solid px-6 py-3">
-                                    {{ $test->quiz->title }}
-                                    {{-- @endif --}}
-                                </td>
-                            </tr>
-                            <th
-                                class="border border-solid bg-gray-100 px-6 py-3 text-left text-sm font-semibold uppercase text-slate-600">
-                                User</th>
-                            <td class="border border-solid px-6 py-3">
-                                @php
-                                    if ($test->type_user === 'user' && $test->user) {
-                                        $testUser = $test->user;
-                                    } elseif ($test->type_user === 'student' && $test->student) {
-                                        $testUser = $test->student;
-                                    } else {
-                                        $testUser = null;
-                                    }
-                                @endphp
-                                @if ($testUser)
-                                    {{ $testUser->nickname ?? $testUser->name }}
-                                    ({{ $testUser->email ?? $testUser->name }})
-                                @else
-                                    User not found
-                                @endif
-                            </td>
-                            </tr>
-                            {{-- @endif --}}
-                            <tr class="w-28">
-                                <th
-                                    class="border border-solid bg-gray-100 px-6 py-3 text-left text-sm font-semibold uppercase text-slate-600">
-                                    Date</th>
-                                <td class="border border-solid px-6 py-3">
-                                    {{ $test->created_at->format('D d/m/Y, h:i A') ?? '' }}
-                                    {{-- {{ $test->created_at ?? '' }} --}}
-                                </td>
-                            </tr>
-                            <tr class="w-28">
-                                <th
-                                    class="border border-solid bg-gray-100 px-6 py-3 text-left text-sm font-semibold uppercase text-slate-600">
-                                    Result</th>
-                                <td class="border border-solid px-6 py-3">
-                                    {{ $test->result }} / {{ $questions_count }}
-                                    {{-- @if ($test->time_spent) --}}
-                                    @php
-                                        $hour = intdiv($test->time_spent, 3600);
-                                        $minutes = intdiv($test->time_spent, 60);
-                                        $seconds = $test->time_spent % 60;
-                                    @endphp
-                                    ( time:
-                                    {{ sprintf('%02d', $hour) }}:{{ sprintf('%02d', $minutes) }}:{{ sprintf('%02d', $seconds) }}
-                                    )
-                                    {{-- @endif --}}
-                                </td>
-                            </tr>
-
-                        </tbody>
-                    </table>
-                </div>
+        <div style="max-width: 1280px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 2;">
+            <div style="text-align: center;">
+                <h1
+                    style="font-size: 36px; font-weight: 800; color: #ffffff; margin: 0 0 12px 0; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+                    📊 ผลการทดสอบ
+                </h1>
+                <p style="font-size: 18px; color: rgba(255, 255, 255, 0.9); margin: 0; font-weight: 500;">
+                    รายละเอียดผลการทำแบบทดสอบของคุณ
+                </p>
             </div>
         </div>
-        <br>
-        {{-- @isset($leaderboard)
+    </div>
+
+    <!-- Main Content -->
+    <div style="padding: 40px 0; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); min-height: 100vh;">
+        <div style="max-width: 1280px; margin: 0 auto; padding: 0 24px;">
+            <!-- Test Summary Card -->
+            <div class="result-card" style="margin-bottom: 32px; position: relative;">
+                <!-- Card Decoration -->
+                <div
+                    style="position: absolute; top: 0; right: 0; width: 150px; height: 150px; background: radial-gradient(circle, rgba(249, 115, 22, 0.08) 0%, transparent 70%); border-radius: 50%;">
+                </div>
+
+                <div style="padding: 32px; position: relative; z-index: 2;">
+                    <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px;">
+                        <div
+                            style="width: 6px; height: 40px; background: linear-gradient(135deg, #f97316 0%, #fb923c 100%); border-radius: 3px; box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3);">
+                        </div>
+                        <h2 style="font-size: 24px; font-weight: 700; color: #1e293b; margin: 0;">สรุปผลการทดสอบ</h2>
+                    </div>
+
+                    <!-- Test Information Grid -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px;">
+                        <!-- Quiz Info Card -->
+                        <div
+                            style="background: rgba(255, 255, 255, 0.8); border-radius: 12px; padding: 24px; border: 1px solid rgba(249, 115, 22, 0.1); backdrop-filter: blur(5px);">
+                            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+                                <div
+                                    style="width: 40px; height: 40px; background: linear-gradient(135deg, #f97316 0%, #fb923c 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-size: 18px; font-weight: bold;">
+                                    📝</div>
+                                <div>
+                                    <h3
+                                        style="font-size: 16px; font-weight: 600; color: #64748b; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;">
+                                        แบบทดสอบ</h3>
+                                    <p style="font-size: 18px; font-weight: 700; color: #1e293b; margin: 4px 0 0 0;">
+                                        {{ $test->quiz->title }}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- User Info Card -->
+                        <div
+                            style="background: rgba(255, 255, 255, 0.8); border-radius: 12px; padding: 24px; border: 1px solid rgba(249, 115, 22, 0.1); backdrop-filter: blur(5px);">
+                            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+                                <div
+                                    style="width: 40px; height: 40px; background: linear-gradient(135deg, #10b981 0%, #34d399 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-size: 18px; font-weight: bold;">
+                                    👤</div>
+                                <div>
+                                    <h3
+                                        style="font-size: 16px; font-weight: 600; color: #64748b; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;">
+                                        ผู้ทำแบบทดสอบ</h3>
+                                    <p style="font-size: 18px; font-weight: 700; color: #1e293b; margin: 4px 0 0 0;">
+                                        @php
+                                            if ($test->type_user === 'user' && $test->user) {
+                                                $testUser = $test->user;
+                                            } elseif ($test->type_user === 'student' && $test->student) {
+                                                $testUser = $test->student;
+                                            } else {
+                                                $testUser = null;
+                                            }
+                                        @endphp
+                                        @if ($testUser)
+                                            {{ $testUser->nickname ?? $testUser->name }}
+                                            <br><span
+                                                style="font-size: 14px; color: #64748b;">({{ $testUser->email ?? $testUser->name }})</span>
+                                        @else
+                                            <span style="color: #ef4444;">User not found</span>
+                                        @endif
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Date Info Card -->
+                        <div
+                            style="background: rgba(255, 255, 255, 0.8); border-radius: 12px; padding: 24px; border: 1px solid rgba(249, 115, 22, 0.1); backdrop-filter: blur(5px);">
+                            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+                                <div
+                                    style="width: 40px; height: 40px; background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-size: 18px; font-weight: bold;">
+                                    📅</div>
+                                <div>
+                                    <h3
+                                        style="font-size: 16px; font-weight: 600; color: #64748b; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;">
+                                        วันที่ทำแบบทดสอบ</h3>
+                                    <p style="font-size: 18px; font-weight: 700; color: #1e293b; margin: 4px 0 0 0;">
+                                        {{ $test->created_at->format('D d/m/Y, h:i A') ?? '' }}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Score Info Card -->
+                        <div
+                            style="background: rgba(255, 255, 255, 0.8); border-radius: 12px; padding: 24px; border: 1px solid rgba(249, 115, 22, 0.1); backdrop-filter: blur(5px);">
+                            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+                                <div
+                                    style="width: 40px; height: 40px; background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-size: 18px; font-weight: bold;">
+                                    🏆</div>
+                                <div>
+                                    <h3
+                                        style="font-size: 16px; font-weight: 600; color: #64748b; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;">
+                                        คะแนน</h3>
+                                    <p style="font-size: 18px; font-weight: 700; color: #1e293b; margin: 4px 0 0 0;">
+                                        {{ $test->result ?? 0 }}/{{ $test->quiz->questions->count() }}
+                                        <span style="font-size: 16px; color: #64748b; font-weight: 500;">
+                                            ({{ number_format(($test->result / $test->quiz->questions->count()) * 100, 2) }}%)
+                                        </span>
+                                        @if ($test->time_spent)
+                                            @php
+                                                $hour = intdiv($test->time_spent, 3600);
+                                                $minutes = intdiv($test->time_spent, 60);
+                                                $seconds = $test->time_spent % 60;
+                                            @endphp
+                                            <br><span style="font-size: 14px; color: #64748b;">
+                                                เวลาที่ใช้:
+                                                {{ sprintf('%02d', $hour) }}:{{ sprintf('%02d', $minutes) }}:{{ sprintf('%02d', $seconds) }}
+                                            </span>
+                                        @endif
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{-- @isset($leaderboard)
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 pb-12">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900">
@@ -145,28 +222,75 @@
                 </div>
             </div>
         @endisset --}}
-        <br>
+            <br>
 
-        {{-- @php
+            {{-- @php
             dd($results);
         @endphp --}}
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
-                    @foreach ($results as $result)
-                        <table class="table table-view w-full my-4 bg-white">
-                            <tbody class="bg-white">
-                                <tr class="bg-gray-100">
-                                    <td class="w-1/2">Question #{{ $loop->iteration }}</td>
+            <!-- Questions Results Section -->
+            <div class="result-card" style="margin-bottom: 32px;">
+                <div style="padding: 32px; position: relative; z-index: 2;">
+                    <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 32px;">
+                        <div
+                            style="width: 6px; height: 40px; background: linear-gradient(135deg, #f97316 0%, #fb923c 100%); border-radius: 3px; box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3);">
+                        </div>
+                        <h2 style="font-size: 24px; font-weight: 700; color: #1e293b; margin: 0;">รายละเอียดคำตอบ</h2>
+                    </div>
 
+                    <!-- Questions Grid -->
+                    <div style="display: grid; gap: 24px;">
+                        @foreach ($results as $result)
+                            <!-- Question Card -->
+                            <div
+                                style="background: rgba(255, 255, 255, 0.9); border-radius: 16px; padding: 24px; border: 2px solid {{ $result->correct ? 'rgba(34, 197, 94, 0.2)' : 'rgba(239, 68, 68, 0.2)' }}; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); position: relative; overflow: hidden; display: flex; flex-direction: column; min-height: 250px;">
+                                <!-- Status Indicator -->
+                                <div
+                                    style="position: absolute; top: 0; right: 0; width: 60px; height: 60px; background: {{ $result->correct ? 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)' : 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)' }}; border-radius: 0 16px 0 50px; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px;">
+                                    {{ $result->correct ? '✓' : '✗' }}
+                                </div>
+                                <!-- Question Header -->
+                                <div
+                                    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-right: 70px;">
+                                    <div>
+                                        <h3 style="font-size: 20px; font-weight: 700; color: #1e293b; margin: 0 0 8px 0;">
+                                            คำถามที่ {{ $loop->iteration }}
+                                        </h3>
+                                        @if ($result->question->type === 'fraction')
+                                            <span
+                                                style="background: linear-gradient(135deg, #f97316 0%, #fb923c 100%); color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">
+                                                เศษส่วน
+                                            </span>
+                                        @elseif ($result->question->type === 'written')
+                                            <span
+                                                style="background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">
+                                                คำตอบเขียน
+                                            </span>
+                                        @elseif ($result->question->type === 'image')
+                                            <span
+                                                style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">
+                                                รูปภาพ
+                                            </span>
+                                        @else
+                                            <span
+                                                style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">
+                                                ตัวเลือก
+                                            </span>
+                                        @endif
+                                    </div>
+                                </div>
+                                <!-- Question Text -->
+                                <div style="margin-bottom: 24px; flex: 1;">
                                     @if ($result->question->type === 'fraction')
                                         {{-- <td>{!! nl2br($result->question->text) !!}</td> --}}
-                                        <td>{{ replaceMixedFractions($result->question->text) }}</td>
+                                        <p style="font-size: 18px; font-weight: 500; color: #64748b; margin: 0;">
+                                            {{ replaceMixedFractions($result->question->text) }}</p>
                                     @else
-                                        <td>{!! nl2br($result->question->text) !!}</td>
+                                        <p style="font-size: 18px; font-weight: 500; color: #64748b; margin: 0;">
+                                            {!! nl2br(replaceMixedFractions($result->question->text)) !!}</p>
                                     @endif
-                                </tr>
-                                <tr>
+                                </div>
+                                <!-- Answer Section -->
+                                <div style="display: grid; grid-template-columns: 1fr; gap: 16px; margin-top: auto;">
                                     @php
                                         $title = '';
                                         $type = $result->question->type;
@@ -184,161 +308,248 @@
                                             $title = 'Title is not found';
                                         }
                                     @endphp
-                                    <td>{{ $title }}</td>
-
-                                    <td>
-                                        @if ($type === 'options')
+                                    <h4
+                                        style="font-size: 16px; font-weight: 600; color: #64748b; margin: 0 0 8px 0; text-transform: uppercase; letter-spacing: 0.5px;">
+                                        {{ $title }}</h4>
+                                    @if ($type === 'options')
+                                        <div style="display: grid; gap: 12px;">
                                             @foreach ($result->question->options as $option)
-                                                <li @class([
-                                                    'underline' => $result->option_id == $option->id,
-                                                    'font-bold text-orange-500' => $option->correct == 1,
-                                                    'mt-5',
-                                                ])>
-                                                    {{ replaceMixedFractions($option->text) }}
-                                                    @if ($option->correct == 1)
-                                                        <span class="italic">(correct answer)</span>
-                                                    @endif
-                                                    @if ($result->option_id == $option->id)
-                                                        <span class="italic">(your answer)</span>
-                                                    @endif
-                                                </li>
+                                                <div
+                                                    style="padding: 16px; border-radius: 12px; border: 2px solid {{ $result->option_id == $option->id ? ($option->correct ? '#22c55e' : '#ef4444') : ($option->correct ? '#22c55e' : '#e2e8f0') }}; background: {{ $option->correct ? 'rgba(34, 197, 94, 0.05)' : ($result->option_id == $option->id ? 'rgba(239, 68, 68, 0.05)' : 'rgba(255, 255, 255, 0.8)') }}; position: relative;">
+                                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                                        <div
+                                                            style="width: 32px; height: 32px; border-radius: 50%; background: {{ $option->correct ? 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)' : ($result->option_id == $option->id ? 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)' : 'linear-gradient(135deg, #64748b 0%, #475569 100%)') }}; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 14px;">
+                                                            {{ chr(65 + $loop->index) }}
+                                                        </div>
+                                                        <div style="flex: 1;">
+                                                            <p
+                                                                style="font-size: 16px; font-weight: 500; color: #1e293b; margin: 0;">
+                                                                {{ replaceMixedFractions($option->text) }}</p>
+                                                            <div style="margin-top: 4px; display: flex; gap: 8px;">
+                                                                @if ($option->correct == 1)
+                                                                    <span
+                                                                        style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color: white; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600;">คำตอบที่ถูก</span>
+                                                                @endif
+                                                                @if ($result->option_id == $option->id)
+                                                                    <span
+                                                                        style="background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); color: white; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600;">คำตอบของคุณ</span>
+                                                                @endif
+                                                            </div>
+                                                        </div>
+                                                        @if ($option->correct == 1)
+                                                            <div style="color: #22c55e; font-size: 20px;">✓</div>
+                                                        @elseif ($result->option_id == $option->id && !$option->correct)
+                                                            <div style="color: #ef4444; font-size: 20px;">✗</div>
+                                                        @endif
+                                                    </div>
+                                                </div>
                                             @endforeach
                                             @if (is_null($result->option_id))
-                                                <span class="font-bold italic">Question unanswered.</span>
+                                                <div
+                                                    style="padding: 16px; border-radius: 12px; border: 2px dashed #fbbf24; background: rgba(251, 191, 36, 0.05); text-align: center;">
+                                                    <span
+                                                        style="font-weight: 600; color: #f59e0b; font-style: italic;">ไม่ได้ตอบคำถามนี้</span>
+                                                </div>
                                             @endif
-                                        @elseif ($type === 'image')
+                                        </div>
+                                    @elseif ($type === 'image')
+                                        <div
+                                            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
                                             @foreach ($result->question->images as $image)
-                                                <li @class([
-                                                    'underline' => $result->image_id == $image->id,
-                                                    'font-bold text-orange-500' => $image->correct == 1,
-                                                    'mt-5',
-                                                ])>
+                                                <div
+                                                    style="padding: 16px; border-radius: 12px; border: 2px solid {{ $result->image_id == $image->id ? ($image->correct ? '#22c55e' : '#ef4444') : ($image->correct ? '#22c55e' : '#e2e8f0') }}; background: {{ $image->correct ? 'rgba(34, 197, 94, 0.05)' : ($result->image_id == $image->id ? 'rgba(239, 68, 68, 0.05)' : 'rgba(255, 255, 255, 0.8)') }}; text-align: center; position: relative;">
                                                     @if ($image->img_name)
                                                         <img class="img-custom"
+                                                            style="width: 100%; max-width: 150px; height: auto; border-radius: 8px; margin-bottom: 12px;"
                                                             src="{{ asset('images_options/' . $image->img_name) }}"
                                                             alt="Image option">
                                                     @endif
 
-                                                    @if ($image->correct == 1)
-                                                        <span class="italic">(correct answer)</span>
-                                                    @endif
+                                                    <div
+                                                        style="display: flex; justify-content: center; gap: 8px; flex-wrap: wrap;">
+                                                        @if ($image->correct == 1)
+                                                            <span
+                                                                style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color: white; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 600;">คำตอบที่ถูก</span>
+                                                        @endif
+                                                        @if ($result->image_id == $image->id)
+                                                            <span
+                                                                style="background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); color: white; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 600;">คำตอบของคุณ</span>
+                                                        @endif
+                                                    </div>
 
-                                                    @if ($result->image_id == $image->id)
-                                                        <span class="italic">(your answer)</span>
+                                                    @if ($image->correct == 1)
+                                                        <div
+                                                            style="position: absolute; top: 8px; right: 8px; color: #22c55e; font-size: 20px;">
+                                                            ✓</div>
+                                                    @elseif ($result->image_id == $image->id && !$image->correct)
+                                                        <div
+                                                            style="position: absolute; top: 8px; right: 8px; color: #ef4444; font-size: 20px;">
+                                                            ✗</div>
                                                     @endif
-                                                </li>
+                                                </div>
                                             @endforeach
-                                            @if (is_null($result->image_id))
-                                                <span class="font-bold italic">Question unanswered.</span>
-                                            @endif
-                                        @elseif ($type === 'written')
-                                            <li @class([
-                                                'underline' => $result->correct != 1,
-                                                'font-bold text-orange-500' => $result->correct == 1,
-                                                'mt-5',
-                                            ])>
-                                                {{ $result->written_answer }} (your answer)
-                                            </li>
-                                            <li class="font-bold text-orange-500">
-                                                {{ $result->question->written_answer }} (correct answer)
-                                            </li>
-                                        @elseif ($type === 'fraction')
+                                        </div>
+                                        @if (is_null($result->image_id))
+                                            <div
+                                                style="padding: 16px; border-radius: 12px; border: 2px dashed #fbbf24; background: rgba(251, 191, 36, 0.05); text-align: center; margin-top: 16px;">
+                                                <span
+                                                    style="font-weight: 600; color: #f59e0b; font-style: italic;">ไม่ได้ตอบคำถามนี้</span>
+                                            </div>
+                                        @endif
+                                    @elseif ($type === 'written')
+                                        <div style="display: grid; gap: 12px;">
+                                            <!-- Your Answer -->
+                                            <div
+                                                style="padding: 16px; border-radius: 12px; border: 2px solid {{ $result->correct ? '#22c55e' : '#ef4444' }}; background: {{ $result->correct ? 'rgba(34, 197, 94, 0.05)' : 'rgba(239, 68, 68, 0.05)' }};">
+                                                <div style="display: flex; align-items: center; gap: 12px;">
+                                                    <div
+                                                        style="width: 32px; height: 32px; border-radius: 50%; background: {{ $result->correct ? 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)' : 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)' }}; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 14px;">
+                                                        {{ $result->correct ? '✓' : '✗' }}
+                                                    </div>
+                                                    <div style="flex: 1;">
+                                                        <p
+                                                            style="font-size: 16px; font-weight: 500; color: #1e293b; margin: 0;">
+                                                            {{ replaceMixedFractions($result->written_answer) }}</p>
+                                                        <span
+                                                            style="background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); color: white; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; margin-top: 4px; display: inline-block;">คำตอบของคุณ</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Correct Answer -->
+                                            <div
+                                                style="padding: 16px; border-radius: 12px; border: 2px solid #22c55e; background: rgba(34, 197, 94, 0.05);">
+                                                <div style="display: flex; align-items: center; gap: 12px;">
+                                                    <div
+                                                        style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 14px;">
+                                                        ✓
+                                                    </div>
+                                                    <div style="flex: 1;">
+                                                        <p
+                                                            style="font-size: 16px; font-weight: 500; color: #1e293b; margin: 0;">
+                                                            {{ replaceMixedFractions($result->question->written_answer) }}
+                                                        </p>
+                                                        <span
+                                                            style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color: white; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; margin-top: 4px; display: inline-block;">คำตอบที่ถูก</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @elseif ($type === 'fraction')
+                                        <div style="display: grid; gap: 12px;">
                                             @if ($result->question->fractions->first()->type === 'options')
                                                 @foreach ($result->question->fractions as $fractions)
-                                                    {{-- @php
-                                                        dd($fractions->answer_type);
-                                                    @endphp --}}
-                                                    <li @class([
-                                                        'underline' => $result->fraction == $fractions->id,
-                                                        'font-bold text-orange-500' => $fractions->correct == 1,
-                                                        'mt-5',
-                                                    ])>
-                                                        @if ($fractions->answer_type == 'mixed')
-                                                            {{-- {{toFraction($fraction->numerator, $fraction->denominator) }} --}}
-                                                            {{ toMixedFraction(null, $fractions->numerator, $fractions->denominator) }}
-                                                        @else
-                                                            {{ toFraction($fractions->numerator, $fractions->denominator) }}
-                                                        @endif
-                                                        {{-- {{ $fractions->numerator }} / {{ $fractions->denominator }} --}}
-                                                        @if ($fractions->correct == 1)
-                                                            <span class="italic">(correct answer)</span>
-                                                        @endif
-                                                        @if ($result->fraction == $fractions->id)
-                                                            <span class="italic">(your answer)</span>
-                                                        @endif
-                                                    </li>
+                                                    <div
+                                                        style="padding: 16px; border-radius: 12px; border: 2px solid {{ $result->fraction == $fractions->id ? ($fractions->correct ? '#22c55e' : '#ef4444') : ($fractions->correct ? '#22c55e' : '#e2e8f0') }}; background: {{ $fractions->correct ? 'rgba(34, 197, 94, 0.05)' : ($result->fraction == $fractions->id ? 'rgba(239, 68, 68, 0.05)' : 'rgba(255, 255, 255, 0.8)') }}; position: relative;">
+                                                        <div style="display: flex; align-items: center; gap: 12px;">
+                                                            <div
+                                                                style="width: 32px; height: 32px; border-radius: 50%; background: {{ $fractions->correct ? 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)' : ($result->fraction == $fractions->id ? 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)' : 'linear-gradient(135deg, #64748b 0%, #475569 100%)') }}; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 14px;">
+                                                                {{ $fractions->correct ? '✓' : '✗' }}
+                                                            </div>
+                                                            <div style="flex: 1;">
+                                                                <p
+                                                                    style="font-size: 16px; font-weight: 500; color: #1e293b; margin: 0;">
+                                                                    @if ($fractions->answer_type == 'mixed')
+                                                                        {{ toMixedFraction(null, $fractions->numerator, $fractions->denominator) }}
+                                                                    @else
+                                                                        {{ toFraction($fractions->numerator, $fractions->denominator) }}
+                                                                    @endif
+                                                                </p>
+                                                                <div style="margin-top: 4px; display: flex; gap: 8px;">
+                                                                    @if ($fractions->correct == 1)
+                                                                        <span
+                                                                            style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color: white; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600;">คำตอบที่ถูก</span>
+                                                                    @endif
+                                                                    @if ($result->fraction == $fractions->id)
+                                                                        <span
+                                                                            style="background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); color: white; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600;">คำตอบของคุณ</span>
+                                                                    @endif
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 @endforeach
                                             @else
-                                                @foreach ($result->question->fractions as $fraction)
-                                                    @php
-                                                        // dd($fraction->answer_type);
-                                                    @endphp
-                                                    <li @class([
-                                                        'underline' => $result->correct != 1,
-                                                        'font-bold text-orange-500' => $result->correct == 1,
-                                                        'mt-5',
-                                                    ])>
-                                                        {{ replaceMixedFractions($result->fraction) }} (your answer)
-                                                    </li>
-                                                    <li class="font-bold text-orange-500 mt-5">
-                                                        @if ($fraction->answer_type == 'mixed')
-                                                            {{-- {{toFraction($fraction->numerator, $fraction->denominator) }} --}}
-                                                            {{ toMixedFraction(null, $fraction->numerator, $fraction->denominator) }}
-                                                        @else
-                                                            {{ toFraction($fraction->numerator, $fraction->denominator) }}
-                                                        @endif
-                                                        (correct answer)
-                                                        {{-- {{ $fraction->numerator }} / {{ $fraction->denominator }} (correct
-                                                        answer) --}}
-                                                    </li>
-                                                @endforeach
-                                            @endif
-
-                                            @if (is_null($result->fraction))
-                                                <span class="font-bold italic">Question unanswered.</span>
-                                            @endif
-                                        @else
-                                            <span class="font-bold italic">Question unanswered.</span>
-                                        @endif
-
-                                    </td>
-                                </tr>
-                                @if ($result->question->answer_explanation || $result->question->more_info_link)
-                                    <tr>
-                                        <td>Answer Explanation</td>
-                                        <td>
-                                            {{ $result->question->answer_explanation }}
-                                        </td>
-                                    </tr>
-                                    @if ($result->question->more_info_link)
-                                        <tr>
-                                            <td>
-                                                Read more:
-                                            </td>
-                                            <td>
-                                                <div class="mt-4">
-                                                    <a href="{{ $result->question->more_info_link }}"
-                                                        class="hover:underline" target="_blank">
-                                                        {{ $result->question->more_info_link }}
-                                                    </a>
+                                                <div
+                                                    style="padding: 16px; border-radius: 12px; border: 2px solid {{ $result->correct ? '#22c55e' : '#ef4444' }}; background: {{ $result->correct ? 'rgba(34, 197, 94, 0.05)' : 'rgba(239, 68, 68, 0.05)' }};">
+                                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                                        <div
+                                                            style="width: 32px; height: 32px; border-radius: 50%; background: {{ $result->correct ? 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)' : 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)' }}; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 14px;">
+                                                            {{ $result->correct ? '✓' : '✗' }}
+                                                        </div>
+                                                        <div style="flex: 1;">
+                                                            <p
+                                                                style="font-size: 16px; font-weight: 500; color: #1e293b; margin: 0;">
+                                                                {{ replaceMixedFractions($result->fraction) }}
+                                                            </p>
+                                                            <span
+                                                                style="background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); color: white; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; margin-top: 4px; display: inline-block;">คำตอบของคุณ</span>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                            </td>
-                                        </tr>
+                                                <div
+                                                    style="padding: 16px; border-radius: 12px; border: 2px solid #22c55e; background: rgba(34, 197, 94, 0.05);">
+                                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                                        <div
+                                                            style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 14px;">
+                                                            ✓
+                                                        </div>
+                                                        <div style="flex: 1;">
+                                                            <p
+                                                                style="font-size: 16px; font-weight: 500; color: #1e293b; margin: 0;">
+                                                                @if ($result->question->fractions->first()->answer_type == 'mixed')
+                                                                    {{ toMixedFraction(null, $result->question->fractions->first()->numerator, $result->question->fractions->first()->denominator) }}
+                                                                @else
+                                                                    {{ toFraction($result->question->fractions->first()->numerator, $result->question->fractions->first()->denominator) }}
+                                                                @endif
+                                                            </p>
+                                                            <span
+                                                                style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color: white; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; margin-top: 4px; display: inline-block;">คำตอบที่ถูก</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    @else
+                                        <span class="font-bold italic">Question unanswered.</span>
                                     @endif
-                                @endif
-                            </tbody>
-                        </table>
 
-                        @if (!$loop->last)
-                            <hr class="my-4 md:min-w-full">
-                        @endif
-                    @endforeach
+                                </div>
+
+                                @if ($result->question->answer_explanation || $result->question->answer_explanation_image)
+                                    <!-- Answer Explanation Section -->
+                                    <div style="margin-top: 24px; padding: 20px; background: rgba(255, 255, 255, 0.8); border-radius: 12px; border: 1px solid rgba(249, 115, 22, 0.2); backdrop-filter: blur(5px);">
+                                        <h4 style="font-size: 16px; font-weight: 600; color: #64748b; margin: 0 0 12px 0; text-transform: uppercase; letter-spacing: 0.5px;">
+                                            💡 คำอธิบายคำตอบ
+                                        </h4>
+                                        @if ($result->question->answer_explanation)
+                                            <p style="font-size: 16px; font-weight: 500; color: #1e293b; margin: 0 0 16px 0; line-height: 1.6;">
+                                                {!! nl2br(e($result->question->answer_explanation)) !!}
+                                            </p>
+                                        @endif
+                                        @if ($result->question->answer_explanation_image)
+                                            <div style="text-align: center; margin-top: 16px;">
+                                                <img src="{{ asset('img_questions/' . $result->question->answer_explanation_image) }}"
+                                                     alt="Answer Explanation Image"
+                                                     style="max-width: 30%; height: auto; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); transition: transform 0.2s ease;"
+                                                     onmouseover="this.style.transform='scale(1.02)';"
+                                                     onmouseout="this.style.transform='scale(1)';">
+                                            </div>
+                                        @endif
+                                    </div>
+                                @endif
+                            </div>
+                        @endforeach
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+    </div>
 @endsection
 @push('scripts')
+    <script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
     <script>
         // function insertFrac() {
         //     let question_text = document.querySelector('#text');
@@ -353,11 +564,26 @@
         //         question_text.value += ' MixFrac(เศษ,ส่วน) ';
         //     }
         // }
-        window.addEventListener('popstate', function(event) {
-            // Redirect to the home page
-            window.location.href =
-                '/quiz/{{ $test->quiz->slug }}'; // Change '/' to the URL of your home page if it's different
+        // ป้องกันการกด backspace
+        // Prevent back button navigation
+        window.addEventListener('beforeunload', function(event) {
+            event.preventDefault();
+            event.returnValue = '';
         });
+
+        window.addEventListener('popstate', function(event) {
+            event.preventDefault();
+            history.pushState(null, null, window.location.href);
+            return false;
+        });
+
+        // Alternative method: Replace current history entry
+        if (window.history && window.history.pushState) {
+            window.history.replaceState(null, null, window.location.href);
+            window.addEventListener('popstate', function() {
+                window.history.replaceState(null, null, window.location.href);
+            });
+        }
 
         // Push a new state to make sure the popstate event is triggered
         history.pushState(null, null, window.location.href);

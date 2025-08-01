@@ -374,9 +374,9 @@
                                                 <img src="{{ asset('img_questions/' . $question->answer_explanation_image) }}"
                                                      alt="คำอธิบายเฉลย"
                                                      style="width: 100%; height: auto; display: block; border: 2px solid white;">
-                                                <div style="position: absolute; top: 8px; right: 8px; background: rgba(0, 0, 0, 0.7); color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; backdrop-filter: blur(4px);">
+                                                {{-- <div style="position: absolute; top: 8px; right: 8px; background: rgba(0, 0, 0, 0.7); color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; backdrop-filter: blur(4px);">
                                                     <i class="fas fa-image" style="margin-right: 4px;"></i>เฉลย
-                                                </div>
+                                                </div> --}}
                                             </div>
                                         </div>
                                     @endif

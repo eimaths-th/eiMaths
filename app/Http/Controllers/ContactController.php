@@ -78,40 +78,103 @@ class ContactController extends Controller
             $firstHistory = $history->sortByDesc('date')->first();
 
             //dd($firstHistory);
+            $now = Carbon::now();
 
             if ($firstHistory) {
-                /*  $start_date = Carbon::parse($firstHistory->date);
-                $end_date = $start_date->copy()->addMonths(4); */
                 $start_date = $firstHistory->start_date;
                 $end_date = $firstHistory->end_date;
-                $startDate = $this->formatDate($start_date);
-                $endDate = $this->formatDate($end_date);
-                return $startDate . ' - ' . $endDate;
+                // $end_date = Carbon::parse($end_date)->format('Y-m-d');
+                $startDateFormat = $this->formatDate($start_date);
+                $endDateFormat = $this->formatDate($end_date);
+                $end_date = Carbon::parse($end_date);
+
+                // ตรวจสอบว่า $now มากกว่า $end_date + 3 เดือน หรือไม่
+                if ($now->greaterThan($end_date->copy()->addMonths(3))) {
+                    return '-';
+                }
+
+                return $startDateFormat . ' - ' . $endDateFormat;
             } else {
-                return '-'; // or you can return some default value if no record is found.
+                return '-';
             }
         } else {
             return '-';
         }
     }
 
+    public function checkRemaining($id)
+    {
+        // $id = 103;
+        $student = Contact::find($id);
+        $studentStartLevel = $student->level;
+        $studentStartTerm = $student->term;
+        $studentEndLevel = $student->level2;
+        $studentEndTerm = $student->term2;
+
+        $coin = 0;
+        $historyCount = 0;
+
+        if ($studentEndLevel && $studentEndTerm) {
+            for ($i = $studentStartLevel; $i <= $studentEndLevel; $i++) {
+
+                if ($i == $studentStartLevel) {
+                    $sterm = $studentStartTerm;
+                } else {
+                    $sterm = 1;
+                }
+
+                if ($i == $studentEndLevel) {
+                    $eterm = $studentEndTerm;
+                } else {
+                    $eterm = 4;
+                }
+
+                for ($j = $sterm; $j <= $eterm; $j++) {
+                    $history = Histrories::where([
+                        ['student_id', $id],
+                        ['level_id', $i],
+                        ['term', $j],
+                    ])->get();
+
+                    if ($history->count() > 0) {
+
+                        $historyCount += $history->count();
+                    }
+
+                    $coin++;
+                }
+            }
+        }
+        $scoin = $coin * 10;
+
+        $remain = $scoin - $historyCount;
+
+        $text = $remain . ' / ' . $scoin . ' เรียนไปแล้ว : ' . $historyCount . ' ครั้ง';
+
+        return $text;
+    }
+
+
     public function index(Request $request)
     {
-        // dd($request);
+        // dd($request->all());
+
         if ($request->ajax()) {
             //sleep(2);
-            //dd($request->get('approved'));
             $query = Contact::select(
                 "contacts.*",
-                "departments.name as centre_name",
-                //"start_terms.name as start_term_name",
+                "departments.name as centre_name"
             )
                 ->join("departments", "contacts.centre", "=", "departments.id")
                 ->join("levels", "contacts.level", "=", "levels.id")
                 ->join("bookuses", "contacts.bookuse", "=", "bookuses.id")
-                //->join("terms as start_terms", "contacts.start_term", "=", "start_terms.id")
                 ->join("terms as pterms", "contacts.term", "=", "pterms.id")
                 ->where('discontinued', '0');
+
+            $centre = $request->get('centre');
+            if ($centre) {
+                $query->where('contacts.centre', $centre);
+            }
 
             if (!Gate::allows('all-centre')) {
                 $query->where('centre', Auth::user()->department->id);
@@ -148,8 +211,17 @@ class ContactController extends Controller
                         return $row->level_name;
                     }
                 })
-                ->editColumn('nickname', function ($row) {
-                    return $row->nickname !== null && $row->nickname !== '' ? $row->nickname : '-';
+                ->editColumn('term', function ($row) {
+                    if (!empty($row->term2)) {
+                        return $row->term . ' - ' . $row->term2;
+                    } else {
+                        return $row->term;
+                    }
+                })
+                ->editColumn('name', function ($row) {
+                    $name = $row->name;
+                    $nickname = $row->nickname ?? '-';
+                    return $name . ' (' . $nickname . ')';
                 })
                 ->editColumn('ref', function ($row) {
                     return $row->ref !== null && $row->ref !== '' ? $row->ref : '-';
@@ -159,6 +231,9 @@ class ContactController extends Controller
                 })
                 ->addColumn('end_date', function ($row) {
                     return $this->checkEndDate($row->id);
+                })
+                ->addColumn('remaining', function ($row) {
+                    return $this->checkRemaining($row->id);
                 })
                 ->editColumn('bookuse_name', function ($row) {
                     if (!empty($row->bookuse2_name)) {
@@ -675,7 +750,7 @@ class ContactController extends Controller
         }
 
         $contact = Contact::create($input);
-        // dd($request->all(), $input);    
+        // dd($request->all(), $input);
 
         $input_order['centre'] = $request->get('centre');
         $input_order['cid'] = $contact->id;
@@ -976,6 +1051,9 @@ class ContactController extends Controller
         $contact->level2_name = $levelq2->name;
         $contact->term2_name = $termq2->name;
         $contact->bookuse2_name = $bookq2->name;
+        $contact->discontinued = 0;
+        $contact->discontinued_date = null;
+        $contact->discontinued_reason = null;
         $contact->save();
 
         $input_order_detail['order_id'] = $order->id;

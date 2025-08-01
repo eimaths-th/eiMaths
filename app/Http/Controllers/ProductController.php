@@ -90,13 +90,39 @@ class ProductController extends Controller
                 })->rawColumns(['checkbox', 'action'])->toJson();
         }
 
-
         $centre = Department::where([['status', '1']])
+            ->whereNot('id', 4)
+            ->whereNot('id', 5)
             ->orderBy("name", "asc")->get();
-
         return view('products.index')->with([
             'centre' => $centre,
             'data' => $datas
+        ]);
+    }
+
+    public function printProduct(Request $request)
+    {
+        //
+        $type = $request->type;
+        $centre = $request->centre;
+        $code_type  = $request->code_type;
+        if ($type == 'view') {
+            $view = 'products.view';
+        }
+        if ($type == 'print') {
+            $view = 'products.print';
+        }
+
+        if ($centre == 'all') {
+            $products = Product::all()->groupBy('centre');
+        } else {
+            $products = Product::where('centre', $centre)->get()->groupBy('centre');
+        }
+
+        return view($view)->with([
+            'type' => $type,
+            'products' => $products,
+            'code_type' => $code_type,
         ]);
     }
 

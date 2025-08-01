@@ -241,6 +241,7 @@ class DashboardController extends Controller
 
     public function receipt_sum_by_date(Request $request)
     {
+        // dd($request->all());    
         $dcentreValue = $request->input('dcentre');
         $reservationValue = $request->input('reservation');
 

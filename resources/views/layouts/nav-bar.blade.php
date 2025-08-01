@@ -1,4 +1,131 @@
-<nav class="bg-white border-b border-gray-100">
+<style>
+    /* Nav-bar Modern Styling */
+    .modern-nav {
+        background: linear-gradient(135deg, #ffffff 0%, #ffffff 100%);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+    .nav-logo {
+        transition: transform 0.3s ease;
+        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+    }
+
+    .nav-logo:hover {
+        transform: scale(1.05);
+    }
+
+    .nav-link {
+        position: relative;
+        color: #6d6d6d !important;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        padding: 8px 16px;
+        border-radius: 6px;
+        margin: 0 4px;
+    }
+
+    .nav-link:hover {
+        background: rgba(255, 255, 255, 0.1);
+        transform: translateY(-1px);
+        color: #6d6d6d !important;
+    }
+
+    .nav-link.active {
+        background: rgba(255, 182, 25, 0.2);
+        color: #6d6d6d !important;
+        border-bottom: 2px solid #ffb443;
+    }
+
+    .dropdown-button {
+        background: rgba(117, 117, 117, 0.1);
+        color: #6d6d6d !important;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: all 0.3s ease;
+        backdrop-filter: blur(5px);
+    }
+
+    .dropdown-button:hover {
+        background: rgba(105, 105, 105, 0.2);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .dropdown-menu {
+        background: rgba(173, 173, 173, 0.95);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        animation: slideDown 0.3s ease;
+    }
+
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .dropdown-menu a,
+    .dropdown-menu button {
+        transition: all 0.2s ease;
+        border-radius: 4px;
+        margin: 2px 4px;
+    }
+
+    .dropdown-menu a:hover,
+    .dropdown-menu button:hover {
+        background: #667eea;
+        color: white !important;
+        transform: translateX(4px);
+    }
+
+    .hamburger-btn {
+        color: white !important;
+        transition: all 0.3s ease;
+    }
+
+    .hamburger-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+        transform: rotate(90deg);
+    }
+
+    .login-link {
+        background: rgba(255, 255, 255, 0.1);
+        color: white !important;
+        padding: 8px 16px;
+        border-radius: 6px;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .login-link:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Mobile responsive improvements */
+    @media (max-width: 640px) {
+        .modern-nav {
+            padding: 0.5rem 1rem;
+        }
+
+        .nav-logo img {
+            height: 50px !important;
+            width: 100px !important;
+        }
+    }
+</style>
+
+<nav class="modern-nav border-b border-gray-100">
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
@@ -18,7 +145,7 @@
                             $route = route('home3');
                         }
                     @endphp
-                    <a href="{{ $route }}">
+                    <a href="{{ $route }}" class="nav-logo">
                         <img src="{{ asset('images/logo.png') }}" style="height: 65px; width: 130px;"
                             alt="Application Logo" />
                     </a>
@@ -28,25 +155,10 @@
             <!-- Settings Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ml-6">
                 @if (Auth::guard('student')->check() || Auth::check())
-                    @php
-                        // Helper function to generate classes based on the active route
-                        function navLinkClasses($routeName)
-                        {
-                            $active = request()->routeIs($routeName);
-                            return $active
-                                ? 'inline-flex items-center px-1 pt-1 border-b-2 border-orange-400 text-sm font-medium leading-5 text-gray-900 focus:outline-none focus:border-indigo-700 transition duration-150 ease-in-out'
-                                : 'inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out';
-                        }
-                    @endphp
-
-                    {{--
-                        <a href="{{ route('home3') }}" class="{{ navLinkClasses('home3') }}"> Home </a>
-                        <a href="{{ route('tests') }}" class="{{ navLinkClasses('tests') }}"> Tests </a>
-                    --}}
-                    <a href="{{ $route }}" class="{{ navLinkClasses('home3') }}"> Home </a>
-                    <a href="{{ route('leaderboard') }}" class="{{ navLinkClasses('leaderboard') }}"> Leaderboard </a>
+                    <a href="{{ $route }}" class="nav-link {{ request()->routeIs('home3') ? 'active' : '' }}"> Home </a>
+                    <a href="{{ route('leaderboard') }}" class="nav-link {{ request()->routeIs('leaderboard') ? 'active' : '' }}"> Leaderboard </a>
                     <a href="{{ route('myresults') }}"
-                        class="{{ navLinkClasses('myresults') }}">{{ __('My Results') }}</a>
+                        class="nav-link {{ request()->routeIs('myresults') ? 'active' : '' }}">{{ __('My Results') }}</a>
 
                     <!-- User Dropdown -->
                     <div class="relative">
@@ -101,7 +213,7 @@
                         </div>
                     </div>
                 @else
-                    <a href="{{ route('student.login') }}" class="text-gray-700 hover:text-gray-800">Log In</a>
+                    <a href="{{ route('student.login') }}" class="login-link">Log In</a>
                     {{-- <a href="{{ route('register') }}" class="ml-4 text-gray-700 hover:text-gray-800">Register</a> --}}
                 @endauth
         </div>
@@ -109,7 +221,7 @@
         <!-- Hamburger -->
         <div class="-mr-2 flex items-center sm:hidden">
             <button @click="toggleDropdown"
-                class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out">
+                class="hamburger-btn inline-flex items-center justify-center p-2 rounded-md focus:outline-none transition duration-150 ease-in-out">
                 <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                     <path class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M4 6h16M4 12h16M4 18h16" />

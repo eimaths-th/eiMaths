@@ -5,6 +5,107 @@
         .ui-datepicker-calendar {
             display: none;
         }
+
+        /* Info Box Hover Effects */
+        .info-box {
+            transition: all 0.3s ease-in-out;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e9ecef;
+        }
+
+        .info-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            border-color: #ffc107;
+        }
+
+        .info-box-icon {
+            transition: all 0.3s ease-in-out;
+        }
+
+        .info-box:hover .info-box-icon {
+            transform: scale(1.1);
+            background-color: #e0a800 !important;
+        }
+
+        .info-box-content {
+            transition: all 0.3s ease-in-out;
+        }
+
+        .info-box:hover .info-box-content {
+            padding-left: 10px;
+        }
+
+        .info-box-number {
+            transition: all 0.3s ease-in-out;
+            font-weight: bold;
+        }
+
+        .info-box:hover .info-box-number {
+            color: #ffc107;
+            font-size: 1.1em;
+        }
+
+        .info-box-text {
+            transition: all 0.3s ease-in-out;
+        }
+
+        .info-box:hover .info-box-text {
+            color: #495057;
+            font-weight: 500;
+        }
+
+        /* Link styling to prevent text decoration issues */
+        a.text-dark:hover {
+            text-decoration: none;
+        }
+
+        /* Responsive improvements */
+        @media (max-width: 768px) {
+            .info-box:hover {
+                transform: translateY(-2px);
+            }
+        }
+
+        .info-box {
+            transition: all 0.3s ease;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .info-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            border-color: rgba(249, 115, 22, 0.3);
+        }
+
+        .info-box-icon {
+            transition: all 0.3s ease;
+        }
+
+        .info-box:hover .info-box-icon {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .info-box-number {
+            transition: all 0.3s ease;
+        }
+
+        .info-box:hover .info-box-number {
+            color: #f97316 !important;
+            font-weight: bold;
+        }
+
+        .text-dark {
+            text-decoration: none;
+        }
+
+        .text-dark:hover {
+            text-decoration: none;
+        }
     </style>
 @endsection
 
@@ -74,16 +175,22 @@
         </div>
     </section>
 
+    <style>
+        /* .test:hover{
+                background-color: #f97316;
+            } */
+    </style>
 
     <section class="content">
         <div class="container-fluid">
             <div class="row">
                 <div class="col-12">
 
+
                     <div class="row">
 
                         <div class="col-md-6 col-sm-6 col-lg-6  col-xl-3 col-12">
-                            <a href="">
+                            <a href="{{ route('departments') }}" target="_blank" class="text-dark">
                                 <div class="info-box">
                                     <span class="info-box-icon bg-warning"><i class="fa-solid fa-building"></i></span>
                                     <div class="info-box-content">
@@ -95,24 +202,33 @@
                             </a>
                         </div>
                         <div class="col-md-6 col-sm-6 col-lg-6  col-xl-3 col-12">
-                            <div class="info-box">
-                                <span class="info-box-icon bg-warning"><i class="fa-solid fa-graduation-cap"></i></span>
-                                <div class="info-box-content">
-                                    <span class="info-box-text">Total Student</span>
-                                    <span class="info-box-number" id="tstudent">0</span>
-                                </div>
+                            {{-- return to contacts with centre --}}
+                            <a id="contacts-link" href="{{ route('contacts', ['centre' => Auth::user()->department->id]) }}"
+                                target="_blank" class="text-dark">
+                                <div class="info-box">
+                                    <span class="info-box-icon bg-warning"><i class="fa-solid fa-graduation-cap"></i></span>
+                                    <div class="info-box-content">
+                                        <span class="info-box-text">Total Student</span>
+                                        <span class="info-box-number" id="tstudent">0</span>
+                                    </div>
 
-                            </div>
+                                </div>
+                            </a>
                         </div>
                         <div class="col-md-6 col-sm-6 col-lg-6  col-xl-3 col-12">
-                            <div class="info-box">
-                                <span class="info-box-icon bg-warning"><i class="fa-solid fa-chalkboard-user"></i></span>
-                                <div class="info-box-content">
-                                    <span class="info-box-text">Total Teacher</span>
-                                    <span class="info-box-number" id="tteacher">0</span>
+                            {{-- return to user with role teacher --}}
+                            <a id="teacher-link"
+                                href="{{ route('users.index', ['role' => 'Teacher', 'centre' => Auth::user()->department->id]) }}"
+                                target="_blank" class="text-dark">
+                                <div class="info-box">
+                                    <span class="info-box-icon bg-warning"><i
+                                            class="fa-solid fa-chalkboard-user"></i></span>
+                                    <div class="info-box-content">
+                                        <span class="info-box-text">Total Teacher</span>
+                                        <span class="info-box-number" id="tteacher">0</span>
+                                    </div>
                                 </div>
-
-                            </div>
+                            </a>
                         </div>
                         <div class="col-md-6 col-sm-6 col-lg-6  col-xl-3 col-12">
                             <div class="info-box">
@@ -125,46 +241,64 @@
                             </div>
                         </div>
                         <div class="col-md-6 col-sm-6 col-lg-6  col-xl-3 col-12">
-                            <div class="info-box">
-                                <span class="info-box-icon bg-warning"><i
-                                        class="fa-solid fa-file-invoice-dollar"></i></span>
-                                <div class="info-box-content">
-                                    <span class="info-box-text ">Total Receipt</span>
-                                    <span class="info-box-number" id="treceipt">0</span>
-                                </div>
+                            {{-- return to receipt with centre --}}
+                            <a href="{{ route('receipts', ['centre' => Auth::user()->department->id]) }}" target="_blank"
+                                class="text-dark receipt-link">
+                                <div class="info-box">
+                                    <span class="info-box-icon bg-warning"><i
+                                            class="fa-solid fa-file-invoice-dollar"></i></span>
+                                    <div class="info-box-content">
+                                        <span class="info-box-text ">Total Receipt</span>
+                                        <span class="info-box-number" id="treceipt">0</span>
+                                    </div>
 
-                            </div>
+                                </div>
+                            </a>
                         </div>
                         <div class="col-md-6 col-sm-6 col-lg-6  col-xl-3 col-12">
-                            <div class="info-box">
-                                <span class="info-box-icon bg-warning"><i class="fa-solid fa-cash-register"></i></span>
-                                <div class="info-box-content">
-                                    <span class="info-box-text ">Payment Receipt</span>
-                                    <span class="info-box-number" id="pareceipt">0</span>
+                            {{-- return to receipt with centre --}}
+                            <a href="{{ route('receipts', ['centre' => Auth::user()->department->id]) }}" target="_blank"
+                                class="text-dark receipt-link">
+                                <div class="info-box">
+                                    <span class="info-box-icon bg-warning"><i class="fa-solid fa-cash-register"></i></span>
+                                    <div class="info-box-content">
+                                        <span class="info-box-text ">Payment Receipt</span>
+                                        <span class="info-box-number" id="pareceipt">0</span>
+                                    </div>
                                 </div>
-
-                            </div>
+                            </a>
                         </div>
                         <div class="col-md-6 col-sm-6 col-lg-6  col-xl-3 col-12">
-                            <div class="info-box">
-                                <span class="info-box-icon bg-warning"><i class="fa-solid fa-hourglass-half"></i></span>
-                                <div class="info-box-content">
-                                    <span class="info-box-text ">Pending Receipt</span>
-                                    <span class="info-box-number" id="preceipt">0</span>
-                                </div>
+                            {{-- return to receipt pending with centre --}}
 
-                            </div>
+                            <a id="receipts-pending-link"
+                                href="{{ route('receipts_pending', ['centre' => Auth::user()->department->id]) }}"
+                                target="_blank" class="text-dark">
+
+                                <div class="info-box">
+                                    <span class="info-box-icon bg-warning"><i
+                                            class="fa-solid fa-hourglass-half"></i></span>
+                                    <div class="info-box-content">
+                                        <span class="info-box-text ">Pending Receipt</span>
+                                        <span class="info-box-number" id="preceipt">0</span>
+                                    </div>
+
+                                </div>
+                            </a>
                         </div>
                         <div class="col-md-6 col-sm-6 col-lg-6  col-xl-3 col-12">
-                            <div class="info-box">
-                                <span class="info-box-icon bg-warning"><i
-                                        class="fa-solid fa-hand-holding-dollar"></i></span>
-                                <div class="info-box-content">
-                                    <span class="info-box-text ">Total Income</span>
-                                    <span class="info-box-number" id="tincome">0</span>
-                                </div>
+                            <a href="{{ route('receipts', ['centre' => Auth::user()->department->id]) }}" target="_blank"
+                                class="text-dark receipt-link">
+                                <div class="info-box">
+                                    <span class="info-box-icon bg-warning"><i
+                                            class="fa-solid fa-hand-holding-dollar"></i></span>
+                                    <div class="info-box-content">
+                                        <span class="info-box-text ">Total Income</span>
+                                        <span class="info-box-number" id="tincome">0</span>
+                                    </div>
 
-                            </div>
+                                </div>
+                            </a>
                         </div>
 
                     </div>
@@ -247,7 +381,8 @@
 
                             <div class="card card-primary" style="max-height: 485px">
                                 <div class="card-header">
-                                    <h3 class="card-title"><i class="fa-solid fa-chart-line"></i> Centre Student Status
+                                    <h3 class="card-title"><i class="fa-solid fa-chart-line"></i> Centre Student
+                                        Status
                                     </h3>
                                     <div class="card-tools">
                                         <button type="button" class="btn btn-tool" data-card-widget="maximize">

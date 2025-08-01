@@ -101,6 +101,7 @@ Route::group(['middleware' => ['auth', 'affiliate.redirect']], function () {
     Route::post('/products/destroy_all', [App\Http\Controllers\ProductController::class, 'destroy_all'])->name('products.destroy_all');
     Route::get('/products/stock', [App\Http\Controllers\ProductController::class, 'getStock'])->name('products.stock');
     Route::get('/products/des/{centre}/{type}', [App\Http\Controllers\ProductController::class, 'getDes'])->name('products.des');
+    Route::get('/products/print', [App\Http\Controllers\ProductController::class, 'printProduct'])->name('products.print');
 
     Route::get('/level/find/{type}/{level}', [App\Http\Controllers\ContactController::class, 'lfind'])->name('level.find');
     Route::get('/term/find/{type}/{level}/{term}', [App\Http\Controllers\ContactController::class, 'tfind'])->name('term.find');
