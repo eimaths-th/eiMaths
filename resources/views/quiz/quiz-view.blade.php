@@ -342,6 +342,46 @@
                                 @endif
                             @endif
 
+                            {{-- Answer Explanation Section --}}
+                            @if($question->answer_explanation || $question->answer_explanation_image)
+                                <div style="margin-top: 24px; padding: 20px; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); border-radius: 12px; border-left: 4px solid #3b82f6; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); transition: all 0.3s ease;"
+                                     onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 16px rgba(0, 0, 0, 0.1)';"
+                                     onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(0, 0, 0, 0.05)';">
+
+                                    {{-- Explanation Header --}}
+                                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+                                        <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #3b82f6, #2563eb); border-radius: 8px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(59, 130, 246, 0.3);">
+                                            <svg style="width: 18px; height: 18px; fill: white;" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+                                            </svg>
+                                        </div>
+                                        <h4 style="margin: 0; color: #1e293b; font-size: 16px; font-weight: 600;">คำอธิบายเฉลย</h4>
+                                    </div>
+
+                                    {{-- Explanation Text --}}
+                                    @if($question->answer_explanation)
+                                        <div style="background: white; padding: 16px; border-radius: 8px; margin-bottom: 16px; border: 1px solid #e2e8f0; line-height: 1.6;">
+                                            <p style="margin: 0; color: #374151; font-size: 15px; white-space: pre-wrap;">{{ $question->answer_explanation }}</p>
+                                        </div>
+                                    @endif
+
+                                    {{-- Explanation Image --}}
+                                    @if($question->answer_explanation_image)
+                                        <div style="text-align: center; margin-top: 16px;">
+                                            <div style="display: inline-block; position: relative; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; max-width: 250px;"
+                                                 onmouseover="this.style.transform='scale(1.02)'; this.style.boxShadow='0 8px 24px rgba(0, 0, 0, 0.15)';"
+                                                 onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 16px rgba(0, 0, 0, 0.1)';">
+                                                <img src="{{ asset('img_questions/' . $question->answer_explanation_image) }}"
+                                                     alt="คำอธิบายเฉลย"
+                                                     style="width: 100%; height: auto; display: block; border: 2px solid white;">
+                                                <div style="position: absolute; top: 8px; right: 8px; background: rgba(0, 0, 0, 0.7); color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; backdrop-filter: blur(4px);">
+                                                    <i class="fas fa-image" style="margin-right: 4px;"></i>เฉลย
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
+                                </div>
+                            @endif
                             {{-- Action Buttons --}}
                             <div
                                 style="margin-top: 20px; text-align: right; border-top: 1px solid #e5e7eb; padding-top: 16px; display: flex; justify-content: space-between;">
