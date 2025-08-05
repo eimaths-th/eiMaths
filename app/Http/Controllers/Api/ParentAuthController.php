@@ -91,6 +91,9 @@ class ParentAuthController extends Controller
         $img_histories = HistoryStudentImg::where('student_id', $request->student_id)
         ->whereIn('history_id', $histrories->pluck('id'))
         ->orderBy('id', 'desc')->get();
+        foreach ($students as $student) {
+            $student['centre_name'] = $student->department()->first()->name;
+        }
 
         return response()->json([
             'status' => 'success',
