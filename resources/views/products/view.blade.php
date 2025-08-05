@@ -184,7 +184,7 @@
                 height: auto !important;
                 max-height: 45mm !important;
             }
-            
+
             .barcode-grid {
                 display: grid;
                 grid-template-columns: repeat(2, 1fr);
@@ -537,7 +537,7 @@
                     @endforeach
                 @elseif($code_type == 'qrcode')
                     @php
-                        $chunks = $productGroup->chunk(9);
+                        $chunks = $productGroup->chunk(12);
                     @endphp
                     @foreach ($chunks as $pageIndex => $items)
                         <div class="qrcode-page">
@@ -545,7 +545,7 @@
                                 style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; height: 100%; align-items: center;">
                                 @foreach ($items as $index => $product)
                                     <div class="qrcode-item"
-                                        style="text-align: center; padding: 15px; border: 1px solid #ddd; border-radius: 8px;">
+                                        style="text-align: center; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
                                         <div class="qrcode-code"
                                             style="font-size: 16px; font-weight: bold; margin-bottom: 10px;">
                                             {{ $product->code }}</div>

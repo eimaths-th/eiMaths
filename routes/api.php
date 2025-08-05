@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\APIController;
+use App\Http\Controllers\Api\ParentAuthController;
 
 
 
@@ -25,6 +26,26 @@ Route::get('/blogs', [App\Http\Controllers\BlogController::class, 'api_show']);
 Route::get('/blogs/{slug}', [App\Http\Controllers\BlogController::class, 'api_show_by_slug']);
 
 //Route::middleware('cors')->post('/applogin', [APIController::class, 'login']);
+// Parent Authentication Routes
+Route::prefix('parent')->group(function () {
+    Route::post('/login', [ParentAuthController::class, 'login']);
+    Route::post('/register', [ParentAuthController::class, 'register']);
+    Route::post('/google-login', [ParentAuthController::class, 'googleLogin']);
+    Route::post('/facebook-login', [ParentAuthController::class, 'facebookLogin']);
+    Route::post('/apple-login', [ParentAuthController::class, 'appleLogin']);
+    Route::post('/password-reset', [ParentAuthController::class, 'passwordReset']);
+    Route::post('/password-reset-confirm', [ParentAuthController::class, 'passwordResetConfirm']);
+    Route::post('/get-student', [ParentAuthController::class, 'getStudent']);
+    //logout
+    Route::post('/logout', [ParentAuthController::class, 'logout']);
+
+    // Protected routes - require authentication
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::post('/logout', [ParentAuthController::class, 'logout']);
+        // Add more protected routes here as needed
+    });
+});
+
 Route::middleware('auth.apikey')->group(function () {
     Route::post('/applogin', [APIController::class, 'login']);
     Route::post('/app-google-login', [APIController::class, 'googleLogin']);

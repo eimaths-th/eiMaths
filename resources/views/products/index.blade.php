@@ -96,7 +96,7 @@
                                             <div class="form-group">
                                                 <label for="centre">Select Centre</label>
                                                 <select class="form-control" id="centre" name="centre" required>
-                                                    @role('SystemAdmin')
+                                                    @can('all-centre')
                                                         <option value="all">All Centres</option>
                                                         @foreach ($centre as $dept)
                                                             <option value="{{ $dept->id }}">{{ $dept->name }}</option>
@@ -104,7 +104,7 @@
                                                     @else
                                                         <option value="{{ Auth::user()->department->id }}" selected>
                                                             {{ Auth::user()->department->name }}</option>
-                                                    @endrole
+                                                    @endcan
                                                 </select>
                                             </div>
                                             <div class="form-group">

@@ -95,4 +95,9 @@ class Contact extends Model implements AuthenticatableContract
             ->withPivot('assigned_at', 'status')
             ->withTimestamps();
     }
+
+    public function department()
+    {
+        return $this->belongsTo(Department::class, 'centre', 'id');
+    }
 }

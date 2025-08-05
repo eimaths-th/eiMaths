@@ -552,7 +552,7 @@
                     if (reservationChanged && $('#reservation').val()) {
                         d.sdate = $('#reservation').val();
                     }
-                    
+
                 }
             },
             serverSide: true,
@@ -703,8 +703,8 @@
                 // Apply the new search based on searchType and keyword
                 if (searchType === '1') {
                     table.column(2).search(keyword).draw();
-                } else if (searchType === '2') {
-                    table.column(3).search(keyword).draw();
+                } else if (searchType === '2' || searchType === '7') {
+                    table.column(4).search(keyword).draw();
                 } else if (searchType === '3') {
                     table.column(14).search(keyword).draw();
                 } else if (searchType === '4') {

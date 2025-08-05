@@ -130,6 +130,7 @@
                                                     <option value="1">Student Code</option>
                                                     {{-- <option value="">Referal Code</option> --}}
                                                     <option value="2">Student Name</option>
+                                                    <option value="7">Student Nick Name</option>
                                                     <option value="3">Father Name</option>
                                                     <option value="4">Mother Name</option>
                                                     <option value="5">Father Mobile</option>

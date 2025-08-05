@@ -3,6 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 /**
  * @property integer $id
@@ -21,7 +24,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $created_at
  * @property string $updated_at
  */
-class Parents extends Model
+class Parents extends Authenticatable
 {
     /**
      * The "type" of the auto-incrementing ID.
@@ -33,7 +36,47 @@ class Parents extends Model
     /**
      * @var array
      */
-    protected $fillable = ['student_id', 'centre_id', 'fname', 'lname', 'telp', 'email', 'password', 'address', 'relationship', 'gender', 'emergency_contact', 'notes', 'created_at', 'updated_at'];
+    use HasApiTokens, Notifiable;
+    
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'student_id', 
+        'centre_id', 
+        'fname', 
+        'lname', 
+        'telp', 
+        'email', 
+        'password', 
+        'address', 
+        'relationship', 
+        'gender', 
+        'emergency_contact', 
+        'notes'
+    ];
+
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array
+     */
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+    ];
 
     public function students()
     {
