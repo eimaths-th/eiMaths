@@ -37,6 +37,8 @@ Route::prefix('parent')->group(function () {
     Route::post('/password-reset-confirm', [ParentAuthController::class, 'passwordResetConfirm']);
     Route::post('/get-student', [ParentAuthController::class, 'getStudent']);
     Route::post('/feedback', [ParentAuthController::class, 'feedback']);
+    Route::post('/check-student', [ParentAuthController::class, 'checkstd']);
+    Route::post('/check-user', [ParentAuthController::class, 'checkUser']);
     //logout
     Route::post('/logout', [ParentAuthController::class, 'logout']);
 

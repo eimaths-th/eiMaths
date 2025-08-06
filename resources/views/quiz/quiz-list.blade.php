@@ -7,7 +7,6 @@
         .select2-selection__rendered {
             overflow: auto !important;
             max-height: 200px;
-            /* optional, to trigger scroll */
         }
     </style>
 @endsection
