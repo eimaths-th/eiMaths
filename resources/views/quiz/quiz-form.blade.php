@@ -96,9 +96,10 @@
                             </div>
                         </div>
                     </div>
-                    <div class="mt-4">
+                    <div class="mt-4" style="overflow: auto;">
                         <label for="questions" class="form-label">Questions</label>
-                        <select id="questions" name="questions[]" class="select2 form-control" multiple>
+                        <select id="questions" name="questions[]" class="select2 form-control"
+                             multiple>
                         </select>
                         @error('questions')
                             <span class="text-red-600 text-sm mt-2">{{ $message }}</span>

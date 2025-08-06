@@ -33,8 +33,11 @@ class Feedback extends Model
      */
     protected $fillable = [
         'user_id',
+        'parent_id',
+        
         'title',
         'description',
+        'image_feedback',
         'category',
         'status',
         'priority',
@@ -54,5 +57,9 @@ class Feedback extends Model
     public function admin()
     {
         return $this->belongsTo(User::class, 'admin_resolved');
+    }
+    public function parent()
+    {
+        return $this->belongsTo(Parents::class, 'parent_id');
     }
 }

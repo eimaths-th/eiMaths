@@ -3,6 +3,13 @@
 @section('style')
     @include('users.style')
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .select2-selection__rendered {
+            overflow: auto !important;
+            max-height: 200px;
+            /* optional, to trigger scroll */
+        }
+    </style>
 @endsection
 
 @section('content')
@@ -14,7 +21,7 @@
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
-                       
+
                         <button type="button" class="btn btn-success " id="AssignButton">
                             <i class="fas fa-user"></i> Assign Quiz </button>&nbsp;
                         <button type="button" class="btn btn-success" id="CreateButton">
@@ -84,7 +91,7 @@
     </section>
 
     {{-- @include('question.question-form', ['editing' => false, 'question' => null, 'options' => []]) --}}
-    @include('quiz.quiz-form', [ 'editing' => false,'quiz' => null, 'options' => []])
+    @include('quiz.quiz-form', ['editing' => false, 'quiz' => null, 'options' => []])
     @include('quiz.quiz-assign')
 
     {{-- @include('question.edit') --}}

@@ -9,6 +9,9 @@ use App\Models\Question;
 use App\Models\Quiz;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use \Illuminate\Support\Str;
+
+
 
 class QuizzesController extends Controller
 {
@@ -49,12 +52,12 @@ class QuizzesController extends Controller
                     $html .= '<button type="button" class="btn btn-sm btn-danger delete-button" style="margin-left: 5px;" data-id="' . $row->id . '"><i class="fa fa-trash"></i> Delete</button>';
                     return $html;
                 })
-                ->filterColumn('questions_count', function($query, $keyword) {
+                ->filterColumn('questions_count', function ($query, $keyword) {
                     // Remove questions_count from search since it's a derived column
                     // The search will still work on other columns
                     return $query;
                 })
-                ->orderColumn('questions_count', function($query, $order) {
+                ->orderColumn('questions_count', function ($query, $order) {
                     // Properly order by the questions count
                     $query->orderByRaw('(SELECT COUNT(*) FROM question_quiz WHERE question_quiz.quiz_id = quizzes.id) ' . $order);
                 })
@@ -159,6 +162,26 @@ class QuizzesController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
+    // public function edit(string $id)
+    // {
+    //     $quiz = Quiz::findOrFail($id);
+    //     $questions = $quiz->questions;
+
+    //     $questions_all = Question::all();
+    //     $html_questions_select = '';
+
+    //     foreach ($questions_all as $question) {
+    //         $select_question = $questions->contains('id', $question->id) ? 'selected' : '';
+    //         $html_questions_select .= '<option value="' . $question->id . '" ' . $select_question . '>' . $question->text . '</option>';
+    //     }
+
+    //     return response()->json([
+    //         'quiz' => $quiz,
+    //         'questions' => $questions,
+    //         'html_questions_select' => $html_questions_select
+    //     ]);
+    // }
+
     public function edit(string $id)
     {
         $quiz = Quiz::findOrFail($id);
@@ -169,7 +192,8 @@ class QuizzesController extends Controller
 
         foreach ($questions_all as $question) {
             $select_question = $questions->contains('id', $question->id) ? 'selected' : '';
-            $html_questions_select .= '<option value="' . $question->id . '" ' . $select_question . '>' . $question->text . '</option>';
+            $truncated_text = Str::limit($question->text, 200, '...'); // Truncate to 50 chars
+            $html_questions_select .= '<option value="' . $question->id . '" ' . $select_question . '> [ ' . $question->code . ' ]' . $truncated_text . '</option>';
         }
 
         return response()->json([

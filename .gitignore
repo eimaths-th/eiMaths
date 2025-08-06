@@ -7,11 +7,12 @@
 /public/form_images
 /public/fonts
 /public/img_questions
-/public/images_options/
+/public/feedback_images/*
+/public/images_options
 /public/img/payment_slips
 /public/img/promotion
 # /public/img/qr_code
-# /public/img/*
+/public/img/*
 /public/fonts/*
 /public/stamps
 /public/storage

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Contact;
+use App\Models\Feedback;
 use App\Models\HistoryStudentImg;
 use App\Models\Histrories;
 use App\Models\Parents;
@@ -13,6 +14,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Http\HttpResponseException;
 use Illuminate\Support\Facades\Log;
+use \Illuminate\Support\Str;
 
 class ParentAuthController extends Controller
 {
@@ -89,8 +91,8 @@ class ParentAuthController extends Controller
 
         $histrories = Histrories::where('student_id', $request->student_id)->orderBy('id', 'desc')->get();
         $img_histories = HistoryStudentImg::where('student_id', $request->student_id)
-        ->whereIn('history_id', $histrories->pluck('id'))
-        ->orderBy('id', 'desc')->get();
+            ->whereIn('history_id', $histrories->pluck('id'))
+            ->orderBy('id', 'desc')->get();
         foreach ($students as $student) {
             $student['centre_name'] = $student->department()->first()->name;
         }
@@ -129,53 +131,6 @@ class ParentAuthController extends Controller
             'message' => 'Successfully logged out',
         ]);
     }
-
-    // public function passwordReset(Request $request)
-    // {
-
-    //     try {
-    //         $this->validate($request, [
-    //             'old_password' => 'required|current_password',
-    //             'password' => 'required',
-    //             'password_confirmation' => 'required|same:password',
-    //         ],
-    //         [
-    //             'old_password.required' => 'Old password is required',
-    //             'old_password.current_password' => 'Old password is incorrect',
-    //             'password.required' => 'New password is required',
-    //             'password_confirmation.required' => 'Confirm password is required',
-    //             'password_confirmation.same' => 'Confirm password must match new password',
-    //         ]);
-
-    //     } catch (\Illuminate\Validation\ValidationException $e) {
-    //         throw new \Illuminate\Validation\ValidationException(
-    //             response()->json(['errors' => $e->errors()], 422)
-    //         );
-    //     }
-    //     $oldPassword = $request->input('old_password');
-    //     $newPassword = $request->input('password');
-
-    //     $user = Parents::find($request->input('parent_id'));
-
-    //     if (!$user) {
-    //         return response()->json(['error' => true, 'message' => 'User not found']);
-    //     }
-
-    //     if (!Hash::check($oldPassword, $user->password)) {
-    //         return response()->json(['error' => true, 'message' => 'Old password is incorrect']);
-    //     }
-
-    //     $user->password = Hash::make($newPassword);
-    //     $user->save();
-
-    //     return response()->json([
-    //         'success' => true,
-    //         'message' => 'Password updated successfully',
-    //         'msg' => 'Updated successfully',
-    //         'title' => 'Password'
-    //     ]);
-    // }
-
 
     public function passwordReset(Request $request)
     {
@@ -218,6 +173,70 @@ class ParentAuthController extends Controller
                 'message' => 'Password updated successfully',
                 'msg' => 'Updated successfully',
                 'title' => 'Password'
+            ]);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            Log::error('Password reset error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while updating the password'
+            ], 500);
+        }
+    }
+    public function feedback(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'parent_id' => 'required|exists:parents,id',
+                'title' => 'required',
+                'description' => 'required',
+                'image_feedback' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:51200', // 5MB
+            ], [
+                'parent_id.required' => 'Parent ID is required',
+                'parent_id.exists' => 'Parent not found',
+                'title.required' => 'Pls. Enter Title',
+                'description.required' => 'Pls. Enter Description',
+                'image_feedback.image' => 'The file must be an image',
+                'image_feedback.mimes' => 'The image must be a file of type: jpeg,png,jpg,gif,svg',
+                'image_feedback.max' => 'The image may not be greater than 5MB',
+            ]);
+
+            $user = Parents::find($validated['parent_id']);
+
+            // Debug information (will be removed later)
+            Log::info('Feedback Info:', [
+                'parent_id' => $user->id,
+                'title' => $validated['title'],
+                'description' => $validated['description']
+            ]);
+
+            if ($request->hasFile('image_feedback')) {
+                $image = $request->file('image_feedback');
+                $randomString = Str::random(10); // Use Laravel's Str helper
+                $imageName = time() . '_' . $randomString . '.' . $image->getClientOriginalExtension();
+                $image->move(public_path('feedback_images'), $imageName);
+                $validated['image_feedback'] = $imageName;
+            } else {
+                $validated['image_feedback'] = null; // Set to null if no image is uploaded
+            }
+
+            $feedback = Feedback::create([
+                'parent_id' => $user->id,
+                'title' => $validated['title'],
+                'description' => $validated['description'],
+                'image_feedback' => $validated['image_feedback'],
+
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Feedback Send successfully',
+                'msg' => 'Send successfully',
+                'title' => 'Feedback'
             ]);
         } catch (ValidationException $e) {
             return response()->json([

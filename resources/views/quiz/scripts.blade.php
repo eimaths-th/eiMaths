@@ -2,7 +2,8 @@
     $(document).ready(function() {
         $('.select2').select2({
             placeholder: "Select Questions",
-            allowClear: true
+            allowClear: true,
+            overflow: 'auto',
         });
         $('.select-std').select2({
             placeholder: "Select Student",
