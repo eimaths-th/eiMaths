@@ -15,6 +15,8 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\Http\HttpResponseException;
 use Illuminate\Support\Facades\Log;
 use \Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\RegistrationConfirmation;
 
 class ParentAuthController extends Controller
 {
@@ -476,6 +478,56 @@ class ParentAuthController extends Controller
                 'notes' => '-',
             ]);
             return response()->json(['success' => true, 'message' => 'successfully', 'parent_data' => $parent_data, 'password_text' => $password_text]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            Log::error('ParentAuthController@checkstd - Error: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while processing your request',
+                'errors' => config('app.debug') ? $e->getMessage() : null
+            ], 500);
+        }
+    }
+
+
+    public function senMailParent(Request $request)
+    {
+        //
+
+
+        try {
+
+            $parentData = $request->input('parentData');
+            $passwordText = $request->input('passwordText');
+            $parent_data = Parents::find($parentData['id']);
+
+            $parent_email = $parentData['email'];
+
+            if ($parent_data && $parent_email) {
+
+                Mail::to($parent_email)->send(new RegistrationConfirmation($parent_data, $passwordText));
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'successfully',
+                    'icon' => 'success',
+                    'title' => 'Successfully sent to Email.',
+                ]);
+            } else {
+
+                return response()->json([
+                    'error' => true,
+                    'message' => 'Please contact the call center.',
+                    'icon' => 'error',
+                    'title' => 'Found some errors !',
+                ]);
+            }
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
                 'success' => false,

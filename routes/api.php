@@ -39,6 +39,7 @@ Route::prefix('parent')->group(function () {
     Route::post('/feedback', [ParentAuthController::class, 'feedback']);
     Route::post('/check-student', [ParentAuthController::class, 'checkstd']);
     Route::post('/check-user', [ParentAuthController::class, 'checkUser']);
+    Route::post('/senMailParent', [ParentAuthController::class, 'senMailParent']);
     //logout
     Route::post('/logout', [ParentAuthController::class, 'logout']);
 
