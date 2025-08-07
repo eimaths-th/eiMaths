@@ -140,7 +140,7 @@ class ParentAuthController extends Controller
             $validated = $request->validate([
                 'parent_id' => 'required|exists:parents,id',
                 'old_password' => 'required',
-                'password' => 'required|confirmed|different:old_password',
+                'password' => 'required|confirmed|different:old_password|min:8|max:16',
             ], [
                 'parent_id.required' => 'Parent ID is required',
                 'parent_id.exists' => 'Parent not found',
@@ -148,6 +148,8 @@ class ParentAuthController extends Controller
                 'password.required' => 'New password is required',
                 'password.confirmed' => 'Password confirmation does not match',
                 'password.different' => 'New password must be different from old password',
+                'password.min' => 'New password must be at least 8 characters',
+                'password.max' => 'New password must not exceed 16 characters',
             ]);
 
             $user = Parents::find($validated['parent_id']);
