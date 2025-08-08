@@ -277,11 +277,13 @@
             $('#EditPosition').empty();
 
             id = $(this).data('id');
+            url = "{{ route('users.edit', $user->id) }}";
+            // console.log(url);
             $.ajax({
-                url: "users/edit/" + id,
+                url: url,
                 method: 'GET',
                 success: function(res) {
-                    console.log(res)
+                    // console.log(res)
                     if (res.data.disable == 1) {
                         $('#ecustomCheckbox1').prop('checked', true);
                     } else {
@@ -316,7 +318,7 @@
             }
 
             $.ajax({
-                url: "users/save/" + id,
+                url: "{{ route('users.save', $user->id) }}",
                 method: 'PUT',
                 data: {
                     name: $('#editName').val(),
