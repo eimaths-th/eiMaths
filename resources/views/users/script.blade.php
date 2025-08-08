@@ -275,7 +275,7 @@
             $('#EditPosition').empty();
 
             id = $(this).data('id');
-            url = "{{ route('users.edit', :id) }}";
+            url = "{{ route('users.edit', ':id') }}";
             url = url.replace(':id', id);
             console.log(url);
             $.ajax({
@@ -315,7 +315,7 @@
             } else {
                 esstatus = 0;
             }
-            url = "{{ route('users.save', :id) }}";
+            url = "{{ route('users.save', ':id') }}";
             url = url.replace(':id', id);
 
             $.ajax({
