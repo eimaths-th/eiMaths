@@ -46,6 +46,12 @@ class HomeController extends Controller
             'centre' => $centre,
         ]);
     }
+
+    public function welcome()
+    {
+        return view('home.welcome');
+    }
+
     public function blank()
     {
         return view('home.blank');

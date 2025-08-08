@@ -194,6 +194,7 @@ Route::group(['middleware' => ['auth', 'affiliate.redirect']], function () {
     Route::get('/home', [App\Http\Controllers\ContactController::class, 'index'])->name('home'); */
     // Route::get('/', [HomeController::class, 'index']);
     Route::get('/', [HomeController::class, 'index']);
+    Route::get('/welcome', [HomeController::class, 'welcome']);
 
     // Route::get('/', function () {
     //     $user = Auth::user();
@@ -202,7 +203,6 @@ Route::group(['middleware' => ['auth', 'affiliate.redirect']], function () {
     //     if ($user && $user->hasRole('Affiliate_user')) {
     //         return redirect()->route('my_affiliate.index');
     //     }
-
     //     return redirect()->route('home.index'); // Adjust this as needed
     // });
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

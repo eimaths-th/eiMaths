@@ -208,8 +208,6 @@
             $('.form').trigger('reset');
             $('#CreateModal').modal('show');
         });
-
-
         // Create product Ajax request.
         $('#SubmitCreateForm').click(function(e) {
             e.preventDefault();
@@ -277,8 +275,9 @@
             $('#EditPosition').empty();
 
             id = $(this).data('id');
-            url = "{{ route('users.edit', $user->id) }}";
-            // console.log(url);
+            url = "{{ route('users.edit', :id) }}";
+            url = url.replace(':id', id);
+            console.log(url);
             $.ajax({
                 url: url,
                 method: 'GET',
@@ -316,9 +315,11 @@
             } else {
                 esstatus = 0;
             }
+            url = "{{ route('users.save', :id) }}";
+            url = url.replace(':id', id);
 
             $.ajax({
-                url: "{{ route('users.save', $user->id) }}",
+                url: url,
                 method: 'PUT',
                 data: {
                     name: $('#editName').val(),
@@ -395,7 +396,8 @@
                     }
                 }
             }); //end ajax
-        })
+        });
+
         $(document).on('click', '.btn-delete-affiliate-user', function() {
             if (!confirm("Confirm Delete Data ?")) return;
 
@@ -430,8 +432,7 @@
                     }
                 }
             }); //end ajax
-        })
-
+        });
 
     });
 </script>
