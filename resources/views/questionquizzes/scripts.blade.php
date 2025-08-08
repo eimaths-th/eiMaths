@@ -591,6 +591,7 @@
                     <div class="mb-3">
                         <label for="answer_explanation_image_${FormIndex}" class="form-label">Answer Explanation Image</label>
                         <input type="file" id="answer_explanation_image_${FormIndex}" class="form-control" name="answer_explanation_image_${FormIndex}" accept="image/*" onchange="showAnswerExplanationImgDynamic(this, ${FormIndex})">
+                        
                         <div id="answer_explanation_img_preview_${FormIndex}" class="mt-2" style="display: none;">
                             <img id="answer_explanation_img_thumbnail_${FormIndex}" src="" alt="Answer Explanation Image" style="max-width: 200px; max-height: 200px; border: 1px solid #ddd; border-radius: 4px; padding: 5px;">
                             <br>
