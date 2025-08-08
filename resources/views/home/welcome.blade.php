@@ -20,7 +20,7 @@
         }
 
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #ffffff 0%, #ffd7a0 100%);
             min-height: 100vh;
             margin: 0;
             padding: 0;
@@ -45,7 +45,7 @@
         }
 
         .header-section {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            background: linear-gradient(135deg, #ff8a50 0%, #ff6b35 100%);
             color: white;
             padding: 40px;
             border-radius: 20px 20px 0 0;
@@ -96,11 +96,11 @@
         }
 
         .affiliate-icon {
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            background: linear-gradient(135deg, #ff8a50 0%, #ff6b35 100%);
         }
 
         .blog-icon {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #ff9a56 0%, #ff7b42 100%);
         }
 
         .service-title {
@@ -150,24 +150,24 @@
         }
 
         .btn-affiliate {
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            background: linear-gradient(135deg, #ff8a50 0%, #ff6b35 100%);
             color: white;
         }
 
         .btn-affiliate:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(17, 153, 142, 0.3);
+            box-shadow: 0 10px 20px rgba(255, 138, 80, 0.3);
             color: white;
         }
 
         .btn-blog {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #ff9a56 0%, #ff7b42 100%);
             color: white;
         }
 
         .btn-blog:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 10px 20px rgba(255, 154, 86, 0.3);
             color: white;
         }
 
@@ -179,8 +179,8 @@
 
         .btn-outline:hover {
             background: #f8f9fa;
-            border-color: #007bff;
-            color: #007bff;
+            border-color: #ff8a50;
+            color: #ff8a50;
         }
 
         .stats-section {
@@ -208,10 +208,11 @@
         }
 
         .footer-section {
+            background: linear-gradient(135deg, #ff8a50 0%, #ff6b35 100%);
+            color: white;
             text-align: center;
             padding: 20px;
-            color: #666;
-            border-top: 1px solid #eee;
+            border-radius: 0 0 20px 20px;
         }
 
         @media (max-width: 768px) {
