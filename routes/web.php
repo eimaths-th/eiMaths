@@ -22,13 +22,8 @@ use App\Services\FileUploadService;
 use Illuminate\Http\Request;
 
 
-/* Route::get('/', function () {
-    return view('home');
-}); */
 
-//Auth::routes();
-
-Route::group(['middleware' => ['auth', 'affiliate.redirect']], function () {
+Route::group(['middleware' => ['auth']], function () {
     //Route::get('/roles', [RoleController::class, 'index'])->name('roles.index');
     //Route::get('/roles/store', [RoleController::class, 'store'])->name('roles.store');
     Route::get('/roles/edit/{id}', [RoleController::class, 'edit'])->name('roles.edit2');
@@ -165,8 +160,6 @@ Route::group(['middleware' => ['auth', 'affiliate.redirect']], function () {
     Route::post('/promotion-images/update-status2', [PromotionImageController::class, 'updateStatus2'])->name('promotion-images.updateStatus2');
     Route::post('/promotion-images/disable-all', [PromotionImageController::class, 'disableAll'])->name('promotion-images.disableAll');
 
-
-
     //parent route
     Route::resource('parent', ParentController::class);
     Route::delete('/parent/{id}', [App\Http\Controllers\ParentController::class, 'destroy'])->name('parents.destroys');
@@ -193,8 +186,17 @@ Route::group(['middleware' => ['auth', 'affiliate.redirect']], function () {
     /* Route::get('/', [App\Http\Controllers\ContactController::class, 'index']);
     Route::get('/home', [App\Http\Controllers\ContactController::class, 'index'])->name('home'); */
     // Route::get('/', [HomeController::class, 'index']);
-    Route::get('/', [HomeController::class, 'index']);
-    Route::get('/welcome', [HomeController::class, 'welcome']);
+
+    Route::get('/', function () {
+        $user = Auth::user();
+        if ($user && $user->hasRole('Affiliate-user') || $user->hasRole('User')) {
+            return redirect()->route('welcome');
+        }
+        return redirect()->route('home');
+
+    });
+
+    Route::get('/welcome', [HomeController::class, 'welcome'])->name('welcome');
 
     // Route::get('/', function () {
     //     $user = Auth::user();

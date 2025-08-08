@@ -352,11 +352,6 @@
                             timeOut: 5000
                         });
                         $('#Listview').DataTable().ajax.reload();
-                        //setTimeout(function() {
-                        //$('.alert-success').hide();
-
-                        //}, 10000);
-
                     }
                 }
             });

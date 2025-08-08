@@ -19,7 +19,7 @@ class RedirectIfAffiliateUser
         $user = Auth::user();
         // dd($user);
         if ($user && $user->hasRole('Affiliate-user')) {
-            return redirect()->route('my_affiliate.index');
+            return redirect()->route('welcome');
         }
 
         return $next($request);

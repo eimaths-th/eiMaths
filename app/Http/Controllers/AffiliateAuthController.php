@@ -88,7 +88,7 @@ class AffiliateAuthController extends Controller
         //
         $page = $this->page;
         $custom_field = $this->custom_field;
-        
+
         return view('affiliate.auth.registration', compact('page', 'custom_field'));
     }
     public function generateUrl($dataGenerate)
@@ -117,7 +117,7 @@ class AffiliateAuthController extends Controller
             'position_id' => 13,
             'password' => bcrypt($validated['password']),
         ]);
-        
+
 
         $user->assignRole('Affiliate-user');
 
@@ -169,6 +169,9 @@ class AffiliateAuthController extends Controller
         //     }
         // }
         $page = $this->page;
+        if (Auth::check()) {
+            return redirect()->route('welcome');
+        }
         return view('affiliate.auth.login', compact('page'));
     }
     public function index()
@@ -207,7 +210,7 @@ class AffiliateAuthController extends Controller
         Auth::logout();
 
         $request->session()->invalidate();
-        
+
         $request->session()->regenerateToken();
 
         return redirect()->route('affiliate.login')->with('success', 'You have successfully logged out.');
