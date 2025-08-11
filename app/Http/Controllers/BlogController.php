@@ -33,10 +33,10 @@ class BlogController extends Controller
      */
     public function index()
     {
-        if (auth()->user()->hasRole('admin')) {
-            $blogs = Blog::with('user')->get();
-        } else {
+        if (auth()->user()->hasRole('User')) {
             $blogs = Blog::where('user_id', auth()->id())->with('user')->get();
+        } else {
+            $blogs = Blog::with('user')->get();
         }
         return view('blogs.index', compact('blogs'));
     }
