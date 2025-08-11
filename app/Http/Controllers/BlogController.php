@@ -113,12 +113,13 @@ class BlogController extends Controller
      */
     public function api_show(Blog $blog)
     {
-        $blog = Blog::all();
-        foreach ($blog as $b) {
+        $blogs = Blog::with('user')->get();
+        foreach ($blogs as $b) {
             $b->makeHidden('id');
             $b->thumbnail = url('storage/' . $b->thumbnail);
+            $b->pen_name = $b->pen_name ?: $b->user->name;
         }
-        return response()->json($blog);
+        return response()->json($blogs);
     }
 
     /**
@@ -126,15 +127,13 @@ class BlogController extends Controller
      */
     public function api_show_by_slug(string $slug_param)
     {
-        $blog = Blog::where('slug', $slug_param)->first();
-
+        $blog = Blog::with('user')->where('slug', $slug_param)->first();
         if (!$blog) {
             return response()->json(['message' => 'Blog not found'], 404);
         }
-
         $blog->makeHidden('id');
         $blog->thumbnail = url('storage/' . $blog->thumbnail);
-
+        $blog->pen_name = $blog->pen_name ?: $blog->user->name;
         return response()->json($blog);
     }
 
