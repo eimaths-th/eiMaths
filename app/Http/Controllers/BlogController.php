@@ -111,17 +111,37 @@ class BlogController extends Controller
     /**
      * Display the specified resource for API.
      */
-    public function api_show(Blog $blog)
+    public function api_show()
     {
         $blogs = Blog::with('user')->get();
         foreach ($blogs as $b) {
-            $b->makeHidden('id');
-            $b->thumbnail = url('storage/' . $b->thumbnail);
-            $b->pen_name = $b->pen_name ?: $b->user->name;
+            $b->makeHidden(['id','user_id']);
+            if ($b->thumbnail) {
+                $b->thumbnail = url('storage/' . $b->thumbnail);
+            } else {
+                $b->thumbnail = null;
+            }
+            $b->pen_name = $b->pen_name ?: ($b->user ? $b->user->name : 'ไม่ระบุ');
+            if ($b->user) {
+                $b->user->makeHidden([
+                    'id',
+                    'affiliate_request',
+                    'language_code',
+                    'email',
+                    'phone',
+                    'referral',
+                    'email_verified_at',
+                    'disable',
+                    'created_at',
+                    'updated_at',
+                    'department_id',
+                    'position_id'
+                ]);
+            }
         }
         return response()->json($blogs);
     }
-
+    
     /**
      * Display the specified blog by slug for API.
      */
@@ -131,9 +151,25 @@ class BlogController extends Controller
         if (!$blog) {
             return response()->json(['message' => 'Blog not found'], 404);
         }
-        $blog->makeHidden('id');
+        $blog->makeHidden(['id','user_id']);
         $blog->thumbnail = url('storage/' . $blog->thumbnail);
         $blog->pen_name = $blog->pen_name ?: $blog->user->name;
+        if ($blog->user) {
+            $blog->user->makeHidden([
+                'id',
+                'affiliate_request',
+                'language_code',
+                'email',
+                'phone',
+                'referral',
+                'email_verified_at',
+                'disable',
+                'created_at',
+                'updated_at',
+                'department_id',
+                'position_id'
+            ]);
+        }
         return response()->json($blog);
     }
 
