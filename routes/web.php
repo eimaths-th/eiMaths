@@ -17,6 +17,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\TeachingPeriodController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\BlogController;
+use App\Http\Controllers\ImageUploadController;
 
 use App\Services\FileUploadService;
 use Illuminate\Http\Request;
@@ -215,6 +216,9 @@ Route::group(['middleware' => ['auth']], function () {
 
     // Blogs
     Route::resource('blogs', BlogController::class);
+
+    // Image Upload
+    Route::post('/upload/image', [ImageUploadController::class, 'upload'])->name('upload.image');
 });
 
 Route::get('/teacher', function () {

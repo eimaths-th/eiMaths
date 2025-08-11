@@ -56,6 +56,8 @@
                                         <tr>
                                             <th>Thumbnail</th>
                                             <th>Title</th>
+                                            <th>Author</th>
+                                            <th>Pen Name</th>
                                             <th>Published</th>
                                             <th>Actions</th>
                                         </tr>
@@ -65,6 +67,8 @@
                                             <tr>
                                                 <td><img src="{{ asset('storage/' . $blog->thumbnail) }}" alt="Thumbnail" width="100px" style="aspect-ratio: 16/9; object-fit: cover; border-radius: 12px;"></td>
                                                 <td>{{ $blog->title }}</td>
+                                                <td>{{ $blog->user->name ?? 'Unknown' }}</td>
+                                                <td>{{ $blog->pen_name ?? 'N/A' }}</td>
                                                 <td>{{ $blog->is_published ? 'Yes' : 'No' }}</td>
                                                 <td>
                                                     <a href="{{ route('blogs.show', $blog) }}" class="btn btn-info btn-sm">View</a>

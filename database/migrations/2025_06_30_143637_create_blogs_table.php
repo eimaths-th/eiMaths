@@ -19,8 +19,10 @@ return new class extends Migration
             $table->longText('content');
             $table->string('meta_description')->nullable();
             $table->string('meta_keywords')->nullable();
+            $table->string('pen_name')->nullable();
             $table->timestamp('published_at')->nullable();
             $table->boolean('is_published')->default(false);
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }
