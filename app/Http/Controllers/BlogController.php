@@ -116,16 +116,25 @@ class BlogController extends Controller
     public function api_show()
     {
         $blogs = Blog::with('user')->where('is_published', true)->get();
-        foreach ($blogs as $b) {
-            $b->makeHidden(['id','user_id']);
-            if ($b->thumbnail) {
-                $b->thumbnail = url('storage/' . $b->thumbnail);
+        foreach ($blogs as $blog) {
+            $blog->makeHidden(['id','user_id']);
+            if ($blog->thumbnail) {
+                $blog->thumbnail = url('storage/' . $blog->thumbnail);
             } else {
-                $b->thumbnail = null;
+                $blog->thumbnail = null;
             }
-            $b->pen_name = $b->pen_name ?: ($b->user ? $b->user->name : 'ไม่ระบุ');
-            if ($b->user) {
-                $b->user->makeHidden([
+            if ($blog->meta_keywords) {
+                $keywords = str_replace('#', '', $blog->meta_keywords);
+                $keywords = preg_replace('/\s+,\s+/', ',', $keywords);
+                $keywords = preg_replace('/\s+/', ',', $keywords);
+                $keywords = preg_replace('/,,+/', ',', $keywords);
+                $blog->meta_keywords = $keywords;
+            } else {
+                $blog->meta_keywords = null;
+            }
+            $blog->pen_name = $blog->pen_name ?: ($blog->user ? $blog->user->name : 'ไม่ระบุ');
+            if ($blog->user) {
+                $blog->user->makeHidden([
                     'id',
                     'affiliate_request',
                     'language_code',
@@ -154,7 +163,20 @@ class BlogController extends Controller
             return response()->json(['message' => 'Blog not found'], 404);
         }
         $blog->makeHidden(['id','user_id']);
-        $blog->thumbnail = url('storage/' . $blog->thumbnail);
+        if ($blog->thumbnail) {
+            $blog->thumbnail = url('storage/' . $blog->thumbnail);
+        } else {
+            $blog->thumbnail = null;
+        }
+        if ($blog->meta_keywords) {
+            $keywords = str_replace('#', '', $blog->meta_keywords);
+            $keywords = preg_replace('/\s+,\s+/', ',', $keywords);
+            $keywords = preg_replace('/\s+/', ',', $keywords);
+            $keywords = preg_replace('/,,+/', ',', $keywords);
+            $blog->meta_keywords = $keywords;
+        } else {
+            $blog->meta_keywords = null;
+        }
         $blog->pen_name = $blog->pen_name ?: ($blog->user ? $blog->user->name : 'ไม่ระบุ');
         if ($blog->user) {
             $blog->user->makeHidden([
