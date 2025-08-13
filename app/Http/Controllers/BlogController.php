@@ -155,7 +155,7 @@ class BlogController extends Controller
         }
         $blog->makeHidden(['id','user_id']);
         $blog->thumbnail = url('storage/' . $blog->thumbnail);
-        $blog->pen_name = $blog->pen_name ?: $blog->user->name;
+        $blog->pen_name = $blog->pen_name ?: ($blog->user ? $blog->user->name : 'ไม่ระบุ');
         if ($blog->user) {
             $blog->user->makeHidden([
                 'id',
