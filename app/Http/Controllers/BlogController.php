@@ -128,6 +128,10 @@ class BlogController extends Controller
                 $keywords = preg_replace('/\s+,\s+/', ',', $keywords);
                 $keywords = preg_replace('/\s+/', ',', $keywords);
                 $keywords = preg_replace('/,,+/', ',', $keywords);
+                $keyword_array = explode(',', $keywords);
+                $keyword_array = array_filter($keyword_array);
+                $keyword_array = array_unique($keyword_array);
+                $keywords = implode(',', $keyword_array);
                 $blog->meta_keywords = $keywords;
             } else {
                 $blog->meta_keywords = null;
@@ -173,6 +177,10 @@ class BlogController extends Controller
             $keywords = preg_replace('/\s+,\s+/', ',', $keywords);
             $keywords = preg_replace('/\s+/', ',', $keywords);
             $keywords = preg_replace('/,,+/', ',', $keywords);
+            $keyword_array = explode(',', $keywords);
+            $keyword_array = array_filter($keyword_array);
+            $keyword_array = array_unique($keyword_array);
+            $keywords = implode(',', $keyword_array);
             $blog->meta_keywords = $keywords;
         } else {
             $blog->meta_keywords = null;
