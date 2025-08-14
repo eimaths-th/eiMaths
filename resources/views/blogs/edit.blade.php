@@ -10,7 +10,7 @@
             });
         </script>
     @endif
-    <form action="{{ route('blogs.update', $blog) }}" method="POST" enctype="multipart/form-data">
+    <form id="blog-form" action="{{ route('blogs.update', $blog) }}" method="POST" enctype="multipart/form-data">
         @csrf
         @method('PUT')
         <div class="form-group">
@@ -99,8 +99,9 @@
         const pen_name_input = document.getElementById('pen_name');
         if (pen_name_input && !pen_name_input.value) {
             const pen_name_from_cookie = GetCookie('blog_pen_name');
-            if (pen_name_from_cookie) {
-                pen_name_input.value = pen_name_from_cookie;
+            const decoded_value = decodeURIComponent(pen_name_from_cookie);
+            if (decoded_value) {
+                pen_name_input.value = decoded_value;
             }
         }
 
@@ -273,16 +274,42 @@
             }
         });
 
-        const blog_form = document.querySelector('form');
+        // บันทึก pen_name ใน cookie เมื่อส่งฟอร์ม
+        const blog_form = document.querySelector('#blog-form'); // ระบุ ID ของฟอร์มให้ชัดเจน
+        
         if (blog_form) {
-            blog_form.addEventListener('submit', function() {
+            console.log('Found blog form:', blog_form); // เพิ่ม debug log
+            
+            blog_form.addEventListener('submit', function(event) {
+                console.log('Form submitted'); // เพิ่ม debug log
+                
                 const pen_name_input = document.getElementById('pen_name');
                 if (pen_name_input && pen_name_input.value) {
+                    console.log('Saving pen_name to cookie:', pen_name_input.value); // เพิ่ม debug log
+                    
                     const expiry_date = new Date();
-                    expiry_date.setTime(expiry_date.getTime() + (30 * 24 * 60 * 60 * 1000));
+                    expiry_date.setTime(expiry_date.getTime() + (3 * 365 * 24 * 60 * 60 * 1000)); // 3 ปี
                     document.cookie = `blog_pen_name=${encodeURIComponent(pen_name_input.value)}; expires=${expiry_date.toUTCString()}; path=/`;
+                    
+                    // ทดสอบว่าบันทึก cookie สำเร็จ
+                    console.log('Cookie set:', document.cookie);
                 }
             });
+            
+            // เพิ่มการบันทึกทันทีเมื่อพิมพ์เสร็จ
+            const pen_name_input = document.getElementById('pen_name');
+            if (pen_name_input) {
+                pen_name_input.addEventListener('change', function() {
+                    if (this.value) {
+                        const expiry_date = new Date();
+                        expiry_date.setTime(expiry_date.getTime() + (3 * 365 * 24 * 60 * 60 * 1000)); // 3 ปี
+                        document.cookie = `blog_pen_name=${encodeURIComponent(this.value)}; expires=${expiry_date.toUTCString()}; path=/`;
+                        console.log('Pen name saved on change:', this.value);
+                    }
+                });
+            }
+        } else {
+            console.error('Blog form not found!');
         }
     });
 </script>
