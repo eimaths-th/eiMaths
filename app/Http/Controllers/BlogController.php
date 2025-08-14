@@ -138,6 +138,7 @@ class BlogController extends Controller
             } else {
                 $blog->thumbnail = null;
             }
+            $blog->content = \Illuminate\Support\Str::markdown($blog->content);
             if ($blog->meta_keywords) {
                 $keywords = $blog->meta_keywords;
                 $keywords = strtolower($keywords); // แปลงเป็นตัวพิมพ์เล็กทั้งหมด
@@ -190,6 +191,7 @@ class BlogController extends Controller
         } else {
             $blog->thumbnail = null;
         }
+        $blog->content = \Illuminate\Support\Str::markdown($blog->content);
         if ($blog->meta_keywords) {
             $keywords = $blog->meta_keywords;
             $keywords = strtolower($keywords); // แปลงเป็นตัวพิมพ์เล็กทั้งหมด

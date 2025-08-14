@@ -140,6 +140,26 @@
                     className: 'fa fa-underline',
                     title: 'Underline',
                 },
+                {
+                    name: 'mark',
+                    action: function(editor) {
+                        const cm = editor.codemirror;
+                        const selection = cm.getSelection();
+                        cm.replaceSelection('<mark>' + selection + '</mark>');
+                        const cursor = cm.getCursor();
+                        const line = cm.getLine(cursor.line);
+                        const mark_pos = line.indexOf('<mark>');
+                        if (mark_pos >= 0) {
+                            cm.setCursor({
+                                line: cursor.line,
+                                ch: mark_pos + 6
+                            });
+                            cm.focus();
+                        }
+                    },
+                    className: 'fa fa-highlighter',
+                    title: 'Mark',
+                },
                 '|',
                 'heading-1', 'heading-2', 'heading-3',
                 '|',
