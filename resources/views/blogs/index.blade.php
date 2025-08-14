@@ -95,8 +95,27 @@
     $(document).ready(function() {
         $('#blogs-table').DataTable({
             processing: true,
+            serverSide: false,
+            searching: true,
+            ordering: true,
+            paging: true,
+            pageLength: 10,
+            lengthChange: true,
+            autoWidth: false,
+            responsive: true,
             language: {
-                processing: "Loading..."
+                processing: "Loading...",
+                search: "Search:",
+                lengthMenu: "Show _MENU_ entries",
+                info: "Showing _START_ to _END_ of _TOTAL_ entries",
+                infoEmpty: "Showing 0 to 0 of 0 entries",
+                infoFiltered: "(filtered from _MAX_ total entries)",
+                paginate: {
+                    first: "First",
+                    previous: "Previous",
+                    next: "Next",
+                    last: "Last"
+                }
             }
         });
     });
