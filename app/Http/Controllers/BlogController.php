@@ -138,22 +138,22 @@ class BlogController extends Controller
             } else {
                 $blog->thumbnail = null;
             }
-            // if ($blog->meta_keywords) {
-            //     $keywords = $blog->meta_keywords;
-            //     $keywords = strtolower($keywords); // แปลงเป็นตัวพิมพ์เล็กทั้งหมด
-            //     $keywords = str_replace('#', '', $keywords); // ลบเครื่องหมาย #
-            //     $keywords = preg_replace('/\s*\/\s*/', ',', $keywords); // แทนที่ / ด้วย ,
-            //     $keywords = preg_replace('/[!?:;."\(\)\[\]\{\}&+%$@\-_]+/', '', $keywords); // ลบเครื่องหมายวรรคตอนและอักขระพิเศษ
-            //     $keywords = preg_replace('/\s+/', ',', $keywords); // แทนที่ช่องว่างด้วย ,
-            //     $keywords = preg_replace('/,+/', ',', $keywords); // แทนที่เครื่องหมาย , ที่ซ้ำกัน
-            //     $keywords = trim($keywords, ','); // ตัดเครื่องหมาย , ที่อยู่ต้นและท้าย
-            //     $keyword_array = explode(',', $keywords); // แปลงเป็น array เพื่อกรองและลบค่าซ้ำ
-            //     $keyword_array = array_filter($keyword_array); // ลบค่าว่าง
-            //     $keyword_array = array_unique($keyword_array); // ลบค่าซ้ำ
-            //     $blog->meta_keywords = implode(',', $keyword_array); // แปลงกลับเป็นสตริงคั่นด้วยเครื่องหมาย ,
-            // } else {
-            //     $blog->meta_keywords = null;
-            // }
+            if ($blog->meta_keywords) {
+                $keywords = $blog->meta_keywords;
+                $keywords = strtolower($keywords); // แปลงเป็นตัวพิมพ์เล็กทั้งหมด
+                $keywords = str_replace('#', '', $keywords); // ลบเครื่องหมาย #
+                $keywords = preg_replace('/\s*\/\s*/', ',', $keywords); // แทนที่ / ด้วย ,
+                $keywords = preg_replace('/[!?:;."\(\)\[\]\{\}&+%$@\-_]+/', '', $keywords); // ลบเครื่องหมายวรรคตอนและอักขระพิเศษ
+                $keywords = preg_replace('/\s+/', ',', $keywords); // แทนที่ช่องว่างด้วย ,
+                $keywords = preg_replace('/,+/', ',', $keywords); // แทนที่เครื่องหมาย , ที่ซ้ำกัน
+                $keywords = trim($keywords, ','); // ตัดเครื่องหมาย , ที่อยู่ต้นและท้าย
+                $keyword_array = explode(',', $keywords); // แปลงเป็น array เพื่อกรองและลบค่าซ้ำ
+                $keyword_array = array_filter($keyword_array); // ลบค่าว่าง
+                $keyword_array = array_unique($keyword_array); // ลบค่าซ้ำ
+                $blog->meta_keywords = implode(',', $keyword_array); // แปลงกลับเป็นสตริงคั่นด้วยเครื่องหมาย ,
+            } else {
+                $blog->meta_keywords = null;
+            }
             $blog->pen_name = $blog->pen_name ?: ($blog->user ? $blog->user->name : 'ไม่ระบุ');
             if ($blog->user) {
                 $blog->user->makeHidden([
@@ -190,22 +190,22 @@ class BlogController extends Controller
         } else {
             $blog->thumbnail = null;
         }
-        // if ($blog->meta_keywords) {
-        //     $keywords = $blog->meta_keywords;
-        //     $keywords = strtolower($keywords); // แปลงเป็นตัวพิมพ์เล็กทั้งหมด
-        //     $keywords = str_replace('#', '', $keywords); // ลบเครื่องหมาย #
-        //     $keywords = preg_replace('/\s*\/\s*/', ',', $keywords); // แทนที่ / ด้วย ,
-        //     $keywords = preg_replace('/[!?:;."\(\)\[\]\{\}&+%$@\-_]+/', '', $keywords); // ลบเครื่องหมายวรรคตอนและอักขระพิเศษ
-        //     $keywords = preg_replace('/\s+/', ',', $keywords); // แทนที่ช่องว่างด้วย ,
-        //     $keywords = preg_replace('/,+/', ',', $keywords); // แทนที่เครื่องหมาย , ที่ซ้ำกัน
-        //     $keywords = trim($keywords, ','); // ตัดเครื่องหมาย , ที่อยู่ต้นและท้าย
-        //     $keyword_array = explode(',', $keywords); // แปลงเป็น array เพื่อกรองและลบค่าซ้ำ
-        //     $keyword_array = array_filter($keyword_array); // ลบค่าว่าง
-        //     $keyword_array = array_unique($keyword_array); // ลบค่าซ้ำ
-        //     $blog->meta_keywords = implode(',', $keyword_array); // แปลงกลับเป็นสตริงคั่นด้วยเครื่องหมาย ,
-        // } else {
-        //     $blog->meta_keywords = null;
-        // }
+        if ($blog->meta_keywords) {
+            $keywords = $blog->meta_keywords;
+            $keywords = strtolower($keywords); // แปลงเป็นตัวพิมพ์เล็กทั้งหมด
+            $keywords = str_replace('#', '', $keywords); // ลบเครื่องหมาย #
+            $keywords = preg_replace('/\s*\/\s*/', ',', $keywords); // แทนที่ / ด้วย ,
+            $keywords = preg_replace('/[!?:;."\(\)\[\]\{\}&+%$@\-_]+/', '', $keywords); // ลบเครื่องหมายวรรคตอนและอักขระพิเศษ
+            $keywords = preg_replace('/\s+/', ',', $keywords); // แทนที่ช่องว่างด้วย ,
+            $keywords = preg_replace('/,+/', ',', $keywords); // แทนที่เครื่องหมาย , ที่ซ้ำกัน
+            $keywords = trim($keywords, ','); // ตัดเครื่องหมาย , ที่อยู่ต้นและท้าย
+            $keyword_array = explode(',', $keywords); // แปลงเป็น array เพื่อกรองและลบค่าซ้ำ
+            $keyword_array = array_filter($keyword_array); // ลบค่าว่าง
+            $keyword_array = array_unique($keyword_array); // ลบค่าซ้ำ
+            $blog->meta_keywords = implode(',', $keyword_array); // แปลงกลับเป็นสตริงคั่นด้วยเครื่องหมาย ,
+        } else {
+            $blog->meta_keywords = null;
+        }
         $blog->pen_name = $blog->pen_name ?: ($blog->user ? $blog->user->name : 'ไม่ระบุ');
         if ($blog->user) {
             $blog->user->makeHidden([
