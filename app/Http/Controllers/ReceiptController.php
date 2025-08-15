@@ -248,7 +248,7 @@ class ReceiptController extends Controller
             if (!Gate::allows('all-centre')) {
                 $query->where('centre', Auth::user()->department->id);
             }
-
+            // dd($request->all());
             if (!empty($request->get('sdate'))) {
                 //dd($request->get('sdate'));
                 $dateRange = $request->input('sdate');
@@ -261,75 +261,72 @@ class ReceiptController extends Controller
                         $query->whereBetween('payment_date', [$startDate . ' 00:00:00', $endDate . ' 23:59:59']);
                     }
                 }
-
-                $datas = $query->orderBy("id", "desc")
-                    ->get();
-                // dd($request->all(), $datas);
-                return datatables()->of($datas)
-                    ->editColumn('checkbox', function ($row) {
-                        //$this->gen_receipt_data($row->id);
-                        //$this->update_name($row->contact_name, $row->id);
-                        return '<input type="checkbox" id="' . $row->id . '" class="flat" name="table_records[]" value="' . $row->id . '" >';
-                    })
-                    ->editColumn('centre', function ($row) {
-                        return $row->department->name ?? 'bug';
-                    })
-                    ->editColumn('contact_code', function ($row) {
-                        return $row->contact->code ?? 'bug';
-                    })
-                    ->editColumn('receipt_number', function ($row) {
-                        return $row->receipt_number ?? 'bug';
-                    })
-                    ->editColumn('payment_date', function ($row) {
-                        return $row->payment_date ?? 'bug';
-                    })
-                    ->editColumn('product_level', function ($row) {
-                        return $row->levels->name ?? $row->level;
-                    })
-                    ->editColumn('book_use', function ($row) {
-                        return '(' . $row->orderDetails->first()->pname . ') - (' . $row->orderDetails->last()->pname . ')';
-                    })
-                    ->editColumn('total_fee', function ($row) {
-                        return $row->total_fee ?? 'bug';
-                    })
-                    ->addColumn('more', function ($row) {
-                        return '';
-                    })
-                    ->editColumn('contact_name', function ($row) {
-                        $nic = $row->contact->nickname ?? '';
-                        //return $row->contact_name . ' ' . $nic;
-                        $name = $row->contact->name ?? 'bug';
-                        $text = $name . ' ( ' . $nic . ' )';
-                        return $text;
-                    })
-                    ->editColumn('ref', function ($row) {
-                        return $row->ref;
-                    })
-
-                    ->addColumn('action', function ($row) {
-                        $html = '';
-                        if (Gate::allows('receipt-edit')) {
-                            $html = '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit</button> ';
-                        } else {
-                            $html = '<button type="button" class="btn btn-sm btn-warning btn-edit disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> Edit</button> ';
-                        }
-                        if (Gate::allows('order-show')) {
-                            $html .= '<button type="button" class="btn btn-sm btn-success btn-print" id="getPrintData" data-id="' . $row->id . '"><i class="fa fa-print"></i> Print</button> ';
-                        } else {
-                            $html .= '<button type="button" class="btn btn-sm btn-success btn-print disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-print"></i> Print</button> ';
-                        }
-                        if (Gate::allows('order-show')) {
-                            $html .= '<button type="button" class="btn btn-sm btn-danger btn-share" id="getShareData" data-id="' . $row->id . '"><i class="fa-solid fa-file-pdf"></i> PDF</button> ';
-                        } else {
-                            $html .= '<button type="button" class="btn btn-sm btn-danger btn-share disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa-solid fa-file-pdf"></i> PDF</button> ';
-                        }
-                        return "<div class='col-sm-2 col-md-2 col-xl-2'>" . $html . "</div>";
-                    })->rawColumns(['checkbox', 'action', 'total_fee'])->toJson();
             }
+            $datas = $query->orderBy("id", "desc")
+                ->get();
+            // dd($request->all(), $datas);
+            return datatables()->of($datas)
+                ->editColumn('checkbox', function ($row) {
+                    //$this->gen_receipt_data($row->id);
+                    //$this->update_name($row->contact_name, $row->id);
+                    return '<input type="checkbox" id="' . $row->id . '" class="flat" name="table_records[]" value="' . $row->id . '" >';
+                })
+                ->editColumn('centre', function ($row) {
+                    return $row->department->name ?? 'bug';
+                })
+                ->editColumn('contact_code', function ($row) {
+                    return $row->contact->code ?? 'bug';
+                })
+                ->editColumn('receipt_number', function ($row) {
+                    return $row->receipt_number ?? 'bug';
+                })
+                ->editColumn('payment_date', function ($row) {
+                    return $row->payment_date ?? 'bug';
+                })
+                ->editColumn('product_level', function ($row) {
+                    return $row->levels->name ?? $row->level;
+                })
+                ->editColumn('book_use', function ($row) {
+                    return '(' . $row->orderDetails->first()->pname . ') - (' . $row->orderDetails->last()->pname . ')';
+                })
+                ->editColumn('total_fee', function ($row) {
+                    return $row->total_fee ?? 'bug';
+                })
+                ->addColumn('more', function ($row) {
+                    return '';
+                })
+                ->editColumn('contact_name', function ($row) {
+                    $nic = $row->contact->nickname ?? '';
+                    //return $row->contact_name . ' ' . $nic;
+                    $name = $row->contact->name ?? 'bug';
+                    $text = $name . ' ( ' . $nic . ' )';
+                    return $text;
+                })
+                ->editColumn('ref', function ($row) {
+                    return $row->ref;
+                })
 
+                ->addColumn('action', function ($row) {
+                    $html = '';
+                    if (Gate::allows('receipt-edit')) {
+                        $html = '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit</button> ';
+                    } else {
+                        $html = '<button type="button" class="btn btn-sm btn-warning btn-edit disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> Edit</button> ';
+                    }
+                    if (Gate::allows('order-show')) {
+                        $html .= '<button type="button" class="btn btn-sm btn-success btn-print" id="getPrintData" data-id="' . $row->id . '"><i class="fa fa-print"></i> Print</button> ';
+                    } else {
+                        $html .= '<button type="button" class="btn btn-sm btn-success btn-print disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-print"></i> Print</button> ';
+                    }
+                    if (Gate::allows('order-show')) {
+                        $html .= '<button type="button" class="btn btn-sm btn-danger btn-share" id="getShareData" data-id="' . $row->id . '"><i class="fa-solid fa-file-pdf"></i> PDF</button> ';
+                    } else {
+                        $html .= '<button type="button" class="btn btn-sm btn-danger btn-share disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa-solid fa-file-pdf"></i> PDF</button> ';
+                    }
+                    return "<div class='col-sm-2 col-md-2 col-xl-2'>" . $html . "</div>";
+                })->rawColumns(['checkbox', 'action', 'total_fee'])->toJson();
         }
         return view('receipts.index');
-
     }
 
 
