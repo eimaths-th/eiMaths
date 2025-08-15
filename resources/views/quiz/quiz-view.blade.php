@@ -291,12 +291,12 @@
                                         @if ($fraction->answer_type === 'frac')
                                             <div class="fraction-display"
                                                 style="text-align: center; padding: 12px; background: #f8fafc; border-radius: 8px;">
-                                                {{ toFraction($fraction->numerator, $fraction->denominator) }}
+                                                {{ toFraction($fraction->numerator, $fraction->denominator) }} 111
                                             </div>
                                         @else
                                             <div class="fraction-display"
                                                 style="text-align: center; padding: 12px; background: #f8fafc; border-radius: 8px;">
-                                                {{ toMixedFraction(null, $fraction->numerator, $fraction->denominator) }}
+                                                {{ toMixedFraction(null, $fraction->numerator, $fraction->denominator) }}222
                                             </div>
                                         @endif
                                     </div>
@@ -325,7 +325,7 @@
                                                 <div style="flex: 1; font-size: 15px; color: #1f2937; text-align: center;">
                                                     <div class="fraction-display"
                                                         style="padding: 8px; background: #f8fafc; border-radius: 6px; display: inline-block;">
-                                                        {{ $textOption }}
+                                                        {{ $textOption }} 333
                                                     </div>
                                                 </div>
                                                 @if ($option->correct)
