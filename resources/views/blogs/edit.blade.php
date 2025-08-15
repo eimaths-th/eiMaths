@@ -87,6 +87,34 @@
 
 @section('script')
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
+<style>
+    /* Show H4–H6 indicators in the dropdown like H1–H3 */
+    .EasyMDEContainer .editor-toolbar .fa-header { position: relative; }
+    .EasyMDEContainer .editor-toolbar .heading-4 .fa-header::after { content: '4' !important; font-size: 7px; position: absolute; top: 7px; right: -5px; }
+    .EasyMDEContainer .editor-toolbar .heading-5 .fa-header::after { content: '5' !important; font-size: 7px; position: absolute; top: 7px; right: -5px; }
+    .EasyMDEContainer .editor-toolbar .heading-6 .fa-header::after { content: '6' !important; font-size: 7px; position: absolute; top: 7px; right: -5px; }
+    
+    /* Font size display button styles */
+    .EasyMDEContainer .editor-toolbar a.font-size-display {
+        font-family: Arial, sans-serif;
+        font-size: 12px;
+        width: auto;
+        min-width: 50px;
+        text-align: center;
+        padding: 0 8px;
+        pointer-events: none;
+    }
+    
+    /* Remove hover effect from font size display */
+    .EasyMDEContainer .editor-toolbar a.font-size-display:hover {
+        background: transparent;
+        border-color: transparent;
+    }
+    /* Fallback: if class not present on anchor, use title attribute */
+    .EasyMDEContainer .editor-toolbar .dropdown-menu a[title="Heading 4"] .fa-header::after { content: '4' !important; font-size: 7px; position: absolute; top: 7px; right: -5px; }
+    .EasyMDEContainer .editor-toolbar .dropdown-menu a[title="Heading 5"] .fa-header::after { content: '5' !important; font-size: 7px; position: absolute; top: 7px; right: -5px; }
+    .EasyMDEContainer .editor-toolbar .dropdown-menu a[title="Heading 6"] .fa-header::after { content: '6' !important; font-size: 7px; position: absolute; top: 7px; right: -5px; }
+</style>
 <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
 <script>
     function GetCookie(name) {
@@ -169,7 +197,207 @@
                     title: 'Mark',
                 },
                 '|',
-                'heading-1', 'heading-2', 'heading-3',
+                {
+                    name: 'headings',
+                    className: 'fa fa-header',
+                    title: 'Headings',
+                    children: [
+                        {
+                            name: 'heading-1',
+                            action: function(editor) {
+                                const cm = editor.codemirror;
+                                const selection = cm.getSelection();
+                                cm.replaceSelection('# ' + selection);
+                                const cursor = cm.getCursor();
+                                cm.setCursor({
+                                    line: cursor.line,
+                                    ch: cursor.ch + 2
+                                });
+                                cm.focus();
+                            },
+                            className: 'fa fa-header heading-1',
+                            title: 'Heading 1',
+                        },
+                        {
+                            name: 'heading-2',
+                            action: function(editor) {
+                                const cm = editor.codemirror;
+                                const selection = cm.getSelection();
+                                cm.replaceSelection('## ' + selection);
+                                const cursor = cm.getCursor();
+                                cm.setCursor({
+                                    line: cursor.line,
+                                    ch: cursor.ch + 3
+                                });
+                                cm.focus();
+                            },
+                            className: 'fa fa-header heading-2',
+                            title: 'Heading 2',
+                        },
+                        {
+                            name: 'heading-3',
+                            action: function(editor) {
+                                const cm = editor.codemirror;
+                                const selection = cm.getSelection();
+                                cm.replaceSelection('### ' + selection);
+                                const cursor = cm.getCursor();
+                                cm.setCursor({
+                                    line: cursor.line,
+                                    ch: cursor.ch + 4
+                                });
+                                cm.focus();
+                            },
+                            className: 'fa fa-header heading-3',
+                            title: 'Heading 3',
+                        },
+                        {
+                            name: 'heading-4',
+                            action: function(editor) {
+                                const cm = editor.codemirror;
+                                const selection = cm.getSelection();
+                                cm.replaceSelection('#### ' + selection);
+                                const cursor = cm.getCursor();
+                                cm.setCursor({
+                                    line: cursor.line,
+                                    ch: cursor.ch + 5
+                                });
+                                cm.focus();
+                            },
+                            className: 'fa fa-header heading-4',
+                            title: 'Heading 4',
+                        },
+                        {
+                            name: 'heading-5',
+                            action: function(editor) {
+                                const cm = editor.codemirror;
+                                const selection = cm.getSelection();
+                                cm.replaceSelection('##### ' + selection);
+                                const cursor = cm.getCursor();
+                                cm.setCursor({
+                                    line: cursor.line,
+                                    ch: cursor.ch + 6
+                                });
+                                cm.focus();
+                            },
+                            className: 'fa fa-header heading-5',
+                            title: 'Heading 5',
+                        },
+                        {
+                            name: 'heading-6',
+                            action: function(editor) {
+                                const cm = editor.codemirror;
+                                const selection = cm.getSelection();
+                                cm.replaceSelection('###### ' + selection);
+                                const cursor = cm.getCursor();
+                                cm.setCursor({
+                                    line: cursor.line,
+                                    ch: cursor.ch + 7
+                                });
+                                cm.focus();
+                            },
+                            className: 'fa fa-header heading-6',
+                            title: 'Heading 6',
+                        }
+                    ],
+                },
+                '|',
+                {
+                    name: 'text-color',
+                    action: function(editor) {
+                        const cm = editor.codemirror;
+                        const color_picker = document.createElement('input');
+                        color_picker.type = 'color';
+                        color_picker.value = '#000000';
+                        color_picker.style.position = 'absolute';
+                        color_picker.style.left = '-1000px';
+                        document.body.appendChild(color_picker);
+                        color_picker.addEventListener('change', function() {
+                            const selection = cm.getSelection();
+                            const color = this.value;
+                            cm.replaceSelection('<span style="color:' + color + '">' + selection + '</span>');
+                            const cursor = cm.getCursor();
+                            const line = cm.getLine(cursor.line);
+                            const span_pos = line.indexOf('<span style="color:' + color + '">');
+                            if (span_pos >= 0) {
+                                cm.setCursor({
+                                    line: cursor.line,
+                                    ch: span_pos + ('<span style="color:' + color + '">').length
+                                });
+                            }
+                            document.body.removeChild(this);
+                            cm.focus();
+                        });
+                        color_picker.click();
+                    },
+                    className: 'fa fa-tint',
+                    title: 'Text Color',
+                },
+                {
+                    name: 'background-color',
+                    action: function(editor) {
+                        const cm = editor.codemirror;
+                        const color_picker = document.createElement('input');
+                        color_picker.type = 'color';
+                        color_picker.value = '#FFFF00';
+                        color_picker.style.position = 'absolute';
+                        color_picker.style.left = '-1000px';
+                        document.body.appendChild(color_picker);
+                        color_picker.addEventListener('change', function() {
+                            const selection = cm.getSelection();
+                            const color = this.value;
+                            const cursor = cm.getCursor();
+                            cm.replaceSelection('<span style="background-color:' + color + '">' + selection + '</span>');
+                            const line = cm.getLine(cursor.line);
+                            const span_pos = line.indexOf('<span style="background-color:' + color + '">');
+                            if (span_pos >= 0) {
+                                cm.setCursor({
+                                    line: cursor.line,
+                                    ch: span_pos + ('<span style="background-color:' + color + '">').length
+                                });
+                            }
+                            document.body.removeChild(this);
+                            cm.focus();
+                        });
+                        color_picker.click();
+                    },
+                    className: 'fa fa-paint-brush',
+                    title: 'Background Color',
+                },
+                '|',
+                {
+                    name: 'font-size-decrease',
+                    action: function(editor) {
+                        const cm = editor.codemirror;
+                        const wrapper = cm.getWrapperElement();
+                        const current_size = parseInt(window.getComputedStyle(wrapper).fontSize);
+                        const new_size = Math.max(current_size - 2, 10);
+                        wrapper.style.fontSize = new_size + 'px';
+                        document.querySelector('.font-size-display').textContent = new_size + 'px';
+                    },
+                    className: 'fa fa-minus',
+                    title: 'Decrease Font Size',
+                },
+                {
+                    name: 'font-size-display',
+                    action: function() {
+                    },
+                    className: 'font-size-display',
+                    text: '16px',
+                    title: 'Font Size',
+                },
+                {
+                    name: 'font-size-increase',
+                    action: function(editor) {
+                        const cm = editor.codemirror;
+                        const wrapper = cm.getWrapperElement();
+                        const current_size = parseInt(window.getComputedStyle(wrapper).fontSize);
+                        const new_size = Math.min(current_size + 2, 48);
+                        wrapper.style.fontSize = new_size + 'px';
+                        document.querySelector('.font-size-display').textContent = new_size + 'px';
+                    },
+                    className: 'fa fa-plus',
+                    title: 'Increase Font Size',
+                },
                 '|',
                 'quote', 'unordered-list', 'ordered-list',
                 '|',
@@ -206,6 +434,13 @@
                 'heading-1': 'Ctrl-Alt-1',
                 'heading-2': 'Ctrl-Alt-2',
                 'heading-3': 'Ctrl-Alt-3',
+                'heading-4': 'Ctrl-Alt-4',
+                'heading-5': 'Ctrl-Alt-5',
+                'heading-6': 'Ctrl-Alt-6',
+                'text-color': 'Ctrl-Alt-Z',
+                'background-color': 'Ctrl-Alt-X',
+                'font-size-decrease': 'Ctrl-Alt-Down',
+                'font-size-increase': 'Ctrl-Alt-Up',
                 quote: 'Ctrl-Alt-Q',
                 'unordered-list': 'Ctrl-Alt-U',
                 'ordered-list': 'Ctrl-Alt-O',
@@ -281,8 +516,26 @@
             renderingConfig: {
                 singleLineBreaks: false,
                 codeSyntaxHighlighting: true,
+            },
+            paste: {
+                cleanPastedHTML: false,
+                forcePlainText: false
             }
         });
+
+                // ตั้งค่าขนาดฟอนต์เริ่มต้นหลังจากสร้าง EasyMDE
+        setTimeout(function() {
+            const cm = easy_mde.codemirror;
+            const wrapper = cm.getWrapperElement();
+            const default_font_size = 16; // ขนาดฟอนต์เริ่มต้น 16px ตามรูปตัวอย่าง
+            wrapper.style.fontSize = default_font_size + 'px';
+            
+            // อัพเดทการแสดงผลขนาดฟอนต์ปัจจุบัน
+            const font_size_display = document.querySelector('.font-size-display');
+            if (font_size_display) {
+                font_size_display.textContent = default_font_size + 'px';
+            }
+        }, 100);
 
         document.getElementById('thumbnail').addEventListener('change', function() {
             const file = this.files[0];
