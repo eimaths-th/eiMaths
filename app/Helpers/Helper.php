@@ -105,7 +105,7 @@ if (!function_exists('toFraction')) {
 }
 
 if (!function_exists('toMixedFraction')) {
-    function toMixedFraction($numerator, $denominator, $whole = null)
+    function toMixedFraction( $whole = null, $numerator, $denominator)
     {
 
         if ($whole) {
