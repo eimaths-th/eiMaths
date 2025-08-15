@@ -210,41 +210,43 @@ class ReceiptController extends Controller
             }
 
             $centre = $request->get('centre');
-            $reservationValue = $request->get('date');
 
-            $query = Receipt::select(
-                "receipts.id as id",
-                "receipts.ref as ref",
-                "receipts.receipt_number as receipt_number",
-                "receipts.total_fee as total_fee",
-                "receipts.payment_date as payment_date",
-                //"receipts.level as level",
-                //"receipts.status as order_status",
-                //"contacts.name as contact_name",
-                "receipts.student_name as contact_name",
-                "contacts.nickname as contact_nickname",
-                "contacts.code as contact_code",
-                //"contacts.start_term as start_term",
-                "departments.name as centre",
-                DB::raw("GROUP_CONCAT(order_detail.pname SEPARATOR ' - ') as book_use"),
-                DB::raw("GROUP_CONCAT(levels.name SEPARATOR ' - ') as product_level"),
-                DB::raw("SUM(order_detail.quantity) as total_amount")
-            )
-                ->join("contacts", "contacts.id", "=", "receipts.cid")
-                ->join("departments", "contacts.centre", "=", "departments.id")
-                ->leftJoin("order_details as order_detail", "order_detail.order_id", "=", "receipts.oid")
-                ->join("bookuses", "bookuses.id", "=", "order_detail.product_id")
-                ->join("levels", "levels.id", "=", "bookuses.level_id")
-                ->where('receipts.type', $type);
+            // $query = Receipt::select(
+            //     "receipts.id as id",
+            //     "receipts.ref as ref",
+            //     "receipts.receipt_number as receipt_number",
+            //     "receipts.total_fee as total_fee",
+            //     "receipts.payment_date as payment_date",
+            //     //"receipts.level as level",
+            //     //"receipts.status as order_status",
+            //     //"contacts.name as contact_name",
+            //     "receipts.student_name as contact_name",
+            //     "contacts.nickname as contact_nickname",
+            //     "contacts.code as contact_code",
+            //     //"contacts.start_term as start_term",
+            //     "departments.name as centre",
+            //     DB::raw("GROUP_CONCAT(order_detail.pname SEPARATOR ' - ') as book_use"),
+            //     DB::raw("GROUP_CONCAT(levels.name SEPARATOR ' - ') as product_level"),
+            //     DB::raw("SUM(order_detail.quantity) as total_amount")
+            // )
+            //     ->join("contacts", "contacts.id", "=", "receipts.cid")
+            //     ->join("departments", "contacts.centre", "=", "departments.id")
+            //     ->leftJoin("order_details as order_detail", "order_detail.order_id", "=", "receipts.oid")
+            //     ->join("bookuses", "bookuses.id", "=", "order_detail.product_id")
+            //     ->join("levels", "levels.id", "=", "bookuses.level_id")
+            //     ->where('receipts.type', $type);
+            $query = Receipt::where('type', $type);
+            // $test = $query->get();
+            // dd($test);
             if ($centre) {
-                $query->where('receipts.centre', $centre);
+                $query->where('centre', $centre);
             }
-            if ($reservationValue) {
-                $query->where('receipts.payment_date', 'like', $reservationValue . '%');
-            }
+            // if ($reservationValue) {
+            //     $query->where('receipts.payment_date', 'like', $reservationValue . '%');
+            // }
 
             if (!Gate::allows('all-centre')) {
-                $query->where('receipts.centre', Auth::user()->department->id);
+                $query->where('centre', Auth::user()->department->id);
             }
 
             if (!empty($request->get('sdate'))) {
@@ -256,73 +258,78 @@ class ReceiptController extends Controller
                     if (!empty($dateRangeArray) && count($dateRangeArray) == 2) {
                         $startDate = $dateRangeArray[0];
                         $endDate = $dateRangeArray[1];
-                        $query->whereBetween('receipts.payment_date', [$startDate . ' 00:00:00', $endDate . ' 23:59:59']);
+                        $query->whereBetween('payment_date', [$startDate . ' 00:00:00', $endDate . ' 23:59:59']);
                     }
                 }
+
+                $datas = $query->orderBy("id", "desc")
+                    ->get();
+                // dd($request->all(), $datas);
+                return datatables()->of($datas)
+                    ->editColumn('checkbox', function ($row) {
+                        //$this->gen_receipt_data($row->id);
+                        //$this->update_name($row->contact_name, $row->id);
+                        return '<input type="checkbox" id="' . $row->id . '" class="flat" name="table_records[]" value="' . $row->id . '" >';
+                    })
+                    ->editColumn('centre', function ($row) {
+                        return $row->department->name ?? 'bug';
+                    })
+                    ->editColumn('contact_code', function ($row) {
+                        return $row->contact->code ?? 'bug';
+                    })
+                    ->editColumn('receipt_number', function ($row) {
+                        return $row->receipt_number ?? 'bug';
+                    })
+                    ->editColumn('payment_date', function ($row) {
+                        return $row->payment_date ?? 'bug';
+                    })
+                    ->editColumn('product_level', function ($row) {
+                        return $row->levels->name ?? $row->level;
+                    })
+                    ->editColumn('book_use', function ($row) {
+                        return '(' . $row->orderDetails->first()->pname . ') - (' . $row->orderDetails->last()->pname . ')';
+                    })
+                    ->editColumn('total_fee', function ($row) {
+                        return $row->total_fee ?? 'bug';
+                    })
+                    ->addColumn('more', function ($row) {
+                        return '';
+                    })
+                    ->editColumn('contact_name', function ($row) {
+                        $nic = $row->contact->nickname ?? '';
+                        //return $row->contact_name . ' ' . $nic;
+                        $name = $row->contact->name ?? 'bug';
+                        $text = $name . ' ( ' . $nic . ' )';
+                        return $text;
+                    })
+                    ->editColumn('ref', function ($row) {
+                        return $row->ref;
+                    })
+
+                    ->addColumn('action', function ($row) {
+                        $html = '';
+                        if (Gate::allows('receipt-edit')) {
+                            $html = '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit</button> ';
+                        } else {
+                            $html = '<button type="button" class="btn btn-sm btn-warning btn-edit disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> Edit</button> ';
+                        }
+                        if (Gate::allows('order-show')) {
+                            $html .= '<button type="button" class="btn btn-sm btn-success btn-print" id="getPrintData" data-id="' . $row->id . '"><i class="fa fa-print"></i> Print</button> ';
+                        } else {
+                            $html .= '<button type="button" class="btn btn-sm btn-success btn-print disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-print"></i> Print</button> ';
+                        }
+                        if (Gate::allows('order-show')) {
+                            $html .= '<button type="button" class="btn btn-sm btn-danger btn-share" id="getShareData" data-id="' . $row->id . '"><i class="fa-solid fa-file-pdf"></i> PDF</button> ';
+                        } else {
+                            $html .= '<button type="button" class="btn btn-sm btn-danger btn-share disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa-solid fa-file-pdf"></i> PDF</button> ';
+                        }
+                        return "<div class='col-sm-2 col-md-2 col-xl-2'>" . $html . "</div>";
+                    })->rawColumns(['checkbox', 'action', 'total_fee'])->toJson();
             }
-            $datas = $query->groupBy(
-                'receipts.id',
-                'receipts.ref',
-                'receipts.receipt_number',
-                'receipts.total_fee',
-                'receipts.payment_date',
-                //'contacts.name',
-                'receipts.student_name',
-                'contacts.nickname',
-                'contacts.code',
-                'departments.name'
-            )
-                ->orderBy("receipts.id", "desc")
-                ->get();
 
-            return datatables()->of($datas)
-                ->editColumn('checkbox', function ($row) {
-                    //$this->gen_receipt_data($row->id);
-                    //$this->update_name($row->contact_name, $row->id);
-                    return '<input type="checkbox" id="' . $row->id . '" class="flat" name="table_records[]" value="' . $row->id . '" >';
-                })
-                ->addColumn('more', function ($row) {
-                    return '';
-                })
-                ->editColumn('contact_name', function ($row) {
-                    $nic = $row->contact_nickname !== null && $row->contact_nickname !== '' ? '(' . $row->contact_nickname . ')' : '';
-                    //return $row->contact_name . ' ' . $nic;
-                    return $row->contact_name;
-                })
-                ->editColumn('ref', function ($row) {
-                    return $row->ref;
-                })
-                ->editColumn('book_use', function (Receipt $datas) {
-
-                    if (strpos($datas->book_use, " - ") !== false) {
-                        $expn = explode(" - ", $datas->book_use);
-                        return "(" . $expn[0] . ") - (" . $expn[1] . ")";
-                    } else {
-                        return $datas->book_use;
-                    }
-                })
-                ->addColumn('action', function ($row) {
-                    $html = '';
-                    if (Gate::allows('receipt-edit')) {
-                        $html = '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit</button> ';
-                    } else {
-                        $html = '<button type="button" class="btn btn-sm btn-warning btn-edit disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> Edit</button> ';
-                    }
-                    if (Gate::allows('order-show')) {
-                        $html .= '<button type="button" class="btn btn-sm btn-success btn-print" id="getPrintData" data-id="' . $row->id . '"><i class="fa fa-print"></i> Print</button> ';
-                    } else {
-                        $html .= '<button type="button" class="btn btn-sm btn-success btn-print disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-print"></i> Print</button> ';
-                    }
-                    if (Gate::allows('order-show')) {
-                        $html .= '<button type="button" class="btn btn-sm btn-danger btn-share" id="getShareData" data-id="' . $row->id . '"><i class="fa-solid fa-file-pdf"></i> PDF</button> ';
-                    } else {
-                        $html .= '<button type="button" class="btn btn-sm btn-danger btn-share disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa-solid fa-file-pdf"></i> PDF</button> ';
-                    }
-                    return "<div class='col-sm-2 col-md-2 col-xl-2'>" . $html . "</div>";
-                })->rawColumns(['checkbox', 'action', 'total_fee'])->toJson();
         }
-
         return view('receipts.index');
+
     }
 
 

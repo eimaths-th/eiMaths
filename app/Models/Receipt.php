@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class Receipt extends Model
 {
@@ -39,6 +40,26 @@ class Receipt extends Model
     }
     public function contact()
     {
-        return $this->belongsTo(Contact::class, 'cid');
+        return $this->belongsTo(Contact::class, 'cid', 'id');
+    }
+
+    public function department()
+    {
+        return $this->belongsTo(Department::class, 'centre', 'id');
+    }
+
+    public function orderDetails()
+    {
+        return $this->hasMany(OrderDetail::class, 'order_id', 'oid');
+    }
+
+    // public function bookuses()
+    // {
+    //     return $this->orderDetails()->pname;
+    // }
+
+    public function levels()
+    {
+        return $this->belongsTo(level::class, 'level', 'id');
     }
 }

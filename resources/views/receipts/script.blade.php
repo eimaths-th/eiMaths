@@ -89,7 +89,12 @@
         }
 
         daterange();
+        let reservationChanged = false;
 
+        $("#reservation").change(function() {
+            reservationChanged = true;
+            table.draw();
+        });
         //$.noConflict();
         var token = ''
         $.ajaxSetup({
@@ -235,9 +240,9 @@
 
                 // Apply the new search based on searchType and keyword
                 if (searchType === '1') {
-                    table.column(2).search(keyword).draw();
-                } else if (searchType === '2') {
                     table.column(3).search(keyword).draw();
+                } else if (searchType === '2') {
+                    table.column(4).search(keyword).draw();
                 }
             } else {
                 // Handle the case where searchType or keyword is empty
@@ -753,9 +758,9 @@
         htmlToPrint +=
             '<link rel="stylesheet" href="dist/css/print.css"><link rel="stylesheet" href="dist/css/adminlte.css?v=3.2.0">';
         // console.log(text);
-        
 
-        htmlToPrint += '</head><body>' + prtContent ;
+
+        htmlToPrint += '</head><body>' + prtContent;
 
         var WinPrint = window.open();
         WinPrint.document.write(htmlToPrint);
