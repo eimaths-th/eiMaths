@@ -38,13 +38,13 @@
         var startDate;
         var endDate;
 
-        function datesearch() {
-            var currentDate = moment();
-            // Set the start date to 7 days before today
-            startDate = moment(currentDate).subtract(365, 'days').format('YYYY-MM-DD');
-            // Set the end date to the end of the current month
-            endDate = moment(currentDate).endOf('year').format('YYYY-MM-DD');
-        }
+        // function datesearch() {
+        //     var currentDate = moment();
+        //     // Set the start date to 7 days before today
+        //     startDate = moment(currentDate).subtract(365, 'days').format('YYYY-MM-DD');
+        //     // Set the end date to the end of the current month
+        //     endDate = moment(currentDate).endOf('year').format('YYYY-MM-DD');
+        // }
 
         function retrieveFieldValues() {
             var saveddateStart = localStorage.getItem('dateStart');
@@ -56,9 +56,10 @@
                 var dateParts = saveddateStart.split(' - ');
                 startDate = dateParts[0];
                 endDate = dateParts[1];
-            } else {
-                datesearch();
             }
+            // else {
+            //     datesearch();
+            // }
             if (savedSearchType) {
                 $('#search_type').val(savedSearchType);
             }
@@ -106,7 +107,11 @@
         var table_option = {
             ajax: {
                 data: function(d) {
-                    d.sdate = $('#reservation').val();
+
+                    if (reservationChanged && $('#reservation').val()) {
+                        d.sdate = $('#reservation').val();
+                    }
+
                 }
             },
             serverSide: true,
