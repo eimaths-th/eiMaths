@@ -325,7 +325,7 @@
                                                 <div style="flex: 1; font-size: 15px; color: #1f2937; text-align: center;">
                                                     <div class="fraction-display"
                                                         style="padding: 8px; background: #f8fafc; border-radius: 6px; display: inline-block;">
-                                                        {{ $textOption }} 333
+                                                        {{ $textOption }}
                                                     </div>
                                                 </div>
                                                 @if ($option->correct)
