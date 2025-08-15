@@ -86,32 +86,46 @@ use Milon\Barcode\DNS2D;
 
 // clean my code
 
-
-//fractional drisplay
-if (!function_exists('generateQrCode')) {
-    function generateQrCode($amount)
+if (!function_exists('textFraction')) {
+    function textFraction($numerator, $denominator)
     {
-        $qr = QRCodePayMent::first();
-        $promptpay_number = $qr->promptpay_numbers;
-        // $promptpay_number = "1103702601675";
-        $qrCodeData = new PromptPay();
-        $savePath = public_path('img/qrcode/qr.png');
-
-        if ($amount) {
-            # code...
-            $qrCodeData->generatePayload($promptpay_number, $amount);
-            $qrCodeData->generateQrCode($savePath, $promptpay_number, $amount);
-        } else {
-            $qrCodeData->generatePayload($promptpay_number);
-            $qrCodeData->generateQrCode($savePath, $promptpay_number);
-        }
-
-
-        $qrCodeImage = asset('img/qrcode/qr.png');
-        return $qrCodeImage;
+        // This generates LaTeX syntax for the fraction
+        return "\\(\\frac{{$numerator}}{{$denominator}}\\)";
     }
 }
 
+if (!function_exists('toFraction')) {
+    function toFraction($numerator, $denominator)
+    {
+        // if ($numerator % $denominator == 0) {
+        //     return (string) ($numerator / $denominator); // Whole number
+        // }
+        return "\(\\frac{{$numerator}}{{$denominator}}\)";
+    }
+}
+
+if (!function_exists('toMixedFraction')) {
+    function toMixedFraction($numerator, $denominator, $whole = null)
+    {
+
+        if ($whole) {
+            $remainder = $numerator % $denominator;
+            $whole = $whole + intdiv($numerator, $denominator);
+        } else {
+
+            if ($numerator % $denominator == 0) {
+                return (string) ($numerator / $denominator); // Whole number
+            }
+
+            $whole = intdiv($numerator, $denominator);
+            $remainder = $numerator % $denominator;
+        }
+
+        return $whole > 0
+            ? "\({$whole} \\frac{{$remainder}}{{$denominator}}\)"
+            : "\(\\frac{{$remainder}}{{$denominator}}\)";
+    }
+}
 
 if (!function_exists('replaceMixedFractions')) {
     function replaceMixedFractions($text)
@@ -315,6 +329,35 @@ if (!function_exists('replaceMixedFractions')) {
     }
 }
 
+//fractional drisplay
+
+if (!function_exists('generateQrCode')) {
+    function generateQrCode($amount)
+    {
+        $qr = QRCodePayMent::first();
+        $promptpay_number = $qr->promptpay_numbers;
+        // $promptpay_number = "1103702601675";
+        $qrCodeData = new PromptPay();
+        $savePath = public_path('img/qrcode/qr.png');
+
+        if ($amount) {
+            # code...
+            $qrCodeData->generatePayload($promptpay_number, $amount);
+            $qrCodeData->generateQrCode($savePath, $promptpay_number, $amount);
+        } else {
+            $qrCodeData->generatePayload($promptpay_number);
+            $qrCodeData->generateQrCode($savePath, $promptpay_number);
+        }
+
+
+        $qrCodeImage = asset('img/qrcode/qr.png');
+        return $qrCodeImage;
+    }
+}
+
+
+
+
 // if (!function_exists('replaceMixedFractions1')) {
 //     function replaceMixedFractions1($text)
 //     {
@@ -497,46 +540,7 @@ if (!function_exists('replaceMixedFractions')) {
 
 
 
-if (!function_exists('textFraction')) {
-    function textFraction($numerator, $denominator)
-    {
-        // This generates LaTeX syntax for the fraction
-        return "\\(\\frac{{$numerator}}{{$denominator}}\\)";
-    }
-}
 
-if (!function_exists('toFraction')) {
-    function toFraction($numerator, $denominator)
-    {
-        // if ($numerator % $denominator == 0) {
-        //     return (string) ($numerator / $denominator); // Whole number
-        // }
-        return "\(\\frac{{$numerator}}{{$denominator}}\)";
-    }
-}
-
-if (!function_exists('toMixedFraction')) {
-    function toMixedFraction($numerator, $denominator, $whole = null)
-    {
-
-        if ($whole) {
-            $remainder = $numerator % $denominator;
-            $whole = $whole + intdiv($numerator, $denominator);
-        } else {
-
-            if ($numerator % $denominator == 0) {
-                return (string) ($numerator / $denominator); // Whole number
-            }
-
-            $whole = intdiv($numerator, $denominator);
-            $remainder = $numerator % $denominator;
-        }
-
-        return $whole > 0
-            ? "\({$whole} \\frac{{$remainder}}{{$denominator}}\)"
-            : "\(\\frac{{$remainder}}{{$denominator}}\)";
-    }
-}
 //end fractional drisplay
 
 
