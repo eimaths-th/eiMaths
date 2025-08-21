@@ -1147,7 +1147,8 @@ class ContactController extends Controller
             $student = Auth::guard('student')->user();
             if ($student->type === 'demo') {
                 # code...
-                return redirect()->route('home.section', ['P6', '4', '20']);
+                // return redirect()->route('home.section', ['P6', '4', '20']);
+                return redirect()->route('home3');
             } else {
                 # code...
                 return redirect()->route('home3');
