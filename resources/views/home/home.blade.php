@@ -1,4 +1,4 @@
-@extends('layouts.qiuz_layout')
+@extends('layouts.quiz_layout')
 
 @section('title', 'Home Page')
 
@@ -44,7 +44,7 @@
                                                 <!-- Background Pattern -->
                                                 <div style="position: absolute; top: -20px; right: -20px; width: 80px; height: 80px; background: rgba(249, 115, 22, 0.1); border-radius: 50%; z-index: 1;"></div>
                                                 <div style="position: absolute; bottom: -30px; left: -30px; width: 100px; height: 100px; background: rgba(249, 115, 22, 0.05); border-radius: 50%; z-index: 1;"></div>
-                                                
+
                                                 <div style="position: relative; z-index: 2;">
                                                     <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
                                                         <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #f97316, #ea580c); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; color: white; font-weight: 600;">{{ $term }}</div>
@@ -53,7 +53,7 @@
                                                             <p style="color: #6b7280; font-size: 14px; margin: 4px 0 0 0;">เทอม {{ $term }}</p>
                                                         </div>
                                                     </div>
-                                                    
+
                                                     <div style="display: flex; align-items: center; gap: 8px;">
                                                         <div style="width: 32px; height: 32px; background: rgba(249, 115, 22, 0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
                                                             <span style="font-size: 16px;">📊</span>
@@ -84,7 +84,7 @@
                                                 <!-- Background Pattern -->
                                                 <div style="position: absolute; top: -20px; right: -20px; width: 80px; height: 80px; background: rgba(14, 165, 233, 0.1); border-radius: 50%; z-index: 1;"></div>
                                                 <div style="position: absolute; bottom: -30px; left: -30px; width: 100px; height: 100px; background: rgba(14, 165, 233, 0.05); border-radius: 50%; z-index: 1;"></div>
-                                                
+
                                                 <div style="position: relative; z-index: 2;">
                                                     <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
                                                         <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #0ea5e9, #0284c7); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; color: white; font-weight: 600;">L{{ $section }}</div>
@@ -93,7 +93,7 @@
                                                             <p style="color: #6b7280; font-size: 14px; margin: 4px 0 0 0;">ระดับ {{ $section }}</p>
                                                         </div>
                                                     </div>
-                                                    
+
                                                     <div style="display: flex; align-items: center; gap: 8px;">
                                                         <div style="width: 32px; height: 32px; background: rgba(14, 165, 233, 0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
                                                             <span style="font-size: 16px;">🎯</span>
@@ -124,7 +124,7 @@
                                                 <!-- Background Pattern -->
                                                 <div style="position: absolute; top: -20px; right: -20px; width: 80px; height: 80px; background: rgba(34, 197, 94, 0.1); border-radius: 50%; z-index: 1;"></div>
                                                 <div style="position: absolute; bottom: -30px; left: -30px; width: 100px; height: 100px; background: rgba(34, 197, 94, 0.05); border-radius: 50%; z-index: 1;"></div>
-                                                
+
                                                 <div style="position: relative; z-index: 2;">
                                                     <div style="margin-bottom: 16px;">
                                                         <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
@@ -135,7 +135,7 @@
                                                         </div>
                                                         <h3 style="color: #1f2937; font-size: 18px; font-weight: 700; margin: 0; line-height: 1.3; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">{{ $quiz->title }}</h3>
                                                     </div>
-                                                    
+
                                                     <div style="display: flex; align-items: center; gap: 8px;">
                                                         <div style="width: 32px; height: 32px; background: rgba(34, 197, 94, 0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
                                                             <span style="font-size: 16px;">❓</span>
@@ -166,7 +166,7 @@
                                                 <!-- Background Pattern -->
                                                 <div style="position: absolute; top: -20px; right: -20px; width: 80px; height: 80px; background: rgba(245, 158, 11, 0.1); border-radius: 50%; z-index: 1;"></div>
                                                 <div style="position: absolute; bottom: -30px; left: -30px; width: 100px; height: 100px; background: rgba(245, 158, 11, 0.05); border-radius: 50%; z-index: 1;"></div>
-                                                
+
                                                 <div style="position: relative; z-index: 2;">
                                                     <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
                                                         <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #f59e0b, #d97706); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 16px; color: white; font-weight: 700;">{{ substr($level, 0, 2) }}</div>
@@ -175,7 +175,7 @@
                                                             <p style="color: #6b7280; font-size: 14px; margin: 4px 0 0 0;">ระดับการศึกษา</p>
                                                         </div>
                                                     </div>
-                                                    
+
                                                     <div style="display: flex; align-items: center; gap: 8px;">
                                                         <div style="width: 32px; height: 32px; background: rgba(245, 158, 11, 0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
                                                             <span style="font-size: 16px;">📚</span>

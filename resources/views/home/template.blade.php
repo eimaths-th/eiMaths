@@ -1,4 +1,4 @@
-@extends('layouts.qiuz_layout')
+@extends('layouts.quiz_layout')
 
 @section('title', 'Leader Board')
 

@@ -234,7 +234,7 @@ class eLeanController extends Controller
             ->where('user_id', $user_id)
             ->where('type_user', $type_user)
             ->with(['quiz' => function ($query) {
-                $query->select('id', 'title', 'description');
+                $query->select('id', 'title','level','term','section');
                 $query->withCount('questions');
             }])->orderBy('id', 'desc')
             ->paginate();
@@ -264,7 +264,7 @@ class eLeanController extends Controller
             ->with(['user' => function ($query) {
                 $query->select('id', 'name');
             }, 'quiz' => function ($query) {
-                $query->select('id', 'title');
+                $query->select('id', 'title','level','term','section');
             }])
             ->when($quizId > 0, function ($query) use ($quizId) {
                 $query->where('quiz_id', $quizId);
