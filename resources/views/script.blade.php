@@ -815,29 +815,39 @@
         const reservation = $('#reservation');
         let centre = dcentre.val();
         let reservationValue = reservation.val();
-
-        console.log('ready centre', centre);
-        console.log('ready reservation', reservationValue);
+        // Determine if current user is SystemAdmin (safe checks without assuming role system)
+        const IS_SYSTEM_ADMIN = @json(auth()->check() && (function() {
+            $u = Auth::user();
+            if (!$u) return false;
+            if (method_exists($u, 'hasRole')) {
+                return $u->hasRole('SystemAdmin');
+            }
+            // Fallbacks if hasRole is unavailable
+            if (isset($u->role) && is_string($u->role)) {
+                return $u->role === 'SystemAdmin';
+            }
+            return false;
+        })());
 
         // Define routes and element selectors in one place
         const routes = [
-            { 
-                selector: '#contacts-link', 
+            {
+                selector: '#contacts-link',
                 route: "{{ route('contacts') }}",
                 params: ['centre', 'date']
             },
-            { 
-                selector: '#teacher-link', 
+            {
+                selector: '#teacher-link',
                 route: "{{ route('users.index') }}",
                 params: ['role=Teacher', 'centre', 'date']
             },
-            { 
-                selector: '.receipt-link', 
+            {
+                selector: '.receipt-link',
                 route: "{{ route('receipts') }}",
                 params: ['centre', 'date']
             },
-            { 
-                selector: '#receipts-pending-link', 
+            {
+                selector: '#receipts-pending-link',
                 route: "{{ route('receipts_pending') }}",
                 params: ['centre', 'date']
             },
@@ -846,7 +856,7 @@
         function updateLinks(centre, reservationValue) {
             routes.forEach(item => {
                 let url = new URL(item.route);
-                
+
                 // Add parameters to URL
                 item.params.forEach(param => {
                     if (param.includes('=')) {
@@ -854,12 +864,15 @@
                         const [key, value] = param.split('=');
                         url.searchParams.set(key, value);
                     } else if (param === 'centre' && centre) {
-                        url.searchParams.set('centre', centre);
+                        // Skip centre for SystemAdmin
+                        if (!IS_SYSTEM_ADMIN) {
+                            url.searchParams.set('centre', centre);
+                        }
                     } else if (param === 'date' && reservationValue) {
                         url.searchParams.set('date', reservationValue);
                     }
                 });
-                
+
                 // Update the href attribute with the properly encoded URL
                 $(item.selector).attr('href', url.toString());
             });
