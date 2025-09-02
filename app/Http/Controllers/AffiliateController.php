@@ -10,6 +10,7 @@ use App\Models\FooterSetting;
 use App\Models\PromotionImage;
 use App\Models\QRCodePayMent;
 use App\Models\TeachingPeriod;
+use Modules\CourseSetting\Entities\Course;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Modules\Affiliate\Repositories\AffiliateRepository;
@@ -167,7 +168,11 @@ class AffiliateController extends Controller
         $footer = FooterSetting::first();
         $promotion = PromotionImage::where('status', 'enabled')->get();
 
-
+        // Retrieve courses with pagination and preserve query string
+        $courses = Course::where('status', 1)
+            ->orderByDesc('id')
+            ->paginate(12);
+        $courses->appends($request->query());
 
         return view('affiliate.courses', compact(
             'request',
@@ -177,7 +182,8 @@ class AffiliateController extends Controller
             'days',
             'qr_payment',
             'footer',
-            'promotion'
+            'promotion',
+            'courses'
         ));
     }
 
