@@ -512,7 +512,7 @@ class QuestionController extends Controller
                 // Validate when 'imgOptions' is present
                 $validatedImageOptions = $request->validate([
                     'imgOptions' => 'required|array',
-                    'imgOptions.*.file' => 'required|file|mimes:jpg,png,jpeg|max:1024', // 1 MB = 1024 KB
+                    'imgOptions.*.file' => 'required|file|mimes:jpg,png,jpeg|max:5120', // 5 MB = 5120 KB
                     'imgOptions.*.correct' => 'required|in:0,1',
                     'imgOptionsShow.*.correct' => 'required|in:0,1',
                 ], [

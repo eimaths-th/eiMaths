@@ -55,6 +55,8 @@ class UserController extends Controller
 
         if ($request->ajax()) {
             //sleep(2);
+            $roleAdmin = Auth::user()->getRoleNames()[0];
+            // dd($roleAdmin, Auth::user());
 
             $role = $request->get('role');
             $centre = $request->get('centre');
@@ -74,8 +76,14 @@ class UserController extends Controller
                         $q->where('id', $centre);
                     });
                 })
-                ->orderBy("id", "desc")
-                ->get();
+                ->orderBy("id", "desc");
+            // ->get();
+            // if ($roleAdmin != 'SystemAdmin') {
+            //     // $datas
+            //     $datas->whereHas('department', function ($query) {
+            //         $query->where('id', Auth::user()->department->id);
+            //     });
+            // }
 
             if (!Gate::allows('all-centre')) {
                 $datas->whereHas('department', function ($query) {
@@ -83,7 +91,7 @@ class UserController extends Controller
                 });
             }
 
-            // $datas->orderBy("id", "desc")->get();
+            $datas->orderBy("id", "desc")->get();
             return datatables()->of($datas)
                 ->editColumn('role', function (User $datas) {
                     if (!empty($datas->getRoleNames())) {
