@@ -70,13 +70,29 @@
 
 
     $('#SearchButtons').on('click', async function() {
-        handle_student_by_centre();
-        teacher_by_centre();
-        study_by_centre();
-        handle_student_by_level();
-        handle_receipt_sum_by_date();
-        handle_student_stutus();
-        handle_daily_study();
+        const $btn = $(this);
+        if ($btn.prop('disabled')) return; // prevent double clicks
+
+        const originalHtml = $btn.html();
+        $btn.prop('disabled', true).addClass('loading');
+        $btn.html('<i class="fas fa-spinner fa-spin"></i>');
+
+        try {
+            await Promise.all([
+                handle_student_by_centre(),
+                teacher_by_centre(),
+                study_by_centre(),
+                handle_student_by_level(),
+                handle_receipt_sum_by_date(),
+                handle_student_stutus(),
+                handle_daily_study(),
+            ]);
+        } catch (e) {
+            console.error('Dashboard refresh error:', e);
+        } finally {
+            $btn.prop('disabled', false).removeClass('loading');
+            $btn.html(originalHtml);
+        }
     });
 
 
