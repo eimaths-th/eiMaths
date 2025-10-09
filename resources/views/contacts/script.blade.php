@@ -955,12 +955,14 @@
                 data: {
                     centre: $('#AddCentre').val()[0],
                     code: $('#AddCode').val(),
+                    free_course: $('#AddFreeCourse').val(),
                     name: $('#AddName').val(),
                     ref: $('#AddReferral').val(),
                     nickname: $('#AddNickname').val(),
                     gender: $("input[name='gender']:checked").val(),
                     birth_date: $('#AddBirthDate').val(),
                     start_date: $('#AddDate').val(),
+
                     //start_term: $('#AddSTerm').val()[0],
                     school: $('#AddSchool').val(),
                     level: $('#AddLevel').val()[0],
@@ -1046,6 +1048,25 @@
 
         })
 
+        $(document).on('click', '.btn-fastHistory', function() {
+            const studentId = $(this).data('id');
+
+            $.get(`/contacts/${studentId}/fast-history`, function(res) {
+                console.log(res.data);
+                toastr.success('บันทึกประวัติการเรียนเรียบร้อยแล้ว');
+                if ($.fn.DataTable.isDataTable('#Listview')) {
+                    $('#Listview').DataTable().ajax.reload(null, false);
+                }
+                // TODO: render modal/table
+            }).fail(function(xhr) {
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    toastr.error(xhr.responseJSON.message);
+                } else {
+                    toastr.error('Loading fast history failed');
+                }
+            });
+        });
+
         $(document).on('click', '#getEditData', function(e) {
             e.preventDefault();
 
@@ -1065,6 +1086,7 @@
                 success: function(res) {
                     $('#EditCentre').val(res.data.centre).change();
                     $('#EditName').val(res.data.name);
+                    $('#EditFreeCourse').val(res.data.free_course);
                     $('#EditNickname').val(res.data.nickname);
                     $('#EditCode').val(res.data.code);
                     $('#EditDate').val(res.data.start_date);
@@ -1171,6 +1193,7 @@
                 data: {
                     centre: $('#EditCentre').val()[0],
                     code: $('#EditCode').val(),
+                    free_course: $('#EditFreeCourse').val(),
                     name: $('#EditName').val(),
                     nickname: $('#EditNickname').val(),
                     gender: $("input[name='egender']:checked").val(),
@@ -1288,6 +1311,7 @@
                 method: 'post',
                 data: {
                     ref: $('#getRef').val(),
+                    free_course: $('#AddRcFreeCourse').val(),
                     centre: $('#ReceiptCentre').val()[0],
                     student: $('#s_student').val()[0],
                     level: $('#ReceiptLevel').val()[0],

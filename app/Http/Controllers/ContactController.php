@@ -111,6 +111,8 @@ class ContactController extends Controller
         $studentEndLevel = $student->level2;
         $studentEndTerm = $student->term2;
 
+        $free_course = $student->free_course;
+
         $coin = 0;
         $historyCount = 0;
 
@@ -145,13 +147,88 @@ class ContactController extends Controller
                 }
             }
         }
-        $scoin = $coin * 10;
+
+        // $history = Histrories::where([
+        //     ['student_id', $student->id],
+        //     ['level_id', $studentStartLevel],
+        //     ['term', $studentStartTerm],
+        // ])->first();
+
+        // if ($history) {
+        //     $history->whereBetween('date', [$history->start_date, $history->end_date])->get();
+        // }
+
+        $scoin = ($coin * 10) + $free_course;
 
         $remain = $scoin - $historyCount;
 
-        $text = $remain . ' / ' . $scoin . ' เรียนไปแล้ว : ' . $historyCount . ' ครั้ง';
+        $text = ' เรียนไปแล้ว : ' . $historyCount . ' ฟรี ' . $free_course . ' เหลือ ' . $remain . ' / ' . $scoin;
 
         return $text;
+    }
+
+    public function maxHistory($id)
+    {
+        // $id = 103;
+        $student = Contact::find($id);
+        $studentStartLevel = $student->level;
+        $studentStartTerm = $student->term;
+        $studentEndLevel = $student->level2;
+        $studentEndTerm = $student->term2;
+
+        $free_course = $student->free_course;
+
+        $coin = 0;
+        $historyCount = 0;
+
+        if ($studentEndLevel && $studentEndTerm) {
+            for ($i = $studentStartLevel; $i <= $studentEndLevel; $i++) {
+
+                if ($i == $studentStartLevel) {
+                    $sterm = $studentStartTerm;
+                } else {
+                    $sterm = 1;
+                }
+
+                if ($i == $studentEndLevel) {
+                    $eterm = $studentEndTerm;
+                } else {
+                    $eterm = 4;
+                }
+
+                for ($j = $sterm; $j <= $eterm; $j++) {
+                    $history = Histrories::where([
+                        ['student_id', $id],
+                        ['level_id', $i],
+                        ['term', $j],
+                    ])->get();
+
+                    if ($history->count() > 0) {
+
+                        $historyCount += $history->count();
+                    }
+
+                    $coin++;
+                }
+            }
+        }
+
+        // $history = Histrories::where([
+        //     ['student_id', $student->id],
+        //     ['level_id', $studentStartLevel],
+        //     ['term', $studentStartTerm],
+        // ])->first();
+
+        // if ($history) {
+        //     $history->whereBetween('date', [$history->start_date, $history->end_date])->get();
+        // }
+
+        $scoin = ($coin * 10) + $free_course;
+
+        $remain = $scoin - $historyCount;
+
+
+        return $remain;
     }
 
 
@@ -247,15 +324,23 @@ class ContactController extends Controller
                 })
                 ->addColumn('action', function ($row) {
                     if (Gate::allows('student-edit')) {
-                        $html = '<button type="button" class="btn btn-sm btn-info btn-show" id="getCourseData" data-id="' . $row->id . '"><i class="fa fa-search"></i> View Course</button> ';
+                        $html = '<button type="button" class="btn btn-sm btn-primary btn-fastHistory" id="fastHistory" data-id="' . $row->id . '"><i class="fa fa-history"></i> Fast History</button> ';
                     } else {
-                        $html = '<button type="button" class="btn btn-sm btn-info disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-search"></i>  View Course</button> ';
+                        $html = '<button type="button" class="btn btn-sm btn-primary disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-history"></i> Fast History</button> ';
                     }
+
+                    if (Gate::allows('student-edit')) {
+                        $html .= '<button type="button" class="btn btn-sm btn-info btn-show" id="getCourseData" data-id="' . $row->id . '"><i class="fa fa-search"></i>View Course</button> ';
+                    } else {
+                        $html .= '<button type="button" class="btn btn-sm btn-info disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-search"></i>  View Course</button> ';
+                    }
+
                     if (Gate::allows('student-edit')) {
                         $html .= '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit</button> ';
                     } else {
                         $html .= '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> Edit</button> ';
                     }
+
                     if (Gate::allows('student-delete')) {
                         $html .= '<button type="button" data-rowid="' . $row->id . '" class="btn btn-sm btn-danger btn-delete"><i class="fa fa-trash"></i> Delete</button>';
                     } else {
@@ -1038,6 +1123,7 @@ class ContactController extends Controller
 
         $contact = Contact::where('id', $request->get('student'))->first();
         $contact->ref = $ref_code;
+        $contact->free_course = $request->get('free_course');
         $contact->order = $order->id;
         $contact->level = $request->get('level');
         $contact->term = $request->get('term');
@@ -1205,6 +1291,8 @@ class ContactController extends Controller
      */
     public function update(Request $request, $id)
     {
+
+        // dd($request->all());
         $rules = [
             'name' => 'required|string|max:255|unique:contacts,name,' . $id,
             'start_date' => 'required|string|max:10',
@@ -1350,6 +1438,7 @@ class ContactController extends Controller
 
         $contactd = [
             'name' => $request->get('name'),
+            'free_course' => $request->get('free_course'),
             'nickname' => $request->get('nickname'),
             'address' => $request->get('address'),
             'postcode' => $request->get('postcode'),
@@ -1464,6 +1553,58 @@ class ContactController extends Controller
 
 
         return response()->json(['success' => 'Student information updated successfully', 'discontinued' => $contact->discontinued]);
+    }
+
+
+    public function fastHistory($id)
+    {
+        $student = Contact::find($id);
+        if (!$student) {
+            return response()->json(['message' => 'Student not found'], 404);
+        }
+        
+        $maxHistory = $this->maxHistory($student->id);
+        if ($maxHistory < 1) {
+            return response()->json(['message' => 'นักเรียนคนนี้เข้าเรียนครบแล้ว'], 404);
+        }
+
+        $history = Histrories::where('student_id', $student->id)
+            ->where('term', $student->term)
+            ->where('level_id', $student->level)
+            ->orderByDesc('date')
+            ->first();
+
+        $now = Carbon::now();
+        $startDate = Carbon::parse($history->start_date ?? $now->format('Y-m-d'));
+        $endDate = $startDate->copy()->addMonths(4);
+
+        $payload = [
+            'centre' => $history->centre ?? $student->centre,
+            'teacher_id' => $history->teacher_id ?? null,
+            'student_id' => $student->id,
+            'level_id' => $history->level_id ?? $student->level,
+            'level_name' => $history->level_name ?? $student->level_name,
+            'term' => $history->term ?? $student->term,
+            'bookuse' => $history->bookuse ?? $student->bookuse,
+            'date' => $now->toDateString(),
+            'stime' => $now->format('H:i:s'),
+            'etime' => $now->addHours(2)->format('H:i:s'),
+            'start_date' => $startDate->toDateString(),
+            'end_date' => $endDate->toDateString(),
+            'comment' => null,
+            'signature' => null,
+        ];
+
+        if ($history) {
+            $remaining = max(($history->course_remaining ?? 0) - 1, 0);
+            $payload['course_remaining'] = $remaining;
+        } else {
+            $payload['course_remaining'] = 9;
+        }
+
+        $newHistory = Histrories::create($payload);
+
+        return response()->json(['data' => $newHistory]);
     }
 
     /**

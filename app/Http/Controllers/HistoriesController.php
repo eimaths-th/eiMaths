@@ -487,6 +487,69 @@ class HistoriesController extends Controller
         }
     }
 
+    public function checkRemaining($id)
+    {
+        // $id = 103;
+        $student = Contact::find($id);
+        $studentStartLevel = $student->level;
+        $studentStartTerm = $student->term;
+        $studentEndLevel = $student->level2;
+        $studentEndTerm = $student->term2;
+
+        $coin = 0;
+        $historyCount = 0;
+
+        if ($studentEndLevel && $studentEndTerm) {
+            for ($i = $studentStartLevel; $i <= $studentEndLevel; $i++) {
+
+                if ($i == $studentStartLevel) {
+                    $sterm = $studentStartTerm;
+                } else {
+                    $sterm = 1;
+                }
+
+                if ($i == $studentEndLevel) {
+                    $eterm = $studentEndTerm;
+                } else {
+                    $eterm = 4;
+                }
+
+                for ($j = $sterm; $j <= $eterm; $j++) {
+                    $history = Histrories::where([
+                        ['student_id', $id],
+                        ['level_id', $i],
+                        ['term', $j],
+                    ])->get();
+
+                    if ($history->count() > 0) {
+
+                        $historyCount += $history->count();
+                    }
+
+                    $coin++;
+                }
+            }
+        }
+
+        // $history = Histrories::where([
+        //     ['student_id', $student->id],
+        //     ['level_id', $studentStartLevel],
+        //     ['term', $studentStartTerm],
+        // ])->first();
+
+        // if ($history) {
+        //     $history->whereBetween('date', [$history->start_date, $history->end_date])->get();
+        // }
+
+        $scoin = $coin * 10;
+
+        // $remain = $scoin - $historyCount;
+
+        // $text = $remain . ' / ' . $scoin . ' เรียนไปแล้ว : ' . $historyCount . ' ครั้ง';
+
+        return $coin;
+    }
+
     public function store(Request $request)
     {
         // dd($request);
@@ -537,6 +600,7 @@ class HistoriesController extends Controller
 
         //contact data
         $contact = Contact::find($std_id);
+        $coin = $this->checkRemaining($std_id);
 
         $history = Histrories::where([
             ['student_id', $std_id],
@@ -587,7 +651,7 @@ class HistoriesController extends Controller
         //dd( $history->count(),$std_id,$term,$level_id,$history,$qty);
         if ($history->isEmpty()) {
             $start_date = Carbon::parse($request->input('date'));
-            $end_date = $start_date->copy()->addMonths(4);
+            $end_date = $start_date->copy()->addMonths(4 * $coin);
             $course_remaining = 9;
         } elseif ($history->count() < $qty) {
             $lastHistory = $history->sortByDesc('date')->first();

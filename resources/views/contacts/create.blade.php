@@ -470,6 +470,8 @@
                                             <div class="col-xs-6 col-sm-6 col-md-6">
                                             </div>
                                             <div class="col-xs-3 col-sm-3 col-md-3">
+                                                <strong><i class="fas fa-book-open"></i>Free Class:</strong>
+                                                <input type="number" min="0" class="form-control free_course" id="AddFreeCourse" name="free_course" value="0">
                                             </div>
                                             <div class="col-xs-3 col-sm-3 col-md-3">
                                                 <div class="form-group">

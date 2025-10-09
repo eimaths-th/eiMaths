@@ -404,10 +404,10 @@
                     name: 'bookuse'
                 },
 
-                {
-                    data: 'course_remaining',
-                    name: 'course_remaining'
-                },
+                // {
+                //     data: 'course_remaining',
+                //     name: 'course_remaining'
+                // },
                 {
                     data: 'start_date',
                     name: 'start_date'

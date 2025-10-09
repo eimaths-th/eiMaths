@@ -54,6 +54,8 @@ Route::group(['middleware' => ['auth']], function () {
     Route::put('/contacts/save/{id}', [App\Http\Controllers\ContactController::class, 'update'])->name('contacts.save');
     Route::delete('/contacts/destroy', [App\Http\Controllers\ContactController::class, 'destroy'])->name('contacts.destroy');
     Route::post('/contacts/destroy_all', [App\Http\Controllers\ContactController::class, 'destroy_all'])->name('contacts.destroy_all');
+    Route::get('contacts/{id}/fast-history', [ContactController::class, 'fastHistory'])->name('contacts.fastHistory');
+
 
     Route::get('/discontinued', [App\Http\Controllers\DiscontinueController::class, 'index'])->name('discontinued');
     Route::put('/discontinued/restart', [App\Http\Controllers\DiscontinueController::class, 'restart'])->name('discontinued.restart');

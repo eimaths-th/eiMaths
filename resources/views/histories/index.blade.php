@@ -171,7 +171,7 @@
 
 
 
-                                                    <th width="1%">Remain</th>
+                                                    {{-- <th width="1%">Remain</th> --}}
                                                     <th>Course Start-End Date</th>
                                                     {{-- <th></th> --}}
 

@@ -504,6 +504,11 @@
                                                             </select>
                                                         </div>
                                                     </div>
+                                                    <div class="col-xs-3 col-sm-3 col-md-3">
+                                                        <strong><i class="fas fa-book-open"></i>Free Class:</strong>
+                                                        <input type="number" min="0" class="form-control EditFreeCourse" id="EditFreeCourse" name="free_course" value="0">
+
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>

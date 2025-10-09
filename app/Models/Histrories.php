@@ -6,22 +6,22 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * @property integer $id
- * @property integer $centre
- * @property integer $student_id
- * @property integer $level_id
- * @property string $level_name
- * @property string $term
- * @property string $bookuse
- * @property string $course_remaining
- * @property string $date
- * @property string $stime
- * @property string $etime
- * @property string $start_date
- * @property string $end_date
- * @property string $comment
- * @property string $signature
- * @property string $created_at
- * @property string $updated_at
+ * @property integer $centre // ศูนย์การศึกษา
+ * @property integer $student_id // รหัสนักเรียน
+ * @property integer $level_id // รหัสชั้น
+ * @property string $level_name // ชั้น
+ * @property string $term // ภาคเรียน
+ * @property string $bookuse // หนังสือ
+ * @property string $course_remaining // จำนวนครั้งที่เหลือ
+ * @property string $date // วันที่มาเรียน
+ * @property string $stime // เวลาเริ่ม
+ * @property string $etime // เวลาสิ้นสุด
+ * @property string $start_date // วันที่เริ่มเรียน
+ * @property string $end_date // วันที่สิ้นสุด
+ * @property string $comment // หมายเหตุ
+ * @property string $signature // ลายเซ็นต์
+ * @property string $created_at // วันที่สร้าง
+ * @property string $updated_at // วันที่แก้ไข
  */
 class Histrories extends Model
 {
@@ -50,5 +50,4 @@ class Histrories extends Model
     {
         return $this->hasOne(bookuse::class, 'id', 'bookuse');
     }
-
 }
