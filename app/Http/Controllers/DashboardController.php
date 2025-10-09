@@ -241,7 +241,7 @@ class DashboardController extends Controller
 
     public function receipt_sum_by_date(Request $request)
     {
-        // dd($request->all());    
+        // dd($request->all());
         $dcentreValue = $request->input('dcentre');
         $reservationValue = $request->input('reservation');
 
@@ -257,7 +257,7 @@ class DashboardController extends Controller
         if ($dcentreValue && $dcentreValue !== '1') {
             $summaryByDate->where('receipts.centre', $dcentreValue);
         }
-
+        $summaryByDate->whereNot('receipts.centre', 4);
         //$summaryByDate->where('orders.status', 1);
 
         if ($reservationValue) {
@@ -298,9 +298,10 @@ class DashboardController extends Controller
 
             ->join('departments', 'contacts.centre', '=', 'departments.id');
 
-        if (!Gate::allows('all-centre')) {
+        if ($dcentreValue && $dcentreValue !== '1') {
             $results->where('contacts.centre', $dcentreValue);
         }
+        $results->whereNot('contacts.centre', 4);
 
         $results->groupBy(['centre_name', 'contacts.centre']);
         $datas = $results->get();

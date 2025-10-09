@@ -238,8 +238,13 @@ class ReceiptController extends Controller
             $query = Receipt::where('type', $type);
             // $test = $query->get();
             // dd($test);
-            if ($centre) {
+            if ($centre && $centre !== '1') {
                 $query->where('centre', $centre);
+            }
+            if ($request->date) { // e.g. "2025-10"
+                [$year, $month] = explode('-', $request->date);
+                $query->whereYear('payment_date', $year)
+                      ->whereMonth('payment_date', $month);
             }
             // if ($reservationValue) {
             //     $query->where('receipts.payment_date', 'like', $reservationValue . '%');
@@ -262,6 +267,8 @@ class ReceiptController extends Controller
                     }
                 }
             }
+
+
             $datas = $query->orderBy("id", "desc")
                 ->get();
             // dd($request->all(), $datas);

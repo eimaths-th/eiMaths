@@ -880,10 +880,7 @@
                         const [key, value] = param.split('=');
                         url.searchParams.set(key, value);
                     } else if (param === 'centre' && centre) {
-                        // Skip centre for SystemAdmin
-                        if (!IS_SYSTEM_ADMIN) {
-                            url.searchParams.set('centre', centre);
-                        }
+                        url.searchParams.set('centre', centre);
                     } else if (param === 'date' && reservationValue) {
                         url.searchParams.set('date', reservationValue);
                     }
