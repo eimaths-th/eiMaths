@@ -68,8 +68,32 @@
             }
         }
 
+        // If still no dates, fall back to default window: last 365 days to end of current year
+        if (!startDate || !endDate) {
+            const currentDate = moment();
+            startDate = moment(currentDate).subtract(365, 'days').format('YYYY-MM-DD');
+            endDate = moment(currentDate).endOf('year').format('YYYY-MM-DD');
+            localStorage.setItem('dateStart', `${startDate} - ${endDate}`);
+        }
+
         // Call the function to set initial field values on page load
         retrieveFieldValues();
+
+        // If incoming URL includes ?date=YYYY-MM, set the picker to that month
+        let hasMonthParam = false;
+        const params = new URLSearchParams(window.location.search);
+        const monthParam = params.get('date');
+        if (monthParam && /^\d{4}-\d{2}$/.test(monthParam)) {
+            try {
+                startDate = moment(monthParam, 'YYYY-MM').startOf('month').format('YYYY-MM-DD');
+                endDate = moment(monthParam, 'YYYY-MM').endOf('month').format('YYYY-MM-DD');
+                // Persist so it survives reloads/navigations
+                localStorage.setItem('dateStart', `${startDate} - ${endDate}`);
+                hasMonthParam = true;
+            } catch (e) {
+                console.warn('Invalid date param:', monthParam, e);
+            }
+        }
 
         let daterange = () => {
             $('#reservation').daterangepicker({
@@ -233,6 +257,22 @@
         };
 
         var table = $('#Listview').DataTable(table_option);
+
+        // If we came with date param, auto-apply the date filter and optionally run keyword search
+        if (hasMonthParam) {
+            reservationChanged = true;
+            // Reflect the chosen range in the input
+            if (startDate && endDate) {
+                $('#reservation').val(`${startDate} - ${endDate}`);
+            }
+            table.draw();
+            // Only trigger the Search button if both fields are filled to avoid error toast
+            const st = $('#search_type').val();
+            const kw = $('#keyword').val();
+            if (st && kw) {
+                $('#SearchButtons').trigger('click');
+            }
+        }
 
         $('#SearchButtons').on('click', function() {
             var searchType = $('#search_type').val();

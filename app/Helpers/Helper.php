@@ -105,7 +105,7 @@ if (!function_exists('toFraction')) {
 }
 
 if (!function_exists('toMixedFraction')) {
-    function toMixedFraction( $whole = null, $numerator, $denominator)
+    function toMixedFraction($numerator, $denominator, $whole = null)
     {
 
         if ($whole) {
@@ -4808,7 +4808,7 @@ if (!function_exists('MarkAsBlogRead')) {
     }
 }
 if (!function_exists('upgradeLevelPayment')) {
-    function upgradeLevelPayment(int $checkout_id, int $level_id, int $user_id = null)
+    function upgradeLevelPayment(int $checkout_id, int $level_id, ?int $user_id = null): bool
     {
         $userId = $user_id ?? auth()->user()->id;
         $exit = MembershipUpgradeLevel::where('membership_checkout_id', $checkout_id)->where('level_id', $level_id)->where('user_id', $userId)->first();

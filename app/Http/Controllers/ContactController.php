@@ -1865,6 +1865,7 @@ class ContactController extends Controller
             # code...
             return Excel::download(new ExportExcel($request->get('table_records')), 'ReceiptForm.xlsx');
         } else {
+
             # code...
             return Excel::download(new ExportForm($request->get('table_records')), 'ExportContact.xlsx');
         }

@@ -88,6 +88,7 @@ class ExportForm implements FromCollection, WithHeadings
                 "gender" => $sex,
                 "birth_date" => $contact->birth_date,
                 "telephone" => $contact->telephone,
+                "email" => $contact->father_email.', '.$contact->mother_email,
 
                 "level_name" => $contact->level_name,
                 "term_name" => $contact->term_name,
@@ -122,6 +123,7 @@ class ExportForm implements FromCollection, WithHeadings
             'gender',
             'Birth Date',
             'Mobile',
+            'email',
             'start level',
             'start term',
             'start bookuse',
