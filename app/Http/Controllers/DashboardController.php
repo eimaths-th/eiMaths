@@ -52,34 +52,20 @@ class DashboardController extends Controller
     public function dashboard_student_by_level(Request $request)
     {
         $dcentreValue = $request->input('dcentre');
-        $dateRangeValue = $request->input('date_range');
-        $yearsValue = $request->input('years');
+        // Ignore date_range and years filters
 
         $results = Contact::select(
             'level_name',
             DB::raw('COUNT(*) as count')
         );
 
+        // Apply centre filter
         if ($dcentreValue && $dcentreValue !== '1') {
             $results->where('centre', $dcentreValue);
         }
 
-        // Apply date range filter if provided
-        if ($dateRangeValue) {
-            $dates = explode(' - ', $dateRangeValue);
-            if (count($dates) === 2) {
-                $results->whereBetween('created_at', [$dates[0], $dates[1] . ' 23:59:59']);
-            }
-        }
-
-        // Apply years filter if provided
-        if ($yearsValue && is_array($yearsValue) && count($yearsValue) > 0) {
-            $results->where(function ($query) use ($yearsValue) {
-                foreach ($yearsValue as $year) {
-                    $query->orWhereYear('created_at', $year);
-                }
-            });
-        }
+        // Exclude Test (4) and Affiliate (5) centres
+        $results->whereNotIn('centre', [4, 5]);
 
         $results->groupBy('level_name');
         $datas = $results->get();
@@ -463,10 +449,8 @@ class DashboardController extends Controller
 
     public function dashboard_student_status(Request $request)
     {
-
         $dcentreValue = $request->input('dcentre');
-        $dateRangeValue = $request->input('date_range');
-        $yearsValue = $request->input('years');
+        // Ignore date_range and years filters
 
         $results = Contact::select(
             //'contacts.*',
@@ -479,27 +463,13 @@ class DashboardController extends Controller
 
             ->join('departments', 'contacts.centre', '=', 'departments.id');
 
+        // Apply centre filter
         if ($dcentreValue && $dcentreValue !== '1') {
             $results->where('contacts.centre', $dcentreValue);
         }
-        $results->whereNot('contacts.centre', 4);
 
-        // Apply date range filter if provided
-        if ($dateRangeValue) {
-            $dates = explode(' - ', $dateRangeValue);
-            if (count($dates) === 2) {
-                $results->whereBetween('contacts.created_at', [$dates[0], $dates[1] . ' 23:59:59']);
-            }
-        }
-
-        // Apply years filter if provided
-        if ($yearsValue && is_array($yearsValue) && count($yearsValue) > 0) {
-            $results->where(function ($query) use ($yearsValue) {
-                foreach ($yearsValue as $year) {
-                    $query->orWhereYear('contacts.created_at', $year);
-                }
-            });
-        }
+        // Exclude Test (4) and Affiliate (5) centres
+        $results->whereNotIn('contacts.centre', [4, 5]);
 
         $results->groupBy(['centre_name', 'contacts.centre']);
         $datas = $results->get();
