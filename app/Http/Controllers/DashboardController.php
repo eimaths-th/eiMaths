@@ -52,7 +52,8 @@ class DashboardController extends Controller
     public function dashboard_student_by_level(Request $request)
     {
         $dcentreValue = $request->input('dcentre');
-        $reservationValue = $request->input('reservation');
+        $dateRangeValue = $request->input('date_range');
+        $yearsValue = $request->input('years');
 
         $results = Contact::select(
             'level_name',
@@ -63,8 +64,22 @@ class DashboardController extends Controller
             $results->where('centre', $dcentreValue);
         }
 
-        // Add condition for $reservationValue if needed
-        // $results->where('your_column_name', $reservationValue);
+        // Apply date range filter if provided
+        if ($dateRangeValue) {
+            $dates = explode(' - ', $dateRangeValue);
+            if (count($dates) === 2) {
+                $results->whereBetween('created_at', [$dates[0], $dates[1] . ' 23:59:59']);
+            }
+        }
+
+        // Apply years filter if provided
+        if ($yearsValue && is_array($yearsValue) && count($yearsValue) > 0) {
+            $results->where(function ($query) use ($yearsValue) {
+                foreach ($yearsValue as $year) {
+                    $query->orWhereYear('created_at', $year);
+                }
+            });
+        }
 
         $results->groupBy('level_name');
         $datas = $results->get();
@@ -85,8 +100,8 @@ class DashboardController extends Controller
     public function dashboard_student_by_centre(Request $request)
     {
         $dcentreValue = $request->input('dcentre');
-        $reservationValue = $request->input('reservation');
-
+        $dateRangeValue = $request->input('date_range');
+        $yearsValue = $request->input('years');
 
         $results = Contact::select(
             'contacts.centre as centre_id',  // Alias for clarity
@@ -98,6 +113,23 @@ class DashboardController extends Controller
 
         if (!Gate::allows('all-centre')) {
             $results->where('contacts.centre', $dcentreValue);
+        }
+
+        // Apply date range filter if provided
+        if ($dateRangeValue) {
+            $dates = explode(' - ', $dateRangeValue);
+            if (count($dates) === 2) {
+                $results->whereBetween('contacts.created_at', [$dates[0], $dates[1] . ' 23:59:59']);
+            }
+        }
+
+        // Apply years filter if provided
+        if ($yearsValue && is_array($yearsValue) && count($yearsValue) > 0) {
+            $results->where(function ($query) use ($yearsValue) {
+                foreach ($yearsValue as $year) {
+                    $query->orWhereYear('contacts.created_at', $year);
+                }
+            });
         }
 
         $results->groupBy('contacts.centre', 'departments.name'); // Group by both centre columns
@@ -133,7 +165,8 @@ class DashboardController extends Controller
     public function dashboard_teacher_by_centre(Request $request)
     {
         $dcentreValue = $request->input('dcentre');
-        $reservationValue = $request->input('reservation');
+        $dateRangeValue = $request->input('date_range');
+        $yearsValue = $request->input('years');
         $role = 'Teacher';
 
         $results = User::select(
@@ -151,10 +184,22 @@ class DashboardController extends Controller
             $results->where('users.department_id', $dcentreValue);
         }
 
+        // Apply date range filter if provided
+        if ($dateRangeValue) {
+            $dates = explode(' - ', $dateRangeValue);
+            if (count($dates) === 2) {
+                $results->whereBetween('users.created_at', [$dates[0], $dates[1] . ' 23:59:59']);
+            }
+        }
 
-        /*
-            $results->where('contacts.centre', $dcentreValue);
-        } */
+        // Apply years filter if provided
+        if ($yearsValue && is_array($yearsValue) && count($yearsValue) > 0) {
+            $results->where(function ($query) use ($yearsValue) {
+                foreach ($yearsValue as $year) {
+                    $query->orWhereYear('users.created_at', $year);
+                }
+            });
+        }
 
         $results->groupBy('users.department_id', 'departments.name'); // Group by both centre columns
         $datas = $results->get();
@@ -189,25 +234,38 @@ class DashboardController extends Controller
     public function today_study_student_by_centre(Request $request)
     {
         $dcentreValue = $request->input('dcentre');
-        $reservationValue = $request->input('reservation');
-
+        $dateRangeValue = $request->input('date_range');
+        $yearsValue = $request->input('years');
 
         $results = Histrories::select(
             'histrories.centre as centre_id',
             'departments.name as centre_name',
             DB::raw('COUNT(*) as count')
         )
-            ->join('departments', 'histrories.centre', '=', 'departments.id') // Adjust the join condition based on your actual schema
-            //->where('users.department_id', '!=', 1);
-            ->where('histrories.date', date("Y-m-d"));
+            ->join('departments', 'histrories.centre', '=', 'departments.id'); // Adjust the join condition based on your actual schema
+
         if (!Gate::allows('all-centre')) {
             $results->where('histrories.centre', $dcentreValue);
         }
 
+        // Apply date range filter if provided, otherwise use today
+        if ($dateRangeValue) {
+            $dates = explode(' - ', $dateRangeValue);
+            if (count($dates) === 2) {
+                $results->whereBetween('histrories.date', [$dates[0], $dates[1]]);
+            }
+        } else {
+            $results->where('histrories.date', date("Y-m-d"));
+        }
 
-        /*
-            $results->where('contacts.centre', $dcentreValue);
-        } */
+        // Apply years filter if provided
+        if ($yearsValue && is_array($yearsValue) && count($yearsValue) > 0) {
+            $results->where(function ($query) use ($yearsValue) {
+                foreach ($yearsValue as $year) {
+                    $query->orWhereYear('histrories.date', $year);
+                }
+            });
+        }
 
         $results->groupBy('histrories.centre', 'departments.name'); // Group by both centre columns
         $datas = $results->get();
@@ -243,7 +301,8 @@ class DashboardController extends Controller
     {
         // dd($request->all());
         $dcentreValue = $request->input('dcentre');
-        $reservationValue = $request->input('reservation');
+        $dateRangeValue = $request->input('date_range');
+        $yearsValue = $request->input('years');
 
         $summaryByDate = Receipt::select(
             'payment_date',
@@ -260,8 +319,21 @@ class DashboardController extends Controller
         $summaryByDate->whereNot('receipts.centre', 4);
         //$summaryByDate->where('orders.status', 1);
 
-        if ($reservationValue) {
-            $summaryByDate->where('payment_date', 'like', $reservationValue . '%');
+        // Apply date range filter if provided
+        if ($dateRangeValue) {
+            $dates = explode(' - ', $dateRangeValue);
+            if (count($dates) === 2) {
+                $summaryByDate->whereBetween('payment_date', [$dates[0], $dates[1]]);
+            }
+        }
+
+        // Apply years filter if provided
+        if ($yearsValue && is_array($yearsValue) && count($yearsValue) > 0) {
+            $summaryByDate->where(function ($query) use ($yearsValue) {
+                foreach ($yearsValue as $year) {
+                    $query->orWhereYear('payment_date', $year);
+                }
+            });
         }
 
         $summaryByDate->groupBy('payment_date');
@@ -281,11 +353,120 @@ class DashboardController extends Controller
         ]);
     }
 
+    public function receipt_sum_by_month(Request $request)
+    {
+        $dcentreValue = $request->input('dcentre');
+        $dateRangeValue = $request->input('date_range');
+        $yearsValue = $request->input('years');
+
+        $summaryByMonth = Receipt::select(
+            DB::raw('DATE_FORMAT(payment_date, "%Y-%m") as month'),
+            DB::raw('COUNT(*) as total_transactions'),
+            DB::raw('COUNT(CASE WHEN orders.status = 1 THEN 1 ELSE NULL END) as total_transactions_payment'),
+            DB::raw('COUNT(CASE WHEN orders.status = 0 THEN 1 ELSE NULL END) as total_transactions_pending'),
+            DB::raw('SUM(CASE WHEN orders.status = 1 THEN total_fee ELSE 0 END) as total_fee_sum')
+        )
+            ->join('orders', 'receipts.oid', '=', 'orders.id');
+
+        if ($dcentreValue && $dcentreValue !== '1') {
+            $summaryByMonth->where('receipts.centre', $dcentreValue);
+        }
+        $summaryByMonth->whereNot('receipts.centre', 4);
+
+        // Apply date range filter if provided
+        if ($dateRangeValue) {
+            $dates = explode(' - ', $dateRangeValue);
+            if (count($dates) === 2) {
+                $summaryByMonth->whereBetween('payment_date', [$dates[0], $dates[1]]);
+            }
+        }
+
+        // Apply years filter if provided
+        if ($yearsValue && is_array($yearsValue) && count($yearsValue) > 0) {
+            $summaryByMonth->where(function ($query) use ($yearsValue) {
+                foreach ($yearsValue as $year) {
+                    $query->orWhereYear('payment_date', $year);
+                }
+            });
+        }
+
+        $summaryByMonth->groupBy('month');
+        $datas = $summaryByMonth->get();
+
+        $totalTransactionsSum = $datas->sum('total_transactions');
+        $totalTransactionsPay = $datas->sum('total_transactions_payment');
+        $totalTransactionsPen = $datas->sum('total_transactions_pending');
+        $totalFeeSum = $datas->sum('total_fee_sum');
+
+        return response()->json([
+            'total_receipt' => $totalTransactionsSum,
+            'total_receipt_pay' => $totalTransactionsPay,
+            'total_receipt_pen' => $totalTransactionsPen,
+            'total_income' => $totalFeeSum,
+            'receipt_sum_by_month' => $datas,
+        ]);
+    }
+
+    public function receipt_sum_by_year(Request $request)
+    {
+        $dcentreValue = $request->input('dcentre');
+        $dateRangeValue = $request->input('date_range');
+        $yearsValue = $request->input('years');
+
+        $summaryByYear = Receipt::select(
+            DB::raw('YEAR(payment_date) as year'),
+            DB::raw('COUNT(*) as total_transactions'),
+            DB::raw('COUNT(CASE WHEN orders.status = 1 THEN 1 ELSE NULL END) as total_transactions_payment'),
+            DB::raw('COUNT(CASE WHEN orders.status = 0 THEN 1 ELSE NULL END) as total_transactions_pending'),
+            DB::raw('SUM(CASE WHEN orders.status = 1 THEN total_fee ELSE 0 END) as total_fee_sum')
+        )
+            ->join('orders', 'receipts.oid', '=', 'orders.id');
+
+        if ($dcentreValue && $dcentreValue !== '1') {
+            $summaryByYear->where('receipts.centre', $dcentreValue);
+        }
+        $summaryByYear->whereNot('receipts.centre', 4);
+
+        // Apply date range filter if provided
+        if ($dateRangeValue) {
+            $dates = explode(' - ', $dateRangeValue);
+            if (count($dates) === 2) {
+                $summaryByYear->whereBetween('payment_date', [$dates[0], $dates[1]]);
+            }
+        }
+
+        // Apply years filter if provided
+        if ($yearsValue && is_array($yearsValue) && count($yearsValue) > 0) {
+            $summaryByYear->where(function ($query) use ($yearsValue) {
+                foreach ($yearsValue as $year) {
+                    $query->orWhereYear('payment_date', $year);
+                }
+            });
+        }
+
+        $summaryByYear->groupBy('year');
+        $datas = $summaryByYear->get();
+
+        $totalTransactionsSum = $datas->sum('total_transactions');
+        $totalTransactionsPay = $datas->sum('total_transactions_payment');
+        $totalTransactionsPen = $datas->sum('total_transactions_pending');
+        $totalFeeSum = $datas->sum('total_fee_sum');
+
+        return response()->json([
+            'total_receipt' => $totalTransactionsSum,
+            'total_receipt_pay' => $totalTransactionsPay,
+            'total_receipt_pen' => $totalTransactionsPen,
+            'total_income' => $totalFeeSum,
+            'receipt_sum_by_year' => $datas,
+        ]);
+    }
+
     public function dashboard_student_status(Request $request)
     {
 
         $dcentreValue = $request->input('dcentre');
-        $reservationValue = $request->input('reservation');
+        $dateRangeValue = $request->input('date_range');
+        $yearsValue = $request->input('years');
 
         $results = Contact::select(
             //'contacts.*',
@@ -302,6 +483,23 @@ class DashboardController extends Controller
             $results->where('contacts.centre', $dcentreValue);
         }
         $results->whereNot('contacts.centre', 4);
+
+        // Apply date range filter if provided
+        if ($dateRangeValue) {
+            $dates = explode(' - ', $dateRangeValue);
+            if (count($dates) === 2) {
+                $results->whereBetween('contacts.created_at', [$dates[0], $dates[1] . ' 23:59:59']);
+            }
+        }
+
+        // Apply years filter if provided
+        if ($yearsValue && is_array($yearsValue) && count($yearsValue) > 0) {
+            $results->where(function ($query) use ($yearsValue) {
+                foreach ($yearsValue as $year) {
+                    $query->orWhereYear('contacts.created_at', $year);
+                }
+            });
+        }
 
         $results->groupBy(['centre_name', 'contacts.centre']);
         $datas = $results->get();
@@ -325,7 +523,8 @@ class DashboardController extends Controller
     public function daily_study(Request $request)
     {
         $dcentreValue = $request->input('dcentre');
-        $reservationValue = $request->input('reservation');
+        $dateRangeValue = $request->input('date_range');
+        $yearsValue = $request->input('years');
 
         $query = Histrories::select(
             'date',
@@ -336,8 +535,21 @@ class DashboardController extends Controller
             $query->where('centre', $dcentreValue);
         }
 
-        if ($reservationValue) {
-            $query->where('date', 'like', $reservationValue . '%');
+        // Apply date range filter if provided
+        if ($dateRangeValue) {
+            $dates = explode(' - ', $dateRangeValue);
+            if (count($dates) === 2) {
+                $query->whereBetween('date', [$dates[0], $dates[1]]);
+            }
+        }
+
+        // Apply years filter if provided
+        if ($yearsValue && is_array($yearsValue) && count($yearsValue) > 0) {
+            $query->where(function ($q) use ($yearsValue) {
+                foreach ($yearsValue as $year) {
+                    $q->orWhereYear('date', $year);
+                }
+            });
         }
 
         $query->groupBy('date');

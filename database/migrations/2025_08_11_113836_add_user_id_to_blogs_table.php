@@ -12,8 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('blogs', function (Blueprint $table) {
-            $table->string('pen_name')->nullable()->after('meta_keywords');
-            $table->foreignid('user_id')->nullable()->constrained()->ondelete('cascade')->after('is_published');
+            // ตรวจสอบและเพิ่มคอลัมน์ pen_name หากยังไม่มี
+            if (!Schema::hasColumn('blogs', 'pen_name')) {
+                $table->string('pen_name', 255)->nullable()->after('meta_keywords');
+            }
+
+            // ตรวจสอบและเพิ่มคอลัมน์ user_id หากยังไม่มี
+            if (!Schema::hasColumn('blogs', 'user_id')) {
+                $table->unsignedBigInteger('user_id')->nullable()->after('pen_name');
+            }
         });
     }
 
@@ -23,9 +30,15 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('blogs', function (Blueprint $table) {
-            $table->dropforeign(['user_id']);
-            $table->dropcolumn('user_id');
-            $table->dropcolumn('pen_name');
+            // ลบคอลัมน์ user_id หากมีอยู่
+            if (Schema::hasColumn('blogs', 'user_id')) {
+                $table->dropColumn('user_id');
+            }
+
+            // ลบคอลัมน์ pen_name หากมีอยู่
+            if (Schema::hasColumn('blogs', 'pen_name')) {
+                $table->dropColumn('pen_name');
+            }
         });
     }
 };

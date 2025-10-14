@@ -58,6 +58,8 @@ Route::group(['middleware' => ['auth', 'affiliate.redirect']], function () {
     Route::post('/teacher_by_centre', [App\Http\Controllers\DashboardController::class, 'dashboard_teacher_by_centre'])->name('dashboard.teacher_by_centre');
     Route::post('/study_by_centre', [App\Http\Controllers\DashboardController::class, 'today_study_student_by_centre'])->name('dashboard.study_by_centre');
     Route::post('/receipt_sum_by_date', [App\Http\Controllers\DashboardController::class, 'receipt_sum_by_date'])->name('dashboard.receipt_sum_by_date');
+    Route::post('/receipt_sum_by_month', [App\Http\Controllers\DashboardController::class, 'receipt_sum_by_month'])->name('dashboard.receipt_sum_by_month');
+    Route::post('/receipt_sum_by_year', [App\Http\Controllers\DashboardController::class, 'receipt_sum_by_year'])->name('dashboard.receipt_sum_by_year');
     Route::post('/student_status', [App\Http\Controllers\DashboardController::class, 'dashboard_student_status'])->name('dashboard.student_status');
     Route::post('/daily_study', [App\Http\Controllers\DashboardController::class, 'daily_study'])->name('dashboard.daily_study');
 

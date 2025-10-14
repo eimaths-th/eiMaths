@@ -15,107 +15,224 @@
     }
 
     function retrieveFieldValues() {
-        var savedYear = localStorage.getItem('Yearsave');
-        var savedMonth = localStorage.getItem('Monthsave');
+        var savedDateRange = localStorage.getItem('savedDateRange');
+        var savedStartDate = localStorage.getItem('savedStartDate');
+        var savedEndDate = localStorage.getItem('savedEndDate');
+        var savedYears = localStorage.getItem('savedYears');
         var savedSearchCentre = localStorage.getItem('searchCentre');
 
         // Set field values from local storage
-        if (savedYear && savedMonth) {
-            currentYear = savedYear;
-            currentMonth = savedMonth;
-            daterange();
-        } else {
-            datesearch();
+        if (savedDateRange && savedStartDate && savedEndDate) {
+            $('#daterange').val(savedDateRange);
+            $('#daterange').data('start-date', savedStartDate);
+            $('#daterange').data('end-date', savedEndDate);
+        }
+        if (savedYears) {
+            var years = JSON.parse(savedYears);
+            $('#year_filter').val(years).trigger('change');
         }
         if (savedSearchCentre) {
             $('#dcentre').val(savedSearchCentre);
         }
     }
 
-    function daterange() {
-        if (!currentYear || !currentMonth) {
-            datesearch();
-        }
-        $('#reservation').datepicker({
-            dateFormat: 'yy-mm',
-            changeMonth: true,
-            changeYear: true,
-            showButtonPanel: true,
-            yearRange: '2023:' + currentYear,
-            onClose: function(dateText, inst) {
-                $(this).datepicker('setDate', new Date(inst.selectedYear, inst.selectedMonth, 1));
-                storeFieldValues();
+    function InitializeDateRangePicker() {
+        $('#daterange').daterangepicker({
+            autoUpdateInput: false,
+            showDropdowns: true,
+            minYear: 2020,
+            maxYear: parseInt(moment().format('YYYY'), 10) + 1,
+            opens: 'left',
+            drops: 'down',
+            locale: {
+                format: 'DD/MM/YYYY',
+                separator: ' - ',
+                applyLabel: 'ตกลง',
+                cancelLabel: 'ล้าง',
+                fromLabel: 'จาก',
+                toLabel: 'ถึง',
+                customRangeLabel: 'กำหนดเอง',
+                weekLabel: 'W',
+                daysOfWeek: ['อา', 'จ', 'อ', 'พ', 'พฤ', 'ศ', 'ส'],
+                monthNames: ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',
+                    'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'
+                ],
+                firstDay: 0
+            },
+            ranges: {
+                'วันนี้': [moment(), moment()],
+                'เมื่อวาน': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                '7 วันที่แล้ว': [moment().subtract(6, 'days'), moment()],
+                '30 วันที่แล้ว': [moment().subtract(29, 'days'), moment()],
+                'เดือนนี้': [moment().startOf('month'), moment().endOf('month')],
+                'เดือนที่แล้ว': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+                'ปีนี้': [moment().startOf('year'), moment().endOf('year')],
+                'ปีที่แล้ว': [moment().subtract(1, 'year').startOf('year'), moment().subtract(1, 'year').endOf('year')]
             }
-        }).datepicker('setDate', new Date(currentYear, currentMonth, 1));
+        });
+
+        $('#daterange').on('apply.daterangepicker', function(ev, picker) {
+            const displayFormat = picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY');
+            $(this).val(displayFormat);
+            // Store in YYYY-MM-DD format for backend
+            $(this).data('start-date', picker.startDate.format('YYYY-MM-DD'));
+            $(this).data('end-date', picker.endDate.format('YYYY-MM-DD'));
+            
+            // Save to localStorage
+            localStorage.setItem('savedDateRange', displayFormat);
+            localStorage.setItem('savedStartDate', picker.startDate.format('YYYY-MM-DD'));
+            localStorage.setItem('savedEndDate', picker.endDate.format('YYYY-MM-DD'));
+            
+            StoreFieldValues();
+        });
+
+        $('#daterange').on('cancel.daterangepicker', function(ev, picker) {
+            $(this).val('');
+            $(this).removeData('start-date');
+            $(this).removeData('end-date');
+            
+            // Remove from localStorage
+            localStorage.removeItem('savedDateRange');
+            localStorage.removeItem('savedStartDate');
+            localStorage.removeItem('savedEndDate');
+            
+            StoreFieldValues();
+        });
+    }
+
+    function InitializeSelect2() {
+        $('#year_filter').select2({
+            placeholder: 'Select Years',
+            allowClear: true,
+            width: '100%'
+        });
+
+        $('#year_filter').on('change', function() {
+            StoreFieldValues();
+        });
     }
 
     // Attach event handler to a button or element to trigger the reset
     $('#resetSearchButton').on('click', async function() {
-        localStorage.removeItem('Yearsave');
-        localStorage.removeItem('Monthsave');
+        localStorage.removeItem('savedDateRange');
+        localStorage.removeItem('savedStartDate');
+        localStorage.removeItem('savedEndDate');
+        localStorage.removeItem('savedYears');
         localStorage.removeItem('searchCentre');
 
-        // Set field values to empty
+        // Set field values to current month
         $('#dcentre').val('{{ Auth::user()->department->id }}');
         localStorage.setItem('searchCentre', {{ Auth::user()->department->id }});
+        
+        // Set to current month (first day to last day)
+        const startOfMonth = moment().startOf('month');
+        const endOfMonth = moment().endOf('month');
+        const displayFormat = startOfMonth.format('DD/MM/YYYY') + ' - ' + endOfMonth.format('DD/MM/YYYY');
+        
+        $('#daterange').val(displayFormat);
+        $('#daterange').data('start-date', startOfMonth.format('YYYY-MM-DD'));
+        $('#daterange').data('end-date', endOfMonth.format('YYYY-MM-DD'));
+        
+        // Save to localStorage
+        localStorage.setItem('savedDateRange', displayFormat);
+        localStorage.setItem('savedStartDate', startOfMonth.format('YYYY-MM-DD'));
+        localStorage.setItem('savedEndDate', endOfMonth.format('YYYY-MM-DD'));
+        
+        $('#year_filter').val(null).trigger('change');
 
-        // Set the date range back to its default
-        datesearch();
-        daterange();
-        handle_student_by_level();
-        handle_receipt_sum_by_date();
-        handle_student_stutus();
-        handle_daily_study();
+        // Show Monthly/Yearly sections since we have date filter
+        $('#monthly_receipt_section').slideDown();
+        $('#yearly_receipt_section').slideDown();
+
+        // Refresh dashboard with all charts
+        await Promise.all([
+            handle_student_by_level(),
+            handle_receipt_sum_by_date(),
+            handle_student_stutus(),
+            handle_daily_study(),
+            handle_student_by_centre(),
+            teacher_by_centre(),
+            study_by_centre(),
+            handle_receipt_sum_by_month(),
+            handle_receipt_sum_by_year(),
+        ]);
     });
 
+
+    // Function to check if filters are applied
+    function CheckFiltersApplied() {
+        const $daterange = $('#daterange');
+        const yearsValue = $('#year_filter').val();
+        
+        const hasDateRange = $daterange.data('start-date') && $daterange.data('end-date');
+        const hasYears = yearsValue && yearsValue.length > 0;
+        
+        return hasDateRange || hasYears;
+    }
+
+    // Function to toggle Monthly/Yearly sections
+    function ToggleReceiptSections() {
+        const showAdvanced = CheckFiltersApplied();
+        
+        if (showAdvanced) {
+            $('#monthly_receipt_section').slideDown();
+            $('#yearly_receipt_section').slideDown();
+        } else {
+            $('#monthly_receipt_section').slideUp();
+            $('#yearly_receipt_section').slideUp();
+        }
+    }
 
     $('#SearchButtons').on('click', async function() {
-        const $btn = $(this);
-        if ($btn.prop('disabled')) return; // prevent double clicks
-
-        const originalHtml = $btn.html();
-        $btn.prop('disabled', true).addClass('loading');
-        $btn.html('<i class="fas fa-spinner fa-spin"></i>');
-
-        try {
-            await Promise.all([
-                handle_student_by_centre(),
-                teacher_by_centre(),
-                study_by_centre(),
-                handle_student_by_level(),
-                handle_receipt_sum_by_date(),
-                handle_student_stutus(),
-                handle_daily_study(),
-            ]);
-        } catch (e) {
-            console.error('Dashboard refresh error:', e);
-        } finally {
-            $btn.prop('disabled', false).removeClass('loading');
-            $btn.html(originalHtml);
+        ToggleReceiptSections();
+        
+        const showAdvanced = CheckFiltersApplied();
+        
+        const promises = [
+            student_by_centre(),
+            teacher_by_centre(),
+            study_by_centre(),
+            handle_student_by_level(),
+            handle_receipt_sum_by_date(),
+            handle_student_stutus(),
+            handle_daily_study(),
+        ];
+        
+        if (showAdvanced) {
+            promises.push(handle_receipt_sum_by_month());
+            promises.push(handle_receipt_sum_by_year());
         }
+        
+        await Promise.all(promises);
     });
 
 
-    function storeFieldValues() {
-        var Yearstart = $('#reservation').val();
+    function StoreFieldValues() {
+        var dateRange = $('#daterange').val();
+        var years = $('#year_filter').val();
         var searchCentre = $('#dcentre').val();
 
-        // Split Yearstart into Yearsave and Monthsave
-        //var [Yearsave, Monthsave] = Yearstart.split('-');
-
         // Store values in local storage
-        //localStorage.setItem('Yearsave', Yearsave);
-        //localStorage.setItem('Monthsave', Monthsave - 1);
+        localStorage.setItem('savedDateRange', dateRange);
+        localStorage.setItem('savedYears', JSON.stringify(years));
         localStorage.setItem('searchCentre', searchCentre);
     }
 
-    $('#dcentre').on('change', storeFieldValues);
+    $('#dcentre').on('change', StoreFieldValues);
 
 
     const student_by_level = async () => {
         try {
             const dcentreValue = $('#dcentre').val();
-            const reservationValue = $('#reservation').val();
+            const $daterange = $('#daterange');
+            let dateRangeValue = '';
+            
+            // Get date range in YYYY-MM-DD format for backend
+            if ($daterange.data('start-date') && $daterange.data('end-date')) {
+                dateRangeValue = $daterange.data('start-date') + ' - ' + $daterange.data('end-date');
+            }
+            
+            const yearsValue = $('#year_filter').val();
 
             const response = await $.ajax({
                 url: '{{ route('dashboard.student_by_level') }}',
@@ -123,7 +240,8 @@
                 data: {
                     _token: token,
                     dcentre: dcentreValue,
-                    reservation: reservationValue,
+                    date_range: dateRangeValue,
+                    years: yearsValue,
                 },
             });
 
@@ -277,7 +395,14 @@
     const student_by_centre = async () => {
         try {
             const dcentreValue = $('#dcentre').val();
-            const reservationValue = $('#reservation').val();
+            const $daterange = $('#daterange');
+            let dateRangeValue = '';
+            
+            if ($daterange.data('start-date') && $daterange.data('end-date')) {
+                dateRangeValue = $daterange.data('start-date') + ' - ' + $daterange.data('end-date');
+            }
+            
+            const yearsValue = $('#year_filter').val();
 
             const response = await $.ajax({
                 url: '{{ route('dashboard.student_by_centre') }}',
@@ -285,7 +410,8 @@
                 data: {
                     _token: token,
                     dcentre: dcentreValue,
-                    reservation: reservationValue,
+                    date_range: dateRangeValue,
+                    years: yearsValue,
                 },
             });
 
@@ -303,9 +429,14 @@
     const teacher_by_centre = async () => {
         try {
             const dcentreValue = $('#dcentre').val();
-            const reservationValue = $('#reservation').val();
-
-            // console.log(dcentreValue);
+            const $daterange = $('#daterange');
+            let dateRangeValue = '';
+            
+            if ($daterange.data('start-date') && $daterange.data('end-date')) {
+                dateRangeValue = $daterange.data('start-date') + ' - ' + $daterange.data('end-date');
+            }
+            
+            const yearsValue = $('#year_filter').val();
 
             const response = await $.ajax({
                 url: '{{ route('dashboard.teacher_by_centre') }}',
@@ -313,7 +444,8 @@
                 data: {
                     _token: token,
                     dcentre: dcentreValue,
-                    reservation: reservationValue,
+                    date_range: dateRangeValue,
+                    years: yearsValue,
                 },
             });
 
@@ -330,9 +462,14 @@
     const study_by_centre = async () => {
         try {
             const dcentreValue = $('#dcentre').val();
-            const reservationValue = $('#reservation').val();
-
-            // console.log(dcentreValue);
+            const $daterange = $('#daterange');
+            let dateRangeValue = '';
+            
+            if ($daterange.data('start-date') && $daterange.data('end-date')) {
+                dateRangeValue = $daterange.data('start-date') + ' - ' + $daterange.data('end-date');
+            }
+            
+            const yearsValue = $('#year_filter').val();
 
             const response = await $.ajax({
                 url: '{{ route('dashboard.study_by_centre') }}',
@@ -340,7 +477,8 @@
                 data: {
                     _token: token,
                     dcentre: dcentreValue,
-                    reservation: reservationValue,
+                    date_range: dateRangeValue,
+                    years: yearsValue,
                 },
             });
 
@@ -444,7 +582,14 @@
     const receipt_sum_by_date = async () => {
         try {
             const dcentreValue = $('#dcentre').val();
-            const reservationValue = $('#reservation').val();
+            const $daterange = $('#daterange');
+            let dateRangeValue = '';
+            
+            if ($daterange.data('start-date') && $daterange.data('end-date')) {
+                dateRangeValue = $daterange.data('start-date') + ' - ' + $daterange.data('end-date');
+            }
+            
+            const yearsValue = $('#year_filter').val();
 
             const response = await $.ajax({
                 url: '{{ route('dashboard.receipt_sum_by_date') }}',
@@ -452,7 +597,8 @@
                 data: {
                     _token: token,
                     dcentre: dcentreValue,
-                    reservation: reservationValue,
+                    date_range: dateRangeValue,
+                    years: yearsValue,
                 },
             });
 
@@ -572,10 +718,243 @@
         }
     };
 
+    // Monthly Receipt Functions
+    const receipt_sum_by_month = async () => {
+        try {
+            const dcentreValue = $('#dcentre').val();
+            const $daterange = $('#daterange');
+            let dateRangeValue = '';
+            
+            if ($daterange.data('start-date') && $daterange.data('end-date')) {
+                dateRangeValue = $daterange.data('start-date') + ' - ' + $daterange.data('end-date');
+            }
+            
+            const yearsValue = $('#year_filter').val();
+
+            const response = await $.ajax({
+                url: '{{ route('dashboard.receipt_sum_by_month') }}',
+                method: 'POST',
+                data: {
+                    _token: token,
+                    dcentre: dcentreValue,
+                    date_range: dateRangeValue,
+                    years: yearsValue,
+                },
+            });
+
+            return response.receipt_sum_by_month;
+        } catch (error) {
+            console.error('Error fetching monthly data:', error);
+            throw error;
+        }
+    };
+
+    const receipt_sum_by_month_chart_data = (data) => {
+        const labels = data.map(entry => entry.month);
+        const totalReceiptData = data.map(entry => entry.total_transactions);
+        const totalPriceData = data.map(entry => entry.total_fee_sum);
+
+        const option = {
+            series: [{
+                    name: 'Total Receipt',
+                    type: 'line',
+                    data: totalReceiptData,
+                },
+                {
+                    name: 'Total Income',
+                    type: 'column',
+                    data: totalPriceData,
+                },
+            ],
+            markers: {
+                size: 5,
+                colors: ["#FFFFFF"],
+                strokeColor: "#28a745",
+                strokeWidth: 4
+            },
+            chart: {
+                type: 'line',
+                height: 380,
+                zoom: {
+                    enabled: false
+                },
+                animations: {
+                    enabled: true,
+                    easing: 'easeinout',
+                    speed: 800,
+                }
+            },
+            dataLabels: {
+                enabled: true,
+                offsetY: -18,
+                enabledOnSeries: [1]
+            },
+            stroke: {
+                curve: 'smooth',
+                width: 4
+            },
+            colors: ['#28a745', '#20c997'],
+            title: {
+                align: 'left'
+            },
+            xaxis: {
+                labels: {
+                    show: true,
+                    rotate: -30,
+                    rotateAlways: true,
+                },
+                categories: labels,
+            },
+            yaxis: [{
+                title: {
+                    text: 'Total Receipt',
+                },
+            }, {
+                opposite: true,
+                title: {
+                    text: 'Total Income (฿)'
+                }
+            }],
+        };
+        return option;
+    };
+
+    const handle_receipt_sum_by_month = async () => {
+        try {
+            const datas = await receipt_sum_by_month();
+
+            const options = receipt_sum_by_month_chart_data(datas);
+            var chart_data = new ApexCharts(document.querySelector("#receipt_sum_by_month"), options);
+            chart_data.render();
+            chart_data.updateOptions(options);
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+
+    // Yearly Receipt Functions
+    const receipt_sum_by_year = async () => {
+        try {
+            const dcentreValue = $('#dcentre').val();
+            const $daterange = $('#daterange');
+            let dateRangeValue = '';
+            
+            if ($daterange.data('start-date') && $daterange.data('end-date')) {
+                dateRangeValue = $daterange.data('start-date') + ' - ' + $daterange.data('end-date');
+            }
+            
+            const yearsValue = $('#year_filter').val();
+
+            const response = await $.ajax({
+                url: '{{ route('dashboard.receipt_sum_by_year') }}',
+                method: 'POST',
+                data: {
+                    _token: token,
+                    dcentre: dcentreValue,
+                    date_range: dateRangeValue,
+                    years: yearsValue,
+                },
+            });
+
+            return response.receipt_sum_by_year;
+        } catch (error) {
+            console.error('Error fetching yearly data:', error);
+            throw error;
+        }
+    };
+
+    const receipt_sum_by_year_chart_data = (data) => {
+        const labels = data.map(entry => entry.year);
+        const totalReceiptData = data.map(entry => entry.total_transactions);
+        const totalPriceData = data.map(entry => entry.total_fee_sum);
+
+        const option = {
+            series: [{
+                    name: 'Total Receipt',
+                    type: 'line',
+                    data: totalReceiptData,
+                },
+                {
+                    name: 'Total Income',
+                    type: 'column',
+                    data: totalPriceData,
+                },
+            ],
+            markers: {
+                size: 6,
+                colors: ["#FFFFFF"],
+                strokeColor: "#17a2b8",
+                strokeWidth: 4
+            },
+            chart: {
+                type: 'line',
+                height: 380,
+                zoom: {
+                    enabled: false
+                },
+                animations: {
+                    enabled: true,
+                    easing: 'easeinout',
+                    speed: 800,
+                }
+            },
+            dataLabels: {
+                enabled: true,
+                offsetY: -18,
+                enabledOnSeries: [1]
+            },
+            stroke: {
+                curve: 'smooth',
+                width: 4
+            },
+            colors: ['#17a2b8', '#5bc0de'],
+            title: {
+                align: 'left'
+            },
+            xaxis: {
+                labels: {
+                    show: true,
+                },
+                categories: labels,
+            },
+            yaxis: [{
+                title: {
+                    text: 'Total Receipt',
+                },
+            }, {
+                opposite: true,
+                title: {
+                    text: 'Total Income (฿)'
+                }
+            }],
+        };
+        return option;
+    };
+
+    const handle_receipt_sum_by_year = async () => {
+        try {
+            const datas = await receipt_sum_by_year();
+
+            const options = receipt_sum_by_year_chart_data(datas);
+            var chart_data = new ApexCharts(document.querySelector("#receipt_sum_by_year"), options);
+            chart_data.render();
+            chart_data.updateOptions(options);
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+
     const daily_study_date = async () => {
         try {
             const dcentreValue = $('#dcentre').val();
-            const reservationValue = $('#reservation').val();
+            const $daterange = $('#daterange');
+            let dateRangeValue = '';
+            
+            if ($daterange.data('start-date') && $daterange.data('end-date')) {
+                dateRangeValue = $daterange.data('start-date') + ' - ' + $daterange.data('end-date');
+            }
+            
+            const yearsValue = $('#year_filter').val();
 
             const response = await $.ajax({
                 url: '{{ route('dashboard.daily_study') }}',
@@ -583,7 +962,8 @@
                 data: {
                     _token: token,
                     dcentre: dcentreValue,
-                    reservation: reservationValue,
+                    date_range: dateRangeValue,
+                    years: yearsValue,
                 },
             });
 
@@ -696,7 +1076,14 @@
     const student_status = async () => {
         try {
             const dcentreValue = $('#dcentre').val();
-            const reservationValue = $('#reservation').val();
+            const $daterange = $('#daterange');
+            let dateRangeValue = '';
+            
+            if ($daterange.data('start-date') && $daterange.data('end-date')) {
+                dateRangeValue = $daterange.data('start-date') + ' - ' + $daterange.data('end-date');
+            }
+            
+            const yearsValue = $('#year_filter').val();
 
             const response = await $.ajax({
                 url: '{{ route('dashboard.student_status') }}',
@@ -704,7 +1091,8 @@
                 data: {
                     _token: token,
                     dcentre: dcentreValue,
-                    reservation: reservationValue,
+                    date_range: dateRangeValue,
+                    years: yearsValue,
                 },
             });
 
@@ -811,9 +1199,13 @@
 
     $(document).ready(() => {
 
+        InitializeDateRangePicker();
+        InitializeSelect2();
         retrieveFieldValues();
-        daterange();
 
+        // Check if filters are applied on page load
+        const showAdvanced = CheckFiltersApplied();
+        
         handle_student_by_level();
         handle_receipt_sum_by_date();
         handle_daily_study();
@@ -822,15 +1214,22 @@
         teacher_by_centre();
         study_by_centre();
 
+        // Load Monthly/Yearly if filters are applied
+        if (showAdvanced) {
+            $('#monthly_receipt_section').show();
+            $('#yearly_receipt_section').show();
+            handle_receipt_sum_by_month();
+            handle_receipt_sum_by_year();
+        }
 
     });
 </script>
 <script>
     $(document).ready(function() {
         const dcentre = $('#dcentre');
-        const reservation = $('#reservation');
+        const daterange = $('#daterange');
         let centre = dcentre.val();
-        let reservationValue = reservation.val();
+        let dateRangeValue = daterange.val();
         // Determine if current user is SystemAdmin (safe checks without assuming role system)
         const IS_SYSTEM_ADMIN = @json(auth()->check() && (function() {
             $u = Auth::user();
@@ -881,8 +1280,8 @@
                         url.searchParams.set(key, value);
                     } else if (param === 'centre' && centre) {
                         url.searchParams.set('centre', centre);
-                    } else if (param === 'date' && reservationValue) {
-                        url.searchParams.set('date', reservationValue);
+                    } else if (param === 'date' && dateRangeValue) {
+                        url.searchParams.set('date', dateRangeValue);
                     }
                 });
 
@@ -891,16 +1290,16 @@
             });
         }
 
-        updateLinks(centre, reservationValue);
+        updateLinks(centre, dateRangeValue);
 
         dcentre.on('change', function() {
             centre = $(this).val();
-            updateLinks(centre, reservationValue);
+            updateLinks(centre, dateRangeValue);
         });
 
-        reservation.on('change', function() {
-            reservationValue = $(this).val();
-            updateLinks(centre, reservationValue);
+        daterange.on('change', function() {
+            dateRangeValue = $(this).val();
+            updateLinks(centre, dateRangeValue);
         });
     });
 </script>
