@@ -23,7 +23,9 @@ class Order extends Model
         'discount',
         'discount_book',
         'status',
-        'payment'
+        'payment',
+        'free_course',
+        'free_course_reason'
     ];
 
     public function contact()

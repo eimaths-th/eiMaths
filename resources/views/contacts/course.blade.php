@@ -56,6 +56,8 @@
                                             <th>Level</th>
                                             <th>Term</th>
                                             <th>Book</th>
+                                            <th>Free Course</th>
+                                            <th>Reason</th>
                                             <th>Create At</th>
                                         </tr>
                                     </thead>

@@ -956,6 +956,7 @@
                     centre: $('#AddCentre').val()[0],
                     code: $('#AddCode').val(),
                     free_course: $('#AddFreeCourse').val(),
+                    free_course_reason: $('#AddFreeCourseReason').val(),
                     name: $('#AddName').val(),
                     ref: $('#AddReferral').val(),
                     nickname: $('#AddNickname').val(),
@@ -1312,6 +1313,7 @@
                 data: {
                     ref: $('#getRef').val(),
                     free_course: $('#AddRcFreeCourse').val(),
+                    free_course_reason: $('#AddFreeCourseReason').val(),
                     centre: $('#ReceiptCentre').val()[0],
                     student: $('#s_student').val()[0],
                     level: $('#ReceiptLevel').val()[0],

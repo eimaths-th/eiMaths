@@ -323,11 +323,13 @@ class ContactController extends Controller
                     return '';
                 })
                 ->addColumn('action', function ($row) {
-                    if (Gate::allows('student-edit')) {
-                        $html = '<button type="button" class="btn btn-sm btn-primary btn-fastHistory" id="fastHistory" data-id="' . $row->id . '"><i class="fa fa-history"></i> Fast History</button> ';
-                    } else {
-                        $html = '<button type="button" class="btn btn-sm btn-primary disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-history"></i> Fast History</button> ';
-                    }
+                    $html = '';
+
+                    // if (Gate::allows('student-edit')) {
+                    //     $html .= '<button type="button" class="btn btn-sm btn-primary btn-fastHistory" id="fastHistory" data-id="' . $row->id . '"><i class="fa fa-history"></i> Fast History</button> ';
+                    // } else {
+                    //     $html .= '<button type="button" class="btn btn-sm btn-primary disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-history"></i> Fast History</button> ';
+                    // }
 
                     if (Gate::allows('student-edit')) {
                         $html .= '<button type="button" class="btn btn-sm btn-info btn-show" id="getCourseData" data-id="' . $row->id . '"><i class="fa fa-search"></i>View Course</button> ';
@@ -433,6 +435,7 @@ class ContactController extends Controller
                     } else {
                         $html = '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> Edit</button> ';
                     }
+
                     if (Gate::allows('student-delete')) {
                         $html .= '<button type="button" data-rowid="' . $row->id . '" class="btn btn-sm btn-danger btn-delete"><i class="fa fa-trash"></i> Delete</button>';
                     } else {
@@ -482,6 +485,8 @@ class ContactController extends Controller
             $html .= '<td>' . $orderDetail->level . '</td>';
             $html .= '<td>' . $orderDetail->term . '</td>';
             $html .= '<td><span class="tag tag-success">' . $orderDetail->book . '</span></td>';
+            $html .= '<td>' . $orderDetail->order->free_course . '</td>';
+            $html .= '<td>' . $orderDetail->order->free_course_reason . '</td>';
             $html .= '<td>' . $orderDetail->created_at . '</td>';
             $html .= '</tr>';
             $i++;
@@ -842,6 +847,9 @@ class ContactController extends Controller
         $input_order['order_number'] = OrderRunningNumber::generate($request->get('centre'));
         $input_order['total_price'] = $mprice + $mbprice;
         $order = Order::create($input_order);
+        $input_order['free_course'] = $request->get('free_course', 0);
+        $input_order['free_course_reason'] = $request->get('free_course_reason');
+        $order->update($input_order);
 
         foreach ($bookss as $dresult) {
             foreach ($dresult as $book) {
@@ -1099,6 +1107,8 @@ class ContactController extends Controller
         $input_order['total_price'] = $mprice + $mbprice;
         $input_order['ref'] = $ref_code;
         $input_order['courses_pending_id'] = $courses_pending_id;
+        $input_order['free_course'] = $request->get('free_course', 0);
+        $input_order['free_course_reason'] = $request->get('free_course_reason');
         $order = Order::create($input_order);
 
         foreach ($bookss as $dresult) {
@@ -1562,7 +1572,7 @@ class ContactController extends Controller
         if (!$student) {
             return response()->json(['message' => 'Student not found'], 404);
         }
-        
+
         $maxHistory = $this->maxHistory($student->id);
         if ($maxHistory < 1) {
             return response()->json(['message' => 'นักเรียนคนนี้เข้าเรียนครบแล้ว'], 404);

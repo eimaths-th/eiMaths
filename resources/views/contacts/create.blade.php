@@ -152,7 +152,11 @@
                                             <div class="col-xs-6 col-sm-6 col-md-6">
                                                 <div class="form-group">
                                                     <strong><i class="fas fa-graduation-cap"></i> Nick Name:</strong>
-                                                    {!! Form::text('nickname', null, ['id' => 'AddNickname', 'placeholder' => 'Nick Name', 'class' => 'form-control']) !!}
+                                                    {!! Form::text('nickname', null, [
+                                                        'id' => 'AddNickname',
+                                                        'placeholder' => 'Nick Name',
+                                                        'class' => 'form-control',
+                                                    ]) !!}
                                                 </div>
                                             </div>
                                         </div>
@@ -166,7 +170,11 @@
                                             <div class="col-xs-6 col-sm-6 col-md-6">
                                                 <div class="form-group">
                                                     <strong><i class="fas fa-school"></i> Referent:</strong>
-                                                    {!! Form::text('referral', null, ['id' => 'AddReferral', 'placeholder' => 'Referral', 'class' => 'form-control']) !!}
+                                                    {!! Form::text('referral', null, [
+                                                        'id' => 'AddReferral',
+                                                        'placeholder' => 'Referral',
+                                                        'class' => 'form-control',
+                                                    ]) !!}
                                                 </div>
                                             </div>
                                         </div>
@@ -466,18 +474,27 @@
                                 <div class="card">
                                     <div class="card-body">
                                         <div class="row">
-
-                                            <div class="col-xs-6 col-sm-6 col-md-6">
+                                            <div class="col-xs-3 col-sm-3 col-md-3">
+                                                
                                             </div>
                                             <div class="col-xs-3 col-sm-3 col-md-3">
                                                 <strong><i class="fas fa-book-open"></i>Free Class:</strong>
-                                                <input type="number" min="0" class="form-control free_course" id="AddFreeCourse" name="free_course" value="0">
+                                                <input type="number" min="0" class="form-control free_course"
+                                                    id="AddFreeCourse" name="free_course" value="0">
                                             </div>
+                                            <div class="col-xs-3 col-sm-3 col-md-3">
+                                                <strong><i class="fas fa-book-open"></i>Reason Free Class:</strong>
+                                                <input type="text" class="form-control free_course_reason"
+                                                    id="AddFreeCourseReason" name="free_course_reason"
+                                                    value="">
+                                            </div>
+
                                             <div class="col-xs-3 col-sm-3 col-md-3">
                                                 <div class="form-group">
                                                     <strong><i class="fas fa-book-open"></i> Total Class:</strong>
 
-                                                    <input type="text" disabled class="form-control scoin" value="0">
+                                                    <input type="text" disabled class="form-control scoin"
+                                                        value="0">
 
                                                 </div>
                                             </div>
