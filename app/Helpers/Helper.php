@@ -172,7 +172,13 @@ if (!function_exists('replaceMixedFractions')) {
 
                     if ($bracket_count === 0) {
                         $match = substr($text, $start_pos, $end_pos - $start_pos);
-                        $clean = preg_replace('/\s+/', '', $match);
+                        // ลบช่องว่างเฉพาะภายใน pattern (Frac/MixFrac และ arguments) ไม่รวมช่องว่างก่อนหน้า
+                        $clean = preg_replace_callback('/(M\s*i\s*x\s*)?F\s*r\s*a\s*c\s*(\(.*?\))/ius', function($m) {
+                            // ลบช่องว่างใน Frac/MixFrac และภายในวงเล็บ
+                            $funcName = preg_replace('/\s+/', '', $m[1] . 'Frac');
+                            $args = $m[2]; // เก็บ arguments ไว้ตามเดิม
+                            return $funcName . $args;
+                        }, $match);
                         $combined .= $clean;
                         $last_end = $end_pos; // อัปเดตตำแหน่งสุดท้าย
                     }
@@ -328,6 +334,208 @@ if (!function_exists('replaceMixedFractions')) {
         }, $text);
     }
 }
+// // save code 
+// if (!function_exists('replaceMixedFractions')) {
+//     function replaceMixedFractions($text)
+//     {
+//         // Remove the test string to avoid conflicts
+//         // $text = "test string removed";
+//         // $text = "text F ra c(2,3) | Frac(4,5) | M i x F r a c ( 1 , 2 , 3 ) | MixFrac(4,5,6) | testDSD MixFrac(5,(1+g) , 3) | MixFrac(null,(1+x) , 3) | MixFrac((1+y) , 3) | Fr ac( ( 1 + z) , 3) | Frac(เศษ,ส่วน) | + MixFrac(เศษ,ส่วน)";
+
+//         $combined = '';
+//         $length = strlen($text);
+//         $i = 0;
+//         $last_end = 0; // เก็บตำแหน่งสุดท้ายที่ประมวลผลแล้ว
+
+//         while ($i < $length) {
+//             // หา pattern เริ่มต้น (รองรับทั้ง Frac และ MixFrac)
+//             if (preg_match('/(M\s*i\s*x\s*)?F\s*r\s*a\s*c\s*/iu', $text, $matches, PREG_OFFSET_CAPTURE, $i)) {
+//                 $start_pos = $matches[0][1];
+//                 $pattern_length = strlen($matches[0][0]);
+
+//                 // เพิ่มข้อความที่อยู่ก่อนหน้า pattern
+//                 if ($start_pos > $last_end) {
+//                     $combined .= substr($text, $last_end, $start_pos - $last_end);
+//                 }
+
+//                 // ข้ามไปหาวงเล็บเปิด
+//                 $pos = $start_pos + $pattern_length;
+//                 while ($pos < $length && $text[$pos] !== '(') {
+//                     $pos++;
+//                 }
+
+//                 if ($pos < $length && $text[$pos] === '(') {
+//                     // นับวงเล็บเพื่อหาจุดปิด (รองรับวงเล็บซ้อน)
+//                     $bracket_count = 1;
+//                     $end_pos = $pos + 1;
+
+//                     while ($end_pos < $length && $bracket_count > 0) {
+//                         if ($text[$end_pos] === '(') {
+//                             $bracket_count++;
+//                         } elseif ($text[$end_pos] === ')') {
+//                             $bracket_count--;
+//                         }
+//                         $end_pos++;
+//                     }
+
+//                     if ($bracket_count === 0) {
+//                         $match = substr($text, $start_pos, $end_pos - $start_pos);
+//                         $clean = preg_replace('/\s+/', '', $match);
+//                         $combined .= $clean;
+//                         $last_end = $end_pos; // อัปเดตตำแหน่งสุดท้าย
+//                     }
+
+//                     $i = $end_pos;
+//                 } else {
+//                     // ถ้าไม่เจอวงเล็บเปิด ให้เพิ่มข้อความตามเดิม
+//                     $combined .= substr($text, $start_pos, $pattern_length);
+//                     $last_end = $start_pos + $pattern_length;
+//                     $i = $start_pos + 1;
+//                 }
+//             } else {
+//                 break;
+//             }
+//         }
+
+//         // เพิ่มข้อความที่เหลือท้ายสุด
+//         if ($last_end < $length) {
+//             $combined .= substr($text, $last_end);
+//         }
+
+//         $text = $combined;
+
+//         // dd($text);
+//         return preg_replace_callback('/(MixFrac|Frac)\s*\(([^()]*(?:\([^()]*(?:\([^()]*\)[^()]*)*\))?[^()]*)\)/i', function ($matches) {
+//             $function = $matches[1]; // MixFrac or Frac
+//             $args = $matches[2];
+
+//             // Split arguments while respecting nested parentheses and quotes
+//             $parts = [];
+//             $current = '';
+//             $depth = 0;
+//             $inQuotes = false;
+//             $args = trim($args);
+//             $len = strlen($args);
+
+//             for ($i = 0; $i < $len; $i++) {
+//                 $char = $args[$i];
+//                 $nextChar = $i < $len - 1 ? $args[$i + 1] : '';
+//                 $prevChar = $i > 0 ? $args[$i - 1] : '';
+
+//                 if ($char === '"' || $char === "'") {
+//                     $inQuotes = !$inQuotes;
+//                     $current .= $char;
+//                 } elseif (!$inQuotes) {
+//                     if ($char === '(') {
+//                         $depth++;
+//                         $current .= $char;
+//                     } elseif ($char === ')') {
+//                         $depth--;
+//                         $current .= $char;
+//                     } elseif ($char === ',' && $depth === 0) {
+//                         $parts[] = trim($current);
+//                         $current = '';
+//                         // Skip whitespace after comma
+//                         while ($i + 1 < $len && trim($args[$i + 1]) === '') {
+//                             $i++;
+//                         }
+//                     } else {
+//                         $current .= $char;
+//                     }
+//                 } else {
+//                     $current .= $char;
+//                 }
+//             }
+
+//             if (trim($current) !== '') {
+//                 $parts[] = trim($current);
+//             }
+
+//             // Helper to check if string is null/empty (case-insensitive)
+//             $isNull = function ($str) {
+//                 $str = trim($str);
+//                 return $str === '' || strtolower($str) === 'null';
+//             };
+//             // Helper to check if string is numeric (including negatives and decimals)
+//             $isNumeric = function ($str) {
+//                 $str = trim($str);
+//                 return is_numeric($str);
+//             };
+//             // Helper to check if part is an expression (contains operators, letters, or parentheses)
+//             $isExpr = function ($str) use ($isNull, $isNumeric) {
+//                 $s = trim($str);
+//                 if ($isNull($s) || $isNumeric($s)) return false;
+//                 return true; // Anything not null or numeric is considered an expression
+//             };
+
+//             if ($function === 'MixFrac') {
+//                 $parts = array_map('trim', $parts);
+//                 $numParts = count($parts);
+
+//                 // Handle different argument counts
+//                 if ($numParts === 3) {
+//                     // Case: MixFrac(whole, num, denom)
+//                     $whole = (int)$parts[0];
+//                     $numerator = (int)$parts[1];
+//                     $denominator = (int)$parts[2];
+//                     // dd($whole, $numerator, $denominator);
+
+//                     if ($whole == 0 || $denominator == 0) {
+//                         return "\\({$parts[0]} \\frac{{$parts[1]}}{{$parts[2]}}\\)";
+//                     }
+//                     // list($whole, $numerator, $denominator) = $parts;
+
+//                     // If first argument is null/empty, treat as Frac(num, denom)
+//                     if ($isNull($whole)) {
+//                         if ($isNull($numerator) || $isNull($denominator)) {
+//                             return $matches[0]; // Invalid fraction
+//                         }
+//                         // dd($parts);
+//                         return "\\(\\frac{{$parts[1]}}{{$parts[2]}}\\)";
+//                     }
+
+//                     // If first argument is numeric, it's a mixed fraction
+//                     if ($isNumeric($whole)) {
+//                         if ($isNull($numerator) || $isNull($denominator)) {
+//                             return $matches[0]; // Invalid fraction
+//                         }
+//                         return "\\({$parts[0]} \\frac{{$parts[1]}}{{$parts[2]}}\\)";
+//                     }
+
+//                     // If we get here, first argument is an expression - treat as MixFrac(null, expr1, expr2)
+//                     if ($isNull($numerator) || $isNull($denominator)) {
+//                         return $matches[0]; // Invalid fraction
+//                     }
+//                     return "\\(\\frac{{$whole}}{{$numerator}}\\)";
+//                 } elseif ($numParts === 2) {
+//                     // Case: MixFrac(expr1, expr2) - treat as Frac(expr1, expr2)
+//                     $numerator = (int)$parts[0];
+//                     $denominator = (int)$parts[1];
+//                     if ($isNull($numerator) || $isNull($denominator)) {
+//                         return $matches[0];
+//                     }
+
+//                     if ($numerator == 0 || $denominator == 0) {
+//                         // Whole number
+//                         return "\(\\frac{{$parts[0]}}{{$parts[1]}}\)";
+//                     }
+//                     return toMixedFraction(null, $numerator, $denominator);
+//                 }
+//             } elseif ($function === 'Frac') {
+//                 if (count($parts) === 2) {
+//                     list($numerator, $denominator) = array_map('trim', $parts);
+//                     if ($isNull($numerator) || $isNull($denominator)) {
+//                         return $matches[0];
+//                     }
+//                     // For Frac, always use LaTeX formatting to preserve expressions
+//                     return "\\(\\frac{{$numerator}}{{$denominator}}\\)";
+//                 }
+//             }
+//             // Return original if something went wrong
+//             return $matches[0];
+//         }, $text);
+//     }
+// }
 
 //fractional drisplay
 
