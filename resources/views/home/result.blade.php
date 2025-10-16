@@ -614,7 +614,7 @@
                                                 <img class="answer-explain-thumb" 
                                                      src="{{ asset('img_questions/' . $result->question->answer_explanation_image) }}"
                                                      alt="Answer Explanation Image"
-                                                     style="max-width: 30%; height: auto; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); transition: transform 0.2s ease;">
+                                                     style="max-width: 50%; height: auto; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); transition: transform 0.2s ease;">
                                             </div>
                                         @endif
                                     </div>
