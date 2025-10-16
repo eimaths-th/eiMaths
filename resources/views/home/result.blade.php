@@ -54,8 +54,8 @@
             display: none;
             pointer-events: none;
             z-index: 9999;
-            max-width: 40vw;
-            max-height: 30vh;
+            max-width: 60vw;
+            max-height: 70vh;
             border-radius: 10px;
             background: #fff;
             border: 1px solid rgba(0,0,0,0.08);
@@ -66,70 +66,57 @@
 @endpush
 @push('scripts')
 <script>
-   (function(){
-    const OFFSET_X = 18;
-    const OFFSET_Y = 18;
+    (function(){
+        const OFFSET_X = 18;
+        const OFFSET_Y = 18;
 
-    const preview = document.createElement('img');
-    preview.className = 'img-hover-preview';
-    document.body.appendChild(preview);
+        const preview = document.createElement('img');
+        preview.className = 'img-hover-preview';
+        document.body.appendChild(preview);
 
-    function positionPreview(e) {
-        const touch = e.touches ? e.touches[0] : e; // รองรับ touch
-        const vw = window.innerWidth;
-        const vh = window.innerHeight;
-        const rect = { w: preview.naturalWidth, h: preview.naturalHeight };
+        function positionPreview(e) {
+            const vw = window.innerWidth;
+            const vh = window.innerHeight;
+            const rect = { w: preview.naturalWidth, h: preview.naturalHeight };
 
-        let scale = 1;
-        const maxW = vw * 0.6;
-        const maxH = vh * 0.7;
-        if (rect.w > maxW || rect.h > maxH) {
-            scale = Math.min(maxW / rect.w, maxH / rect.h);
+            let scale = 1;
+            const maxW = vw * 0.6; // 60vw
+            const maxH = vh * 0.7; // 70vh
+            if (rect.w > maxW || rect.h > maxH) {
+                scale = Math.min(maxW / rect.w, maxH / rect.h);
+            }
+
+            preview.style.width = rect.w ? (rect.w * scale) + 'px' : '';
+            preview.style.height = rect.h ? (rect.h * scale) + 'px' : '';
+
+            let x = e.clientX + OFFSET_X;
+            let y = e.clientY + OFFSET_Y;
+
+            const pw = preview.getBoundingClientRect().width;
+            const ph = preview.getBoundingClientRect().height;
+
+            if (x + pw > vw - 10) x = e.clientX - pw - OFFSET_X;
+            if (y + ph > vh - 10) y = e.clientY - ph - OFFSET_Y;
+
+            preview.style.transform = `translate(${x}px, ${y}px)`;
         }
 
-        preview.style.width = rect.w ? (rect.w * scale) + 'px' : '';
-        preview.style.height = rect.h ? (rect.h * scale) + 'px' : '';
+        function attachPreview(el) {
+            el.addEventListener('mouseenter', (e) => {
+                preview.src = el.getAttribute('src');
+                preview.style.display = 'block';
+                positionPreview(e);
+            });
+            el.addEventListener('mousemove', positionPreview);
+            el.addEventListener('mouseleave', () => {
+                preview.style.display = 'none';
+            });
+        }
 
-        let x = touch.clientX + OFFSET_X;
-        let y = touch.clientY + OFFSET_Y;
-
-        const pw = preview.getBoundingClientRect().width;
-        const ph = preview.getBoundingClientRect().height;
-
-        if (x + pw > vw - 10) x = touch.clientX - pw - OFFSET_X;
-        if (y + ph > vh - 10) y = touch.clientY - ph - OFFSET_Y;
-
-        preview.style.transform = `translate(${x}px, ${y}px)`;
-    }
-
-    function attachPreview(el) {
-        el.addEventListener('mouseenter', (e) => {
-            preview.src = el.getAttribute('src');
-            preview.style.display = 'block';
-            positionPreview(e);
+        document.addEventListener('DOMContentLoaded', function(){
+            document.querySelectorAll('.answer-explain-thumb').forEach(attachPreview);
         });
-        el.addEventListener('mousemove', positionPreview);
-        el.addEventListener('mouseleave', () => {
-            preview.style.display = 'none';
-        });
-
-        // 👇 เพิ่มสำหรับ mobile
-        el.addEventListener('touchstart', (e) => {
-            preview.src = el.getAttribute('src');
-            preview.style.display = 'block';
-            positionPreview(e);
-        });
-        el.addEventListener('touchmove', positionPreview);
-        el.addEventListener('touchend', () => {
-            preview.style.display = 'none';
-        });
-    }
-
-    document.addEventListener('DOMContentLoaded', function(){
-        document.querySelectorAll('.answer-explain-thumb').forEach(attachPreview);
-    });
-})();
-
+    })();
 </script>
 @endpush
 @section('content')
