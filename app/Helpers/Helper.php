@@ -307,15 +307,23 @@ if (!function_exists('replaceMixedFractions')) {
                     return "\\(\\frac{{$whole}}{{$numerator}}\\)";
                 } elseif ($numParts === 2) {
                     // Case: MixFrac(numerator, denominator) - convert to mixed fraction
-                    $numerator = (int)$parts[0];
-                    $denominator = (int)$parts[1];
-                    if ($isNull($numerator) || $isNull($denominator)) {
+                    if ($isNull($parts[0]) || $isNull($parts[1])) {
                         return $matches[0];
                     }
 
+                    // ตรวจสอบว่าเป็น expression หรือไม่ (มีตัวอักษร หรือ operators)
+                    if ($isExpr($parts[0]) || $isExpr($parts[1])) {
+                        // ถ้าเป็น expression ให้แสดงเป็น fraction ธรรมดา
+                        return "\\(\\frac{{$parts[0]}}{{$parts[1]}}\\)";
+                    }
+
+                    // ถ้าเป็นตัวเลขล้วน ให้แปลงเป็น mixed fraction
+                    $numerator = (int)$parts[0];
+                    $denominator = (int)$parts[1];
+
                     if ($numerator == 0 || $denominator == 0) {
                         // Invalid fraction
-                        return "\(\\frac{{$parts[0]}}{{$parts[1]}}\)";
+                        return "\\(\\frac{{$parts[0]}}{{$parts[1]}}\\)";
                     }
                     // ส่งพารามิเตอร์ถูกต้อง: toMixedFraction($numerator, $denominator, $whole)
                     return toMixedFraction($numerator, $denominator, null);
