@@ -306,7 +306,7 @@ if (!function_exists('replaceMixedFractions')) {
                     }
                     return "\\(\\frac{{$whole}}{{$numerator}}\\)";
                 } elseif ($numParts === 2) {
-                    // Case: MixFrac(expr1, expr2) - treat as Frac(expr1, expr2)
+                    // Case: MixFrac(numerator, denominator) - convert to mixed fraction
                     $numerator = (int)$parts[0];
                     $denominator = (int)$parts[1];
                     if ($isNull($numerator) || $isNull($denominator)) {
@@ -314,10 +314,11 @@ if (!function_exists('replaceMixedFractions')) {
                     }
 
                     if ($numerator == 0 || $denominator == 0) {
-                        // Whole number
+                        // Invalid fraction
                         return "\(\\frac{{$parts[0]}}{{$parts[1]}}\)";
                     }
-                    return toMixedFraction(null, $numerator, $denominator);
+                    // ส่งพารามิเตอร์ถูกต้อง: toMixedFraction($numerator, $denominator, $whole)
+                    return toMixedFraction($numerator, $denominator, null);
                 }
             } elseif ($function === 'Frac') {
                 if (count($parts) === 2) {
