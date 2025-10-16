@@ -46,7 +46,6 @@ class eLeanController extends Controller
 
     public function home()
     {
-        // dd($this->level);
         $quizIds = $this->getQuizId();
 
         $levels = $this->level;
@@ -114,6 +113,7 @@ class eLeanController extends Controller
     }
     public function homeTerm($level, $term)
     {
+        // dd($level, $term);
         $quizIds = $this->getQuizId();
 
         $public_quizzes = Quiz::whereHas('questions')->where('public', true)->orderBy('id', 'desc')->withCount('questions')->get();
@@ -121,11 +121,11 @@ class eLeanController extends Controller
             ->where(['public' => true, 'level' => $level, 'term' => $term])
             ->whereIn('id', $quizIds)
             // ->orderBy('term', 'asc')
-            // ->orderBy('term', 'asc')
+           // ->orderBy('term', 'DESC')
             ->orderBy('id', 'Desc')
             ->withCount('questions')
             ->get()
-            ->groupBy('section');
+            ->groupBy('section')->sortKeysDesc();
         // ->groupBy('term');
         $registered_only_quizzes = Quiz::whereHas('questions')
             ->where(['published' => true, 'level' => $level, 'term' => $term])
@@ -134,7 +134,7 @@ class eLeanController extends Controller
             ->orderBy('id', 'Desc')
             ->withCount('questions')
             ->get()
-            ->groupBy('section');
+            ->groupBy('section')->sortKeysDesc();
 
         // ->groupBy('term');
         $levelCheck = 2;

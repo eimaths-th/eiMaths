@@ -46,9 +46,91 @@
             transform: translateY(-2px);
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
         }
+
+        .img-hover-preview {
+            position: fixed;
+            top: 0;
+            left: 0;
+            display: none;
+            pointer-events: none;
+            z-index: 9999;
+            max-width: 40vw;
+            max-height: 30vh;
+            border-radius: 10px;
+            background: #fff;
+            border: 1px solid rgba(0,0,0,0.08);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            padding: 8px;
+        }
     </style>
 @endpush
-@push('script')
+@push('scripts')
+<script>
+   (function(){
+    const OFFSET_X = 18;
+    const OFFSET_Y = 18;
+
+    const preview = document.createElement('img');
+    preview.className = 'img-hover-preview';
+    document.body.appendChild(preview);
+
+    function positionPreview(e) {
+        const touch = e.touches ? e.touches[0] : e; // รองรับ touch
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+        const rect = { w: preview.naturalWidth, h: preview.naturalHeight };
+
+        let scale = 1;
+        const maxW = vw * 0.6;
+        const maxH = vh * 0.7;
+        if (rect.w > maxW || rect.h > maxH) {
+            scale = Math.min(maxW / rect.w, maxH / rect.h);
+        }
+
+        preview.style.width = rect.w ? (rect.w * scale) + 'px' : '';
+        preview.style.height = rect.h ? (rect.h * scale) + 'px' : '';
+
+        let x = touch.clientX + OFFSET_X;
+        let y = touch.clientY + OFFSET_Y;
+
+        const pw = preview.getBoundingClientRect().width;
+        const ph = preview.getBoundingClientRect().height;
+
+        if (x + pw > vw - 10) x = touch.clientX - pw - OFFSET_X;
+        if (y + ph > vh - 10) y = touch.clientY - ph - OFFSET_Y;
+
+        preview.style.transform = `translate(${x}px, ${y}px)`;
+    }
+
+    function attachPreview(el) {
+        el.addEventListener('mouseenter', (e) => {
+            preview.src = el.getAttribute('src');
+            preview.style.display = 'block';
+            positionPreview(e);
+        });
+        el.addEventListener('mousemove', positionPreview);
+        el.addEventListener('mouseleave', () => {
+            preview.style.display = 'none';
+        });
+
+        // 👇 เพิ่มสำหรับ mobile
+        el.addEventListener('touchstart', (e) => {
+            preview.src = el.getAttribute('src');
+            preview.style.display = 'block';
+            positionPreview(e);
+        });
+        el.addEventListener('touchmove', positionPreview);
+        el.addEventListener('touchend', () => {
+            preview.style.display = 'none';
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function(){
+        document.querySelectorAll('.answer-explain-thumb').forEach(attachPreview);
+    });
+})();
+
+</script>
 @endpush
 @section('content')
     <!-- Results Header Section -->
@@ -529,11 +611,10 @@
                                         @endif
                                         @if ($result->question->answer_explanation_image)
                                             <div style="text-align: center; margin-top: 16px;">
-                                                <img src="{{ asset('img_questions/' . $result->question->answer_explanation_image) }}"
+                                                <img class="answer-explain-thumb" 
+                                                     src="{{ asset('img_questions/' . $result->question->answer_explanation_image) }}"
                                                      alt="Answer Explanation Image"
-                                                     style="max-width: 30%; height: auto; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); transition: transform 0.2s ease;"
-                                                     onmouseover="this.style.transform='scale(1.02)';"
-                                                     onmouseout="this.style.transform='scale(1)';">
+                                                     style="max-width: 50%; height: auto; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); transition: transform 0.2s ease;">
                                             </div>
                                         @endif
                                     </div>
