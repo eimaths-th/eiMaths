@@ -469,9 +469,9 @@
                                                                 : '';
                                                         if ($option->answer_type == 'mixed') {
                                                             $textOption = toMixedFraction(
-                                                                $option->whole ?? null,
                                                                 $option->numerator,
                                                                 $option->denominator,
+                                                                $option->whole ?? null
                                                             );
                                                         } else {
                                                             $textOption = toFraction(
@@ -1411,7 +1411,7 @@
                         numerator = parseInt(arg1);
                         denominator = parseInt(arg2);
                     }
-                    return toMixedFraction(whole, numerator, denominator);
+                    return toMixedFraction( numerator, denominator,whole);
                 } else {
                     // Frac(num, denom)
                     numerator = parseInt(arg1);
@@ -1433,7 +1433,7 @@
             return `\\(\\frac{${numerator}}{${denominator}}\\)`;
         }
 
-        function toMixedFraction(whole = null, numerator, denominator) {
+        function toMixedFraction( numerator, denominator ,whole = null,) {
             let remainder;
 
             if (whole !== null && whole !== undefined) {

@@ -505,7 +505,7 @@ class QuizController extends Controller
     {
         return match ($answerData['type']) {
             'options' => optional(Option::find($answerData['answer']))->correct,
-            'written' => strtolower($answerData['answer']) === strtolower($question->written_answer),
+            'written' => strtolower(trim($answerData['answer'])) === strtolower(trim($question->written_answer)),
             'image' => optional(ImageOption::find($answerData['answer']))->correct,
             default => false,
         };

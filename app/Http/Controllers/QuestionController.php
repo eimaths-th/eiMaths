@@ -33,7 +33,7 @@ class QuestionController extends Controller
                     $numerator = (int)$matches[2];
                     $denominator = (int)$matches[3];
                 }
-                return toMixedFraction($whole, $numerator, $denominator);
+                return toMixedFraction($numerator, $denominator,$whole);
             } else {
                 // Frac(num, denom)
                 $numerator = (int)$matches[2];
@@ -56,7 +56,7 @@ class QuestionController extends Controller
         return "\(\\frac{{$numerator}}{{$denominator}}\)";
     }
 
-    function toMixedFraction($whole = null, $numerator, $denominator)
+    function toMixedFraction( $numerator, $denominator,$whole = null)
     {
         if ($whole) {
             $remainder = $numerator % $denominator;

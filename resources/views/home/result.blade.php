@@ -519,7 +519,7 @@
                                                                 <p
                                                                     style="font-size: 16px; font-weight: 500; color: #1e293b; margin: 0;">
                                                                     @if ($fractions->answer_type == 'mixed')
-                                                                        {{ toMixedFraction(null, $fractions->numerator, $fractions->denominator) }}
+                                                                        {{ toMixedFraction( $fractions->numerator, $fractions->denominator,null) }}
                                                                     @else
                                                                         {{ toFraction($fractions->numerator, $fractions->denominator) }}
                                                                     @endif
@@ -567,7 +567,7 @@
                                                             <p
                                                                 style="font-size: 16px; font-weight: 500; color: #1e293b; margin: 0;">
                                                                 @if ($result->question->fractions->first()->answer_type == 'mixed')
-                                                                    {{ toMixedFraction(null, $result->question->fractions->first()->numerator, $result->question->fractions->first()->denominator) }}
+                                                                    {{ toMixedFraction($result->question->fractions->first()->numerator, $result->question->fractions->first()->denominator,null) }}
                                                                 @else
                                                                     {{ toFraction($result->question->fractions->first()->numerator, $result->question->fractions->first()->denominator) }}
                                                                 @endif
@@ -598,7 +598,7 @@
                                         @endif
                                         @if ($result->question->answer_explanation_image)
                                             <div style="text-align: center; margin-top: 16px;">
-                                                <img class="answer-explain-thumb" 
+                                                <img class="answer-explain-thumb"
                                                      src="{{ asset('img_questions/' . $result->question->answer_explanation_image) }}"
                                                      alt="Answer Explanation Image"
                                                      style="max-width: 50%; height: auto; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); transition: transform 0.2s ease;">

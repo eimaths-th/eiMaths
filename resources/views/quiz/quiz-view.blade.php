@@ -297,7 +297,7 @@
                                         @else
                                             <div class="fraction-display"
                                                 style="text-align: center; padding: 12px; background: #f8fafc; border-radius: 8px;">
-                                                {{ toMixedFraction(null, $fraction->numerator, $fraction->denominator) }}
+                                                {{ toMixedFraction($fraction->numerator, $fraction->denominator,null) }}
                                             </div>
                                         @endif
                                     </div>
@@ -310,9 +310,10 @@
                                                 $textOption =
                                                     $option->answer_type === 'mixed'
                                                         ? toMixedFraction(
-                                                            null,
+
                                                             $option->numerator,
                                                             $option->denominator,
+                                                            null
                                                         )
                                                         : toFraction($option->numerator, $option->denominator);
                                             @endphp
