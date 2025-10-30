@@ -24,8 +24,7 @@ class QuizzesController extends Controller
 
         if ($request->ajax()) {
             $query = Quiz::select('quizzes.*')
-                ->withCount('questions')
-                ->latest();
+                ->withCount('questions');
 
             return datatables()->eloquent($query)
                 ->addColumn('#', function ($row) {
@@ -61,6 +60,15 @@ class QuizzesController extends Controller
                     // Properly order by the questions count
                     $query->orderByRaw('(SELECT COUNT(*) FROM question_quiz WHERE question_quiz.quiz_id = quizzes.id) ' . $order);
                 })
+                // Ensure ordering works for primitive columns as expected
+                ->orderColumn('id', 'quizzes.id $1')
+                ->orderColumn('title', 'quizzes.title $1')
+                ->orderColumn('slug', 'quizzes.slug $1')
+                ->orderColumn('description', 'quizzes.description $1')
+                ->orderColumn('public', 'quizzes.public $1')
+                ->orderColumn('level', 'quizzes.level $1')
+                ->orderColumn('term', 'quizzes.term $1')
+                ->orderColumn('section', 'quizzes.section $1')
                 ->rawColumns(['action', 'public'])
                 ->toJson();
         }

@@ -68,7 +68,7 @@
         });
 
         var table = $('#Listview').DataTable({
-            ajax: '',
+            ajax: "{{ route('quizzes') }}",
             serverSide: true,
             processing: true,
             language: {
@@ -91,7 +91,7 @@
                 }
             },
             aaSorting: [
-                [0, "desc"]
+                [1, "desc"]
             ],
             iDisplayLength: 10,
             lengthMenu: [10, 25, 50, 75, 100],
@@ -103,6 +103,8 @@
             columns: [{
                     data: '#',
                     name: '#',
+                    orderable: false,
+                    searchable: false,
                     createdCell: function(td, cellData, rowData, row, col) {
                         $(td).addClass('text-nowrap').css('width', '1%');
                     }
