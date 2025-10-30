@@ -307,144 +307,228 @@
             table.draw();
         });
 
+        // const table_option = {
+        //     ajax: {
+        //         data: function(d) {
+
+        //             if (reservationChanged && $('#reservation').val()) {
+        //                 d.sdate = $('#reservation').val();
+        //             }
+
+        //         }
+        //     },
+
+        //     serverSide: true,
+        //     processing: true,
+        //     language: {
+        //         loadingRecords: '&nbsp;',
+        //         processing: `<div class="spinner-border text-primary"></div>`,
+        //         "sProcessing": "Processing...",
+        //         "sLengthMenu": "Display _MENU_ Row",
+        //         "sZeroRecords": "No Data Found",
+        //         "sInfo": "Display _START_ To _END_ From _TOTAL_ Records",
+        //         "sInfoEmpty": "Display 0 To 0 From 0 Records",
+        //         "sInfoFiltered": "(Filters _MAX_ Row)",
+        //         "sInfoPostFix": "",
+        //         "sSearch": "Search:",
+        //         "sUrl": "",
+        //         "oPaginate": {
+        //             "sFirst": "First",
+        //             "sPrevious": "Previous",
+        //             "sNext": "Next",
+        //             "sLast": "Last"
+        //         }
+        //     },
+        //     aaSorting: [
+        //         [1, "desc"]
+        //     ],
+        //     ////searching: false,
+        //     iDisplayLength: 10,
+        //     lengthMenu: [10, 25, 50, 75, 100],
+        //     stateSave: true,
+        //     autoWidth: false,
+        //     fixedHeader: true,
+        //     responsive: {
+        //         details: {
+        //             type: 'column',
+        //             target: 'tr'
+        //         }
+        //     },
+        //     columnDefs: [{
+        //         className: 'control',
+        //         orderable: false,
+        //         targets: -1
+        //     }],
+        //     sPaginationType: "full_numbers",
+        //     dom: 'T<"clear">lfrtip',
+        //     columns: [{
+        //             data: 'checkbox',
+        //             name: 'checkbox',
+        //             orderable: true,
+        //             searchable: false
+        //         },
+        //         {
+        //             data: 'date',
+        //             name: 'date'
+        //         },
+        //         {
+        //             data: 'setime',
+        //             name: 'setime'
+        //         },
+        //         /* {
+        //                            data: 'etime',
+        //                            name: 'etime'
+        //                        }, */
+        //         {
+        //             data: 'centre',
+        //             name: 'centre'
+        //         },
+        //         {
+        //             data: 'code',
+        //             name: 'code'
+        //         },
+        //         {
+        //             data: 'name',
+        //             name: 'name'
+        //         },
+        //         {
+        //             data: 'level_name',
+        //             name: 'level_name'
+        //         },
+        //         {
+        //             data: 'term',
+        //             name: 'term'
+        //         },
+        //         {
+        //             data: 'bookuse',
+        //             name: 'bookuse'
+        //         },
+
+        //         // {
+        //         //     data: 'course_remaining',
+        //         //     name: 'course_remaining'
+        //         // },
+        //         {
+        //             data: 'start_date',
+        //             name: 'start_date'
+        //         },
+
+        //         /* {
+        //             data: 'end_date',
+        //             name: 'end_date'
+        //         }, */
+        //         // {
+        //         //     data: 'start_term_name',
+        //         //     name: 'start_term_name'
+        //         // },
+
+
+        //         {
+        //             data: 'comment',
+        //             name: 'comment'
+        //         },
+
+        //         {
+        //             data: 'action',
+        //             name: 'action'
+        //         },
+        //         {
+        //             data: 'more',
+        //             name: 'more'
+        //         }
+        //     ]
+        // };
         const table_option = {
-            ajax: {
-                data: function(d) {
+                processing: true,
+                serverSide: true,
 
-                    if (reservationChanged && $('#reservation').val()) {
-                        d.sdate = $('#reservation').val();
+                ajax: {
+                    url: "{{ route('histories.index') }}", // ✅ ต้องมี URL ชัดเจน!
+                    type: "GET",
+                    data: function (d) {
+                        // ✅ ส่งค่าช่วงวันที่ (หรือฟิลเตอร์อื่น ๆ) ไปยัง server
+                        if (reservationChanged && $('#reservation').val()) {
+                            d.sdate = $('#reservation').val();
+                        }
                     }
-
-                }
-            },
-
-            serverSide: true,
-            processing: true,
-            language: {
-                loadingRecords: '&nbsp;',
-                processing: `<div class="spinner-border text-primary"></div>`,
-                "sProcessing": "Processing...",
-                "sLengthMenu": "Display _MENU_ Row",
-                "sZeroRecords": "No Data Found",
-                "sInfo": "Display _START_ To _END_ From _TOTAL_ Records",
-                "sInfoEmpty": "Display 0 To 0 From 0 Records",
-                "sInfoFiltered": "(Filters _MAX_ Row)",
-                "sInfoPostFix": "",
-                "sSearch": "Search:",
-                "sUrl": "",
-                "oPaginate": {
-                    "sFirst": "First",
-                    "sPrevious": "Previous",
-                    "sNext": "Next",
-                    "sLast": "Last"
-                }
-            },
-            aaSorting: [
-                [1, "desc"]
-            ],
-            ////searching: false,
-            iDisplayLength: 10,
-            lengthMenu: [10, 25, 50, 75, 100],
-            stateSave: true,
-            autoWidth: false,
-            fixedHeader: true,
-            responsive: {
-                details: {
-                    type: 'column',
-                    target: 'tr'
-                }
-            },
-            columnDefs: [{
-                className: 'control',
-                orderable: false,
-                targets: -1
-            }],
-            sPaginationType: "full_numbers",
-            dom: 'T<"clear">lfrtip',
-            columns: [{
-                    data: 'checkbox',
-                    name: 'checkbox',
-                    orderable: true,
-                    searchable: false
-                },
-                {
-                    data: 'date',
-                    name: 'date'
-                },
-                {
-                    data: 'setime',
-                    name: 'setime'
-                },
-                /* {
-                                   data: 'etime',
-                                   name: 'etime'
-                               }, */
-                {
-                    data: 'centre',
-                    name: 'centre'
-                },
-                {
-                    data: 'code',
-                    name: 'code'
-                },
-                {
-                    data: 'name',
-                    name: 'name'
-                },
-                {
-                    data: 'level_name',
-                    name: 'level_name'
-                },
-                {
-                    data: 'term',
-                    name: 'term'
-                },
-                {
-                    data: 'bookuse',
-                    name: 'bookuse'
                 },
 
-                // {
-                //     data: 'course_remaining',
-                //     name: 'course_remaining'
-                // },
-                {
-                    data: 'start_date',
-                    name: 'start_date'
+                language: {
+                    loadingRecords: '&nbsp;',
+                    processing: `<div class="spinner-border text-primary"></div>`,
+                    sProcessing: "Processing...",
+                    sLengthMenu: "Display _MENU_ Row",
+                    sZeroRecords: "No Data Found",
+                    sInfo: "Display _START_ To _END_ From _TOTAL_ Records",
+                    sInfoEmpty: "Display 0 To 0 From 0 Records",
+                    sInfoFiltered: "(Filters _MAX_ Row)",
+                    sInfoPostFix: "",
+                    sSearch: "Search:",
+                    sUrl: "",
+                    oPaginate: {
+                        sFirst: "First",
+                        sPrevious: "Previous",
+                        sNext: "Next",
+                        sLast: "Last"
+                    }
                 },
 
-                /* {
-                    data: 'end_date',
-                    name: 'end_date'
-                }, */
-                // {
-                //     data: 'start_term_name',
-                //     name: 'start_term_name'
-                // },
+                aaSorting: [
+                    [1, "desc"]
+                ],
 
+                iDisplayLength: 10,
+                lengthMenu: [10, 25, 50, 75, 100],
+                stateSave: true,
+                autoWidth: false,
+                fixedHeader: true,
 
-                {
-                    data: 'comment',
-                    name: 'comment'
+                responsive: {
+                    details: {
+                        type: 'column',
+                        target: 'tr'
+                    }
                 },
 
-                {
-                    data: 'action',
-                    name: 'action'
-                },
-                {
-                    data: 'more',
-                    name: 'more'
-                }
-            ]
-        };
+                columnDefs: [
+                    {
+                        className: 'control',
+                        orderable: false,
+                        targets: -1
+                    }
+                ],
+
+                sPaginationType: "full_numbers",
+                dom: 'T<"clear">lfrtip',
+
+                columns: [
+                    { data: 'checkbox', name: 'checkbox', orderable: false, searchable: false },
+                    { data: 'date', name: 'date' },
+                    { data: 'setime', name: 'setime' },
+                    { data: 'centre', name: 'centre' },
+                    { data: 'code', name: 'code' },
+                    { data: 'name', name: 'name' },
+                    { data: 'level_name', name: 'level_name' },
+                    { data: 'term', name: 'term' },
+                    { data: 'bookuse', name: 'bookuse' },
+                    { data: 'start_date', name: 'start_date' },
+                    { data: 'comment', name: 'comment' },
+                    { data: 'action', name: 'action', orderable: false, searchable: false },
+                    { data: 'more', name: 'more', orderable: false, searchable: false }
+                ]
+            };
+
+    
+
 
         var table = $('#Listview').DataTable(table_option);
 
         $('#SearchButtons').on('click', function() {
+         
             var searchType = $('#search_type').val();
             var keyword = $('#keyword').val();
-
+            //    console.log(searchType, keyword);
+            // return;
             if (searchType !== '' && keyword !== '') {
                 // Clear the previous search and any custom filters
                 table.search('').draw();

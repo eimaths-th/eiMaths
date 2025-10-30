@@ -87,6 +87,7 @@ class eLeanController extends Controller
 
     public function homeLevel($level)
     {
+      
         $quizIds = $this->getQuizId();
         $public_quizzes = Quiz::whereHas('questions')->where('public', true)->orderBy('id', 'desc')->withCount('questions')->get();
         $public_quizzes_term = Quiz::whereHas('questions')
@@ -113,7 +114,7 @@ class eLeanController extends Controller
     }
     public function homeTerm($level, $term)
     {
-        // dd($level, $term);
+        
         $quizIds = $this->getQuizId();
 
         $public_quizzes = Quiz::whereHas('questions')->where('public', true)->orderBy('id', 'desc')->withCount('questions')->get();
@@ -125,7 +126,7 @@ class eLeanController extends Controller
             ->orderBy('id', 'Desc')
             ->withCount('questions')
             ->get()
-            ->groupBy('section')->sortKeysDesc();
+            ->groupBy('section')->sortKeys();
         // ->groupBy('term');
         $registered_only_quizzes = Quiz::whereHas('questions')
             ->where(['published' => true, 'level' => $level, 'term' => $term])
@@ -134,12 +135,12 @@ class eLeanController extends Controller
             ->orderBy('id', 'Desc')
             ->withCount('questions')
             ->get()
-            ->groupBy('section')->sortKeysDesc();
+            ->groupBy('section')->sortKeys();
 
         // ->groupBy('term');
         $levelCheck = 2;
         $header = 'eiMaths Quiz Grade ' . $level . ' Term ' . $term;
-        // dd($public_quizzes_term);
+        //  dd($public_quizzes_term);
 
         return view('home.home', compact('public_quizzes', 'registered_only_quizzes', 'header', 'public_quizzes_term', 'levelCheck', 'level', 'term'));
     }

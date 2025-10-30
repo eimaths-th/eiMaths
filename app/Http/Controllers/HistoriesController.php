@@ -67,154 +67,270 @@ class HistoriesController extends Controller
     }
 
 
+    // public function index(Request $request)
+    // {
+    //     if ($request->ajax()) {
+    //         $datass = Histrories::orderByRaw("CONCAT(date, ' ', stime) DESC");
+    //         if (!Gate::allows('all-centre')) {
+    //             $datass->where('centre', Auth::user()->department->id);
+    //         }
+
+    //         if (!empty($request->get('sdate'))) {
+    //             $dateRange = $request->input('sdate');
+    //             if ($dateRange) {
+    //                 $dateRangeArray = explode(' - ', $dateRange);
+
+    //                 if (!empty($dateRangeArray) && count($dateRangeArray) == 2) {
+    //                     $startDate = $dateRangeArray[0];
+    //                     $endDate = $dateRangeArray[1];
+    //                     $datass->whereBetween('date', [$startDate, $endDate]);
+    //                 }
+    //             }
+    //             // dd($request->all());
+    //         }
+
+    //         $datas = $datass->get();
+    //         return datatables()->of($datas)
+    //             ->editColumn('checkbox', function ($row) {
+    //                 return '<input type="checkbox" id="' . $row->id . '" class="flat" name="table_records[]" value="' . $row->id . '" >';
+    //             })
+    //             ->editColumn('centre', function ($row) {
+    //                 // $code= 1;
+    //                 if ($row->department) {
+
+    //                     $centre = $row->department->name;
+    //                 } else {
+    //                     $centre = 'N/A';
+    //                 }
+    //                 return $centre;
+    //             })
+    //             ->editColumn('bookuse', function ($row) {
+    //                 /* if ($row->booku) {
+    //                     $bookuse = $row->booku->name;
+    //                 } else { */
+    //                 $bookuse = $row->bookuse;
+    //                 //}
+    //                 return $bookuse;
+    //             })
+    //             ->editColumn('code', function ($row) {
+    //                 // $code= 1;
+    //                 if ($row->student) {
+
+    //                     $code = $row->student->code;
+    //                 } else {
+    //                     $code = 'N/A';
+    //                 }
+    //                 return $code;
+    //             })
+    //             ->editColumn('date', function ($row) {
+    //                 //$code = $this->formatDate($row->date);
+    //                 $code = $row->date;
+    //                 return $code;
+    //             })
+    //             ->addColumn('setime', function ($row) {
+    //                 //$code = $this->formatDate($row->date);
+    //                 $code = $row->stime . ' - ' . $row->etime;
+    //                 return $code;
+    //             })
+    //             ->editColumn('start_date', function ($row) {
+    //                 //$code = $this->checkStartEndDate($row->student_id, $row->term, $row->level_id);
+    //                 $code = $row->start_date . ' - ' . $row->end_date;
+    //                 return $code;
+    //             })
+    //             ->editColumn('name', function ($row) {
+    //                 // $name = 1;
+    //                 $nic = $row->contact_nickname !== null && $row->contact_nickname !== '' ? '(' . $row->contact_nickname . ')' : '';
+    //                 if ($row->student) {
+    //                     $name = $row->student->name;
+    //                 } else {
+    //                     $name = 'N/A';
+    //                 }
+    //                 return $name . ' ' . $nic;
+    //             })
+    //             ->addColumn('more', function ($row) {
+    //                 return '';
+    //             })
+    //             ->addColumn('action', function ($row) {
+    //                 $html = '';
+    //                 if (Gate::allows('student-edit')) {
+    //                     $html = '<button type="button" class="btn btn-sm btn-primary btn-view" id="getViewData" data-id="' . $row->id . '"><i class="fa fa-eye"></i> View </button> ';
+    //                     $html .= '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit </button> ';
+    //                     // $html .= '<button type="button" class="btn btn-sm btn-info btn-edit" id="getLogData" data-id="' . $row->id . '"><i class="fa fa-clipboard"></i> Log </button> ';
+    //                 } else {
+    //                     $html = '<button type="button" class="btn btn-sm btn-primary disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> View</button> ';
+    //                     $html .= '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> Edit</button> ';
+    //                 }
+    //                 if (Gate::allows('view-log')) {
+
+    //                     $html .= '<button type="button" class="btn btn-sm btn-info btn-edit" id="getLogData" data-id="' . $row->id . '"><i class="fa fa-clipboard"></i> Log </button> ';
+    //                 } else {
+
+    //                     $html .= '<button type="button" class="btn btn-sm btn-info btn-edit" id="getLogData" disabled><i class="fa fa-clipboard"></i> Log </button> ';
+    //                 }
+
+    //                 // if (Gate::allows('student-edit')) {
+    //                 //     $html .= '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit</button> ';
+    //                 // } else {
+    //                 //     $html .= '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> Edit</button> ';
+    //                 // }
+
+    //                 if (Gate::allows('student-delete')) {
+    //                     $html .= '<button type="button" data-rowid="' . $row->id . '" class="btn btn-sm btn-danger btn-delete"><i class="fa fa-trash"></i> Delete</button>';
+    //                 } else {
+    //                     $html .= '<button type="button" class="btn btn-sm btn-danger disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-trash"></i> Delete</button> ';
+    //                 }
+    //                 return $html;
+    //             })->rawColumns(['checkbox', 'action', 'more'])->toJson();
+    //     }
+
+    //     $centre = Department::where([['status', '1']])
+    //         ->orderBy("name", "asc")->get();
+    //     $term = term::where([['status', '1']])
+    //         ->orderBy("name", "asc")->get();
+    //     $sterm = Sterm::where([['status', '1']])
+    //         ->orderBy("name", "asc")->get();
+    //     $bookuse = bookuse::where([['status', '1']/* , ['type', '1'] */])
+    //         ->orderBy("name", "asc")->get();
+    //     $level = level::where([['status', '1']])
+    //         ->orderBy("name", "asc")->get();
+
+    //     $role = 'Teacher';
+    //     $teacher = User::whereHas('roles', function ($query) use ($role) {
+    //         $query->where('name', $role);
+    //     })->get();
+
+    //     // dd($last_book,$last_level,$graduated);
+    //     // $histories = Histrories::all();
+
+    //     return view('histories.index', [
+    //         'centre' => $centre,
+    //         'bookuse' => $bookuse,
+    //         'term' => $term,
+    //         'sterm' => $sterm,
+    //         // 'histories' => $histories,
+    //         'level' => $level,
+    //         'lteacher' => $teacher
+    //     ]);
+    // }
     public function index(Request $request)
     {
-
         if ($request->ajax()) {
 
-            $datass = Histrories::orderByRaw("CONCAT(date, ' ', stime) DESC");
+            // ✅ ใช้ with() preload ความสัมพันธ์ เพื่อลดจำนวน query
+            $datass = Histrories::with(['student', 'department'])
+                ->orderBy('date', 'desc')
+                ->orderBy('stime', 'desc');
+
+            // ✅ จำกัดศูนย์ตามสิทธิ์
             if (!Gate::allows('all-centre')) {
                 $datass->where('centre', Auth::user()->department->id);
             }
 
+            // ✅ กรองตามวันที่
             if (!empty($request->get('sdate'))) {
                 $dateRange = $request->input('sdate');
                 if ($dateRange) {
                     $dateRangeArray = explode(' - ', $dateRange);
-
-                    if (!empty($dateRangeArray) && count($dateRangeArray) == 2) {
+                    if (count($dateRangeArray) == 2) {
                         $startDate = $dateRangeArray[0];
                         $endDate = $dateRangeArray[1];
                         $datass->whereBetween('date', [$startDate, $endDate]);
                     }
                 }
-                // dd($request->all());
-
             }
 
-            $datas = $datass->get();
-            return datatables()->of($datas)
+            // ✅ ใช้ eloquent() ไม่ใช่ get()
+            return datatables()
+                ->eloquent($datass)
+                // Custom filters for related columns to avoid querying non-existent histories.* fields
+                ->filterColumn('code', function ($query, $keyword) {
+                    $query->whereHas('student', function ($q) use ($keyword) {
+                        $q->where('code', 'like', "%{$keyword}%");
+                    });
+                })
+                ->filterColumn('name', function ($query, $keyword) {
+                    $query->whereHas('student', function ($q) use ($keyword) {
+                        $q->where('name', 'like', "%{$keyword}%");
+                    });
+                })
                 ->editColumn('checkbox', function ($row) {
                     return '<input type="checkbox" id="' . $row->id . '" class="flat" name="table_records[]" value="' . $row->id . '" >';
                 })
                 ->editColumn('centre', function ($row) {
-                    // $code= 1;
-                    if ($row->department) {
-
-                        $centre = $row->department->name;
-                    } else {
-                        $centre = 'N/A';
-                    }
-                    return $centre;
+                    return $row->department ? $row->department->name : 'N/A';
                 })
                 ->editColumn('bookuse', function ($row) {
-                    /* if ($row->booku) {
-                        $bookuse = $row->booku->name;
-                    } else { */
-                    $bookuse = $row->bookuse;
-                    //}
-                    return $bookuse;
+                    return $row->bookuse ?? 'N/A';
                 })
                 ->editColumn('code', function ($row) {
-                    // $code= 1;
-                    if ($row->student) {
-
-                        $code = $row->student->code;
-                    } else {
-                        $code = 'N/A';
-                    }
-                    return $code;
+                    return $row->student ? $row->student->code : 'N/A';
                 })
                 ->editColumn('date', function ($row) {
-                    //$code = $this->formatDate($row->date);
-                    $code = $row->date;
-                    return $code;
+                    return $row->date;
                 })
                 ->addColumn('setime', function ($row) {
-                    //$code = $this->formatDate($row->date);
-                    $code = $row->stime . ' - ' . $row->etime;
-                    return $code;
+                    return $row->stime . ' - ' . $row->etime;
                 })
                 ->editColumn('start_date', function ($row) {
-                    //$code = $this->checkStartEndDate($row->student_id, $row->term, $row->level_id);
-                    $code = $row->start_date . ' - ' . $row->end_date;
-                    return $code;
+                    return $row->start_date . ' - ' . $row->end_date;
                 })
                 ->editColumn('name', function ($row) {
-                    // $name = 1;
-                    $nic = $row->contact_nickname !== null && $row->contact_nickname !== '' ? '(' . $row->contact_nickname . ')' : '';
-                    if ($row->student) {
-                        $name = $row->student->name;
-                    } else {
-                        $name = 'N/A';
-                    }
-                    return $name . ' ' . $nic;
+                    $nic = $row->contact_nickname ? '(' . $row->contact_nickname . ')' : '';
+                    return ($row->student ? $row->student->name : 'N/A') . ' ' . $nic;
                 })
-                ->addColumn('more', function ($row) {
+                ->addColumn('more', function () {
                     return '';
                 })
                 ->addColumn('action', function ($row) {
                     $html = '';
+
                     if (Gate::allows('student-edit')) {
-                        $html = '<button type="button" class="btn btn-sm btn-primary btn-view" id="getViewData" data-id="' . $row->id . '"><i class="fa fa-eye"></i> View </button> ';
-                        $html .= '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit </button> ';
-                        // $html .= '<button type="button" class="btn btn-sm btn-info btn-edit" id="getLogData" data-id="' . $row->id . '"><i class="fa fa-clipboard"></i> Log </button> ';
+                        $html .= '<button type="button" class="btn btn-sm btn-primary btn-view" id="getViewData" data-id="' . $row->id . '"><i class="fa fa-eye"></i> View</button> ';
+                        $html .= '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit</button> ';
                     } else {
-                        $html = '<button type="button" class="btn btn-sm btn-primary disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> View</button> ';
-                        $html .= '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> Edit</button> ';
+                        $html .= '<button type="button" class="btn btn-sm btn-primary disabled" title="No Permission"><i class="fa fa-eye"></i> View</button> ';
+                        $html .= '<button type="button" class="btn btn-sm btn-warning disabled" title="No Permission"><i class="fa fa-edit"></i> Edit</button> ';
                     }
+
                     if (Gate::allows('view-log')) {
-
-                        $html .= '<button type="button" class="btn btn-sm btn-info btn-edit" id="getLogData" data-id="' . $row->id . '"><i class="fa fa-clipboard"></i> Log </button> ';
+                        $html .= '<button type="button" class="btn btn-sm btn-info btn-edit" id="getLogData" data-id="' . $row->id . '"><i class="fa fa-clipboard"></i> Log</button> ';
                     } else {
-
-                        $html .= '<button type="button" class="btn btn-sm btn-info btn-edit" id="getLogData" disabled><i class="fa fa-clipboard"></i> Log </button> ';
+                        $html .= '<button type="button" class="btn btn-sm btn-info disabled"><i class="fa fa-clipboard"></i> Log</button> ';
                     }
-
-                    // if (Gate::allows('student-edit')) {
-                    //     $html .= '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit</button> ';
-                    // } else {
-                    //     $html .= '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> Edit</button> ';
-                    // }
 
                     if (Gate::allows('student-delete')) {
                         $html .= '<button type="button" data-rowid="' . $row->id . '" class="btn btn-sm btn-danger btn-delete"><i class="fa fa-trash"></i> Delete</button>';
                     } else {
-                        $html .= '<button type="button" class="btn btn-sm btn-danger disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-trash"></i> Delete</button> ';
+                        $html .= '<button type="button" class="btn btn-sm btn-danger disabled" title="No Permission"><i class="fa fa-trash"></i> Delete</button>';
                     }
+
                     return $html;
-                })->rawColumns(['checkbox', 'action', 'more'])->toJson();
+                })
+                ->rawColumns(['checkbox', 'action', 'more'])
+                ->make(true);
         }
 
-        $centre = Department::where([['status', '1']])
-            ->orderBy("name", "asc")->get();
-        $term = term::where([['status', '1']])
-            ->orderBy("name", "asc")->get();
-        $sterm = Sterm::where([['status', '1']])
-            ->orderBy("name", "asc")->get();
-        $bookuse = bookuse::where([['status', '1']/* , ['type', '1'] */])
-            ->orderBy("name", "asc")->get();
-        $level = level::where([['status', '1']])
-            ->orderBy("name", "asc")->get();
+        // ✅ โหลดข้อมูลประกอบสำหรับ view ปกติ
+        $centre = Department::where('status', '1')->orderBy('name', 'asc')->get();
+        $term = term::where('status', '1')->orderBy('name', 'asc')->get();
+        $sterm = Sterm::where('status', '1')->orderBy('name', 'asc')->get();
+        $bookuse = bookuse::where('status', '1')->orderBy('name', 'asc')->get();
+        $level = level::where('status', '1')->orderBy('name', 'asc')->get();
 
-        $role = 'Teacher';
-        $teacher = User::whereHas('roles', function ($query) use ($role) {
-            $query->where('name', $role);
+        $teacher = User::whereHas('roles', function ($q) {
+            $q->where('name', 'Teacher');
         })->get();
-
-        // dd($last_book,$last_level,$graduated);
-        // $histories = Histrories::all();
 
         return view('histories.index', [
             'centre' => $centre,
             'bookuse' => $bookuse,
             'term' => $term,
             'sterm' => $sterm,
-            // 'histories' => $histories,
             'level' => $level,
             'lteacher' => $teacher
         ]);
     }
+
 
     /**
      * Show the form for creating a new resource.
@@ -1137,7 +1253,7 @@ class HistoriesController extends Controller
             }
         }
         //term qty
-       /*  foreach ($this->get_product_id($history->student_id) as $bookused) {
+        /*  foreach ($this->get_product_id($history->student_id) as $bookused) {
             if ($bookused->term_id == $request->term && $bookused->level_id == $request->level_id) {
                 $qty = $bookused->qty;
                 //break;
