@@ -153,22 +153,17 @@ class eLeanController extends Controller
         $public_quizzes_term = Quiz::whereHas('questions')
             ->where(['public' => true, 'level' => $level, 'term' => $term, 'section' => $section])
             ->whereIn('id', $quizIds)
-            // ->orderBy('term', 'asc')
             ->orderBy('id', 'Desc')
             ->withCount('questions')
             ->get();
-        // ->groupBy('term');
         $registered_only_quizzes = Quiz::whereHas('questions')
             ->where(['published' => true, 'level' => $level, 'term' => $term, 'section' => $section])
             ->whereIn('id', $quizIds)
-            // ->orderBy('term', 'asc')
             ->orderBy('id', 'Desc')
             ->withCount('questions')
             ->get();
-        // ->groupBy('term');
         $levelCheck = 3;
         $header = 'eiMaths Quiz Grade ' . $level . ' Term ' . $term . ' Level-' . $section;
-        // dd($public_quizzes_term);
 
         return view('home.home', compact('public_quizzes', 'registered_only_quizzes', 'header', 'public_quizzes_term', 'levelCheck', 'level', 'term', 'section'));
     }
