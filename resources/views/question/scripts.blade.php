@@ -96,16 +96,18 @@
         var token = '{{ csrf_token() }}';
 
 
-        var table = $('#Listview').DataTable({
-            ajax: '',
-            serverSide: true,
-            processing: true,
-            drawCallback: function() {
-                if (typeof MathJax !== "undefined") {
-                    MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
-                }
-            }, // <-- ✅ Added missing comma here
-            language: {
+        // Initialize Listview table here only if not already initialized by the page
+        if ($('#Listview').length && !$.fn.DataTable.isDataTable('#Listview')) {
+            var table = $('#Listview').DataTable({
+                ajax: '',
+                serverSide: true,
+                processing: true,
+                drawCallback: function() {
+                    if (typeof MathJax !== "undefined") {
+                        MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+                    }
+                }, // <-- ✅ Added missing comma here
+                language: {
                 loadingRecords: '&nbsp;',
                 processing: `<div class="spinner-border text-primary"></div>`,
                 "sProcessing": "Processcing...",
@@ -194,13 +196,16 @@
                     }
                 }
             ],
-            createdRow: function(row, data, dataIndex) {
-                // Sequential numbering
-                var info = table.page.info();
-                $('td:eq(0)', row).html(info.start + dataIndex + 1);
-            }
-        });
-        $('#Listview').DataTable().clear().draw();
+                createdRow: function(row, data, dataIndex) {
+                    // Sequential numbering
+                    var info = table.page.info();
+                    $('td:eq(0)', row).html(info.start + dataIndex + 1);
+                }
+            });
+        }
+        if ($.fn.DataTable.isDataTable('#Listview')) {
+            $('#Listview').DataTable().clear().draw();
+        }
 
         function addFractionOption(numerator = '', denominator = '', answerType = 'mixed', correct = 0) {
             $('#add-fraction-container').append(`

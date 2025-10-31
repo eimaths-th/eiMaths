@@ -311,15 +311,20 @@
 
 @section('script')
     <script>
-        // Function to reload DataTable with given parameters
-        function reloadDataTable(check, grade, term, section) {
+        window.ListviewInitByPage = true;
+        let qTable = null;
+        // Initialize (once) and let ajax.data read current filters each time
+        function initDataTable() {
             if ($.fn.DataTable.isDataTable('#Listview')) {
-                $('#Listview').DataTable().destroy();
+                qTable = $('#Listview').DataTable();
+                return;
             }
 
-            $('#Listview').DataTable({
+            qTable = $('#Listview').DataTable({
                 processing: true,
                 serverSide: true,
+                searching: true,
+                destroy: true,
                 drawCallback: function() {
                     if (typeof MathJax !== "undefined") {
                         MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
@@ -327,16 +332,19 @@
                 },
                 ajax: {
                     url: '{{ route('questions') }}',
-                    data: {
-                        check: check,
-                        grade: grade,
-                        term: term,
-                        section: section
+                    data: function(d) {
+                        const f = getCurrentFilters();
+                        d.check = f.check;
+                        d.grade = f.grade;
+                        d.term = f.term;
+                        d.section = f.section;
                     }
                 },
                 columns: [{
                         data: '#',
                         name: '#',
+                        orderable: false,
+                        searchable: false,
                         createdCell: function(td, cellData, rowData, row, col) {
                             $(td).addClass('text-nowrap').css('width', '1%');
                         }
@@ -375,11 +383,13 @@
                     },
                     {
                         data: 'type',
-                        name: 'type'
+                        name: 'type',
+                        orderable: false
                     },
                     {
                         data: 'option',
-                        name: 'option'
+                        name: 'option',
+                        orderable: false
                     },
                     {
                         data: 'action',
@@ -407,27 +417,24 @@
         $(document).on('change', '.my-question', function() {
             const filters = getCurrentFilters();
 
-            $.ajax({
-                url: '{{ route('questions') }}',
-                method: 'GET',
-                data: {
-                    check: filters.check
-                },
-                success: function(res) {
-                    toastr.success(res.message || 'Status updated');
-                    (filters.check, filters.grade, filters.term, filters.section);
-                    reloadDataTable(filters.check, filters.grade, filters.term, filters.section);
-                },
-                error: function(err) {
-                    toastr.error('Failed to update status');
-                }
-            });
+            // No need to re-init; just reload with new params
+            initDataTable();
+            qTable.ajax.reload();
         });
 
         // Event handlers for filter select boxes
         $(document).on('change', '#filter-grade, #filter-term, #filter-section', function() {
-            const filters = getCurrentFilters();
-            reloadDataTable(filters.check, filters.grade, filters.term, filters.section);
+            initDataTable();
+            qTable.ajax.reload();
+        });
+
+        // Initialize table on first load so global search input works
+        $(document).ready(function() {
+            initDataTable();
+            // Hook global search triggers server-side
+            $('#Listview_filter input').off('keyup.DT input.DT').on('keyup', function(){
+                qTable.search(this.value).draw();
+            });
         });
     </script>
     @include('question.scripts')

@@ -104,23 +104,13 @@ class QuestionController extends Controller
                 $datas->where('section', $section);
             }
 
-            // Apply ordering
-            $datas = $datas->latest();
+            // Do not force default ordering here; let DataTables handle per-column ordering
 
-            return datatables()->of($datas)
+            return datatables()->eloquent($datas)
                 ->addColumn('#', function ($row) {
                     return $row->id;
                 })
-                ->addColumn('level', function ($row) {
-                    return $row->level;
-                })
-                ->addColumn('term', function ($row) {
-                    return $row->term;
-                })
-                ->addColumn('section', function ($row) {
-                    return $row->section;
-                })
-                ->addColumn('text', function ($row) {
+                ->editColumn('text', function ($row) {
                     Log::info("Original Text: " . $row->text);
                     $textFrac = replaceMixedFractions($row->text);
                     Log::info("Processed Text: " . $textFrac);
@@ -155,6 +145,10 @@ class QuestionController extends Controller
                         return $row->options()->count();
                     }
                 })
+                // prevent searching on computed columns that don't directly map to DB fields
+                ->filterColumn('option', function ($query, $keyword) {
+                    return $query; // ignore search on computed 'option'
+                })
                 ->addColumn('type_option', function ($row) {
                     return '';
                 })
@@ -163,7 +157,9 @@ class QuestionController extends Controller
                     $html = '<button type="button" class="btn btn-sm btn-warning" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit</a>';
                     $html .= '<button type="button" class="btn btn-sm btn-danger delete-button" style="margin-left: 5px;" data-id="' . $row->id . '"><i class="fa fa-trash"></i> Delete</button>';
                     return $html;
-                })->rawColumns(['action', 'text'])->toJson();
+                })
+                ->rawColumns(['action', 'text'])
+                ->toJson();
         }
         return view('question.qusetion-list');
     }

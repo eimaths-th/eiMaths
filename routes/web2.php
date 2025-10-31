@@ -20,6 +20,7 @@ use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\QuestionQuizzesController;
 use App\Http\Controllers\QuizController;
 use App\Http\Controllers\QuizzesController;
+use App\Http\Controllers\QuestionBulkController;
 use App\Http\Controllers\ResultController;
 use App\Http\Controllers\TestSystemQuestionsController;
 use App\Http\Livewire\Admin\AdminForm;
@@ -112,6 +113,8 @@ Route::group(['middleware' => ['auth', 'affiliate.redirect']], function () {
     Route::put('quizzes/update/{question}', [QuizzesController::class, 'update'])->name('quizzes.update');
     Route::delete('quizzes/{id}', [QuizzesController::class, 'destroy'])->name('quizzes.destroy');
     Route::get('/quizzes/{id}', [QuizzesController::class, 'show'])->name('quizzes.show');
+
+    Route::post('questions/bulk-update', [QuestionBulkController::class, 'bulkUpdate'])->name('questions.bulk.update');
 
 
     Route::post('assign-quiz', [AssignQuizToStudentController::class, 'assignQuiz'])->name('assignQuiz');

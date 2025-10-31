@@ -148,6 +148,53 @@
                 </div>
             </div>
         </div>
+        <!-- ปุ่ม mod แก้ไข  -->
+        <div style="margin: 16px 0;">
+            <div style="display:flex; align-items:center; gap:12px; margin-bottom:10px;">
+                <button id="toggle-edit" type="button" style="background:#0ea5e9;color:#fff;border:none;padding:10px 16px;border-radius:10px;font-weight:700;letter-spacing:.2px;box-shadow:0 6px 14px rgba(14,165,233,.25);cursor:pointer;">ย้าย Question</button>
+            </div>
+            <div id="edit-panel" style="display:none; background:#ffffff; border:1px solid #e5e7eb; border-radius:12px; box-shadow: 0 10px 24px rgba(0,0,0,.06); padding:16px;">
+                <div style="display:flex; flex-wrap:wrap; gap:16px;">
+                    <div style="min-width:220px; flex:1;">
+                        <div style="font-size:12px; color:#6b7280; margin-bottom:6px;">Grade</div>
+                        <select id="bulk-level" style="width:100%; padding:10px 12px; border:1px solid #d1d5db; border-radius:8px; background:#fff; outline:none;">
+                            <option value="" selected>Select Grade</option>
+                            <option value="K1">K1</option>
+                            <option value="K2">K2</option>
+                            <option value="P1">P1</option>
+                            <option value="P2">P2</option>
+                            <option value="P3">P3</option>
+                            <option value="P4">P4</option>
+                            <option value="P5">P5</option>
+                            <option value="P6">P6</option>
+                        </select>
+                    </div>
+                    <div style="min-width:180px; flex:1;">
+                        <div style="font-size:12px; color:#6b7280; margin-bottom:6px;">Term</div>
+                        <select id="bulk-term" style="width:100%; padding:10px 12px; border:1px solid #d1d5db; border-radius:8px; background:#fff; outline:none;">
+                            @for ($i = 1; $i <= 4; $i++)
+                                <option value="{{ $i }}" {{ (int)$quizzes->term === $i ? 'selected' : '' }}>{{ $i }}</option>
+                            @endfor
+                        </select>
+                    </div>
+                    <div style="min-width:180px; flex:1;">
+                        <div style="font-size:12px; color:#6b7280; margin-bottom:6px;">Level</div>
+                        <select id="bulk-section" style="width:100%; padding:10px 12px; border:1px solid #d1d5db; border-radius:8px; background:#fff; outline:none;">
+                            @for ($i = 1; $i <= 10; $i++)
+                                <option value="{{ $i }}" {{ (int)$quizzes->section === $i ? 'selected' : '' }}>{{ $i }}</option>
+                            @endfor
+                        </select>
+                    </div>
+                </div>
+                <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:14px;">
+                    <label style="display:flex; align-items:center; gap:8px; cursor:pointer; color:#374151;">
+                        <input id="select-all" type="checkbox" style="width:16px; height:16px;" />
+                        <span>เลือกทั้งหมด</span>
+                    </label>
+                    <button id="bulk-confirm" type="button" style="background:linear-gradient(135deg,#10b981,#059669); color:#fff; border:none; padding:10px 18px; border-radius:10px; font-weight:700; letter-spacing:.2px; box-shadow:0 8px 18px rgba(16,185,129,.25); cursor:pointer;">ยืนยัน</button>
+                </div>
+            </div>
+        </div>
 
         <!-- Questions Section -->
         <div style="margin-bottom: 24px;">
@@ -177,6 +224,9 @@
                         <div class="question-card" id="question-container-{{ $question->id }}">
                             <div style="display: flex; align-items: flex-start; gap: 16px; margin-bottom: 16px;">
                                 <div class="question-number">{{ $key + 1 }}</div>
+                                <div class="q-check" style="display:none; margin-top:2px;">
+                                    <input type="checkbox" class="q-select" value="{{ $question->id }}" />
+                                </div>
                                 <div style="flex: 1;">
                                     <div class="question-type-badge">
                                         @if ($question->type === 'written')
@@ -530,5 +580,99 @@
         });
     </script>
     @include('quiz.scripts')
+
+    <script>
+        // Toggle edit mode panel and checkboxes
+        $(document).on('click', '#toggle-edit', function () {
+            const $panel = $('#edit-panel');
+            const visible = $panel.is(':visible');
+            $panel.toggle(!visible);
+            $('.q-check').toggle(!visible);
+            if (visible) {
+                $('#select-all').prop('checked', false).trigger('change');
+                // clear highlight outlines applied in edit mode
+                $('.question-card').css({ outline: 'none', outlineOffset: '0' });
+                // clear all individual selections
+                $('.q-check .q-select').prop('checked', false);
+            }
+        });
+
+        // Select all checkboxes
+        $(document).on('change', '#select-all', function () {
+            const checked = $(this).is(':checked');
+            $('.q-check:visible .q-select').prop('checked', checked);
+            // update card outlines to match selection
+            $('.q-check:visible').each(function(){
+                const $cb = $(this).find('.q-select');
+                const $card = $(this).closest('.question-card');
+                if ($cb.prop('checked')) {
+                    $card.css({ outline: '2px solid #10b981', outlineOffset: '2px' });
+                } else {
+                    $card.css({ outline: 'none', outlineOffset: '0' });
+                }
+            });
+        });
+
+        // Click on question-card toggles its checkbox in edit mode
+        $(document).on('click', '.question-card', function (e) {
+            if (!$('#edit-panel').is(':visible')) return;
+            const tag = (e.target.tagName || '').toLowerCase();
+            if (['input','button','select','a','textarea','svg','path','label'].includes(tag)) return;
+
+            const $card = $(this);
+            const $cb = $card.find('.q-check .q-select');
+            if (!$cb.length) return;
+
+            const newState = !$cb.prop('checked');
+            $cb.prop('checked', newState);
+
+            // update visual highlight
+            if (newState) {
+                $card.css({ outline: '2px solid #10b981', outlineOffset: '2px' });
+            } else {
+                $card.css({ outline: 'none', outlineOffset: '0' });
+            }
+
+            // sync select-all
+            const total = $('.q-check:visible .q-select').length;
+            const selected = $('.q-check:visible .q-select:checked').length;
+            $('#select-all').prop('checked', total > 0 && total === selected);
+        });
+
+        // Bulk confirm submit
+        $(document).on('click', '#bulk-confirm', function () {
+            const ids = $('.q-select:checked').map(function(){ return $(this).val(); }).get();
+            if (ids.length === 0) {
+                Swal.fire({ icon: 'warning', title: 'กรุณาเลือกข้อสอบ', timer: 2000, showConfirmButton: false });
+                return;
+            }
+
+            const payload = {
+                _token: '{{ csrf_token() }}',
+                question_ids: ids,
+                level: $('#bulk-level').val(),
+                term: $('#bulk-term').val(),
+                section: $('#bulk-section').val(),
+                // current quiz meta
+                quiz_id: {{ (int) $quizzes->id }},
+                quiz_title: @json($quizzes->title),
+                quiz_level: @json($quizzes->level),
+                quiz_term: @json($quizzes->term),
+                quiz_section: @json($quizzes->section),
+            };
+
+            $.post("{{ route('questions.bulk.update') }}", payload)
+                .done(function (res) {
+                    Swal.fire({ icon: 'success', title: res.message || 'อัปเดตสำเร็จ', timer: 1200, showConfirmButton: false });
+                    setTimeout(function(){ location.reload(); }, 1200);
+                })
+                .fail(function (xhr) {
+                    let msg = 'เกิดข้อผิดพลาด';
+                    if (xhr.responseJSON && xhr.responseJSON.message) msg = xhr.responseJSON.message;
+                    else if (xhr.responseJSON && xhr.responseJSON.errors) msg = Object.values(xhr.responseJSON.errors).flat().join('\n');
+                    Swal.fire({ icon: 'error', title: msg });
+                });
+        });
+    </script>
 
 @endsection
