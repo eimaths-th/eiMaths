@@ -107,6 +107,43 @@
             font-weight: bold;
             color: #1f2937;
         }
+        /* Compact styles used in sort mode */
+        .sort-compact .question-card {
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+        .sort-compact .question-card .question-number {
+            width: 28px; height: 28px; font-size: 12px;
+        }
+        .sort-compact .question-card .question-type-badge {
+            font-size: 10px; padding: 2px 8px;
+        }
+        .sort-compact .question-card .question-type-badge,
+        .sort-compact .question-card .q-check,
+        .sort-compact .question-card img,
+        .sort-compact .question-card .answer-display,
+        .sort-compact .question-card .option-item,
+        .sort-compact .question-card .edit-question-btn,
+        .sort-compact .question-card .check-button,
+        .sort-compact .question-card .uncheck-button {
+            display: none !important;
+        }
+        .sort-compact .question-card .q-text{
+            font-size: 13px !important;
+            line-height: 1.3 !important;
+            margin: 0 !important;
+            display: -webkit-box;
+            -webkit-line-clamp: 2; /* show only 2 lines */
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            max-height: 3.2em;
+        }
+        /* hide everything after the question text */
+        .sort-compact .question-card .q-text ~ * { display: none !important; }
+        /* hide all blocks after header row inside the card (includes explanation and actions) */
+        .sort-compact .question-card > *:not(:first-child) { display: none !important; }
+        .drag-ghost { opacity: 0.6; }
     </style>
 @endsection
 
@@ -152,6 +189,8 @@
         <div style="margin: 16px 0;">
             <div style="display:flex; align-items:center; gap:12px; margin-bottom:10px;">
                 <button id="toggle-edit" type="button" style="background:#0ea5e9;color:#fff;border:none;padding:10px 16px;border-radius:10px;font-weight:700;letter-spacing:.2px;box-shadow:0 6px 14px rgba(14,165,233,.25);cursor:pointer;">ย้าย Question</button>
+                <button id="toggle-sort" type="button" style="background:#0ea5e9;color:#fff;border:none;padding:10px 16px;border-radius:10px;font-weight:700;letter-spacing:.2px;box-shadow:0 6px 14px rgba(14,165,233,.25);cursor:pointer;">ย้าย ตำเเหน่ง</button>
+                <button id="confirm-sort" type="button" style="display:none;background:#10b981;color:#fff;border:none;padding:10px 16px;border-radius:10px;font-weight:700;letter-spacing:.2px;box-shadow:0 6px 14px rgba(16,185,129,.25);cursor:pointer;">ยืนยันลำดับ</button>
             </div>
             <div id="edit-panel" style="display:none; background:#ffffff; border:1px solid #e5e7eb; border-radius:12px; box-shadow: 0 10px 24px rgba(0,0,0,.06); padding:16px;">
                 <div style="display:flex; flex-wrap:wrap; gap:16px;">
@@ -180,7 +219,7 @@
                     <div style="min-width:180px; flex:1;">
                         <div style="font-size:12px; color:#6b7280; margin-bottom:6px;">Level</div>
                         <select id="bulk-section" style="width:100%; padding:10px 12px; border:1px solid #d1d5db; border-radius:8px; background:#fff; outline:none;">
-                            @for ($i = 1; $i <= 10; $i++)
+                            @for ($i = 1; $i <= 12; $i++)
                                 <option value="{{ $i }}" {{ (int)$quizzes->section === $i ? 'selected' : '' }}>{{ $i }}</option>
                             @endfor
                         </select>
@@ -219,7 +258,7 @@
                     <p style="color: #9ca3af; margin: 8px 0 0 0;">ยังไม่มีคำถามในแบบทดสอบนี้</p>
                 </div>
             @else
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)); gap: 20px;">
+                <div id="questions-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)); gap: 20px;">
                     @foreach ($questions as $key => $question)
                         <div class="question-card" id="question-container-{{ $question->id }}">
                             <div style="display: flex; align-items: flex-start; gap: 16px; margin-bottom: 16px;">
@@ -241,7 +280,7 @@
                                             {{ $question->type }}
                                         @endif
                                     </div>
-                                    <div
+                                    <div class="q-text"
                                         style="font-size: 16px; font-weight: 500; color: #1f2937; line-height: 1.5; margin-bottom: 12px;">
                                         {{ replaceMixedFractions($question->text) }}
                                     </div>
@@ -516,6 +555,7 @@
 @section('script')
     @include('question.scripts')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
 
     <script>
         let checkedQuestions = new Set(JSON.parse(localStorage.getItem('checkedQuestions')) || []);
@@ -579,6 +619,119 @@
             updateUI(questionId, false);
         });
     </script>
+
+    <script>
+        // Sort mode toggle and save
+        let sortableInstance = null;
+        const grid = document.getElementById('questions-grid');
+        let originalOrder = [];
+        let sortPending = false;
+
+        function enterSortMode() {
+            if (!grid) return;
+            // switch to compact multi-column for overview
+            grid.dataset.originalTemplate = grid.style.gridTemplateColumns;
+            grid.dataset.originalGap = grid.style.gap;
+            grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(180px, 1fr))';
+            grid.style.gap = '6px';
+
+            // remember original DOM order
+            originalOrder = Array.from(grid.querySelectorAll('.question-card')).map(el => el.id);
+            sortPending = true;
+
+            document.querySelectorAll('.question-card').forEach((el) => {
+                el.style.cursor = 'move';
+            });
+
+            document.getElementById('confirm-sort').style.display = 'inline-block';
+            grid.classList.add('sort-compact');
+            // hide edit-mode button while sorting
+            $('#toggle-edit').hide();
+
+            if (!sortableInstance) {
+                sortableInstance = Sortable.create(grid, {
+                    animation: 150,
+                    handle: '.question-card',
+                    ghostClass: 'drag-ghost'
+                });
+            }
+        }
+
+        function exitSortMode(restore = true) {
+            if (!grid) return;
+            // restore grid layout
+            const original = grid.dataset.originalTemplate;
+            if (original) grid.style.gridTemplateColumns = original;
+            const originalGap = grid.dataset.originalGap;
+            if (originalGap !== undefined) grid.style.gap = originalGap;
+
+            // if not confirmed, restore DOM order
+            if (restore && sortPending && originalOrder.length) {
+                const map = new Map();
+                Array.from(grid.querySelectorAll('.question-card')).forEach(el => map.set(el.id, el));
+                originalOrder.forEach(id => {
+                    const el = map.get(id);
+                    if (el) grid.appendChild(el);
+                });
+            }
+
+            document.querySelectorAll('.question-card').forEach((el) => {
+                el.style.cursor = '';
+            });
+
+            document.getElementById('confirm-sort').style.display = 'none';
+            grid.classList.remove('sort-compact');
+            // show edit-mode button back
+            $('#toggle-edit').show();
+
+            if (sortableInstance) {
+                sortableInstance.destroy();
+                sortableInstance = null;
+            }
+
+            // clear state
+            originalOrder = [];
+            sortPending = false;
+        }
+
+        $(document).on('click', '#toggle-sort', function () {
+            if (sortableInstance) {
+                // user cancels sort — restore original order
+                exitSortMode(true);
+            } else {
+                enterSortMode();
+            }
+        });
+
+        $(document).on('click', '#confirm-sort', function () {
+            if (!grid) return;
+            const ids = Array.from(grid.querySelectorAll('.question-card')).map(el => {
+                const id = el.id.replace('question-container-', '');
+                return parseInt(id, 10);
+            });
+
+            if (!ids.length) return;
+
+            $.ajax({
+                url: "{{ url('/quizzes/' . $quizzes->id . '/order') }}",
+                method: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    ordered_ids: ids
+                }
+            }).done(function (res) {
+                Swal.fire({ icon: 'success', title: res.message || 'บันทึกลำดับสำเร็จ', timer: 1200, showConfirmButton: false });
+                // confirmed — keep the new order (no restore)
+                exitSortMode(false);
+                setTimeout(function(){ location.reload(); }, 1200);
+            }).fail(function (xhr) {
+                let msg = 'เกิดข้อผิดพลาด';
+                if (xhr.responseJSON && xhr.responseJSON.message) msg = xhr.responseJSON.message;
+                else if (xhr.responseJSON && xhr.responseJSON.errors) msg = Object.values(xhr.responseJSON.errors).flat().join('\n');
+                Swal.fire({ icon: 'error', title: msg });
+            });
+        });
+    </script>
     @include('quiz.scripts')
 
     <script>
@@ -588,6 +741,14 @@
             const visible = $panel.is(':visible');
             $panel.toggle(!visible);
             $('.q-check').toggle(!visible);
+            // hide/show the other mode button accordingly
+            if (!visible) {
+                // entering edit mode -> hide sort button
+                $('#toggle-sort').hide();
+            } else {
+                // exiting edit mode -> show sort button
+                $('#toggle-sort').show();
+            }
             if (visible) {
                 $('#select-all').prop('checked', false).trigger('change');
                 // clear highlight outlines applied in edit mode

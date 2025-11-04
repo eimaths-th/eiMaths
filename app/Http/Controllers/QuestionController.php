@@ -326,7 +326,7 @@ class QuestionController extends Controller
 
         // Generate and save question code
         $question->update(['code' => str_pad($question->id, 6, '0', STR_PAD_LEFT)]);
-
+        
         // Save main image
         if ($request->hasFile('img_name')) {
             $file = $request->file('img_name');
@@ -441,7 +441,7 @@ class QuestionController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // dd($request->all());
+        
         $validated = Validator::make($request->all(), [
             'text' => 'nullable|string',
             'img_name' => 'nullable|image|file|mimes:jpg,png,jpeg|max:2048',

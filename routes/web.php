@@ -18,6 +18,7 @@ use App\Http\Controllers\TeachingPeriodController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\ImageUploadController;
+use App\Http\Controllers\QuestionBulkController;
 
 use App\Services\FileUploadService;
 use Illuminate\Http\Request;
@@ -161,6 +162,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/promotion-images/update-status', [PromotionImageController::class, 'updateStatus'])->name('promotion-images.updateStatus');
     Route::post('/promotion-images/update-status2', [PromotionImageController::class, 'updateStatus2'])->name('promotion-images.updateStatus2');
     Route::post('/promotion-images/disable-all', [PromotionImageController::class, 'disableAll'])->name('promotion-images.disableAll');
+    Route::post('/quizzes/{quiz}/order', [QuestionBulkController::class, 'updateOrder'])->name('quizzes.order.update');
 
     //parent route
     Route::resource('parent', ParentController::class);

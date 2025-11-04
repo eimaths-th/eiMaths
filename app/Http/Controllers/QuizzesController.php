@@ -10,6 +10,7 @@ use App\Models\Quiz;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use \Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 
 
 
@@ -143,6 +144,14 @@ class QuizzesController extends Controller
         ]);
 
         $quiz->questions()->attach($validated['questions']);
+        // Build position: set sequential positions based on the incoming order
+        $pos = 1;
+        foreach ($validated['questions'] as $qid) {
+            DB::table('question_quiz')
+                ->where('quiz_id', $quiz->id)
+                ->where('question_id', $qid)
+                ->update(['position' => $pos++]);
+        }
 
         return response()->json(['success' => 'Quiz created successfully!']);
     }
@@ -247,6 +256,59 @@ class QuizzesController extends Controller
         ]);
 
         $quiz->questions()->sync($request->input('questions', []));
+
+        // Option B: If questions[] is present, treat it as the intended new order.
+        if ($request->has('questions')) {
+            $ordered = $request->input('questions', []);
+
+            // Put ordered ids first
+            $pos = 1;
+            foreach ($ordered as $qid) {
+                DB::table('question_quiz')
+                    ->where('quiz_id', $quiz->id)
+                    ->where('question_id', $qid)
+                    ->update(['position' => $pos++]);
+            }
+
+            // Append remaining ids not specified, preserving their existing relative order if available
+            $existingIds = DB::table('question_quiz')
+                ->where('quiz_id', $quiz->id)
+                ->pluck('question_id')
+                ->toArray();
+
+            $remaining = array_values(array_diff($existingIds, $ordered));
+
+            if (!empty($remaining)) {
+                $hasAnyPosition = DB::table('question_quiz')
+                    ->where('quiz_id', $quiz->id)
+                    ->whereNotNull('position')
+                    ->exists();
+
+                if ($hasAnyPosition) {
+                    $remaining = DB::table('question_quiz')
+                        ->where('quiz_id', $quiz->id)
+                        ->whereIn('question_id', $remaining)
+                        ->orderBy('position', 'asc')
+                        ->pluck('question_id')
+                        ->toArray();
+                } else {
+                    $remaining = DB::table('question_quiz')
+                        ->where('quiz_id', $quiz->id)
+                        ->whereIn('question_id', $remaining)
+                        ->orderBy('question_id', 'asc')
+                        ->pluck('question_id')
+                        ->toArray();
+                }
+
+                foreach ($remaining as $qid) {
+                    DB::table('question_quiz')
+                        ->where('quiz_id', $quiz->id)
+                        ->where('question_id', $qid)
+                        ->update(['position' => $pos++]);
+                }
+            }
+        }
+
         return response()->json(['success' => 'Quiz updated successfully']);
     }
 

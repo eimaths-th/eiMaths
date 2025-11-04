@@ -52,7 +52,9 @@ class Quiz extends Model
 
     public function questions()
     {
-        return $this->belongsToMany(Question::class);
+        return $this->belongsToMany(Question::class)
+            ->withPivot('position')
+            ->orderBy('question_quiz.position');
     }
 
     public function scopePublic($query)
