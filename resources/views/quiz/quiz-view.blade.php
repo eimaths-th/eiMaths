@@ -120,7 +120,6 @@
         }
         .sort-compact .question-card .question-type-badge,
         .sort-compact .question-card .q-check,
-        .sort-compact .question-card img,
         .sort-compact .question-card .answer-display,
         .sort-compact .question-card .option-item,
         .sort-compact .question-card .edit-question-btn,
@@ -143,6 +142,8 @@
         .sort-compact .question-card .q-text ~ * { display: none !important; }
         /* hide all blocks after header row inside the card (includes explanation and actions) */
         .sort-compact .question-card > *:not(:first-child) { display: none !important; }
+        /* In compact mode, allow images inside the header row to be visible (e.g., image-only questions) */
+        .sort-compact .question-card > *:first-child img { display: inline-block !important; max-height: 64px; width: auto; }
         .drag-ghost { opacity: 0.6; }
     </style>
 @endsection
@@ -280,10 +281,12 @@
                                             {{ $question->type }}
                                         @endif
                                     </div>
-                                    <div class="q-text"
-                                        style="font-size: 16px; font-weight: 500; color: #1f2937; line-height: 1.5; margin-bottom: 12px;">
-                                        {{ replaceMixedFractions($question->text) }}
-                                    </div>
+                                    @if(trim((string) $question->text) !== '')
+                                        <div class="q-text"
+                                            style="font-size: 16px; font-weight: 500; color: #1f2937; line-height: 1.5; margin-bottom: 12px;">
+                                            {{ replaceMixedFractions($question->text) }}
+                                        </div>
+                                    @endif
 
                                     @if ($question->img_name)
                                         <div style="margin: 12px 0;">
