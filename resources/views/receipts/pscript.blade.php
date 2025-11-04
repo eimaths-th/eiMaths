@@ -795,14 +795,7 @@
         let status = 0;
 
         $('#SubmitEditForm, #SubmitEditFormp').click(function(e) {
-
-            if (!confirm("ยืนยันการทำรายการ ?")) return;
             e.preventDefault();
-
-            $('.alert-danger').html('');
-            $('.alert-danger').hide();
-            $('.alert-success').html('');
-            $('.alert-success').hide();
 
             // Check which button was clicked and update the 'status' variable
             if (this.id === 'SubmitEditForm') {
@@ -811,78 +804,122 @@
                 status = 0; // Set status to 0 if Pending button is clicked
             }
 
-            console.log('test1');
+            // Show SweetAlert2 confirmation dialog
+            Swal.fire({
+                title: 'ยืนยันการทำรายการ?',
+                text: status === 1 ? 'คุณต้องการยืนยันรายการนี้หรือไม่?' : 'คุณต้องการบันทึกเป็น Pending หรือไม่?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'ยืนยัน',
+                cancelButtonText: 'ยกเลิก'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // User confirmed, proceed with the submission
+                    $('.alert-danger').html('');
+                    $('.alert-danger').hide();
+                    $('.alert-success').html('');
+                    $('.alert-success').hide();
 
-            var values = $("input[name='imgFiles2[]']")
-                .map(function() {
-                    return $(this).val();
-                }).get();
+                    console.log('test1');
 
-            var formData = {
-                ref: $('#getRef').val(),
-                courses_pending_id: $('#courses_pending_id').val(),
-                order_number: $('#EditLot').val(),
-                cid: $('#EditCompany').val()[0],
-                total_cost: $('#EditTotalCost').val(),
-                detail: $('#EditDetail').val(),
-                refund: $('#EditRefund').val(),
-                register_fee: $('#EditRegisterFee').val(),
-                access_fee: $('#EditAccessFee').val(),
-                orther_fee: $('#EditOrtherFee').val(),
-                discount: $('#EditDiscountTerm').val(),
-                discount_book: $('#EditDiscountBook').val(),
-                status: status,
-                payment: $("input[name='payment']:checked").val(),
-                img: values,
-                _token: token
-            };
+                    var values = $("input[name='imgFiles2[]']")
+                        .map(function() {
+                            return $(this).val();
+                        }).get();
 
-            $.ajax({
-                url: "orders/save/" + id,
-                method: 'PUT',
-                data: formData,
+                    var formData = {
+                        ref: $('#getRef').val(),
+                        courses_pending_id: $('#courses_pending_id').val(),
+                        order_number: $('#EditLot').val(),
+                        cid: $('#EditCompany').val()[0],
+                        total_cost: $('#EditTotalCost').val(),
+                        detail: $('#EditDetail').val(),
+                        refund: $('#EditRefund').val(),
+                        register_fee: $('#EditRegisterFee').val(),
+                        access_fee: $('#EditAccessFee').val(),
+                        orther_fee: $('#EditOrtherFee').val(),
+                        discount: $('#EditDiscountTerm').val(),
+                        discount_book: $('#EditDiscountBook').val(),
+                        status: status,
+                        payment: $("input[name='payment']:checked").val(),
+                        img: values,
+                        _token: token
+                    };
 
-                success: function(result) {
-                    //console.log(result);
-                    if (result.errors) {
-                        $('.alert-danger').html('');
-                        $.each(result.errors, function(key, value) {
-                            $('.alert-danger').show();
-                            $('.alert-danger').append('<strong><li>' + value +
-                                '</li></strong>');
-                        });
-                    } else {
-                        console.log(result);
-                        // $('.alert-danger').hide();
-                        // $('.alert-success').show();
-                        // $('.alert-success').append('<strong><li>' + result.success +
-                        //     '</li></strong>');
-                        // $('#EditModal').modal('hide');
-                        // toastr.success(result.success, {
-                        //     timeOut: 5000
-                        // });
-                        // clearDropzonePreviews2();
-                        // $('#Listview').DataTable().ajax.reload();
-
-                        var ostatus = result.status;
-                        if (ostatus == 1) {
-                            var url = "{{ route('receipts') }}";
-                            window.location.href = url;
-                        } else {
-                            $('.alert-danger').hide();
-                            $('.alert-success').show();
-                            $('.alert-success').append('<strong><li>' + result.success +
-                                '</li></strong>');
-                            $('#EditModal').modal('hide');
-                            toastr.success(result.success, {
-                                timeOut: 5000
-                            });
-                            clearDropzonePreviews2();
-                            $('#Listview').DataTable().ajax.reload();
+                    // Show loading and disable buttons
+                    $('#SubmitEditForm, #SubmitEditFormp').prop('disabled', true);
+                    Swal.fire({
+                        title: 'กำลังบันทึกข้อมูล...',
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        didOpen: () => {
+                            Swal.showLoading();
                         }
+                    });
+
+                    $.ajax({
+                        url: "orders/save/" + id,
+                        method: 'PUT',
+                        data: formData,
+
+                        success: function(result) {
+                            // Hide loading
+                            Swal.close();
+                            $('#SubmitEditForm, #SubmitEditFormp').prop('disabled', false);
+
+                            //console.log(result);
+                            if (result.errors) {
+                                $('.alert-danger').html('');
+                                $.each(result.errors, function(key, value) {
+                                    $('.alert-danger').show();
+                                    $('.alert-danger').append('<strong><li>' + value +
+                                        '</li></strong>');
+                                });
+                            } else {
+                                console.log(result);
+                                // $('.alert-danger').hide();
+                                // $('.alert-success').show();
+                                // $('.alert-success').append('<strong><li>' + result.success +
+                                //     '</li></strong>');
+                                // $('#EditModal').modal('hide');
+                                // toastr.success(result.success, {
+                                //     timeOut: 5000
+                                // });
+                                // clearDropzonePreviews2();
+                                // $('#Listview').DataTable().ajax.reload();
+
+                                var ostatus = result.status;
+                                if (ostatus == 1) {
+                                    var url = "{{ route('receipts') }}";
+                                    window.location.href = url;
+                                } else {
+                                    $('.alert-danger').hide();
+                                    $('.alert-success').show();
+                                    $('.alert-success').append('<strong><li>' + result.success +
+                                        '</li></strong>');
+                                    $('#EditModal').modal('hide');
+                                    toastr.success(result.success, {
+                                        timeOut: 5000
+                                    });
+                                    clearDropzonePreviews2();
+                                    $('#Listview').DataTable().ajax.reload();
+                                }
 
 
-                    }
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            // Hide loading on error
+                            Swal.close();
+                            $('#SubmitEditForm, #SubmitEditFormp').prop('disabled', false);
+                            
+                            $('.alert-danger').html('');
+                            $('.alert-danger').show();
+                            $('.alert-danger').append('<strong><li>เกิดข้อผิดพลาด: ' + error + '</li></strong>');
+                        }
+                    });
                 }
             });
         });
