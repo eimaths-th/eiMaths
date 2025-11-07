@@ -189,10 +189,71 @@
         <!-- ปุ่ม mod แก้ไข  -->
         <div style="margin: 16px 0;">
             <div style="display:flex; align-items:center; gap:12px; margin-bottom:10px;">
-                <button id="toggle-edit" type="button" style="background:#0ea5e9;color:#fff;border:none;padding:10px 16px;border-radius:10px;font-weight:700;letter-spacing:.2px;box-shadow:0 6px 14px rgba(14,165,233,.25);cursor:pointer;">ย้าย Question</button>
-                <button id="toggle-sort" type="button" style="background:#0ea5e9;color:#fff;border:none;padding:10px 16px;border-radius:10px;font-weight:700;letter-spacing:.2px;box-shadow:0 6px 14px rgba(14,165,233,.25);cursor:pointer;">ย้าย ตำเเหน่ง</button>
-                <button id="confirm-sort" type="button" style="display:none;background:#10b981;color:#fff;border:none;padding:10px 16px;border-radius:10px;font-weight:700;letter-spacing:.2px;box-shadow:0 6px 14px rgba(16,185,129,.25);cursor:pointer;">ยืนยันลำดับ</button>
+                <button id="toggle-edit" type="button" style="background:#0ea5e9;color:#fff;border:none;padding:10px 16px;border-radius:10px;font-weight:700;letter-spacing:.2px;box-shadow:0 6px 14px rgba(14,165,233,.25);cursor:pointer;display:flex;align-items:center;gap:8px;transition:all .2s ease;" onmouseover="this.style.background='#0284c7';this.style.transform='translateY(-1px)';this.style.boxShadow='0 8px 18px rgba(14,165,233,.35)';" onmouseout="this.style.background='#0ea5e9';this.style.transform='translateY(0)';this.style.boxShadow='0 6px 14px rgba(14,165,233,.25)';">
+                    <svg style="width:18px;height:18px;fill:currentColor;" viewBox="0 0 20 20" aria-hidden="true">
+                        <path fill-rule="evenodd" d="M3 10a1 1 0 011-1h8.586L10.293 6.707a1 1 0 111.414-1.414l4 4 .007.007a.997.997 0 010 1.414l-.007.007-4 4a1 1 0 11-1.414-1.414L12.586 11H4a1 1 0 01-1-1z" clip-rule="evenodd"/>
+                    </svg>
+                    ย้าย Question
+                </button>
+                <button id="toggle-sort" type="button" style="background:#0ea5e9;color:#fff;border:none;padding:10px 16px;border-radius:10px;font-weight:700;letter-spacing:.2px;box-shadow:0 6px 14px rgba(14,165,233,.25);cursor:pointer;display:flex;align-items:center;gap:8px;transition:all .2s ease;" onmouseover="this.style.background='#0284c7';this.style.transform='translateY(-1px)';this.style.boxShadow='0 8px 18px rgba(14,165,233,.35)';" onmouseout="this.style.background='#0ea5e9';this.style.transform='translateY(0)';this.style.boxShadow='0 6px 14px rgba(14,165,233,.25)';">
+                    <svg style="width:18px;height:18px;fill:currentColor;" viewBox="0 0 20 20" aria-hidden="true">
+                        <path d="M3 5a1 1 0 011-1h8a1 1 0 110 2H4A1 1 0 013 5zm0 10a1 1 0 011 1v6.586l1.293-1.293a1 1 0 011.414 1.414l-3 3-.007.007a.997.997 0 01-1.414 0l-.007-.007-3-3a1 1 0 111.414-1.414L13 15.586V9a1 1 0 011-1zm0-6a1 1 0 00-1 1v2.586L12.707 5.293a1 1 0 10-1.414 1.414l3 3 .007.007a.997.997 0 001.414 0l.007-.007 3-3a1 1 0 10-1.414-1.414L15 6.586V3a1 1 0 00-1-1z"/>
+                    </svg>
+                    ย้าย ตำเเหน่ง
+                </button>
+                <button id="confirm-sort" type="button" style="display:none;background:#10b981;color:#fff;border:none;padding:10px 16px;border-radius:10px;font-weight:700;letter-spacing:.2px;box-shadow:0 6px 14px rgba(16,185,129,.25);cursor:pointer;display:flex;align-items:center;gap:8px;transition:all .2s ease;" onmouseover="this.style.background='#059669';this.style.transform='translateY(-1px)';this.style.boxShadow='0 8px 18px rgba(16,185,129,.35)';" onmouseout="this.style.background='#10b981';this.style.transform='translateY(0)';this.style.boxShadow='0 6px 14px rgba(16,185,129,.25)';">
+                    <svg style="width:18px;height:18px;fill:currentColor;" viewBox="0 0 20 20" aria-hidden="true">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                    </svg>
+                    ยืนยันลำดับ
+                </button>
             </div>
+            <!-- Confirm Sort Modal -->
+            <div id="confirmSortModal" style="display:none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+                <div style="background: #fff; border-radius: 12px; width: 90%; max-width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); overflow: hidden;">
+                    <div style="padding: 16px 20px; border-bottom: 1px solid #e5e7eb; display:flex; align-items:center; gap:10px;">
+                        <svg style="width:20px; height:20px; color:#0ea5e9;" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"/></svg>
+                        <div style="font-weight:700; color:#111827;">ยืนยันการเปลี่ยนลำดับ</div>
+                    </div>
+                    <div style="padding: 16px 20px; color:#374151;">
+                        ต้องการยืนยันลำดับข้อคำถามใหม่ใช่หรือไม่?
+                    </div>
+                    <div style="padding: 12px 16px; background:#f9fafb; border-top:1px solid #e5e7eb; display:flex; gap:10px; justify-content:flex-end;">
+                        <button id="cancelConfirmSort" type="button" style="background:#e5e7eb; color:#111827; border:none; padding:8px 14px; border-radius:8px; font-weight:600;">ยกเลิก</button>
+                        <button id="proceedConfirmSort" type="button" style="background:#10b981; color:#fff; border:none; padding:8px 14px; border-radius:8px; font-weight:700; box-shadow:0 6px 14px rgba(16,185,129,.25);">ยืนยัน</button>
+                    </div>
+                </div>
+            </div>
+            <script>
+                (function(){
+                    var btn = document.getElementById('confirm-sort');
+                    var modal = document.getElementById('confirmSortModal');
+                    var cancelBtn = document.getElementById('cancelConfirmSort');
+                    var proceedBtn = document.getElementById('proceedConfirmSort');
+
+                    if (btn) {
+                        // Open modal only on user-initiated clicks (ignore programmatic clicks on init)
+                        btn.addEventListener('click', function(e){
+                            if (!e.isTrusted) { return; }
+                            e.preventDefault();
+                            e.stopPropagation();
+                            if (modal) {
+                                modal.style.display = 'flex';
+                            }
+                        }, true);
+                    }
+
+                    function closeModal(){ if(modal){ modal.style.display='none'; } }
+                    if (cancelBtn) { cancelBtn.addEventListener('click', function(){ closeModal(); }); }
+                    if (proceedBtn) {
+                        proceedBtn.addEventListener('click', function(){
+                            closeModal();
+                            // Programmatic click skips this handler (due to isTrusted=false) but allows other listeners to run
+                            if (btn) { btn.click(); }
+                        });
+                    }
+                })();
+            </script>
             <div id="edit-panel" style="display:none; background:#ffffff; border:1px solid #e5e7eb; border-radius:12px; box-shadow: 0 10px 24px rgba(0,0,0,.06); padding:16px;">
                 <div style="display:flex; flex-wrap:wrap; gap:16px;">
                     <div style="min-width:220px; flex:1;">
@@ -232,6 +293,48 @@
                         <span>เลือกทั้งหมด</span>
                     </label>
                     <button id="bulk-confirm" type="button" style="background:linear-gradient(135deg,#10b981,#059669); color:#fff; border:none; padding:10px 18px; border-radius:10px; font-weight:700; letter-spacing:.2px; box-shadow:0 8px 18px rgba(16,185,129,.25); cursor:pointer;">ยืนยัน</button>
+                    <!-- Bulk Confirm Modal -->
+                    <div id="bulkConfirmModal" style="display:none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+                        <div style="background: #fff; border-radius: 12px; width: 90%; max-width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); overflow: hidden;">
+                            <div style="padding: 16px 20px; border-bottom: 1px solid #e5e7eb; display:flex; align-items:center; gap:10px;">
+                                <svg style="width:20px; height:20px; color:#0ea5e9;" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"/></svg>
+                                <div style="font-weight:700; color:#111827;">ยืนยันการแก้ไขข้อมูลจำนวนมาก</div>
+                            </div>
+                            <div style="padding: 16px 20px; color:#374151;">
+                                ต้องการยืนยันการอัปเดตค่า Grade/Term/Level ให้กับคำถามที่เลือกใช่หรือไม่?
+                            </div>
+                            <div style="padding: 12px 16px; background:#f9fafb; border-top:1px solid #e5e7eb; display:flex; gap:10px; justify-content:flex-end;">
+                                <button id="cancelBulkConfirm" type="button" style="background:#e5e7eb; color:#111827; border:none; padding:8px 14px; border-radius:8px; font-weight:600;">ยกเลิก</button>
+                                <button id="proceedBulkConfirm" type="button" style="background:#10b981; color:#fff; border:none; padding:8px 14px; border-radius:8px; font-weight:700; box-shadow:0 6px 14px rgba(16,185,129,.25);">ยืนยัน</button>
+                            </div>
+                        </div>
+                    </div>
+                    <script>
+                        (function(){
+                            var bulkBtn = document.getElementById('bulk-confirm');
+                            var modal = document.getElementById('bulkConfirmModal');
+                            var cancelBtn = document.getElementById('cancelBulkConfirm');
+                            var proceedBtn = document.getElementById('proceedBulkConfirm');
+
+                            if (bulkBtn) {
+                                bulkBtn.addEventListener('click', function(e){
+                                    if (!e.isTrusted) { return; }
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    if (modal) { modal.style.display = 'flex'; }
+                                }, true);
+                            }
+
+                            function closeModal(){ if(modal){ modal.style.display='none'; } }
+                            if (cancelBtn) { cancelBtn.addEventListener('click', function(){ closeModal(); }); }
+                            if (proceedBtn) {
+                                proceedBtn.addEventListener('click', function(){
+                                    closeModal();
+                                    if (bulkBtn) { bulkBtn.click(); }
+                                });
+                            }
+                        })();
+                    </script>
                 </div>
             </div>
         </div>
@@ -561,6 +664,11 @@
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
 
     <script>
+        $(document).ready(function() {
+             $('#confirm-sort').hide();
+        });
+
+
         let checkedQuestions = new Set(JSON.parse(localStorage.getItem('checkedQuestions')) || []);
 
         function updateUI(questionId, isChecked) {

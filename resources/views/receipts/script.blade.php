@@ -356,7 +356,6 @@
         $(document).on('click', '#getPrintData', function(e) {
             e.preventDefault();
 
-
             $('.alert-danger').html('');
             $('.alert-danger').hide();
             $('.alert-success').html('');
@@ -391,12 +390,22 @@
                 method: 'GET',
                 success: function(res) {
                     $('#edit_data').html(res.html);
+                    // ensure a stable receipt id is embedded in the modal form
+                    const hid = $('#EditRModal').find('#receipt_id');
+                    if (!hid.length) {
+                        $('#editdata').prepend('<input type="hidden" id="receipt_id" name="receipt_id" />');
+                    }
+                    $('#EditRModal').find('#receipt_id').val(pid);
                     $("#rdate").datepicker({
                         dateFormat: 'yy-mm-dd',
                         changeMonth: true,
                         changeYear: true,
                         yearRange: '1980:2050'
                     });
+                    // keep the active pid bound to the edit modal to avoid accidental overwrites by other clicks
+                    $('#EditRModal').data('pid', pid);
+                    // also bind the pid directly to the Save button if present in the injected markup
+                    $('#EditRModal').find('#SaveReceipt').data('id', pid);
                     $('#EditRModal').modal('show');
                 }
             });
@@ -416,14 +425,22 @@
                     $('#LogModal').modal('show');
                 }
             });
-
-
         })
 
         let rid;
         let rid2;
         $(document).on('click', '#getDeleteData', function(e) {
             e.preventDefault();
+            // prevent bubbling to any parent handlers that might change pid
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+            // lock pid to the current modal's id to prevent accidental overwrite
+            const lockedPid = (
+                $('#EditRModal').find('#receipt_id').val() ||
+                $('#EditRModal').data('pid') ||
+                pid
+            );
+            pid = lockedPid;
             $('.alert-danger').html('');
             $('.alert-danger').hide();
             $('.alert-success').html('');
@@ -436,6 +453,16 @@
                     method: 'PUT',
                     // async : false,
                     success: function(res) {
+                        const curId = (
+                            $('#EditRModal').find('#receipt_id').val() ||
+                            $('#EditRModal').data('pid') ||
+                            pid
+                        );
+                        // re-assert stable id onto modal and Save button in case markup was re-rendered
+                        $('#EditRModal').data('pid', curId);
+                        $('#EditRModal').find('#receipt_id').val(curId);
+                        $('#EditRModal').find('#SaveReceipt').data('id', curId);
+                        
                         toastr.success('ลบไฟล์เรียบร้อยแล้ว', {
                             timeOut: 5000
                         });
@@ -447,6 +474,13 @@
         })
 
         $(document).on('click', '#SaveReceipt', function(e) {
+            // Resolve stable receipt id from multiple sources
+            // Priority: Save button's own data-id (set on modal open) > hidden input in modal > modal data > global pid
+            const sourceBtn = $(this).data('id');
+            const sourceHidden = $('#EditRModal').find('#receipt_id').val();
+            const sourceHiddenAlt = $('#EditRModal').find('input[name="receipt_id"]').val();
+            const sourceModal = $('#EditRModal').data('pid');
+            const spid = (sourceBtn || sourceHidden || sourceHiddenAlt || sourceModal || pid);
             e.preventDefault();
             $('.alert-danger').html('');
             $('.alert-danger').hide();
@@ -616,7 +650,7 @@
             };
 
             $.ajax({
-                url: "receipts/save/" + pid,
+                url: "receipts/save/" + spid,
                 method: 'PUT',
                 data: formData,
 
@@ -641,7 +675,6 @@
                         clearDropzonePreviews2();
                         $('#Listview').DataTable().ajax.reload();
 
-
                     }
                 }
             });
@@ -650,7 +683,7 @@
 
     });
 
-    var token = ''
+    var token = '';
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
