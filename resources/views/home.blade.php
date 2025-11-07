@@ -383,7 +383,7 @@
                             <label class="mb-1 text-sm font-weight-bold">
                                 <i class="fas fa-building text-warning"></i> Centre
                             </label>
-                            <select name="dcentre" id="dcentre" class="form-control form-control-sm"
+                            <select name="dcentre" id="dcentre" class="form-control form-control-md"
                                 @cannot('all-centre') disabled @endcannot>
                                 @foreach ($centre as $key2)
                                     @if ($key2->id != 4 && $key2->id != 5)
@@ -401,7 +401,7 @@
                             <label class="mb-1 text-sm font-weight-bold">
                                 <i class="fas fa-calendar-alt text-info"></i> Date Range
                             </label>
-                            <input type="text" class="form-control form-control-sm" id="daterange" name="daterange" 
+                            <input type="text" class="form-control form-control-md" id="daterange" name="daterange" 
                                    placeholder="Select date range" readonly style="background-color: white; cursor: pointer;">
                         </div>
 
