@@ -56,6 +56,8 @@ Route::group(['middleware' => ['auth']], function () {
     Route::delete('/contacts/destroy', [App\Http\Controllers\ContactController::class, 'destroy'])->name('contacts.destroy');
     Route::post('/contacts/destroy_all', [App\Http\Controllers\ContactController::class, 'destroy_all'])->name('contacts.destroy_all');
     Route::get('contacts/{id}/fast-history', [ContactController::class, 'fastHistory'])->name('contacts.fastHistory');
+    Route::get('/contacts/export-by-centre', [App\Http\Controllers\ContactController::class, 'exportContactsByCentre'])->name('contacts.exportByCentre');
+    Route::get('/contacts/get-by-centre', [App\Http\Controllers\ContactController::class, 'getContactsByCentre'])->name('contacts.getByCentre');
 
 
     Route::get('/discontinued', [App\Http\Controllers\DiscontinueController::class, 'index'])->name('discontinued');

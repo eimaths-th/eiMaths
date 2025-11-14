@@ -1880,4 +1880,28 @@ class ContactController extends Controller
             return Excel::download(new ExportForm($request->get('table_records')), 'ExportContact.xlsx');
         }
     }
+
+    /**
+     * Export contacts from centre 2 and 3, grouped by centre, ordered by id desc
+     */
+    public function exportContactsByCentre()
+    {
+        return Contact::exportToExcel('contacts_centre_2_3_export.xlsx');
+    }
+
+    /**
+     * Get contacts data for centres 2 and 3 (for preview)
+     */
+    public function getContactsByCentre()
+    {
+        $contacts = Contact::getContactsByCentre();
+
+        return response()->json([
+            'success' => true,
+            'data' => $contacts,
+            'total_centre_2' => $contacts->has(2) ? $contacts[2]->count() : 0,
+            'total_centre_3' => $contacts->has(3) ? $contacts[3]->count() : 0,
+            'total' => $contacts->flatten()->count()
+        ]);
+    }
 }

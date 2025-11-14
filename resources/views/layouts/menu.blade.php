@@ -18,45 +18,45 @@
         </a>
         <ul class="nav nav-treeview">
             <li class="nav-item">
-                <a href="{{ route('contacts') }}" class="nav-link {{ Request::is('contacts') ? 'active' : '' }}">
+                <a href="{{ route('contacts') }}" class="nav-link {{ Route::currentRouteName() == 'contacts' ? 'active' : '' }}">
                     <i class="nav-icon fa-solid fa-comment-dots"></i>
                     <p>Students List</p>
                 </a>
             </li>
             <li class="nav-item">
-                <a href="{{ route('demo.list') }}" class="nav-link {{ Request::is('demo.list') ? 'active' : '' }}">
+                <a href="{{ route('demo.list') }}" class="nav-link {{ Route::currentRouteName() == 'demo.list' ? 'active' : '' }}">
                     <i class="nav-icon fa-solid fa-comment-dots"></i>
                     <p>Demo Students List</p>
                 </a>
             </li>
             <li class="nav-item">
-                <a href="{{ route('discontinued') }}" class="nav-link {{ Request::is('discontinued') ? 'active' : '' }}">
+                <a href="{{ route('discontinued') }}" class="nav-link {{ Route::currentRouteName() == 'discontinued' ? 'active' : '' }}">
                     <i class="nav-icon fa-solid fa-comment-dots"></i>
                     <p>Discontinued Student</p>
                 </a>
             </li>
             <li class="nav-item">
                 <a href="{{ route('contacts.graduated') }}"
-                    class="nav-link {{ Request::is('graduated') ? 'active' : '' }}">
+                    class="nav-link {{ Route::currentRouteName() == 'contacts.graduated' ? 'active' : '' }}">
                     <i class="nav-icon fa-solid fa-comment-dots"></i>
                     <p>Graduated Student</p>
                 </a>
             </li>
             <li class="nav-item">
-                <a href="{{ route('histories.index') }}" class="nav-link {{ Request::is('histories') ? 'active' : '' }}">
+                <a href="{{ route('histories.index') }}" class="nav-link {{ Route::currentRouteName() == 'histories.index' ? 'active' : '' }}">
                     <i class="nav-icon fa-solid fa-comment-dots"></i>
                     <p>Study Histories</p>
                 </a>
             </li>
             <li class="nav-item">
-                <a href="{{ route('parent.index') }}" class="nav-link {{ Request::is('parent') ? 'active' : '' }}">
+                <a href="{{ route('parent.index') }}" class="nav-link {{ Route::currentRouteName() == 'parent.index' ? 'active' : '' }}">
                     <i class="nav-icon fa-solid fa-comment-dots"></i>
                     <p>Parent Manage</p>
                 </a>
             </li>
             <li class="nav-item">
                 <a href="{{ route('ei_form.backEndIndex') }}"
-                    class="nav-link {{ Request::is('ei_form.backEndIndex') ? 'active' : '' }}">
+                    class="nav-link {{ Route::currentRouteName() == 'ei_form.backEndIndex' ? 'active' : '' }}">
                     <i class="nav-icon fa-solid fa-comment-dots"></i>
                     <p>eiForm</p>
                 </a>
@@ -122,9 +122,6 @@
         class="nav-item {{ in_array(Request::route()->getName(), [
             'receipts',
             'receipts_pending',
-            'courses.pending.index',
-            'commission-list.index',
-            'config-withdraw.index',
         ])
             ? 'menu-open'
             : '' }}">
@@ -132,9 +129,6 @@
             class="nav-link {{ in_array(Request::route()->getName(), [
                 'receipts',
                 'receipts_pending',
-                'courses.pending.index',
-                'commission-list.index',
-                'config-withdraw.index',
             ])
                 ? 'active'
                 : '' }}">

@@ -426,14 +426,14 @@
                                                         <th scope="col">SL</th>
                                                         <th scope="col">ref</th>
                                                         {{-- <th scope="col"> Required Type</th> --}}
-                                                        <th scope="col">name</th>
-                                                        <th scope="col">email</th>
-                                                        <th scope="col">telp</th>
-                                                        <th scope="col">department </th>
-                                                        <th scope="col">day</th>
-                                                        <th scope="col">Teaching Period</th>
-                                                        <th scope="col">course name</th>
-                                                        <th scope="col">type parent</th>
+                                                        <th scope="col">Name</th>
+                                                        <th scope="col">Email</th>
+                                                        <th scope="col">Phone</th>
+                                                        <th scope="col">Department </th>
+                                                        <th scope="col">Appointment Date</th>
+                                                        <th scope="col">Student Name</th>
+                                                        <th scope="col">grade</th>
+                                                        <th scope="col">Type Parent</th>
 
                                                         <th scope="col">Status</th>
                                                         <th scope="col">Action</th>
@@ -458,6 +458,75 @@
     @include('course.create_new_std')
     @include('course.receipt')
     @include('course.modal_view_slip')
+
+    <!-- Course Pending Details Modal -->
+    <div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="detailsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="detailsModalLabel">Course Pending Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="detailsModalBody">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-primary">Parent Information</h6>
+                            <table class="table table-sm">
+                                <tr><td><strong>Name:</strong></td><td id="detail-name">-</td></tr>
+                                <tr><td><strong>Email:</strong></td><td id="detail-email">-</td></tr>
+                                <tr><td><strong>Phone:</strong></td><td id="detail-telp">-</td></tr>
+                                <tr><td><strong>Type Parent:</strong></td><td id="detail-type_parent">-</td></tr>
+                                <tr><td><strong>Ref Code:</strong></td><td id="detail-ref">-</td></tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-primary">Student Information</h6>
+                            <table class="table table-sm">
+                                <tr><td><strong>Student Name:</strong></td><td id="detail-student_name">-</td></tr>
+                                <tr><td><strong>Nickname:</strong></td><td id="detail-student_nickname">-</td></tr>
+                                <tr><td><strong>Grade:</strong></td><td id="detail-grade">-</td></tr>
+                                <tr><td><strong>Appointment Date:</strong></td><td id="detail-appointment_date">-</td></tr>
+                            </table>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-primary">Course Information</h6>
+                            <table class="table table-sm">
+                                <tr><td><strong>Course Name:</strong></td><td id="detail-course_name">-</td></tr>
+                                <tr><td><strong>Price:</strong></td><td id="detail-price">-</td></tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-primary">Schedule Information</h6>
+                            <table class="table table-sm">
+                                <tr><td><strong>Department:</strong></td><td id="detail-department">-</td></tr>
+                                <tr><td><strong>Day:</strong></td><td id="detail-day">-</td></tr>
+                                <tr><td><strong>Period:</strong></td><td id="detail-period">-</td></tr>
+                            </table>
+                        </div>
+                    </div>
+                    {{-- <hr> --}}
+                    <div class="row" style="display: none">
+                        <div class="col-md-12">
+                            <h6 class="text-primary">System Information</h6>
+                            <table class="table table-sm">
+                                <tr><td><strong>ID:</strong></td><td id="detail-id">-</td></tr>
+                                <tr><td><strong>Status:</strong></td><td id="detail-status">-</td></tr>
+                                <tr><td><strong>Created At:</strong></td><td id="detail-created_at">-</td></tr>
+                                <tr><td><strong>Updated At:</strong></td><td id="detail-updated_at">-</td></tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     {{-- @include('contacts.receipt') --}}
 @endsection
 @section('script')
@@ -894,16 +963,16 @@
                         name: 'department'
                     }, // Delivery
                     {
-                        data: 'day',
-                        name: 'day'
+                        data: 'appointment_date',
+                        name: 'appointment_date'
                     }, // Delivery
                     {
-                        data: 'period',
-                        name: 'period'
+                        data: 'student_name',
+                        name: 'student_name'
                     }, // Delivery
                     {
-                        data: 'course_name',
-                        name: 'course_name'
+                        data: 'grade',
+                        name: 'grade'
                     }, // Delivery
                     {
                         data: 'type_parent',
@@ -968,6 +1037,105 @@
                 },
                 error: function(error) {
                     console.error('Error fetching receipt:', error);
+                }
+            });
+        });
+
+        // View Details Button Handler
+        $(document).on('click', '.view-detail-btn', function() {
+            var id = $(this).data('id');
+            console.log('View Details clicked for ID:', id);
+
+            // Show modal first
+            $('#detailsModal').modal('show');
+
+            var url = "{{ route('courses.pending.details', ':id') }}".replace(':id', id);
+            console.log('AJAX URL:', url);
+
+            // Send AJAX request to fetch course pending details
+            $.ajax({
+                url: url,
+                method: 'GET',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                beforeSend: function() {
+                    console.log('AJAX beforeSend: Starting request...');
+                    // Clear all fields and show loading
+                    $('#detail-name, #detail-email, #detail-telp, #detail-type_parent, #detail-ref').text('Loading...');
+                    $('#detail-student_name, #detail-student_nickname, #detail-grade, #detail-appointment_date').text('Loading...');
+                    $('#detail-course_name, #detail-price').text('Loading...');
+                    $('#detail-department, #detail-day, #detail-period').text('Loading...');
+                    $('#detail-id, #detail-status, #detail-created_at, #detail-updated_at').text('Loading...');
+                },
+                success: function(response) {
+                    console.log('AJAX Success Response:', response);
+                    if (response.success) {
+                        var data = response.data;
+                        console.log('Course Pending Data:', data);
+
+                        // Populate parent information
+                        $('#detail-name').text(data.name || '-');
+                        $('#detail-email').text(data.email || '-');
+                        $('#detail-telp').text(data.telp || '-');
+                        $('#detail-type_parent').text(data.type_parent || '-');
+                        $('#detail-ref').text(data.ref || '-');
+
+                        // Populate student information
+                        $('#detail-student_name').text(data.student_name || '-');
+                        $('#detail-student_nickname').text(data.student_nickname || '-');
+                        $('#detail-grade').text(data.grade || '-');
+                        $('#detail-appointment_date').text(data.appointment_date ? new Date(data.appointment_date).toLocaleString() : '-');
+
+                        // Populate course information
+                        $('#detail-course_name').text(data.course_name || '-');
+                        $('#detail-price').text(data.price ? '฿' + data.price : '-');
+
+                        // Populate schedule information
+                        $('#detail-department').text(data.department ? data.department.name : '-');
+                        $('#detail-day').text(data.day || '-');
+                        $('#detail-period').text(data.period || '-');
+
+                        // Populate system information
+                        $('#detail-id').text(data.id || '-');
+
+                        // Status with badge
+                        var statusText = '';
+                        var statusClass = '';
+                        switch(data.status) {
+                            case 1: statusText = 'Pending'; statusClass = 'warning'; break;
+                            case 2: statusText = 'Accepted'; statusClass = 'success'; break;
+                            case 3: statusText = 'Waiting for Payment'; statusClass = 'info'; break;
+                            case 4: statusText = 'Success'; statusClass = 'success'; break;
+                            case 0: statusText = 'Denied'; statusClass = 'danger'; break;
+                            default: statusText = 'Unknown'; statusClass = 'secondary'; break;
+                        }
+                        $('#detail-status').html('<span class="badge bg-' + statusClass + '">' + statusText + '</span>');
+
+                        $('#detail-created_at').text(data.created_at ? new Date(data.created_at).toLocaleString() : '-');
+                        $('#detail-updated_at').text(data.updated_at ? new Date(data.updated_at).toLocaleString() : '-');
+                    } else {
+                        // Show error in all fields
+                        $('#detail-name, #detail-email, #detail-telp, #detail-type_parent, #detail-ref').text('Error');
+                        $('#detail-student_name, #detail-student_nickname, #detail-grade, #detail-appointment_date').text('Error');
+                        $('#detail-course_name, #detail-price').text('Error');
+                        $('#detail-department, #detail-day, #detail-period').text('Error');
+                        $('#detail-id, #detail-status, #detail-created_at, #detail-updated_at').text('Error');
+                        alert('Error: ' + response.message);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('AJAX Error:', error);
+                    console.error('XHR:', xhr);
+                    console.error('Status:', status);
+                    console.error('Response Text:', xhr.responseText);
+                    // Show error in all fields
+                    $('#detail-name, #detail-email, #detail-telp, #detail-type_parent, #detail-ref').text('Error');
+                    $('#detail-student_name, #detail-student_nickname, #detail-grade, #detail-appointment_date').text('Error');
+                    $('#detail-course_name, #detail-price').text('Error');
+                    $('#detail-department, #detail-day, #detail-period').text('Error');
+                    $('#detail-id, #detail-status, #detail-created_at, #detail-updated_at').text('Error');
+                    alert('Error loading details. Please try again.');
                 }
             });
         });
@@ -1992,7 +2160,7 @@
                         url: "contacts/running/" + centre,
                         async: false,
                         success: function(res) {
-                        
+
                             $('#AddCode').val(res.running);
                         }
                     });

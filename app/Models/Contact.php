@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Auth\Authenticatable;
+use App\Exports\ContactsExport;
 
 /**
  * @property integer $id
@@ -100,5 +101,33 @@ class Contact extends Model implements AuthenticatableContract
     public function department()
     {
         return $this->belongsTo(Department::class, 'centre', 'id');
+    }
+
+    /**
+     * Query contacts by centre (2, 3) and group by centre, order by id desc
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public static function getContactsByCentre()
+    {
+        return self::whereIn('centre', [2, 3])
+            ->orderBy('id', 'desc')
+            ->get()
+            ->groupBy('centre');
+    }
+
+    /**
+     * Export contacts data to Excel for centres 2 and 3
+     * @param string $filename
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
+    public static function exportToExcel($filename = 'contacts_export.xlsx')
+    {
+        $contacts = self::whereIn('centre', [2, 3])
+            ->orderBy('id', 'desc')
+            ->get()
+            ->groupBy('centre');
+
+        // Create Excel file using Laravel Excel package
+        return \Maatwebsite\Excel\Facades\Excel::download(new ContactsExport($contacts), $filename);
     }
 }

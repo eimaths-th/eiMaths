@@ -152,9 +152,9 @@ Route::group(['middleware' => ['auth', 'affiliate.redirect']], function () {
 
     // Route::get('quiz/{quiz}', [HomeController::class, 'show'])->name('quiz.show');
 
-    //course list 
+    //course list
 
-    // line api setting 
+    // line api setting
 
     Route::resource('/line-api', LineApiController::class);
     Route::post('/line-api/update-status/{id}', [LineApiController::class, 'updateStatus'])->name('line-api.updateStatus');
@@ -190,6 +190,7 @@ Route::group(['middleware' => ['auth', 'affiliate.redirect']], function () {
     Route::delete('/courses/course-level/destroy/{id}', [CourseController::class, 'courseLevelDestroy'])->name('course.level.destroy');
 
     Route::get('/courses/pending/index', [CourseController::class, 'coursesPendingIndex'])->name('courses.pending.index');
+    Route::get('/courses/pending/details/{id}', [CourseController::class, 'getCoursePendingDetails'])->name('courses.pending.details');
     Route::post('/courses/pending/confirm/{id}', [CourseController::class, 'coursesPendingConfirm'])->name('courses.pending.confirm');
     Route::post('/courses/pending/cancel/{id}', [CourseController::class, 'coursesPendingCancel'])->name('courses.pending.cancel');
     Route::post('/courses/pending/reset/{id}', [CourseController::class, 'coursesPendingReset'])->name('courses.pending.reset');
@@ -290,7 +291,7 @@ Route::get('manon', function (Request $request) {
 route::get('ei-form', [EiFormController::class, 'index'])->name('ei-form.index');
 route::post('ei-form/store', [EiFormController::class, 'store'])->name('ei-form.store');
 
-// test route 
+// test route
 Route::get('/test-system-questions', [TestSystemQuestionsController::class, 'index'])->name('ts.questions.index');
 Route::get('/test-system-questions/create', [TestSystemQuestionsController::class, 'create'])->name('ts.questions.create');
 Route::get('/test-system-questions/view', [TestSystemQuestionsController::class, 'view'])->name('ts.questions.view');

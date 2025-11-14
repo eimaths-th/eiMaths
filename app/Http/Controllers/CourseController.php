@@ -904,14 +904,22 @@ class CourseController extends Controller
                 ->editColumn('department', function ($query) {
                     return $query->department->code ?? '';
                 })
-                ->editColumn('day', function ($query) {
-                    return $query->day ?? '';
+                ->editColumn('appointment_date ', function ($query) {
+                    return $query->appointment_date ?? '';
                 })
-                ->editColumn('period', function ($query) {
-                    return $query->period ?? '';
+                ->editColumn('student_name', function ($query) {
+
+                    $name = '';
+                    if ($query->student_name) {
+                        $name = $query->student_name;
+                    }
+                    if ($query->student_nickname) {
+                        $name .= ' ( ' . $query->student_nickname . ' )';
+                    }
+                    return $name;
                 })
-                ->editColumn('course_name', function ($query) {
-                    return $query->course_name ?? '';
+                ->editColumn('grade', function ($query) {
+                    return $query->grade ?? '';
                 })
                 ->editColumn('status', function ($query) {
                     $html = '';
@@ -935,7 +943,10 @@ class CourseController extends Controller
                 })
 
                 ->addColumn('action', function ($query) {
-                    $dropdown = '<div class="dropdown">
+
+                    $html = '';
+                    $btn = '<button class="btn btn-primary btn-sm view-detail-btn" data-id="' . $query->id . '" style="margin-right: 5px;"> <i class="fa fa-eye"></i> </button>';
+                    $dropdown = '<div class="dropdown" style="display: inline-block;">
                                     <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="actionDropdown' . $query->id . '" data-bs-toggle="dropdown" aria-expanded="false">
                                         Actions
                                     </button>
@@ -955,11 +966,13 @@ class CourseController extends Controller
                         // $dropdown .= '';
                         $dropdown .= '<li><button class="dropdown-item reset-btn" data-id="' . $query->id . '">Reset</button></li>';
                     }
-                    $dropdown .= '<li><button class="dropdown-item view-slip-btn" data-id="' . $query->id . '">view slip</button></li>';
+                    $dropdown .= '<li><button class="dropdown-item view-slip-btn" data-id="' . $query->id . '">View Slip</button></li>';
+                    // $dropdown .= '<li><button class="dropdown-item view-detail-btn" data-id="' . $query->id . '">View Details</button></li>';
                     $dropdown .= '</ul>
                                 </div>';
+                    $html .= $btn . $dropdown;
 
-                    return $dropdown;
+                    return $html;
                 })
 
                 // ->addColumn('action', function ($query) {
@@ -1082,6 +1095,10 @@ class CourseController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email',
             'telp' => 'required|string|max:15',
+            'appointment_date' => 'required|date_format:Y-m-d\TH:i',
+            'student_name' => 'required|string|max:255',
+            'student_nickname' => 'required|string|max:255',
+            'grade' => 'required|string|max:10',
             'course_name' => 'required|string',
             'type_parent' => 'required|in:father,mother',
             'department_id' => 'required|string|max:255',
@@ -1508,7 +1525,7 @@ class CourseController extends Controller
 
         $input['courses_pending_id'] = $courses_pending_id;
         $contact = Contact::create($input);
-        // dd($request->all(), $input);    
+        // dd($request->all(), $input);
 
         $input_order['centre'] = $request->get('centre');
         $input_order['cid'] = $contact->id;
@@ -1666,5 +1683,25 @@ class CourseController extends Controller
         if ($response->getStatusCode() !== 200) {
             \Log::error('Failed to send message to myself', ['response' => $response->getBody()->getContents()]);
         }
+    }
+
+    /**
+     * Get course pending details for view
+     */
+    public function getCoursePendingDetails($id)
+    {
+        $coursePending = CoursePending::with('department')->find($id);
+
+        if (!$coursePending) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Course pending not found'
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $coursePending
+        ]);
     }
 }
