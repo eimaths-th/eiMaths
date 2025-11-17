@@ -179,8 +179,8 @@
                     @if(isset($data->doc_number) && $data->doc_number == 'RP2511010')
                         <font class="grey"><b>
                             บริษัท สำนักงานกฎหมาย ธันย์ธรณ์เทพ จำกัด<br>
-                            <span style="white-space: nowrap;">เลขประจำตัวผู้เสียภาษีอากร : 0105566182291</span><br>
                             เลขที่ 1055/525 สเตท ทาวเวอร์ ชั้น 28 ถนนสีลม แขวงสีลม เขตบางรัก กรุงเทพฯ 10500<br>
+                            <span style="white-space: nowrap;">เลขประจำตัวผู้เสียภาษีอากร : 0105566182291</span><br>
                             
                         </b></font>
                     @else
