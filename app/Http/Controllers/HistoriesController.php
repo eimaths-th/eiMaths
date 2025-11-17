@@ -217,9 +217,7 @@ class HistoriesController extends Controller
         if ($request->ajax()) {
 
             // ✅ ใช้ with() preload ความสัมพันธ์ เพื่อลดจำนวน query
-            $datass = Histrories::with(['student', 'department'])
-                ->orderBy('date', 'desc')
-                ->orderBy('stime', 'desc');
+            $datass = Histrories::with(['student', 'department']);
 
             // ✅ จำกัดศูนย์ตามสิทธิ์
             if (!Gate::allows('all-centre')) {
@@ -242,6 +240,12 @@ class HistoriesController extends Controller
             // ✅ ใช้ eloquent() ไม่ใช่ get()
             return datatables()
                 ->eloquent($datass)
+                // Ensure server-side ordering works for these columns
+                ->orderColumn('date', function($query, $order) {
+                    $query->orderBy('date', $order)->orderBy('stime', $order);
+                })
+                ->orderColumn('level_name', 'level_name $1')
+                ->orderColumn('term', 'term $1')
                 // Custom filters for related columns to avoid querying non-existent histories.* fields
                 ->filterColumn('code', function ($query, $keyword) {
                     $query->whereHas('student', function ($q) use ($keyword) {

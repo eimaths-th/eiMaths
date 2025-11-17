@@ -646,6 +646,7 @@ class ReceiptController extends Controller
      */
     public function show($id, $social = 0)
     {
+
         // Get the data from the database query
         $datas = Receipt::select(
             "receipts.*",
@@ -687,7 +688,7 @@ class ReceiptController extends Controller
             ->where("receipts.id", $id)
             ->get();
 
-        //dd($datas);
+        //  dd($datas->toArray());
 
 
         if ($datas->isEmpty()) {
@@ -742,6 +743,8 @@ class ReceiptController extends Controller
             'items' => $receipt_detail,
         ];
 
+        // dd($data);
+
 
         if ($social == 1) {
             // Render the view with the data and get the HTML content
@@ -778,6 +781,7 @@ class ReceiptController extends Controller
             // Render the view with the data and get the HTML content
             $data['file_att'] = $this->getfileattprint($datas[0]->oid);
             $htmlContent = View::make($template, $data)->render();
+            // $htmlContent = "";
             //return new Response($htmlContent, 200, ['Content-Type' => 'text/html']);
             return response()->json([
                 'html' =>  $htmlContent
