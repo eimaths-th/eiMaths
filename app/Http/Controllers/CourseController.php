@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Mail\RegistrationConfirmation;
+use App\Mail\CoursePendingConfirmation;
+use App\Services\TelegramService;
 use App\Models\bookuse;
 use App\Models\Contact;
 use Illuminate\Http\Request;
@@ -1168,6 +1170,24 @@ class CourseController extends Controller
 
         $qrCodePayment = generateQrCode($create->price);
         // dd($qrCodePayment);
+
+        // ส่ง email ขอบคุณลูกค้า
+        try {
+            Mail::to($validatedData['email'])->send(new CoursePendingConfirmation($validatedData));
+            Log::info('Course pending confirmation email sent to: ' . $validatedData['email']);
+        } catch (\Exception $e) {
+            Log::error('Failed to send course pending confirmation email: ' . $e->getMessage());
+        }
+
+        // ส่ง Telegram notification แจ้ง admin
+        try {
+            $department = Department::find($validatedData['department_id']);
+            $validatedData['department_id'] = $department->name;
+            $telegramService = new TelegramService();
+            $telegramService->sendCoursePendingNotification($validatedData);
+        } catch (\Exception $e) {
+            Log::error('Failed to send Telegram notification: ' . $e->getMessage());
+        }
 
         return response()->json([
             'success' => true,

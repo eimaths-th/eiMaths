@@ -8,15 +8,25 @@
     <style>
         #loading {
             position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             background: rgba(0, 0, 0, 0.7);
             color: white;
-            padding: 20px;
-            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 99999;
+        }
+
+        #loading .loading-content {
+            background: linear-gradient(135deg, #FF8C00, #FF6A00);
+            padding: 30px 50px;
+            border-radius: 20px;
             text-align: center;
-            z-index: 9999;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
         }
 
         .spinner {
@@ -200,8 +210,11 @@
 @endsection
 @section('content')
     <div id="loading" style="display: none;">
-        <div class="spinner"></div>
-        <p class="text-white">Sending email...</p>
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <p class="text-white mb-0 mt-2" style="font-size: 1.1rem; font-weight: 600;">กำลังส่งข้อมูล</p>
+            <p class="text-white mb-0" style="font-size: 0.9rem; opacity: 0.9;">กรุณารอสักครู่...</p>
+        </div>
     </div>
     <div>
         <div class="breadcrumb_area bradcam_bg_2"
@@ -718,6 +731,11 @@
         document.getElementById('courseForm').addEventListener('submit', function(event) {
             event.preventDefault(); // Prevent the default form submission
 
+            // Show loading overlay and disable submit button
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('submitForm').disabled = true;
+            document.getElementById('submitForm').innerHTML = '<i class="fas fa-spinner fa-spin"></i> กำลังส่ง...';
+
             const formData = new FormData(this);
             fetch('{{ route('courses.pending.store') }}', {
                     method: 'POST',
@@ -729,6 +747,11 @@
                 })
                 .then(response => response.json())
                 .then(data => {
+                    // Hide loading overlay
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('submitForm').disabled = false;
+                    document.getElementById('submitForm').innerHTML = 'Submit';
+
                     if (data.success) {
                         console.log(data);
 
@@ -766,7 +789,14 @@
                         });
                     }
                 })
-                .catch(error => console.error('Error:', error));
+                .catch(error => {
+                    console.error('Error:', error);
+                    // Hide loading overlay on error
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('submitForm').disabled = false;
+                    document.getElementById('submitForm').innerHTML = 'Submit';
+                    toastr.error('เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง');
+                });
         });
     </script>
     <script>

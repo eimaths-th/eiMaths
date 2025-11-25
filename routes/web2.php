@@ -14,6 +14,7 @@ use App\Http\Controllers\eLeanController;
 use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LineApiController;
+use App\Http\Controllers\TelegramSettingController;
 use App\Http\Controllers\LineController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QuestionController;
@@ -158,6 +159,11 @@ Route::group(['middleware' => ['auth', 'affiliate.redirect']], function () {
 
     Route::resource('/line-api', LineApiController::class);
     Route::post('/line-api/update-status/{id}', [LineApiController::class, 'updateStatus'])->name('line-api.updateStatus');
+
+    // telegram setting
+    Route::resource('/telegram-setting', TelegramSettingController::class);
+    Route::put('/telegram-setting/{id}/status', [TelegramSettingController::class, 'updateStatus'])->name('telegram-setting.updateStatus');
+    Route::post('/telegram-setting/{id}/test', [TelegramSettingController::class, 'testNotification'])->name('telegram-setting.test');
 
     Route::get('/course/categories', [CourseController::class, 'categories'])->name('categories.index');
     Route::post('/course/categories-store', [CourseController::class, 'categoriesStore'])->name('categories.store');
