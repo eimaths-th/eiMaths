@@ -59,8 +59,6 @@
             //$('#signature-image').attr('src', '');
         });
 
-
-
         var ecanvas = document.getElementById('esignature-pad');
         var esignaturePad = new SignaturePad(ecanvas);
 
@@ -192,12 +190,10 @@
                 storeFieldValues();
             });
         }
-
         daterange();
-
         $.datepicker.setDefaults($.datepicker.regional['en']);
         $(".AddDate").datepicker({
-            /*  onSelect: function() {
+             /* onSelect: function() {
                  table.draw();
              }, */
             dateFormat: 'yy-mm-dd',
@@ -473,9 +469,9 @@
                     }
                 },
 
-                aaSorting: [
-                    [1, "desc"]
-                ],
+                ordering: true,
+                orderCellsTop: true,
+                order: [],
 
                 iDisplayLength: 10,
                 lengthMenu: [10, 25, 50, 75, 100],
@@ -495,7 +491,18 @@
                         className: 'control',
                         orderable: false,
                         targets: -1
-                    }
+                    },
+                    // Disable sorting for computed/non-DB columns to prevent server-side ordering issues
+                    { targets: [0], orderable: false }, // checkbox
+                    { targets: [2], orderable: false }, // setime (computed)
+                    { targets: [3], orderable: true }, // centre (related name)
+                    { targets: [4], orderable: false }, // code (related)
+                    { targets: [5], orderable: false }, // name (related)
+                    { targets: [8], orderable: false }, // bookuse (free text)
+                    { targets: [9], orderable: false }, // start_date (combined string)
+                    { targets: [10], orderable: false }, // comment
+                    { targets: [11], orderable: false }, // action
+                    { targets: [12], orderable: false }  // more
                 ],
 
                 sPaginationType: "full_numbers",

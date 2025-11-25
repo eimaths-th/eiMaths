@@ -101,6 +101,7 @@ class AddDefaulthomePageInFrontPage extends Migration
     </div>
 
 </div>';
+
         return $html;
     }
 
