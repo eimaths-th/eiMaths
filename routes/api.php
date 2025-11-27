@@ -61,3 +61,7 @@ Route::middleware('auth.apikey')->group(function () {
     Route::post('/savehistories', [APIController::class, 'saveHistories'])->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
     Route::post('/savefile', [APIController::class, 'saveFile'])->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
 });
+
+// Revenue Summary API
+
+Route::get('/revenue-summary-by-branch', [App\Http\Controllers\ReceiptController::class, 'GetRevenueSummaryByBranch']);
