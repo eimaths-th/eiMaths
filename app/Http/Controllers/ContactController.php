@@ -234,7 +234,7 @@ class ContactController extends Controller
 
     public function index(Request $request)
     {
-        // dd($request->all());
+        //  dd($request->all());
 
         if ($request->ajax()) {
             //sleep(2);
@@ -505,7 +505,6 @@ class ContactController extends Controller
             $centre = Auth::user()->department->id;
         }
         $rnumber = studentRunningNumber::pre_generate($centre);
-        //dd($rnumber);
         return response()->json([
             'running' =>  $rnumber
         ]);
