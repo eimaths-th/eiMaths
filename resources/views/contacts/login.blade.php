@@ -12,7 +12,7 @@
 	<div class="login login-with-news-feed">
 		<!-- BEGIN news-feed -->
 		<div class="news-feed">
-			<div class="news-image" ></div>
+			<div class="news-image" style="background-image: url(/images/student_site.jpg)"></div>
 			<div class="news-caption">
 				<h4 class="caption-title"><b>eiMaths</b> Student site</h4>
 				<p>
