@@ -883,10 +883,14 @@ class CourseController extends Controller
             ->orderBy("name", "asc")->get();
         if ($request->ajax()) {
             // $query = CoursePending::where('start_course', 1)->orderBy('id', 'desc');
-            $query = CoursePending::query()->orderBy('id', 'desc');
-
+             $query = CoursePending::query()->orderBy('id', 'desc');
             return DataTables::of($query)
                 ->addIndexColumn()
+                ->filterColumn('department',function($query,$keyword){
+                    $query->whereHas('department',function($q) use ($keyword){
+                        $q->where('code','like',"%$keyword%");
+                    });
+                })
                 ->editColumn('ref', function ($query) {
                     return $query->ref ?? '';
                 })
