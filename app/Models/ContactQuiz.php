@@ -26,6 +26,10 @@ class ContactQuiz extends Model
      * @var array
      */
     protected $fillable = ['quiz_id', 'contact_id', 'assigned_at', 'status', 'created_at', 'updated_at'];
+    
+    protected $casts = [
+        'assigned_at' => 'datetime',
+    ];
 
     public function student()
     {

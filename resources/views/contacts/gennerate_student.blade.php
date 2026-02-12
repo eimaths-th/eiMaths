@@ -134,9 +134,8 @@
                                             class="fas fa-clipboard"></i> Copy</button>
 
                                 </div>
-
-
                             </div>
+                            
                         </div>
 
                         <div class="modal-footer {{-- justify-content-between --}}">

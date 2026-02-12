@@ -62,19 +62,44 @@
                                 </thead>
 
                                 <tbody>
-                                    @foreach ($assignments as $assignment)
+                                   @foreach ($assignments as $studentId => $studentAssignments)
+                                        @php
+                                            $firstAssignment = $studentAssignments->first();
+                                            $student = $firstAssignment->student;
+                                        @endphp
                                         <tr>
                                             <td>{{ $loop->iteration }}</td>
-                                            <td> @if ($assignment->student){{ $assignment->student->code }} ( {{ $assignment->student->nickname }} ) {{ $assignment->student->name }}
+                                            <td> 
+                                                @if ($student)
+                                                    {{ $student->code }} ( {{ $student->nickname }} ) {{ $student->name }}
                                                 @else
-                                                    N/A(Student Deleted)
+                                                    N/A (Student Deleted)
                                                 @endif
                                             </td>
-                                            <td>{{ $assignment->quiz->title ?? 'N/A(Quiz Deleted)' }}</td>
-                                            <td>{{ ucfirst($assignment->status) }}</td>
-                                            <td>{{ $assignment->assigned_at }}</td>
                                             <td>
-                                                <!-- Add buttons like Edit/Delete here -->
+                                                <ul class="pl-3 mb-0 list-unstyled">
+                                                    @foreach ($studentAssignments as $assignment)
+                                                        <li>{{ $assignment->quiz->title ?? 'N/A (Quiz Deleted)' }}</li>
+                                                    @endforeach
+                                                </ul>
+                                            </td>
+                                            <td>
+                                                <ul class="pl-3 mb-0 list-unstyled">
+                                                    @foreach ($studentAssignments as $assignment)
+                                                        <li>
+                                                            <span class="badge badge-{{ $assignment->status == 'active' ? 'success' : 'secondary' }}">
+                                                                {{ ucfirst($assignment->status) }}
+                                                            </span>
+                                                        </li>
+                                                    @endforeach
+                                                </ul>
+                                            </td>
+                                            <td>
+                                                <ul class="pl-3 mb-0 list-unstyled">
+                                                     @foreach ($studentAssignments as $assignment)
+                                                        <li>{{ $assignment->assigned_at ? $assignment->assigned_at->format('d/m/Y H:i') : '-' }}</li>
+                                                    @endforeach
+                                                </ul>
                                             </td>
                                         </tr>
                                     @endforeach

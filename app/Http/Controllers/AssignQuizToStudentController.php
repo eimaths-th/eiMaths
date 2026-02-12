@@ -43,7 +43,7 @@ class AssignQuizToStudentController extends Controller
         $students = Contact::all(); // or add filters/sorting as needed
         $quizzes = Quiz::all();
 
-        $assignments = ContactQuiz::all();
+       $assignments = ContactQuiz::with(['student', 'quiz'])->get()->groupBy('contact_id');
 
         // Filter Options
         $levels = Quiz::select('level')->distinct()->orderBy('level')->pluck('level');

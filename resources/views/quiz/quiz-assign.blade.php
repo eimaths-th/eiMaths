@@ -82,7 +82,7 @@
  </div>
     <div class="row">
         <div class="col-lg-12">
-            <div class="mt-4">
+            <div class="mt-3">
                 <label for="quiz" class="form-label">Quiz</label>
                 <select id="quiz_id" name="quiz_id[]" class="select-quiz form-control" multiple>
                     @foreach ($quizzes as $quiz)
@@ -92,6 +92,8 @@
             </div>
         </div>
     </div>
+     
+   
 </form>
 
 
