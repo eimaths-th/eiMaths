@@ -29,13 +29,12 @@
 
         function filterQuizzes() {
             var selectedGrade = $('#filter_grade').val();
-            var selectedTerm = $('#assign_term').val();
-            var selectedLevel = $('#filter_level').val();
+            var selectedTerm = $('#assign_term').val();       
 
             var filteredQuizzes = allQuizzes.filter(function(quiz) {
                 return (!selectedGrade || quiz.level == selectedGrade) &&
-                       (!selectedTerm || quiz.term == selectedTerm) &&
-                       (!selectedLevel || quiz.section == selectedLevel);
+                       (!selectedTerm || quiz.term == selectedTerm) ;
+                       
             });
 
             var $quizSelect = $('#quiz_id');
@@ -45,6 +44,12 @@
                 $quizSelect.append(new Option(quiz.title, quiz.id));
             });
             
+            // Auto-select quizzes if Grade AND Term are selected        
+            if(selectedGrade && selectedTerm){
+                var allIds = filteredQuizzes.map(function(q){  return q.id;});
+                $quizSelect.val(allIds);                
+            }
+
             $quizSelect.trigger('change');
         }
 
@@ -227,7 +232,6 @@ $('#btnClear').on('click', function () {
     // reset filter
     $('#filter_grade').val('').trigger('change');
     $('#assign_term').val('').trigger('change');
-    $('#filter_level').val('').trigger('change');
     $('#status').val('').trigger('change');
 
     // โหลด quiz ทั้งหมดกลับมา

@@ -41,7 +41,7 @@
         </div>    
     </div>
     <div class="row">
-        <div class="col-lg-3">
+        <div class="col-lg-4">
             <div class="mt-4">
                 <label for="filter_grade" class="form-label">Grade</label>
                 <select id="filter_grade" class="form-control">
@@ -52,7 +52,7 @@
                 </select>
             </div>
         </div>
-        <div class="col-lg-3">
+        <div class="col-lg-4">
             <div class="mt-4">
                 <label for="assign_term" class="form-label">Term</label>
                 <select id="assign_term" name="term" class="form-control">
@@ -63,18 +63,7 @@
                 </select>
             </div>
         </div>
-        <div class="col-lg-3">
-            <div class="mt-4">
-                <label for="filter_level" class="form-label">Level</label>
-                <select id="filter_level" class="form-control">
-                    <option value="">Select Level</option>
-                    @foreach ($sections as $sec)
-                        <option value="{{ $sec }}">{{ $sec }}</option>
-                    @endforeach
-                </select>
-            </div>
-        </div>
-        <div class="col-lg-3">
+        <div class="col-lg-4">
             <div class="mt-4">
                 <label for="status" class="form-label">Status</label>
                 <select id="status" name="status" class="form-control">

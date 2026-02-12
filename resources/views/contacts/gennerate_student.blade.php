@@ -89,7 +89,7 @@
                                 <input type="hidden" name="action" id="action" value="generate">
                                 <div class="col-xs-6 col-sm-6 col-md-6">
                                     <div class="form-group">
-                                        <strong><i class="fas fa-user"></i> Stuents:</strong>
+                                        <strong><i class="fas fa-user"></i> Students:</strong>
                                         <select name="student_id" id="selectStudent" class="form-control">
                                             <option value="">Select Student</option>
                                             @foreach ($students as $student)
@@ -166,6 +166,10 @@
             }
         });
 
+        $('#selectStudent').select2({
+            placeholder: "Select Student",
+            allowClear: true
+        });
         $('#ranCreateForm1').click(function(e) {
             e.preventDefault();
             $('.alert-danger').html('');
