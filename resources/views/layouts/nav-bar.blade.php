@@ -188,7 +188,8 @@
                                 class="block px-4 py-2 text-sm text-gray-700">{{ __('Profile') }}</a> --}}
                             @if (isset($user))
                                 {{-- {{ $user->name }} --}}
-                                <form method="POST" action="{{ route('logout') }}">
+                                {{-- <form method="POST" action="{{ route('logout') }}"> --}}
+                                    <form method="POST" action="{{ route('quiz.user.logout') }}">
                                     @csrf
                                     <button type="submit"
                                         class="block w-full text-left px-4 py-2 text-sm text-gray-700"

@@ -253,6 +253,7 @@ Route::group(['middleware' => ['auth.userOrStudent', 'affiliate.redirect']], fun
 Route::get('/students-login', [App\Http\Controllers\ContactController::class, 'studentsLogin'])->name('student.login');
 Route::post('/students-login-check', [App\Http\Controllers\ContactController::class, 'studentsCheckLogin'])->name('student.check');
 Route::post('/students-logout', [App\Http\Controllers\ContactController::class, 'studentsLogout'])->name('student.logout');
+Route::post('/quiz-user-logout', [App\Http\Controllers\ContactController::class, 'quizUserLogout'])->name('quiz.user.logout');
 Route::get('/normalize', [App\Http\Controllers\HomeController::class, 'normalizeNumber1'])->name('normalize');
 Route::get('thank-you', [ContactController::class, 'thank_you'])->name('demo.thank_you');
 

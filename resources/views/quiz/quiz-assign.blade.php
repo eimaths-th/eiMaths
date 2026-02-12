@@ -25,45 +25,86 @@
 
 
                 <form class="form" action="#" method="POST" id="quizForm">
-                    @csrf
+    @csrf
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="mt-4">
+                <label for="student" class="form-label">Student</label>
+                <select id="student_id" name="student_id[]" class="select-std form-control" multiple>
+                    @foreach ($students as $student)
+                        <option value="{{ $student->id }}">
+                            {{ $student->code }} {{ $student->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+        </div>    
+    </div>
+    <div class="row">
+        <div class="col-lg-3">
+            <div class="mt-4">
+                <label for="filter_grade" class="form-label">Grade</label>
+                <select id="filter_grade" class="form-control">
+                    <option value="">Select Grade</option>
+                    @foreach ($levels as $lvl)
+                        <option value="{{ $lvl }}">{{ $lvl }}</option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+        <div class="col-lg-3">
+            <div class="mt-4">
+                <label for="assign_term" class="form-label">Term</label>
+                <select id="assign_term" name="term" class="form-control">
+                    <option value="">Select Term</option>
+                    @foreach ($terms as $trm)
+                        <option value="{{ $trm }}">{{ $trm }}</option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+        <div class="col-lg-3">
+            <div class="mt-4">
+                <label for="filter_level" class="form-label">Level</label>
+                <select id="filter_level" class="form-control">
+                    <option value="">Select Level</option>
+                    @foreach ($sections as $sec)
+                        <option value="{{ $sec }}">{{ $sec }}</option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+        <div class="col-lg-3">
+            <div class="mt-4">
+                <label for="status" class="form-label">Status</label>
+                <select id="status" name="status" class="form-control">
+                    <option value="" disabled selected>Select Status</option>
+                    <option value="active">active</option>
+                    <option value="inactive">inactive</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="d-flex justify-content-center mt-4">
+       <button type="button"  id="btnClear" class="btn btn-primary">
+        <i class="fas fa-trash"></i>
+        Clear
+       </button>
+ </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="mt-4">
+                <label for="quiz" class="form-label">Quiz</label>
+                <select id="quiz_id" name="quiz_id[]" class="select-quiz form-control" multiple>
+                    @foreach ($quizzes as $quiz)
+                        <option value="{{ $quiz->id }}">{{ $quiz->title }}</option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+    </div>
+</form>
 
-                    <div class="row">
-                        <div class="col-lg-6">
-                            <div class="mt-4">
-                                <label for="student" class=" form-label">Student</label>
-                                <select id="student_id" name="student_id[]" class="select-std form-control" multiple>
-
-                                    @foreach ($students as $student)
-                                        <option value="{{ $student->id }}">{{ $student->code }} {{ $student->name }}</option>
-                                    @endforeach
-
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="mt-4">
-                                <label for="quiz" class=" form-label">Quiz</label>
-
-                                <select id="quiz_id" name="quiz_id[]" class="select-quiz form-control" multiple>
-                                    @foreach ($quizzes as $quiz)
-                                        <option value="{{ $quiz->id }}">{{ $quiz->title }} </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="mt-4">
-                                <label for="status" class=" form-label">Status</label>
-                                <select id="status" name="status" class="form-control">
-                                    <option value="" disabled selected>Select Status</option>
-                                    <option value="active">active</option>
-                                    <option value="inactive">inactive</option>
-                                </select>
-
-                            </div>
-                        </div>
-                    </div>
-                </form>
 
             </div>
             <div class="modal-footer">

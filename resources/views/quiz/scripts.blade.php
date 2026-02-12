@@ -14,6 +14,44 @@
             allowClear: true
         });
 
+        // Store all quizzes initially
+        var allQuizzes = [
+            @foreach ($quizzes as $quiz)
+                {
+                    id: "{{ $quiz->id }}",
+                    title: "{{ $quiz->title }}",
+                    level: "{{ $quiz->level }}",
+                    term: "{{ $quiz->term }}",
+                    section: "{{ $quiz->section }}"
+                },
+            @endforeach
+        ];
+
+        function filterQuizzes() {
+            var selectedGrade = $('#filter_grade').val();
+            var selectedTerm = $('#assign_term').val();
+            var selectedLevel = $('#filter_level').val();
+
+            var filteredQuizzes = allQuizzes.filter(function(quiz) {
+                return (!selectedGrade || quiz.level == selectedGrade) &&
+                       (!selectedTerm || quiz.term == selectedTerm) &&
+                       (!selectedLevel || quiz.section == selectedLevel);
+            });
+
+            var $quizSelect = $('#quiz_id');
+            $quizSelect.empty();
+
+            $.each(filteredQuizzes, function(index, quiz) {
+                $quizSelect.append(new Option(quiz.title, quiz.id));
+            });
+            
+            $quizSelect.trigger('change');
+        }
+
+        $('#filter_grade, #assign_term, #filter_level').on('change', function() {
+            filterQuizzes();
+        });
+
         // $('#level').select2({
 
         //     placeholder: "Select Term",
@@ -177,6 +215,31 @@
                 $('td:eq(0)', row).html(info.start + dataIndex + 1);
             }
         });
+$('#btnClear').on('click', function () {
+
+    // reset form ปกติ
+    $('#quizForm')[0].reset();
+
+    // reset select2
+    $('#student_id').val(null).trigger('change');
+    $('#quiz_id').val(null).trigger('change');
+
+    // reset filter
+    $('#filter_grade').val('').trigger('change');
+    $('#assign_term').val('').trigger('change');
+    $('#filter_level').val('').trigger('change');
+    $('#status').val('').trigger('change');
+
+    // โหลด quiz ทั้งหมดกลับมา
+    var $quizSelect = $('#quiz_id');
+    $quizSelect.empty();
+
+    $.each(allQuizzes, function(index, quiz) {
+        $quizSelect.append(new Option(quiz.title, quiz.id));
+    });
+
+    $quizSelect.trigger('change');
+});
 
         $(document).on('click', '#CreateButton', function(e) {
             e.preventDefault();
@@ -341,6 +404,7 @@
                 data: {
                     student_id: $('#student_id').val(),
                     quiz_id: $('#quiz_id').val(),
+                    term: $('#assign_term').val(),
                     status: $('#status').val(),
                     _token: token,
                 },
@@ -373,6 +437,11 @@
                         $('#student_id').val(null).trigger('change');
                         $('#quiz_id').val(null).trigger('change');
                         $('#status').val('').trigger('change');
+
+                        // Reset filters and reload quiz list
+                        $('#filter_grade').val('').trigger('change');
+                        $('#assign_term').val('').trigger('change');
+                        $('#filter_level').val('').trigger('change');
 
                         // Hide the modal
                         // $('#AssignModal').modal('hide');

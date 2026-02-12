@@ -383,6 +383,12 @@
                     <p>Tests</p>
                 </a>
             </li>
+            <li class="nav-item">
+                <a href="{{ route('assign') }}" class="nav-link {{ Request::is('assign-index') ? 'active' : '' }}">
+                    <i class="nav-icon fa-solid fa-comment-dots"></i>
+                    <p>Assign</p>
+                </a>
+            </li>
 
 
             {{-- @endcan

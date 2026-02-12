@@ -39,8 +39,7 @@
                                     <i class="fas fa-minus"></i>
                                 </button>
                             </div>
-                        </div>
-
+                        </div>      
                         <div class="card-body">
                             @if ($message = Session::get('success'))
                                 <script>
@@ -66,8 +65,12 @@
                                     @foreach ($assignments as $assignment)
                                         <tr>
                                             <td>{{ $loop->iteration }}</td>
-                                            <td>{{ $assignment->student->code }} ( {{ $assignment->student->nickname }} ) {{ $assignment->student->name }}</td>
-                                            <td>{{ $assignment->quiz->title }}</td>
+                                            <td> @if ($assignment->student){{ $assignment->student->code }} ( {{ $assignment->student->nickname }} ) {{ $assignment->student->name }}
+                                                @else
+                                                    N/A(Student Deleted)
+                                                @endif
+                                            </td>
+                                            <td>{{ $assignment->quiz->title ?? 'N/A(Quiz Deleted)' }}</td>
                                             <td>{{ ucfirst($assignment->status) }}</td>
                                             <td>{{ $assignment->assigned_at }}</td>
                                             <td>

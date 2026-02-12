@@ -76,10 +76,18 @@ class QuizzesController extends Controller
 
         $students = Contact::all();
         $quizzes = Quiz::all();
+        
+        // Filter Options
+        $levels = Quiz::select('level')->distinct()->orderBy('level')->pluck('level');
+        $terms = Quiz::select('term')->distinct()->orderBy('term')->pluck('term');
+        $sections = Quiz::select('section')->distinct()->orderBy('section')->pluck('section');
+
         return view('quiz.quiz-list', [
             'students' => $students,
             'quizzes' => $quizzes,
-
+            'levels' => $levels,
+            'terms' => $terms,
+            'sections' => $sections,
         ]);
     }
 

@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Yajra\DataTables\Facades\DataTables;
 
 class BlogController extends Controller
 {
@@ -35,12 +36,48 @@ class BlogController extends Controller
      */
     public function index()
     {
-        if (auth()->user()->hasRole('Admin')|| auth()->user()->hasRole('SystemAdmin') || auth()->user()->hasRole('BranchAdmin')) {
-            $blogs = Blog::with('user')->get();
-        } else {
-            $blogs = Blog::where('user_id', auth()->id())->with('user')->get();
+        // if (auth()->user()->hasRole('Admin')|| auth()->user()->hasRole('SystemAdmin') || auth()->user()->hasRole('BranchAdmin')) {
+        //     $blogs = Blog::with('user')->get();
+        // } else {
+        //     $blogs = Blog::where('user_id', auth()->id())->with('user')->get();
+        // }
+        // return view('blogs.index', compact('blogs'));
+         if (request()-> ajax()){
+            if (auth()->user()->hasRole('Admin')|| auth()->user()->hasRole('SystemAdmin')||auth()->user()->hasRole('BranchAdmin')){
+                $blogs = Blog:: select(['id','title','slug','thumbnail','is_published','user_id','pen_name','created_at','updated_at'])->with('user');              
+            }else{
+                $blogs = Blog:: select(['id','title','slug','thumbnail','is_published','user_id','pen_name','created_at','updated_at'])->where('user_id', auth()->id())->with('user');
+            }
+           return DataTables::of($blogs)
+           ->addIndexColumn()
+           ->editColumn('thumbnail',function($row){
+             if ($row->thumbnail){
+               return '<img src="' . asset('storage/' . $row->thumbnail) . '" alt="Thumbnail" width="100px" style="aspect-ratio: 16/9; object-fit: cover; border-radius: 12px;">';
+             }return '';
+           })
+           ->addColumn('author',function($row){
+                return $row->user->name ?? 'Unknown';
+           })
+           ->editColumn('pen_name',function($row){
+                return $row->pen_name ?? 'N/A';
+           })
+           ->editColumn('is_published',function($row){
+                return $row->is_published ? 'Yes':'No';
+           })
+            ->addColumn('action', function ($row) {
+                    $btn = '<a href="' . route('blogs.show', $row->id) . '" class="btn btn-info btn-sm">View</a> ';
+                    $btn .= '<a href="' . route('blogs.edit', $row->id) . '" class="btn btn-warning btn-sm">Edit</a> ';
+                    $btn .= '<form action="' . route('blogs.destroy', $row->id) . '" method="POST" style="display:inline;" onsubmit="return confirm(\'Are you sure?\')">
+                                ' . csrf_field() . '
+                                ' . method_field('DELETE') . '
+                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                            </form>';
+                    return $btn;
+                })
+            ->rawColumns(['thumbnail', 'action'])
+            ->make(true);
         }
-        return view('blogs.index', compact('blogs'));
+        return view('blogs.index');
     }
 
     /**

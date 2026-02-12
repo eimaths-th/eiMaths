@@ -1260,6 +1260,13 @@ class ContactController extends Controller
         return redirect()->route('student.login');
     }
 
+    public function quizUserLogout()
+    {
+        Auth::guard('web')->logout();
+        Session::flush();
+        return redirect()->route('student.login');
+    }
+
     /**
      * Show the form for editing the specified resource.
      *

@@ -45,10 +45,18 @@ class AssignQuizToStudentController extends Controller
 
         $assignments = ContactQuiz::all();
 
+        // Filter Options
+        $levels = Quiz::select('level')->distinct()->orderBy('level')->pluck('level');
+        $terms = Quiz::select('term')->distinct()->orderBy('term')->pluck('term');
+        $sections = Quiz::select('section')->distinct()->orderBy('section')->pluck('section');
+
         return view('quiz.assign-index', compact(
             'students',
             'quizzes',
             'assignments',
+            'levels',
+            'terms',
+            'sections'
         ));
     }
 }
