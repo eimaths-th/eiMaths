@@ -1187,8 +1187,8 @@ class ContactController extends Controller
     public function gennerateStudent()
     {
         $students = Contact::orderBy('id')->get();
-
-        return view('contacts.gennerate_student', ['students' => $students]);
+        $gennerateStudent = Contact::whereNotNull('password')->orderBy('id')->get();
+        return view('contacts.gennerate_student', ['students' => $students, 'gennerateStudent' => $gennerateStudent]);
         // dd($students);
     }
     public function gennerateStudentSave(Request $request)
@@ -1210,7 +1210,7 @@ class ContactController extends Controller
             # code...
             $ranPass = Str::random(4);
             $password = $student->code . '_' . $ranPass;
-            return response()->json(['success' => 'Random generate student password success !!', 'password' => $password]);
+            return response()->json(['success' => 'Random generate student password success !!', 'password' => $password, 'student' => $student]);
         } elseif ($action === 'update') {
             # code...
         } else {
@@ -1218,9 +1218,12 @@ class ContactController extends Controller
         }
 
         $passwordHash = Hash::make($password);
-        $student->update(['password' => $passwordHash]);
+        $student->update([
+            'password' => $passwordHash,
+            'password_generated_at' => now(),
+        ]);
 
-        return response()->json(['success' => 'Generate student password success !!', 'password' => $password]);
+        return response()->json(['success' => 'Generate student password success !!', 'password' => $password, 'student' => $student, 'created_at' => now()->format('d/m/Y H:i')]);
     }
 
     public function studentsLogin()
@@ -1236,7 +1239,6 @@ class ContactController extends Controller
         ]);
 
         $student = Contact::where('code', $request->code)->first();
-
         if ($student && Hash::check($request->password, $student->password)) {
             Auth::guard('student')->login($student);
             $student = Auth::guard('student')->user();
