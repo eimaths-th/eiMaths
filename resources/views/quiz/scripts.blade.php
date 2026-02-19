@@ -558,5 +558,99 @@ $('#btnClear').on('click', function () {
                 }
             });
         });
+
+        $(document).on('click', '.edit-assign', function(e) {
+            e.preventDefault();
+            $('.alert-danger').html('');
+            $('.alert-danger').hide();
+            $('.alert-success').html('');
+            $('.alert-success').hide();
+            $('.form').trigger('reset'); // This might clear selects, need to re-populate
+            $('#assign-title').text('Edit Assign Quiz');
+
+            var studentId = $(this).data('student-id');
+            var btn =
+                '<button type="button" class="btn btn-success" id="SubmitUpdateAssignForm" data-student-id="' +
+                studentId + '"> <i class="fas fa-save"></i> Update </button>';
+            $('#btn-assign-submit').html(btn);
+
+            // Fetch existing assignments
+            var url = '{{ url('assign-quiz/get-assignments') }}/' + studentId;
+            $.ajax({
+                url: url,
+                method: 'GET',
+                success: function(res) {
+                    var quizIds = res.quiz_ids;
+                    
+                    // Set Student (Single)
+                    $('#student_id').val([studentId]).trigger('change');
+                    
+                    // Set Quizzes (Multiple)
+                    // Ensure all quizzes are available in the dropdown (might be filtered out)
+                    // For now, we assume the initial list contains them or we reload.
+                    // If filter is active, some might be hidden. Ideally we should reset filters.
+                     $('#filter_grade').val('').trigger('change');
+                     $('#assign_term').val('').trigger('change');
+
+                    $('#quiz_id').val(quizIds).trigger('change');
+                    
+                    $('#AssignModal').modal('show');
+                }
+            });
+        });
+
+        $(document).on('click', '#SubmitUpdateAssignForm', function(e) {
+            e.preventDefault();
+            $('.alert-danger').html('');
+            $('.alert-danger').hide();
+            $('.alert-success').html('');
+            $('.alert-success').hide();
+            
+            var studentId = $(this).data('student-id');
+
+            $.ajax({
+                url: "{{ url('assign-quiz/update-assignments') }}",
+                method: 'post',
+                data: {
+                    student_id: [studentId], // Send as array to match controller expectation
+                    quiz_id: $('#quiz_id').val(),
+                    status: $('#status').val(),
+                    _token: token,
+                },
+                success: function(result) {
+                    if (result.errors) {
+                        $('.alert-danger').html('');
+                        $.each(result.errors, function(key, value) {
+                            $('.alert-danger').show();
+                            $('.alert-danger').append('<strong><li>' + value +
+                                '</li></strong>');
+                        });
+                    } else {
+                        $('.alert-danger').hide();
+                        $('.alert-success').show();
+                        $('.alert-success').append('<strong><li>' + result.success +
+                            '</li></strong>');
+                        toastr.success(result.success, {
+                            timeOut: 5000
+                        });
+                        
+                        setTimeout(function(){
+                           window.location.reload(); // Reload to refresh the list since it's not a DataTable ajax
+                        }, 1000);
+                        
+                        $('#AssignModal').modal('hide');
+                    }
+                },
+                error: function(xhr) {
+                    var errors = xhr.responseJSON.errors;
+                    $('.alert-danger').html('');
+                    $.each(errors, function(key, value) {
+                        $('.alert-danger').show();
+                        $('.alert-danger').append('<strong><li>' + value +
+                            '</li></strong>');
+                    });
+                }
+            });
+        });
     });
 </script>

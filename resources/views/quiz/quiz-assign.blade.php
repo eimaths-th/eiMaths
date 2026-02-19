@@ -63,7 +63,7 @@
                 </select>
             </div>
         </div>
-        <div class="col-lg-4">
+        <!-- <div class="col-lg-4">
             <div class="mt-4">
                 <label for="status" class="form-label">Status</label>
                 <select id="status" name="status" class="form-control">
@@ -72,7 +72,7 @@
                     <option value="inactive">inactive</option>
                 </select>
             </div>
-        </div>
+        </div> -->
     </div>
     <div class="d-flex justify-content-center mt-4">
        <button type="button"  id="btnClear" class="btn btn-primary">

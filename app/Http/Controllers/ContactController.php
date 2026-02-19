@@ -1184,12 +1184,27 @@ class ContactController extends Controller
         ]);
     }
 
-    public function gennerateStudent()
+    public function gennerateStudent(Request $request)
     {
         $students = Contact::orderBy('id')->get();
-        $gennerateStudent = Contact::whereNotNull('password')->orderBy('id')->get();
+        
+        $query = Contact::whereNotNull('password');
+
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('code', 'like', "%{$search}%");
+            });
+        }
+
+        $perPage = $request->input('per_page', 25);
+
+        $gennerateStudent = $query->orderBy('password_generated_at', 'desc')
+                                    ->orderBy('id', 'desc') // Fallback sorting
+                                    ->paginate($perPage);
+                                    
         return view('contacts.gennerate_student', ['students' => $students, 'gennerateStudent' => $gennerateStudent]);
-        // dd($students);
     }
     public function gennerateStudentSave(Request $request)
     {
@@ -1226,9 +1241,57 @@ class ContactController extends Controller
         return response()->json(['success' => 'Generate student password success !!', 'password' => $password, 'student' => $student, 'created_at' => now()->format('d/m/Y H:i')]);
     }
 
+    public function resetStudentPassword(Request $request) {
+        $student_id = $request->student_id;
+        if (!$student_id) {
+            return response()->json(['errors' => ['Pls select student']]);
+        }
+
+        $student = Contact::find($student_id);
+        if (!$student) {
+             return response()->json(['errors' => ['Student not found']]);
+        }
+
+        // Generate new random password
+        $ranPass = Str::random(4);
+        $password = $student->code . '_' . $ranPass;
+
+        $passwordHash = Hash::make($password);
+        
+        $student->update([
+            'password' => $passwordHash,
+            'password_generated_at' => now(),
+        ]);
+
+        // Return just success message as requested to reload page
+        return response()->json([
+            'success' => 'Reset password success !! New Password: ' . $password,
+            // 'password' => $password 
+        ]);
+    }
+
+    public function removeStudentPassword(Request $request) {
+        $student_id = $request->student_id;
+        if (!$student_id) {
+            return response()->json(['errors' => ['Pls select student']]);
+        }
+
+        $student = Contact::find($student_id);
+        if (!$student) {
+             return response()->json(['errors' => ['Student not found']]);
+        }
+        
+        $student->update([
+            'password' => null,
+            'password_generated_at' => null,
+        ]);
+
+        return response()->json([
+            'success' => 'Student password removed successfully',
+        ]);
+    }
     public function studentsLogin()
     {
-
         return view('contacts.login');
     }
     public function studentsCheckLogin(Request $request)

@@ -54,10 +54,9 @@
                                         <th> # </th>
                                         <th> Student </th>
                                         <th> Quiz </th>
-                                        <th> Status </th>
+                                        <!-- <th> Status </th> -->
                                         <th> Assign AT </th>
-
-                                        <th> </th>
+                                        <th> Action </th>
                                     </tr>
                                 </thead>
 
@@ -83,7 +82,7 @@
                                                     @endforeach
                                                 </ul>
                                             </td>
-                                            <td>
+                                            <!-- <td>
                                                 <ul class="pl-3 mb-0 list-unstyled">
                                                     @foreach ($studentAssignments as $assignment)
                                                         <li>
@@ -93,13 +92,19 @@
                                                         </li>
                                                     @endforeach
                                                 </ul>
-                                            </td>
+                                            </td> -->
                                             <td>
                                                 <ul class="pl-3 mb-0 list-unstyled">
                                                      @foreach ($studentAssignments as $assignment)
                                                         <li>{{ $assignment->assigned_at ? $assignment->assigned_at->format('d/m/Y H:i') : '-' }}</li>
                                                     @endforeach
                                                 </ul>
+                                            </td>
+                                            <td>
+                                                <button type="button" class="btn btn-warning btn-sm edit-assign"
+                                                    data-student-id="{{ $studentId }}">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
                                             </td>
                                         </tr>
                                     @endforeach

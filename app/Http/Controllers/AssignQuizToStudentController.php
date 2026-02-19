@@ -14,7 +14,7 @@ class AssignQuizToStudentController extends Controller
     {
         $studentIds = $request->student_id; // array of selected student IDs
         $quizIds = $request->quiz_id;       // array of selected quiz IDs
-        $status = $request->status ?? 'pending'; // fallback status
+        $status = $request->status ?? 'active'; // fallback status
 
         foreach ($studentIds as $studentId) {
             foreach ($quizIds as $quizId) {
@@ -42,7 +42,6 @@ class AssignQuizToStudentController extends Controller
     {
         $students = Contact::all(); // or add filters/sorting as needed
         $quizzes = Quiz::all();
-
        $assignments = ContactQuiz::with(['student', 'quiz'])->get()->groupBy('contact_id');
 
         // Filter Options
@@ -58,5 +57,42 @@ class AssignQuizToStudentController extends Controller
             'terms',
             'sections'
         ));
+    }
+    public function getStudentAssignments($studentId)
+    {
+        $quizIds = ContactQuiz::where('contact_id', $studentId)->pluck('quiz_id');
+        return response()->json(['quiz_ids' => $quizIds]);
+    }
+
+    public function updateStudentAssignments(Request $request)
+    {
+        $studentIds = $request->student_id; 
+        // Handle array or single value
+        $studentId = is_array($studentIds) ? $studentIds[0] : $studentIds;
+
+        $newQuizIds = $request->quiz_id ?? [];
+        $status = $request->status ?? 'active';
+
+        // Sync logic
+        $currentQuizIds = ContactQuiz::where('contact_id', $studentId)->pluck('quiz_id')->toArray();
+
+        // To delete
+        $toDelete = array_diff($currentQuizIds, $newQuizIds);
+        if (!empty($toDelete)) {
+             ContactQuiz::where('contact_id', $studentId)->whereIn('quiz_id', $toDelete)->delete();
+        }
+
+        // To Add
+        $toAdd = array_diff($newQuizIds, $currentQuizIds);
+        foreach ($toAdd as $quizId) {
+             ContactQuiz::create([
+                 'contact_id' => $studentId,
+                 'quiz_id' => $quizId,
+                 'assigned_at' => now(),
+                 'status' => $status
+             ]);
+        }
+        
+        return response()->json(['success' => 'Assignments updated successfully']);
     }
 }

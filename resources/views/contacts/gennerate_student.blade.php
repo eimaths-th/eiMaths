@@ -66,7 +66,25 @@
                         </div>
 
                         <div class="card-body">
-                             
+                            <form method="GET" action="{{ route('generate.student') }}">
+                                <div class="row mb-3">
+                                    <div class="col-md-6 d-flex align-items-center">
+                                        Display 
+                                        <select name="per_page" id="per_page" class="form-control form-control-sm mx-2" style="width: auto; display: inline-block;" onchange="this.form.submit()">
+                                            <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10</option>
+                                            <option value="25" {{ request('per_page') == 25 || !request('per_page') ? 'selected' : '' }}>25</option>
+                                            <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
+                                            <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100</option>
+                                        </select> 
+                                        Row
+                                    </div>
+                                    <div class="col-md-6 d-flex justify-content-end align-items-center">
+                                        Search: 
+                                        <input type="text" name="search" class="form-control form-control-sm ml-2" style="width: 200px; display: inline-block;" value="{{ request('search') }}" placeholder="">
+                                        <button type="submit" class="btn btn-sm btn-default ml-1"><i class="fas fa-search"></i></button>
+                                    </div>
+                                </div>
+                            </form>
                             <table class="table table-bordered table-striped table-hover">
                                 <thead>
                                     <tr>
@@ -91,7 +109,7 @@
                                                     <div class="dropdown-menu">
                                                         <a class="dropdown-item btn-reset-password" href="#" data-student-id="{{ $student->id }}"><i class="fas fa-edit"></i> Reset
                                                             Password</a>
-                                                        <a class="dropdown-item text-danger" href="#"><i class="fas fa-trash"></i>
+                                                        <a class="dropdown-item text-danger btn-delete-password" href="#" data-student-id="{{ $student->id }}"><i class="fas fa-trash"></i>
                                                             Delete</a>
                                                     </div>
                                                 </div>
@@ -100,6 +118,8 @@
                                     @endforeach
                                 </tbody>
                             </table>
+                             <br>
+                            {!! $gennerateStudent->appends(Request::all())->render() !!}
                         </div>
 
                     </div>
@@ -157,7 +177,6 @@
                                 </select>
                             </div>
                         </div>
-
                     </div>
                     <div class="row">
                         <div class="col-xs-8 col-sm-8 col-md-8">
@@ -209,6 +228,28 @@
         </div>
 
     </section>
+
+     <!-- Modal Delete -->
+     <div class="modal fade" id="modal-delete" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirm Delete Password</h5>
+                    <button type="button" class="close" data-dismiss="modal"  data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete this student's password?
+                    <input type="hidden" id="delete_student_id">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-danger" id="btn-confirm-delete">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('script')
@@ -256,11 +297,11 @@
                         });
                     } else {
                         $('.alert-danger').hide();
-                        $('.alert-success').show();
+                        /* $('.alert-success').show();
                         $('.alert-success').append('<strong><li>' + result.success + '</li></strong>');
                         toastr.success(result.success, {
                             timeOut: 5000
-                        });
+                        }); */
                         $("#AddPassword").val(result.password);
                         $("#generate").val(result.password);
                         // copyToClipboard()
@@ -318,8 +359,13 @@
                         var row = '<tr>' + 
                             '<td>' + student.code + ' - ' + (student.name ? student.name : '') + '</td>' + 
                             '<td>' + result.created_at + '</td>' +   
+                            '<td>' + result.created_at + '</td>' +   
                             '</tr>';
                         $('table tbody').append(row);
+
+                        setTimeout(function() {
+                             location.reload();
+                        }, 1000);  
 
                     }
                 }
@@ -345,6 +391,44 @@
              $('#AddPassword').val('');
              $('#generate').val('');
              $('.alert').hide();
+        });
+
+         // Handle Delete Password click
+         $(document).on('click', '.btn-delete-password', function(e) {
+            e.preventDefault();
+            var studentId = $(this).data('student-id');
+            $('#delete_student_id').val(studentId);
+            $('#modal-delete').modal('show');
+        });
+
+        // Handle Confirm Delete click
+        $('#btn-confirm-delete').click(function() {
+            var studentId = $('#delete_student_id').val();
+            
+            $.ajax({
+                url: "{{ route('generate.student.remove') }}",
+                method: 'post',
+                data: {
+                    student_id: studentId,
+                    _token: token,
+                },
+                success: function(result) {
+                    if (result.errors) {
+                         var errors = Array.isArray(result.errors) ? result.errors : [result.errors];
+                         toastr.error(errors.join('<br>'), { timeOut: 5000 });
+                    } else {
+                        toastr.success(result.success, { timeOut: 5000 });
+                         $('#modal-delete').modal('hide');
+                        setTimeout(function() {
+                             location.reload();
+                        }, 1000);
+                    }
+                },
+                error: function(xhr) {
+                    toastr.error('Something went wrong', { timeOut: 5000 });
+                    $('#modal-delete').modal('hide');
+                }
+            });
         });
 
         function copyToClipboard() {
