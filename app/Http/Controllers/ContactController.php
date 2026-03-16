@@ -471,25 +471,37 @@ class ContactController extends Controller
     public function get_course($std_id)
     {
         $orders = Order::where('cid', $std_id)->orderBy('id', 'asc')->get();
-        $orderIds = $orders->pluck('id');
-
-        $orderDetails = OrderDetailList::whereIn('order_id', $orderIds)
-            ->get();
 
         $html = '';
         $i = 1;
 
-        foreach ($orderDetails as $orderDetail) {
-            $html .= '<tr>';
-            $html .= '<td>' . $i . '</td>';
-            $html .= '<td>' . $orderDetail->level . '</td>';
-            $html .= '<td>' . $orderDetail->term . '</td>';
-            $html .= '<td><span class="tag tag-success">' . $orderDetail->book . '</span></td>';
-            $html .= '<td>' . $orderDetail->order->free_course . '</td>';
-            $html .= '<td>' . $orderDetail->order->free_course_reason . '</td>';
-            $html .= '<td>' . $orderDetail->created_at . '</td>';
-            $html .= '</tr>';
-            $i++;
+        foreach ($orders as $order) {
+            $orderDetails = OrderDetailList::where('order_id', $order->id)->get();
+            $count = $orderDetails->count();
+
+            if ($count > 0) {
+                $levels = [];
+                $terms = [];
+                $books = [];
+
+                foreach ($orderDetails as $orderDetail) {
+                    $levels[] = $orderDetail->level;
+                    $terms[] = $orderDetail->term;
+                    $books[] = '<span class="tag tag-success">' . $orderDetail->book . '</span>';
+                }
+
+                $html .= '<tr>';
+                $html .= '<td class="align-middle">' . $i . '</td>';
+                $html .= '<td class="align-middle">' . implode('<br>', $levels) . '</td>';
+                $html .= '<td class="align-middle">' . implode('<br>', $terms) . '</td>';
+                $html .= '<td class="align-middle">' . implode('<br>', $books) . '</td>';
+                $html .= '<td class="align-middle">' . $order->free_course . '</td>';
+                $html .= '<td class="align-middle">' . $order->free_course_reason . '</td>';
+                $html .= '<td class="align-middle">' . $order->created_at . '</td>';
+                $html .= '</tr>';
+                
+                $i++;
+            }
         }
 
         return $html;

@@ -220,6 +220,32 @@
                 $('td:eq(0)', row).html(info.start + dataIndex + 1);
             }
         });
+
+        $('#Listview2').DataTable({
+            language: {
+                "sLengthMenu": "Display_MENU_ Row",
+                "sZeroRecords": "No Data Found",
+                "sInfo": "Display _START_ To _END_ From _TOTAL_ Records",
+                "sInfoEmpty": "Display 0 To 0 From 0 Records",
+                "sInfoFiltered": "(Filters _MAX_ Row)",
+                "sSearch": "Search:",
+                "oPaginate": {
+                    "sFirst": "First",
+                    "sPrevious": "Previous",
+                    "sNext": "Next",
+                    "sLast": "Last"
+                }
+            },
+            aaSorting: [
+                [0, "asc"]
+            ],
+            iDisplayLength: 10,
+            lengthMenu: [10, 25, 50, 75, 100],
+            stateSave: true,
+            autoWidth: false,
+            responsive: true,
+            sPaginationType: "full_numbers"
+        });
 $('#btnClear').on('click', function () {
 
     // reset form ปกติ
