@@ -983,7 +983,7 @@ class ReceiptController extends Controller
                 DB::raw('SUM(CAST(receipts.total_fee AS DECIMAL(15,2))) as total_revenue')
             )
             ->join('departments', 'departments.id', '=', 'receipts.centre')
-            ->whereNotIn('receipts.centre', [1, 4, 5])
+            ->whereNotIn('receipts.centre', [4, 5, 6])
             ->where('receipts.type', 0)
             ->whereDate('receipts.payment_date', $current_date)
             ->groupBy('receipts.centre', 'departments.name', 'departments.code')
@@ -999,6 +999,54 @@ class ReceiptController extends Controller
                 'message' => 'สรุปรายได้รายวันแยกตามสาขาสำเร็จ',
                 'data' => [
                     'date' => $current_date,
+                    'grand_total' => $grand_total,
+                    'total_receipts' => $total_receipts,
+                    'branches' => $branch_revenue,
+                ],
+            ], 200, ['Content-Type' => 'application/json;charset=UTF-8'], JSON_UNESCAPED_UNICODE);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred fetching data.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function GetRevenueSummaryByBranchMonthly(Request $request)
+    {
+        try {
+            $month = $request->input('month');
+            $year = $request->input('year');
+
+            // Query รายได้แยกตามสาขา เฉพาะวันนี้
+            $branch_revenue = Receipt::select(
+                'receipts.centre',
+                'departments.name as branch_name',
+                'departments.code as branch_code',
+                DB::raw('COUNT(receipts.id) as total_receipts'),
+                DB::raw('SUM(CAST(receipts.total_fee AS DECIMAL(15,2))) as total_revenue')
+            )
+            ->join('departments', 'departments.id', '=', 'receipts.centre')
+            ->whereNotIn('receipts.centre', [4, 5, 6])
+            ->where('receipts.type', 0)
+            // ->whereDate('receipts.payment_date', $current_date)
+            ->whereMonth('receipts.payment_date', $month)
+            ->whereYear('receipts.payment_date', $year)
+            ->groupBy('receipts.centre', 'departments.name', 'departments.code')
+            ->orderBy('total_revenue', 'desc')
+            ->get();
+
+            // คำนวณยอดรวมทั้งหมด
+            $grand_total = $branch_revenue->sum('total_revenue');
+            $total_receipts = $branch_revenue->sum('total_receipts');
+
+            return response()->json([
+                'success' => true,
+                'message' => 'สรุปรายได้รายวันแยกตามสาขาสำเร็จ',
+                'data' => [
+                    'date' => $month.'-'.$year,
                     'grand_total' => $grand_total,
                     'total_receipts' => $total_receipts,
                     'branches' => $branch_revenue,
