@@ -1044,7 +1044,7 @@ class ReceiptController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'สรุปรายได้รายวันแยกตามสาขาสำเร็จ',
+                'message' => 'สรุปรายได้รายเดือนแยกตามสาขาสำเร็จ',
                 'data' => [
                     'date' => $month.'-'.$year,
                     'grand_total' => $grand_total,
