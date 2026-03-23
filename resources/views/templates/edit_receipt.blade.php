@@ -126,7 +126,7 @@
                 <td align="left">
                     <table align="left">
                         <tr>
-                            <td align="left" style="vertical-align: top;" height="5px">บริษัท เมต้า โนวเลจ จำกัด
+                            <td align="left" style="vertical-align: top;" height="5px">บริษัท เมต้า โนวเลจ จำกัด(สำนักงานใหญ่)
                             </td>
                         </tr>
                         <tr>

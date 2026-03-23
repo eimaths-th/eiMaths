@@ -6,7 +6,7 @@
         </a>
     </div>
 
-    <div class="sidebar">
+    <div class="sidebar" style="overflow-y: auto; height: calc(100vh - 150px);">
         <nav class="mt-2">
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
                 data-accordion="false">

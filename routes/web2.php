@@ -70,6 +70,10 @@ Route::group(['middleware' => ['auth', 'affiliate.redirect']], function () {
     Route::post('/generate-save', [App\Http\Controllers\HomeController::class, 'generate_save'])->name('generate.system.save');
     Route::get('/generate-password-student', [App\Http\Controllers\ContactController::class, 'gennerateStudent'])->name('generate.student');
     Route::post('/generate-password-student-save', [App\Http\Controllers\ContactController::class, 'gennerateStudentSave'])->name('generate.student.save');
+    Route::post('/generate-password-student-reset', [App\Http\Controllers\ContactController::class, 'resetStudentPassword'])->name('generate.student.reset');
+    Route::post('/generate-password-student-remove', [App\Http\Controllers\ContactController::class, 'removeStudentPassword'])->name('generate.student.remove');
+
+
 
 
 
@@ -120,6 +124,9 @@ Route::group(['middleware' => ['auth', 'affiliate.redirect']], function () {
 
     Route::post('assign-quiz', [AssignQuizToStudentController::class, 'assignQuiz'])->name('assignQuiz');
     Route::get('assign', [AssignQuizToStudentController::class, 'index'])->name('assign');
+    Route::get('assign-quiz/get-assignments/{studentId}', [AssignQuizToStudentController::class, 'getStudentAssignments']);
+    Route::post('assign-quiz/update-assignments', [AssignQuizToStudentController::class, 'updateStudentAssignments']);
+
 
 
     // Route::get('questions-quizzes', [QuestionQuizzesController::class, 'index'])->name('questions-quizzes');
@@ -253,6 +260,7 @@ Route::group(['middleware' => ['auth.userOrStudent', 'affiliate.redirect']], fun
 Route::get('/students-login', [App\Http\Controllers\ContactController::class, 'studentsLogin'])->name('student.login');
 Route::post('/students-login-check', [App\Http\Controllers\ContactController::class, 'studentsCheckLogin'])->name('student.check');
 Route::post('/students-logout', [App\Http\Controllers\ContactController::class, 'studentsLogout'])->name('student.logout');
+Route::post('/quiz-user-logout', [App\Http\Controllers\ContactController::class, 'quizUserLogout'])->name('quiz.user.logout');
 Route::get('/normalize', [App\Http\Controllers\HomeController::class, 'normalizeNumber1'])->name('normalize');
 Route::get('thank-you', [ContactController::class, 'thank_you'])->name('demo.thank_you');
 

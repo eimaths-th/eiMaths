@@ -60,26 +60,7 @@
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    @foreach ($blogs as $blog)
-                                    <tr>
-                                        <td><img src="{{ asset('storage/' . $blog->thumbnail) }}" alt="Thumbnail" width="100px" style="aspect-ratio: 16/9; object-fit: cover; border-radius: 12px;"></td>
-                                        <td>{{ $blog->title }}</td>
-                                        <td>{{ $blog->user->name ?? 'Unknown' }}</td>
-                                        <td>{{ $blog->pen_name ?? 'N/A' }}</td>
-                                        <td>{{ $blog->is_published ? 'Yes' : 'No' }}</td>
-                                        <td>
-                                            <a href="{{ route('blogs.show', $blog) }}" class="btn btn-info btn-sm">View</a>
-                                            <a href="{{ route('blogs.edit', $blog) }}" class="btn btn-warning btn-sm">Edit</a>
-                                            <form action="{{ route('blogs.destroy', $blog) }}" method="POST" style="display:inline;">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">Delete</button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                    @endforeach
-                                </tbody>
+                               
                             </table>
                         </div>
                     </div>
@@ -96,27 +77,36 @@
         $('#blogs-table').DataTable({
             processing: true,
             serverSide: false,
-            searching: true,
-            ordering: true,
-            paging: true,
-            pageLength: 10,
-            lengthChange: true,
-            autoWidth: false,
-            responsive: true,
-            language: {
-                processing: "Loading...",
-                search: "Search:",
-                lengthMenu: "Show _MENU_ entries",
-                info: "Showing _START_ to _END_ of _TOTAL_ entries",
-                infoEmpty: "Showing 0 to 0 of 0 entries",
-                infoFiltered: "(filtered from _MAX_ total entries)",
-                paginate: {
-                    first: "First",
-                    previous: "Previous",
-                    next: "Next",
-                    last: "Last"
-                }
-            }
+             ajax:"{{ route('blogs.index')}}",
+            columns: [
+                {data: 'thumbnail',name:'thumbnail',orderable:false,searchable:false},
+                {data: 'title',name:'title'},
+                {data: 'author',name:'user.name'},
+                {data: 'pen_name',name:'pen_name'},
+                {data: 'is_published',name:'is_published'},
+                {data: 'action',name:'action',orderable:false,searchable:false}
+            ]
+            // searching: true,
+            // ordering: true,
+            // paging: true,
+            // pageLength: 10,
+            // lengthChange: true,
+            // autoWidth: false,
+            // responsive: true,
+            // language: {
+            //     processing: "Loading...",
+            //     search: "Search:",
+            //     lengthMenu: "Show _MENU_ entries",
+            //     info: "Showing _START_ to _END_ of _TOTAL_ entries",
+            //     infoEmpty: "Showing 0 to 0 of 0 entries",
+            //     infoFiltered: "(filtered from _MAX_ total entries)",
+            //     paginate: {
+            //         first: "First",
+            //         previous: "Previous",
+            //         next: "Next",
+            //         last: "Last"
+            //     }
+            // }
         });
     });
 </script>

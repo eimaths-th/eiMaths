@@ -14,6 +14,49 @@
             allowClear: true
         });
 
+        // Store all quizzes initially
+        var allQuizzes = [
+            @foreach ($quizzes as $quiz)
+                {
+                    id: "{{ $quiz->id }}",
+                    title: "{{ $quiz->title }}",
+                    level: "{{ $quiz->level }}",
+                    term: "{{ $quiz->term }}",
+                    section: "{{ $quiz->section }}"
+                },
+            @endforeach
+        ];
+
+        function filterQuizzes() {
+            var selectedGrade = $('#filter_grade').val();
+            var selectedTerm = $('#assign_term').val();       
+
+            var filteredQuizzes = allQuizzes.filter(function(quiz) {
+                return (!selectedGrade || quiz.level == selectedGrade) &&
+                       (!selectedTerm || quiz.term == selectedTerm) ;
+                       
+            });
+
+            var $quizSelect = $('#quiz_id');
+            $quizSelect.empty();
+
+            $.each(filteredQuizzes, function(index, quiz) {
+                $quizSelect.append(new Option(quiz.title, quiz.id));
+            });
+            
+            // Auto-select quizzes if Grade AND Term are selected        
+            if(selectedGrade && selectedTerm){
+                var allIds = filteredQuizzes.map(function(q){  return q.id;});
+                $quizSelect.val(allIds);                
+            }
+
+            $quizSelect.trigger('change');
+        }
+
+        $('#filter_grade, #assign_term, #filter_level').on('change', function() {
+            filterQuizzes();
+        });
+
         // $('#level').select2({
 
         //     placeholder: "Select Term",
@@ -178,6 +221,56 @@
             }
         });
 
+        $('#Listview2').DataTable({
+            language: {
+                "sLengthMenu": "Display_MENU_ Row",
+                "sZeroRecords": "No Data Found",
+                "sInfo": "Display _START_ To _END_ From _TOTAL_ Records",
+                "sInfoEmpty": "Display 0 To 0 From 0 Records",
+                "sInfoFiltered": "(Filters _MAX_ Row)",
+                "sSearch": "Search:",
+                "oPaginate": {
+                    "sFirst": "First",
+                    "sPrevious": "Previous",
+                    "sNext": "Next",
+                    "sLast": "Last"
+                }
+            },
+            aaSorting: [
+                [0, "asc"]
+            ],
+            iDisplayLength: 10,
+            lengthMenu: [10, 25, 50, 75, 100],
+            stateSave: true,
+            autoWidth: false,
+            responsive: true,
+            sPaginationType: "full_numbers"
+        });
+$('#btnClear').on('click', function () {
+
+    // reset form ปกติ
+    $('#quizForm')[0].reset();
+
+    // reset select2
+    $('#student_id').val(null).trigger('change');
+    $('#quiz_id').val(null).trigger('change');
+
+    // reset filter
+    $('#filter_grade').val('').trigger('change');
+    $('#assign_term').val('').trigger('change');
+    $('#status').val('').trigger('change');
+
+    // โหลด quiz ทั้งหมดกลับมา
+    var $quizSelect = $('#quiz_id');
+    $quizSelect.empty();
+
+    $.each(allQuizzes, function(index, quiz) {
+        $quizSelect.append(new Option(quiz.title, quiz.id));
+    });
+
+    $quizSelect.trigger('change');
+});
+
         $(document).on('click', '#CreateButton', function(e) {
             e.preventDefault();
             $('.alert-danger').html('');
@@ -341,6 +434,7 @@
                 data: {
                     student_id: $('#student_id').val(),
                     quiz_id: $('#quiz_id').val(),
+                    term: $('#assign_term').val(),
                     status: $('#status').val(),
                     _token: token,
                 },
@@ -373,6 +467,11 @@
                         $('#student_id').val(null).trigger('change');
                         $('#quiz_id').val(null).trigger('change');
                         $('#status').val('').trigger('change');
+
+                        // Reset filters and reload quiz list
+                        $('#filter_grade').val('').trigger('change');
+                        $('#assign_term').val('').trigger('change');
+                        $('#filter_level').val('').trigger('change');
 
                         // Hide the modal
                         // $('#AssignModal').modal('hide');
@@ -472,6 +571,100 @@
                         $('#Listview').DataTable().ajax.reload();
                         $('.form').trigger('reset');
                         $('#CreateModal').modal('hide');
+                    }
+                },
+                error: function(xhr) {
+                    var errors = xhr.responseJSON.errors;
+                    $('.alert-danger').html('');
+                    $.each(errors, function(key, value) {
+                        $('.alert-danger').show();
+                        $('.alert-danger').append('<strong><li>' + value +
+                            '</li></strong>');
+                    });
+                }
+            });
+        });
+
+        $(document).on('click', '.edit-assign', function(e) {
+            e.preventDefault();
+            $('.alert-danger').html('');
+            $('.alert-danger').hide();
+            $('.alert-success').html('');
+            $('.alert-success').hide();
+            $('.form').trigger('reset'); // This might clear selects, need to re-populate
+            $('#assign-title').text('Edit Assign Quiz');
+
+            var studentId = $(this).data('student-id');
+            var btn =
+                '<button type="button" class="btn btn-success" id="SubmitUpdateAssignForm" data-student-id="' +
+                studentId + '"> <i class="fas fa-save"></i> Update </button>';
+            $('#btn-assign-submit').html(btn);
+
+            // Fetch existing assignments
+            var url = '{{ url('assign-quiz/get-assignments') }}/' + studentId;
+            $.ajax({
+                url: url,
+                method: 'GET',
+                success: function(res) {
+                    var quizIds = res.quiz_ids;
+                    
+                    // Set Student (Single)
+                    $('#student_id').val([studentId]).trigger('change');
+                    
+                    // Set Quizzes (Multiple)
+                    // Ensure all quizzes are available in the dropdown (might be filtered out)
+                    // For now, we assume the initial list contains them or we reload.
+                    // If filter is active, some might be hidden. Ideally we should reset filters.
+                     $('#filter_grade').val('').trigger('change');
+                     $('#assign_term').val('').trigger('change');
+
+                    $('#quiz_id').val(quizIds).trigger('change');
+                    
+                    $('#AssignModal').modal('show');
+                }
+            });
+        });
+
+        $(document).on('click', '#SubmitUpdateAssignForm', function(e) {
+            e.preventDefault();
+            $('.alert-danger').html('');
+            $('.alert-danger').hide();
+            $('.alert-success').html('');
+            $('.alert-success').hide();
+            
+            var studentId = $(this).data('student-id');
+
+            $.ajax({
+                url: "{{ url('assign-quiz/update-assignments') }}",
+                method: 'post',
+                data: {
+                    student_id: [studentId], // Send as array to match controller expectation
+                    quiz_id: $('#quiz_id').val(),
+                    status: $('#status').val(),
+                    _token: token,
+                },
+                success: function(result) {
+                    if (result.errors) {
+                        $('.alert-danger').html('');
+                        $.each(result.errors, function(key, value) {
+                            $('.alert-danger').show();
+                            $('.alert-danger').append('<strong><li>' + value +
+                                '</li></strong>');
+                        });
+                    } else {
+                        $('.alert-danger').hide();
+                        $('.alert-success').show();
+                        $('.alert-success').append('<strong><li>' + result.success +
+                            '</li></strong>');
+                        toastr.success(result.success, {
+                            timeOut: 5000
+                        });
+                        
+                        setTimeout(function(){
+                           window.location.reload(); // Reload to refresh the list since it's not a DataTable ajax
+                        }, 1000);
+                        
+                        $('#AssignModal').modal('hide');
                     }
                 },
                 error: function(xhr) {

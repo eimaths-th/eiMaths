@@ -20,6 +20,14 @@ class studentRunningNumber extends Model
 
 
         if (!studentRunningNumber::where('year', $year)->where('department', $type)->exists()) {
+            // ดึงค่า number ล่าสุดจากปีก่อน (ถ้ามี) เพื่อต่อเนื่อง
+            $lastRecord = studentRunningNumber::where('department', $type)
+                ->orderBy('year', 'desc')
+                ->orderBy('number', 'desc')
+                ->first();
+            
+            $number = $lastRecord ? $lastRecord->number : 0;
+            
             studentRunningNumber::create([
                 'number' => $number,
                 'year' => $year,
@@ -51,6 +59,14 @@ class studentRunningNumber extends Model
         $number = 0;
         $year = date('Y');
         if (! studentRunningNumber::where('department', $type)->where('year', $year)->exists()) {
+            // ดึงค่า number ล่าสุดจากปีก่อน (ถ้ามี) เพื่อต่อเนื่อง
+            $lastRecord = studentRunningNumber::where('department', $type)
+                ->orderBy('year', 'desc')
+                ->orderBy('number', 'desc')
+                ->first();
+            
+            $number = $lastRecord ? $lastRecord->number : 0;
+            
             studentRunningNumber::create([
                 'department' => $type,
                 'number' => $number,

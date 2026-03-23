@@ -91,8 +91,23 @@ class UserController extends Controller
                 });
             }
 
-            $datas->orderBy("id", "desc")->get();
+            // $datas->orderBy("id", "desc")->get();
             return datatables()->of($datas)
+            ->filterColumn('department',function($query,$keyword){
+                $query->whereHas('department',function($q) use ($keyword){
+                    $q->where('name','like',"%{$keyword}%");
+                });
+                })
+            ->filterColumn('position',function($query,$keyword){
+                $query->whereHas('position',function($q) use ($keyword){
+                    $q->where('name','like',"%{$keyword}%");
+                });
+               })
+            ->filterColumn('role',function($query,$keyword){
+                $query->whereHas('roles',function($q) use ($keyword){
+                    $q->where('name','like',"%{$keyword}%");
+                });
+               })
                 ->editColumn('role', function (User $datas) {
                     if (!empty($datas->getRoleNames())) {
                         $urole = '';

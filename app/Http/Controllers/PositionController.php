@@ -51,6 +51,9 @@ class PositionController extends Controller
             $datas->orderBy("positions.id", "desc")->get();
             $state_text = array('Disable', 'Enable');
             return datatables()->of($datas)
+            ->filterColumn('dname',function($query,$keyword){
+                $query->where('departments.name','like',"%$keyword%");
+            })
                 ->editColumn('checkbox', function ($row) {
                     return '<input type="checkbox" id="' . $row->id . '" class="flat" name="table_records[]" value="' . $row->id . '" >';
                 })

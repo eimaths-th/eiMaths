@@ -234,7 +234,7 @@ class ContactController extends Controller
 
     public function index(Request $request)
     {
-        // dd($request->all());
+        //  dd($request->all());
 
         if ($request->ajax()) {
             //sleep(2);
@@ -471,25 +471,37 @@ class ContactController extends Controller
     public function get_course($std_id)
     {
         $orders = Order::where('cid', $std_id)->orderBy('id', 'asc')->get();
-        $orderIds = $orders->pluck('id');
-
-        $orderDetails = OrderDetailList::whereIn('order_id', $orderIds)
-            ->get();
 
         $html = '';
         $i = 1;
 
-        foreach ($orderDetails as $orderDetail) {
-            $html .= '<tr>';
-            $html .= '<td>' . $i . '</td>';
-            $html .= '<td>' . $orderDetail->level . '</td>';
-            $html .= '<td>' . $orderDetail->term . '</td>';
-            $html .= '<td><span class="tag tag-success">' . $orderDetail->book . '</span></td>';
-            $html .= '<td>' . $orderDetail->order->free_course . '</td>';
-            $html .= '<td>' . $orderDetail->order->free_course_reason . '</td>';
-            $html .= '<td>' . $orderDetail->created_at . '</td>';
-            $html .= '</tr>';
-            $i++;
+        foreach ($orders as $order) {
+            $orderDetails = OrderDetailList::where('order_id', $order->id)->get();
+            $count = $orderDetails->count();
+
+            if ($count > 0) {
+                $levels = [];
+                $terms = [];
+                $books = [];
+
+                foreach ($orderDetails as $orderDetail) {
+                    $levels[] = $orderDetail->level;
+                    $terms[] = $orderDetail->term;
+                    $books[] = '<span class="tag tag-success">' . $orderDetail->book . '</span>';
+                }
+
+                $html .= '<tr>';
+                $html .= '<td class="align-middle">' . $i . '</td>';
+                $html .= '<td class="align-middle">' . implode('<br>', $levels) . '</td>';
+                $html .= '<td class="align-middle">' . implode('<br>', $terms) . '</td>';
+                $html .= '<td class="align-middle">' . implode('<br>', $books) . '</td>';
+                $html .= '<td class="align-middle">' . $order->free_course . '</td>';
+                $html .= '<td class="align-middle">' . $order->free_course_reason . '</td>';
+                $html .= '<td class="align-middle">' . $order->created_at . '</td>';
+                $html .= '</tr>';
+                
+                $i++;
+            }
         }
 
         return $html;
@@ -505,7 +517,6 @@ class ContactController extends Controller
             $centre = Auth::user()->department->id;
         }
         $rnumber = studentRunningNumber::pre_generate($centre);
-        //dd($rnumber);
         return response()->json([
             'running' =>  $rnumber
         ]);
@@ -1185,12 +1196,27 @@ class ContactController extends Controller
         ]);
     }
 
-    public function gennerateStudent()
+    public function gennerateStudent(Request $request)
     {
         $students = Contact::orderBy('id')->get();
+        
+        $query = Contact::whereNotNull('password');
 
-        return view('contacts.gennerate_student', ['students' => $students]);
-        // dd($students);
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('code', 'like', "%{$search}%");
+            });
+        }
+
+        $perPage = $request->input('per_page', 25);
+
+        $gennerateStudent = $query->orderBy('password_generated_at', 'desc')
+                                    ->orderBy('id', 'desc') // Fallback sorting
+                                    ->paginate($perPage);
+                                    
+        return view('contacts.gennerate_student', ['students' => $students, 'gennerateStudent' => $gennerateStudent]);
     }
     public function gennerateStudentSave(Request $request)
     {
@@ -1211,7 +1237,7 @@ class ContactController extends Controller
             # code...
             $ranPass = Str::random(4);
             $password = $student->code . '_' . $ranPass;
-            return response()->json(['success' => 'Random generate student password success !!', 'password' => $password]);
+            return response()->json(['success' => 'Random generate student password success !!', 'password' => $password, 'student' => $student]);
         } elseif ($action === 'update') {
             # code...
         } else {
@@ -1219,14 +1245,65 @@ class ContactController extends Controller
         }
 
         $passwordHash = Hash::make($password);
-        $student->update(['password' => $passwordHash]);
+        $student->update([
+            'password' => $passwordHash,
+            'password_generated_at' => now(),
+        ]);
 
-        return response()->json(['success' => 'Generate student password success !!', 'password' => $password]);
+        return response()->json(['success' => 'Generate student password success !!', 'password' => $password, 'student' => $student, 'created_at' => now()->format('d/m/Y H:i')]);
     }
 
+    public function resetStudentPassword(Request $request) {
+        $student_id = $request->student_id;
+        if (!$student_id) {
+            return response()->json(['errors' => ['Pls select student']]);
+        }
+
+        $student = Contact::find($student_id);
+        if (!$student) {
+             return response()->json(['errors' => ['Student not found']]);
+        }
+
+        // Generate new random password
+        $ranPass = Str::random(4);
+        $password = $student->code . '_' . $ranPass;
+
+        $passwordHash = Hash::make($password);
+        
+        $student->update([
+            'password' => $passwordHash,
+            'password_generated_at' => now(),
+        ]);
+
+        // Return just success message as requested to reload page
+        return response()->json([
+            'success' => 'Reset password success !! New Password: ' . $password,
+            // 'password' => $password 
+        ]);
+    }
+
+    public function removeStudentPassword(Request $request) {
+        $student_id = $request->student_id;
+        if (!$student_id) {
+            return response()->json(['errors' => ['Pls select student']]);
+        }
+
+        $student = Contact::find($student_id);
+        if (!$student) {
+             return response()->json(['errors' => ['Student not found']]);
+        }
+        
+        $student->update([
+            'password' => null,
+            'password_generated_at' => null,
+        ]);
+
+        return response()->json([
+            'success' => 'Student password removed successfully',
+        ]);
+    }
     public function studentsLogin()
     {
-
         return view('contacts.login');
     }
     public function studentsCheckLogin(Request $request)
@@ -1237,7 +1314,6 @@ class ContactController extends Controller
         ]);
 
         $student = Contact::where('code', $request->code)->first();
-
         if ($student && Hash::check($request->password, $student->password)) {
             Auth::guard('student')->login($student);
             $student = Auth::guard('student')->user();
@@ -1257,6 +1333,13 @@ class ContactController extends Controller
     {
 
         Auth::guard('student')->logout();
+        Session::flush();
+        return redirect()->route('student.login');
+    }
+
+    public function quizUserLogout()
+    {
+        Auth::guard('web')->logout();
         Session::flush();
         return redirect()->route('student.login');
     }

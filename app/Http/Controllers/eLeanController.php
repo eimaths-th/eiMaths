@@ -30,16 +30,20 @@ class eLeanController extends Controller
             // Not authenticated at all
             abort(403, 'Unauthorized');
         }
+    
         $getQuizAssign = ContactQuiz::where([
             'contact_id' => $id
         ])->get();
+
+    
         if ($getQuizAssign && $getQuizAssign->count() > 0) {
             # code...
             $quizIds = $getQuizAssign->pluck('quiz_id');
         } else {
             # code...
-            $quizId = Quiz::all();
-            $quizIds = $quizId->pluck('id');
+            // $quizId = Quiz::all();
+            // $quizIds = $quizId->pluck('id');
+            $quizIds = [];
         }
         return $quizIds;
     }
@@ -47,9 +51,9 @@ class eLeanController extends Controller
     public function home()
     {
         $quizIds = $this->getQuizId();
-
+        // dd($quizIds);
         $levels = $this->level;
-        // dd($getQuizAssign,$quizIds,$levels);
+         
 
         $public_quizzes_level = Quiz::whereHas('questions')
             ->where('public', true)

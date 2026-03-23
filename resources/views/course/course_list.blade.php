@@ -1017,9 +1017,9 @@
                     }, // Delivery
                     {
                         data: 'category',
-                        name: 'category',
+                        name: 'category.name',
                         orderable: false,
-                        searchable: false
+                        // searchable: false
                     }, // Category
                     {
                         data: 'user',
