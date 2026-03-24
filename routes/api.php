@@ -65,3 +65,4 @@ Route::middleware('auth.apikey')->group(function () {
 // Revenue Summary API
 
 Route::get('/revenue-summary-by-branch', [App\Http\Controllers\ReceiptController::class, 'GetRevenueSummaryByBranch']);
+Route::get('/revenue-summary-by-branch-monthly', [App\Http\Controllers\ReceiptController::class, 'GetRevenueSummaryByBranchMonthly']);
