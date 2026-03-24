@@ -390,20 +390,6 @@
              $(this).removeClass("menu-open");
          }); */
 
-        $('.sidebar-toggle-btn').on('click', function() {
-            // Get the logo element
-            var logo = $('#logo');
-
-            // Check if the sidebar is being opened or closed
-            if (logo.is(':visible')) {
-                // Hide the logo when the sidebar is toggled
-                logo.hide();
-            } else {
-                // Show the logo when the sidebar is toggled
-                logo.show();
-            }
-        });
-
         initializeTooltips();
 
         $('#Listview').on('draw.dt', function() {
