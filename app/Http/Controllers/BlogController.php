@@ -44,9 +44,9 @@ class BlogController extends Controller
         // return view('blogs.index', compact('blogs'));
          if (request()-> ajax()){
             if (auth()->user()->hasRole('Admin')|| auth()->user()->hasRole('SystemAdmin')||auth()->user()->hasRole('BranchAdmin')){
-                $blogs = Blog:: select(['id','title','slug','thumbnail','is_published','user_id','pen_name','created_at','updated_at'])->with('user');              
+                $blogs = Blog:: select(['id','title','slug','thumbnail','is_published','user_id','pen_name','created_at','updated_at'])->with('user')->orderBy('created_at', 'desc');              
             }else{
-                $blogs = Blog:: select(['id','title','slug','thumbnail','is_published','user_id','pen_name','created_at','updated_at'])->where('user_id', auth()->id())->with('user');
+                $blogs = Blog:: select(['id','title','slug','thumbnail','is_published','user_id','pen_name','created_at','updated_at'])->where('user_id', auth()->id())->with('user')->orderBy('created_at', 'desc');
             }
            return DataTables::of($blogs)
            ->addIndexColumn()
