@@ -83,14 +83,14 @@ class TermfeeController extends Controller
             'price' => 'required',
             'half_price' => 'required',
             'book_price' => 'required',
-
+            'book_half_price' => 'required',
         ];
-
 
         $validator = Validator::make($request->all(), $rules, [
             'price.required' => 'Term Fee must not be blank!',
             'half_price.required' => 'Term Fee ( half ) must not be blank!',
             'book_price.required' => 'Book Price must not be blank!',
+            'book_half_price.required' => 'Book Half Price must not be blank!',
         ]);
 
         if ($validator->fails()) {
@@ -101,6 +101,7 @@ class TermfeeController extends Controller
             'price' => $request->get('price'),
             'half_price' => $request->get('half_price'),
             'book_price' => $request->get('book_price'),
+            'book_half_price' => $request->get('book_half_price'),
         ];
 
         $update = level::find($id);

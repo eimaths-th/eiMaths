@@ -82,6 +82,7 @@
                                             <th>Term Fee</th>
                                             <th>Term Fee ( Half ) </th>
                                             <th>Book Price</th>
+                                            <th>Book Half Price</th>
                                             <th width="80px"></th>
                                         </tr>
                                     </thead>

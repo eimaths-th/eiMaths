@@ -105,6 +105,10 @@
                     name: 'book_price'
                 },
                 {
+                    data: 'book_half_price',
+                    name: 'book_half_price'
+                },
+                {
                     data: 'action',
                     name: 'action'
                 },
@@ -190,6 +194,7 @@
                     $('#EditFee').val(res.data.price);
                     $('#EditHalf').val(res.data.half_price);
                     $('#EditBook').val(res.data.book_price);
+                    $('#EditBookHalf').val(res.data.book_half_price);
                     /* if (res.data.status == 1) {
                         $('#ecustomCheckbox1').prop('checked', true);
                     } else {
@@ -227,6 +232,7 @@
                     price: $('#EditFee').val(),
                     half_price: $('#EditHalf').val(),
                     book_price: $('#EditBook').val(),
+                    book_half_price: $('#EditBookHalf').val(),
                     //status: esstatus,
                 },
 

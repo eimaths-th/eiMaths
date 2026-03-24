@@ -65,6 +65,16 @@
                             </div>
 
                         </div>
+                        <div class="row">
+                            <div class="col-xs-6 col-sm-6 col-md-6">
+                                <div class="form-group">
+                                    <strong><i class="fa-solid fa-comment-dollar"></i> Book Half Price:</strong>
+                                    {!! Form::text('book_half', null, ['id' => 'EditBookHalf', 'placeholder' => 'Book Half Price', 'class' => 'auto_decimal form-control']) !!}
+
+                                </div>
+                            </div>
+
+                        </div>
 
                         {!! Form::close() !!}
                     </div>
