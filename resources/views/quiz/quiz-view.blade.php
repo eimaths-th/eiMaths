@@ -154,14 +154,14 @@
         <div class="quiz-header">
             <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;">
                 <div>
-                    <h1 style="margin: 0; font-size: 28px; font-weight: bold;">{{ $quizzes->title }}</h1>
+                    <h1 style="margin: 0; font-size: 28px; font-weight: bold;">{{ $quiz->title }}</h1>
                     <div style="margin-top: 12px; display: flex; gap: 24px; flex-wrap: wrap;">
                         <div style="display: flex; align-items: center; gap: 8px;">
                             <svg style="width: 20px; height: 20px; fill: currentColor;" viewBox="0 0 20 20">
                                 <path
                                     d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z" />
                             </svg>
-                            <span style="font-weight: 500;">ระดับชั้น: {{ $quizzes->level }}</span>
+                            <span style="font-weight: 500;">ระดับชั้น: {{ $quiz->level }}</span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 8px;">
                             <svg style="width: 20px; height: 20px; fill: currentColor;" viewBox="0 0 20 20">
@@ -169,14 +169,14 @@
                                     d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
                                     clip-rule="evenodd" />
                             </svg>
-                            <span style="font-weight: 500;">เทอม: {{ $quizzes->term }}</span>
+                            <span style="font-weight: 500;">เทอม: {{ $quiz->term }}</span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 8px;">
                             <svg style="width: 20px; height: 20px; fill: currentColor;" viewBox="0 0 20 20">
                                 <path
                                     d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z" />
                             </svg>
-                            <span style="font-weight: 500;">หมวด: {{ $quizzes->section }}</span>
+                            <span style="font-weight: 500;">หมวด: {{ $quiz->section }}</span>
                         </div>
                     </div>
                 </div>
@@ -274,7 +274,7 @@
                         <div style="font-size:12px; color:#6b7280; margin-bottom:6px;">Term</div>
                         <select id="bulk-term" style="width:100%; padding:10px 12px; border:1px solid #d1d5db; border-radius:8px; background:#fff; outline:none;">
                             @for ($i = 1; $i <= 4; $i++)
-                                <option value="{{ $i }}" {{ (int)$quizzes->term === $i ? 'selected' : '' }}>{{ $i }}</option>
+                                <option value="{{ $i }}" {{ (int)$quiz->term === $i ? 'selected' : '' }}>{{ $i }}</option>
                             @endfor
                         </select>
                     </div>
@@ -282,7 +282,7 @@
                         <div style="font-size:12px; color:#6b7280; margin-bottom:6px;">Level</div>
                         <select id="bulk-section" style="width:100%; padding:10px 12px; border:1px solid #d1d5db; border-radius:8px; background:#fff; outline:none;">
                             @for ($i = 1; $i <= 12; $i++)
-                                <option value="{{ $i }}" {{ (int)$quizzes->section === $i ? 'selected' : '' }}>{{ $i }}</option>
+                                <option value="{{ $i }}" {{ (int)$quiz->section === $i ? 'selected' : '' }}>{{ $i }}</option>
                             @endfor
                         </select>
                     </div>
@@ -824,7 +824,7 @@
             if (!ids.length) return;
 
             $.ajax({
-                url: "{{ url('/quizzes/' . $quizzes->id . '/order') }}",
+                url: "{{ url('/quizzes/' . $quiz->id . '/order') }}",
                 method: 'POST',
                 data: {
                     _token: '{{ csrf_token() }}',
@@ -926,11 +926,11 @@
                 term: $('#bulk-term').val(),
                 section: $('#bulk-section').val(),
                 // current quiz meta
-                quiz_id: {{ (int) $quizzes->id }},
-                quiz_title: @json($quizzes->title),
-                quiz_level: @json($quizzes->level),
-                quiz_term: @json($quizzes->term),
-                quiz_section: @json($quizzes->section),
+                quiz_id: {{ (int) $quiz->id }},
+                quiz_title: @json($quiz->title),
+                quiz_level: @json($quiz->level),
+                quiz_term: @json($quiz->term),
+                quiz_section: @json($quiz->section),
             };
 
             $.post("{{ route('questions.bulk.update') }}", payload)

@@ -169,17 +169,15 @@ class QuizzesController extends Controller
      */
     public function show($id)
     {
-        //
-        $quizzes = Quiz::findOrFail($id);
-        $questions = $quizzes->questions; // Assuming a relationship: Quiz hasMany Questions
-        if (!empty($getAnserSessionIndex['answer']) && is_array($getAnserSessionIndex['answer'])) {
-            $getAnserSessionIndexWhole = $getAnserSessionIndex['answer']['whole'] ?? null;
-            $getAnserSessionIndexNumerator = $getAnserSessionIndex['answer']['numerator'] ?? null;
-            $getAnserSessionIndexDenominator = $getAnserSessionIndex['answer']['denominator'] ?? null;
-        }
-        // dd($questions);
+        $quiz = Quiz::findOrFail($id);
+        $questions = $quiz->questions; // Assuming a relationship: Quiz hasMany Questions
+
+        // All quizzes collection needed by scripts.blade.php
+        $quizzes = Quiz::all();
+
         return view('quiz.quiz-view', [
             'quizzes' => $quizzes,
+            'quiz' => $quiz,
             'questions' => $questions,
         ]);
     }
