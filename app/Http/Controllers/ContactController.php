@@ -857,6 +857,7 @@ class ContactController extends Controller
         $input_order['cid'] = $contact->id;
         $input_order['order_number'] = OrderRunningNumber::generate($request->get('centre'));
         $input_order['total_price'] = $mprice + $mbprice;
+        $input_order['ref'] = $request->get('ref');
         $order = Order::create($input_order);
         $input_order['free_course'] = $request->get('free_course', 0);
         $input_order['free_course_reason'] = $request->get('free_course_reason');
