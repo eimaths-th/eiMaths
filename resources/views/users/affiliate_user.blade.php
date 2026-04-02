@@ -78,7 +78,9 @@
                                     <thead>
                                         <tr>
                                             <th><input type="checkbox" id="check-all" class="flat"></th>
+                                            <th>Ref. Code</th>
                                             <th>User Name</th>
+                                            <th>Email</th>
                                             <th>Centre</th>
                                             <th>Department</th>
                                             <th>Role</th>

@@ -787,7 +787,7 @@ if (!function_exists('generateQrCode')) {
 
 // create commission list
 if (!function_exists('create_commmission_list')) {
-    function create_commmission_list($order_id, $reqRef, $courses_pending_id = null)
+    function create_commmission_list($order_id, $courses_pending_id = null , $reqRef)
     {
         $month = date('m');
         $year = date('Y');
@@ -796,7 +796,7 @@ if (!function_exists('create_commmission_list')) {
         if (!$order) {
             throw new Exception("Order not found with ID: $order_id");
         }
-        // dd($reqRef);
+        // dd($reqRef, $courses_pending_id);
         $coursePendingRef = $courses_pending_id
             ? CoursePending::find($courses_pending_id)?->ref
             : null;
