@@ -787,7 +787,7 @@ if (!function_exists('generateQrCode')) {
 
 // create commission list
 if (!function_exists('create_commmission_list')) {
-    function create_commmission_list($order_id, $courses_pending_id = null , $reqRef)
+    function create_commmission_list($order_id, $courses_pending_id = null , $reqRef = null)
     {
         $month = date('m');
         $year = date('Y');
