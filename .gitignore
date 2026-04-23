@@ -16,6 +16,7 @@
 /public/fonts/*
 /public/stamps
 /public/storage
+/public/hot
 /storage/*.key
 /vendor
 .history/*
