@@ -66,6 +66,7 @@
                                         <th> QUESTIONS </th>
                                         {{-- <th> PUBLISHED </th> --}}
                                         <th> PUBLIC </th>
+                                        <th> FREE </th>
                                         <th> Grade</th>
                                         <th> Term</th>
                                         <th> Level</th>

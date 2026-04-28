@@ -288,7 +288,7 @@
 
                                 <!-- Answer Options -->
                                 <form id="quiz-form"
-                                    action="{{ route('quiz.next', ['quiz' => $quiz, 'currentQuestionIndex' => $currentQuestionIndex, 'quizStartTime' => $quizStartTime]) }}"
+                                    action="{{ route($nextRouteName ?? 'quiz.next', ['quiz' => $quiz, 'currentQuestionIndex' => $currentQuestionIndex, 'quizStartTime' => $quizStartTime]) }}"
                                     method="POST">
                                     @csrf
                                     <input type="hidden" name="startTimeInSeconds" id="startTimeInSeconds"
@@ -554,7 +554,7 @@
                 formData.append("changeToQuestionIndex", changeToIndex);
                 formData.append("quizStartTime", "{{ $quizStartTime }}");
 
-                fetch("{{ route('quiz.saveAnswer') }}", {
+                fetch("{{ $saveAnswerRoute ?? route('quiz.saveAnswer') }}", {
                         method: "POST", // <- changed from GET to POST
                         headers: {
                             "X-CSRF-TOKEN": document.querySelector('input[name="_token"]').value,
@@ -578,7 +578,7 @@
 
                 // Replace placeholders in route with dynamic values
                 let nextUrl =
-                    `{{ route('quiz.show', ['quiz' => '__QUIZ__', 'currentQuestionIndex' => '__INDEX__']) }}`
+                    `{{ route(isset($isGuest) && $isGuest ? 'guest.quiz.show' : 'quiz.show', ['quiz' => '__QUIZ__', 'currentQuestionIndex' => '__INDEX__']) }}`
                     .replace("__QUIZ__", quiz)
                     .replace("__INDEX__", changeToIndex)
 

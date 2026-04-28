@@ -311,3 +311,27 @@ Route::get('/test-system-questions/create', [TestSystemQuestionsController::clas
 Route::get('/test-system-questions/view', [TestSystemQuestionsController::class, 'view'])->name('ts.questions.view');
 Route::post('/test-system-questions', [TestSystemQuestionsController::class, 'store'])->name('ts.questions.store');
 Route::get('/test-system-questions/emptyView', [TestSystemQuestionsController::class, 'emptyView'])->name('ts.questions.emptyView');
+
+
+// ============================================
+// Guest Free Quiz Routes
+// ============================================
+use App\Http\Controllers\GuestQuizController;
+
+// Public routes (ไม่ต้อง login)
+Route::get('/free-quiz/register', [GuestQuizController::class, 'showRegister'])->name('guest.quiz.register');
+Route::post('/free-quiz/register', [GuestQuizController::class, 'register'])->name('guest.quiz.register.store');
+Route::post('/free-quiz/login', [GuestQuizController::class, 'login'])->name('guest.quiz.login');
+Route::get('/free-quiz/expired', [GuestQuizController::class, 'expired'])->name('guest.quiz.expired');
+
+// Guest-protected routes (ต้อง login ด้วย guest_quiz guard + ยังไม่หมดอายุ)
+Route::group(['middleware' => ['guest.quiz']], function () {
+    Route::get('/free-quiz/home', [GuestQuizController::class, 'home'])->name('guest.quiz.home');
+    Route::get('/free-quiz/{quiz}', [GuestQuizController::class, 'show'])->name('guest.quiz.show');
+    Route::post('/free-quiz/save-answer', [GuestQuizController::class, 'saveAnswer'])->name('guest.quiz.saveAnswer');
+    Route::post('/free-quiz/{quiz}/next', [GuestQuizController::class, 'nextQuestion'])->name('guest.quiz.next');
+    Route::post('/free-quiz/{quiz}/submit', [GuestQuizController::class, 'submit'])->name('guest.quiz.submit');
+    Route::get('/free-quiz/result/{guestTest}', [GuestQuizController::class, 'result'])->name('guest.quiz.result');
+    Route::post('/free-quiz/logout', [GuestQuizController::class, 'logout'])->name('guest.quiz.logout');
+});
+

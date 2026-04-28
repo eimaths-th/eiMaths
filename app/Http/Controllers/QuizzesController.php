@@ -42,6 +42,11 @@ class QuizzesController extends Controller
                     $text = $row->public ? 'Yes' : 'No';
                     return '<span class="badge border border-' . $class . ' text-' . $class . ' px-2 pt-5px pb-5px rounded fs-12px d-inline-flex align-items-center"><i class="fa fa-circle fs-9px fa-fw me-5px"></i>&nbsp' . $text . '</span>';
                 })
+                ->addColumn('is_free', function ($row) {
+                    $class = $row->is_free ? 'warning' : 'secondary';
+                    $text = $row->is_free ? 'Free' : '-';
+                    return '<span class="badge border border-' . $class . ' text-' . $class . ' px-2 pt-5px pb-5px rounded fs-12px d-inline-flex align-items-center"><i class="fa fa-circle fs-9px fa-fw me-5px"></i>&nbsp' . $text . '</span>';
+                })
                 ->editColumn('questions_count', function ($row) {
                     return $row->questions_count;
                 })
@@ -53,15 +58,11 @@ class QuizzesController extends Controller
                     return $html;
                 })
                 ->filterColumn('questions_count', function ($query, $keyword) {
-                    // Remove questions_count from search since it's a derived column
-                    // The search will still work on other columns
                     return $query;
                 })
                 ->orderColumn('questions_count', function ($query, $order) {
-                    // Properly order by the questions count
                     $query->orderByRaw('(SELECT COUNT(*) FROM question_quiz WHERE question_quiz.quiz_id = quizzes.id) ' . $order);
                 })
-                // Ensure ordering works for primitive columns as expected
                 ->orderColumn('id', 'quizzes.id $1')
                 ->orderColumn('title', 'quizzes.title $1')
                 ->orderColumn('slug', 'quizzes.slug $1')
@@ -70,7 +71,7 @@ class QuizzesController extends Controller
                 ->orderColumn('level', 'quizzes.level $1')
                 ->orderColumn('term', 'quizzes.term $1')
                 ->orderColumn('section', 'quizzes.section $1')
-                ->rawColumns(['action', 'public'])
+                ->rawColumns(['action', 'public', 'is_free'])
                 ->toJson();
         }
 
@@ -132,11 +133,9 @@ class QuizzesController extends Controller
             'description' => 'nullable|string',
             'questions' => 'required|array',
             'questions.*' => 'exists:questions,id',
-            // 'published' => 'boolean',
             'public' => 'boolean',
+            'is_free' => 'boolean',
         ]);
-
-        // dd($request->all());
 
         $quiz = Quiz::create([
             'title' => $validated['title'],
@@ -147,8 +146,8 @@ class QuizzesController extends Controller
             'description' => $validated['description'],
             'published' => 0,
             'public' => $validated['public'] ?? 0,
+            'is_free' => $validated['is_free'] ?? 0,
             'created_by' => Auth::user()->id,
-
         ]);
 
         $quiz->questions()->attach($validated['questions']);
@@ -257,8 +256,8 @@ class QuizzesController extends Controller
             'description' => $request->input('description'),
             'published' => 0,
             'public' => $request->boolean('public'),
+            'is_free' => $request->boolean('is_free'),
             'updated_by' => Auth::user()->id,
-
         ]);
 
         $quiz->questions()->sync($request->input('questions', []));

@@ -193,6 +193,13 @@
                     }
                 },
                 {
+                    data: 'is_free',
+                    name: 'is_free',
+                    createdCell: function(td, cellData, rowData, row, col) {
+                        $(td).addClass('text-nowrap').css('width', '1%');
+                    }
+                },
+                {
                     data: 'level',
                     name: 'level'
                 },
@@ -387,6 +394,7 @@ $('#btnClear').on('click', function () {
                     questions: $('#questions').val(),
                     // published: $('#published').is(':checked') ? 1 : 0,
                     public: $('#public').is(':checked') ? 1 : 0,
+                    is_free: $('#is_free').is(':checked') ? 1 : 0,
                     _token: token,
                 },
                 success: function(result) {
@@ -521,6 +529,7 @@ $('#btnClear').on('click', function () {
 
                     // $('#published').prop('checked', res.quiz.published);
                     $('#public').prop('checked', res.quiz.public);
+                    $('#is_free').prop('checked', res.quiz.is_free);
 
                     $('#CreateModal').modal('show');
                 }
@@ -550,6 +559,7 @@ $('#btnClear').on('click', function () {
                     questions: $('#questions').val(), // No need to add [] here
                     // published: $('#published').is(':checked') ? 1 : 0,
                     public: $('#public').is(':checked') ? 1 : 0,
+                    is_free: $('#is_free').is(':checked') ? 1 : 0,
                     _token: token,
                 },
                 success: function(result) {

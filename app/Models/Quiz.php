@@ -33,6 +33,7 @@ class Quiz extends Model
         'description',
         'published',
         'public',
+        'is_free',
         'created_at',
         'updated_at',
         'deleted_at',
@@ -43,6 +44,16 @@ class Quiz extends Model
     public function tests()
     {
         return $this->hasMany(Test::class, 'quiz_id');
+    }
+
+    public function guestTests()
+    {
+        return $this->hasMany(GuestTest::class, 'quiz_id');
+    }
+
+    public function scopeFree($query)
+    {
+        return $query->where('is_free', true);
     }
 
     public function getRouteKeyName()

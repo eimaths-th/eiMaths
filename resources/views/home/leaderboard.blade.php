@@ -113,16 +113,16 @@
         /* Podium for top 3 */
         .podium-section {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 24px;
-            margin-bottom: 40px;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
         }
 
         .podium-card {
             background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            padding: 32px 24px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            border-radius: 16px;
+            padding: 22px 18px;
+            box-shadow: 0 14px 38px rgba(0, 0, 0, 0.12);
             border: 1px solid rgba(255, 255, 255, 0.3);
             backdrop-filter: blur(20px);
             position: relative;
@@ -132,8 +132,8 @@
         }
 
         .podium-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.2);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 54px rgba(0, 0, 0, 0.16);
         }
 
         .podium-card.first-place::before {
@@ -173,12 +173,12 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 60px;
-            height: 60px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
-            font-size: 1.5rem;
+            font-size: 1.25rem;
             font-weight: 800;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         }
 
@@ -198,16 +198,22 @@
         }
 
         .podium-user {
-            font-size: 1.25rem;
+            font-size: 1.05rem;
             font-weight: 700;
             color: #1f2937;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         .podium-quiz {
-            font-size: 0.875rem;
+            font-size: 0.8125rem;
             color: #6b7280;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         .podium-score {
@@ -220,8 +226,8 @@
 
         .score-circle {
             position: relative;
-            width: 80px;
-            height: 80px;
+            width: 70px;
+            height: 70px;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -232,8 +238,8 @@
         .score-circle::before {
             content: '';
             position: absolute;
-            width: 60px;
-            height: 60px;
+            width: 52px;
+            height: 52px;
             border-radius: 50%;
             background: #ffffff;
         }
@@ -249,67 +255,82 @@
         .podium-date {
             font-size: 0.75rem;
             color: #9ca3af;
+            line-height: 1.6;
         }
 
         /* Regular leaderboard cards */
         .leaderboard-card {
             background: rgba(255, 255, 255, 0.95);
             border-radius: 16px;
-            padding: 24px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            padding: 16px 18px;
+            box-shadow: 0 10px 28px rgba(31, 41, 55, 0.09);
             border: 1px solid rgba(255, 255, 255, 0.3);
             backdrop-filter: blur(20px);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex;
+            display: grid;
+            grid-template-columns: auto minmax(180px, 1.1fr) minmax(220px, 1.2fr) auto;
             align-items: center;
-            gap: 20px;
+            gap: 16px;
         }
 
         .leaderboard-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 16px 36px rgba(31, 41, 55, 0.14);
         }
 
         .rank-badge {
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 48px;
-            height: 48px;
+            width: 44px;
+            height: 44px;
             border-radius: 12px;
             background: linear-gradient(135deg, #ff6b35 0%, #f59e0b 100%);
             color: #ffffff;
-            font-size: 1.25rem;
+            font-size: 1.05rem;
             font-weight: 700;
             box-shadow: 0 4px 16px rgba(255, 107, 53, 0.3);
         }
 
         .user-info {
-            flex: 1;
+            min-width: 0;
         }
 
         .user-name {
-            font-size: 1.125rem;
-            font-weight: 600;
-            color: #1f2937;
-            margin-bottom: 4px;
-        }
-
-        .user-email {
-            font-size: 0.875rem;
-            color: #6b7280;
-        }
-
-        .quiz-info {
-            flex: 1;
-            text-align: center;
-        }
-
-        .quiz-title {
             font-size: 1rem;
             font-weight: 600;
             color: #1f2937;
+            margin-bottom: 3px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .user-email {
+            font-size: 0.8125rem;
+            color: #6b7280;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .quiz-info {
+            min-width: 0;
+            text-align: left;
+            padding: 10px 12px;
+            border-radius: 12px;
+            background: rgba(249, 250, 251, 0.82);
+            border: 1px solid rgba(229, 231, 235, 0.8);
+        }
+
+        .quiz-title {
+            font-size: 0.9375rem;
+            font-weight: 600;
+            color: #1f2937;
             margin-bottom: 4px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         .quiz-date {
@@ -320,13 +341,14 @@
         .score-info {
             display: flex;
             align-items: center;
-            gap: 12px;
+            justify-content: flex-end;
+            gap: 10px;
         }
 
         .score-circle-small {
             position: relative;
-            width: 60px;
-            height: 60px;
+            width: 52px;
+            height: 52px;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -337,8 +359,8 @@
         .score-circle-small::before {
             content: '';
             position: absolute;
-            width: 44px;
-            height: 44px;
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
             background: #ffffff;
         }
@@ -346,7 +368,7 @@
         .score-value-small {
             position: relative;
             z-index: 1;
-            font-size: 0.875rem;
+            font-size: 0.75rem;
             font-weight: 700;
             color: #1f2937;
         }
@@ -356,7 +378,7 @@
         }
 
         .score-fraction {
-            font-size: 1.125rem;
+            font-size: 1rem;
             font-weight: 700;
             color: #1f2937;
             margin-bottom: 2px;
@@ -365,6 +387,101 @@
         .score-time {
             font-size: 0.75rem;
             color: #6b7280;
+            white-space: nowrap;
+        }
+
+        /* Pagination */
+        .leaderboard-pagination {
+            display: flex;
+            justify-content: center;
+            padding: 24px 0 4px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .leaderboard-pagination-card {
+            display: inline-flex;
+            max-width: min(100%, 760px);
+            padding: 12px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.72);
+            backdrop-filter: blur(14px);
+            box-shadow: 0 14px 32px rgba(146, 64, 14, 0.14);
+        }
+
+        .leaderboard-pagination nav {
+            width: 100%;
+        }
+
+        .leaderboard-pagination nav > div,
+        .leaderboard-pagination nav .hidden,
+        .leaderboard-pagination nav .relative {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            flex-wrap: wrap !important;
+            gap: 8px !important;
+            width: auto !important;
+        }
+
+        .leaderboard-pagination nav p,
+        .leaderboard-pagination nav .text-sm,
+        .leaderboard-pagination nav .sm\:hidden {
+            display: none !important;
+        }
+
+        .leaderboard-pagination a,
+        .leaderboard-pagination span,
+        .leaderboard-pagination button,
+        .leaderboard-pagination .page-link {
+            min-width: 38px !important;
+            height: 38px !important;
+            padding: 0 12px !important;
+            border-radius: 10px !important;
+            border: 1px solid rgba(245, 158, 11, 0.22) !important;
+            background: rgba(255, 255, 255, 0.88) !important;
+            color: #92400e !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-size: 0.875rem !important;
+            font-weight: 700 !important;
+            line-height: 1 !important;
+            text-decoration: none !important;
+            box-shadow: 0 4px 12px rgba(146, 64, 14, 0.08) !important;
+            margin: 0 !important;
+        }
+
+        .leaderboard-pagination a:hover,
+        .leaderboard-pagination .page-link:hover {
+            background: #fff7ed !important;
+            border-color: rgba(249, 115, 22, 0.45) !important;
+            transform: translateY(-1px);
+        }
+
+        .leaderboard-pagination span[aria-current="page"] span,
+        .leaderboard-pagination .active .page-link,
+        .leaderboard-pagination span.bg-blue-50 {
+            background: linear-gradient(135deg, #f59e0b 0%, #ff6b35 100%) !important;
+            border-color: transparent !important;
+            color: #ffffff !important;
+        }
+
+        .leaderboard-pagination span[aria-disabled="true"] {
+            opacity: 0.45;
+            background: rgba(255, 255, 255, 0.72) !important;
+            color: #9ca3af !important;
+        }
+
+        .leaderboard-pagination ul.pagination {
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 0;
+            padding: 0;
+            list-style: none;
         }
 
         /* Empty state */
@@ -415,17 +532,46 @@
             }
 
             .leaderboard-card {
-                flex-direction: column;
+                grid-template-columns: 1fr;
                 text-align: center;
-                gap: 16px;
+                gap: 12px;
             }
 
             .quiz-info {
                 text-align: center;
             }
 
+            .rank-badge {
+                margin: 0 auto;
+            }
+
+            .score-info {
+                justify-content: center;
+            }
+
             .score-details {
                 text-align: center;
+            }
+
+            .leaderboard-pagination a,
+            .leaderboard-pagination span,
+            .leaderboard-pagination button,
+            .leaderboard-pagination .page-link {
+                min-width: 34px !important;
+                height: 34px !important;
+                padding: 0 10px !important;
+                font-size: 0.8125rem !important;
+            }
+        }
+
+        @media (min-width: 769px) and (max-width: 1050px) {
+            .leaderboard-card {
+                grid-template-columns: auto minmax(160px, 1fr) minmax(180px, 1fr);
+            }
+
+            .score-info {
+                grid-column: 2 / -1;
+                justify-content: flex-start;
             }
         }
     </style>
@@ -468,8 +614,9 @@
         <div class="leaderboard-container">
             @if ($tests->count() > 0)
                 @php
-                    $topThree = $tests->take(3);
-                    $remaining = $tests->skip(3);
+                    $isFirstPage = !method_exists($tests, 'currentPage') || $tests->currentPage() === 1;
+                    $topThree = $isFirstPage ? $tests->take(3) : collect();
+                    $remaining = $isFirstPage ? $tests->skip(3) : $tests->getCollection();
                 @endphp
 
                 <!-- Podium Section (Top 3) -->
@@ -541,6 +688,10 @@
                     <div class="leaderboard-grid">
                         @foreach ($remaining as $test)
                             @php
+                                $rankNumber = $isFirstPage
+                                    ? $loop->iteration + 3
+                                    : (method_exists($tests, 'firstItem') ? $tests->firstItem() + $loop->index : $loop->iteration);
+
                                 if ($test->type_user === 'user' && $test->user) {
                                     $testUser = $test->user;
                                 } elseif ($test->type_user === 'student' && $test->student) {
@@ -560,7 +711,7 @@
 
                             <div class="leaderboard-card">
                                 <div class="rank-badge">
-                                    {{ $loop->iteration + 3 }}
+                                    {{ $rankNumber }}
                                 </div>
 
                                 <div class="user-info">
@@ -573,7 +724,7 @@
                                     </div>
                                     <div class="user-email">
                                         @if ($testUser)
-                                            {{ $testUser->nickname ?? ($testUser->name ?? 'Unknown User') }}
+                                            {{ $testUser->email ?? ($testUser->name ?? 'Unknown User') }}
                                         @else
                                             Unknown User
                                         @endif
@@ -605,6 +756,14 @@
                                 </div>
                             </div>
                         @endforeach
+                    </div>
+                @endif
+
+                @if(method_exists($tests, 'hasPages') && $tests->hasPages())
+                    <div class="leaderboard-pagination">
+                        <div class="leaderboard-pagination-card">
+                            {{ $tests->links() }}
+                        </div>
                     </div>
                 @endif
             @else

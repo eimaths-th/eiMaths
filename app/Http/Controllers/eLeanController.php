@@ -57,6 +57,7 @@ class eLeanController extends Controller
 
         $public_quizzes_level = Quiz::whereHas('questions')
             ->where('public', true)
+            ->where('is_free', false)
             ->whereIn('id', $quizIds)
             ->orderBy('level', 'asc')
             ->orderBy('id', 'Desc')
@@ -66,6 +67,7 @@ class eLeanController extends Controller
 
         $public_quizzes = Quiz::whereHas('questions')
             ->where('public', true)
+            ->where('is_free', false)
             ->whereIn('id', $quizIds)
             ->orderBy('id', 'desc')
             ->withCount('questions')
@@ -73,6 +75,7 @@ class eLeanController extends Controller
 
         $registered_only_quizzes = Quiz::whereHas('questions')
             ->where('published', true)
+            ->where('is_free', false)
             ->whereIn('id', $quizIds)
             ->orderBy('level', 'asc')
             ->orderBy('id', 'Desc')
@@ -93,9 +96,10 @@ class eLeanController extends Controller
     {
       
         $quizIds = $this->getQuizId();
-        $public_quizzes = Quiz::whereHas('questions')->where('public', true)->orderBy('id', 'desc')->withCount('questions')->get();
+        $public_quizzes = Quiz::whereHas('questions')->where('public', true)->where('is_free', false)->orderBy('id', 'desc')->withCount('questions')->get();
         $public_quizzes_term = Quiz::whereHas('questions')
             ->where(['public' => true, 'level' => $level])
+            ->where('is_free', false)
             ->whereIn('id', $quizIds)
             ->orderBy('term', 'asc')
             ->orderBy('id', 'Desc')
@@ -199,7 +203,7 @@ class eLeanController extends Controller
             })
             ->orderBy('result', 'desc')
             ->orderBy('time_spent')
-            ->get();
+            ->paginate(10);
 
         return view('home.leaderboard', compact('header', 'quizzes', 'tests', 'quiz_slug'));
     }
@@ -273,7 +277,7 @@ class eLeanController extends Controller
             // ->orderBy('result', 'desc')
             // ->orderBy('time_spent')
             ->latest()
-            ->get();
+            ->paginate(20);
         return view('home.tests', [
             'tests' => $tests,
             'quizzes' => $quizzes,

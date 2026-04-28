@@ -44,6 +44,10 @@ return [
             'driver' => 'session',
             'provider' => 'students',
         ],
+        'guest_quiz' => [
+            'driver' => 'session',
+            'provider' => 'guest_quizzers',
+        ],
     ],
 
     /*
@@ -71,6 +75,10 @@ return [
         'students' => [
             'driver' => 'eloquent',
             'model' => App\Models\Contact::class, // Assuming Contact is your student model
+        ],
+        'guest_quizzers' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\GuestQuizzer::class,
         ],
 
         // 'users' => [

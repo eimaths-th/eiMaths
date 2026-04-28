@@ -128,6 +128,17 @@
                         @enderror
                     </div>
 
+                    <div class="mt-4 form-check">
+                        <div class="flex items-center">
+                            <label for="is_free" class="form-label">Free <small class="text-muted">(ข้อสอบฟรีสำหรับบุคคลทั่วไป)</small></label>
+                            <input type="checkbox" id="is_free" class="form-check-input ml-2" name="is_free"
+                                {{ old('is_free', $quiz->is_free ?? false) ? 'checked' : '' }}>
+                        </div>
+                        @error('is_free')
+                            <span class="text-red-600 text-sm mt-2">{{ $message }}</span>
+                        @enderror
+                    </div>
+
                     {{-- <div class="mt-4">
                         <button type="submit" class="btn btn-primary">
                             Save

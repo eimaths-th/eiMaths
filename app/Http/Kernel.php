@@ -68,6 +68,7 @@ class Kernel extends HttpKernel
         'auth.apikey' => \App\Http\Middleware\AuthenticateApiKey::class,
         'student.auth' => \App\Http\Middleware\StudentAuth::class,
         'auth.userOrStudent' => \App\Http\Middleware\CheckUserOrStudent::class,
+        'guest.quiz' => \App\Http\Middleware\GuestQuizAuth::class,
     ];
 
 

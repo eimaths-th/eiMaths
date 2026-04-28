@@ -681,6 +681,282 @@
             font-size: 1.125rem;
             filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
         }
+
+        /* Compact result cards */
+        .test-result-card {
+            background: rgba(255, 255, 255, 0.96);
+            border-radius: 16px;
+            padding: 18px;
+            margin-bottom: 16px;
+            box-shadow: 0 10px 28px rgba(31, 41, 55, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.45);
+            border-left: 4px solid #f59e0b;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .test-result-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 16px 34px rgba(31, 41, 55, 0.14);
+        }
+
+        .test-card-content {
+            display: grid;
+            grid-template-columns: minmax(280px, 0.9fr) minmax(440px, 1.35fr);
+            gap: 16px;
+            align-items: stretch;
+        }
+
+        .test-info-column {
+            display: grid;
+            grid-template-rows: auto 1fr;
+            gap: 12px;
+            min-width: 0;
+        }
+
+        .user-info-section {
+            padding: 14px 16px;
+            margin-bottom: 0;
+            border-radius: 14px;
+            box-shadow: 0 6px 18px rgba(31, 41, 55, 0.06);
+        }
+
+        .user-avatar {
+            width: 42px;
+            height: 42px;
+            font-size: 0.875rem;
+            flex: 0 0 auto;
+        }
+
+        .user-name {
+            font-size: 1rem;
+            margin-bottom: 2px;
+        }
+
+        .user-email {
+            font-size: 0.8125rem;
+            line-height: 1.35;
+            word-break: break-word;
+        }
+
+        .quiz-info-card {
+            padding: 14px;
+            border-radius: 14px;
+            box-shadow: 0 6px 18px rgba(31, 41, 55, 0.06);
+        }
+
+        .quiz-info-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 8px;
+        }
+
+        .quiz-info-item {
+            padding: 10px 12px;
+            border-radius: 10px;
+            box-shadow: none;
+            min-width: 0;
+        }
+
+        .quiz-info-item:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        .quiz-info-label {
+            font-size: 0.6875rem;
+            margin-bottom: 5px;
+            letter-spacing: 0.6px;
+        }
+
+        .quiz-info-value {
+            font-size: 0.8125rem;
+            gap: 6px;
+            min-width: 0;
+        }
+
+        .quiz-info-value span:last-child {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .quiz-info-icon {
+            font-size: 1rem;
+            flex: 0 0 auto;
+        }
+
+        .score-panel {
+            grid-template-columns: minmax(128px, 0.8fr) auto minmax(170px, 0.95fr);
+            gap: 18px;
+            padding: 18px;
+            margin-top: 0;
+            min-height: 100%;
+        }
+
+        .score-left,
+        .score-right {
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .score-meter {
+            width: 112px;
+            height: 112px;
+        }
+
+        .score-meter-value {
+            font-size: 1.15rem;
+        }
+
+        .score-info-number {
+            font-size: 1.35rem;
+        }
+
+        .test-meta {
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        .test-meta-item {
+            font-size: 0.8125rem;
+        }
+
+        .action-btn {
+            justify-content: center;
+            padding: 9px 14px;
+            width: 100%;
+        }
+
+        /* Pagination: force Laravel links into a clean horizontal control */
+        .tests-pagination {
+            padding: 8px 0 28px;
+        }
+
+        .tests-pagination nav {
+            width: 100%;
+        }
+
+        .tests-pagination .pagination-shell,
+        .tests-pagination nav > div,
+        .tests-pagination nav .hidden,
+        .tests-pagination nav .relative {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            flex-wrap: wrap !important;
+            gap: 8px !important;
+            width: auto !important;
+        }
+
+        .tests-pagination nav p,
+        .tests-pagination nav .text-sm,
+        .tests-pagination nav .sm\:hidden {
+            display: none !important;
+        }
+
+        .tests-pagination a,
+        .tests-pagination span,
+        .tests-pagination button,
+        .tests-pagination .page-link {
+            min-width: 38px !important;
+            height: 38px !important;
+            padding: 0 12px !important;
+            border-radius: 10px !important;
+            border: 1px solid rgba(245, 158, 11, 0.22) !important;
+            background: rgba(255, 255, 255, 0.88) !important;
+            color: #92400e !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-size: 0.875rem !important;
+            font-weight: 700 !important;
+            line-height: 1 !important;
+            text-decoration: none !important;
+            box-shadow: 0 4px 12px rgba(146, 64, 14, 0.08) !important;
+            margin: 0 !important;
+        }
+
+        .tests-pagination a:hover,
+        .tests-pagination .page-link:hover {
+            background: #fff7ed !important;
+            border-color: rgba(249, 115, 22, 0.45) !important;
+            transform: translateY(-1px);
+        }
+
+        .tests-pagination span[aria-current="page"] span,
+        .tests-pagination .active .page-link,
+        .tests-pagination span.bg-blue-50,
+        .tests-pagination span[aria-disabled="true"] {
+            background: linear-gradient(135deg, #f59e0b 0%, #ff6b35 100%) !important;
+            border-color: transparent !important;
+            color: #ffffff !important;
+        }
+
+        .tests-pagination span[aria-disabled="true"] {
+            opacity: 0.45;
+            background: rgba(255, 255, 255, 0.72) !important;
+            color: #9ca3af !important;
+        }
+
+        .tests-pagination ul.pagination {
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .tests-pagination .pagination-card {
+            display: inline-flex;
+            max-width: min(100%, 760px);
+            padding: 12px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.72);
+            backdrop-filter: blur(14px);
+            box-shadow: 0 14px 32px rgba(146, 64, 14, 0.14);
+        }
+
+        @media (max-width: 1100px) {
+            .test-card-content {
+                grid-template-columns: 1fr;
+            }
+
+            .score-panel {
+                grid-template-columns: 1fr auto 1fr;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .test-result-card {
+                padding: 14px;
+            }
+
+            .quiz-info-grid,
+            .score-panel {
+                grid-template-columns: 1fr;
+            }
+
+            .score-left,
+            .score-right {
+                text-align: center;
+            }
+
+            .tests-pagination a,
+            .tests-pagination span,
+            .tests-pagination button,
+            .tests-pagination .page-link {
+                min-width: 34px !important;
+                height: 34px !important;
+                padding: 0 10px !important;
+                font-size: 0.8125rem !important;
+            }
+        }
     </style>
 @endpush
 
@@ -772,13 +1048,10 @@
             <!-- Tests Cards Section -->
             <div class="space-y-4">
                 @forelse($tests as $test)
-                    <div
-                        style="background: rgba(255, 255, 255, 0.95); border-radius: 16px; padding: 24px;
-                        margin-bottom: 20px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); border: 1px solid rgba(255, 255, 255, 0.3);
-                        transition: all 0.3s ease; position: relative; overflow: hidden; border-left: 4px solid #f59e0b;">
-                        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                    <div class="test-result-card">
+                        <div class="test-card-content">
                             <!-- User Info -->
-                            <div class="flex-1">
+                            <div class="test-info-column">
                                 <!-- Enhanced User Info Section -->
                                 <div class="user-info-section">
                                     <div class="flex items-center gap-4">
@@ -936,6 +1209,15 @@
                     </div>
                 @endforelse
             </div>
+
+            <!-- Pagination -->
+            @if(method_exists($tests, 'hasPages') && $tests->hasPages())
+            <div class="tests-pagination mt-8 flex justify-center w-full">
+                <div class="pagination-card">
+                    {{ $tests->links() }}
+                </div>
+            </div>
+            @endif
         </div>
     </div>
 

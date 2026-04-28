@@ -202,7 +202,7 @@ class HomeController extends Controller
             })
             ->orderBy('result', 'desc')
             ->orderBy('time_spent')
-            ->get();
+            ->paginate(10);
 
         return view('home.leaderboard', compact('header', 'quizzes', 'tests', 'quiz_slug'));
     }
@@ -267,7 +267,7 @@ class HomeController extends Controller
             // ->orderBy('result', 'desc')
             // ->orderBy('time_spent')
             ->latest()
-            ->get();
+            ->paginate(20);
         return view('home.tests', [
             'tests' => $tests,
             'quizzes' => $quizzes,
