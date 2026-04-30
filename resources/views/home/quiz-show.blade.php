@@ -65,18 +65,53 @@
         }
 
         /* Responsive design */
-        @media (max-width: 768px) {
-            .w-64 {
-                width: 100%;
-                margin-bottom: 1rem;
-            }
+        .quiz-layout {
+            display: flex;
+            gap: 1.5rem;
+        }
 
-            .flex {
+        .quiz-sidebar {
+            width: 16rem;
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            padding: 1rem;
+            flex-shrink: 0;
+        }
+
+        .quiz-main-content {
+            flex: 1;
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            min-width: 0; /* Prevents overflow in flex child */
+        }
+
+        .quiz-question-grid {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .quiz-layout {
                 flex-direction: column;
             }
 
-            .grid-cols-5 {
+            .quiz-sidebar {
+                width: 100%;
+            }
+
+            .quiz-question-grid {
                 grid-template-columns: repeat(10, minmax(0, 1fr));
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .quiz-question-grid {
+                grid-template-columns: repeat(6, minmax(0, 1fr));
             }
         }
 
@@ -185,13 +220,11 @@
 
         <!-- Main Content -->
         <div style="max-width: 80rem; margin: 0 auto; padding: 1.5rem;">
-            <div style="display: flex; gap: 1.5rem;">
+            <div class="quiz-layout">
                 <!-- Left Sidebar - Question Navigation -->
-                <div
-                    style="width: 16rem; background-color: white; border-radius: 0.5rem; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1); padding: 1rem;">
+                <div class="quiz-sidebar">
                     <h3 style="font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 1rem;">Questions</h3>
-                    <div
-                        style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0.5rem; margin-bottom: 1rem;">
+                    <div class="quiz-question-grid">
                         @for ($i = 0; $i < $questionsCount; $i++)
                             @php
                                 $isAnswered =
@@ -235,8 +268,7 @@
                 </div>
 
                 <!-- Main Quiz Content -->
-                <div
-                    style="flex: 1; background-color: white; border-radius: 0.5rem; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1); padding: 1.5rem;">
+                <div class="quiz-main-content">
                     <div style="width: 100%;">
 
                         @if (!$quiz->public && !auth()->check())

@@ -101,6 +101,7 @@ Route::group(['middleware' => ['auth', 'affiliate.redirect']], function () {
     Route::get('admins/create', AdminForm::class)->name('admin.create');
 
     // Route::get('tests', TestList::class)->name('tests');
+    Route::get('tests/{quiz_slug?}', [eLeanController::class, 'tests'])->name('tests');
     //#################################################################
     Route::get('questions', [QuestionController::class, 'index'])->name('questions');
     Route::get('questions/create', [QuestionController::class, 'create'])->name('questions.create');
@@ -250,7 +251,6 @@ Route::group(['middleware' => ['auth.userOrStudent', 'affiliate.redirect']], fun
     Route::get('myresults', [eLeanController::class, 'myResult'])->name('myresults');
     Route::get('leaderboard/{quiz_slug?}', [eLeanController::class, 'leaderboard'])->name('leaderboard');
     Route::post('submit-leaderboard', [eLeanController::class, 'submitLeaderboard'])->name('submit.leaderboard');
-    Route::get('tests/{quiz_slug?}', [eLeanController::class, 'tests'])->name('tests');
     Route::post('check-answer', [eLeanController::class, 'checkAnswer'])->name('check.answer');
 });
 
@@ -334,4 +334,3 @@ Route::group(['middleware' => ['guest.quiz']], function () {
     Route::get('/free-quiz/result/{guestTest}', [GuestQuizController::class, 'result'])->name('guest.quiz.result');
     Route::post('/free-quiz/logout', [GuestQuizController::class, 'logout'])->name('guest.quiz.logout');
 });
-

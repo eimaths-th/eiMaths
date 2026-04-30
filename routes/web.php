@@ -45,6 +45,11 @@ Route::group(['middleware' => ['auth']], function () {
     Route::resource('permission', PermissionsController::class);
 
     Route::get('/contacts', [App\Http\Controllers\ContactController::class, 'index'])->name('contacts');
+
+    // Guest Report routes
+    Route::get('/guest-report', [App\Http\Controllers\GuestReportController::class, 'index'])->name('guest.report');
+    Route::post('/guest-report/destroy', [App\Http\Controllers\GuestReportController::class, 'destroy'])->name('guest.report.destroy');
+
     Route::get('/graduated', [App\Http\Controllers\ContactController::class, 'graduated'])->name('contacts.graduated');
     Route::get('/contacts/running/{centre}', [App\Http\Controllers\ContactController::class, 'create'])->name('contacts.running');
     Route::post('/contacts/store', [App\Http\Controllers\ContactController::class, 'store'])->name('contacts.store');

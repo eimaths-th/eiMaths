@@ -9,9 +9,9 @@
 @endcan
 {{--  --}}
 @can('student-list')
-    <li class="nav-item {{ in_array(Request::route()->getName(), ['contacts', 'demo.list', 'discontinued', 'contacts.graduated', 'histories.index', 'parent.index', 'ei_form.backEndIndex']) ? 'menu-open' : '' }}">
+    <li class="nav-item {{ in_array(Request::route()->getName(), ['contacts', 'guest.report', 'demo.list', 'discontinued', 'contacts.graduated', 'histories.index', 'parent.index', 'ei_form.backEndIndex']) ? 'menu-open' : '' }}">
         <a href="#"
-            class="nav-link {{ in_array(Request::route()->getName(), ['contacts', 'demo.list', 'discontinued', 'contacts.graduated', 'histories.index', 'parent.index', 'ei_form.backEndIndex']) ? 'active' : '' }}">
+            class="nav-link {{ in_array(Request::route()->getName(), ['contacts', 'guest.report', 'demo.list', 'discontinued', 'contacts.graduated', 'histories.index', 'parent.index', 'ei_form.backEndIndex']) ? 'active' : '' }}">
             <i class="nav-icon fas fa-graduation-cap"></i>
             <p>Students Management</p>
             <i class="fas fa-angle-left right"></i>
@@ -21,6 +21,12 @@
                 <a href="{{ route('contacts') }}" class="nav-link {{ Route::currentRouteName() == 'contacts' ? 'active' : '' }}">
                     <i class="nav-icon fa-solid fa-comment-dots"></i>
                     <p>Students List</p>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{{ route('guest.report') }}" class="nav-link {{ Route::currentRouteName() == 'guest.report' ? 'active' : '' }}">
+                    <i class="nav-icon fa-solid fa-comment-dots"></i>
+                    <p>Guest Quizzers Report</p>
                 </a>
             </li>
             <li class="nav-item">
