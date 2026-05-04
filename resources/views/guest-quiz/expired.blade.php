@@ -5,7 +5,7 @@
 	'appContentClass' => 'p-0'
 ])
 
-@section('title', 'หมดอายุการใช้งาน')
+@section('title', 'Subscription Expired')
 
 
 
@@ -18,20 +18,20 @@
                 <i data-lucide="clock" style="color: white;" width="40" height="40"></i>
             </div>
 
-            <h1 style="font-size: 28px; font-weight: 800; color: #1e293b; margin: 0 0 12px 0;">หมดอายุการใช้งาน</h1>
+            <h1 style="font-size: 28px; font-weight: 800; color: #1e293b; margin: 0 0 12px 0;">Subscription Expired</h1>
             <p style="font-size: 16px; color: #64748b; margin: 0 0 32px 0; line-height: 1.6;">
-                สิทธิ์ทดสอบฟรี 7 วันของคุณหมดอายุแล้ว<br>
-                ข้อมูลผลสอบถูกลบเรียบร้อยแล้ว
+                Your 7-day free trial has expired.<br>
+                All test data has been deleted.
             </p>
 
             <!-- Contact Info -->
             <div style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-radius: 16px; padding: 24px; margin-bottom: 32px; border: 1px solid rgba(245,158,11,0.3);">
                 <h3 style="font-size: 16px; font-weight: 700; color: #92400e; margin: 0 0 12px 0;">
-                    <i data-lucide="phone"></i> ติดต่อทีมงาน eiMaths
+                    <i data-lucide="phone"></i> Contact eiMaths Team
                 </h3>
                 <p style="font-size: 14px; color: #92400e; margin: 0; line-height: 1.8;">
-                    สนใจสมัครเรียนเพื่อเข้าถึงแบบทดสอบทั้งหมด<br>
-                    พร้อมเฉลยอย่างละเอียด
+                    Interested in enrolling for full access to all quizzes<br>
+                    with detailed answer explanations?
                 </p>
                 <!-- <button style="background-color: #f97316; color: white; padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer;" onclick="window.location.href='https://eimaths-th.com/contact'">
                     <i data-lucide="message-circle"></i> ติดต่อสมัครเรียน
@@ -53,7 +53,7 @@
             </div>
 
             <a href="{{ route('student.login') }}" style="display: inline-block; background: linear-gradient(135deg, #f97316 0%, #fb923c 100%); color: white; padding: 14px 40px; border-radius: 12px; text-decoration: none; font-weight: 600; font-size: 16px;">
-                กลับหน้าเข้าสู่ระบบ
+                Back to Login
             </a>
         </div>
     </div>
