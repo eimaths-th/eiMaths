@@ -177,19 +177,19 @@ class ParentController extends Controller
 
         $request->validate([
             'student_id' => 'required|array',
-            // 'student_id.*' => 'exists:contacts,id',
             'centre_id' => 'required',
             'fname' => 'required',
             'lname' => 'required',
-            //'telp' => 'required|unique:parents|max:10|min:10',
-            'telp' => 'required|max:10|min:10',
-            'email' => 'required|email|unique:parents',
+            'telp' => 'required|unique:parents,telp|max:10|min:10',
+            'email' => 'required|email|unique:parents,email',
             'password' => 'required|min:6|confirmed',
             'address' => 'required',
             'relationship' => 'required',
             'gender' => 'required',
-            //'emergency_contact' => 'required|unique:parents|max:10|min:10',
             'emergency_contact' => 'required|max:10|min:10',
+        ], [
+            'telp.unique' => 'เบอร์โทรศัพท์นี้ถูกใช้งานในระบบไปแล้ว กรุณาใช้เบอร์อื่น',
+            'email.unique' => 'อีเมลนี้ถูกใช้งานในระบบไปแล้ว กรุณาใช้อีเมลอื่น'
         ]);
         $hashedPassword = bcrypt($request->input('password'));
         $stds = $request->input('student_id');
@@ -270,38 +270,37 @@ class ParentController extends Controller
         if ($request->password) {
             # code...
             $request->validate([
-                // Uncomment rules as needed
                 'student_id' => 'required|array',
-                // 'student_id.*' => 'exists:contacts,id',
-                'centre_id' => 'required',
-                'fname' => 'required',
-                'lname' => 'required',
-                //'telp' => 'required|unique:parents,telp,' . $id . '|max:10|min:10',
-                'telp' => 'required|max:10|min:10',
-                'email' => 'required|email|unique:parents,email,' . $id,
-                'password' => 'required|min:6|confirmed',
-                'address' => 'required',
-                'relationship' => 'required',
-                'gender' => 'required',
-                //'emergency_contact' => 'required|unique:parents,emergency_contact,' . $id . '|max:10|min:10',
-                'emergency_contact' => 'required|max:10|min:10',
-            ]);
-        } else {
-            # code...
-            $request->validate([
-                // Uncomment rules as needed
-                'student_id' => 'required|array',
-                // 'student_id.*' => 'exists:contacts,id',
                 'centre_id' => 'required',
                 'fname' => 'required',
                 'lname' => 'required',
                 'telp' => 'required|unique:parents,telp,' . $id . '|max:10|min:10',
                 'email' => 'required|email|unique:parents,email,' . $id,
-                // 'password' => 'required|min:6|confirmed',
+                'password' => 'required|min:6|confirmed',
                 'address' => 'required',
                 'relationship' => 'required',
                 'gender' => 'required',
-                'emergency_contact' => 'required|unique:parents,emergency_contact,' . $id . '|max:10|min:10',
+                'emergency_contact' => 'required|max:10|min:10',
+            ], [
+                'telp.unique' => 'เบอร์โทรศัพท์นี้ถูกใช้งานในระบบไปแล้ว กรุณาใช้เบอร์อื่น',
+                'email.unique' => 'อีเมลนี้ถูกใช้งานในระบบไปแล้ว กรุณาใช้อีเมลอื่น'
+            ]);
+        } else {
+            # code...
+            $request->validate([
+                'student_id' => 'required|array',
+                'centre_id' => 'required',
+                'fname' => 'required',
+                'lname' => 'required',
+                'telp' => 'required|unique:parents,telp,' . $id . '|max:10|min:10',
+                'email' => 'required|email|unique:parents,email,' . $id,
+                'address' => 'required',
+                'relationship' => 'required',
+                'gender' => 'required',
+                'emergency_contact' => 'required|max:10|min:10',
+            ], [
+                'telp.unique' => 'เบอร์โทรศัพท์นี้ถูกใช้งานในระบบไปแล้ว กรุณาใช้เบอร์อื่น',
+                'email.unique' => 'อีเมลนี้ถูกใช้งานในระบบไปแล้ว กรุณาใช้อีเมลอื่น'
             ]);
         }
 
