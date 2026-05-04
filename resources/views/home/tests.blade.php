@@ -1051,7 +1051,7 @@
                 <label for="per_page" style="margin: 0;">Show</label>
                 <select id="per_page" name="per_page"
                     style="width: 58px; min-width: 58px; height: 38px; background: #ffffff; color: #374151; border: 1px solid #d1d5db; border-radius: 4px; padding: 6px 8px; font-size: 13px; outline: none;"
-                    onchange="const url = new URL(window.location.href); url.searchParams.set('per_page', this.value); url.searchParams.delete('page'); window.location.href = url.toString();">
+                    onchange="const params = new URLSearchParams(window.location.search); params.set('per_page', this.value); params.delete('page'); window.location.href = window.location.pathname + '?' + params.toString();">
                     @foreach (($perPageOptions ?? [10, 20, 50, 100]) as $option)
                         <option value="{{ $option }}" {{ (int) ($perPage ?? 20) === $option ? 'selected' : '' }}>
                             {{ $option }}
