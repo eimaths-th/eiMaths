@@ -255,6 +255,12 @@ class eLeanController extends Controller
         $quizzes = Quiz::all();
         $header = 'Tests';
         $quizId = 0;
+        $perPageOptions = [10, 20, 50, 100];
+        $perPage = (int) $request->input('per_page', 20);
+
+        if (!in_array($perPage, $perPageOptions, true)) {
+            $perPage = 20;
+        }
 
         if ($quiz_slug != '0') {
             $quiz = Quiz::where('slug', $quiz_slug)->first();
@@ -277,12 +283,15 @@ class eLeanController extends Controller
             // ->orderBy('result', 'desc')
             // ->orderBy('time_spent')
             ->latest()
-            ->paginate(20);
+            ->paginate($perPage)
+            ->withQueryString();
         return view('home.tests', [
             'tests' => $tests,
             'quizzes' => $quizzes,
             'quiz_slug' => $quiz_slug,
             'header' => $header,
+            'perPage' => $perPage,
+            'perPageOptions' => $perPageOptions,
 
         ]);
     }

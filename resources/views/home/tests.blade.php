@@ -1046,6 +1046,19 @@
                 </form>
             </div>
             <!-- Tests Cards Section -->
+            <div id="blogs-table_length"
+                style="display: flex; align-items: center; justify-content: flex-start; gap: 8px; margin-bottom: 16px; color: #ffffff; font-size: 14px; font-weight: 500;">
+                <label for="per_page" style="margin: 0;">Show</label>
+                <select id="per_page" name="per_page"
+                    style="width: 58px; min-width: 58px; height: 38px; background: #ffffff; color: #374151; border: 1px solid #d1d5db; border-radius: 4px; padding: 6px 8px; font-size: 13px; outline: none;"
+                    onchange="const url = new URL(window.location.href); url.searchParams.set('per_page', this.value); url.searchParams.delete('page'); window.location.href = url.toString();">
+                    @foreach (($perPageOptions ?? [10, 20, 50, 100]) as $option)
+                        <option value="{{ $option }}" {{ (int) ($perPage ?? 20) === $option ? 'selected' : '' }}>
+                            {{ $option }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
             <div class="space-y-4">
                 @forelse($tests as $test)
                     <div class="test-result-card">
