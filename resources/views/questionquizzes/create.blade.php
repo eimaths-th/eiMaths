@@ -194,8 +194,6 @@
                                                 </div>
                                             </div>
                                         </div>
-
-
                                         <div class="mt-4 form-check">
                                             <div class="flex items-center">
                                                 <label for="public" class="form-label">Public</label>
@@ -204,6 +202,17 @@
                                                     {{ old('public', $quiz->public ?? false) ? 'checked' : '' }}>
                                             </div>
                                             @error('public')
+                                                <span class="text-red-600 text-sm mt-2">{{ $message }}</span>
+                                            @enderror
+                                        </div>
+                                        <div class="mt-2 form-check">
+                                            <div class="flex items-center">
+                                                <label for="is_free" class="form-label">Free <small class="text-muted">(ข้อสอบฟรีสำหรับบุคคลทั่วไป)</small></label>
+                                                <input type="checkbox" id="is_free" class="form-check-input ml-2"
+                                                    name="is_free"
+                                                    {{ old('is_free', $quiz->is_free ?? false) ? 'checked' : '' }}>
+                                            </div>
+                                            @error('is_free')
                                                 <span class="text-red-600 text-sm mt-2">{{ $message }}</span>
                                             @enderror
                                         </div>

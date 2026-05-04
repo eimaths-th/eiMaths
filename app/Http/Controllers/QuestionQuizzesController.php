@@ -517,6 +517,7 @@ class QuestionQuizzesController extends Controller
                     'description' => $request['description'],
                     'published' => 0,
                     'public' => $request['public'] ?? 0,
+                    'is_free' => $request['is_free'] ?? 0,
                     'created_by' => Auth::user()->id,
                 ]);
             } else {

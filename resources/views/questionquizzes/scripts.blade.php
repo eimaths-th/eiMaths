@@ -986,6 +986,7 @@
                 quizData.append('term', termQuiz);
                 quizData.append('section', sectionQuiz);
                 quizData.append('public', $('#public').is(':checked') ? 1 : 0);
+                quizData.append('is_free', $('#is_free').is(':checked') ? 1 : 0);
 
                 // Add question data to quizData
                 $('.question-form .question-form-index').each(function(index, element) {
