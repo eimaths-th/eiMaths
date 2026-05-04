@@ -79,10 +79,10 @@
 
 @media (max-width: 850px) {
     .brand-title {
-        top: 6%;
+        top: 4%;
     }
     .brand-title h1 {
-        font-size: 3.5rem;
+        font-size: 3rem;
         letter-spacing: -1px;
     }
     .brand-title h2 {
@@ -466,13 +466,23 @@ select.custom-input {
 @media (max-width: 850px) {
     .choice-cards-wrapper {
         flex-direction: column;
-        gap: 20px;
+        gap: 15px;
+        padding-top: 120px;
     }
     .choice-card {
         width: 90%;
         max-width: 380px;
-        padding: 30px;
+        padding: 25px 20px;
         height: auto;
+    }
+    .choice-card .icon-wrapper {
+        width: 70px;
+        height: 70px;
+        margin-bottom: 15px;
+    }
+    .choice-card h3 {
+        font-size: 24px !important;
+        margin-bottom: 10px !important;
     }
     .form-panel {
         width: 100%;
