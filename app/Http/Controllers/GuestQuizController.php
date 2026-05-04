@@ -67,7 +67,7 @@ class GuestQuizController extends Controller
             'email' => $request->email,
             'phone' => $request->phone,
             'password' => Hash::make($request->phone),
-            'expires_at' => now()->addDays(7),
+            'expires_at' => now()->addDays(10),
         ]);
 
         // Auto login
