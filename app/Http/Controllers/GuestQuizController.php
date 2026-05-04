@@ -384,44 +384,67 @@ class GuestQuizController extends Controller
 
         $guest = Auth::guard('guest_quiz')->user();
 
-        // สร้าง GuestTest record
+        // Get all questions in quiz
+        $allQuestions = $quiz->questions()->get();
+
+        // Create GuestTest record
         $guestTest = GuestTest::create([
             'guest_quizzer_id' => $guest->id,
             'quiz_id' => $quiz->id,
             'result' => 0,
-            'total_questions' => $quiz->questions()->count(),
+            'total_questions' => $allQuestions->count(),
             'time_spent' => $timeSpent,
             'ip_address' => $request->ip(),
         ]);
 
-        // ตรวจคำตอบ + บันทึก
-        foreach ($answersOfQuestions as $answerData) {
-            if (!is_array($answerData)) continue;
+        // Build a lookup of answered questions by question_id
+        $answeredByQuestionId = [];
+        foreach ($answersOfQuestions as $key => $answerData) {
+            if (!is_array($answerData) || !isset($answerData['question_id'])) continue;
+            $answeredByQuestionId[(int) $answerData['question_id']] = $answerData;
+        }
 
-            $questionId = (int) $answerData['question_id'];
-            $question = Question::find($questionId);
-            $type = $answerData['type'];
+        // Loop through ALL questions and create answers
+        foreach ($allQuestions as $question) {
+            $answerData = $answeredByQuestionId[$question->id] ?? null;
 
-            if ($type === 'fraction') {
-                $correct = $this->checkAnswerFactions($question, $answerData);
-                $textAnswerFactions = $this->textAnswerFactions($question, $answerData);
+            if ($answerData) {
+                // Answered question — check if correct
+                $type = $answerData['type'];
+                $textAnswerFactions = null;
+
+                if ($type === 'fraction') {
+                    $correct = $this->checkAnswerFactions($question, $answerData);
+                    $textAnswerFactions = $this->textAnswerFactions($question, $answerData);
+                } else {
+                    $correct = $this->checkAnswer($question, $answerData);
+                }
+
+                if ($correct) {
+                    $result++;
+                }
+
+                GuestAnswer::create([
+                    'guest_test_id' => $guestTest->id,
+                    'question_id' => $question->id,
+                    'option_id' => $answerData['type'] === 'options' ? $answerData['answer'] : null,
+                    'image_id' => $answerData['type'] === 'image' ? $answerData['answer'] : null,
+                    'written_answer' => $answerData['type'] === 'written' ? $answerData['answer'] : null,
+                    'fraction' => $answerData['type'] === 'fraction' ? ($textAnswerFactions ?? null) : null,
+                    'correct' => $correct ? 1 : 0,
+                ]);
             } else {
-                $correct = $this->checkAnswer($question, $answerData);
+                // Unanswered question — mark as incorrect
+                GuestAnswer::create([
+                    'guest_test_id' => $guestTest->id,
+                    'question_id' => $question->id,
+                    'option_id' => null,
+                    'image_id' => null,
+                    'written_answer' => null,
+                    'fraction' => null,
+                    'correct' => 0,
+                ]);
             }
-
-            if ($correct) {
-                $result++;
-            }
-
-            GuestAnswer::create([
-                'guest_test_id' => $guestTest->id,
-                'question_id' => $question->id,
-                'option_id' => $answerData['type'] === 'options' ? $answerData['answer'] : null,
-                'image_id' => $answerData['type'] === 'image' ? $answerData['answer'] : null,
-                'written_answer' => $answerData['type'] === 'written' ? $answerData['answer'] : null,
-                'fraction' => $answerData['type'] === 'fraction' ? ($textAnswerFactions ?? null) : null,
-                'correct' => $correct ? 1 : 0,
-            ]);
         }
 
         // Update result
