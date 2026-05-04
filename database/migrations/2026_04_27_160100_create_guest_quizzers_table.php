@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('email')->unique();         // ใช้ login
             $table->string('phone');                   // เบอร์โทร (ใช้เป็น password)
             $table->string('password');                // hashed phone
-            $table->timestamp('expires_at');           // created_at + 7 days
+            $table->dateTime('expires_at');           // created_at + 7 days
             $table->timestamps();
         });
     }
