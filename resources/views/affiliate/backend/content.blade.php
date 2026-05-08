@@ -1,65 +1,177 @@
 @extends('affiliate.backend.my_affiliate-layout')
 
+@section('style')
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+<style>
+    /* ช่อง Textarea รองรับ Dark/Light Mode */
+    .primary_textarea {
+        width: 100%;
+        border: 1px solid var(--backend-border-color);
+        background: var(--white-box-bg);
+        color: var(--dynamic-text-color);
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-size: 14px;
+        resize: vertical;
+    }
+    .primary_textarea:focus {
+        outline: none;
+        border-color: var(--backend-primary-color);
+    }
+    .primary_textarea::placeholder {
+        color: var(--muted-text);
+    }
+
+    /* การ์ดสื่อการตลาด */
+    .marketing-card {
+        transition: all 0.25s ease;
+        cursor: pointer;
+        border: 2px solid transparent !important;
+        border-radius: 10px !important;
+        overflow: hidden;
+        background: var(--white-box-bg);
+    }
+    .marketing-card:hover {
+        border-color: var(--backend-primary-color) !important;
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+    .marketing-card.selected {
+        border-color: var(--backend-primary-color) !important;
+        box-shadow: 0 0 0 3px rgba(85, 110, 230, 0.25);
+    }
+
+    /* Preview Area */
+    .preview-area {
+        background: var(--white-box-bg);
+        border-color: var(--backend-border-color) !important;
+        border-radius: 8px;
+    }
+
+    /* ปุ่มแชร์ Social */
+    .social-btn-group .btn {
+        min-width: 110px;
+        font-size: 13px;
+    }
+
+    /* Gap Utilities */
+    .gap-2 { gap: 0.5rem; }
+    .gap-1 { gap: 0.25rem; }
+
+    /* Referral Link Input */
+    .referral-link-box {
+        background: var(--header-search-bg);
+        border: 1px solid var(--backend-border-color);
+        border-radius: 5px;
+        padding: 10px 15px;
+        font-family: monospace;
+        font-size: 13px;
+        color: var(--dynamic-text-color);
+        width: 100%;
+        cursor: text;
+    }
+
+    /* ข้อความในตัวอย่าง */
+    #text_preview {
+        color: var(--dynamic-text-color);
+    }
+    #link_preview {
+        color: var(--backend-primary-color);
+        word-break: break-all;
+        font-size: 12px;
+    }
+</style>
+@endsection
+
 @section('content')
-<!-- Path Route -->
+{{-- ส่วนหัวหน้า (Breadcrumb) --}}
 <section class="sms-breadcrumb mb-10 white-box">
     <div class="container-fluid p-0">
-        <div class="d-flex flex-wrap justify-content-between">
-            <h1 class="text-uppercase">Marketing Materials (สื่อการตลาด)</h1>
+        <div class="d-flex flex-wrap justify-content-between align-items-center">
+            <h1>สื่อการตลาด (Marketing Materials)</h1>
         </div>
     </div>
 </section>
-<!-- End Path Route -->
 
 <section class="admin-visitor-area up_st_admin_visitor">
     <div class="container-fluid p-0">
-        <!-- Content Composer Section -->
+
+        {{-- ส่วนที่ 1: Content Composer --}}
         <div class="row">
             <div class="col-lg-12">
                 <div class="white_box mb_30">
                     <div class="box_header common_table_header">
-                        <div class="main-title d-md-flex">
-                            <h3 class="mb-0 mr-30 mb_xs_15px mb_sm_20px">สร้างคอนเทนต์ของคุณเอง (Content Composer)</h3>
+                        <div class="main-title">
+                            <h3 class="mb-0">สร้างคอนเทนต์ของคุณเอง</h3>
                         </div>
                     </div>
-                    
+
                     <div class="row">
-                        <div class="col-lg-8">
-                            <div class="primary_input mb-25">
+                        {{-- คอลัมน์ซ้าย: แบบฟอร์ม --}}
+                        <div class="col-lg-7">
+                            <div class="primary_input mb-15">
                                 <label class="primary_input_label" for="custom_caption">เขียนข้อความเชิญชวน (Caption)</label>
-                                <textarea class="primary_textarea" name="custom_caption" id="custom_caption" placeholder="เช่น 'เรียนคณิตศาสตร์กับ eiMaths วันนี้รับสิทธิพิเศษมากมาย!'" rows="4"></textarea>
+                                <textarea class="primary_textarea" id="custom_caption" rows="4"
+                                    placeholder="เช่น 'สนใจเรียนคณิตศาสตร์ eiMaths ลดพิเศษ! สมัครเลย 👇'"></textarea>
                             </div>
-                            
-                            <div class="primary_input mb-25">
-                                <label class="primary_input_label">ลิงก์แนะนำของคุณ (Your Referral Link)</label>
-                                <input class="primary_input_field" type="text" id="referral_url_display" value="{{ $referral_link }}" readonly>
+
+                            <div class="primary_input mb-15">
+                                <label class="primary_input_label">ลิงก์แนะนำของคุณ (Referral Link)</label>
+                                <input class="referral-link-box" type="text" id="referral_url_display"
+                                       value="{{ $referral_link }}" readonly onclick="this.select()">
                             </div>
-                            
-                            <div class="d-flex flex-wrap gap-2">
-                                <button class="btn btn-primary" id="generate_and_copy">
-                                    <i class="ti-files"></i> คัดลอกข้อความและลิงก์
+
+                            {{-- ปุ่มดำเนินการ --}}
+                            <div class="d-flex flex-wrap gap-2 social-btn-group mb-15">
+                                <button class="btn btn-primary" id="btn_copy_all" type="button">
+                                    <i class="ti-files"></i> คัดลอกทั้งหมด
                                 </button>
-                                <button class="btn btn-outline-success" id="share_fb">
+                                <button class="btn btn-primary" id="btn_copy_link" type="button" style="background:#34a853; border-color:#34a853;">
+                                    <i class="ti-link"></i> คัดลอกลิงก์
+                                </button>
+                            </div>
+
+                            <hr style="border-color: var(--backend-border-color);">
+
+                            <label class="primary_input_label mb-10">แชร์ไปยัง Social Media</label>
+                            <div class="d-flex flex-wrap gap-2 social-btn-group">
+                                <button class="btn btn-sm" id="share_fb" type="button"
+                                    style="background:#1877F2; color:#fff;">
                                     <i class="fab fa-facebook-f"></i> Facebook
                                 </button>
-                                <button class="btn btn-outline-danger" id="share_ig">
+                                <button class="btn btn-sm" id="share_line" type="button"
+                                    style="background:#06C755; color:#fff;">
+                                    <i class="fab fa-line"></i> LINE
+                                </button>
+                                <button class="btn btn-sm" id="share_ig" type="button"
+                                    style="background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888); color:#fff;">
                                     <i class="fab fa-instagram"></i> Instagram
                                 </button>
-                                <button class="btn btn-dark" id="share_tt">
+                                <button class="btn btn-sm" id="share_tt" type="button"
+                                    style="background:#010101; color:#fff;">
                                     <i class="fab fa-tiktok"></i> TikTok
+                                </button>
+                                <button class="btn btn-sm" id="share_twitter" type="button"
+                                    style="background:#1DA1F2; color:#fff;">
+                                    <i class="fab fa-twitter"></i> Twitter
                                 </button>
                             </div>
                         </div>
-                        
-                        <div class="col-lg-4">
-                            <div class="preview-area p-3 border rounded" style="background: var(--white-box-bg); min-height: 200px;">
-                                <label class="small text-muted d-block mb-2">ตัวอย่าง (Preview)</label>
+
+                        {{-- คอลัมน์ขวา: Live Preview --}}
+                        <div class="col-lg-5 mt-3 mt-lg-0">
+                            <div class="preview-area p-3 border rounded" style="min-height: 280px;">
+                                <label class="small d-block mb-2" style="color:var(--muted-text);">
+                                    <i class="ti-eye"></i> ตัวอย่างก่อนแชร์ (Live Preview)
+                                </label>
                                 <div id="media_preview" class="mb-2">
-                                    <div class="text-center p-4 text-muted border border-dashed rounded">
-                                        ยังไม่ได้เลือกรูปภาพ/วิดีโอ
+                                    <div class="text-center p-4 border rounded" style="border-style:dashed !important; color:var(--muted-text);">
+                                        <i class="ti-image" style="font-size:32px;"></i>
+                                        <p class="mt-2 mb-0">เลือกรูปภาพ/วิดีโอจากด้านล่าง</p>
                                     </div>
                                 </div>
-                                <div id="text_preview" class="small text-dark" style="white-space: pre-wrap;"></div>
+                                <div id="text_preview" class="small mt-2" style="white-space:pre-wrap; line-height:1.6;"></div>
+                                <div id="link_preview" class="mt-1"></div>
                             </div>
                         </div>
                     </div>
@@ -67,153 +179,206 @@
             </div>
         </div>
 
-        <!-- System Materials Section -->
-        <div class="row mt-4">
+        {{-- ส่วนที่ 2: สื่อจากระบบ --}}
+        <div class="row">
             <div class="col-lg-12">
                 <div class="white_box mb_30">
                     <div class="box_header common_table_header">
-                        <div class="main-title d-md-flex">
-                            <h3 class="mb-0 mr-30 mb_xs_15px mb_sm_20px">เลือกสื่อจากระบบ (System Materials)</h3>
+                        <div class="main-title">
+                            <h3 class="mb-0">เลือกสื่อจากระบบ (System Materials)</h3>
                         </div>
                     </div>
-                    
+
                     <div class="row">
                         @forelse($contents as $content)
                             <div class="col-xl-3 col-lg-4 col-md-6 mb-4">
-                                <div class="card marketing-card h-100 shadow-sm border-0" style="border-radius: 10px; overflow: hidden; border: 1px solid #eee !important;">
+                                <div class="card marketing-card h-100 shadow-sm">
+                                    {{-- Preview รูป/วิดีโอ --}}
                                     <div class="media-container position-relative">
                                         @if($content->type == 'video')
-                                            <video width="100%" height="180" style="background: #000; object-fit: contain;">
+                                            <video width="100%" height="160" style="background:#000; object-fit:contain;">
                                                 <source src="{{ asset($content->file_path) }}" type="video/mp4">
                                             </video>
                                         @else
-                                            <img src="{{ asset($content->file_path) }}" alt="{{ $content->title }}" class="card-img-top" style="height: 180px; object-fit: cover;">
+                                            <img src="{{ asset($content->file_path) }}" alt="{{ $content->title }}"
+                                                 class="card-img-top" style="height:160px; object-fit:cover;">
                                         @endif
-                                        
-                                        <div class="position-absolute top-0 right-0 p-2">
-                                            <span class="badge {{ $content->type == 'video' ? 'bg-danger' : 'bg-primary' }} text-white">
-                                                {{ ucfirst($content->type) }}
+                                        <div class="position-absolute" style="top:8px; right:8px;">
+                                            <span class="badge {{ $content->type == 'video' ? 'bg-danger' : 'bg-info' }} text-white">
+                                                {{ $content->type == 'video' ? '🎬 Video' : '🖼 Image' }}
                                             </span>
                                         </div>
                                     </div>
-                                    
+
+                                    {{-- ข้อมูลการ์ด --}}
                                     <div class="card-body p-3">
-                                        <h6 class="font-weight-bold mb-1">{{ $content->title }}</h6>
+                                        <h6 class="font-weight-bold mb-2" style="color:var(--dynamic-text-color);">
+                                            {{ $content->title }}
+                                        </h6>
+                                        @if($content->description)
+                                            <p class="small mb-2" style="color:var(--muted-text); line-height:1.4;">
+                                                {{ Str::limit($content->description, 60) }}
+                                            </p>
+                                        @endif
                                         <div class="d-flex flex-column gap-1">
-                                            <button class="btn btn-sm btn-outline-primary select-media" 
-                                                    data-src="{{ asset($content->file_path) }}" 
+                                            <button class="btn btn-sm btn-outline-primary select-media"
+                                                    data-src="{{ asset($content->file_path) }}"
                                                     data-type="{{ $content->type }}"
-                                                    data-caption="{{ $content->description }}">
-                                                <i class="ti-check-box"></i> เลือกรูปนี้
+                                                    data-caption="{{ $content->description }}" type="button">
+                                                <i class="ti-check-box"></i> เลือกใช้สื่อนี้
                                             </button>
-                                            <a href="{{ asset($content->file_path) }}" download class="btn btn-sm btn-link text-muted">โหลดไฟล์ต้นฉบับ</a>
+                                            <a href="{{ asset($content->file_path) }}" download
+                                               class="btn btn-sm btn-link" style="color:var(--muted-text);">
+                                                <i class="ti-download"></i> ดาวน์โหลด
+                                            </a>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         @empty
                             <div class="col-12 text-center p-5">
-                                <img src="{{ asset('backend/img/no_data.png') }}" style="max-width: 150px; opacity: 0.5;" class="mb-3">
-                                <p class="text-muted">ยังไม่มีสื่อสำเร็จรูปในระบบ แต่คุณสามารถเขียนข้อความแชร์ลิงก์ได้จากส่วนด้านบน</p>
+                                <i class="ti-gallery" style="font-size:48px; color:var(--muted-text);"></i>
+                                <p class="mt-3" style="color:var(--muted-text);">
+                                    ยังไม่มีสื่อในระบบ คุณสามารถพิมพ์ข้อความ + ลิงก์แนะนำ แล้วแชร์ได้จากส่วนด้านบนเลย
+                                </p>
                             </div>
                         @endforelse
                     </div>
                 </div>
             </div>
         </div>
+
     </div>
 </section>
-
-<style>
-    .gap-2 { gap: 0.5rem; }
-    .gap-1 { gap: 0.25rem; }
-    .marketing-card { transition: all 0.2s; cursor: pointer; }
-    .marketing-card:hover { border-color: var(--system_primery_color) !important; transform: translateY(-3px); }
-    .card.selected { border: 2px solid var(--system_primery_color) !important; }
-    .primary_textarea {
-        width: 100%;
-        border: 1px solid #eceef4;
-        padding: 10px 20px;
-        border-radius: 5px;
-        font-size: 14px;
-        color: #415094;
-    }
-    .primary_textarea:focus { outline: none; border-color: var(--system_primery_color); }
-</style>
+@endsection
 
 @section('script')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 <script>
 $(document).ready(function() {
-    let selectedMedia = null;
-    let selectedType = null;
-    const refUrl = $('#referral_url_display').val();
+    // ค่าเริ่มต้น
+    var selected_media = null;
+    var ref_url = $('#referral_url_display').val();
 
-    // Sync Text Preview
-    $('#custom_caption').on('input', function() {
-        $('#text_preview').text($(this).val());
-    });
+    // กำหนดค่า toastr
+    toastr.options = {
+        closeButton: true,
+        positionClass: 'toast-top-right',
+        timeOut: 2500
+    };
 
-    // Select Media
-    $('.select-media').click(function() {
-        const src = $(this).data('src');
-        const type = $(this).data('type');
-        const caption = $(this).data('caption');
-        
-        selectedMedia = src;
-        selectedType = type;
-        
-        // Update Preview
-        if (type === 'video') {
-            $('#media_preview').html(`<video width="100%" controls class="rounded"><source src="${src}" type="video/mp4"></video>`);
+    // ฟังก์ชันคัดลอกข้อความ (รองรับทั้ง HTTPS และ HTTP)
+    function CopyToClipboard(text, success_msg) {
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(text).then(function() {
+                toastr.success(success_msg || 'คัดลอกแล้ว!');
+            });
         } else {
-            $('#media_preview').html(`<img src="${src}" class="img-fluid rounded" style="max-height: 200px; width: 100%; object-fit: cover;">`);
+            // Fallback สำหรับ HTTP
+            var textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                toastr.success(success_msg || 'คัดลอกแล้ว!');
+            } catch (err) {
+                toastr.error('ไม่สามารถคัดลอกได้ กรุณาคัดลอกด้วยตนเอง');
+            }
+            document.body.removeChild(textarea);
+        }
+    }
+
+    // สร้างข้อความเต็ม (Caption + Link)
+    function BuildFullText() {
+        var caption = $('#custom_caption').val().trim();
+        return (caption ? caption + '\n\n' : '') + ref_url;
+    }
+
+    // ===== Live Preview =====
+    function UpdatePreview() {
+        var caption = $('#custom_caption').val().trim();
+        $('#text_preview').text(caption || '');
+        $('#link_preview').html(ref_url ? '<a href="' + ref_url + '" target="_blank">' + ref_url + '</a>' : '');
+    }
+
+    $('#custom_caption').on('input', UpdatePreview);
+    UpdatePreview(); // แสดง link ตั้งแต่เริ่มต้น
+
+    // ===== เลือกสื่อจากระบบ =====
+    $('.select-media').click(function() {
+        var src = $(this).data('src');
+        var type = $(this).data('type');
+        var caption = $(this).data('caption');
+
+        selected_media = src;
+
+        // อัปเดต Preview
+        if (type === 'video') {
+            $('#media_preview').html(
+                '<video width="100%" controls class="rounded" style="max-height:220px;">' +
+                '<source src="' + src + '" type="video/mp4"></video>'
+            );
+        } else {
+            $('#media_preview').html(
+                '<img src="' + src + '" class="img-fluid rounded" style="max-height:220px; width:100%; object-fit:cover;">'
+            );
         }
 
-        // Optional: Auto-fill caption if user hasn't typed much
-        if ($('#custom_caption').val().length < 5 && caption) {
-            $('#custom_caption').val(caption).trigger('input');
+        // ใส่ caption ตัวอย่างถ้าผู้ใช้ยังไม่ได้พิมพ์
+        if ($('#custom_caption').val().trim().length < 5 && caption) {
+            $('#custom_caption').val(caption);
+            UpdatePreview();
         }
 
+        // Highlight การ์ดที่เลือก
         $('.marketing-card').removeClass('selected');
         $(this).closest('.marketing-card').addClass('selected');
-        toastr.info('เลือกรูปภาพแล้ว');
+        toastr.info('เลือกสื่อแล้ว');
     });
 
-    // Generate and Copy
-    $('#generate_and_copy').click(function() {
-        const caption = $('#custom_caption').val();
-        const fullText = (caption ? caption + "\n\n" : "") + refUrl;
-        
-        navigator.clipboard.writeText(fullText).then(() => {
-            toastr.success('คัดลอกข้อความและลิงก์แล้ว!');
-        });
+    // ===== ปุ่มคัดลอก =====
+    $('#btn_copy_all').click(function() {
+        CopyToClipboard(BuildFullText(), 'คัดลอกข้อความ + ลิงก์แล้ว!');
     });
 
-    // Share Facebook
+    $('#btn_copy_link').click(function() {
+        CopyToClipboard(ref_url, 'คัดลอกลิงก์แล้ว!');
+    });
+
+    // ===== แชร์ Social Media =====
     $('#share_fb').click(function() {
-        const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(refUrl)}`;
-        window.open(url, '_blank', 'width=600,height=400');
+        window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(ref_url),
+            '_blank', 'width=600,height=400');
     });
 
-    // Share Instagram (Copy Link + Open IG)
+    $('#share_line').click(function() {
+        var text = BuildFullText();
+        window.open('https://social-plugins.line.me/lineit/share?url=' + encodeURIComponent(ref_url) +
+            '&text=' + encodeURIComponent(text), '_blank', 'width=600,height=400');
+    });
+
     $('#share_ig').click(function() {
-        const caption = $('#custom_caption').val();
-        const fullText = (caption ? caption + "\n\n" : "") + refUrl;
-        
-        navigator.clipboard.writeText(fullText).then(() => {
-            toastr.success('คัดลอกข้อความแล้ว! กำลังเปิด Instagram...');
-            setTimeout(() => {
-                window.open('https://www.instagram.com/', '_blank');
-            }, 1000);
-        });
+        CopyToClipboard(BuildFullText(), 'คัดลอกข้อความแล้ว! กำลังเปิด Instagram...');
+        setTimeout(function() {
+            window.open('https://www.instagram.com/', '_blank');
+        }, 1200);
     });
 
-    // Share TikTok
     $('#share_tt').click(function() {
-        const url = `https://www.tiktok.com/share?url=${encodeURIComponent(refUrl)}`;
-        window.open(url, '_blank', 'width=600,height=400');
+        CopyToClipboard(BuildFullText(), 'คัดลอกข้อความแล้ว! กำลังเปิด TikTok...');
+        setTimeout(function() {
+            window.open('https://www.tiktok.com/', '_blank');
+        }, 1200);
+    });
+
+    $('#share_twitter').click(function() {
+        var text = BuildFullText();
+        window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(text),
+            '_blank', 'width=600,height=400');
     });
 });
 </script>
-@endsection
 @endsection
