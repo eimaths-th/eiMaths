@@ -26,7 +26,29 @@
         </div>
     </div>
 
-    @include('affiliate.backend.my_affiliate-script')
-    @yield('script')
+<script>
+    function ApplyTheme(theme) {
+        if (theme === 'dark') {
+            document.documentElement.classList.add('dark');
+            document.documentElement.classList.remove('light');
+        } else {
+            document.documentElement.classList.add('light');
+            document.documentElement.classList.remove('dark');
+        }
+        localStorage.setItem('affiliate_theme', theme);
+    }
+
+    function ToggleTheme() {
+        const currentTheme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        ApplyTheme(newTheme);
+    }
+
+    // Initial Load
+    const savedTheme = localStorage.getItem('affiliate_theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'dark'); // Default to dark as per user's dashboard
+    ApplyTheme(savedTheme);
+</script>
+
+@yield('script')
 </body>
 </html>

@@ -132,12 +132,11 @@
                         </li> --}}
 
                         <!-- Theme Toggler start -->
-                        {{-- <li class="d-none d-sm-block" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                        <li class="d-none d-sm-block" data-bs-toggle="tooltip" data-bs-placement="bottom"
                             title="Toggle Theme" data-bs-custom-class="tooltip-zindex">
-                            <div class="theme-toggler" id="">
+                            <div class="theme-toggler">
                                 <div class="icons">
-                                    <a href="#">
-                                        <a href="http://127.0.0.1:8001/change-theme/light">
+                                    <a href="javascript:void(0)" onclick="ToggleTheme()">
                                         <svg width="24" class="sun" height="24"
                                             viewBox="0 0 24 24" fill="none"
                                             xmlns="http://www.w3.org/2000/svg">
@@ -151,11 +150,9 @@
                                                 stroke-linecap="round" stroke-linejoin="round" />
                                         </svg>
                                     </a>
-
-
                                 </div>
                             </div>
-                        </li> --}}
+                        </li>
                         <!-- Theme toggler end -->
                         <!-- Start Notification -->
                         {{-- <li class="scroll_notification_list" data-bs-toggle="tooltip"

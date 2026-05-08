@@ -35,12 +35,18 @@
                                 <input class="primary_input_field" type="text" id="referral_url_display" value="{{ $referral_link }}" readonly>
                             </div>
                             
-                            <div class="d-flex gap-2">
+                            <div class="d-flex flex-wrap gap-2">
                                 <button class="btn btn-primary" id="generate_and_copy">
                                     <i class="ti-files"></i> คัดลอกข้อความและลิงก์
                                 </button>
                                 <button class="btn btn-outline-success" id="share_fb">
-                                    <i class="fab fa-facebook-f"></i> แชร์ไป Facebook
+                                    <i class="fab fa-facebook-f"></i> Facebook
+                                </button>
+                                <button class="btn btn-outline-danger" id="share_ig">
+                                    <i class="fab fa-instagram"></i> Instagram
+                                </button>
+                                <button class="btn btn-dark" id="share_tt">
+                                    <i class="fab fa-tiktok"></i> TikTok
                                 </button>
                             </div>
                         </div>
@@ -186,6 +192,25 @@ $(document).ready(function() {
     // Share Facebook
     $('#share_fb').click(function() {
         const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(refUrl)}`;
+        window.open(url, '_blank', 'width=600,height=400');
+    });
+
+    // Share Instagram (Copy Link + Open IG)
+    $('#share_ig').click(function() {
+        const caption = $('#custom_caption').val();
+        const fullText = (caption ? caption + "\n\n" : "") + refUrl;
+        
+        navigator.clipboard.writeText(fullText).then(() => {
+            toastr.success('คัดลอกข้อความแล้ว! กำลังเปิด Instagram...');
+            setTimeout(() => {
+                window.open('https://www.instagram.com/', '_blank');
+            }, 1000);
+        });
+    });
+
+    // Share TikTok
+    $('#share_tt').click(function() {
+        const url = `https://www.tiktok.com/share?url=${encodeURIComponent(refUrl)}`;
         window.open(url, '_blank', 'width=600,height=400');
     });
 });
