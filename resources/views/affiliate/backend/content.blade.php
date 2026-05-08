@@ -472,34 +472,58 @@ $(document).ready(function() {
         }
     }
 
-    // ฟังก์ชันแชร์แบบ Fallback: คัดลอก + เปิดแอป + แจ้งเตือน
+    // ฟังก์ชันแชร์แบบ Fallback: คัดลอก + เปิดแอป + แจ้งเตือนพร้อมขั้นตอน
     function ShareWithCopy(platform_name, platform_url) {
         var text = BuildFullText();
         CopyToClipboard(text, '');
-        toastr.info(
-            '<b>ข้อความและลิงก์ถูกคัดลอกแล้ว!</b><br>' +
-            '📋 กด <b>วาง (Paste)</b> ใน ' + platform_name + ' เพื่อโพสต์<br>' +
-            '<small>ถ้าเลือกรูปไว้ ให้บันทึกรูปแล้วแนบเอง</small>',
-            '', { timeOut: 5000, extendedTimeOut: 3000, enableHtml: true }
+        toastr.success(
+            '<div style="line-height:1.8;">' +
+            '<b>✅ ข้อความ + ลิงก์ถูกคัดลอกแล้ว!</b><br>' +
+            '<span style="font-size:13px;">📌 ทำตามขั้นตอนนี้ใน ' + platform_name + ':</span><br>' +
+            '<span style="font-size:12px;">1. กด <b>Ctrl+V</b> (หรือแตะค้าง > วาง) ในช่องเขียนโพสต์</span><br>' +
+            '<span style="font-size:12px;">2. แนบ <b>รูปภาพ/วิดีโอ</b> ที่ดาวน์โหลดไว้</span><br>' +
+            '<span style="font-size:12px;">3. กด <b>โพสต์/แชร์</b></span>' +
+            '</div>',
+            '', {
+                timeOut: 8000,
+                extendedTimeOut: 5000,
+                enableHtml: true,
+                positionClass: 'toast-top-center',
+                closeButton: true
+            }
         );
         setTimeout(function() {
             window.open(platform_url, '_blank');
-        }, 1500);
+        }, 2000);
     }
 
-    // Facebook: ใช้ feed dialog ส่ง quote (ข้อความ) ได้
+    // Facebook: sharer.php ไม่รองรับข้อความ/รูปจากภายนอก → คัดลอก + เปิด FB สร้างโพสต์
     $('#share_fb').click(function() {
-        var caption = $('#custom_caption').val().trim();
-        var quote = caption || '';
-        var url = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(ref_url) +
-                  '&quote=' + encodeURIComponent(quote);
-        CopyToClipboard(BuildFullText(), '');
-        toastr.info(
-            '<b>กำลังเปิด Facebook...</b><br>' +
-            '📋 ข้อความถูกคัดลอกแล้ว กด <b>วาง</b> ในโพสต์ได้เลย',
-            '', { timeOut: 4000, enableHtml: true }
+        var full_text = BuildFullText();
+        CopyToClipboard(full_text, '');
+
+        // แสดง popup คำแนะนำแบบละเอียด
+        toastr.success(
+            '<div style="line-height:1.8;">' +
+            '<b>✅ ข้อความ + ลิงก์ถูกคัดลอกแล้ว!</b><br>' +
+            '<span style="font-size:13px;">📌 ทำตามขั้นตอนนี้:</span><br>' +
+            '<span style="font-size:12px;">1. กด <b>Ctrl+V</b> (หรือแตะค้าง > วาง) ในช่องเขียนโพสต์</span><br>' +
+            '<span style="font-size:12px;">2. กด <b>เพิ่มรูปภาพ/วิดีโอ</b> เพื่อแนบสื่อ</span><br>' +
+            '<span style="font-size:12px;">3. กด <b>โพสต์</b></span>' +
+            '</div>',
+            '', {
+                timeOut: 8000,
+                extendedTimeOut: 5000,
+                enableHtml: true,
+                positionClass: 'toast-top-center',
+                closeButton: true
+            }
         );
-        setTimeout(function() { window.open(url, '_blank', 'width=600,height=500'); }, 1000);
+
+        // เปิด Facebook หน้าสร้างโพสต์ (delay ให้ user อ่าน popup ก่อน)
+        setTimeout(function() {
+            window.open('https://www.facebook.com/', '_blank');
+        }, 2000);
     });
 
     // LINE: ส่ง text ไปได้ตรง
