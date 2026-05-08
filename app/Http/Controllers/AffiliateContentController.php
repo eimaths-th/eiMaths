@@ -3,9 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
 use App\Models\PromotionImage;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class AffiliateContentController extends Controller
