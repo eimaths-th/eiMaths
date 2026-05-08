@@ -84,10 +84,10 @@
                                     <div class="media-container position-relative">
                                         @if($content->type == 'video')
                                             <video width="100%" height="180" style="background: #000; object-fit: contain;">
-                                                <source src="{{ asset($content->img) }}" type="video/mp4">
+                                                <source src="{{ asset($content->file_path) }}" type="video/mp4">
                                             </video>
                                         @else
-                                            <img src="{{ asset($content->img) }}" alt="{{ $content->title }}" class="card-img-top" style="height: 180px; object-fit: cover;">
+                                            <img src="{{ asset($content->file_path) }}" alt="{{ $content->title }}" class="card-img-top" style="height: 180px; object-fit: cover;">
                                         @endif
                                         
                                         <div class="position-absolute top-0 right-0 p-2">
@@ -101,12 +101,12 @@
                                         <h6 class="font-weight-bold mb-1">{{ $content->title }}</h6>
                                         <div class="d-flex flex-column gap-1">
                                             <button class="btn btn-sm btn-outline-primary select-media" 
-                                                    data-src="{{ asset($content->img) }}" 
+                                                    data-src="{{ asset($content->file_path) }}" 
                                                     data-type="{{ $content->type }}"
                                                     data-caption="{{ $content->description }}">
                                                 <i class="ti-check-box"></i> เลือกรูปนี้
                                             </button>
-                                            <a href="{{ asset($content->img) }}" download class="btn btn-sm btn-link text-muted">โหลดไฟล์ต้นฉบับ</a>
+                                            <a href="{{ asset($content->file_path) }}" download class="btn btn-sm btn-link text-muted">โหลดไฟล์ต้นฉบับ</a>
                                         </div>
                                     </div>
                                 </div>

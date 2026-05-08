@@ -202,6 +202,7 @@
             'qrcode_payment.index',
             'TeachingPeriod.index',
             'promotion-img.index',
+            'affiliate-content-manage.index',
             'footer-setting.index',
         ];
     @endphp
@@ -219,6 +220,7 @@
             'qrcode_payment.index',
             'TeachingPeriod.index',
             'promotion-img.index',
+            'affiliate-content-manage.index',
             'footer-setting.index',
         ])
             ? 'menu-open'
@@ -237,6 +239,7 @@
                 'qrcode_payment.index',
                 'TeachingPeriod.index',
                 'promotion-img.index',
+                'affiliate-content-manage.index',
                 'footer-setting.index',
             ])
                 ? 'active'
@@ -307,6 +310,13 @@
                     class="nav-link {{ Request::is('promotion-img.index') ? 'active' : '' }}">
                     <i class="nav-icon fa-solid fa-comment-dots"></i>
                     <p>Promotion</p>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{{ route('affiliate-content-manage.index') }}"
+                    class="nav-link {{ request()->routeIs('affiliate-content-manage.*') ? 'active' : '' }}">
+                    <i class="nav-icon fa-solid fa-photo-film"></i>
+                    <p>Affiliate Content</p>
                 </a>
             </li>
             <li class="nav-item">
