@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AffiliateAuthController;
+use App\Http\Controllers\AffiliateContentController;
 use App\Http\Controllers\AffiliateConfigurationsController;
 use App\Http\Controllers\AffiliateController;
 use App\Http\Controllers\AffiliateTransactionController;
@@ -284,6 +285,7 @@ Route::POST('/senMailconfirm', [CourseController::class, 'senMail'])->name('senM
 
 
 // Route::get('/affiliate/my_affiliate', )->name('my_affiliate.index');
+Route::get('/affiliate/my_affiliate/content', [AffiliateContentController::class, 'index'])->name('my_affiliate.content');
 Route::resource('/affiliate/my_affiliate', AffiliateController::class)->except(['destroy']);
 Route::resource('/affiliate/my_affiliate/withdraw', AffiliateTransactionController::class)->except(['destroy']);
 

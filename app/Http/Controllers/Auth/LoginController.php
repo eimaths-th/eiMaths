@@ -61,7 +61,7 @@ class LoginController extends Controller
 
             // Check if user has the 'affiliate-user' role
             if ($user->hasRole('Affiliate-user')) {
-                return redirect()->route('welcome');
+                return redirect()->route('my_affiliate.index');
             }
         
             if ($user->hasRole('User')) {

@@ -33,35 +33,42 @@ class PromotionImageController extends Controller
     {
         // Validate input
         $request->validate([
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // Accept only images up to 2MB
+            'image' => 'required|file|mimes:jpeg,png,jpg,gif,mp4,mov,avi,wmv|max:51200', // Accept images and videos up to 50MB
             'title' => 'required|string|max:255',
+            'type' => 'required|in:image,video',
+            'description' => 'nullable|string',
+            'is_for_affiliate' => 'nullable|boolean',
         ]);
 
         // Handle file upload
         if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            //random str 10 car
-            $random = Str::random($length = 10);
-            $originalName = $image->getClientOriginalName();
+            $file = $request->file('image');
+            $random = Str::random(10);
+            $originalName = $file->getClientOriginalName();
+            $fileName = time() . '-' . $random . '_' . $originalName; 
+            
+            // Determine directory based on type
+            $directory = $request->type == 'video' ? 'video/promotion' : 'img/promotion';
+            
+            // Move the file
+            $file->move(public_path($directory), $fileName);
 
-            $imageName = time() . '-' . $random . '_' . $originalName . '.' . $image->getClientOriginalExtension(); // Unique filename
-            // Move the file to public/img/promotion
-            $image->move(public_path('img/promotion'), $imageName);
-
-            // Save file path to database (if needed)
-            $imagePath = 'img/promotion/' . $imageName;
+            $filePath = $directory . '/' . $fileName;
         } else {
-            return back()->with('error', 'No image uploaded.');
+            return back()->with('error', 'No file uploaded.');
         }
 
-        // Store image details in database (if necessary)
+        // Store details in database
         $promotion = new PromotionImage();
         $promotion->title = $request->title;
         $promotion->url = $request->url;
-        $promotion->img = $imagePath; // Save path in DB
+        $promotion->img = $filePath; 
+        $promotion->type = $request->type;
+        $promotion->description = $request->description;
+        $promotion->is_for_affiliate = $request->has('is_for_affiliate') ? 1 : 0;
         $promotion->save();
 
-        return back()->with('success', 'Promotion image uploaded successfully!');
+        return back()->with('success', 'Marketing content uploaded successfully!');
     }
 
     /**

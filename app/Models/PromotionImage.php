@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * @property integer $id
  * @property string $img //path file
+ * @property string $type //image or video
+ * @property string $description
+ * @property boolean $is_for_affiliate
  * @property string $title
  * @property string $status
  * @property string $url
@@ -27,5 +30,5 @@ class PromotionImage extends Model
     /**
      * @var array
      */
-    protected $fillable = ['img', 'title', 'status', 'created_by', 'updated_by', 'created_at', 'updated_at'];
+    protected $fillable = ['img', 'type', 'description', 'is_for_affiliate', 'title', 'status', 'url', 'created_by', 'updated_by', 'created_at', 'updated_at'];
 }

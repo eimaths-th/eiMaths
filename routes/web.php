@@ -200,11 +200,15 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::get('/', function () {
         $user = Auth::user();
-        if ($user && $user->hasRole('Affiliate-user') || $user->hasRole('User')) {
-            return redirect()->route('welcome');
+        if ($user) {
+            if ($user->hasRole('Affiliate-user')) {
+                return redirect()->route('my_affiliate.index');
+            }
+            if ($user->hasRole('User')) {
+                return redirect()->route('welcome');
+            }
         }
         return redirect()->route('home');
-
     });
 
     Route::get('/welcome', [HomeController::class, 'welcome'])->name('welcome');

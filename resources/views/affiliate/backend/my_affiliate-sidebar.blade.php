@@ -51,9 +51,14 @@
                 </div>
             </a>
             <ul>
-                <li class="mm-active">
+                <li class="{{request()->routeIs('my_affiliate.index') ? 'mm-active' : ''}}">
                     <a href="{{ route('my_affiliate.index') }}">
                         My Affiliate
+                    </a>
+                </li>
+                <li class="{{request()->routeIs('my_affiliate.content') ? 'mm-active' : ''}}">
+                    <a href="{{ route('my_affiliate.content') }}">
+                        Marketing Materials
                     </a>
                 </li>
             </ul>

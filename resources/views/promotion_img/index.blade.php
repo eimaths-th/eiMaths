@@ -125,66 +125,55 @@
                             <form action="{{ route('promotion-img.store') }}" method="POST" enctype="multipart/form-data">
                                 @csrf
                                 <div class="row">
-                                    <div class="col-lg-3">
-                                        <div class="form-group">
-                                            <label class="mb-2">add image <span class="text-danger">*</span></label>
-                                            <input class="form-control" type="file" name="image" id="image"
-                                                required>
-                                        </div>
-
-                                    </div>
-                                    <div class="col-lg-3">
-                                        <div class="form-group">
-                                            <label class="mb-2">Title <span class="text-danger">*</span></label>
-                                            <div class="row">
-                                                <div class="col-lg-12">
-                                                    <input class="form-control" type="text" name="title" id="Title"
-                                                        value="" required>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-lg-3">
-                                        <div class="form-group">
-                                            <label class="mb-2">Url <span class="text-danger">*</span></label>
-                                            <div class="row">
-                                                <div class="col-lg-12">
-                                                    <input class="form-control" type="text" name="url" id="url"
-                                                        value="">
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-3">
-                                        {{-- <div class="form-group">
-                                            <label class="mb-2">promptpay_numbers<span
-                                                    class="text-danger">*</span></label>
-                                            <input class="form-control" type="text" name="promptpay_numbers"
-                                                id="promptpay_numbers" value="{{ $qr->promptpay_numbers }}" required>
-                                        </div> --}}
-                                    </div>
-
-                                    {{-- <div class="col-lg-3">
-                                        <div class="form-group">
-                                            <label class="mb-2">status<span
-                                                    class="text-danger">*</span></label>
-                                            <input class="form-control" type="text"
-                                                name="status"
-                                                value="{{ $qr->status }}" required>
-                                        </div>
-                                    </div> --}}
-
-                                    <div class="col-lg-3">
-                                        <button type="submit" class="btn btn-primary " id="update_qr_payment">
-                                            <i class="ti-check"></i> Update
-                                        </button>
-                                    </div>
-                                </div>
+                                     <div class="col-lg-3">
+                                         <div class="form-group">
+                                             <label class="mb-2">File (Image/Video) <span class="text-danger">*</span></label>
+                                             <input class="form-control" type="file" name="image" id="image" required>
+                                         </div>
+                                     </div>
+                                     <div class="col-lg-3">
+                                         <div class="form-group">
+                                             <label class="mb-2">Type <span class="text-danger">*</span></label>
+                                             <select class="form-control" name="type" required>
+                                                 <option value="image">Image</option>
+                                                 <option value="video">Video</option>
+                                             </select>
+                                         </div>
+                                     </div>
+                                     <div class="col-lg-3">
+                                         <div class="form-group">
+                                             <label class="mb-2">Title <span class="text-danger">*</span></label>
+                                             <input class="form-control" type="text" name="title" required>
+                                         </div>
+                                     </div>
+                                     <div class="col-lg-3">
+                                         <div class="form-group">
+                                             <label class="mb-2">Landing Page URL</label>
+                                             <input class="form-control" type="text" name="url">
+                                         </div>
+                                     </div>
+                                     <div class="col-lg-9">
+                                         <div class="form-group">
+                                             <label class="mb-2">Description (Share Caption)</label>
+                                             <textarea class="form-control" name="description" rows="2"></textarea>
+                                         </div>
+                                     </div>
+                                     <div class="col-lg-3">
+                                         <div class="form-group mt-4">
+                                             <label class="primary_checkbox d-flex">
+                                                 <input type="checkbox" name="is_for_affiliate" value="1">
+                                                 <span class="checkmark mr_15"></span>
+                                                 <span class="label_name">For Affiliate Content</span>
+                                             </label>
+                                         </div>
+                                     </div>
+                                     <div class="col-lg-12">
+                                         <button type="submit" class="btn btn-primary">
+                                             <i class="ti-check"></i> Upload Content
+                                         </button>
+                                     </div>
+                                 </div>
                             </form>
-
-                            {{-- qrcode img qrCodeImage  --}}
-                            {{-- <img src="{{ $qrCodeImage }}" alt=""> --}}
 
                         </div>
 
@@ -253,8 +242,22 @@
                                 @foreach ($promotion_images as $image)
                                     <div class="col-md-3 mb-4">
                                         <div class="card position-relative">
-                                            <img src="{{ asset($image->img) }}" alt="Promotion Image" class="card-img-top"
-                                                style="width: 100%; height: 200px; object-fit: cover;">
+                                            @if($image->type == 'video')
+                                                <video width="100%" height="200" controls style="object-fit: cover;">
+                                                    <source src="{{ asset($image->img) }}" type="video/mp4">
+                                                    Your browser does not support the video tag.
+                                                </video>
+                                            @else
+                                                <img src="{{ asset($image->img) }}" alt="Promotion Image" class="card-img-top"
+                                                    style="width: 100%; height: 200px; object-fit: cover;">
+                                            @endif
+                                            
+                                            <div class="p-2">
+                                                <strong>{{ $image->title }}</strong>
+                                                @if($image->is_for_affiliate)
+                                                    <span class="badge badge-success">Affiliate</span>
+                                                @endif
+                                            </div>
 
                                             <!-- Delete Button Positioned at the Top Right -->
                                             <div class="position-absolute top-0 end-0 p-2">
