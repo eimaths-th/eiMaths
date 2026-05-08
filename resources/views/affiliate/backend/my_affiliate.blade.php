@@ -500,6 +500,32 @@
     </div>
 
     @include('affiliate.backend.my_affiliate-script')
+
+    {{-- Script สลับ Dark/Light Mode --}}
+    <script>
+        function ApplyTheme(theme) {
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark');
+                document.documentElement.classList.remove('light');
+            } else {
+                document.documentElement.classList.add('light');
+                document.documentElement.classList.remove('dark');
+            }
+            localStorage.setItem('affiliate_theme', theme);
+        }
+
+        function ToggleTheme() {
+            var is_dark = document.documentElement.classList.contains('dark');
+            ApplyTheme(is_dark ? 'light' : 'dark');
+        }
+
+        // โหลด Theme จาก LocalStorage (Default = dark)
+        (function() {
+            var saved = localStorage.getItem('affiliate_theme') || 'dark';
+            ApplyTheme(saved);
+        })();
+    </script>
+
     @yield('script')
 
 </body>

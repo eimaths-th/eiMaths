@@ -52,7 +52,7 @@
                         </div>
                         
                         <div class="col-lg-4">
-                            <div class="preview-area p-3 border rounded" style="background: #f9f9f9; min-height: 200px;">
+                            <div class="preview-area p-3 border rounded" style="background: var(--white-box-bg); min-height: 200px;">
                                 <label class="small text-muted d-block mb-2">ตัวอย่าง (Preview)</label>
                                 <div id="media_preview" class="mb-2">
                                     <div class="text-center p-4 text-muted border border-dashed rounded">
