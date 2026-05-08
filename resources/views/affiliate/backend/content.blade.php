@@ -32,7 +32,7 @@
                             
                             <div class="primary_input mb-25">
                                 <label class="primary_input_label">ลิงก์แนะนำของคุณ (Your Referral Link)</label>
-                                <input class="primary_input_field" type="text" id="referral_url_display" value="{{ url('/') . '/?ref=' . $user->id }}" readonly>
+                                <input class="primary_input_field" type="text" id="referral_url_display" value="{{ $referral_link }}" readonly>
                             </div>
                             
                             <div class="d-flex gap-2">

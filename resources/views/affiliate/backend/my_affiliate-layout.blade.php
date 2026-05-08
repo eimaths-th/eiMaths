@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en">
+<html dir="{{ isRtl() ? 'rtl' : 'ltr' }}" class="{{ isRtl() ? 'rtl' : 'ltr' }} {{ auth()->check() && auth()->user()->dark_mode == 1 ? 'dark' : 'light' }}"
+    lang="{{ app()->getLocale() }}">
 <head>
     @include('affiliate.backend.my_affiliate-head')
     @yield('style')

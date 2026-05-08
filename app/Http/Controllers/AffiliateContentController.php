@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\PromotionImage;
 use Illuminate\Support\Facades\Auth;
+use Modules\Affiliate\Entities\AffiliateLink;
 
 class AffiliateContentController extends Controller
 {
@@ -16,10 +17,14 @@ class AffiliateContentController extends Controller
             ->get();
             
         $user = Auth::user();
-        // Base referral URL: home URL + ?ref=user_id or user referral code
-        // Based on previous analysis, it uses ?ref=id or a specific link.
-        // I'll check how referral links are generated in this system.
         
-        return view('affiliate.backend.content', compact('contents', 'user'));
+        // Fetch the first existing affiliate link for this user
+        $existing_link = AffiliateLink::where('owner_id', $user->id)->first();
+        
+        $referral_link = $existing_link 
+            ? $existing_link->affiliate_link 
+            : url('/') . '/?ref=' . ($user->referral ?? $user->id);
+            
+        return view('affiliate.backend.content', compact('contents', 'user', 'referral_link'));
     }
 }
