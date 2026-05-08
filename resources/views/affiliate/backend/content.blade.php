@@ -349,31 +349,98 @@ $(document).ready(function() {
     });
 
     // ===== แชร์ Social Media =====
+
+    // ฟังก์ชันหลัก: ใช้ Web Share API ถ้ารองรับ (มือถือ)
+    async function NativeShare() {
+        var text = BuildFullText();
+        var share_data = {
+            title: 'eiMaths - เรียนคณิตศาสตร์ออนไลน์',
+            text: text,
+            url: ref_url
+        };
+
+        // ถ้าเลือกรูปไว้ ให้แนบไฟล์ด้วย (Web Share API Level 2)
+        if (selected_media && navigator.canShare) {
+            try {
+                var response = await fetch(selected_media);
+                var blob = await response.blob();
+                var file_name = selected_media.split('/').pop();
+                var file = new File([blob], file_name, { type: blob.type });
+                if (navigator.canShare({ files: [file] })) {
+                    share_data.files = [file];
+                }
+            } catch(e) {
+                // ไม่สามารถดึงไฟล์ได้ ข้ามไป
+            }
+        }
+
+        try {
+            await navigator.share(share_data);
+            toastr.success('แชร์สำเร็จ!');
+        } catch(err) {
+            if (err.name !== 'AbortError') {
+                toastr.info('ยกเลิกการแชร์');
+            }
+        }
+    }
+
+    // ฟังก์ชันแชร์แบบ Fallback: คัดลอก + เปิดแอป + แจ้งเตือน
+    function ShareWithCopy(platform_name, platform_url) {
+        var text = BuildFullText();
+        CopyToClipboard(text, '');
+        toastr.info(
+            '<b>ข้อความและลิงก์ถูกคัดลอกแล้ว!</b><br>' +
+            '📋 กด <b>วาง (Paste)</b> ใน ' + platform_name + ' เพื่อโพสต์<br>' +
+            '<small>ถ้าเลือกรูปไว้ ให้บันทึกรูปแล้วแนบเอง</small>',
+            '', { timeOut: 5000, extendedTimeOut: 3000, enableHtml: true }
+        );
+        setTimeout(function() {
+            window.open(platform_url, '_blank');
+        }, 1500);
+    }
+
+    // Facebook: ใช้ feed dialog ส่ง quote (ข้อความ) ได้
     $('#share_fb').click(function() {
-        window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(ref_url),
-            '_blank', 'width=600,height=400');
+        var caption = $('#custom_caption').val().trim();
+        var quote = caption || '';
+        var url = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(ref_url) +
+                  '&quote=' + encodeURIComponent(quote);
+        CopyToClipboard(BuildFullText(), '');
+        toastr.info(
+            '<b>กำลังเปิด Facebook...</b><br>' +
+            '📋 ข้อความถูกคัดลอกแล้ว กด <b>วาง</b> ในโพสต์ได้เลย',
+            '', { timeOut: 4000, enableHtml: true }
+        );
+        setTimeout(function() { window.open(url, '_blank', 'width=600,height=500'); }, 1000);
     });
 
+    // LINE: ส่ง text ไปได้ตรง
     $('#share_line').click(function() {
         var text = BuildFullText();
-        window.open('https://social-plugins.line.me/lineit/share?url=' + encodeURIComponent(ref_url) +
-            '&text=' + encodeURIComponent(text), '_blank', 'width=600,height=400');
+        var url = 'https://social-plugins.line.me/lineit/share?url=' + encodeURIComponent(ref_url) +
+                  '&text=' + encodeURIComponent(text);
+        window.open(url, '_blank', 'width=600,height=500');
     });
 
+    // Instagram: ไม่มี Share API จากเว็บ → คัดลอก + เปิด IG
     $('#share_ig').click(function() {
-        CopyToClipboard(BuildFullText(), 'คัดลอกข้อความแล้ว! กำลังเปิด Instagram...');
-        setTimeout(function() {
-            window.open('https://www.instagram.com/', '_blank');
-        }, 1200);
+        if (navigator.share) {
+            NativeShare();
+        } else {
+            ShareWithCopy('Instagram', 'https://www.instagram.com/');
+        }
     });
 
+    // TikTok: ไม่มี Share API จากเว็บ → คัดลอก + เปิด TikTok
     $('#share_tt').click(function() {
-        CopyToClipboard(BuildFullText(), 'คัดลอกข้อความแล้ว! กำลังเปิด TikTok...');
-        setTimeout(function() {
-            window.open('https://www.tiktok.com/', '_blank');
-        }, 1200);
+        if (navigator.share) {
+            NativeShare();
+        } else {
+            ShareWithCopy('TikTok', 'https://www.tiktok.com/');
+        }
     });
 
+    // Twitter: ส่ง text ไปได้ตรง
     $('#share_twitter').click(function() {
         var text = BuildFullText();
         window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(text),
