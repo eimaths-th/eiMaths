@@ -96,6 +96,94 @@
 <section class="admin-visitor-area up_st_admin_visitor">
     <div class="container-fluid p-0">
 
+        {{-- ส่วนวิธีใช้งาน (How to Use) --}}
+        <div class="row mb-3">
+            <div class="col-lg-12">
+                <div class="white_box mb_20">
+                    <div class="d-flex justify-content-between align-items-center cursor-pointer"
+                         data-bs-toggle="collapse" data-bs-target="#howToUseGuide"
+                         aria-expanded="false" aria-controls="howToUseGuide"
+                         style="cursor:pointer;">
+                        <h5 class="mb-0" style="color:var(--dynamic-text-color);">
+                            <i class="ti-help-alt" style="color:var(--backend-primary-color);"></i>
+                            วิธีใช้งาน — สร้างคอนเทนต์แชร์ลิงก์แนะนำ
+                        </h5>
+                        <span class="badge" style="background:var(--backend-primary-color); color:#fff; font-size:12px;">
+                            <i class="ti-angle-down"></i> กดเพื่อดู
+                        </span>
+                    </div>
+
+                    <div class="collapse mt-3" id="howToUseGuide">
+                        <div class="row">
+                            {{-- ขั้นตอนที่ 1 --}}
+                            <div class="col-lg-3 col-md-6 mb-3">
+                                <div class="p-3 rounded text-center h-100" style="background:var(--header-search-bg); border:1px solid var(--backend-border-color);">
+                                    <div class="mb-2" style="font-size:36px;">✍️</div>
+                                    <h6 style="color:var(--dynamic-text-color);">ขั้นตอนที่ 1</h6>
+                                    <p class="small mb-0" style="color:var(--muted-text); line-height:1.5;">
+                                        <b>เขียนข้อความเชิญชวน</b><br>
+                                        พิมพ์ Caption ที่น่าสนใจ เช่น โปรโมชั่น หรือจุดเด่นของคอร์สเรียน
+                                    </p>
+                                </div>
+                            </div>
+                            {{-- ขั้นตอนที่ 2 --}}
+                            <div class="col-lg-3 col-md-6 mb-3">
+                                <div class="p-3 rounded text-center h-100" style="background:var(--header-search-bg); border:1px solid var(--backend-border-color);">
+                                    <div class="mb-2" style="font-size:36px;">🖼️</div>
+                                    <h6 style="color:var(--dynamic-text-color);">ขั้นตอนที่ 2</h6>
+                                    <p class="small mb-0" style="color:var(--muted-text); line-height:1.5;">
+                                        <b>เลือกรูปภาพ/วิดีโอ</b> (ถ้ามี)<br>
+                                        เลื่อนลงไปเลือกสื่อจากระบบ หรือใช้รูปของคุณเอง กดดาวน์โหลดไฟล์ต้นฉบับได้
+                                    </p>
+                                </div>
+                            </div>
+                            {{-- ขั้นตอนที่ 3 --}}
+                            <div class="col-lg-3 col-md-6 mb-3">
+                                <div class="p-3 rounded text-center h-100" style="background:var(--header-search-bg); border:1px solid var(--backend-border-color);">
+                                    <div class="mb-2" style="font-size:36px;">📋</div>
+                                    <h6 style="color:var(--dynamic-text-color);">ขั้นตอนที่ 3</h6>
+                                    <p class="small mb-0" style="color:var(--muted-text); line-height:1.5;">
+                                        <b>กดคัดลอกหรือแชร์</b><br>
+                                        กด "คัดลอกทั้งหมด" จะได้ข้อความ + ลิงก์แนะนำ หรือกดปุ่ม Social เพื่อแชร์ตรง
+                                    </p>
+                                </div>
+                            </div>
+                            {{-- ขั้นตอนที่ 4 --}}
+                            <div class="col-lg-3 col-md-6 mb-3">
+                                <div class="p-3 rounded text-center h-100" style="background:var(--header-search-bg); border:1px solid var(--backend-border-color);">
+                                    <div class="mb-2" style="font-size:36px;">💰</div>
+                                    <h6 style="color:var(--dynamic-text-color);">ขั้นตอนที่ 4</h6>
+                                    <p class="small mb-0" style="color:var(--muted-text); line-height:1.5;">
+                                        <b>รับค่าคอมมิชชัน!</b><br>
+                                        เมื่อมีคนสมัครผ่านลิงก์ของคุณ ระบบจะคำนวณค่าคอมมิชชันให้อัตโนมัติ
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr style="border-color:var(--backend-border-color);">
+
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <h6 style="color:var(--dynamic-text-color);"><i class="ti-mobile"></i> แชร์บนมือถือ</h6>
+                                <ul class="small" style="color:var(--muted-text); line-height:2;">
+                                    <li>กดปุ่ม <b>Instagram</b> หรือ <b>TikTok</b> → ระบบจะเปิดหน้าต่างแชร์ของมือถือ ส่งรูป+ข้อความ+ลิงก์ได้เลย</li>
+                                    <li>กดปุ่ม <b>Facebook</b> หรือ <b>LINE</b> → เปิดหน้าแชร์พร้อมข้อความอัตโนมัติ</li>
+                                </ul>
+                            </div>
+                            <div class="col-lg-6">
+                                <h6 style="color:var(--dynamic-text-color);"><i class="ti-desktop"></i> แชร์บนคอมพิวเตอร์</h6>
+                                <ul class="small" style="color:var(--muted-text); line-height:2;">
+                                    <li>กดปุ่ม <b>Instagram / TikTok</b> → ข้อความ+ลิงก์จะถูก<b>คัดลอกอัตโนมัติ</b> แล้วเปิดเว็บไซต์ให้ กด <b>Ctrl+V</b> วางข้อความได้ทันที</li>
+                                    <li>ถ้าต้องการแนบรูป ให้กด <b>"ดาวน์โหลด"</b> บันทึกรูปก่อน แล้วอัปโหลดเองในโพสต์</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         {{-- ส่วนที่ 1: Content Composer --}}
         <div class="row">
             <div class="col-lg-12">
