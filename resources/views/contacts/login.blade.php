@@ -559,10 +559,10 @@ select.custom-input {
 
         <form action="{{ route('student.check') }}" method="POST">
             @csrf
-            @if (isset($message))
+            @if (isset($message) || $errors->has('error'))
                 <div class="alert-beautiful">
                     <i data-lucide="alert-circle" width="20" height="20"></i>
-                    {{ $message ?? '' }}
+                    {{ $message ?? $errors->first('error') }}
                 </div>
             @endif
             
@@ -612,7 +612,7 @@ select.custom-input {
             <form action="{{ route('guest.quiz.register.store') }}" method="POST">
                 @csrf
 
-                @if ($errors->any() && !($errors->has('guest_error') || $errors->has('guest_email') || $errors->has('guest_password')))
+                @if ($errors->any() && !($errors->has('error') || $errors->has('guest_error') || $errors->has('guest_email') || $errors->has('guest_password')))
                     <div class="alert-beautiful" style="align-items: flex-start;">
                         <i data-lucide="alert-circle" width="20" height="20" style="flex-shrink: 0; margin-top: 2px;"></i>
                         <div>
@@ -873,7 +873,7 @@ select.custom-input {
 
     // Check for errors on load to auto-open forms
     document.addEventListener("DOMContentLoaded", function() {
-        @if (isset($message) || $errors->has('code') || $errors->has('password'))
+        @if (isset($message) || $errors->has('error') || $errors->has('code') || $errors->has('password'))
             openStudentForm();
         @elseif ($errors->has('guest_error') || $errors->has('guest_email') || $errors->has('guest_password'))
             openGuestForm();
