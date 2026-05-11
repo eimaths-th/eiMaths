@@ -261,7 +261,7 @@ select.custom-input {
     <div class="register-panel" id="register-panel">
         <div class="form-header">
             <h2><i data-lucide="rocket" style="color: #3b82f6;" width="40" height="40"></i> Register Free Trial</h2>
-            <p>Fill in your details to get 7 days of free access.</p>
+            <p>Fill in your details to get 10 days of free access.</p>
         </div>
 
         <form action="{{ route('guest.quiz.register.store') }}" method="POST">

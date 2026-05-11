@@ -541,7 +541,7 @@ select.custom-input {
                 <i data-lucide="rocket" class="text-white" width="44" height="44"></i>
             </div>
             <h3>Free Trial</h3>
-            <p>7-day free trial for guests. Test your math skills with our exclusive quizzes.</p>
+            <p>10-day free trial for guests. Test your math skills with our exclusive quizzes.</p>
         </div>
     </div>
 
