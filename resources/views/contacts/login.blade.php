@@ -535,8 +535,7 @@ select.custom-input {
             <h3>Student Login</h3>
             <p>Access your eiMaths Thailand student account and continue your learning.</p>
         </div>
-
-        {{-- Free Trial card — temporarily hidden
+        <!-- Free Trial card — temporarily hidden -->
         <div class="choice-card login-opt-guest" onclick="openGuestForm()">
             <div class="icon-wrapper">
                 <i data-lucide="rocket" class="text-white" width="44" height="44"></i>
@@ -544,7 +543,6 @@ select.custom-input {
             <h3>Free Trial</h3>
             <p>7-day free trial for guests. Test your math skills with our exclusive quizzes.</p>
         </div>
-        --}}
     </div>
 
     <!-- Student Form Panel (Slides from Right) -->

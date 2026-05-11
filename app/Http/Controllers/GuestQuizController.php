@@ -140,8 +140,36 @@ class GuestQuizController extends Controller
     {
         $guest = Auth::guard('guest_quiz')->user();
 
+        // กำหนดเงื่อนไขการมองเห็นข้อสอบตามชั้นเรียนที่สมัคร
+        $allowedLevels = [];
+        switch ($guest->grade) {
+            case 'K1':
+            case 'K2':
+            case 'P1':
+                $allowedLevels = ['K1', 'K2', 'P1', 'P2'];
+                break;
+            case 'P2':
+                $allowedLevels = ['P1', 'P2', 'P3'];
+                break;
+            case 'P3':
+                $allowedLevels = ['P2', 'P3', 'P4'];
+                break;
+            case 'P4':
+                $allowedLevels = ['P3', 'P4', 'P5'];
+                break;
+            case 'P5':
+            case 'P6':
+                $allowedLevels = ['P4', 'P5', 'P6'];
+                break;
+            default:
+                // กรณีอื่นๆ (ถ้ามี) ให้เห็นระดับใกล้เคียง หรือเห็นทั้งหมด (ตั้งเป็นค่า default)
+                $allowedLevels = [$guest->grade];
+                break;
+        }
+
         $freeQuizzes = Quiz::whereHas('questions')
             ->where('is_free', true)
+            ->whereIn('level', $allowedLevels)
             ->orderBy('level', 'asc')
             ->orderBy('id', 'desc')
             ->withCount('questions')
@@ -150,6 +178,7 @@ class GuestQuizController extends Controller
 
         $freeQuizzesAll = Quiz::whereHas('questions')
             ->where('is_free', true)
+            ->whereIn('level', $allowedLevels)
             ->orderBy('id', 'desc')
             ->withCount('questions')
             ->get();
