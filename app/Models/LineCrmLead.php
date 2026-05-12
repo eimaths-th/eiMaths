@@ -18,5 +18,7 @@ class LineCrmLead extends Model
         'last_interaction_at',
         'lead_score',
         'last_step_at',
+        'last_follow_up_at',
+        'follow_up_count',
     ];
 }

@@ -69,3 +69,4 @@ Route::get('/revenue-summary-by-branch', [App\Http\Controllers\ReceiptController
 Route::get('/revenue-summary-by-branch-monthly', [App\Http\Controllers\ReceiptController::class, 'GetRevenueSummaryByBranchMonthly']);
 
 Route::post('/n8n/line/lead', [N8nLineCrmController::class, 'handleLead']);
+Route::get('/n8n/line/follow-up-leads', [N8nLineCrmController::class, 'followUpLeads']);

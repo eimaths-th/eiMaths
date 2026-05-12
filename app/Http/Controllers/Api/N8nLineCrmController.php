@@ -60,7 +60,8 @@ class N8nLineCrmController extends Controller
 
             $lead->last_step_at = now();
 
-            $replyText = "ขอบคุณครับ 😊 ตอนนี้ระบบได้รับข้อมูลของคุณเรียบร้อยแล้ว\nเดี๋ยวทีมงานจะแนะนำคอร์สที่เหมาะกับ {$lead->level} ให้นะครับ";
+            $replyText = "ขอบคุณครับ 😊 ตอนนี้ระบบได้รับข้อมูลของคุณเรียบร้อยแล้ว\nเดี๋ยวทีมงานจะแนะนำคอร์สที่เหมาะกับ {$lead->level} ให้นะครับ\n\n"
+                        ."หรือหากต้องการเริ่มใหม่ พิมพ์: แก้ไข";
 
         } elseif ($lead->step === 'waiting_admin' || $lead->step === 'completed') {
 
@@ -131,5 +132,33 @@ class N8nLineCrmController extends Controller
         if (str_contains($text, 'ทดลองเรียน')) return 'ทดลองเรียน';
         
         return null;
+    }
+
+    public function followUpLeads()
+    {
+        $leads = LineCrmLead::query()
+            // เลือกเฉพาะ lead ที่ต้อง follow-up
+            ->whereIn('status', [
+                'hot_lead',
+                'waiting_admin',
+            ])
+            // ต้องมี LINE user id
+            ->whereNotNull('line_user_id')
+            // ลูกค้าหายเกิน 1 ชั่วโมง
+            ->where('last_interaction_at', '<=', now()->subHours(1))
+            // ยังไม่ถูก follow-up วันนี้
+            ->where(function ($query) {
+                $query->whereNull('last_follow_up_at')
+                      ->orWhere('last_follow_up_at', '<=', now()->subDay());
+            })
+            // จำกัดจำนวนต่อรอบ
+            ->limit(20)
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'count' => $leads->count(),
+            'leads' => $leads,
+        ]);
     }
 }
