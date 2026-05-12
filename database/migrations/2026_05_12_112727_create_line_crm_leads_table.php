@@ -28,6 +28,9 @@ return new class extends Migration
             $table->text('last_message')->nullable();
 
             $table->timestamp('last_interaction_at')->nullable();
+            
+            $table->integer('lead_score')->default(0);
+            $table->timestamp('last_step_at')->nullable();
 
             $table->timestamps();
         });

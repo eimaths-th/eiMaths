@@ -16,5 +16,7 @@ class LineCrmLead extends Model
         'status',
         'last_message',
         'last_interaction_at',
+        'lead_score',
+        'last_step_at',
     ];
 }
