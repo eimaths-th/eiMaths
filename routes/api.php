@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\APIController;
 use App\Http\Controllers\Api\ParentAuthController;
+use App\Http\Controllers\Api\N8nLineCrmController;
 
 
 
@@ -66,3 +67,5 @@ Route::middleware('auth.apikey')->group(function () {
 
 Route::get('/revenue-summary-by-branch', [App\Http\Controllers\ReceiptController::class, 'GetRevenueSummaryByBranch']);
 Route::get('/revenue-summary-by-branch-monthly', [App\Http\Controllers\ReceiptController::class, 'GetRevenueSummaryByBranchMonthly']);
+
+Route::post('/n8n/line/lead', [N8nLineCrmController::class, 'handleLead']);
