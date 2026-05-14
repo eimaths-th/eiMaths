@@ -78,6 +78,14 @@
         </a>
     </li>
 @endcan
+@can('faq-list')
+    <li class="nav-item">
+        <a href="{{ route('faqs.index') }}" class="nav-link {{ Request::is('faqs*') ? 'active' : '' }}">
+            <i class="nav-icon fas fa-circle-question"></i>
+            <p>FAQ Management</p>
+        </a>
+    </li>
+@endcan
 @can('order-list')
     <!--<li class="nav-item {{ in_array(Request::route()->getName(), ['orders']) ? 'menu-open' : '' }}">
                                                                                     <a href="#" class="nav-link {{ in_array(Request::route()->getName(), ['orders']) ? 'active' : '' }}">

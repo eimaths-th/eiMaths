@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\APIController;
 use App\Http\Controllers\Api\ParentAuthController;
 use App\Http\Controllers\Api\N8nLineCrmController;
+use App\Http\Controllers\FaqController;
 
 
 
@@ -25,6 +26,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::get('/blogs', [App\Http\Controllers\BlogController::class, 'api_show']);
 Route::get('/blogs/{slug}', [App\Http\Controllers\BlogController::class, 'api_show_by_slug']);
+Route::get('/faqs', [FaqController::class, 'ApiIndex']);
 
 //Route::middleware('cors')->post('/applogin', [APIController::class, 'login']);
 // Parent Authentication Routes

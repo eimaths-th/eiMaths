@@ -3,6 +3,7 @@
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\EiFormController;
 use App\Http\Controllers\FooterSettingController;
+use App\Http\Controllers\FaqController;
 use App\Http\Controllers\HistoriesController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
@@ -236,6 +237,14 @@ Route::group(['middleware' => ['auth']], function () {
 
     // Blogs
     Route::resource('blogs', BlogController::class);
+
+    // FAQs
+    Route::get('/faqs', [FaqController::class, 'Index'])->name('faqs.index');
+    Route::get('/faqs/create', [FaqController::class, 'Create'])->name('faqs.create');
+    Route::post('/faqs', [FaqController::class, 'Store'])->name('faqs.store');
+    Route::get('/faqs/{faq}/edit', [FaqController::class, 'Edit'])->name('faqs.edit');
+    Route::put('/faqs/{faq}', [FaqController::class, 'Update'])->name('faqs.update');
+    Route::delete('/faqs/{faq}', [FaqController::class, 'Destroy'])->name('faqs.destroy');
 
     // Image Upload
     Route::post('/upload/image', [ImageUploadController::class, 'upload'])->name('upload.image');
