@@ -11,9 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('line_crm_leads', function (Blueprint $table) {
-            $table->timestamp('last_follow_up_at')->nullable();
-            $table->integer('follow_up_count')->default(0);
+    Schema::table('line_crm_leads', function (Blueprint $table) {
+            if (!Schema::hasColumn('line_crm_leads', 'last_follow_up_at')) {
+                $table->timestamp('last_follow_up_at')->nullable();
+            }
+
+            if (!Schema::hasColumn('line_crm_leads', 'follow_up_count')) {
+                $table->integer('follow_up_count')->default(0);
+            }
         });
     }
 
@@ -22,8 +27,14 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('line_crm_leads', function (Blueprint $table) {
-            $table->dropColumn(['last_follow_up_at', 'follow_up_count']);
+      Schema::table('line_crm_leads', function (Blueprint $table) {
+            if (Schema::hasColumn('line_crm_leads', 'last_follow_up_at')) {
+                $table->dropColumn('last_follow_up_at');
+            }
+
+            if (Schema::hasColumn('line_crm_leads', 'follow_up_count')) {
+                $table->dropColumn('follow_up_count');
+            }
         });
     }
 };
