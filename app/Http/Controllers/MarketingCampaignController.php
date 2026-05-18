@@ -86,4 +86,43 @@ class MarketingCampaignController extends Controller
             ->route('marketing.campaigns.index')
             ->with('success', 'ลบ Campaign สำเร็จ');
     }
+
+    public function pendingCampaigns()
+    {
+        $campaigns = MarketingCampaign::query()
+            ->where('status', 'scheduled')
+            ->where('schedule_at', '<=', now())
+            ->orderBy('schedule_at')
+            ->limit(10)
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'count' => $campaigns->count(),
+            'campaigns' => $campaigns,
+        ]);
+    }
+
+    public function markAsProcessing(MarketingCampaign $campaign)
+    {
+        $campaign->update([
+            'status' => 'processing',
+        ]);
+
+        return response()->json([
+            'success' => true,
+        ]);
+    }
+
+    public function markAsSent(MarketingCampaign $campaign)
+    {
+        $campaign->update([
+            'status' => 'completed',
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Campaign marked as completed',
+        ]);
+    }
 }

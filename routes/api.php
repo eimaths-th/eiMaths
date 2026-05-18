@@ -72,3 +72,9 @@ Route::get('/revenue-summary-by-branch-monthly', [App\Http\Controllers\ReceiptCo
 
 Route::post('/n8n/line/lead', [N8nLineCrmController::class, 'handleLead']);
 Route::get('/n8n/line/follow-up-leads', [N8nLineCrmController::class, 'followUpLeads']);
+
+use App\Http\Controllers\MarketingCampaignController;
+
+Route::get('/n8n/marketing/campaigns/pending', [MarketingCampaignController::class, 'pendingCampaigns']);
+Route::post('/n8n/marketing/campaigns/{campaign}/processing', [MarketingCampaignController::class, 'markAsProcessing']);
+Route::post('/n8n/marketing/campaigns/{campaign}/sent', [MarketingCampaignController::class, 'markAsSent']);
