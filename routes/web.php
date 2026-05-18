@@ -20,7 +20,6 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\ImageUploadController;
 use App\Http\Controllers\QuestionBulkController;
-use App\Http\Controllers\MarketingCampaignController;
 
 use App\Services\FileUploadService;
 use Illuminate\Http\Request;
@@ -28,7 +27,6 @@ use Illuminate\Http\Request;
 
 
 Route::group(['middleware' => ['auth']], function () {
-    Route::resource('marketing/campaigns', MarketingCampaignController::class)->names('marketing.campaigns');
     //Route::get('/roles', [RoleController::class, 'index'])->name('roles.index');
     //Route::get('/roles/store', [RoleController::class, 'store'])->name('roles.store');
     Route::get('/roles/edit/{id}', [RoleController::class, 'edit'])->name('roles.edit2');

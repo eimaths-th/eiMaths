@@ -669,12 +669,3 @@
         </ul>
     </li>
 @endcan
-
-<li class="nav-header">MARKETING</li>
-<li class="nav-item">
-    <a href="{{ route('marketing.campaigns.index') }}"
-       class="nav-link {{ request()->routeIs('marketing.campaigns.*') ? 'active' : '' }}">
-        <i class="nav-icon fas fa-bullhorn"></i>
-        <p>Campaigns</p>
-    </a>
-</li>
