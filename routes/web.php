@@ -248,6 +248,9 @@ Route::group(['middleware' => ['auth']], function () {
 
     // Image Upload
     Route::post('/upload/image', [ImageUploadController::class, 'upload'])->name('upload.image');
+
+    // Marketing Campaigns
+    Route::resource('marketing-campaigns', \App\Http\Controllers\MarketingCampaignController::class);
 });
 
 Route::get('/teacher', function () {
