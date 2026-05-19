@@ -14,7 +14,7 @@
     <p><strong>Published At:</strong> {{ $blog->published_at ? $blog->published_at->format('M d, Y H:i') : 'N/A' }}</p>
     <hr>
     <div class="markdown-html-body">
-        {!! Str::markdown($blog->content) !!}
+        {!! $rendered_content !!}
     </div>
     <hr>
     <p><strong>Meta Description:</strong> {{ $blog->meta_description }}</p>

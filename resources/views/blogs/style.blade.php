@@ -38,6 +38,18 @@
         border-radius: 12px;
     }
 
+    .markdown-html-body .youtube-embed {
+        aspect-ratio: 16 / 9;
+        margin: 1rem 0;
+        max-width: 100%;
+        width: 100%;
+    }
+
+    .markdown-html-body .youtube-embed iframe {
+        height: 100%;
+        width: 100%;
+    }
+
     @media screen and (max-width: 768px) {
         .markdown-html-body p img {
             width: 100%;

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Blog;
+use App\Services\BlogContentRenderer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
@@ -159,7 +160,9 @@ class BlogController extends Controller
     {
         // Load blog with user information
         $blog->load('user');
-        return view('blogs.show', compact('blog'));
+        $rendered_content = app(BlogContentRenderer::class)->Render($blog->content);
+
+        return view('blogs.show', compact('blog', 'rendered_content'));
     }
 
     /**
@@ -168,6 +171,8 @@ class BlogController extends Controller
     public function api_show()
     {
         $blogs = Blog::with('user')->where('is_published', true)->get();
+        $content_renderer = app(BlogContentRenderer::class);
+
         foreach ($blogs as $blog) {
             $blog->makeHidden(['id','user_id']);
             if ($blog->thumbnail) {
@@ -175,7 +180,7 @@ class BlogController extends Controller
             } else {
                 $blog->thumbnail = null;
             }
-            $blog->content = \Illuminate\Support\Str::markdown($blog->content);
+            $blog->content = $content_renderer->Render($blog->content);
             if ($blog->meta_keywords) {
                 $keywords = $blog->meta_keywords;
                 $keywords = strtolower($keywords); // แปลงเป็นตัวพิมพ์เล็กทั้งหมด
@@ -228,7 +233,7 @@ class BlogController extends Controller
         } else {
             $blog->thumbnail = null;
         }
-        $blog->content = \Illuminate\Support\Str::markdown($blog->content);
+        $blog->content = app(BlogContentRenderer::class)->Render($blog->content);
         if ($blog->meta_keywords) {
             $keywords = $blog->meta_keywords;
             $keywords = strtolower($keywords); // แปลงเป็นตัวพิมพ์เล็กทั้งหมด
