@@ -78,24 +78,6 @@
         </a>
     </li>
 @endcan
-
-    <li class="nav-item {{ in_array(Request::route()->getName(), ['marketing.campaigns.index', 'marketing.campaigns.create', 'marketing.campaigns.edit']) ? 'menu-open' : '' }}">
-        <a href="#"
-            class="nav-link {{ in_array(Request::route()->getName(), ['marketing.campaigns.index', 'marketing.campaigns.create', 'marketing.campaigns.edit']) ? 'active' : '' }}">
-            <i class="nav-icon fas fa-bullhorn"></i>
-            <p>Marketing</p>
-            <i class="fas fa-angle-left right"></i>
-        </a>
-        <ul class="nav nav-treeview">
-            <li class="nav-item">
-                <a href="{{ route('marketing.campaigns.index') }}" class="nav-link {{ Request::routeIs('marketing.campaigns.*') ? 'active' : '' }}">
-                    <i class="nav-icon fa-solid fa-comment-dots"></i>
-                    <p>Campaigns</p>
-                </a>
-            </li>
-        </ul>
-    </li>
-
 @can('faq-list')
     <li class="nav-item">
         <a href="{{ route('faqs.index') }}" class="nav-link {{ Request::is('faqs*') ? 'active' : '' }}">

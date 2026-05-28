@@ -20,7 +20,6 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\ImageUploadController;
 use App\Http\Controllers\QuestionBulkController;
-use App\Http\Controllers\MarketingCampaignController;
 
 use App\Services\FileUploadService;
 use Illuminate\Http\Request;
@@ -250,8 +249,6 @@ Route::group(['middleware' => ['auth']], function () {
     // Image Upload
     Route::post('/upload/image', [ImageUploadController::class, 'upload'])->name('upload.image');
 
-    // Marketing Campaigns
-    Route::resource('marketing/campaigns', MarketingCampaignController::class)->names('marketing.campaigns');
 });
 
 Route::get('/teacher', function () {
