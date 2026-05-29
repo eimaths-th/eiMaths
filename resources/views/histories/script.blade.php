@@ -471,11 +471,16 @@
 
                 ordering: true,
                 orderCellsTop: true,
-                order: [],
+                order: [[1, 'desc']],
 
                 iDisplayLength: 10,
                 lengthMenu: [10, 25, 50, 75, 100],
                 stateSave: true,
+                stateLoadParams: function(settings, data) {
+                    if (!data.order || data.order.length === 0) {
+                        data.order = [[1, 'desc']];
+                    }
+                },
                 autoWidth: false,
                 fixedHeader: true,
 
@@ -603,7 +608,7 @@
 
         $("#AddCentre").change(function() {
             let centre = $('#AddCentre').val();
-            if (centre.length !== 0) {
+            if (Array.isArray(centre) && centre.length !== 0) {
                 $.ajax({
                     method: "GET",
                     url: "histories/running/" + centre,
@@ -613,6 +618,8 @@
                         $('#s_student').html(res.html_std);
                     }
                 });
+            } else {
+                $('#s_student').html('<option value="">select student</option>').val(null).trigger("change");
             }
         })
 
@@ -632,34 +639,40 @@
         }
 
 
+        function clearCreateHistoryMessages() {
+            $('.alert-danger').html('').hide();
+            $('.alert-success').html('').hide();
+            $('#custom-tabs-one-home-tab').tab('show');
+        }
+
+        function getSingleSelectValue(selector) {
+            const value = $(selector).val();
+            return Array.isArray(value) ? (value[0] || '') : (value || '');
+        }
+
         $(document).on('click', '#CreateButton', async function(e) {
             e.preventDefault();
-            $('.alert-danger').html('');
-            $('.alert-danger').hide();
-            $('.alert-success').html('');
-            $('.alert-success').hide();
+            clearCreateHistoryMessages();
 
-            $('#custom-tabs-one-home-tab').tab('show');
-            $('#AddSTerm').val(null).trigger("change");
-            // $('#AddBook').val(null).trigger("change");
-            $('#AddLevel').val(null).trigger("change")
-            $('#AddTerm').val(null).trigger("change")
-            var centre = 0;
-            var createUrl = "{{ route('create', ':centre') }}".replace(':centre', centre);
-            $.ajax({
-                url: createUrl,
-                method: "GET",
-                success: function(response) {
-                    $('#AddCode').val(response.running);
-                    $('#AddTerm').prop('disabled', true);
-                    // $('#AddBook').prop('disabled', true);
-                    $('#s_student').html(response.html_std);
+            if ($('#AddCentre').prop('disabled')) {
+                var centre = getSingleSelectValue('#AddCentre') || 0;
+                var selectedStudent = getSingleSelectValue('#s_student');
+                var createUrl = "{{ route('create', ':centre') }}".replace(':centre', centre);
+                $.ajax({
+                    url: createUrl,
+                    method: "GET",
+                    success: function(response) {
+                        $('#AddCode').val(response.running);
+                        $('#AddTerm').prop('disabled', !getSingleSelectValue('#AddTerm'));
+                        // $('#AddBook').prop('disabled', true);
+                        $('#s_student').html(response.html_std).val(selectedStudent).trigger("change.select2");
 
-                },
-                error: function(error) {
-                    console.error(error);
-                }
-            });
+                    },
+                    error: function(error) {
+                        console.error(error);
+                    }
+                });
+            }
             $('#CreateModal').modal('show');
 
         });
@@ -752,11 +765,11 @@
                 data: {
                     img: values,
                     signature: signatureData,
-                    centre: $('#AddCentre').val()[0],
-                    student_id: $('#s_student').val()[0],
+                    centre: getSingleSelectValue('#AddCentre'),
+                    student_id: getSingleSelectValue('#s_student'),
                     teacher_id: $('#teacher').val(),
-                    level_id: $('#AddLevel').val()[0],
-                    term: $('#AddTerm').val()[0],
+                    level_id: getSingleSelectValue('#AddLevel'),
+                    term: getSingleSelectValue('#AddTerm'),
                     bookuse: $('#AddBook').val(),
                     date: $('#AddDate').val(),
                     stime: $('#AddStartTime').val(),
@@ -786,17 +799,10 @@
                         signaturePad.clear();
                         canvas.style.backgroundColor = 'rgba(0, 0, 0, 0)';
 
-                        $('#Listview').DataTable().ajax.reload();
-                        $('#AddCentre').val(null).trigger("change");
-                        $('#teacher').val(null).trigger("change");
-                        $('#s_student').val(null).trigger("change");
-                        $('#AddLevel').val(null).trigger("change");
-                        $('#AddTerm').val(null).trigger("change");
-                        $('#AddBook').val('');
-                        $('#AddDate').val('');
-                        $('#AddStartTime').val('');
-                        $('#AddEndTime').val('');
-                        $('#AddComment').val('');
+                        $('#Listview').DataTable().order([1, 'desc']).ajax.reload();
+                        $('#drop2').val('');
+                        $('#dropzone-att').css('border', '');
+                        $('#dropzone-att-error').hide();
                         clearDropzonePreviewsCreate();
                         // $('.form').trigger('reset');
                         $('#CreateModal').modal('hide');

@@ -242,7 +242,9 @@ class HistoriesController extends Controller
                 ->eloquent($datass)
                 // Ensure server-side ordering works for these columns
                 ->orderColumn('date', function($query, $order) {
-                    $query->orderBy('date', $order)->orderBy('stime', $order);
+                    $query->orderBy('date', $order)
+                        ->orderBy('stime', $order)
+                        ->orderBy('id', $order);
                 })
                 ->orderColumn('level_name', 'level_name $1')
                 ->orderColumn('term', 'term $1')
