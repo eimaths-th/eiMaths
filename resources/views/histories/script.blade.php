@@ -443,7 +443,7 @@
                     type: "GET",
                     data: function (d) {
                         // ✅ ส่งค่าช่วงวันที่ (หรือฟิลเตอร์อื่น ๆ) ไปยัง server
-                        if (reservationChanged && $('#reservation').val()) {
+                        if ($('#reservation').val()) {
                             d.sdate = $('#reservation').val();
                         }
                     }
@@ -779,12 +779,22 @@
                     _token: token,
                 },
                 success: function(result) {
-                    if (result.errors) {
+                    if (result.errors || result.success === false) {
                         $('.alert-danger').html('');
-                        $.each(result.errors, function(key, value) {
-                            $('.alert-danger').show();
-                            $('.alert-danger').append('<strong><li>' + value +
+                        $('.alert-danger').show();
+
+                        if (result.errors) {
+                            $.each(result.errors, function(key, value) {
+                                $('.alert-danger').append('<strong><li>' + value +
+                                    '</li></strong>');
+                            });
+                        } else {
+                            $('.alert-danger').append('<strong><li>' + result.message +
                                 '</li></strong>');
+                        }
+
+                        toastr.error(result.message || 'Unable to create history', {
+                            timeOut: 5000
                         });
                     } else {
 
