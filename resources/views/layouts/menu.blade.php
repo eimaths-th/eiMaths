@@ -14,6 +14,12 @@
         <p>CRM Leads</p>
     </a>
 </li>
+<li class="nav-item">
+    <a href="{{ route('tracking-links.index') }}" class="nav-link {{ Request::routeIs('tracking-links.*') ? 'active' : '' }}">
+        <i class="nav-icon fas fa-link"></i>
+        <p>Tracking Link Generator</p>
+    </a>
+</li>
 
 @can('student-list')
     <li class="nav-item {{ in_array(Request::route()->getName(), ['contacts', 'guest.report', 'demo.list', 'discontinued', 'contacts.graduated', 'histories.index', 'parent.index', 'ei_form.backEndIndex']) ? 'menu-open' : '' }}">

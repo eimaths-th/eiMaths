@@ -16,6 +16,7 @@ use App\Http\Controllers\QrCodePaymentController;
 use App\Http\Controllers\ReceiptController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\TeachingPeriodController;
+use App\Http\Controllers\TrackingLinkController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\CrmLeadController;
@@ -254,6 +255,10 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/crm/leads/{lead}', [CrmLeadController::class, 'show'])->name('crm.leads.show');
     Route::put('/crm/leads/{lead}', [CrmLeadController::class, 'update'])->name('crm.leads.update');
     Route::post('/crm/leads/{lead}/notes', [CrmLeadController::class, 'storeNote'])->name('crm.leads.notes.store');
+
+    Route::get('/tracking-links', [TrackingLinkController::class, 'index'])->name('tracking-links.index');
+    Route::post('/tracking-links', [TrackingLinkController::class, 'store'])->name('tracking-links.store');
+    Route::delete('/tracking-links/{trackingLink}', [TrackingLinkController::class, 'destroy'])->name('tracking-links.destroy');
 
 });
 
