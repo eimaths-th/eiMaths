@@ -8,6 +8,13 @@
 </li>
 @endcan
 {{--  --}}
+<li class="nav-item">
+    <a href="{{ route('crm.leads.index') }}" class="nav-link {{ Request::routeIs('crm.leads.*') ? 'active' : '' }}">
+        <i class="nav-icon fas fa-user-check"></i>
+        <p>CRM Leads</p>
+    </a>
+</li>
+
 @can('student-list')
     <li class="nav-item {{ in_array(Request::route()->getName(), ['contacts', 'guest.report', 'demo.list', 'discontinued', 'contacts.graduated', 'histories.index', 'parent.index', 'ei_form.backEndIndex']) ? 'menu-open' : '' }}">
         <a href="#"

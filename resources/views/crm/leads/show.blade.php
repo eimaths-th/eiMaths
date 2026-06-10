@@ -1,0 +1,205 @@
+@extends('layouts.app')
+
+@section('content')
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Lead Detail #{{ $lead->id }}</h1>
+            </div>
+            <div class="col-sm-6">
+                <a href="{{ route('crm.leads.index') }}" class="btn btn-secondary float-sm-right">Back</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+        @if (Session::has('success'))
+            <div class="alert alert-success">{{ Session::get('success') }}</div>
+        @endif
+
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                {{ $errors->first() }}
+            </div>
+        @endif
+
+        @if($lead->duplicateOf)
+            <div class="alert alert-warning">
+                Possible duplicate of lead #{{ $lead->duplicateOf->id }}: {{ $lead->duplicateOf->parent_name }} / {{ $lead->duplicateOf->phone }}
+            </div>
+        @endif
+
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card card-primary">
+                    <div class="card-header">
+                        <h3 class="card-title">Lead Information</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5>Parent</h5>
+                                <p><strong>Name:</strong> {{ $lead->parent_name }}</p>
+                                <p><strong>Phone:</strong> {{ $lead->phone }}</p>
+                                <p><strong>LINE ID:</strong> {{ $lead->line_id ?: '-' }}</p>
+                                <p><strong>Email:</strong> {{ $lead->email ?: '-' }}</p>
+                                <p><strong>Preferred time:</strong> {{ $lead->preferred_contact_time ?: '-' }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>Student</h5>
+                                <p><strong>Name:</strong> {{ $lead->student_name }}</p>
+                                <p><strong>Grade:</strong> {{ $lead->student_grade }}</p>
+                                <p><strong>School:</strong> {{ $lead->student_school ?: '-' }}</p>
+                                <p><strong>Age:</strong> {{ $lead->student_age ?: '-' }}</p>
+                            </div>
+                        </div>
+
+                        <hr>
+                        <h5>Need & Interest</h5>
+                        <p><strong>Pain point:</strong> {{ $lead->pain_point ?: '-' }}</p>
+                        <p><strong>Interest:</strong> {{ $lead->interest ?: '-' }}</p>
+
+                        <hr>
+                        <h5>Mini Assessment</h5>
+                        @if(is_array($lead->assessment_answers) && count($lead->assessment_answers))
+                            <ul>
+                                @foreach($lead->assessment_answers as $answer)
+                                    <li>
+                                        <strong>{{ $answer['question'] ?? $answer['key'] ?? 'Question' }}:</strong>
+                                        {{ is_array($answer['answer'] ?? null) ? implode(', ', $answer['answer']) : ($answer['answer'] ?? '-') }}
+                                    </li>
+                                @endforeach
+                            </ul>
+                        @else
+                            <p>-</p>
+                        @endif
+                        <p><strong>Assessment note:</strong> {{ $lead->assessment_note ?: '-' }}</p>
+
+                        <hr>
+                        <h5>Tracking</h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Source:</strong> {{ $lead->utm_source ?: '-' }}</p>
+                                <p><strong>Medium:</strong> {{ $lead->utm_medium ?: '-' }}</p>
+                                <p><strong>Campaign:</strong> {{ $lead->utm_campaign ?: '-' }}</p>
+                                <p><strong>Content:</strong> {{ $lead->utm_content ?: '-' }}</p>
+                                <p><strong>Term:</strong> {{ $lead->utm_term ?: '-' }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>First touch:</strong> {{ $lead->first_touch_source ?: '-' }}</p>
+                                <p><strong>Last touch:</strong> {{ $lead->last_touch_source ?: '-' }}</p>
+                                <p><strong>Referrer:</strong> <span class="text-break">{{ $lead->referrer ?: '-' }}</span></p>
+                                <p><strong>Landing page:</strong> <span class="text-break">{{ $lead->landing_page ?: '-' }}</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card card-secondary">
+                    <div class="card-header">
+                        <h3 class="card-title">Notes / Contact History</h3>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" action="{{ route('crm.leads.notes.store', $lead) }}" class="mb-4">
+                            @csrf
+                            <div class="form-group">
+                                <textarea name="note" class="form-control" rows="3" placeholder="Add contact note..." required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <select name="status_after" class="form-control">
+                                    <option value="">Keep current status</option>
+                                    @foreach($statuses as $value => $label)
+                                        <option value="{{ $value }}">{{ $label }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Save Note</button>
+                        </form>
+
+                        @forelse($lead->notes as $note)
+                            <div class="border rounded p-3 mb-2">
+                                <div class="text-muted small">
+                                    {{ optional($note->created_at)->format('Y-m-d H:i') }}
+                                    by {{ $note->creator->name ?? 'System' }}
+                                    @if($note->status_before || $note->status_after)
+                                        | {{ $note->status_before ?: '-' }} -> {{ $note->status_after ?: '-' }}
+                                    @endif
+                                </div>
+                                <div>{{ $note->note }}</div>
+                            </div>
+                        @empty
+                            <p>No notes yet.</p>
+                        @endforelse
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card card-success">
+                    <div class="card-header">
+                        <h3 class="card-title">Staff Actions</h3>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" action="{{ route('crm.leads.update', $lead) }}">
+                            @csrf
+                            @method('PUT')
+                            <div class="form-group">
+                                <label>Status</label>
+                                <select name="lead_status" class="form-control" required>
+                                    @foreach($statuses as $value => $label)
+                                        <option value="{{ $value }}" @selected($lead->lead_status === $value)>{{ $label }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Assigned staff</label>
+                                <select name="assigned_staff_id" class="form-control">
+                                    <option value="">Unassigned</option>
+                                    @foreach($staffUsers as $staff)
+                                        <option value="{{ $staff->id }}" @selected($lead->assigned_staff_id === $staff->id)>{{ $staff->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Last contact at</label>
+                                <input type="datetime-local" name="last_contact_at" value="{{ optional($lead->last_contact_at)->format('Y-m-d\\TH:i') }}" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Next follow-up at</label>
+                                <input type="datetime-local" name="next_follow_up_at" value="{{ optional($lead->next_follow_up_at)->format('Y-m-d\\TH:i') }}" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Trial scheduled at</label>
+                                <input type="datetime-local" name="trial_scheduled_at" value="{{ optional($lead->trial_scheduled_at)->format('Y-m-d\\TH:i') }}" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Trial completed at</label>
+                                <input type="datetime-local" name="trial_completed_at" value="{{ optional($lead->trial_completed_at)->format('Y-m-d\\TH:i') }}" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Enrolled at</label>
+                                <input type="datetime-local" name="enrolled_at" value="{{ optional($lead->enrolled_at)->format('Y-m-d\\TH:i') }}" class="form-control">
+                            </div>
+                            <button type="submit" class="btn btn-success btn-block">Update Lead</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card card-info">
+                    <div class="card-header">
+                        <h3 class="card-title">Click IDs</h3>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>fbclid:</strong> <span class="text-break">{{ $lead->fbclid ?: '-' }}</span></p>
+                        <p><strong>gclid:</strong> <span class="text-break">{{ $lead->gclid ?: '-' }}</span></p>
+                        <p><strong>ttclid:</strong> <span class="text-break">{{ $lead->ttclid ?: '-' }}</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+@endsection

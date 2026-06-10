@@ -18,6 +18,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\TeachingPeriodController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\BlogController;
+use App\Http\Controllers\CrmLeadController;
 use App\Http\Controllers\ImageUploadController;
 use App\Http\Controllers\QuestionBulkController;
 
@@ -248,6 +249,11 @@ Route::group(['middleware' => ['auth']], function () {
 
     // Image Upload
     Route::post('/upload/image', [ImageUploadController::class, 'upload'])->name('upload.image');
+
+    Route::get('/crm/leads', [CrmLeadController::class, 'index'])->name('crm.leads.index');
+    Route::get('/crm/leads/{lead}', [CrmLeadController::class, 'show'])->name('crm.leads.show');
+    Route::put('/crm/leads/{lead}', [CrmLeadController::class, 'update'])->name('crm.leads.update');
+    Route::post('/crm/leads/{lead}/notes', [CrmLeadController::class, 'storeNote'])->name('crm.leads.notes.store');
 
 });
 
