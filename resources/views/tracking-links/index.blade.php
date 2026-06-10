@@ -46,24 +46,49 @@
                     <div class="row">
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label for="utm_source">Source *</label>
+                                <label for="utm_source">
+                                    Source *
+                                    <i class="fas fa-circle-info text-muted ml-1" data-toggle="tooltip"
+                                        title="แพลตฟอร์มหรือแหล่งที่ลูกค้าเข้ามา เช่น Facebook, Google, TikTok หรือ LINE"></i>
+                                </label>
                                 <select id="utm_source" name="utm_source" class="form-control tracking-field" required>
                                     <option value="">Select source</option>
-                                    @foreach(['facebook', 'google', 'tiktok', 'line', 'email', 'referral', 'organic'] as $source)
-                                        <option value="{{ $source }}" @selected(old('utm_source') === $source)>{{ ucfirst($source) }}</option>
+                                    @foreach([
+                                        'facebook' => 'Facebook - โฆษณาหรือโพสต์บน Facebook',
+                                        'google' => 'Google - โฆษณาหรือผลค้นหาจาก Google',
+                                        'tiktok' => 'TikTok - โฆษณาหรือคอนเทนต์บน TikTok',
+                                        'line' => 'LINE - LINE Ads, LINE OA หรือข้อความ LINE',
+                                        'email' => 'Email - ลิงก์ที่ส่งผ่านอีเมล',
+                                        'referral' => 'Referral - เว็บไซต์หรือพันธมิตรแนะนำมา',
+                                        'organic' => 'Organic - การเข้าถึงโดยไม่เสียค่าโฆษณา',
+                                    ] as $source => $sourceLabel)
+                                        <option value="{{ $source }}" @selected(old('utm_source') === $source)>{{ $sourceLabel }}</option>
                                     @endforeach
                                 </select>
+                                <small class="form-text text-muted">Source บอกว่าลูกค้ามาจากแพลตฟอร์มใด</small>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label for="utm_medium">Medium *</label>
+                                <label for="utm_medium">
+                                    Medium *
+                                    <i class="fas fa-circle-info text-muted ml-1" data-toggle="tooltip"
+                                        title="วิธีที่ลูกค้าเดินทางมาจาก Source เช่น โฆษณาแบบจ่ายเงิน โพสต์ปกติ อีเมล หรือเว็บไซต์แนะนำ"></i>
+                                </label>
                                 <select id="utm_medium" name="utm_medium" class="form-control tracking-field" required>
                                     <option value="">Select medium</option>
-                                    @foreach(['cpc', 'paid_social', 'organic_social', 'email', 'referral', 'display'] as $medium)
-                                        <option value="{{ $medium }}" @selected(old('utm_medium') === $medium)>{{ $medium }}</option>
+                                    @foreach([
+                                        'cpc' => 'cpc - โฆษณาแบบจ่ายต่อคลิก เช่น Google Search Ads',
+                                        'paid_social' => 'paid_social - โฆษณาแบบเสียเงินบน Social Media',
+                                        'organic_social' => 'organic_social - โพสต์ Social ปกติ ไม่เสียค่าโฆษณา',
+                                        'email' => 'email - ลิงก์ที่ส่งผ่าน Email Marketing',
+                                        'referral' => 'referral - ลิงก์จากเว็บไซต์หรือพันธมิตร',
+                                        'display' => 'display - โฆษณาแบนเนอร์หรือ Display Network',
+                                    ] as $medium => $mediumLabel)
+                                        <option value="{{ $medium }}" @selected(old('utm_medium') === $medium)>{{ $mediumLabel }}</option>
                                     @endforeach
                                 </select>
+                                <small class="form-text text-muted">Medium บอกว่าลูกค้าเข้ามาด้วยวิธีใด</small>
                             </div>
                         </div>
                         <div class="col-md-4">
@@ -178,6 +203,10 @@
 @section('script')
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        if (window.jQuery && typeof window.jQuery.fn.tooltip === 'function') {
+            window.jQuery('[data-toggle="tooltip"]').tooltip();
+        }
+
         const preview = document.getElementById('generated-preview');
         const trackedFields = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'];
 
