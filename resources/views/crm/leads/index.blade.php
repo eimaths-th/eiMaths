@@ -55,6 +55,14 @@
                                 @endforeach
                             </select>
                         </div>
+                        <div class="col-md-2 mb-2">
+                            <select name="created_from" class="form-control">
+                                <option value="">All channels</option>
+                                @foreach($createdFromOptions as $value => $label)
+                                    <option value="{{ $value }}" @selected(request('created_from') === $value)>{{ $label }}</option>
+                                @endforeach
+                            </select>
+                        </div>
                         <div class="col-md-1 mb-2">
                             <button type="submit" class="btn btn-primary btn-block">Filter</button>
                         </div>
@@ -79,6 +87,7 @@
                                 <th>Parent</th>
                                 <th>Phone</th>
                                 <th>LINE ID</th>
+                                <th>Channel</th>
                                 <th>Student</th>
                                 <th>Grade</th>
                                 <th>Pain Point</th>
@@ -98,6 +107,15 @@
                                     <td>{{ $lead->parent_name }}</td>
                                     <td>{{ $lead->phone }}</td>
                                     <td>{{ $lead->line_id ?: '-' }}</td>
+                                    <td>
+                                        @if($lead->line_user_id)
+                                            <span class="badge badge-success">LINE OA</span>
+                                            <div class="small mt-1">{{ $lead->line_display_name ?: $lead->line_user_id }}</div>
+                                            <div class="text-muted small">{{ $lead->created_from_label }}</div>
+                                        @else
+                                            <span class="badge badge-light">{{ $lead->created_from_label }}</span>
+                                        @endif
+                                    </td>
                                     <td>{{ $lead->student_name }}</td>
                                     <td>{{ $lead->student_grade }}</td>
                                     <td>{{ \Illuminate\Support\Str::limit($lead->pain_point, 50) }}</td>
@@ -114,7 +132,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="14" class="text-center">No leads found.</td>
+                                    <td colspan="15" class="text-center">No leads found.</td>
                                 </tr>
                             @endforelse
                         </tbody>

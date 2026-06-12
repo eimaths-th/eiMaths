@@ -58,6 +58,26 @@
                         </div>
 
                         <hr>
+                        <h5>LINE OA</h5>
+                        <div class="row">
+                            <div class="col-md-3">
+                                @if($lead->line_picture_url)
+                                    <img src="{{ $lead->line_picture_url }}" alt="{{ $lead->line_display_name }}" class="img-fluid rounded-circle mb-3" style="max-width: 96px;">
+                                @endif
+                            </div>
+                            <div class="col-md-9">
+                                <p><strong>Display name:</strong> {{ $lead->line_display_name ?: '-' }}</p>
+                                <p><strong>LINE user ID:</strong> <span class="text-break">{{ $lead->line_user_id ?: '-' }}</span></p>
+                                <p><strong>Follow status:</strong> {{ $lead->line_follow_status ?: '-' }}</p>
+                                <p><strong>Followed at:</strong> {{ optional($lead->line_followed_at)->format('Y-m-d H:i') ?: '-' }}</p>
+                                <p><strong>Conversation:</strong> {{ $lead->line_conversation_state ?: '-' }}</p>
+                                <p><strong>LINE source:</strong> {{ $lead->line_source ?: '-' }}</p>
+                                <p><strong>Campaign ref:</strong> {{ $lead->line_ref ?: '-' }}</p>
+                                <p><strong>Last message:</strong> {{ optional($lead->line_last_message_at)->format('Y-m-d H:i') ?: '-' }}</p>
+                            </div>
+                        </div>
+
+                        <hr>
                         <h5>Need & Interest</h5>
                         <p><strong>Pain point:</strong> {{ $lead->pain_point ?: '-' }}</p>
                         <p><strong>Interest:</strong> {{ $lead->interest ?: '-' }}</p>
@@ -80,6 +100,7 @@
 
                         <hr>
                         <h5>Tracking</h5>
+                        <p><strong>Created from:</strong> {{ $lead->created_from_label }}</p>
                         <div class="row">
                             <div class="col-md-6">
                                 <p><strong>Source:</strong> {{ $lead->utm_source ?: '-' }}</p>

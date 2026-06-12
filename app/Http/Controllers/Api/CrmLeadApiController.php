@@ -13,21 +13,42 @@ class CrmLeadApiController extends Controller
 {
     public function store(Request $request, CrmLeadService $leadService)
     {
+        $this->authorizeIntegration($request);
+        $request->merge([
+            'phone' => preg_replace('/[^0-9+]/', '', (string) $request->input('phone')),
+        ]);
         $data = $request->validate($this->leadValidationRules());
 
         $lead = $leadService->createFromRegistration($data);
+        $action = $lead->getAttribute('merge_action') ?: 'created';
 
         return response()->json([
             'success' => true,
             'message' => 'Lead registration saved successfully.',
+            'action' => $action,
             'lead_id' => $lead->id,
+            'id' => $lead->id,
             'status' => $lead->lead_status,
-            'is_duplicate' => ! empty($lead->duplicate_of_lead_id),
-        ], 201);
+            'is_duplicate' => false,
+            'was_merged' => (bool) $lead->getAttribute('was_merged'),
+            'lead' => [
+                'id' => $lead->id,
+                'parent_name' => $lead->parent_name,
+                'phone' => $lead->phone,
+                'student_name' => $lead->student_name,
+                'student_grade' => $lead->student_grade,
+                'lead_status' => $lead->lead_status,
+                'created_from' => $lead->created_from,
+                'utm_source' => $lead->utm_source,
+                'utm_campaign' => $lead->utm_campaign,
+            ],
+            'lead_detail_url' => route('crm.leads.show', $lead),
+        ], $action === 'merged' ? 200 : 201);
     }
 
-    public function followUpDue()
+    public function followUpDue(Request $request)
     {
+        $this->authorizeIntegration($request);
         $leads = CrmLead::query()
             ->with('assignedStaff:id,name')
             ->where(function ($query) {
@@ -63,6 +84,7 @@ class CrmLeadApiController extends Controller
 
     public function updateStatus(Request $request, CrmLead $lead, CrmLeadStatusService $statusService)
     {
+        $this->authorizeIntegration($request);
         $data = $request->validate([
             'lead_status' => ['required', Rule::in(array_keys(CrmLead::STATUSES))],
             'assigned_staff_id' => ['nullable', 'exists:users,id'],
@@ -83,6 +105,7 @@ class CrmLeadApiController extends Controller
 
     public function addNote(Request $request, CrmLead $lead)
     {
+        $this->authorizeIntegration($request);
         $data = $request->validate([
             'note' => ['required', 'string', 'max:5000'],
             'status_after' => ['nullable', Rule::in(array_keys(CrmLead::STATUSES))],
@@ -112,8 +135,17 @@ class CrmLeadApiController extends Controller
     {
         return [
             'parent_name' => ['required', 'string', 'max:255'],
-            'phone' => ['required', 'string', 'max:30', 'regex:/^[0-9+()\\-\\s]{8,30}$/'],
+            'phone' => ['required', 'string', 'regex:/^[0-9+]{8,15}$/'],
             'line_id' => ['nullable', 'string', 'max:100'],
+            'line_user_id' => ['nullable', 'string', 'max:100'],
+            'line_display_name' => ['nullable', 'string', 'max:255'],
+            'line_picture_url' => ['nullable', 'url', 'max:2000'],
+            'line_follow_status' => ['nullable', Rule::in(['followed', 'unfollowed', 'unknown'])],
+            'line_followed_at' => ['nullable', 'date'],
+            'line_last_message_at' => ['nullable', 'date'],
+            'line_conversation_state' => ['nullable', 'string', 'max:100'],
+            'line_ref' => ['nullable', 'string', 'max:255'],
+            'line_source' => ['nullable', 'string', 'max:100'],
             'email' => ['nullable', 'email', 'max:255'],
             'preferred_contact_time' => ['nullable', 'string', 'max:255'],
             'student_name' => ['required', 'string', 'max:255'],
@@ -134,7 +166,7 @@ class CrmLeadApiController extends Controller
             'landing_page' => ['nullable', 'string', 'max:2000'],
             'first_touch_source' => ['nullable', 'string', 'max:255'],
             'last_touch_source' => ['nullable', 'string', 'max:255'],
-            'created_from' => ['nullable', 'string', 'max:100'],
+            'created_from' => ['nullable', Rule::in(array_keys(CrmLead::CREATED_FROM))],
             'lead_status' => ['nullable', Rule::in(array_keys(CrmLead::STATUSES))],
             'assessment_answers' => ['nullable', 'array'],
             'assessment_level' => ['nullable', 'string', 'max:100'],
@@ -145,5 +177,19 @@ class CrmLeadApiController extends Controller
             'weak_topics' => ['nullable', 'array'],
             'test_duration_seconds' => ['nullable', 'integer'],
         ];
+    }
+
+    private function authorizeIntegration(Request $request): void
+    {
+        $configuredToken = (string) config('services.crm_integrations.token');
+        $providedToken = (string) ($request->bearerToken() ?: $request->header('X-EIMATHS-TOKEN'));
+
+        abort_unless(
+            $configuredToken !== ''
+                && $providedToken !== ''
+                && hash_equals($configuredToken, $providedToken),
+            401,
+            'Invalid integration token.'
+        );
     }
 }

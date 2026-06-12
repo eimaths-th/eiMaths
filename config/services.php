@@ -37,4 +37,8 @@ return [
         'redirect' => env('GOOGLE_REDIRECT'),
     ],
 
+    'crm_integrations' => [
+        'token' => env('CRM_INTEGRATION_TOKEN'),
+    ],
+
 ];

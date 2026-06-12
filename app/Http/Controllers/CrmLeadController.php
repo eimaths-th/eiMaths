@@ -17,6 +17,7 @@ class CrmLeadController extends Controller
             ->when($request->filled('status'), fn ($query) => $query->where('lead_status', $request->status))
             ->when($request->filled('source'), fn ($query) => $query->where('utm_source', $request->source))
             ->when($request->filled('campaign'), fn ($query) => $query->where('utm_campaign', $request->campaign))
+            ->when($request->filled('created_from'), fn ($query) => $query->where('created_from', $request->created_from))
             ->when($request->filled('staff_id'), fn ($query) => $query->where('assigned_staff_id', $request->staff_id))
             ->when($request->filled('date_from'), fn ($query) => $query->whereDate('created_at', '>=', $request->date_from))
             ->when($request->filled('date_to'), fn ($query) => $query->whereDate('created_at', '<=', $request->date_to))
@@ -26,6 +27,8 @@ class CrmLeadController extends Controller
                     $subQuery->where('parent_name', 'like', $search)
                         ->orWhere('phone', 'like', $search)
                         ->orWhere('line_id', 'like', $search)
+                        ->orWhere('line_display_name', 'like', $search)
+                        ->orWhere('line_user_id', 'like', $search)
                         ->orWhere('student_name', 'like', $search);
                 });
             })
@@ -39,6 +42,7 @@ class CrmLeadController extends Controller
             'staffUsers' => User::query()->orderBy('name')->get(['id', 'name']),
             'sources' => CrmLead::query()->whereNotNull('utm_source')->distinct()->orderBy('utm_source')->pluck('utm_source'),
             'campaigns' => CrmLead::query()->whereNotNull('utm_campaign')->distinct()->orderBy('utm_campaign')->pluck('utm_campaign'),
+            'createdFromOptions' => CrmLead::CREATED_FROM,
         ]);
     }
 

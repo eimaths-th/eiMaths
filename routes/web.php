@@ -255,6 +255,8 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/crm/leads/{lead}', [CrmLeadController::class, 'show'])->name('crm.leads.show');
     Route::put('/crm/leads/{lead}', [CrmLeadController::class, 'update'])->name('crm.leads.update');
     Route::post('/crm/leads/{lead}/notes', [CrmLeadController::class, 'storeNote'])->name('crm.leads.notes.store');
+    Route::get('/admin/crm/leads', [CrmLeadController::class, 'index'])->name('admin.crm.leads.index');
+    Route::get('/admin/crm/leads/{lead}', [CrmLeadController::class, 'show'])->name('admin.crm.leads.show');
 
     Route::get('/tracking-links', [TrackingLinkController::class, 'index'])->name('tracking-links.index');
     Route::post('/tracking-links', [TrackingLinkController::class, 'store'])->name('tracking-links.store');

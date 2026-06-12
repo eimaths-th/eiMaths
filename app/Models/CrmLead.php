@@ -6,6 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class CrmLead extends Model
 {
+    public const CREATED_FROM = [
+        'unknown' => 'Unknown',
+        'lead_registration_website' => 'Website registration',
+        'line_oa_chatbot' => 'LINE OA chatbot',
+        'line_oa_follow' => 'LINE OA follow',
+        'line_liff_registration' => 'LINE LIFF registration',
+    ];
+
     public const STATUSES = [
         'new_lead' => 'ลูกค้าใหม่',
         'registered' => 'ลงทะเบียนแล้ว',
@@ -22,6 +30,15 @@ class CrmLead extends Model
         'parent_name',
         'phone',
         'line_id',
+        'line_user_id',
+        'line_display_name',
+        'line_picture_url',
+        'line_follow_status',
+        'line_followed_at',
+        'line_last_message_at',
+        'line_conversation_state',
+        'line_ref',
+        'line_source',
         'email',
         'preferred_contact_time',
         'student_name',
@@ -72,6 +89,8 @@ class CrmLead extends Model
         'trial_completed_at' => 'datetime',
         'enrolled_at' => 'datetime',
         'duplicate_checked_at' => 'datetime',
+        'line_followed_at' => 'datetime',
+        'line_last_message_at' => 'datetime',
     ];
 
     public function assignedStaff()
@@ -92,5 +111,10 @@ class CrmLead extends Model
     public function getStatusLabelAttribute(): string
     {
         return self::STATUSES[$this->lead_status] ?? $this->lead_status;
+    }
+
+    public function getCreatedFromLabelAttribute(): string
+    {
+        return self::CREATED_FROM[$this->created_from] ?? $this->created_from;
     }
 }
