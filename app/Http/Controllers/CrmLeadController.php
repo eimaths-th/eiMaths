@@ -16,6 +16,7 @@ class CrmLeadController extends Controller
             ->with('assignedStaff:id,name')
             ->when($request->filled('status'), fn ($query) => $query->where('lead_status', $request->status))
             ->when($request->filled('source'), fn ($query) => $query->where('utm_source', $request->source))
+            ->when($request->filled('line_source'), fn ($query) => $query->where('line_source', $request->line_source))
             ->when($request->filled('campaign'), fn ($query) => $query->where('utm_campaign', $request->campaign))
             ->when($request->filled('created_from'), fn ($query) => $query->where('created_from', $request->created_from))
             ->when($request->filled('staff_id'), fn ($query) => $query->where('assigned_staff_id', $request->staff_id))
@@ -41,6 +42,7 @@ class CrmLeadController extends Controller
             'statuses' => CrmLead::STATUSES,
             'staffUsers' => User::query()->orderBy('name')->get(['id', 'name']),
             'sources' => CrmLead::query()->whereNotNull('utm_source')->distinct()->orderBy('utm_source')->pluck('utm_source'),
+            'lineSources' => CrmLead::query()->whereNotNull('line_source')->distinct()->orderBy('line_source')->pluck('line_source'),
             'campaigns' => CrmLead::query()->whereNotNull('utm_campaign')->distinct()->orderBy('utm_campaign')->pluck('utm_campaign'),
             'createdFromOptions' => CrmLead::CREATED_FROM,
         ]);

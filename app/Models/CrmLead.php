@@ -9,6 +9,8 @@ class CrmLead extends Model
     public const CREATED_FROM = [
         'unknown' => 'Unknown',
         'lead_registration_website' => 'Website registration',
+        'new_customer_line_oa_chatbot' => 'New Customer LINE OA chatbot',
+        'new_customer_line_oa_follow' => 'New Customer LINE OA follow',
         'line_oa_chatbot' => 'LINE OA chatbot',
         'line_oa_follow' => 'LINE OA follow',
         'line_liff_registration' => 'LINE LIFF registration',

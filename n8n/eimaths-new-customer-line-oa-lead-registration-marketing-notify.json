@@ -1,0 +1,401 @@
+{
+  "name": "eiMaths - New Customer LINE OA Registration + Marketing Notify",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "eimaths-new-customer-line-oa-registration",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "c66e13cf-41d7-4b37-b0a9-bb3624a91101",
+      "name": "LINE Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -820,
+        140
+      ],
+      "webhookId": "eimaths-new-customer-line-oa-registration"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $json.body || $json;\nconst events = Array.isArray(body.events) ? body.events : [];\nreturn events\n  .filter((event) => event.source?.userId && ['follow', 'message'].includes(event.type))\n  .filter((event) => event.type !== 'message' || event.message?.type === 'text')\n  .map((event) => ({\n    json: {\n      eventType: event.type,\n      lineUserId: event.source.userId,\n      replyToken: event.replyToken,\n      messageText: event.message?.text?.trim() || '',\n      eventTimestamp: new Date(event.timestamp || Date.now()).toISOString()\n    }\n  }));"
+      },
+      "id": "90da2ad9-fbec-4f37-9844-ea8b79128eb4",
+      "name": "Normalize LINE Event",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -600,
+        140
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ 'https://api.line.me/v2/bot/profile/' + $json.lineUserId }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ 'Bearer ' + $env.NEW_CUSTOMER_LINE_CHANNEL_ACCESS_TOKEN }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "334596ff-dd48-4268-b08c-86d8fbf16cd4",
+      "name": "Get LINE Profile",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -360,
+        260
+      ],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "id": "c96013de-d516-4308-a17d-c009ee917cea",
+      "name": "Merge Event and Profile",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -100,
+        140
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const item = $input.first().json;\nconst store = $getWorkflowStaticData('global');\nstore.conversations = store.conversations || {};\n\nconst now = new Date().toISOString();\nconst userId = item.lineUserId;\nconst text = (item.messageText || '').trim();\nconst lowerText = text.toLowerCase();\nconst restartKeywords = ['เริ่มใหม่', 'ลงทะเบียนใหม่', 'แก้ข้อมูล', 'กรอกใหม่'];\nconst isRestartKeyword = restartKeywords.some((keyword) => lowerText.includes(keyword.toLowerCase()));\n\nlet conversation = store.conversations[userId] || {\n  state: 'idle',\n  answers: {},\n  createdAt: now,\n  followedAt: item.eventType === 'follow' ? now : null,\n  lineRef: null\n};\n\nconversation.displayName = item.displayName || conversation.displayName || null;\nconversation.pictureUrl = item.pictureUrl || conversation.pictureUrl || null;\nconversation.lastMessageAt = now;\nif (item.eventType === 'follow' && !conversation.followedAt) conversation.followedAt = now;\n\nconst refMatch = text.match(/REF:([^\\s]+)/i);\nif (refMatch) conversation.lineRef = refMatch[1].slice(0, 255);\n\nconst questions = {\n  waiting_parent_name: 'รบกวนขอชื่อคุณพ่อ/คุณแม่ หรือผู้ปกครองที่สะดวกให้ติดต่อกลับหน่อยค่ะ',\n  waiting_phone: 'ขอเบอร์โทรที่สะดวกให้ทีมงานติดต่อกลับหน่อยนะคะ',\n  waiting_student_name: 'น้องชื่ออะไรคะ จะได้ให้ทีมงานเรียกชื่อน้องถูกค่ะ 😊',\n  waiting_student_grade: 'ตอนนี้น้องอยู่ระดับชั้นไหนคะ เช่น ป.4, ป.6 หรือ ม.1',\n  waiting_pain_point: 'ตอนนี้อยากให้ eiMaths ช่วยน้องเรื่องไหนเป็นพิเศษคะ\\nเช่น ไม่ชอบคณิต, กลัวเลข, ทำโจทย์ไม่ค่อยได้, เรียนไม่ทัน หรืออยากเพิ่มความมั่นใจ',\n  waiting_preferred_contact_time: 'คุณพ่อ/คุณแม่สะดวกให้ทีมงานติดต่อกลับช่วงเวลาไหนคะ\\nเช่น หลัง 18:00 หรือช่วงเย็นหลังเลิกงาน'\n};\n\nconst welcomeText = 'สวัสดีค่ะ 😊 ขอบคุณที่สนใจทดลองเรียนฟรีกับ eiMaths นะคะ\\nแอดมินขอข้อมูลนิดนึง เพื่อให้ทีมงานช่วยแนะนำคอร์สที่เหมาะกับน้องได้ค่ะ\\n\\n';\nlet shouldReply = true;\nlet replyText = '';\nlet completed = false;\nlet ignoredReason = null;\n\nif (conversation.state === 'idle') {\n  conversation.state = 'waiting_parent_name';\n  conversation.answers = {};\n  conversation.startedAt = now;\n  replyText = welcomeText + questions.waiting_parent_name;\n} else if (isRestartKeyword && ['completed', 'handover_to_staff'].includes(conversation.state)) {\n  conversation.state = 'waiting_parent_name';\n  conversation.answers = {};\n  conversation.startedAt = now;\n  replyText = welcomeText + questions.waiting_parent_name;\n} else if (isRestartKeyword) {\n  replyText = 'ตอนนี้กำลังอยู่ระหว่างลงทะเบียนนะคะ 😊\\n' + (questions[conversation.state] || 'รบกวนตอบข้อมูลต่อได้เลยค่ะ');\n} else if (conversation.state === 'waiting_parent_name') {\n  conversation.answers.parent_name = text;\n  conversation.state = 'waiting_phone';\n  replyText = questions.waiting_phone;\n} else if (conversation.state === 'waiting_phone') {\n  const phone = text.replace(/[^0-9+]/g, '');\n  if (!/^[0-9+]{8,15}$/.test(phone)) {\n    replyText = 'เบอร์โทรอาจยังไม่ครบค่ะ\\nรบกวนพิมพ์เป็นตัวเลขอีกครั้งนะคะ เช่น 0812345678';\n  } else {\n    conversation.answers.phone = phone;\n    conversation.state = 'waiting_student_name';\n    replyText = questions.waiting_student_name;\n  }\n} else if (conversation.state === 'waiting_student_name') {\n  conversation.answers.student_name = text;\n  conversation.state = 'waiting_student_grade';\n  replyText = questions.waiting_student_grade;\n} else if (conversation.state === 'waiting_student_grade') {\n  conversation.answers.student_grade = text;\n  conversation.state = 'waiting_pain_point';\n  replyText = questions.waiting_pain_point;\n} else if (conversation.state === 'waiting_pain_point') {\n  conversation.answers.pain_point = text;\n  conversation.state = 'waiting_preferred_contact_time';\n  replyText = questions.waiting_preferred_contact_time;\n} else if (conversation.state === 'waiting_preferred_contact_time') {\n  conversation.answers.preferred_contact_time = text;\n  conversation.state = 'completed';\n  conversation.completedAt = now;\n  completed = true;\n  replyText = 'ขอบคุณมากค่ะ 😊\\nระบบได้รับข้อมูลเรียบร้อยแล้วนะคะ\\n\\nทีมงาน eiMaths จะติดต่อกลับเพื่อนัดทดลองเรียนฟรี 2 คลาส และแนะนำแนวทางที่เหมาะกับน้องให้ค่ะ';\n} else if (conversation.state === 'completed' || conversation.state === 'handover_to_staff') {\n  shouldReply = false;\n  ignoredReason = 'already_completed_handover_to_staff';\n} else {\n  shouldReply = false;\n  ignoredReason = 'unknown_state_no_reply';\n}\n\nstore.conversations[userId] = conversation;\n\nlet crmPayload = null;\nif (completed) {\n  const refParts = (conversation.lineRef || '').split('|');\n  crmPayload = {\n    ...conversation.answers,\n    interest: 'ทดลองเรียนฟรี 2 คลาส',\n    line_user_id: userId,\n    line_display_name: conversation.displayName,\n    line_picture_url: conversation.pictureUrl,\n    line_follow_status: conversation.followedAt ? 'followed' : 'unknown',\n    line_followed_at: conversation.followedAt,\n    line_last_message_at: now,\n    line_conversation_state: 'completed',\n    line_ref: conversation.lineRef,\n    line_source: 'new_customer_line_oa',\n    utm_source: refParts[0] || 'line',\n    utm_medium: refParts[1] || 'oa_chat',\n    utm_campaign: refParts[2] || 'unknown',\n    utm_content: refParts[3] || null,\n    first_touch_source: refParts[0] || 'new_customer_line_oa',\n    last_touch_source: 'new_customer_line_oa',\n    created_from: 'new_customer_line_oa_chatbot',\n    lead_status: 'new_lead'\n  };\n\n  conversation.state = 'handover_to_staff';\n  conversation.handoverAt = now;\n  store.conversations[userId] = conversation;\n}\n\nreturn [{\n  json: {\n    shouldReply,\n    ignoredReason,\n    completed,\n    replyToken: item.replyToken,\n    replyText,\n    lineUserId: userId,\n    conversationState: conversation.state,\n    crmPayload\n  }\n}];"
+      },
+      "id": "4f4fab8f-abcc-426b-a022-7648c8361229",
+      "name": "Conversation State",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        140,
+        140
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "693947ed-7a42-4321-b59d-c15bbef602fa",
+              "leftValue": "={{ $json.completed }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "d749520c-50bd-4458-840c-eac315b04c32",
+      "name": "Registration Complete?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        620,
+        140
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ ($env.EIMATHS_CRM_BASE_URL || 'https://test-web.eimaths-th.com').replace(/\\/$/, '') + '/api/n8n/marketing/leads' }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ 'Bearer ' + $env.CRM_INTEGRATION_TOKEN }}"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify($json.crmPayload) }}",
+        "options": {}
+      },
+      "id": "bf63ea6e-72e0-475a-9929-a438a2a7b114",
+      "name": "Create or Merge CRM Lead",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        860,
+        40
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.line.me/v2/bot/message/reply",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ 'Bearer ' + $env.NEW_CUSTOMER_LINE_CHANNEL_ACCESS_TOKEN }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({ replyToken: $('Conversation State').item.json.replyToken, messages: [{ type: 'text', text: $('Conversation State').item.json.replyText }] }) }}",
+        "options": {}
+      },
+      "id": "54ed1e91-6b99-4fdc-a50c-41c26784c115",
+      "name": "Reply Completed",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1340,
+        40
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.line.me/v2/bot/message/reply",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ 'Bearer ' + $env.NEW_CUSTOMER_LINE_CHANNEL_ACCESS_TOKEN }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({ replyToken: $json.replyToken, messages: [{ type: 'text', text: $json.replyText }] }) }}",
+        "options": {}
+      },
+      "id": "08eaf293-daae-4202-9579-972c944c69b4",
+      "name": "Reply Next Question",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        860,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.line.me/v2/bot/message/push",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ 'Bearer ' + ($env.LINE_MARKETING_CHANNEL_ACCESS_TOKEN || $env.NEW_CUSTOMER_LINE_CHANNEL_ACCESS_TOKEN) }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ (() => {\n  const lead = $('Conversation State').item.json.crmPayload || {};\n  const crm = $json || {};\n  const leadId = crm.id || crm.lead_id || crm.data?.id || crm.data?.lead_id || crm.data?.lead?.id || '';\n  const baseUrl = ($env.EIMATHS_CRM_BASE_URL || 'https://test-web.eimaths-th.com').replace(/\\/$/, '');\n  const detailUrl = crm.lead_detail_url || (leadId ? `${baseUrl}/admin/crm/leads/${leadId}` : `${baseUrl}/admin/crm/leads`);\n  const source = lead.utm_source || lead.line_source || 'line';\n  const campaign = lead.utm_campaign || 'unknown';\n  const content = lead.utm_content || '-';\n  const lineName = lead.line_display_name || '-';\n  const text = [\n    '🔔 Lead ใหม่จาก New Customer LINE OA',\n    '',\n    `ผู้ปกครอง: ${lead.parent_name || '-'}`,\n    `เบอร์: ${lead.phone || '-'}`,\n    `LINE: ${lineName}`,\n    `นักเรียน: ${lead.student_name || '-'}`,\n    `ระดับชั้น: ${lead.student_grade || '-'}`,\n    `ปัญหา: ${lead.pain_point || '-'}`,\n    `สนใจ: ${lead.interest || 'ทดลองเรียนฟรี 2 คลาส'}`,\n    `เวลาติดต่อ: ${lead.preferred_contact_time || '-'}`,\n    '',\n    `LINE source: ${lead.line_source || 'new_customer_line_oa'}`,\n    `ช่องทางโฆษณา: ${source}`,\n    `Campaign: ${campaign}`,\n    `Content: ${content}`,\n    `Created from: ${lead.created_from || 'new_customer_line_oa_chatbot'}`,\n    `Action: ${crm.action || 'created'}`,\n    '',\n    `ดูรายละเอียด: ${detailUrl}`\n  ].join('\\n');\n\n  return JSON.stringify({\n    to: $env.LINE_MARKETING_GROUP_ID,\n    messages: [{ type: 'text', text }]\n  });\n})() }}",
+        "options": {}
+      },
+      "id": "c0f9b63d-bc5e-43b9-91bb-82b7824efcda",
+      "name": "Notify Marketing Team",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1100,
+        -80
+      ],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "5450ae25-8461-4e16-8217-bccc237a609e",
+              "leftValue": "={{ $json.shouldReply }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "16a1ab3a-ad4e-4558-a827-65f42c670ee5",
+      "name": "Should Reply?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        380,
+        140
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "LINE Webhook": {
+      "main": [
+        [
+          {
+            "node": "Normalize LINE Event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize LINE Event": {
+      "main": [
+        [
+          {
+            "node": "Get LINE Profile",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge Event and Profile",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get LINE Profile": {
+      "main": [
+        [
+          {
+            "node": "Merge Event and Profile",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Event and Profile": {
+      "main": [
+        [
+          {
+            "node": "Conversation State",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Conversation State": {
+      "main": [
+        [
+          {
+            "node": "Should Reply?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Registration Complete?": {
+      "main": [
+        [
+          {
+            "node": "Create or Merge CRM Lead",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Reply Next Question",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create or Merge CRM Lead": {
+      "main": [
+        [
+          {
+            "node": "Notify Marketing Team",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify Marketing Team": {
+      "main": [
+        [
+          {
+            "node": "Reply Completed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Should Reply?": {
+      "main": [
+        [
+          {
+            "node": "Registration Complete?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "fa991554-acde-4eaf-8824-347c50292b42",
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "tags": []
+}

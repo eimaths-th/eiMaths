@@ -40,6 +40,14 @@
                             </select>
                         </div>
                         <div class="col-md-2 mb-2">
+                            <select name="line_source" class="form-control">
+                                <option value="">All LINE sources</option>
+                                @foreach($lineSources as $lineSource)
+                                    <option value="{{ $lineSource }}" @selected(request('line_source') === $lineSource)>{{ $lineSource }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-2 mb-2">
                             <select name="campaign" class="form-control">
                                 <option value="">All campaigns</option>
                                 @foreach($campaigns as $campaign)
@@ -111,6 +119,7 @@
                                         @if($lead->line_user_id)
                                             <span class="badge badge-success">LINE OA</span>
                                             <div class="small mt-1">{{ $lead->line_display_name ?: $lead->line_user_id }}</div>
+                                            <div class="small">{{ $lead->line_source ?: '-' }}</div>
                                             <div class="text-muted small">{{ $lead->created_from_label }}</div>
                                         @else
                                             <span class="badge badge-light">{{ $lead->created_from_label }}</span>

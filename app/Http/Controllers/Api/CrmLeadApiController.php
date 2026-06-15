@@ -39,10 +39,11 @@ class CrmLeadApiController extends Controller
                 'student_grade' => $lead->student_grade,
                 'lead_status' => $lead->lead_status,
                 'created_from' => $lead->created_from,
+                'line_source' => $lead->line_source,
                 'utm_source' => $lead->utm_source,
                 'utm_campaign' => $lead->utm_campaign,
             ],
-            'lead_detail_url' => route('crm.leads.show', $lead),
+            'lead_detail_url' => route('admin.crm.leads.show', $lead),
         ], $action === 'merged' ? 200 : 201);
     }
 
