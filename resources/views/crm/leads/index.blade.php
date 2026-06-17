@@ -90,13 +90,29 @@
                                     @endforeach
                                 </select>
                             </div>
+                            @php
+                                $dateFromFormatted = request('date_from') ? \Carbon\Carbon::parse(request('date_from'))->format('d/m/Y') : '';
+                                $dateToFormatted = request('date_to') ? \Carbon\Carbon::parse(request('date_to'))->format('d/m/Y') : '';
+                            @endphp
                             <div class="col-md-2 col-sm-6 mb-3">
                                 <label class="form-label font-weight-bold text-muted small mb-1">Created From</label>
-                                <input type="date" name="date_from" value="{{ request('date_from') }}" class="form-control">
+                                <input type="hidden" name="date_from" id="date_from" value="{{ request('date_from') }}">
+                                <div class="input-group">
+                                    <input type="text" id="date_from_visible" value="{{ $dateFromFormatted }}" class="form-control bg-white" placeholder="dd/mm/yyyy" autocomplete="off">
+                                    <div class="input-group-append" style="cursor: pointer;" onclick="$('#date_from_visible').focus();">
+                                        <span class="input-group-text bg-white"><i class="far fa-calendar-alt text-muted"></i></span>
+                                    </div>
+                                </div>
                             </div>
                             <div class="col-md-2 col-sm-6 mb-3">
                                 <label class="form-label font-weight-bold text-muted small mb-1">Created To</label>
-                                <input type="date" name="date_to" value="{{ request('date_to') }}" class="form-control">
+                                <input type="hidden" name="date_to" id="date_to" value="{{ request('date_to') }}">
+                                <div class="input-group">
+                                    <input type="text" id="date_to_visible" value="{{ $dateToFormatted }}" class="form-control bg-white" placeholder="dd/mm/yyyy" autocomplete="off">
+                                    <div class="input-group-append" style="cursor: pointer;" onclick="$('#date_to_visible').focus();">
+                                        <span class="input-group-text bg-white"><i class="far fa-calendar-alt text-muted"></i></span>
+                                    </div>
+                                </div>
                             </div>
                             <div class="col-md-4 col-sm-12 mb-3 d-flex align-items-end">
                                 <button type="submit" class="btn btn-primary mr-2 flex-grow-1"><i class="fas fa-filter mr-1"></i> Filter</button>
@@ -234,4 +250,39 @@
         </div>
     </div>
 </section>
+@endsection
+
+@section('script')
+<script>
+    $(document).ready(function() {
+        $('#date_from_visible').datepicker({
+            dateFormat: 'dd/mm/yy',
+            altField: '#date_from',
+            altFormat: 'yy-mm-dd',
+            changeMonth: true,
+            changeYear: true
+        });
+        
+        $('#date_to_visible').datepicker({
+            dateFormat: 'dd/mm/yy',
+            altField: '#date_to',
+            altFormat: 'yy-mm-dd',
+            changeMonth: true,
+            changeYear: true
+        });
+        
+        // Clear hidden input when user clears visible input manually
+        $('#date_from_visible').on('input change', function() {
+            if (!$(this).val()) {
+                $('#date_from').val('');
+            }
+        });
+        
+        $('#date_to_visible').on('input change', function() {
+            if (!$(this).val()) {
+                $('#date_to').val('');
+            }
+        });
+    });
+</script>
 @endsection
