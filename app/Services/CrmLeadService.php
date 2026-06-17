@@ -153,6 +153,14 @@ class CrmLeadService
         $merged['first_touch_source'] = $lead->first_touch_source
             ?: ($data['first_touch_source'] ?? $data['utm_source'] ?? null);
 
+        if (
+            $lead->lead_status === 'line_login_pending'
+            && filled($incoming['lead_status'] ?? null)
+            && $incoming['lead_status'] !== 'line_login_pending'
+        ) {
+            $merged['lead_status'] = $incoming['lead_status'];
+        }
+
         if ($lead->lead_status === 'enrolled') {
             unset($merged['lead_status']);
         }
