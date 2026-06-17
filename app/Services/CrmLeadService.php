@@ -17,6 +17,9 @@ class CrmLeadService
     {
         $data['created_from'] = $data['created_from'] ?? 'unknown';
         $data['lead_status'] = $data['lead_status'] ?? 'new_lead';
+        if ($data['created_from'] === 'lead_registration_website' && blank($data['utm_source'] ?? null)) {
+            $data['utm_source'] = 'website';
+        }
         $data['interest'] = $data['interest'] ?? 'ทดลองเรียนฟรี 2 คลาส';
         $data['first_touch_source'] = $data['first_touch_source']
             ?? $data['utm_source']
