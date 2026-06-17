@@ -159,56 +159,6 @@
             </div>
 
             <div class="col-lg-4">
-                <div class="card card-success">
-                    <div class="card-header">
-                        <h3 class="card-title">Staff Actions</h3>
-                    </div>
-                    <div class="card-body">
-                        <form method="POST" action="{{ route('crm.leads.update', $lead) }}">
-                            @csrf
-                            @method('PUT')
-                            <div class="form-group">
-                                <label>Status</label>
-                                <select name="lead_status" class="form-control" required>
-                                    @foreach($statuses as $value => $label)
-                                        <option value="{{ $value }}" @selected($lead->lead_status === $value)>{{ $label }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Assigned staff</label>
-                                <select name="assigned_staff_id" class="form-control">
-                                    <option value="">Unassigned</option>
-                                    @foreach($staffUsers as $staff)
-                                        <option value="{{ $staff->id }}" @selected($lead->assigned_staff_id === $staff->id)>{{ $staff->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Last contact at</label>
-                                <input type="datetime-local" name="last_contact_at" value="{{ optional($lead->last_contact_at)->format('Y-m-d\\TH:i') }}" class="form-control">
-                            </div>
-                            <div class="form-group">
-                                <label>Next follow-up at</label>
-                                <input type="datetime-local" name="next_follow_up_at" value="{{ optional($lead->next_follow_up_at)->format('Y-m-d\\TH:i') }}" class="form-control">
-                            </div>
-                            <div class="form-group">
-                                <label>Trial scheduled at</label>
-                                <input type="datetime-local" name="trial_scheduled_at" value="{{ optional($lead->trial_scheduled_at)->format('Y-m-d\\TH:i') }}" class="form-control">
-                            </div>
-                            <div class="form-group">
-                                <label>Trial completed at</label>
-                                <input type="datetime-local" name="trial_completed_at" value="{{ optional($lead->trial_completed_at)->format('Y-m-d\\TH:i') }}" class="form-control">
-                            </div>
-                            <div class="form-group">
-                                <label>Enrolled at</label>
-                                <input type="datetime-local" name="enrolled_at" value="{{ optional($lead->enrolled_at)->format('Y-m-d\\TH:i') }}" class="form-control">
-                            </div>
-                            <button type="submit" class="btn btn-success btn-block">Update Lead</button>
-                        </form>
-                    </div>
-                </div>
-
                 <div class="card card-info">
                     <div class="card-header">
                         <h3 class="card-title">Click IDs</h3>

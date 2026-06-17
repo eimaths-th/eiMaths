@@ -16,7 +16,7 @@
         -820,
         140
       ],
-      "webhookId": "eimaths-new-customer-line-oa-registration"
+      "webhookId": "eimaths-new-customer-line-registration"
     },
     {
       "parameters": {
