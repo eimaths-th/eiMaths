@@ -73,6 +73,8 @@ Route::get('/revenue-summary-by-branch-monthly', [App\Http\Controllers\ReceiptCo
 
 Route::post('/n8n/line/lead', [N8nLineCrmController::class, 'handleLead']);
 Route::get('/n8n/line/follow-up-leads', [N8nLineCrmController::class, 'followUpLeads']);
+Route::post('/line/free-trial/liff-lead', [CrmLeadApiController::class, 'storeLiffLead'])
+    ->middleware('throttle:60,1');
 
 Route::prefix('n8n/marketing/leads')->middleware('throttle:30,1')->group(function () {
     Route::post('/', [CrmLeadApiController::class, 'store']);

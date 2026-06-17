@@ -14,9 +14,11 @@ class CrmLead extends Model
         'line_oa_chatbot' => 'LINE OA chatbot',
         'line_oa_follow' => 'LINE OA follow',
         'line_liff_registration' => 'LINE LIFF registration',
+        'free_trial_liff_login' => 'Free trial LIFF login',
     ];
 
     public const STATUSES = [
+        'line_login_pending' => 'รอลงทะเบียนผ่าน LINE',
         'new_lead' => 'ลูกค้าใหม่',
         'registered' => 'ลงทะเบียนแล้ว',
         'waiting_for_contact' => 'รอติดต่อกลับ',

@@ -47,6 +47,38 @@ class CrmLeadApiController extends Controller
         ], $action === 'merged' ? 200 : 201);
     }
 
+    public function storeLiffLead(Request $request, CrmLeadService $leadService)
+    {
+        $this->authorizeIntegration($request);
+
+        $data = $request->validate([
+            'line_user_id' => ['required', 'string', 'max:100'],
+            'line_display_name' => ['nullable', 'string', 'max:255'],
+            'line_picture_url' => ['nullable', 'url', 'max:2000'],
+            'utm_source' => ['nullable', 'string', 'max:255'],
+            'utm_medium' => ['nullable', 'string', 'max:255'],
+            'utm_campaign' => ['nullable', 'string', 'max:255'],
+            'utm_content' => ['nullable', 'string', 'max:255'],
+            'utm_term' => ['nullable', 'string', 'max:255'],
+            'referrer' => ['nullable', 'string', 'max:2000'],
+            'landing_page' => ['nullable', 'string', 'max:2000'],
+            'first_touch_source' => ['nullable', 'string', 'max:255'],
+            'last_touch_source' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        $lead = $leadService->createOrUpdateFromLiffLogin($data);
+        $action = $lead->getAttribute('merge_action') ?: 'created';
+
+        return response()->json([
+            'success' => true,
+            'lead_id' => $lead->id,
+            'id' => $lead->id,
+            'action' => $action === 'merged' ? 'updated' : 'created',
+            'line_user_id' => $lead->line_user_id,
+            'status' => $lead->lead_status,
+        ], $action === 'merged' ? 200 : 201);
+    }
+
     public function followUpDue(Request $request)
     {
         $this->authorizeIntegration($request);
