@@ -130,8 +130,8 @@
                                 <th>Parent / Student</th>
                                 <th>Contact Info</th>
                                 <th>Channel</th>
-                                <th>Needs & Interest</th>
-                                <th>Marketing</th>
+                                <th>Problem</th>
+                                <th>Source</th>
                                 <th>Status</th>
                                 <th>Staff</th>
                                 <th>Timeline</th>
@@ -189,26 +189,46 @@
                                         @endif
                                     </td>
                                     <td>
-                                        @if($lead->interest)
-                                            <div class="small"><strong>Interest:</strong> {{ $lead->interest }}</div>
-                                        @endif
                                         @if($lead->pain_point)
-                                            <div class="small mt-1 text-muted" title="{{ $lead->pain_point }}">
-                                                <strong>Problem:</strong> {{ \Illuminate\Support\Str::limit($lead->pain_point, 60) }}
-                                            </div>
-                                        @endif
-                                        @if(!$lead->interest && !$lead->pain_point)
+                                            <span title="{{ $lead->pain_point }}">{{ \Illuminate\Support\Str::limit($lead->pain_point, 60) }}</span>
+                                        @else
                                             <span class="text-muted">-</span>
                                         @endif
                                     </td>
                                     <td>
-                                        @if($lead->utm_source || $lead->last_touch_source)
-                                            <div class="small"><strong>Src:</strong> {{ $lead->utm_source ?: $lead->last_touch_source }}</div>
-                                        @endif
-                                        @if($lead->utm_campaign)
-                                            <div class="small text-muted"><strong>Camp:</strong> {{ $lead->utm_campaign }}</div>
-                                        @endif
-                                        @if(!$lead->utm_source && !$lead->last_touch_source && !$lead->utm_campaign)
+                                        @php
+                                            $sourceVal = $lead->utm_source ?: $lead->last_touch_source ?: '';
+                                            $sourceLower = strtolower($sourceVal);
+                                        @endphp
+                                        @if($sourceLower === 'facebook')
+                                            <span class="badge text-white px-2 py-1.5 font-weight-normal" style="background-color: #3b5998 !important; font-size: 85%;">
+                                                <i class="fab fa-facebook-f mr-1"></i> Facebook
+                                            </span>
+                                        @elseif($sourceLower === 'tiktok')
+                                            <span class="badge text-white px-2 py-1.5 font-weight-normal" style="background-color: #010101 !important; font-size: 85%;">
+                                                <i class="fab fa-tiktok mr-1"></i> TikTok
+                                            </span>
+                                        @elseif($sourceLower === 'line')
+                                            <span class="badge text-white px-2 py-1.5 font-weight-normal" style="background-color: #06C755 !important; font-size: 85%;">
+                                                <i class="fab fa-line mr-1"></i> LINE
+                                            </span>
+                                        @elseif($sourceLower === 'google')
+                                            <span class="badge text-white px-2 py-1.5 font-weight-normal" style="background-color: #db4437 !important; font-size: 85%;">
+                                                <i class="fab fa-google mr-1"></i> Google
+                                            </span>
+                                        @elseif($sourceLower === 'youtube')
+                                            <span class="badge text-white px-2 py-1.5 font-weight-normal" style="background-color: #ff0000 !important; font-size: 85%;">
+                                                <i class="fab fa-youtube mr-1"></i> YouTube
+                                            </span>
+                                        @elseif($sourceLower === 'instagram')
+                                            <span class="badge text-white px-2 py-1.5 font-weight-normal" style="background: linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%) !important; font-size: 85%;">
+                                                <i class="fab fa-instagram mr-1"></i> Instagram
+                                            </span>
+                                        @elseif($sourceVal)
+                                            <span class="badge badge-secondary px-2 py-1.5 font-weight-normal" style="font-size: 85%;">
+                                                <i class="fas fa-link mr-1"></i> {{ ucfirst($sourceVal) }}
+                                            </span>
+                                        @else
                                             <span class="text-muted">-</span>
                                         @endif
                                     </td>

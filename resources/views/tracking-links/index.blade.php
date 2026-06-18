@@ -57,6 +57,7 @@
                                         'facebook' => 'Facebook - โฆษณาหรือโพสต์บน Facebook',
                                         'google' => 'Google - โฆษณาหรือผลค้นหาจาก Google',
                                         'tiktok' => 'TikTok - โฆษณาหรือคอนเทนต์บน TikTok',
+                                        'youtube' => 'YouTube - โฆษณาวิดีโอ, Shorts หรือ link จากช่อง YouTube',
                                         'line' => 'LINE - LINE Ads, LINE OA หรือข้อความ LINE',
                                         'email' => 'Email - ลิงก์ที่ส่งผ่านอีเมล',
                                         'referral' => 'Referral - เว็บไซต์หรือพันธมิตรแนะนำมา',
