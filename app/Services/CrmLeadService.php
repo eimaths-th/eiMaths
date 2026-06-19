@@ -97,10 +97,22 @@ class CrmLeadService
         }
 
         $leads = DB::transaction(function () use ($data, $students, $isRestartFlow) {
-            $pendingLead = ! empty($data['line_user_id'])
-                ? $this->findLatestPendingLineLead($data['line_user_id'])
-                : null;
-            $attributionSource = $pendingLead;
+            $pendingLead = null;
+            $attributionSource = null;
+
+            if (! empty($data['line_user_id'])) {
+                if ($isRestartFlow) {
+                    $attributionSource = $this->findLatestActiveLineLead($data['line_user_id']);
+                    $this->cancelPreviousRestartLeads(
+                        $data['line_user_id'],
+                        $data['registration_batch_id']
+                    );
+                } else {
+                    $pendingLead = $this->findLatestPendingLineLead($data['line_user_id']);
+                    $attributionSource = $pendingLead;
+                }
+            }
+
             $createdLeads = [];
 
             foreach ($students as $index => $student) {
@@ -113,7 +125,7 @@ class CrmLeadService
                     unset($studentData['lead_id']);
                 }
 
-                if (! empty($studentData['lead_id'])) {
+                if (! $isRestartFlow && ! empty($studentData['lead_id'])) {
                     $explicitLeadQuery = CrmLead::query()->whereKey($studentData['lead_id']);
                     if (! empty($studentData['line_user_id'])) {
                         $explicitLeadQuery->where('line_user_id', $studentData['line_user_id']);
@@ -137,7 +149,7 @@ class CrmLeadService
                     }
                 }
 
-                if ($index === 0 && $pendingLead) {
+                if (! $isRestartFlow && $index === 0 && $pendingLead) {
                     $previousStatus = $pendingLead->lead_status;
                     $pendingLead->fill($this->mergeLeadData($pendingLead, $studentData));
                     $pendingLead->save();
@@ -161,14 +173,6 @@ class CrmLeadService
                 $lead->setAttribute('merge_action', 'created');
                 $lead->setAttribute('previous_lead_status', null);
                 $createdLeads[] = $lead;
-            }
-
-            if ($isRestartFlow && ! empty($data['line_user_id'])) {
-                $this->cancelPreviousRestartLeads(
-                    $data['line_user_id'],
-                    $data['registration_batch_id'],
-                    collect($createdLeads)->pluck('id')->all()
-                );
             }
 
             return $createdLeads;
@@ -282,22 +286,28 @@ class CrmLeadService
             ->first();
     }
 
-    private function cancelPreviousRestartLeads(string $lineUserId, string $registrationBatchId, array $newLeadIds): int
+    private function findLatestActiveLineLead(string $lineUserId): ?CrmLead
     {
         return CrmLead::query()
             ->where('line_user_id', $lineUserId)
-            ->whereNotIn('id', $newLeadIds ?: [0])
-            ->where(function ($query) use ($registrationBatchId) {
-                $query->whereNull('registration_batch_id')
-                    ->orWhere('registration_batch_id', '!=', $registrationBatchId);
-            })
+            ->where('is_active', true)
+            ->latest()
+            ->lockForUpdate()
+            ->first();
+    }
+
+    private function cancelPreviousRestartLeads(string $lineUserId, string $registrationBatchId): int
+    {
+        return CrmLead::query()
+            ->where('line_user_id', $lineUserId)
+            ->where('is_active', true)
             ->whereIn('lead_status', $this->restartSupersedableStatuses())
             ->update([
                 'lead_status' => 'cancelled_by_restart',
                 'is_active' => false,
                 'cancelled_at' => now(),
                 'superseded_at' => now(),
-                'cancel_reason' => 'user_restart',
+                'cancel_reason' => 'restart_registration',
                 'superseded_by_batch_id' => $registrationBatchId,
                 'updated_at' => now(),
             ]);
@@ -315,6 +325,9 @@ class CrmLeadService
             'registered',
             'waiting_for_contact',
             'contacted',
+            'follow_up',
+            'pending',
+            'contacting',
             'handover_to_staff',
             'completed',
         ];
