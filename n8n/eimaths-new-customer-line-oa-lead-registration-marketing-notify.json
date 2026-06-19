@@ -1,34 +1,33 @@
 {
-  "name": "eiMaths - New Customer LINE Lead Registration V6 dynamic validation + silent handover",
+  "name": "eiMaths - New Customer LINE Lead Registration",
   "nodes": [
     {
       "parameters": {
         "httpMethod": "POST",
         "path": "eimaths-new-customer-line-registration",
-        "responseMode": "onReceived",
         "options": {}
       },
-      "id": "c66e13cf-41d7-4b37-b0a9-bb3624a91101",
+      "id": "0ff8c5d8-23a2-4e32-8378-22077954c1e2",
       "name": "LINE Webhook",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [
-        -820,
-        140
+        4288,
+        2656
       ],
-      "webhookId": "eimaths-new-customer-line-registration"
+      "webhookId": "eimaths-new-customer-line-registration-v12"
     },
     {
       "parameters": {
-        "jsCode": "const CONFIG = {\n  lineToken: '',\n  crmToken: 'ee3133cb65d162bd96d9610c0080d56f0803ff82c0088b2c4d0d85ed2088cfdf',\n  crmBaseUrl: 'https://test-web.eimaths-th.com',\n  marketingGroupId: 'PUT_LINE_MARKETING_GROUP_ID_HERE'\n};\n\nconst body = $json.body || $json;\nconst events = Array.isArray(body.events) ? body.events : [];\nreturn events\n  .filter((event) => event.source?.userId && ['follow', 'message'].includes(event.type))\n  .filter((event) => event.type !== 'message' || event.message?.type === 'text')\n  .map((event) => ({\n    json: {\n      config: CONFIG,\n      eventType: event.type,\n      lineUserId: event.source.userId,\n      replyToken: event.replyToken,\n      messageText: event.message?.text?.trim() || '',\n      eventTimestamp: new Date(event.timestamp || Date.now()).toISOString()\n    }\n  }));"
+        "jsCode": "const CONFIG = {\n  lineToken: 'OSuAp+bFgLfWZC0Vf/eehMgzFSBpZer1FaTVBF5xUn3R9Hf5OqIZfG5xnC1rFv02p2wycGYSqaSPckSWEfuuZnllRJhYSuECp4PyXOxnY4yCkluxiM0c0JIQiS2EtQyDCHQbjyd4LkK1byL5A6sw/AdB04t89/1O/w1cDnyilFU=',\n  crmToken: 'ee3133cb65d162bd96d9610c0080d56f0803ff82c0088b2c4d0d85ed2088cfdf',\n  crmBaseUrl: 'https://test-web.eimaths-th.com',\n  marketingGroupId: 'PUT_LINE_MARKETING_GROUP_ID_HERE'\n};\n\nfunction NormalizeText(value) {\n  return String(value || '').trim().replace(/\\s+/g, ' ');\n}\n\nconst body = $json.body || $json;\nconst events = Array.isArray(body.events) ? body.events : [];\n\nreturn events\n  .filter((event) => event.source?.userId && ['follow', 'message'].includes(event.type))\n  .filter((event) => event.type !== 'message' || event.message?.type === 'text')\n  .map((event) => {\n    const message_text = NormalizeText(event.message?.text || '');\n    return {\n      json: {\n        config: CONFIG,\n        eventType: event.type,\n        lineUserId: event.source.userId,\n        replyToken: event.replyToken,\n        messageText: message_text,\n        normalizedText: message_text,\n        lowerText: message_text.toLowerCase(),\n        eventTimestamp: new Date(event.timestamp || Date.now()).toISOString()\n      }\n    };\n  });"
       },
-      "id": "90da2ad9-fbec-4f37-9844-ea8b79128eb4",
+      "id": "b226e28a-2bcc-4f30-96e2-fca66dee04cb",
       "name": "Normalize LINE Event",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -600,
-        140
+        4512,
+        2656
       ]
     },
     {
@@ -45,13 +44,13 @@
         },
         "options": {}
       },
-      "id": "334596ff-dd48-4268-b08c-86d8fbf16cd4",
+      "id": "9fc437ac-87fd-45ee-82ab-131db6ab825a",
       "name": "Get LINE Profile",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        -360,
-        260
+        4736,
+        2736
       ],
       "continueOnFail": true
     },
@@ -61,27 +60,41 @@
         "combineBy": "combineByPosition",
         "options": {}
       },
-      "id": "c96013de-d516-4308-a17d-c009ee917cea",
+      "id": "e664233c-22eb-4fe8-b039-b94b11fe435d",
       "name": "Merge Event and Profile",
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        -100,
-        140
+        4960,
+        2656
       ]
     },
     {
       "parameters": {
         "mode": "runOnceForEachItem",
-        "jsCode": "const item = $json || {};\nconst store = $getWorkflowStaticData('global');\nstore.conversations = store.conversations || {};\n\nconst questions = {\n  waiting_parent_name: 'รบกวนขอชื่อคุณพ่อ/คุณแม่ หรือผู้ปกครองที่สะดวกให้ติดต่อกลับหน่อยค่ะ',\n  waiting_phone: 'ขอเบอร์โทรที่สะดวกให้ทีมงานติดต่อกลับหน่อยนะคะ',\n  waiting_student_name: 'น้องชื่ออะไรคะ จะได้ให้ทีมงานเรียกชื่อน้องถูกค่ะ 😊',\n  waiting_student_grade: 'ตอนนี้น้องอยู่ระดับชั้นไหนคะ เช่น ป.4, ป.6 หรือ ม.1',\n  waiting_pain_point: 'ตอนนี้อยากให้ eiMaths ช่วยน้องเรื่องไหนเป็นพิเศษคะ\\nเช่น ไม่ชอบคณิต, กลัวเลข, ทำโจทย์ไม่ค่อยได้, เรียนไม่ทัน หรืออยากเพิ่มความมั่นใจ',\n  waiting_preferred_contact_time: 'คุณพ่อ/คุณแม่สะดวกให้ทีมงานติดต่อกลับช่วงเวลาไหนคะ\\nเช่น หลัง 18:00 หรือช่วงเย็นหลังเลิกงาน'\n};\n\nfunction introText() {\n  return 'สวัสดีค่ะ 😊 ขอบคุณที่สนใจทดลองเรียนฟรีกับ eiMaths นะคะ\\nแอดมินขอข้อมูลนิดนึง เพื่อให้ทีมงานช่วยแนะนำคอร์สที่เหมาะกับน้องได้ค่ะ\\n\\n' + questions.waiting_parent_name;\n}\n\nfunction normalizeText(value) {\n  return String(value || '').trim().replace(/\\s+/g, ' ');\n}\n\nfunction cleanPhone(value) {\n  return String(value || '').replace(/[^0-9+]/g, '');\n}\n\nfunction looksLikePhone(value) {\n  const phone = cleanPhone(value);\n  return /^[0-9+]{8,15}$/.test(phone);\n}\n\nfunction isOnlyNumber(value) {\n  return /^[0-9+\\-\\s().]+$/.test(String(value || '').trim());\n}\n\nfunction isWeakAnswer(value) {\n  const text = normalizeText(value).toLowerCase();\n  if (!text) return true;\n  if (/^[.\\-_/\\\\!?]+$/.test(text)) return true;\n  const weakWords = [\n    'ครับ', 'ค่ะ', 'คะ', 'จ้า', 'จ๊ะ', 'จ้ะ', 'โอเค', 'ok', 'okay',\n    'ได้', 'ได้ค่ะ', 'ได้ครับ', 'ใช่', 'ไม่', 'ไม่รู้', 'ไม่แน่ใจ',\n    'อืม', 'อือ', 'เอ่อ', '555', '5555', 'test', 'ทดสอบ'\n  ];\n  return weakWords.includes(text);\n}\n\nfunction validateParentName(text) {\n  const value = normalizeText(text);\n  if (isWeakAnswer(value)) {\n    return { ok: false, reply: 'ขอชื่อคุณพ่อ/คุณแม่ หรือผู้ปกครองอีกครั้งนะคะ 😊\\nเช่น แม่แดง, คุณพ่อนัท หรือคุณแม่ก้อยค่ะ' };\n  }\n  if (looksLikePhone(value) || isOnlyNumber(value)) {\n    return { ok: false, reply: 'เหมือนอันนี้จะเป็นเบอร์โทรค่ะ เดี๋ยวขอชื่อผู้ปกครองก่อนนะคะ\\nเช่น แม่แดง หรือคุณพ่อนัทค่ะ' };\n  }\n  if (value.length > 80) {\n    return { ok: false, reply: 'ชื่อยาวไปนิดนึงค่ะ รบกวนพิมพ์เฉพาะชื่อผู้ปกครองที่สะดวกให้ติดต่อกลับนะคะ' };\n  }\n  return { ok: true, value };\n}\n\nfunction validatePhone(text) {\n  const value = cleanPhone(text);\n  if (!/^[0-9+]{8,15}$/.test(value)) {\n    return { ok: false, reply: 'เบอร์โทรอาจยังไม่ครบค่ะ\\nรบกวนพิมพ์เป็นตัวเลขอีกครั้งนะคะ เช่น 0812345678' };\n  }\n  return { ok: true, value };\n}\n\nfunction validateStudentName(text) {\n  const value = normalizeText(text);\n  if (isWeakAnswer(value)) {\n    return { ok: false, reply: 'ขอชื่อน้องอีกครั้งนะคะ จะเป็นชื่อเล่นก็ได้ค่ะ 😊\\nเช่น น้องมีนา, น้องต้น หรือ น้องบี' };\n  }\n  if (looksLikePhone(value) || isOnlyNumber(value)) {\n    return { ok: false, reply: 'อันนี้เหมือนเป็นตัวเลขค่ะ รบกวนพิมพ์ชื่อน้องให้หน่อยนะคะ จะเป็นชื่อเล่นก็ได้ค่ะ 😊' };\n  }\n  if (value.length > 80) {\n    return { ok: false, reply: 'ชื่อน้องยาวไปนิดนึงค่ะ รบกวนพิมพ์เฉพาะชื่อหรือชื่อเล่นของน้องนะคะ' };\n  }\n  return { ok: true, value };\n}\n\nfunction normalizeGrade(text) {\n  const raw = normalizeText(text);\n  const compact = raw.toLowerCase().replace(/[\\s.]/g, '');\n  if (['เตรียมอนุบาล', 'nursery', 'prek', 'pre-k'].includes(compact)) return 'เตรียมอนุบาล';\n\n  const match = compact.match(/([1-6])$/);\n  if (!match) return null;\n\n  const level = Number(match[1]);\n  const prefix = compact.slice(0, -match[1].length);\n  const startsWithAny = (values) => values.some((value) => prefix.startsWith(value));\n\n  if (level <= 3 && startsWithAny(['อ', 'อนุบาล', 'k'])) return 'อ.' + level;\n  if (level <= 6 && startsWithAny(['ป', 'ประถม', 'p'])) return 'ป.' + level;\n  if (level <= 6 && startsWithAny(['ม', 'มัธยม', 'm'])) return 'ม.' + level;\n  return null;\n}\n\nfunction validateGrade(text) {\n  const normalized = normalizeGrade(text);\n  if (!normalized) {\n    return { ok: false, reply: 'ขอระดับชั้นของน้องอีกครั้งนะคะ 😊\\nพิมพ์ได้แบบสั้น ๆ เช่น อ.3, ป.5, ป.6 หรือ ม.1 ค่ะ' };\n  }\n  return { ok: true, value: normalized };\n}\n\nfunction validatePainPoint(text) {\n  const value = normalizeText(text);\n  if (isWeakAnswer(value) || value.length < 3) {\n    return { ok: false, reply: 'ขอทราบปัญหาหรือเป้าหมายของน้องนิดนึงนะคะ\\nเช่น กลัวเลข, ไม่ชอบคณิต, ทำโจทย์ไม่ทัน, เรียนไม่เข้าใจ หรืออยากเพิ่มความมั่นใจค่ะ' };\n  }\n  if (value.length > 500) {\n    return { ok: false, reply: 'รายละเอียดค่อนข้างยาวค่ะ รบกวนสรุปสั้น ๆ ว่าอยากให้ช่วยเรื่องไหนเป็นพิเศษนะคะ' };\n  }\n  return { ok: true, value };\n}\n\nfunction validatePreferredContactTime(text) {\n  const value = normalizeText(text);\n  if (isWeakAnswer(value)) {\n    return { ok: false, reply: 'รบกวนแจ้งช่วงเวลาที่สะดวกให้ทีมงานติดต่อกลับหน่อยนะคะ\\nเช่น วันนี้หลัง 18:00, พรุ่งนี้ช่วงเย็น หรือเสาร์-อาทิตย์ค่ะ' };\n  }\n  const timePattern = /\\d{1,2}[:.]?\\d{0,2}/;\n  const keywords = [\n    'เช้า', 'สาย', 'เที่ยง', 'กลางวัน', 'บ่าย', 'เย็น', 'ค่ำ', 'กลางคืน',\n    'หลัง', 'ก่อน', 'วันนี้', 'พรุ่งนี้', 'เสาร์', 'อาทิตย์', 'ทุกวัน',\n    'วันธรรมดา', 'เลิกงาน', 'เลิกเรียน', 'สะดวก'\n  ];\n  const hasTime = timePattern.test(value) || keywords.some((keyword) => value.includes(keyword));\n  if (!hasTime || value.length > 200) {\n    return { ok: false, reply: 'ขอช่วงเวลาที่สะดวกแบบประมาณก็ได้ค่ะ 😊\\nเช่น หลัง 18:00, ช่วงเย็นหลังเลิกงาน หรือเสาร์-อาทิตย์' };\n  }\n  return { ok: true, value };\n}\n\nconst now = new Date().toISOString();\nconst userId = item.lineUserId;\nconst text = normalizeText(item.messageText || '');\nconst lowerText = text.toLowerCase();\n\nconst restartKeywords = ['เริ่มใหม่', 'ลงทะเบียนใหม่', 'แก้ข้อมูล', 'กรอกใหม่', 'restart', 'reset'];\nconst isRestartKeyword = restartKeywords.some((keyword) => lowerText.includes(keyword.toLowerCase()));\n\nlet conversation = store.conversations[userId] || {\n  state: 'waiting_parent_name',\n  answers: {},\n  createdAt: now,\n  followedAt: item.eventType === 'follow' ? now : null,\n  startedAt: now,\n  handoverReplyCount: 0\n};\n\nconversation.displayName = item.displayName || conversation.displayName || null;\nconversation.pictureUrl = item.pictureUrl || conversation.pictureUrl || null;\nconversation.lastMessageAt = now;\nconversation.answers = conversation.answers || {};\nif (item.eventType === 'follow' && !conversation.followedAt) conversation.followedAt = now;\n\nlet replyText = '';\nlet completed = false;\nlet shouldReply = true;\nlet validation = null;\n\nif (isRestartKeyword) {\n  conversation.state = 'waiting_parent_name';\n  conversation.answers = {};\n  conversation.startedAt = now;\n  conversation.completedAt = null;\n  conversation.handoverReplyCount = 0;\n  replyText = 'ได้เลยค่ะ เริ่มลงทะเบียนใหม่ให้นะคะ 😊\\n\\n' + questions.waiting_parent_name;\n} else if (item.eventType === 'follow') {\n  conversation.state = 'waiting_parent_name';\n  conversation.answers = conversation.answers || {};\n  conversation.startedAt = conversation.startedAt || now;\n  conversation.handoverReplyCount = 0;\n  replyText = introText();\n} else if (!text && conversation.state === 'waiting_parent_name') {\n  replyText = introText();\n} else if (conversation.state === 'waiting_parent_name') {\n  validation = validateParentName(text);\n  if (!validation.ok) {\n    replyText = validation.reply;\n  } else {\n    conversation.answers.parent_name = validation.value;\n    conversation.state = 'waiting_phone';\n    replyText = questions.waiting_phone;\n  }\n} else if (conversation.state === 'waiting_phone') {\n  validation = validatePhone(text);\n  if (!validation.ok) {\n    replyText = validation.reply;\n  } else {\n    conversation.answers.phone = validation.value;\n    conversation.state = 'waiting_student_name';\n    replyText = questions.waiting_student_name;\n  }\n} else if (conversation.state === 'waiting_student_name') {\n  validation = validateStudentName(text);\n  if (!validation.ok) {\n    replyText = validation.reply;\n  } else {\n    conversation.answers.student_name = validation.value;\n    conversation.state = 'waiting_student_grade';\n    replyText = questions.waiting_student_grade;\n  }\n} else if (conversation.state === 'waiting_student_grade') {\n  validation = validateGrade(text);\n  if (!validation.ok) {\n    replyText = validation.reply;\n  } else {\n    conversation.answers.student_grade = validation.value;\n    conversation.state = 'waiting_pain_point';\n    replyText = questions.waiting_pain_point;\n  }\n} else if (conversation.state === 'waiting_pain_point') {\n  validation = validatePainPoint(text);\n  if (!validation.ok) {\n    replyText = validation.reply;\n  } else {\n    conversation.answers.pain_point = validation.value;\n    conversation.state = 'waiting_preferred_contact_time';\n    replyText = questions.waiting_preferred_contact_time;\n  }\n} else if (conversation.state === 'waiting_preferred_contact_time') {\n  validation = validatePreferredContactTime(text);\n  if (!validation.ok) {\n    replyText = validation.reply;\n  } else {\n    conversation.answers.preferred_contact_time = validation.value;\n    conversation.completedAt = now;\n    conversation.state = 'handover_to_staff';\n    conversation.handoverReplyCount = 0;\n    completed = true;\n    replyText = 'ขอบคุณมากค่ะ 😊\\nแอดมินได้รับข้อมูลเรียบร้อยแล้วนะคะ\\n\\nเดี๋ยวทีมงาน eiMaths จะติดต่อกลับตามช่วงเวลาที่แจ้งไว้\\nเพื่อแนะนำการทดลองเรียนฟรี 2 คลาสให้น้องค่ะ';\n  }\n} else if (conversation.state === 'completed' || conversation.state === 'handover_to_staff') {\n  conversation.state = 'handover_to_staff';\n  conversation.handoverReplyCount = Number(conversation.handoverReplyCount || 0) + 1;\n  replyText = '';\n  shouldReply = false;\n} else {\n  conversation.state = 'waiting_parent_name';\n  conversation.answers = {};\n  conversation.startedAt = now;\n  conversation.handoverReplyCount = 0;\n  replyText = introText();\n}\n\nstore.conversations[userId] = conversation;\n\nlet crmPayload = null;\nif (completed) {\n  crmPayload = {\n    ...conversation.answers,\n    interest: 'ทดลองเรียนฟรี 2 คลาส',\n    line_user_id: userId,\n    line_display_name: conversation.displayName,\n    line_picture_url: conversation.pictureUrl,\n    line_follow_status: 'followed',\n    line_followed_at: conversation.followedAt || now,\n    line_last_message_at: now,\n    line_conversation_state: 'completed',\n    line_source: 'new_customer_line_oa',\n    utm_source: 'line',\n    utm_medium: 'new_customer_oa_chat',\n    utm_campaign: 'unknown',\n    utm_content: null,\n    first_touch_source: 'line',\n    last_touch_source: 'new_customer_line_oa',\n    created_from: 'new_customer_line_oa_chatbot',\n    lead_status: 'new_lead'\n  };\n}\n\nreturn {\n  json: {\n    ...item,\n    completed,\n    replyToken: item.replyToken,\n    replyText,\n    shouldReply,\n    lineUserId: userId,\n    conversationState: conversation.state,\n    crmPayload\n  }\n};"
+        "jsCode": "const item = $json || {};\nconst store = $getWorkflowStaticData('global');\nstore.conversations = store.conversations || {};\n\nconst now_iso = new Date().toISOString();\nconst line_user_id = item.lineUserId;\n\nconst default_conversation = {\n  state: 'waiting_consent',\n  consentStatus: 'pending',\n  answers: {},\n  currentStudentIndex: 0,\n  createdAt: now_iso,\n  startedAt: now_iso,\n  followedAt: item.eventType === 'follow' ? now_iso : null,\n  lastMessageAt: now_iso,\n  invalidCountByState: {},\n  handoverReplyCount: 0,\n  postCompletionReplyCount: 0,\n  handoverNotifiedAt: null,\n  handoverReason: null,\n  completedAt: null\n};\n\nconst conversation = store.conversations[line_user_id] || default_conversation;\nconversation.answers = conversation.answers || {};\nconversation.currentStudentIndex = Number(conversation.currentStudentIndex || 0);\nconversation.invalidCountByState = conversation.invalidCountByState || {};\nconversation.lastMessageAt = now_iso;\nconversation.displayName = item.displayName || conversation.displayName || null;\nconversation.pictureUrl = item.pictureUrl || conversation.pictureUrl || null;\nif (item.eventType === 'follow' && !conversation.followedAt) conversation.followedAt = now_iso;\n\nstore.conversations[line_user_id] = conversation;\n\nreturn {\n  json: {\n    ...item,\n    nowIso: now_iso,\n    conversationState: conversation.state,\n    consentStatus: conversation.consentStatus || 'pending',\n    existingAnswers: conversation.answers,\n    currentStudentIndex: conversation.currentStudentIndex,\n    invalidCountByState: conversation.invalidCountByState,\n    handoverReplyCount: Number(conversation.handoverReplyCount || 0),\n    postCompletionReplyCount: Number(conversation.postCompletionReplyCount || 0),\n    handoverNotifiedAt: conversation.handoverNotifiedAt || null,\n    handoverReason: conversation.handoverReason || null,\n    completedAt: conversation.completedAt || null,\n    displayName: conversation.displayName,\n    pictureUrl: conversation.pictureUrl\n  }\n};"
       },
-      "id": "4f4fab8f-abcc-426b-a022-7648c8361229",
-      "name": "Conversation State",
+      "id": "0e2a9c3b-97e6-4b7c-a5ce-3d734ede3814",
+      "name": "Load Conversation Context",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        140,
-        140
+        5184,
+        2656
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const item = $json || {};\nconst text = String(item.normalizedText || '').trim();\nconst lower_text = text.toLowerCase();\n\nfunction IncludesAny(values) {\n  return values.some((keyword) => lower_text.includes(keyword.toLowerCase()));\n}\n\nconst restart_keywords = [\n  'เริ่มใหม่', 'ลงทะเบียนใหม่', 'แก้ข้อมูล', 'กรอกใหม่', 'สมัครใหม่',\n  'เริ่มลงทะเบียน', 'ลงใหม่', 'ทำใหม่', 'เริ่มอีกรอบ', 'restart', 'reset', 'clear'\n];\nconst staff_keywords = [\n  'ติดต่อเจ้าหน้าที่', 'คุยกับแอดมิน', 'คุยกับคน', 'ขอคนตอบ',\n  'เจ้าหน้าที่', 'แอดมิน', 'ให้คนติดต่อ', 'ให้เจ้าหน้าที่ติดต่อ'\n];\nconst cancel_keywords = ['ยกเลิก', 'ไม่ลงทะเบียน', 'พอก่อน', 'ไม่สะดวกแล้ว'];\n\nlet direct_decision = null;\n\n// ให้เริ่มใหม่มี priority สูงสุด เพื่อให้ user ที่เคยกรอกจบหรืออยู่ silent handover reset ได้เสมอ\nif (IncludesAny(restart_keywords)) {\n  direct_decision = {\n    action: 'restart_registration',\n    reason: 'user_requested_restart',\n    replyText: ''\n  };\n} else if (IncludesAny(staff_keywords)) {\n  direct_decision = {\n    action: 'handover_to_staff',\n    reason: 'user_requested_staff',\n    replyText: 'ได้เลยค่ะ 😊 เดี๋ยวบอทส่งเรื่องให้เจ้าหน้าที่เข้ามาดูแลต่อนะคะ\\nระหว่างนี้สามารถพิมพ์คำถามหรือรายละเอียดเพิ่มเติมไว้ได้เลยค่ะ'\n  };\n} else if (IncludesAny(cancel_keywords)) {\n  direct_decision = {\n    action: 'cancel_registration',\n    reason: 'user_requested_cancel',\n    replyText: 'เข้าใจค่ะ 😊 ตอนนี้บอทจะหยุดขั้นตอนลงทะเบียนไว้ก่อนนะคะ\\nหากต้องการเริ่มใหม่ สามารถพิมพ์ “เริ่มใหม่” หรือพิมพ์ “ติดต่อเจ้าหน้าที่” ได้เลยค่ะ'\n  };\n}\n\nreturn {\n  json: {\n    ...item,\n    directDecision: direct_decision,\n    hasDirectDecision: Boolean(direct_decision)\n  }\n};"
+      },
+      "id": "000e0faf-4b60-4b00-9467-80b73beb9161",
+      "name": "Detect Global Intent",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5408,
+        2656
       ]
     },
     {
@@ -95,7 +108,131 @@
           },
           "conditions": [
             {
-              "id": "693947ed-7a42-4321-b59d-c15bbef602fa",
+              "id": "553465f2-eb69-4656-bab4-f7af0489dc42",
+              "leftValue": "={{ $json.hasDirectDecision }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "b1b941ac-b163-45b0-b49d-9b1bf6e57462",
+      "name": "Has Immediate Decision?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        5632,
+        2656
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const item = $json || {};\nconst text = String(item.normalizedText || '').trim();\nconst lower_text = text.toLowerCase();\nconst current_state = item.conversationState || 'waiting_consent';\nconst consent_status = item.consentStatus || 'pending';\nconst is_registration_completed = Boolean(item.completedAt) || item.handoverReason === 'registration_completed';\n\nconst questions = {\n  waiting_parent_name: `รบกวนขอชื่อหรือชื่อเล่นของคุณพ่อ/คุณแม่ที่สะดวกให้ติดต่อกลับหน่อยค่ะ 😊\\nเช่น แม่ก้อย, คุณพ่อนัท หรือคุณแม่แอนค่ะ`,\n  waiting_phone: 'ขอเบอร์โทรที่สะดวกให้ทีมงานติดต่อกลับหน่อยนะคะ',\n  waiting_student_count: 'ตอนนี้ต้องการลงทะเบียนทดลองเรียนฟรีให้น้องกี่คนคะ',\n  waiting_student_name: 'น้องชื่ออะไรคะ จะได้ให้ทีมงานเรียกชื่อน้องถูกค่ะ 😊',\n  waiting_student_grade: 'ตอนนี้น้องอยู่ระดับชั้นไหนคะ เช่น อนุบาล 1, ป.1 หรือ ป.6',\n  waiting_pain_point: `ตอนนี้อยากให้ eiMaths ช่วยน้องเรื่องไหนเป็นพิเศษคะ\\nเช่น ไม่ชอบคณิต, กลัวเลข, ทำโจทย์ไม่ค่อยได้, เรียนไม่ทัน หรืออยากเพิ่มความมั่นใจ`,\n  waiting_preferred_contact_time: `คุณพ่อ/คุณแม่สะดวกให้ทีมงานติดต่อกลับช่วงเวลาไหนคะ\\nเช่น หลัง 18:00 หรือช่วงเย็นหลังเลิกงาน`\n};\n\nfunction IncludesAny(values) {\n  return values.some((keyword) => lower_text.includes(keyword.toLowerCase()));\n}\n\nfunction EqualsAny(values) {\n  return values.some((keyword) => lower_text === keyword.toLowerCase());\n}\n\nfunction IsConsentDecline() {\n  const exact_decline_keywords = [\n    'ไม่ยินยอม', 'ไม่ยินยอมค่ะ', 'ไม่ยินยอมครับ', 'ไม่อนุญาต',\n    'ไม่ให้เก็บข้อมูล', 'ไม่ให้ข้อมูล', 'ไม่สะดวกให้ข้อมูล', 'ยังไม่สะดวกให้ข้อมูล',\n    'ขอไม่ให้ข้อมูล', 'ขอคิดก่อน'\n  ];\n  const phrase_decline_keywords = [\n    'ไม่ยินยอม', 'ไม่อนุญาต', 'ไม่ให้เก็บข้อมูล', 'ไม่ให้ข้อมูล',\n    'ไม่สะดวกให้ข้อมูล', 'ยังไม่สะดวกให้ข้อมูล', 'ขอไม่ให้ข้อมูล', 'ขอคิดก่อน'\n  ];\n\n  return EqualsAny(exact_decline_keywords) || phrase_decline_keywords.some((keyword) => lower_text.includes(keyword));\n}\n\nfunction IsConsentAccept() {\n  const exact_accept_keywords = [\n    'ยินยอม', 'ยินยอมค่ะ', 'ยินยอมครับ', 'ตกลง', 'ตกลงค่ะ', 'ตกลงครับ',\n    'อนุญาต', 'อนุญาตค่ะ', 'อนุญาตครับ', 'ได้ค่ะ', 'ได้ครับ', 'ได้เลย',\n    'โอเค', 'ok', 'okay', 'สนใจ', 'ลงทะเบียน'\n  ];\n  const phrase_accept_keywords = [\n    'ยินยอมให้เก็บข้อมูล', 'อนุญาตให้เก็บข้อมูล', 'เริ่มลงทะเบียน', 'อยากลงทะเบียน', 'ขอลงทะเบียน'\n  ];\n\n  if (IsConsentDecline()) return false;\n  return EqualsAny(exact_accept_keywords) || phrase_accept_keywords.some((keyword) => lower_text.includes(keyword));\n}\n\nfunction ConsentIntroText() {\n  return [\n    'สวัสดีค่ะ 😊',\n    'ตอนนี้คุณกำลังคุยกับผู้ช่วยอัตโนมัติของ eiMaths นะคะ',\n    '',\n    'บอทจะช่วยเก็บข้อมูลเบื้องต้น เพื่อให้ทีมงานแนะนำคลาสทดลองเรียนฟรีที่เหมาะกับน้องได้ตรงมากขึ้นค่ะ',\n    '',\n    'ก่อนเริ่มลงทะเบียน ขออนุญาตเก็บข้อมูล เช่น ชื่อผู้ปกครอง เบอร์โทร ชื่อน้อง ระดับชั้น และช่วงเวลาที่สะดวกให้ติดต่อกลับนะคะ',\n    '',\n    'ข้อมูลนี้ใช้เพื่อให้ทีมงาน eiMaths ติดต่อกลับและแนะนำคลาสทดลองเรียนฟรีเท่านั้นค่ะ',\n    '',\n    'หากยินยอมให้เก็บข้อมูล พิมพ์ “ยินยอม”',\n    'หากยังไม่สะดวกให้เก็บข้อมูล พิมพ์ “ไม่ยินยอม”',\n    'หรือพิมพ์ “ติดต่อเจ้าหน้าที่” เพื่อให้ทีมงานดูแลต่อค่ะ'\n  ].join('\\n');\n}\n\nfunction PostCompletionOptionsText() {\n  return [\n    'ก่อนหน้านี้ระบบได้รับข้อมูลลงทะเบียนไว้เรียบร้อยแล้วนะคะ 😊',\n    '',\n    'หากต้องการกรอกข้อมูลใหม่ พิมพ์ “เริ่มใหม่”',\n    'หากต้องการให้เจ้าหน้าที่ช่วยดูแลต่อ พิมพ์ “ติดต่อเจ้าหน้าที่” ได้เลยค่ะ'\n  ].join('\\n');\n}\n\nlet consent_decision = null;\nlet needs_field_validation = false;\n\nif ((current_state === 'handover_to_staff' || current_state === 'completed') && is_registration_completed) {\n  consent_decision = {\n    action: 'post_completion_options',\n    nextState: 'handover_to_staff',\n    consentStatus: consent_status,\n    replyText: PostCompletionOptionsText()\n  };\n} else if (current_state === 'handover_to_staff' || current_state === 'completed') {\n  consent_decision = {\n    action: 'silent_handover',\n    nextState: 'handover_to_staff',\n    consentStatus: consent_status,\n    replyText: ''\n  };\n} else if (item.eventType === 'follow') {\n  consent_decision = {\n    action: 'ask_consent',\n    nextState: 'waiting_consent',\n    consentStatus: 'pending',\n    replyText: ConsentIntroText()\n  };\n} else if (current_state === 'waiting_consent' || consent_status !== 'accepted') {\n  // ต้องเช็คไม่ยินยอมก่อน เพราะคำว่า “ไม่ยินยอม” มีคำว่า “ยินยอม” อยู่ข้างใน\n  if (IsConsentDecline()) {\n    consent_decision = {\n      action: 'decline_consent',\n      nextState: 'consent_declined',\n      consentStatus: 'declined',\n      replyText: 'เข้าใจค่ะ 😊\\nตอนนี้บอทจะยังไม่เก็บข้อมูลส่วนตัวนะคะ\\n\\nหากต้องการเริ่มลงทะเบียนใหม่ สามารถพิมพ์ “ยินยอม” ได้เลย\\nหรือพิมพ์ “ติดต่อเจ้าหน้าที่” เพื่อให้ทีมงานเข้ามาดูแลต่อค่ะ'\n    };\n  } else if (IsConsentAccept()) {\n    consent_decision = {\n      action: 'accept_consent',\n      nextState: 'waiting_parent_name',\n      consentStatus: 'accepted',\n      replyText: 'ขอบคุณค่ะ 😊\\n' + questions.waiting_parent_name\n    };\n  } else {\n    consent_decision = {\n      action: 'ask_consent',\n      nextState: 'waiting_consent',\n      consentStatus: 'pending',\n      replyText: ConsentIntroText()\n    };\n  }\n} else if (current_state === 'consent_declined') {\n  consent_decision = {\n    action: 'consent_declined_idle',\n    nextState: 'consent_declined',\n    consentStatus: 'declined',\n    replyText: 'ตอนนี้บอทยังไม่เก็บข้อมูลส่วนตัวนะคะ 😊\\nหากต้องการเริ่มลงทะเบียน สามารถพิมพ์ “ยินยอม” หรือพิมพ์ “ติดต่อเจ้าหน้าที่” ได้เลยค่ะ'\n  };\n} else {\n  needs_field_validation = true;\n}\n\nreturn {\n  json: {\n    ...item,\n    questions,\n    consentDecision: consent_decision,\n    needsFieldValidation: needs_field_validation\n  }\n};"
+      },
+      "id": "2cab6d2b-b04c-44b0-98ae-42ebc3ac96a0",
+      "name": "Consent Gate",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5856,
+        2784
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "75285e0a-87db-4e52-80b9-90f83072861c",
+              "leftValue": "={{ $json.needsFieldValidation }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "bae389e7-84d5-4859-8780-eff830850ecf",
+      "name": "Needs Field Validation?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        6080,
+        2784
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const item = $json || {};\nconst text = NormalizeText(item.normalizedText || item.messageText || '');\nconst state = item.conversationState;\nconst questions = item.questions || {};\nconst current_student_index = Number(item.currentStudentIndex || 0);\n\nfunction NormalizeText(value) {\n  return String(value || '').trim().replace(/\\s+/g, ' ');\n}\n\nfunction NormalizeThaiDigits(value) {\n  const thai_digit_by_arabic_digit = {\n    '๐': '0',\n    '๑': '1',\n    '๒': '2',\n    '๓': '3',\n    '๔': '4',\n    '๕': '5',\n    '๖': '6',\n    '๗': '7',\n    '๘': '8',\n    '๙': '9'\n  };\n  return String(value || '').replace(/[๐-๙]/g, (digit) => thai_digit_by_arabic_digit[digit] || digit);\n}\n\nfunction LowerText(value) {\n  return NormalizeThaiDigits(value).toLowerCase();\n}\n\nfunction CreatePass(normalized_value, reason) {\n  return {\n    status: 'pass',\n    normalizedValue: normalized_value,\n    reason: reason || 'rule_pass'\n  };\n}\n\nfunction CreateFail(reply_text, reason, count_invalid = true) {\n  return {\n    status: 'fail',\n    normalizedValue: '',\n    replyText: reply_text,\n    reason: reason || 'rule_fail',\n    countInvalid: count_invalid\n  };\n}\n\nfunction CreateNeedsAi(reason) {\n  return {\n    status: 'needs_ai',\n    reason: reason || 'ambiguous_rule_result'\n  };\n}\n\nfunction IncludesAny(lower_text, keywords) {\n  return keywords.some((keyword) => lower_text.includes(String(keyword).toLowerCase()));\n}\n\nfunction EqualsAny(lower_text, keywords) {\n  return keywords.some((keyword) => lower_text === String(keyword).toLowerCase());\n}\n\nfunction HasLetter(value) {\n  return /[A-Za-zก-๙]/.test(value);\n}\n\nfunction LooksLikePhone(value) {\n  const phone_text = NormalizeThaiDigits(value).replace(/[\\s\\-().]/g, '');\n  return /^(\\+66|0)?[0-9]{8,12}$/.test(phone_text);\n}\n\nfunction LooksLikeGrade(value) {\n  const lower_text = LowerText(value)\n    .replace(/\\s+/g, '')\n    .replace(/ปี/g, '')\n    .replace(/ศึกษา/g, '')\n    .replace(/ที่/g, '');\n  return /^(อ\\.?|อนุบาล|ป\\.?|ประถม|ม\\.?|มัธยม|p|m)[0-9]+$/.test(lower_text);\n}\n\nfunction IsProbablyUrlOrHandle(value) {\n  const lower_text = LowerText(value);\n  return /(https?:\\/\\/|www\\.|@|line\\s?id|ไลน์\\s?id)/i.test(lower_text);\n}\n\nfunction BuildNameRetryReply(field_type) {\n  if (field_type === 'parent_name') {\n    return 'รบกวนขอชื่อหรือชื่อเล่นของคุณพ่อ/คุณแม่เพิ่มเติมนิดนึงนะคะ 😊 เช่น แม่ก้อย หรือคุณพ่อนัทค่ะ';\n  }\n\n  return [\n    'รบกวนขอชื่อน้องหรือชื่อเล่นน้องอีกครั้งนะคะ 😊',\n    'เช่น น้องมีนา, น้องต้น หรือ น้องแพรค่ะ'\n  ].join('\\n');\n}\n\nfunction ValidatePersonName(value, field_type) {\n  const normalized_value = NormalizeText(value);\n  const lower_text = LowerText(normalized_value);\n  const compact_text = lower_text.replace(/\\s+/g, '');\n\n  const common_invalid_exact_keywords = [\n    '', 'ค่ะ', 'ครับ', 'คะ', 'จ้า', 'จ่ะ', 'ฮะ', 'โอเค', 'ok', 'okay', 'ได้ค่ะ', 'ได้ครับ',\n    'สวัสดี', 'หวัดดี', 'hello', 'hi', '555', '5555', '55555', 'test', 'ทดสอบ',\n    'ไม่บอก', 'ยังไม่บอก', 'ไม่ค่ะ', 'ไม่ครับ', 'ไม่คะ', 'ไม่จ้า', 'ไม่รู้', 'ไม่ทราบ',\n    'ยังไม่รู้', 'ยังไม่ทราบ', 'ไม่มี', 'ไม่เอา', 'ขอผ่าน', 'ผ่านก่อน', 'เราเอง', 'ฉันเอง',\n    'คนเดิม', 'เบอร์เดิม', '-', '.', '/', 'na', 'n/a'\n  ];\n\n  const common_invalid_phrase_keywords = [\n    'ไม่รู้', 'ไม่ทราบ', 'ไม่บอก', 'ยังไม่บอก', 'จำไม่ได้', 'ขอผ่าน', 'ผ่านก่อน',\n    'ไม่มีชื่อ', 'ยังไม่ได้ตั้งชื่อ', 'ไม่ให้ชื่อ', 'ไม่สะดวกให้ชื่อ', 'ทดสอบ', 'test',\n    'asdf', 'qwer', 'qwerty', 'xxx', 'yyy', 'zzz', '1234'\n  ];\n\n  if (EqualsAny(lower_text, common_invalid_exact_keywords) || IncludesAny(lower_text, common_invalid_phrase_keywords)) {\n    return CreateFail(BuildNameRetryReply(field_type), `${field_type}_common_invalid`, true);\n  }\n\n  if (LooksLikePhone(normalized_value)) {\n    const reply_text = field_type === 'parent_name'\n      ? 'ตอนนี้บอทขอชื่อผู้ปกครองก่อนนะคะ 😊 รบกวนแจ้งชื่อหรือชื่อเล่น เช่น แม่ก้อย หรือคุณพ่อนัทค่ะ'\n      : 'ตอนนี้บอทขอชื่อน้องก่อนนะคะ 😊 รบกวนแจ้งชื่อน้องหรือชื่อเล่นน้องค่ะ';\n    return CreateFail(reply_text, `${field_type}_looks_like_phone`, false);\n  }\n\n  if (LooksLikeGrade(normalized_value)) {\n    const reply_text = field_type === 'parent_name'\n      ? 'ตอนนี้บอทขอชื่อผู้ปกครองก่อนนะคะ 😊 รบกวนแจ้งชื่อหรือชื่อเล่น เช่น แม่ก้อย หรือคุณพ่อนัทค่ะ'\n      : 'ตอนนี้บอทขอชื่อน้องก่อนนะคะ 😊 ระดับชั้นจะถามในขั้นถัดไปค่ะ';\n    return CreateFail(reply_text, `${field_type}_looks_like_grade`, false);\n  }\n\n  if (IsProbablyUrlOrHandle(normalized_value)) {\n    const reply_text = field_type === 'parent_name'\n      ? 'รบกวนแจ้งเป็นชื่อหรือชื่อเล่นของผู้ปกครองแทนลิงก์หรือไอดีนะคะ 😊'\n      : 'รบกวนแจ้งเป็นชื่อน้องหรือชื่อเล่นน้องแทนลิงก์หรือไอดีนะคะ 😊';\n    return CreateFail(reply_text, `${field_type}_url_or_handle`, true);\n  }\n\n  if (field_type === 'parent_name') {\n    const role_only_keywords = ['แม่', 'คุณแม่', 'พ่อ', 'คุณพ่อ', 'ผู้ปกครอง', 'ผปค', 'พ่อแม่', 'ผู้ดูแล'];\n    if (EqualsAny(lower_text, role_only_keywords)) {\n      return CreateFail(\n        'รบกวนขอชื่อหรือชื่อเล่นเพิ่มเติมนิดนึงนะคะ 😊 เช่น แม่ก้อย, คุณพ่อนัท หรือคุณแม่แอนค่ะ',\n        'parent_name_role_only',\n        false\n      );\n    }\n  }\n\n  if (field_type === 'student_name') {\n    const student_invalid_exact_keywords = [\n      'ไวๆ', 'เร็วๆ', 'รีบๆ', 'วัยรุ่น', 'เด็ก', 'ลูก', 'น้อง', 'ชื่อเล่น', 'ชื่อ',\n      'โตแล้ว', 'เด็กเล็ก', 'ผู้ชาย', 'ผู้หญิง', 'อะไรก็ได้', 'ชื่ออะไรก็ได้',\n      'แล้วแต่', 'ตามใจ', 'มั่ว', 'มั่วๆ', 'มั่วๆไป', 'เล่นๆ', 'ล้อเล่น', 'กดเล่น',\n      'เร็ว', 'ไว', 'รีบ', 'ไม่ค่ะ', 'ไม่ครับ', 'ไม่คะ', 'ไม่มี', 'ไม่บอก', 'ขอผ่าน', 'ผ่านก่อน'\n    ];\n\n    const student_invalid_phrase_keywords = [\n      'มั่ว', 'เล่นๆ', 'ล้อเล่น', 'อะไรก็ได้', 'ชื่ออะไรก็ได้', 'ไม่ใช่ชื่อ',\n      'ไม่มีชื่อ', 'ยังไม่ได้ตั้งชื่อ', 'ไม่รู้ชื่อ', 'ไม่ทราบชื่อ', 'จำชื่อไม่ได้',\n      'ขอไม่บอก', 'ไม่บอกชื่อ', 'กดเล่น', 'ตอบเล่น', 'ตอบมั่ว', 'เร็วๆ', 'ไวๆ', 'รีบๆ'\n    ];\n\n    const student_sentence_like_keywords = [\n      'ชื่ออะไร', 'ถามทำไม', 'เอาไปทำไม', 'ไม่อยาก', 'ไม่สะดวก', 'ไม่ให้', 'เดี๋ยวบอก'\n    ];\n\n    if (\n      EqualsAny(lower_text, student_invalid_exact_keywords)\n      || IncludesAny(lower_text, student_invalid_phrase_keywords)\n      || IncludesAny(lower_text, student_sentence_like_keywords)\n    ) {\n      return CreateFail(BuildNameRetryReply(field_type), 'student_name_invalid_or_random_answer', true);\n    }\n\n    if (/[0-9๐-๙]/.test(normalized_value)) {\n      return CreateFail('ตอนนี้บอทขอชื่อน้องก่อนนะคะ 😊 รบกวนแจ้งเป็นชื่อหรือชื่อเล่นน้อง ไม่ใช่ตัวเลขค่ะ', 'student_name_contains_number', false);\n    }\n\n    if (/[ๆ!?！？#*_={}\\[\\]<>|\\\\/]/.test(normalized_value)) {\n      return CreateFail(BuildNameRetryReply(field_type), 'student_name_contains_suspicious_symbol', true);\n    }\n\n    if (normalized_value.length > 30) {\n      return CreateNeedsAi('student_name_long_or_sentence_like');\n    }\n  }\n\n  if (!HasLetter(normalized_value) || normalized_value.length > 40) {\n    const reply_text = field_type === 'parent_name'\n      ? 'รบกวนแจ้งชื่อหรือชื่อเล่นของผู้ปกครองอีกครั้งนะคะ 😊'\n      : BuildNameRetryReply(field_type);\n    return CreateFail(reply_text, `${field_type}_invalid_shape`, true);\n  }\n\n  if (normalized_value.length <= 1 && field_type === 'parent_name') {\n    return CreateNeedsAi('parent_name_too_short_for_rule');\n  }\n\n  if (field_type === 'student_name' && normalized_value.length <= 1) {\n    return CreateFail(BuildNameRetryReply(field_type), 'student_name_too_short', false);\n  }\n\n  return CreatePass(normalized_value, `${field_type}_rule_pass`);\n}\n\nfunction ValidatePhone(value) {\n  const lower_text = LowerText(value);\n  const invalid_keywords = ['เบอร์เดิม', 'โทรมาเลย', 'ไม่มี', 'ไม่บอก', 'ยังไม่ให้', 'ไม่ให้เบอร์', 'ไม่สะดวกให้เบอร์'];\n\n  if (EqualsAny(lower_text, invalid_keywords) || IncludesAny(lower_text, ['ไม่ให้เบอร์', 'ไม่บอกเบอร์'])) {\n    return CreateFail('รบกวนขอเบอร์มือถือที่สะดวกให้ทีมงานติดต่อกลับนะคะ 😊', 'phone_refused_or_missing', true);\n  }\n\n  const compact_phone = NormalizeThaiDigits(value).replace(/[\\s\\-().]/g, '');\n  let normalized_value = '';\n\n  if (/^\\+66[689][0-9]{8}$/.test(compact_phone)) {\n    normalized_value = '0' + compact_phone.slice(3);\n  } else if (/^66[689][0-9]{8}$/.test(compact_phone)) {\n    normalized_value = '0' + compact_phone.slice(2);\n  } else if (/^0[689][0-9]{8}$/.test(compact_phone)) {\n    normalized_value = compact_phone;\n  }\n\n  if (!normalized_value) {\n    return CreateFail('รบกวนขอเบอร์มือถือ 10 หลัก เช่น 0812345678 นะคะ 😊', 'phone_invalid_format', true);\n  }\n\n  if (/^([0-9])\\1+$/.test(normalized_value)) {\n    return CreateFail('รบกวนขอเบอร์มือถือที่ถูกต้องอีกครั้งนะคะ 😊', 'phone_repeated_digits', true);\n  }\n\n  return CreatePass(normalized_value, 'phone_rule_pass');\n}\n\nfunction ValidateStudentCount(value) {\n  const normalized_value = NormalizeThaiDigits(NormalizeText(value));\n  if (!/^\\d+$/.test(normalized_value)) {\n    return CreateFail('รบกวนพิมพ์เป็นตัวเลข 1-4 นะคะ เช่น 1 หรือ 2 ค่ะ', 'student_count_not_number', false);\n  }\n  const count = Number(normalized_value);\n  if (count < 1 || count > 4) {\n    return CreateFail('รบกวนพิมพ์เป็นตัวเลข 1-4 นะคะ เช่น 1 หรือ 2 ค่ะ', 'student_count_out_of_range', false);\n  }\n  return CreatePass(count, 'student_count_rule_pass');\n}\n\nfunction ValidateStudentGrade(value) {\n  const normalized_text = NormalizeThaiDigits(value);\n  const original_compact_text = LowerText(normalized_text).replace(/\\s+/g, '');\n  const compact_text = original_compact_text\n    .replace(/ปี/g, '')\n    .replace(/ศึกษา/g, '')\n    .replace(/ที่/g, '');\n  const broad_grade_keywords = ['อนุบาล', 'ประถม', 'มัธยม', 'เด็กเล็ก', 'โตแล้ว', 'วัยรุ่น'];\n  const ineligible_reply_text = [\n    'ขออภัยค่ะ ตอนนี้ eiMaths เปิดรับน้องอายุ 3–12 ปี หรือระดับชั้นอนุบาล 1 ถึง ป.6 เท่านั้นนะคะ 😊',\n    'หากต้องการให้เจ้าหน้าที่ช่วยดูรายละเอียดเพิ่มเติม สามารถพิมพ์ “ติดต่อเจ้าหน้าที่” ได้เลยค่ะ'\n  ].join('\\n');\n\n  function BuildGrade(prefix, raw_level) {\n    const level = Number(raw_level);\n    if (prefix === 'อ' && level >= 1 && level <= 3) return `อ.${level}`;\n    if (prefix === 'ป' && level >= 1 && level <= 6) return `ป.${level}`;\n    return '';\n  }\n\n  const secondary_grade_match = compact_text.match(/^(?:ม\\.?|มัธยม|m)([0-9]+)$/);\n  if (secondary_grade_match) {\n    return CreateFail(ineligible_reply_text, 'student_grade_secondary_not_eligible', false);\n  }\n\n  const kindergarten_grade_match = compact_text.match(/^(?:อ\\.?|อนุบาล)([0-9]+)$/);\n  if (kindergarten_grade_match) {\n    const kindergarten_level = Number(kindergarten_grade_match[1]);\n    const normalized_value = BuildGrade('อ', kindergarten_grade_match[1]);\n    if (normalized_value) return CreatePass(normalized_value, 'student_grade_rule_pass');\n    if (kindergarten_level > 3 || kindergarten_level < 1) {\n      return CreateFail(ineligible_reply_text, 'student_grade_kindergarten_not_eligible', false);\n    }\n  }\n\n  const primary_grade_match = compact_text.match(/^(?:ป\\.?|ประถม|p)([0-9]+)$/);\n  if (primary_grade_match) {\n    const primary_level = Number(primary_grade_match[1]);\n    const normalized_value = BuildGrade('ป', primary_grade_match[1]);\n    if (normalized_value) return CreatePass(normalized_value, 'student_grade_rule_pass');\n    if (primary_level > 6 || primary_level < 1) {\n      return CreateFail(ineligible_reply_text, 'student_grade_primary_not_eligible', false);\n    }\n  }\n\n  const age_match = original_compact_text.match(/(?:อายุ)?([0-9]{1,2})(?:ขวบ|ปี|yrs?|years?)/i);\n  if (age_match) {\n    const age_years = Number(age_match[1]);\n    if (age_years >= 3 && age_years <= 12) {\n      return CreateFail('รบกวนแจ้งเป็นระดับชั้นของน้องด้วยนะคะ 😊 เช่น อนุบาล 1, ป.1 หรือ ป.6 ค่ะ', 'student_grade_age_without_grade', false);\n    }\n    return CreateFail(ineligible_reply_text, 'student_age_not_eligible', false);\n  }\n\n  if (compact_text === 'มัธยม' || compact_text.startsWith('มัธยม') || compact_text === 'ม') {\n    return CreateFail(ineligible_reply_text, 'student_grade_secondary_broad_not_eligible', false);\n  }\n\n  if (EqualsAny(compact_text, broad_grade_keywords) || broad_grade_keywords.some((keyword) => compact_text === keyword)) {\n    return CreateFail('รบกวนแจ้งระดับชั้นพร้อมเลขชั้นด้วยนะคะ 😊 เช่น อนุบาล 1, ป.1 หรือ ป.6 ค่ะ', 'student_grade_missing_level', false);\n  }\n\n  return CreateFail('รบกวนแจ้งระดับชั้นให้ชัดเจน เช่น อนุบาล 1, ป.1 หรือ ป.6 นะคะ 😊', 'student_grade_invalid_format', true);\n}\n\nfunction ValidatePainPoint(value) {\n  const normalized_value = NormalizeText(value);\n  const lower_text = LowerText(normalized_value);\n\n  const short_clarification_keywords = ['กลัว', 'ไม่ชอบ', 'ไม่เข้าใจ', 'ทำไม่ได้', 'ยาก', 'อ่อน', 'ไม่เก่ง'];\n  const useful_problem_keywords = [\n    'คณิต', 'เลข', 'โจทย์', 'เรียนไม่ทัน', 'ไม่ทัน', 'กลัวเลข', 'กลัวคณิต',\n    'ไม่เข้าใจ', 'ไม่ชอบ', 'ทำโจทย์', 'ทำไม่ได้', 'ช้า', 'พื้นฐาน', 'สอบ',\n    'คะแนน', 'เพิ่มความมั่นใจ', 'มั่นใจ', 'เกรด', 'สมาธิ', 'ท่องสูตร', 'บวก', 'ลบ', 'คูณ', 'หาร'\n  ];\n  const invalid_keywords = ['', 'ok', 'okay', 'โอเค', 'ค่ะ', 'ครับ', 'คะ', '555', 'แล้วแต่', 'อะไรก็ได้', 'ไม่รู้', 'ยังไม่รู้'];\n\n  if (EqualsAny(lower_text, invalid_keywords)) {\n    return CreateFail(\n      'รบกวนเล่าเพิ่มเติมนิดนึงนะคะว่าอยากให้ eiMaths ช่วยน้องเรื่องไหนเป็นพิเศษ 😊',\n      'pain_point_invalid_short',\n      true\n    );\n  }\n\n  if (EqualsAny(lower_text, short_clarification_keywords)) {\n    return CreateFail(\n      'ขอรายละเอียดเพิ่มนิดนึงนะคะ 😊 เช่น กลัว/ไม่ชอบ/ไม่เข้าใจเรื่องไหน หรืออยากให้ช่วยด้านไหนเป็นพิเศษคะ',\n      'pain_point_needs_clarification',\n      false\n    );\n  }\n\n  if (IncludesAny(lower_text, useful_problem_keywords) && normalized_value.length >= 5) {\n    return CreatePass(normalized_value, 'pain_point_rule_pass');\n  }\n\n  return CreateNeedsAi('pain_point_ambiguous');\n}\n\nfunction ValidatePreferredContactTime(value) {\n  const normalized_value = NormalizeText(value);\n  const lower_text = LowerText(normalized_value);\n\n  const now_keywords = ['ตอนนี้', 'ตอนนี้เลย', 'โทรได้เลย', 'เดี๋ยวนี้', 'สะดวกตอนนี้', 'ตอนนี้ได้', 'โทรมาได้เลย'];\n  const unavailable_keywords = ['ไม่สะดวก', 'ยังไม่สะดวก', 'ไม่ว่าง', 'ยังไม่รู้', 'เดี๋ยวบอก', 'ไม่รู้', 'ไว้ก่อน'];\n  const time_keywords = [\n    'เช้า', 'สาย', 'บ่าย', 'เย็น', 'ค่ำ', 'กลางวัน', 'หลังเลิกงาน', 'หลังเลิกเรียน',\n    'วันนี้', 'พรุ่งนี้', 'มะรืน', 'เสาร์', 'อาทิตย์', 'วันหยุด', 'ทุกวัน', 'ได้ตลอด',\n    'หลัง', 'ก่อน', 'ช่วง'\n  ];\n\n  if (EqualsAny(lower_text, now_keywords) || IncludesAny(lower_text, now_keywords)) {\n    return CreatePass('ตอนนี้', 'preferred_contact_time_now_rule_pass');\n  }\n\n  if (EqualsAny(lower_text, unavailable_keywords) || IncludesAny(lower_text, unavailable_keywords)) {\n    return CreateFail(\n      'พอมีช่วงไหนที่สะดวกให้ทีมงานติดต่อกลับไหมคะ 😊 เช่น หลัง 18:00 หรือพรุ่งนี้บ่ายค่ะ',\n      'preferred_contact_time_unavailable',\n      false\n    );\n  }\n\n  if (/\\b([01]?[0-9]|2[0-3])[:.][0-5][0-9]\\b/.test(lower_text) || /\\b([01]?[0-9]|2[0-3])\\s*(โมง|น\\.|am|pm)\\b/i.test(lower_text)) {\n    return CreatePass(normalized_value, 'preferred_contact_time_clock_rule_pass');\n  }\n\n  if (IncludesAny(lower_text, time_keywords) && normalized_value.length >= 2) {\n    return CreatePass(normalized_value, 'preferred_contact_time_keyword_rule_pass');\n  }\n\n  return CreateNeedsAi('preferred_contact_time_ambiguous');\n}\n\nfunction ValidateByState(current_state, value) {\n  const validation_by_state = {\n    waiting_parent_name: () => ValidatePersonName(value, 'parent_name'),\n    waiting_phone: () => ValidatePhone(value),\n    waiting_student_count: () => ValidateStudentCount(value),\n    waiting_student_name: () => ValidatePersonName(value, 'student_name'),\n    waiting_student_grade: () => ValidateStudentGrade(value),\n    waiting_pain_point: () => ValidatePainPoint(value),\n    waiting_preferred_contact_time: () => ValidatePreferredContactTime(value)\n  };\n\n  const validator = validation_by_state[current_state];\n  if (!validator) return CreateNeedsAi('unknown_state');\n  return validator();\n}\n\nconst hybrid_validation = ValidateByState(state, text);\nconst should_use_ai_validation = hybrid_validation.status === 'needs_ai';\n\nconst ai_validation_request = {\n  current_state: state,\n  expected_question: questions[state] || '',\n  current_student_index,\n  user_message: text,\n  existing_answers: item.existingAnswers || {},\n  consent_status: item.consentStatus || 'accepted',\n  validation_mode: 'hybrid_rule_first_ai_for_ambiguous_fields',\n  rule_result: hybrid_validation,\n  note: should_use_ai_validation\n    ? 'Rule validator could not make a safe decision. AI should validate this field without guessing missing data.'\n    : 'Rule validator already made a deterministic decision. AI is skipped.'\n};\n\nreturn {\n  json: {\n    ...item,\n    ruleValidation: should_use_ai_validation ? null : hybrid_validation,\n    shouldUseAiValidation: should_use_ai_validation,\n    aiValidationRequest: ai_validation_request,\n    aiFallbackReplyText: questions[state] || 'รบกวนตอบข้อมูลส่วนนี้อีกครั้งนะคะ 😊',\n    hybridValidation: hybrid_validation\n  }\n};\n"
+      },
+      "id": "65a28d2b-b2ff-4687-9a73-73ab0a5cdf68",
+      "name": "Prepare AI Validation Request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        6304,
+        2720
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const source_item = $('Prepare AI Validation Request').item.json;\n\nfunction BuildFallbackReplyText() {\n  return source_item.aiFallbackReplyText\n    || source_item.questions?.[source_item.conversationState]\n    || 'ขออภัยค่ะ ตอนนี้ระบบตรวจคำตอบอัตโนมัติไม่พร้อมใช้งานชั่วคราว รบกวนพิมพ์คำตอบนี้อีกครั้งนะคะ 😊';\n}\n\nlet ai_validation = {\n  is_valid: false,\n  confidence: 0,\n  detected_intent: 'ask_clarification',\n  normalized_value: '',\n  reason: 'AI Agent did not return a usable JSON response',\n  reply_text: BuildFallbackReplyText()\n};\n\nfunction ExtractJsonText(value) {\n  if (value === null || value === undefined) return '';\n  if (typeof value === 'object') {\n    if (value.error || value.message) {\n      const error_message = value.error?.message || value.error || value.message || 'AI Agent error';\n      throw new Error(String(error_message));\n    }\n    if (typeof value.output === 'string') return value.output;\n    if (typeof value.text === 'string') return value.text;\n    if (typeof value.response === 'string') return value.response;\n    if (typeof value.result === 'string') return value.result;\n    if (typeof value.content === 'string') return value.content;\n    return JSON.stringify(value);\n  }\n  return String(value);\n}\n\nfunction ParseJsonObject(raw_value) {\n  const raw_text = ExtractJsonText(raw_value).trim();\n  if (!raw_text) throw new Error('empty AI Agent output');\n\n  try {\n    return JSON.parse(raw_text);\n  } catch (direct_error) {\n    const match = raw_text.match(/\\{[\\s\\S]*\\}/);\n    if (!match) throw direct_error;\n    return JSON.parse(match[0]);\n  }\n}\n\ntry {\n  const parsed = ParseJsonObject($json);\n  if (parsed && typeof parsed === 'object') {\n    const confidence = Number(parsed.confidence || 0);\n    ai_validation = {\n      is_valid: Boolean(parsed.is_valid) && confidence >= 0.75,\n      confidence,\n      detected_intent: String(parsed.detected_intent || 'unknown'),\n      normalized_value: String(parsed.normalized_value || ''),\n      reason: String(parsed.reason || ''),\n      reply_text: String(parsed.reply_text || '')\n    };\n  }\n} catch (error) {\n  ai_validation.reason = `AI Agent unavailable or JSON parse failed: ${error.message}`;\n  ai_validation.reply_text = BuildFallbackReplyText();\n}\n\nreturn {\n  json: {\n    ...source_item,\n    aiValidation: ai_validation,\n    aiAgentRawOutput: $json\n  }\n};"
+      },
+      "id": "1163c3dd-80c9-4b18-a551-1052e73e1258",
+      "name": "Parse AI Validation",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        7104,
+        2592
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const item = $json || {};\nconst store = $getWorkflowStaticData('global');\nstore.conversations = store.conversations || {};\n\nconst now_iso = item.nowIso || new Date().toISOString();\nconst line_user_id = item.lineUserId;\nconst questions = item.questions || {\n  waiting_parent_name: `รบกวนขอชื่อหรือชื่อเล่นของคุณพ่อ/คุณแม่ที่สะดวกให้ติดต่อกลับหน่อยค่ะ 😊\\nเช่น แม่ก้อย, คุณพ่อนัท หรือคุณแม่แอนค่ะ`,\n  waiting_phone: 'ขอเบอร์โทรที่สะดวกให้ทีมงานติดต่อกลับหน่อยนะคะ',\n  waiting_student_count: 'ตอนนี้ต้องการลงทะเบียนทดลองเรียนฟรีให้น้องกี่คนคะ',\n  waiting_student_name: 'น้องชื่ออะไรคะ จะได้ให้ทีมงานเรียกชื่อน้องถูกค่ะ 😊',\n  waiting_student_grade: 'ตอนนี้น้องอยู่ระดับชั้นไหนคะ เช่น อนุบาล 1, ป.1 หรือ ป.6',\n  waiting_pain_point: `ตอนนี้อยากให้ eiMaths ช่วยน้องเรื่องไหนเป็นพิเศษคะ\\nเช่น ไม่ชอบคณิต, กลัวเลข, ทำโจทย์ไม่ค่อยได้, เรียนไม่ทัน หรืออยากเพิ่มความมั่นใจ`,\n  waiting_preferred_contact_time: `คุณพ่อ/คุณแม่สะดวกให้ทีมงานติดต่อกลับช่วงเวลาไหนคะ\\nเช่น หลัง 18:00 หรือช่วงเย็นหลังเลิกงาน`\n};\n\nfunction CreateDefaultConversation() {\n  return {\n    state: 'waiting_consent',\n    consentStatus: 'pending',\n    answers: {},\n    createdAt: now_iso,\n    startedAt: now_iso,\n    followedAt: item.eventType === 'follow' ? now_iso : null,\n    lastMessageAt: now_iso,\n    invalidCountByState: {},\n    totalInvalidCount: 0,\n    handoverReplyCount: 0,\n    postCompletionReplyCount: 0,\n    handoverNotifiedAt: null,\n    handoverReason: null,\n    completedAt: null,\n    aiValidationSummary: [],\n    currentStudentIndex: 0\n  };\n}\n\nfunction MoveToNextState(current_state, conversation) {\n  const next_state_by_current_state = {\n    waiting_parent_name: 'waiting_phone',\n    waiting_phone: 'waiting_student_count',\n    waiting_student_count: 'waiting_student_name',\n    waiting_student_name: 'waiting_student_grade',\n    waiting_student_grade: 'waiting_pain_point',\n    waiting_preferred_contact_time: 'ready_to_submit_crm'\n  };\n\n  if (current_state === 'waiting_pain_point') {\n    const current_index = Number(conversation.currentStudentIndex || 0);\n    const student_count = Number(conversation.answers.student_count || 1);\n    if (current_index + 1 < student_count) {\n      conversation.currentStudentIndex = current_index + 1;\n      return 'waiting_student_name';\n    }\n    return 'waiting_preferred_contact_time';\n  }\n\n  return next_state_by_current_state[current_state] || 'handover_to_staff';\n}\n\nfunction AnswerKeyForState(current_state) {\n  const answer_key_by_state = {\n    waiting_parent_name: 'parent_name',\n    waiting_phone: 'phone',\n    waiting_student_count: 'student_count',\n    waiting_preferred_contact_time: 'preferred_contact_time'\n  };\n  return answer_key_by_state[current_state] || null;\n}\n\nfunction EnsureStudents(conversation) {\n  conversation.answers.students = Array.isArray(conversation.answers.students) ? conversation.answers.students : [];\n  const index = Number(conversation.currentStudentIndex || 0);\n  conversation.answers.students[index] = conversation.answers.students[index] || {};\n  return conversation.answers.students[index];\n}\n\nfunction StoreAnswerForState(conversation, current_state, normalized_value) {\n  if (current_state === 'waiting_student_count') {\n    const count = Math.max(1, Math.min(4, Number(normalized_value || 1)));\n    conversation.answers.student_count = count;\n    conversation.answers.students = [];\n    conversation.currentStudentIndex = 0;\n    return;\n  }\n\n  if (current_state === 'waiting_student_name') {\n    EnsureStudents(conversation).student_name = normalized_value;\n    return;\n  }\n\n  if (current_state === 'waiting_student_grade') {\n    EnsureStudents(conversation).student_grade = normalized_value;\n    return;\n  }\n\n  if (current_state === 'waiting_pain_point') {\n    EnsureStudents(conversation).pain_point = normalized_value;\n    return;\n  }\n\n  const answer_key = AnswerKeyForState(current_state);\n  if (answer_key) conversation.answers[answer_key] = normalized_value;\n}\n\nfunction QuestionForState(state, conversation) {\n  const index = Number(conversation.currentStudentIndex || 0);\n  if (state === 'waiting_student_name') {\n    return (index === 0 ? 'ขอข้อมูล' : 'ต่อไปขอข้อมูล') + 'น้องคนที่ ' + (index + 1) + ' นะคะ 😊 น้องชื่ออะไรคะ';\n  }\n  if (state === 'waiting_student_grade') {\n    return 'น้องคนที่ ' + (index + 1) + ' อยู่ระดับชั้นไหนคะ เช่น อนุบาล 1, ป.1 หรือ ป.6';\n  }\n  if (state === 'waiting_pain_point') {\n    return 'อยากให้ eiMaths ช่วยน้องคนที่ ' + (index + 1) + ' เรื่องไหนเป็นพิเศษคะ เช่น ไม่ชอบคณิต กลัวเลข เรียนไม่ทัน หรืออยากเพิ่มความมั่นใจ';\n  }\n  return questions[state] || 'ขอบคุณค่ะ';\n}\n\nfunction BuildConsentIntroText() {\n  return [\n    'ได้เลยค่ะ เริ่มลงทะเบียนใหม่ให้นะคะ 😊',\n    '',\n    'ก่อนเริ่ม ขออนุญาตเก็บข้อมูลเบื้องต้นเพื่อให้ทีมงานติดต่อกลับและแนะนำคลาสทดลองเรียนฟรีค่ะ',\n    '',\n    'หากยินยอมให้เก็บข้อมูล พิมพ์ “ยินยอม”',\n    'หากยังไม่สะดวกให้เก็บข้อมูล พิมพ์ “ไม่ยินยอม”',\n    'หรือพิมพ์ “ติดต่อเจ้าหน้าที่” เพื่อให้ทีมงานดูแลต่อค่ะ'\n  ].join('\\n');\n}\n\nfunction BuildCrmPayload(conversation) {\n  const student_count = Number(conversation.answers.student_count || 1);\n  const edit_lead_ids = Array.isArray(conversation.editLeadIds) ? conversation.editLeadIds : (conversation.editLeadId ? [conversation.editLeadId] : []);\n  const students = (Array.isArray(conversation.answers.students) ? conversation.answers.students.slice(0, student_count) : []).map((student, index) => ({\n    ...student,\n    lead_id: edit_lead_ids[index] || student.lead_id || null\n  }));\n  const first_student = students[0] || {};\n  return {\n    ...conversation.answers,\n    student_name: first_student.student_name || conversation.answers.student_name || null,\n    student_grade: first_student.student_grade || conversation.answers.student_grade || null,\n    pain_point: first_student.pain_point || conversation.answers.pain_point || null,\n    student_count,\n    lead_id: edit_lead_ids[0] || conversation.answers.lead_id || null,\n    students,\n    interest: 'ทดลองเรียนฟรี 2 คลาส',\n    consent_status: conversation.consentStatus || 'accepted',\n    consent_accepted_at: conversation.consentAcceptedAt || null,\n    ai_validation_summary: conversation.aiValidationSummary || [],\n    invalid_attempt_count: conversation.totalInvalidCount || 0,\n    handover_reason: conversation.handoverReason || null,\n    line_user_id: line_user_id,\n    line_display_name: conversation.displayName || item.displayName || null,\n    line_picture_url: conversation.pictureUrl || item.pictureUrl || null,\n    line_follow_status: 'followed',\n    line_followed_at: conversation.followedAt || now_iso,\n    line_last_message_at: now_iso,\n    line_conversation_state: 'completed',\n    line_source: 'new_customer_line_oa',\n    utm_source: 'line',\n    utm_medium: 'new_customer_oa_chat',\n    utm_campaign: 'unknown',\n    utm_content: null,\n    first_touch_source: 'line',\n    last_touch_source: 'new_customer_line_oa',\n    created_from: 'new_customer_line_oa_chatbot',\n    lead_status: 'new_lead'\n  };\n}\n\nfunction BuildHandoverNotificationText(conversation, reason) {\n  const answers = conversation.answers || {};\n  return [\n    '⚠️ ต้องการเจ้าหน้าที่ช่วยดูแล',\n    '',\n    `เหตุผล: ${reason || conversation.handoverReason || '-'}`,\n    `LINE: ${conversation.displayName || item.displayName || '-'}`,\n    `LINE User ID: ${line_user_id || '-'}`,\n    `State ล่าสุด: ${conversation.state || '-'}`,\n    `ข้อความล่าสุด: ${item.normalizedText || '-'}`,\n    '',\n    'ข้อมูลที่เก็บได้แล้ว:',\n    `ผู้ปกครอง: ${answers.parent_name || '-'}`,\n    `เบอร์: ${answers.phone || '-'}`,\n    `นักเรียน: ${answers.student_name || '-'}`,\n    `ระดับชั้น: ${answers.student_grade || '-'}`,\n    `ปัญหา: ${answers.pain_point || '-'}`,\n    `เวลาติดต่อ: ${answers.preferred_contact_time || '-'}`\n  ].join('\\n');\n}\n\nfunction MarkInvalid(conversation, state, reply_text, reason) {\n  conversation.invalidCountByState = conversation.invalidCountByState || {};\n  conversation.invalidCountByState[state] = Number(conversation.invalidCountByState[state] || 0) + 1;\n  conversation.totalInvalidCount = Number(conversation.totalInvalidCount || 0) + 1;\n\n  if (conversation.invalidCountByState[state] >= 3) {\n    conversation.state = 'handover_to_staff';\n    conversation.handoverReason = reason || 'invalid_answer_limit_reached';\n    return {\n      replyText: 'ขออภัยค่ะ ดูเหมือนบอทยังเก็บข้อมูลส่วนนี้ไม่สำเร็จ\\nเดี๋ยวส่งเรื่องให้เจ้าหน้าที่เข้ามาช่วยดูแลต่อนะคะ 😊',\n      handover: true\n    };\n  }\n\n  return {\n    replyText: reply_text || 'รบกวนตอบข้อมูลส่วนนี้อีกครั้งนะคะ 😊',\n    handover: false\n  };\n}\n\nlet conversation = store.conversations[line_user_id] || CreateDefaultConversation();\nconversation.currentStudentIndex = Number(conversation.currentStudentIndex || 0);\nconversation.answers = conversation.answers || {};\nconversation.invalidCountByState = conversation.invalidCountByState || {};\nconversation.lastMessageAt = now_iso;\nconversation.displayName = item.displayName || conversation.displayName || null;\nconversation.pictureUrl = item.pictureUrl || conversation.pictureUrl || null;\n\nlet reply_text = '';\nlet should_reply = true;\nlet completed = false;\nlet crm_payload = null;\nlet should_notify_handover = false;\nlet notification_text = '';\n\nconst direct_decision = item.directDecision;\nconst consent_decision = item.consentDecision;\nconst rule_validation = item.ruleValidation;\nconst ai_validation = item.aiValidation;\n\nif (direct_decision) {\n  if (direct_decision.action === 'restart_registration') {\n    const previous_lead_ids = Array.isArray(conversation.lastLeadIds) ? conversation.lastLeadIds : (conversation.lastLeadId ? [conversation.lastLeadId] : []);\n    conversation = CreateDefaultConversation();\n    conversation.editLeadIds = previous_lead_ids;\n    conversation.editLeadId = previous_lead_ids[0] || null;\n    conversation.state = 'waiting_consent';\n    conversation.consentStatus = 'pending';\n    conversation.answers = {};\n    conversation.handoverReason = null;\n    conversation.completedAt = null;\n    conversation.handoverNotifiedAt = null;\n    conversation.handoverReplyCount = 0;\n    conversation.postCompletionReplyCount = 0;\n    reply_text = BuildConsentIntroText();\n  } else if (direct_decision.action === 'handover_to_staff') {\n    conversation.state = 'handover_to_staff';\n    conversation.handoverReason = direct_decision.reason;\n    conversation.handoverReplyCount = Number(conversation.handoverReplyCount || 0) + 1;\n    reply_text = conversation.handoverReplyCount <= 1 ? direct_decision.replyText : 'ได้แจ้งเรื่องให้เจ้าหน้าที่แล้วนะคะ 😊 ระหว่างนี้สามารถพิมพ์รายละเอียดเพิ่มเติมไว้ได้เลยค่ะ';\n    should_reply = Boolean(reply_text);\n  } else if (direct_decision.action === 'cancel_registration') {\n    conversation.state = 'consent_declined';\n    conversation.consentStatus = conversation.consentStatus === 'accepted' ? 'cancelled' : 'declined';\n    conversation.handoverReason = direct_decision.reason;\n    reply_text = direct_decision.replyText;\n  }\n} else if (consent_decision && !item.needsFieldValidation) {\n  if (consent_decision.action === 'silent_handover') {\n    conversation.state = 'handover_to_staff';\n    conversation.handoverReplyCount = Number(conversation.handoverReplyCount || 0) + 1;\n    reply_text = '';\n    should_reply = false;\n  } else if (consent_decision.action === 'post_completion_options') {\n    conversation.state = 'handover_to_staff';\n    conversation.postCompletionReplyCount = Number(conversation.postCompletionReplyCount || 0) + 1;\n    reply_text = consent_decision.replyText;\n    should_reply = true;\n  } else {\n    conversation.state = consent_decision.nextState || conversation.state;\n    conversation.consentStatus = consent_decision.consentStatus || conversation.consentStatus;\n    if (consent_decision.action === 'accept_consent') {\n      conversation.consentAcceptedAt = conversation.consentAcceptedAt || now_iso;\n      conversation.invalidCountByState.waiting_consent = 0;\n    }\n    reply_text = consent_decision.replyText;\n  }\n} else if (rule_validation && rule_validation.status === 'fail') {\n  if (rule_validation.countInvalid === false) {\n    reply_text = rule_validation.replyText || 'รบกวนแจ้งข้อมูลส่วนนี้เพิ่มเติมอีกนิดนะคะ 😊';\n  } else {\n    const invalid_result = MarkInvalid(conversation, conversation.state, rule_validation.replyText, rule_validation.reason);\n    reply_text = invalid_result.replyText;\n  }\n} else if (ai_validation) {\n  conversation.aiValidationSummary = conversation.aiValidationSummary || [];\n  conversation.aiValidationSummary.push({\n    state: conversation.state,\n    is_valid: Boolean(ai_validation.is_valid),\n    confidence: Number(ai_validation.confidence || 0),\n    detected_intent: ai_validation.detected_intent || 'unknown',\n    reason: ai_validation.reason || '',\n    checked_at: now_iso\n  });\n  conversation.aiValidationSummary = conversation.aiValidationSummary.slice(-20);\n\n  if (ai_validation.detected_intent === 'request_staff') {\n    conversation.state = 'handover_to_staff';\n    conversation.handoverReason = 'ai_detected_request_staff';\n    reply_text = ai_validation.reply_text || 'ได้เลยค่ะ 😊 เดี๋ยวบอทส่งเรื่องให้เจ้าหน้าที่เข้ามาดูแลต่อนะคะ';\n  } else if (ai_validation.detected_intent === 'restart') {\n    conversation = CreateDefaultConversation();\n    reply_text = BuildConsentIntroText();\n  } else if (ai_validation.detected_intent === 'cancel') {\n    conversation.state = 'consent_declined';\n    conversation.consentStatus = conversation.consentStatus === 'accepted' ? 'cancelled' : 'declined';\n    conversation.handoverReason = 'ai_detected_cancel';\n    reply_text = ai_validation.reply_text || 'เข้าใจค่ะ ตอนนี้บอทจะหยุดขั้นตอนลงทะเบียนไว้ก่อนนะคะ 😊';\n  } else if (ai_validation.is_valid && Number(ai_validation.confidence || 0) >= 0.75) {\n    const normalized_value = ai_validation.normalized_value || (rule_validation && rule_validation.normalizedValue) || item.normalizedText || '';\n    const current_state = conversation.state;\n    StoreAnswerForState(conversation, current_state, normalized_value);\n    conversation.invalidCountByState[current_state] = 0;\n    const next_state = MoveToNextState(current_state, conversation);\n    conversation.state = next_state;\n    if (next_state === 'ready_to_submit_crm') {\n      conversation.completedAt = now_iso;\n      completed = true;\n      crm_payload = BuildCrmPayload(conversation);\n      conversation.state = 'handover_to_staff';\n      conversation.handoverReason = 'registration_completed';\n      reply_text = [\n        'ขอบคุณมากค่ะ 😊',\n        'แอดมินได้รับข้อมูลเรียบร้อยแล้วนะคะ',\n        '',\n        'เดี๋ยวทีมงาน eiMaths จะติดต่อกลับตามช่วงเวลาที่แจ้งไว้',\n        'เพื่อแนะนำการทดลองเรียนฟรี 2 คลาสให้น้องค่ะ',\n        '',\n        'หากต้องการกรอกข้อมูลใหม่ สามารถพิมพ์ “เริ่มใหม่” ได้เลยค่ะ'\n      ].join('\\n');\n    } else {\n      reply_text = QuestionForState(next_state, conversation);\n    }\n  } else {\n    const should_count_invalid = !['ask_question', 'ask_clarification'].includes(ai_validation.detected_intent);\n    if (should_count_invalid) {\n      const invalid_result = MarkInvalid(conversation, conversation.state, ai_validation.reply_text, ai_validation.reason);\n      reply_text = invalid_result.replyText;\n    } else {\n      reply_text = ai_validation.reply_text || `${questions[conversation.state] || 'รบกวนตอบข้อมูลส่วนนี้อีกครั้งนะคะ'}`;\n    }\n  }\n} else if (rule_validation && rule_validation.status === 'pass') {\n  const current_state = conversation.state;\n  StoreAnswerForState(conversation, current_state, rule_validation.normalizedValue);\n  conversation.invalidCountByState[current_state] = 0;\n  const next_state = MoveToNextState(current_state, conversation);\n  conversation.state = next_state;\n  if (next_state === 'ready_to_submit_crm') {\n    conversation.completedAt = now_iso;\n    completed = true;\n    crm_payload = BuildCrmPayload(conversation);\n    conversation.state = 'handover_to_staff';\n    conversation.handoverReason = 'registration_completed';\n    reply_text = [\n      'ขอบคุณมากค่ะ 😊',\n      'แอดมินได้รับข้อมูลเรียบร้อยแล้วนะคะ',\n      '',\n      'เดี๋ยวทีมงาน eiMaths จะติดต่อกลับตามช่วงเวลาที่แจ้งไว้',\n      'เพื่อแนะนำการทดลองเรียนฟรี 2 คลาสให้น้องค่ะ',\n      '',\n      'หากต้องการกรอกข้อมูลใหม่ สามารถพิมพ์ “เริ่มใหม่” ได้เลยค่ะ'\n    ].join('\\n');\n  } else {\n    reply_text = QuestionForState(next_state, conversation);\n  }\n} else {\n  conversation.state = 'handover_to_staff';\n  conversation.handoverReason = 'unhandled_decision_path';\n  reply_text = 'ขออภัยค่ะ บอทยังดำเนินการต่อไม่สำเร็จ\\nเดี๋ยวส่งเรื่องให้เจ้าหน้าที่ช่วยดูแลต่อนะคะ 😊';\n}\n\nif (conversation.state === 'handover_to_staff' && conversation.handoverReason !== 'registration_completed' && !conversation.handoverNotifiedAt) {\n  should_notify_handover = true;\n  conversation.handoverNotifiedAt = now_iso;\n  notification_text = BuildHandoverNotificationText(conversation, conversation.handoverReason);\n}\n\nstore.conversations[line_user_id] = conversation;\n\nreturn {\n  json: {\n    ...item,\n    completed,\n    crmPayload: crm_payload,\n    replyText: reply_text,\n    shouldReply: should_reply && Boolean(reply_text),\n    shouldNotifyHandover: should_notify_handover,\n    notificationText: notification_text,\n    lineUserId: line_user_id,\n    conversationState: conversation.state,\n    consentStatus: conversation.consentStatus,\n    answers: conversation.answers,\n    handoverReason: conversation.handoverReason || null\n  }\n};"
+      },
+      "id": "a81dc763-2864-42b2-99f8-7ca9949118e9",
+      "name": "Apply Conversation Decision",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        7328,
+        2720
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "fb6577fd-5561-4589-b2ef-c8bef69e0c86",
               "leftValue": "={{ $json.completed }}",
               "rightValue": true,
               "operator": {
@@ -109,13 +246,13 @@
         },
         "options": {}
       },
-      "id": "d749520c-50bd-4458-840c-eac315b04c32",
+      "id": "57d7b72e-ba3d-4a3c-9551-3f63f8475e30",
       "name": "Registration Complete?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        620,
-        140
+        7552,
+        2720
       ]
     },
     {
@@ -141,69 +278,27 @@
         "body": "={{ JSON.stringify($json.crmPayload) }}",
         "options": {}
       },
-      "id": "bf63ea6e-72e0-475a-9929-a438a2a7b114",
+      "id": "073264b9-2a93-43f7-bac6-c21c0bd77fed",
       "name": "Create or Merge CRM Lead",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        860,
-        40
+        7776,
+        2496
       ]
     },
     {
       "parameters": {
-        "method": "POST",
-        "url": "https://api.line.me/v2/bot/message/reply",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "Authorization",
-              "value": "={{ 'Bearer ' + $('Normalize LINE Event').item.json.config.lineToken }}"
-            }
-          ]
-        },
-        "sendBody": true,
-        "contentType": "raw",
-        "rawContentType": "application/json",
-        "body": "={{ JSON.stringify({ replyToken: $('Conversation State').item.json.replyToken, messages: [{ type: 'text', text: $('Conversation State').item.json.replyText }] }) }}",
-        "options": {}
+        "mode": "runOnceForEachItem",
+        "jsCode": "const config = $('Normalize LINE Event').item.json.config || {};\nconst lead = $('Apply Conversation Decision').item.json.crmPayload || {};\nconst crm = $json || {};\nconst store = $getWorkflowStaticData('global');\nstore.conversations = store.conversations || {};\nconst crm_leads = Array.isArray(crm.leads) ? crm.leads : [];\nconst lead_ids = Array.isArray(crm.lead_ids) ? crm.lead_ids : (crm.lead_id ? [crm.lead_id] : []);\nconst lead_id = crm.id || crm.lead_id || crm.data?.id || crm.data?.lead_id || crm.data?.lead?.id || '';\nconst base_url = (config.crmBaseUrl || 'https://test-web.eimaths-th.com').replace(/\\/$/, '');\nconst detail_url = crm.lead_list_url || crm.lead_detail_url || (lead_id ? base_url + '/admin/crm/leads/' + lead_id : base_url + '/admin/crm/leads');\nconst primary_crm_lead = crm_leads[0] || crm.data?.lead || crm.lead || {};\nconst source = primary_crm_lead.utm_source || lead.utm_source || lead.line_source || 'line';\nconst campaign = primary_crm_lead.utm_campaign || lead.utm_campaign || 'unknown';\nconst content = primary_crm_lead.utm_content || lead.utm_content || '-';\nconst line_name = lead.line_display_name || '-';\nif (lead.line_user_id) {\n  const conversation = store.conversations[lead.line_user_id] || {};\n  const saved_lead_ids = Array.isArray(crm.lead_ids) ? crm.lead_ids : (crm.lead_id ? [crm.lead_id] : []);\n  if (saved_lead_ids.length) {\n    conversation.lastLeadIds = saved_lead_ids;\n    conversation.lastLeadId = saved_lead_ids[0];\n    conversation.lastLeadSavedAt = new Date().toISOString();\n    store.conversations[lead.line_user_id] = conversation;\n  }\n}\nconst students = Array.isArray(lead.students) && lead.students.length ? lead.students : [{ student_name: lead.student_name, student_grade: lead.student_grade, pain_point: lead.pain_point }];\nconst student_lines = students.flatMap((student, index) => [\n  'น้องคนที่ ' + (index + 1) + ': ' + (student.student_name || '-') + ' / ' + (student.student_grade || '-'),\n  'ปัญหา: ' + (student.pain_point || '-'),\n  ''\n]);\nconst notification_text = [\n  '🔔 Lead ใหม่จาก New Customer LINE OA',\n  '',\n  'ผู้ปกครอง: ' + (lead.parent_name || '-'),\n  'เบอร์: ' + (lead.phone || '-'),\n  'LINE: ' + line_name,\n  '',\n  ...student_lines,\n  'สนใจ: ' + (lead.interest || 'ทดลองเรียนฟรี 2 คลาส'),\n  'เวลาติดต่อ: ' + (lead.preferred_contact_time || '-'),\n  '',\n  'Consent: ' + (lead.consent_status || '-'),\n  'LINE source: ' + (lead.line_source || 'new_customer_line_oa'),\n  'ช่องทางโฆษณา: ' + source,\n  'Campaign: ' + campaign,\n  'Content: ' + content,\n  'Created from: ' + (lead.created_from || 'new_customer_line_oa_chatbot'),\n  'Action: ' + (crm.action || 'created'),\n  lead_ids.length ? 'Lead IDs: ' + lead_ids.join(', ') : '',\n  '',\n  'ดูรายละเอียด: ' + detail_url\n].filter((line) => line !== '').join('\\n');\nreturn {\n  json: {\n    ...$('Apply Conversation Decision').item.json,\n    crmResponse: crm,\n    notificationText: notification_text\n  }\n};"
       },
-      "id": "54ed1e91-6b99-4fdc-a50c-41c26784c115",
-      "name": "Reply Completed",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
+      "id": "e6057c26-2614-4c8f-8a9d-ebd27b0778a3",
+      "name": "Build CRM Notification",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
       "position": [
-        1340,
-        40
-      ]
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "https://api.line.me/v2/bot/message/reply",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "Authorization",
-              "value": "={{ 'Bearer ' + $('Normalize LINE Event').item.json.config.lineToken }}"
-            }
-          ]
-        },
-        "sendBody": true,
-        "contentType": "raw",
-        "rawContentType": "application/json",
-        "body": "={{ JSON.stringify({ replyToken: $json.replyToken, messages: [{ type: 'text', text: $json.replyText }] }) }}",
-        "options": {}
-      },
-      "id": "08eaf293-daae-4202-9579-972c944c69b4",
-      "name": "Reply Next Question",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        860,
-        260
+        8000,
+        2496
       ]
     },
     {
@@ -226,16 +321,111 @@
         "sendBody": true,
         "contentType": "raw",
         "rawContentType": "application/json",
-        "body": "={{ (() => {\n  const config = $('Normalize LINE Event').item.json.config || {};\n  const lead = $('Conversation State').item.json.crmPayload || {};\n  const crm = $json || {};\n  const leadId = crm.id || crm.lead_id || crm.data?.id || crm.data?.lead_id || crm.data?.lead?.id || '';\n  const baseUrl = (config.crmBaseUrl || 'https://test-web.eimaths-th.com').replace(/\\/$/, '');\n  const detailUrl = crm.lead_detail_url || (leadId ? `${baseUrl}/admin/crm/leads/${leadId}` : `${baseUrl}/admin/crm/leads`);\n  const source = lead.utm_source || lead.line_source || 'line';\n  const campaign = lead.utm_campaign || 'unknown';\n  const content = lead.utm_content || '-';\n  const lineName = lead.line_display_name || '-';\n  const text = [\n    '🔔 Lead ใหม่จาก New Customer LINE OA',\n    '',\n    `ผู้ปกครอง: ${lead.parent_name || '-'}`,\n    `เบอร์: ${lead.phone || '-'}`,\n    `LINE: ${lineName}`,\n    `นักเรียน: ${lead.student_name || '-'}`,\n    `ระดับชั้น: ${lead.student_grade || '-'}`,\n    `ปัญหา: ${lead.pain_point || '-'}`,\n    `สนใจ: ${lead.interest || 'ทดลองเรียนฟรี 2 คลาส'}`,\n    `เวลาติดต่อ: ${lead.preferred_contact_time || '-'}`,\n    '',\n    `LINE source: ${lead.line_source || 'new_customer_line_oa'}`,\n    `ช่องทางโฆษณา: ${source}`,\n    `Campaign: ${campaign}`,\n    `Content: ${content}`,\n    `Created from: ${lead.created_from || 'new_customer_line_oa_chatbot'}`,\n    `Action: ${crm.action || 'created'}`,\n    '',\n    `ดูรายละเอียด: ${detailUrl}`\n  ].join('\\n');\n\n  return JSON.stringify({\n    to: config.marketingGroupId,\n    messages: [{ type: 'text', text }]\n  });\n})() }}",
+        "body": "={{ JSON.stringify({ to: $('Normalize LINE Event').item.json.config.marketingGroupId, messages: [{ type: 'text', text: $('Build CRM Notification').item.json.notificationText }] }) }}",
         "options": {}
       },
-      "id": "c0f9b63d-bc5e-43b9-91bb-82b7824efcda",
+      "id": "4c10dce7-e0ea-4d02-810a-a1a2400c10d1",
       "name": "Notify Marketing Team",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1100,
-        -80
+        8224,
+        2496
+      ],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.line.me/v2/bot/message/reply",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ 'Bearer ' + $('Normalize LINE Event').item.json.config.lineToken }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({ replyToken: $('Apply Conversation Decision').item.json.replyToken, messages: [{ type: 'text', text: $('Apply Conversation Decision').item.json.replyText }] }) }}",
+        "options": {}
+      },
+      "id": "3f75851c-f1e8-4090-aae3-2c45a9280fe6",
+      "name": "Reply Completed",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        8448,
+        2496
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "341cdd72-2ac8-47e5-8ed2-9873ff59f2a2",
+              "leftValue": "={{ $json.shouldNotifyHandover }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "c5d356a9-b848-46de-bff0-96a1d5f0254e",
+      "name": "Should Notify Handover?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        7776,
+        2816
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.line.me/v2/bot/message/push",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ 'Bearer ' + $('Normalize LINE Event').item.json.config.lineToken }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({ to: $('Normalize LINE Event').item.json.config.marketingGroupId, messages: [{ type: 'text', text: $('Apply Conversation Decision').item.json.notificationText }] }) }}",
+        "options": {}
+      },
+      "id": "167e6635-c0bf-43e2-912b-ab16bfa842d7",
+      "name": "Notify Marketing Handover",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        8000,
+        2688
       ],
       "continueOnFail": true
     },
@@ -250,7 +440,41 @@
           },
           "conditions": [
             {
-              "id": "5450ae25-8461-4e16-8217-bccc237a609e",
+              "id": "393d6f99-f164-4b55-8ef1-427940275a76",
+              "leftValue": "={{ $(\"Apply Conversation Decision\").item.json.shouldReply }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "6abaa8dd-920b-4813-8bd4-3539f35a97ee",
+      "name": "Should Reply After Handover Notify?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        8224,
+        2688
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "a5e275bf-1a8c-43a2-88cd-8f17d3e2e874",
               "leftValue": "={{ $json.shouldReply }}",
               "rightValue": true,
               "operator": {
@@ -264,13 +488,127 @@
         },
         "options": {}
       },
-      "id": "16a1ab3a-ad4e-4558-a827-65f42c670ee5",
+      "id": "07f2bade-bfeb-4ef0-9556-55c7852a651c",
       "name": "Should Reply?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        380,
-        140
+        8224,
+        2880
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.line.me/v2/bot/message/reply",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ 'Bearer ' + $('Normalize LINE Event').item.json.config.lineToken }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({ replyToken: $('Apply Conversation Decision').item.json.replyToken, messages: [{ type: 'text', text: $('Apply Conversation Decision').item.json.replyText }] }) }}",
+        "options": {}
+      },
+      "id": "69aeeec6-fd21-4869-a62e-9fd9f25e8937",
+      "name": "Reply Next Question",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        8448,
+        2816
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ 'ตรวจสอบคำตอบล่าสุดของผู้ปกครองใน LINE chatbot ของ eiMaths ตามข้อมูลนี้เท่านั้น\\n\\n' + JSON.stringify($json.aiValidationRequest || {}, null, 2) }}",
+        "options": {
+          "systemMessage": "คุณคือ AI Validation Agent สำหรับตรวจคำตอบใน LINE chatbot ของ eiMaths\n\nหน้าที่ของคุณคือประเมินว่าข้อความล่าสุดของผู้ใช้เป็นคำตอบที่ถูกต้องและเกี่ยวข้องกับ current_state ปัจจุบันหรือไม่ โดย workflow นี้ใช้ Hybrid Validation: rule ตรวจเคสชัดเจนก่อน และส่งให้ AI เฉพาะเคสกำกวมเท่านั้น\n\nกฎสำคัญ:\n- ห้ามแต่งข้อมูลใหม่\n- ห้ามเดาข้อมูลที่ผู้ใช้ไม่ได้ให้มา\n- ห้ามบันทึกข้อมูลที่ไม่ชัดเจน\n- ห้ามตอบคำถามแทน chatbot แบบยาว\n- ตัดสินจาก current_state, expected_question, user_message และ existing_answers เท่านั้น\n- ต้องตอบกลับเป็น JSON object เท่านั้น ห้ามมี markdown ห้ามมี code fence ห้ามมีข้อความอื่นนอก JSON\n- ถ้าข้อความดูเหมือนตอบเล่น ตอบกวน ตอบมั่ว ตอบรับเฉย ๆ หรือไม่ใช่ข้อมูลที่ถาม ให้ invalid_answer\n- ถ้าไม่มั่นใจ ให้ is_valid = false และ confidence ต่ำกว่า 0.75\n- ถ้า user_message เป็นข้อมูลของ field อื่นที่ไม่ใช่ current_state ให้ถือว่าไม่ใช่คำตอบที่ถูกต้องของ state นี้ และถาม field ปัจจุบันซ้ำอย่างสุภาพ\n\nค่า detected_intent ที่ใช้ได้:\n- answer: ผู้ใช้ตอบข้อมูลที่ state ต้องการ\n- invalid_answer: ผู้ใช้ตอบมั่ว ตอบสั้นเกินไป หรือไม่ใช่ข้อมูลที่ถาม\n- ask_clarification: คำตอบมีเค้าถูกทางแต่ยังสั้น/ไม่ชัด ต้องถามขยายความ โดยไม่ควรส่งต่อเจ้าหน้าที่ทันที\n- ask_question: ผู้ใช้ถามคำถามแทรกระหว่างกรอกข้อมูล\n- request_staff: ผู้ใช้ต้องการคุยกับเจ้าหน้าที่\n- restart: ผู้ใช้ต้องการเริ่มใหม่\n- cancel: ผู้ใช้ต้องการยกเลิกหรือไม่ลงทะเบียน\n- unknown: ไม่มั่นใจ\n\nเกณฑ์ราย state:\n\n1. waiting_parent_name\nคำตอบต้องเป็นชื่อหรือชื่อเล่นของผู้ปกครอง หรือคำเรียกที่ระบุตัวบุคคลได้ เช่น แม่ก้อย, คุณพ่อนัท, พ่อเอก, คุณแม่แอน, แม่ของน้องมีนา\nห้ามรับคำที่เป็นเพียงบทบาททั่วไปโดยไม่มีชื่อ เช่น แม่, คุณแม่, พ่อ, คุณพ่อ, ผู้ปกครอง, ผปค, พ่อแม่\nห้ามรับคำตอบกวนหรือไม่ระบุตัวบุคคล เช่น คุณแม่งี้, แม่อะ, พ่ออะ, เราเอง, ฉันเอง, คนเดิม, เบอร์เดิม\nห้ามรับเบอร์โทร ตัวเลขล้วน คำทักทาย หรือคำตอบรับเฉย ๆ เช่น สวัสดี, โอเค, ค่ะ, 555\nถ้าไม่มีชื่อหรือชื่อเล่น ให้ is_valid = false และ reply_text ขอชื่อเพิ่มเติมอย่างสุภาพ\n\n2. waiting_phone\nคำตอบต้องเป็นเบอร์มือถือไทยที่น่าเชื่อถือเท่านั้น\nรูปแบบที่รับได้:\n- 10 หลัก ขึ้นต้น 06, 08 หรือ 09 เช่น 0812345678\n- รูปแบบ international +66 ตามด้วย 6, 8 หรือ 9 และเลขอีก 8 หลัก เช่น +66812345678\nให้ตัดช่องว่าง ขีด วงเล็บ ออกจาก normalized_value ได้\nห้ามรับเลขซ้ำทั้งเบอร์ เช่น 0000000000, 1111111111, 9999999999\nห้ามรับคำว่า เบอร์เดิม, โทรมาเลย, ไม่มี, ไม่บอก, ยังไม่ให้\nถ้าไม่ใช่เบอร์มือถือ ให้ is_valid = false และ reply_text ขอเบอร์มือถือ 10 หลัก\n\n3. waiting_student_name\nคำตอบต้องเป็นชื่อน้องหรือชื่อเล่นจริง เช่น มีนา, ต้น, บี, น้องแพร, น้องภูมิ\nห้ามรับคำทั่วไปที่ไม่ใช่ชื่อ เช่น ไวๆ, เร็วๆ, รีบๆ, วัยรุ่น, เด็ก, ลูก, น้อง, ชื่อเล่น, สวัสดี, โอเค, 555\nห้ามรับคำตอบปฏิเสธหรือไม่ให้ข้อมูล เช่น ไม่ค่ะ, ไม่รู้, ไม่ทราบ, ไม่มี, ไม่บอก, จำไม่ได้\nห้ามรับคำตอบมั่ว/ตอบเล่น เช่น มั่ว, มั่วๆไป, อะไรก็ได้, ชื่ออะไรก็ได้, test, asdf, xxx, qwerty, ล้อเล่น, เล่นๆ\nห้ามรับตัวเลขล้วน เบอร์โทร หรือระดับชั้น เช่น ป.1, ป.6 เป็นชื่อน้อง\nถ้าดูเป็นคำกวน คำเร่ง คำบรรยาย คำตอบเล่น หรือไม่ใช่ชื่อ ให้ invalid_answer\n\n4. waiting_student_grade\nคำตอบต้องเป็นระดับชั้นที่ชัดเจนพร้อมเลขชั้น และต้องอยู่ในช่วงที่ eiMaths รับเท่านั้น\nรับได้เฉพาะ:\n- อนุบาล 1, อนุบาล 2, อนุบาล 3 หรือ อ.1, อ.2, อ.3\n- ประถม 1 ถึง ประถม 6 หรือ ป.1 ถึง ป.6\nnormalized_value ต้องแปลงเป็นรูปแบบไทย เช่น อ.1, อ.2, อ.3, ป.1, ป.4, ป.6 ถ้าทำได้อย่างมั่นใจ\nห้ามรับ มัธยม ทุกระดับ เช่น มัธยม 1, มัธยม 6 หรือข้อความย่อรูปแบบ ม1, ม.1, ม6, ม.6, m1, m6\nห้ามรับคำกว้าง ๆ ที่ไม่มีเลขชั้น เช่น ประถม, อนุบาล, มัธยม, เด็กเล็ก, โตแล้ว, วัยรุ่น\nถ้าเป็นมัธยม หรือเกินช่วง อ.1–อ.3 / ป.1–ป.6 ให้ is_valid = false และ reply_text แจ้งว่า eiMaths เปิดรับอายุ 3–12 ปี หรือระดับอนุบาล 1 ถึง ป.6 เท่านั้น พร้อมเสนอให้พิมพ์ “ติดต่อเจ้าหน้าที่” หากต้องการให้ช่วยดูเพิ่ม\n\n5. waiting_pain_point\nคำตอบควรบอกปัญหา เป้าหมาย หรือสิ่งที่อยากให้ช่วยแบบมีรายละเอียดพอ เช่น ไม่เข้าใจคณิต, กลัวเลข, ทำโจทย์ช้า, เรียนไม่ทัน, อยากเพิ่มความมั่นใจ\nถ้าคำตอบสั้นแต่มีเค้าของปัญหา เช่น กลัว, ไม่ชอบ, ไม่เข้าใจ, ทำไม่ได้, ยาก ให้ is_valid = false, detected_intent = ask_clarification และถามเพิ่มว่ากลัว/ไม่ชอบ/ไม่เข้าใจเรื่องอะไร\nห้ามถือเคส ask_clarification เป็นเหตุผลส่งต่อเจ้าหน้าที่ทันที\nห้ามรับคำตอบรับเฉย ๆ เช่น ok, ค่ะ, 555, แล้วแต่, อะไรก็ได้\n\n6. waiting_preferred_contact_time\nคำตอบควรเป็นช่วงเวลาที่ติดต่อกลับได้ เช่น ตอนนี้, หลัง 18:00, พรุ่งนี้บ่าย, เสาร์อาทิตย์, ช่วงเย็น, หลังเลิกงาน\nคำว่า ตอนนี้, ตอนนี้เลย, โทรได้เลย, เดี๋ยวนี้, สะดวกตอนนี้ ให้ถือว่า valid และ normalized_value = ตอนนี้\nถ้าผู้ใช้ตอบว่า ไม่สะดวก, ยังไม่สะดวก, ไม่ว่าง, ยังไม่รู้, เดี๋ยวบอก ให้ is_valid = false, detected_intent = ask_clarification และถามว่ามีช่วงไหนที่สะดวกให้ติดต่อกลับ\nห้ามถือว่า ไม่สะดวก เป็น cancel ใน state นี้\nห้ามเดาช่วงเวลาที่ผู้ใช้ไม่ได้ระบุ\n\nกรณีผู้ใช้ถามคำถามแทรก:\n- ให้ detected_intent = ask_question\n- reply_text ตอบสั้น ๆ ได้เท่าที่ปลอดภัย แล้วพากลับมาถามข้อมูลของ current_state เดิม\n- ห้ามบันทึกคำถามนั้นเป็นคำตอบ\n\nรูปแบบ JSON ที่ต้องตอบกลับเท่านั้น:\n{\n  \"is_valid\": true,\n  \"confidence\": 0.95,\n  \"detected_intent\": \"answer\",\n  \"normalized_value\": \"\",\n  \"reason\": \"\",\n  \"reply_text\": \"\"\n}\n\nถ้า is_valid = true:\n- normalized_value ต้องเป็นค่าที่ควรบันทึก โดยใช้ข้อความจริงจากผู้ใช้เท่านั้น หรือ normalized format ที่ชัดเจน เช่น เบอร์โทรที่ตัดขีดออก, ระดับชั้นที่แปลงเป็น อ.1, ป.4, ป.6, หรือเวลาติดต่อกลับเป็น ตอนนี้\n- reply_text ต้องเป็น \"\"\n\nถ้า is_valid = false:\n- normalized_value ต้องเป็น \"\"\n- reply_text ต้องเป็นข้อความถามซ้ำหรือข้อความตอบแทรกแบบสุภาพ สั้น และเหมาะกับ state ปัจจุบัน\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        6752,
+        2592
+      ],
+      "id": "7bbd836a-891b-4823-9f9f-29db5be1edf4",
+      "name": "AI Validation Agent",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        6768,
+        2816
+      ],
+      "id": "7a81052b-f858-4e04-9aa0-7000575cec06",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "HK2S35kYrNr499VA",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolThink",
+      "typeVersion": 1.1,
+      "position": [
+        6896,
+        2816
+      ],
+      "id": "712ea881-17fb-4027-aace-144af7f8724f",
+      "name": "Think"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c45ced01-b09d-4947-8fa6-d5f73a31fc4b",
+              "leftValue": "={{ $json.shouldUseAiValidation }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "825fa8e5-6dc1-4891-b36c-83dca7f873ed",
+      "name": "Should Use AI Validation?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        6528,
+        2720
       ]
     }
   ],
@@ -318,18 +656,98 @@
       "main": [
         [
           {
-            "node": "Conversation State",
+            "node": "Load Conversation Context",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Conversation State": {
+    "Load Conversation Context": {
       "main": [
         [
           {
-            "node": "Should Reply?",
+            "node": "Detect Global Intent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Detect Global Intent": {
+      "main": [
+        [
+          {
+            "node": "Has Immediate Decision?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Immediate Decision?": {
+      "main": [
+        [
+          {
+            "node": "Apply Conversation Decision",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Consent Gate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consent Gate": {
+      "main": [
+        [
+          {
+            "node": "Needs Field Validation?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Needs Field Validation?": {
+      "main": [
+        [
+          {
+            "node": "Prepare AI Validation Request",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Apply Conversation Decision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse AI Validation": {
+      "main": [
+        [
+          {
+            "node": "Apply Conversation Decision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Apply Conversation Decision": {
+      "main": [
+        [
+          {
+            "node": "Registration Complete?",
             "type": "main",
             "index": 0
           }
@@ -347,7 +765,7 @@
         ],
         [
           {
-            "node": "Reply Next Question",
+            "node": "Should Notify Handover?",
             "type": "main",
             "index": 0
           }
@@ -355,6 +773,17 @@
       ]
     },
     "Create or Merge CRM Lead": {
+      "main": [
+        [
+          {
+            "node": "Build CRM Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build CRM Notification": {
       "main": [
         [
           {
@@ -376,26 +805,129 @@
         ]
       ]
     },
-    "Should Reply?": {
+    "Should Notify Handover?": {
       "main": [
         [
           {
-            "node": "Registration Complete?",
+            "node": "Notify Marketing Handover",
             "type": "main",
             "index": 0
           }
         ],
-        []
+        [
+          {
+            "node": "Should Reply?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify Marketing Handover": {
+      "main": [
+        [
+          {
+            "node": "Should Reply After Handover Notify?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Should Reply After Handover Notify?": {
+      "main": [
+        [
+          {
+            "node": "Reply Next Question",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Should Reply?": {
+      "main": [
+        [
+          {
+            "node": "Reply Next Question",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Validation Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Validation Agent": {
+      "main": [
+        [
+          {
+            "node": "Parse AI Validation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Think": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Validation Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare AI Validation Request": {
+      "main": [
+        [
+          {
+            "node": "Should Use AI Validation?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Should Use AI Validation?": {
+      "main": [
+        [
+          {
+            "node": "AI Validation Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Apply Conversation Decision",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     }
   },
-  "active": false,
+  "active": true,
   "settings": {
-    "executionOrder": "v1"
+    "executionOrder": "v1",
+    "binaryMode": "separate"
   },
-  "versionId": "fa991554-acde-4eaf-8824-347c50292b42",
+  "versionId": "178ef2a2-c259-492a-afd5-7b62f0aa3797",
   "meta": {
-    "templateCredsSetupCompleted": true
+    "instanceId": "cb32ad20c97f80470c3917919ac88ee5e264c31e0abf566878ecba64eececbeb"
   },
+  "id": "LkcayF8cBAKGVZnm",
   "tags": []
 }

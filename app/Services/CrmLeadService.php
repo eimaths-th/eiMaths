@@ -61,6 +61,114 @@ class CrmLeadService
         return $lead;
     }
 
+    /**
+     * @return array<int, CrmLead>
+     */
+    public function createManyFromRegistration(array $data): array
+    {
+        $data['created_from'] = $data['created_from'] ?? 'unknown';
+        $data['lead_status'] = $data['lead_status'] ?? 'new_lead';
+        if ($data['created_from'] === 'lead_registration_website' && blank($data['utm_source'] ?? null)) {
+            $data['utm_source'] = 'website';
+        }
+        $data['interest'] = $data['interest'] ?? 'ทดลองเรียนฟรี 2 คลาส';
+        $data['first_touch_source'] = $data['first_touch_source']
+            ?? $data['utm_source']
+            ?? $data['line_source']
+            ?? $data['created_from'];
+        $data['last_touch_source'] = $data['last_touch_source']
+            ?? $data['utm_source']
+            ?? $data['line_source']
+            ?? $data['created_from'];
+        $data['duplicate_checked_at'] = now();
+
+        $students = array_values($data['students'] ?? []);
+        unset($data['students'], $data['student_count']);
+
+        if (empty($students)) {
+            return [$this->createFromRegistration($data)];
+        }
+
+        $leads = DB::transaction(function () use ($data, $students) {
+            $pendingLead = ! empty($data['line_user_id'])
+                ? $this->findLatestPendingLineLead($data['line_user_id'])
+                : null;
+            $attributionSource = $pendingLead;
+            $createdLeads = [];
+
+            foreach ($students as $index => $student) {
+                $studentData = array_merge(
+                    $data,
+                    Arr::only($student, ['lead_id', 'student_name', 'student_grade', 'student_school', 'student_age', 'pain_point'])
+                );
+
+                if (! empty($studentData['lead_id'])) {
+                    $explicitLeadQuery = CrmLead::query()->whereKey($studentData['lead_id']);
+                    if (! empty($studentData['line_user_id'])) {
+                        $explicitLeadQuery->where('line_user_id', $studentData['line_user_id']);
+                    }
+
+                    $explicitLead = $explicitLeadQuery->lockForUpdate()->first();
+
+                    if ($explicitLead) {
+                        $previousStatus = $explicitLead->lead_status;
+                        $explicitLead->fill($this->mergeLeadData($explicitLead, $studentData));
+                        $explicitLead->save();
+
+                        $lead = $explicitLead->fresh();
+                        $lead->setAttribute('was_merged', true);
+                        $lead->setAttribute('merge_action', 'updated_by_lead_id');
+                        $lead->setAttribute('previous_lead_status', $previousStatus);
+                        $createdLeads[] = $lead;
+                        $attributionSource = $lead;
+
+                        continue;
+                    }
+                }
+
+                if ($index === 0 && $pendingLead) {
+                    $previousStatus = $pendingLead->lead_status;
+                    $pendingLead->fill($this->mergeLeadData($pendingLead, $studentData));
+                    $pendingLead->save();
+
+                    $lead = $pendingLead->fresh();
+                    $lead->setAttribute('was_merged', true);
+                    $lead->setAttribute('merge_action', 'merged');
+                    $lead->setAttribute('previous_lead_status', $previousStatus);
+                    $createdLeads[] = $lead;
+                    $attributionSource = $lead;
+
+                    continue;
+                }
+
+                if ($attributionSource) {
+                    $studentData = $this->copyTrackedAttributionFromLead($attributionSource, $studentData);
+                }
+
+                $lead = CrmLead::create(Arr::only($studentData, (new CrmLead())->getFillable()))->fresh();
+                $lead->setAttribute('was_merged', false);
+                $lead->setAttribute('merge_action', 'created');
+                $lead->setAttribute('previous_lead_status', null);
+                $createdLeads[] = $lead;
+            }
+
+            return $createdLeads;
+        });
+
+        foreach ($leads as $lead) {
+            $previousStatus = $lead->getAttribute('previous_lead_status');
+            if (
+                ! $lead->getAttribute('was_merged')
+                || ($previousStatus === 'line_login_pending' && $lead->lead_status === 'new_lead')
+            ) {
+                $this->notificationService->notifyStaffNewLead($lead);
+            }
+            $this->notificationService->sendCustomerConfirmation($lead);
+        }
+
+        return $leads;
+    }
+
     public function createOrUpdateFromLiffLogin(array $data): CrmLead
     {
         $data['line_follow_status'] = $data['line_follow_status'] ?? 'unknown';
@@ -76,10 +184,7 @@ class CrmLeadService
         $data['duplicate_checked_at'] = now();
 
         [$lead, $wasMerged] = DB::transaction(function () use ($data) {
-            $lead = CrmLead::query()
-                ->where('line_user_id', $data['line_user_id'])
-                ->lockForUpdate()
-                ->first();
+            $lead = $this->findLatestPendingLineLead($data['line_user_id']);
 
             if (! $lead) {
                 return [
@@ -103,18 +208,56 @@ class CrmLeadService
     private function findExistingLead(array $data): ?CrmLead
     {
         if (! empty($data['line_user_id'])) {
-            $lineLead = CrmLead::query()
-                ->where('line_user_id', $data['line_user_id'])
-                ->lockForUpdate()
-                ->first();
+            $lineLead = $this->findLatestPendingLineLead($data['line_user_id']);
 
             if ($lineLead) {
                 return $lineLead;
             }
         }
 
+        if (! empty($data['lead_id'])) {
+            return CrmLead::query()
+                ->whereKey($data['lead_id'])
+                ->lockForUpdate()
+                ->first();
+        }
+
+        if (empty($data['line_user_id'])) {
+            return CrmLead::query()
+                ->where('phone', $data['phone'])
+                ->latest()
+                ->lockForUpdate()
+                ->first();
+        }
+
         return CrmLead::query()
             ->where('phone', $data['phone'])
+            ->where(function ($query) {
+                $query->whereIn('lead_status', ['line_login_pending', 'line_chatting'])
+                    ->orWhere(function ($subQuery) {
+                        $subQuery->whereNotNull('line_user_id')
+                            ->where(function ($lineQuery) {
+                                $lineQuery->whereNotNull('line_conversation_state')
+                                    ->where('line_conversation_state', '!=', 'completed');
+                            });
+                    });
+            })
+            ->latest()
+            ->lockForUpdate()
+            ->first();
+    }
+
+    private function findLatestPendingLineLead(string $lineUserId): ?CrmLead
+    {
+        return CrmLead::query()
+            ->where('line_user_id', $lineUserId)
+            ->where(function ($query) {
+                $query->whereIn('lead_status', ['line_login_pending', 'line_chatting'])
+                    ->orWhere(function ($subQuery) {
+                        $subQuery->whereNotNull('line_conversation_state')
+                            ->where('line_conversation_state', '!=', 'completed');
+                    });
+            })
             ->latest()
             ->lockForUpdate()
             ->first();
@@ -141,6 +284,19 @@ class CrmLeadService
             'line_source',
             'duplicate_checked_at',
         ];
+
+        if (! empty($data['lead_id'])) {
+            $alwaysRefresh = array_merge($alwaysRefresh, [
+                'parent_name',
+                'phone',
+                'preferred_contact_time',
+                'student_name',
+                'student_grade',
+                'student_school',
+                'student_age',
+                'pain_point',
+            ]);
+        }
 
         $merged = [];
         foreach ($incoming as $field => $value) {
@@ -169,6 +325,29 @@ class CrmLeadService
         }
 
         return $merged;
+    }
+
+    private function copyTrackedAttributionFromLead(CrmLead $lead, array $data): array
+    {
+        foreach ([
+            'utm_source',
+            'utm_medium',
+            'utm_campaign',
+            'utm_content',
+            'utm_term',
+            'fbclid',
+            'gclid',
+            'ttclid',
+            'referrer',
+            'landing_page',
+            'first_touch_source',
+        ] as $field) {
+            if (filled($lead->{$field})) {
+                $data[$field] = $lead->{$field};
+            }
+        }
+
+        return $data;
     }
 
     private function preserveTrackedAttribution(CrmLead $lead, array $incoming): array

@@ -19,6 +19,43 @@ class CrmLeadApiController extends Controller
         ]);
         $data = $request->validate($this->leadValidationRules());
 
+        if (! empty($data['students'])) {
+            $leads = $leadService->createManyFromRegistration($data);
+            $leadIds = collect($leads)->pluck('id')->values();
+            $actions = collect($leads)->map(fn ($lead) => $lead->getAttribute('merge_action') ?: 'created')->values();
+            $primaryLead = $leads[0];
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Lead registrations saved successfully.',
+                'action' => $actions->contains('created')
+                    ? ($actions->contains('merged') || $actions->contains('updated_by_lead_id') ? 'updated_and_created_many' : 'created_many')
+                    : 'updated_many',
+                'lead_id' => $primaryLead->id,
+                'id' => $primaryLead->id,
+                'lead_ids' => $leadIds,
+                'count' => count($leads),
+                'status' => $primaryLead->lead_status,
+                'is_duplicate' => false,
+                'was_merged' => $actions->contains('merged') || $actions->contains('updated_by_lead_id'),
+                'leads' => collect($leads)->map(fn ($lead) => [
+                    'id' => $lead->id,
+                    'parent_name' => $lead->parent_name,
+                    'phone' => $lead->phone,
+                    'student_name' => $lead->student_name,
+                    'student_grade' => $lead->student_grade,
+                    'lead_status' => $lead->lead_status,
+                    'created_from' => $lead->created_from,
+                    'line_source' => $lead->line_source,
+                    'utm_source' => $lead->utm_source,
+                    'utm_campaign' => $lead->utm_campaign,
+                    'action' => $lead->getAttribute('merge_action') ?: 'created',
+                ])->values(),
+                'lead_detail_url' => route('admin.crm.leads.show', $primaryLead),
+                'lead_list_url' => route('admin.crm.leads.index'),
+            ], $actions->contains('created') ? 201 : 200);
+        }
+
         $lead = $leadService->createFromRegistration($data);
         $action = $lead->getAttribute('merge_action') ?: 'created';
 
@@ -73,7 +110,7 @@ class CrmLeadApiController extends Controller
             'success' => true,
             'lead_id' => $lead->id,
             'id' => $lead->id,
-            'action' => $action === 'merged' ? 'updated' : 'created',
+            'action' => $action === 'merged' ? 'updated_pending' : 'created',
             'line_user_id' => $lead->line_user_id,
             'status' => $lead->lead_status,
         ], $action === 'merged' ? 200 : 201);
@@ -168,6 +205,7 @@ class CrmLeadApiController extends Controller
     {
         return [
             'parent_name' => ['required', 'string', 'max:255'],
+            'lead_id' => ['nullable', 'integer', 'exists:crm_leads,id'],
             'phone' => ['required', 'string', 'regex:/^[0-9+]{8,15}$/'],
             'line_id' => ['nullable', 'string', 'max:100'],
             'line_user_id' => ['nullable', 'string', 'max:100'],
@@ -181,8 +219,16 @@ class CrmLeadApiController extends Controller
             'line_source' => ['nullable', 'string', 'max:100'],
             'email' => ['nullable', 'email', 'max:255'],
             'preferred_contact_time' => ['nullable', 'string', 'max:255'],
-            'student_name' => ['required', 'string', 'max:255'],
-            'student_grade' => ['required', 'string', 'max:100'],
+            'student_count' => ['nullable', 'integer', 'min:1', 'max:4'],
+            'students' => ['nullable', 'array', 'min:1', 'max:4'],
+            'students.*.lead_id' => ['nullable', 'integer', 'exists:crm_leads,id'],
+            'students.*.student_name' => ['required_with:students', 'string', 'max:255'],
+            'students.*.student_grade' => ['required_with:students', 'string', 'max:100'],
+            'students.*.student_school' => ['nullable', 'string', 'max:255'],
+            'students.*.student_age' => ['nullable', 'integer', 'min:1', 'max:30'],
+            'students.*.pain_point' => ['nullable', 'string', 'max:3000'],
+            'student_name' => ['required_without:students', 'string', 'max:255'],
+            'student_grade' => ['required_without:students', 'string', 'max:100'],
             'student_school' => ['nullable', 'string', 'max:255'],
             'student_age' => ['nullable', 'integer', 'min:1', 'max:30'],
             'pain_point' => ['nullable', 'string', 'max:3000'],

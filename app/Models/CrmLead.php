@@ -19,6 +19,7 @@ class CrmLead extends Model
 
     public const STATUSES = [
         'line_login_pending' => 'รอลงทะเบียนผ่าน LINE',
+        'line_chatting' => 'Line chatting',
         'new_lead' => 'ลูกค้าใหม่',
         'registered' => 'ลงทะเบียนแล้ว',
         'waiting_for_contact' => 'รอติดต่อกลับ',
@@ -26,6 +27,8 @@ class CrmLead extends Model
         'trial_scheduled' => 'นัดทดลองเรียนแล้ว',
         'trial_completed' => 'ทดลองเรียนแล้ว',
         'enrolled' => 'สมัครเรียนแล้ว',
+        'handover_to_staff' => 'Handover to staff',
+        'completed' => 'Completed',
         'not_interested' => 'ไม่สนใจ',
         'cannot_contact' => 'ติดต่อไม่ได้',
     ];
