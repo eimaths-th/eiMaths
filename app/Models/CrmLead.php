@@ -29,6 +29,9 @@ class CrmLead extends Model
         'enrolled' => 'สมัครเรียนแล้ว',
         'handover_to_staff' => 'Handover to staff',
         'completed' => 'Completed',
+        'superseded' => 'Superseded',
+        'cancelled' => 'Cancelled',
+        'cancelled_by_restart' => 'Cancelled by restart',
         'not_interested' => 'ไม่สนใจ',
         'cannot_contact' => 'ติดต่อไม่ได้',
     ];
@@ -84,6 +87,12 @@ class CrmLead extends Model
         'test_duration_seconds',
         'duplicate_of_lead_id',
         'duplicate_checked_at',
+        'registration_batch_id',
+        'superseded_at',
+        'cancelled_at',
+        'cancel_reason',
+        'superseded_by_batch_id',
+        'is_active',
     ];
 
     protected $casts = [
@@ -98,6 +107,9 @@ class CrmLead extends Model
         'duplicate_checked_at' => 'datetime',
         'line_followed_at' => 'datetime',
         'line_last_message_at' => 'datetime',
+        'superseded_at' => 'datetime',
+        'cancelled_at' => 'datetime',
+        'is_active' => 'boolean',
     ];
 
     public function assignedStaff()

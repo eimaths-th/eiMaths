@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\CrmLead;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class CrmLeadService
 {
@@ -30,6 +31,7 @@ class CrmLeadService
             ?? $data['line_source']
             ?? $data['created_from'];
         $data['duplicate_checked_at'] = now();
+        $data['is_active'] = $data['is_active'] ?? true;
 
         [$lead, $wasMerged, $previousStatus] = DB::transaction(function () use ($data) {
             $existingLead = $this->findExistingLead($data);
@@ -81,15 +83,20 @@ class CrmLeadService
             ?? $data['line_source']
             ?? $data['created_from'];
         $data['duplicate_checked_at'] = now();
+        $data['registration_batch_id'] = $data['registration_batch_id']
+            ?? $this->makeRegistrationBatchId($data['line_user_id'] ?? null);
+        $data['is_active'] = true;
 
         $students = array_values($data['students'] ?? []);
         unset($data['students'], $data['student_count']);
+        $isRestartFlow = filter_var($data['is_restart_flow'] ?? false, FILTER_VALIDATE_BOOL);
+        unset($data['is_restart_flow']);
 
         if (empty($students)) {
             return [$this->createFromRegistration($data)];
         }
 
-        $leads = DB::transaction(function () use ($data, $students) {
+        $leads = DB::transaction(function () use ($data, $students, $isRestartFlow) {
             $pendingLead = ! empty($data['line_user_id'])
                 ? $this->findLatestPendingLineLead($data['line_user_id'])
                 : null;
@@ -101,6 +108,10 @@ class CrmLeadService
                     $data,
                     Arr::only($student, ['lead_id', 'student_name', 'student_grade', 'student_school', 'student_age', 'pain_point'])
                 );
+
+                if ($isRestartFlow) {
+                    unset($studentData['lead_id']);
+                }
 
                 if (! empty($studentData['lead_id'])) {
                     $explicitLeadQuery = CrmLead::query()->whereKey($studentData['lead_id']);
@@ -150,6 +161,14 @@ class CrmLeadService
                 $lead->setAttribute('merge_action', 'created');
                 $lead->setAttribute('previous_lead_status', null);
                 $createdLeads[] = $lead;
+            }
+
+            if ($isRestartFlow && ! empty($data['line_user_id'])) {
+                $this->cancelPreviousRestartLeads(
+                    $data['line_user_id'],
+                    $data['registration_batch_id'],
+                    collect($createdLeads)->pluck('id')->all()
+                );
             }
 
             return $createdLeads;
@@ -261,6 +280,51 @@ class CrmLeadService
             ->latest()
             ->lockForUpdate()
             ->first();
+    }
+
+    private function cancelPreviousRestartLeads(string $lineUserId, string $registrationBatchId, array $newLeadIds): int
+    {
+        return CrmLead::query()
+            ->where('line_user_id', $lineUserId)
+            ->whereNotIn('id', $newLeadIds ?: [0])
+            ->where(function ($query) use ($registrationBatchId) {
+                $query->whereNull('registration_batch_id')
+                    ->orWhere('registration_batch_id', '!=', $registrationBatchId);
+            })
+            ->whereIn('lead_status', $this->restartSupersedableStatuses())
+            ->update([
+                'lead_status' => 'cancelled_by_restart',
+                'is_active' => false,
+                'cancelled_at' => now(),
+                'superseded_at' => now(),
+                'cancel_reason' => 'user_restart',
+                'superseded_by_batch_id' => $registrationBatchId,
+                'updated_at' => now(),
+            ]);
+    }
+
+    /**
+     * These are active, non-enrolled statuses that can be archived when a user completes a restart.
+     */
+    private function restartSupersedableStatuses(): array
+    {
+        return [
+            'line_login_pending',
+            'line_chatting',
+            'new_lead',
+            'registered',
+            'waiting_for_contact',
+            'contacted',
+            'handover_to_staff',
+            'completed',
+        ];
+    }
+
+    private function makeRegistrationBatchId(?string $lineUserId): string
+    {
+        $prefix = $lineUserId ? 'line_' . substr(hash('sha256', $lineUserId), 0, 12) : 'lead';
+
+        return $prefix . '_' . now()->format('YmdHis') . '_' . Str::lower(Str::random(8));
     }
 
     private function mergeLeadData(CrmLead $lead, array $data): array

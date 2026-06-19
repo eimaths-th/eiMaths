@@ -12,9 +12,14 @@ class CrmLeadController extends Controller
 {
     public function index(Request $request)
     {
+        $archivedStatuses = ['superseded', 'cancelled', 'cancelled_by_restart'];
+
         $leads = CrmLead::query()
             ->with('assignedStaff:id,name')
             ->when($request->filled('status'), fn ($query) => $query->where('lead_status', $request->status))
+            ->when(! $request->filled('status'), fn ($query) => $query
+                ->where('is_active', true)
+                ->whereNotIn('lead_status', $archivedStatuses))
             ->when($request->filled('source'), fn ($query) => $query->where('utm_source', $request->source))
             ->when($request->filled('line_source'), fn ($query) => $query->where('line_source', $request->line_source))
             ->when($request->filled('campaign'), fn ($query) => $query->where('utm_campaign', $request->campaign))
