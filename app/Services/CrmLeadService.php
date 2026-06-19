@@ -301,7 +301,7 @@ class CrmLeadService
         return CrmLead::query()
             ->where('line_user_id', $lineUserId)
             ->where('is_active', true)
-            ->whereIn('lead_status', $this->restartSupersedableStatuses())
+            ->whereNotIn('lead_status', $this->restartProtectedStatuses())
             ->update([
                 'lead_status' => 'cancelled_by_restart',
                 'is_active' => false,
@@ -314,22 +314,15 @@ class CrmLeadService
     }
 
     /**
-     * These are active, non-enrolled statuses that can be archived when a user completes a restart.
+     * These statuses represent real enrollment/won outcomes and must survive a chat restart.
      */
-    private function restartSupersedableStatuses(): array
+    private function restartProtectedStatuses(): array
     {
         return [
-            'line_login_pending',
-            'line_chatting',
-            'new_lead',
-            'registered',
-            'waiting_for_contact',
-            'contacted',
-            'follow_up',
-            'pending',
-            'contacting',
-            'handover_to_staff',
-            'completed',
+            'enrolled',
+            'paid',
+            'won',
+            'closed_won',
         ];
     }
 
