@@ -77,6 +77,26 @@ class UserController extends Controller
                     });
                 })
                 ->orderBy("id", "desc");
+
+            $date_range = $request->input('date_range');
+            if (is_string($date_range) && preg_match('/^\d{4}-\d{2}-\d{2} - \d{4}-\d{2}-\d{2}$/', $date_range)) {
+                [$start_date, $end_date] = explode(' - ', $date_range);
+                $datas->whereBetween('users.created_at', [$start_date, $end_date . ' 23:59:59']);
+            }
+
+            $years = $request->input('years', []);
+            $valid_years = is_array($years)
+                ? array_values(array_filter($years, fn ($year) => preg_match('/^\d{4}$/', (string) $year)))
+                : [];
+
+            if (!empty($valid_years)) {
+                $datas->where(function ($year_query) use ($valid_years) {
+                    foreach ($valid_years as $year) {
+                        $year_query->orWhereYear('users.created_at', $year);
+                    }
+                });
+            }
+
             // ->get();
             // if ($roleAdmin != 'SystemAdmin') {
             //     // $datas

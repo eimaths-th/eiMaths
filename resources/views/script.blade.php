@@ -1226,80 +1226,83 @@
 </script>
 <script>
     $(document).ready(function() {
-        const dcentre = $('#dcentre');
-        const daterange = $('#daterange');
-        let centre = dcentre.val();
-        let dateRangeValue = daterange.val();
-        // Determine if current user is SystemAdmin (safe checks without assuming role system)
-        const IS_SYSTEM_ADMIN = @json(auth()->check() && (function() {
-            $u = Auth::user();
-            if (!$u) return false;
-            if (method_exists($u, 'hasRole')) {
-                return $u->hasRole('SystemAdmin');
-            }
-            // Fallbacks if hasRole is unavailable
-            if (isset($u->role) && is_string($u->role)) {
-                return $u->role === 'SystemAdmin';
-            }
-            return false;
-        })());
-
-        // Define routes and element selectors in one place
-        const routes = [
+        const dashboard_card_routes = [
             {
                 selector: '#contacts-link',
                 route: "{{ route('contacts') }}",
-                params: ['centre', 'date']
             },
             {
                 selector: '#teacher-link',
                 route: "{{ route('users.index') }}",
-                params: ['role=Teacher', 'centre', 'date']
+                static_params: {
+                    role: 'Teacher',
+                },
             },
             {
                 selector: '.receipt-link',
                 route: "{{ route('receipts') }}",
-                params: ['centre', 'date']
+                receipt_status: true,
             },
             {
                 selector: '#receipts-pending-link',
                 route: "{{ route('receipts_pending') }}",
-                params: ['centre', 'date']
             },
         ];
 
-        function updateLinks(centre, reservationValue) {
-            routes.forEach(item => {
-                let url = new URL(item.route);
+        function GetDashboardDateRange() {
+            const $date_range = $('#daterange');
+            const start_date = $date_range.data('start-date');
+            const end_date = $date_range.data('end-date');
 
-                // Add parameters to URL
-                item.params.forEach(param => {
-                    if (param.includes('=')) {
-                        // Handle parameters with static values (like role=Teacher)
-                        const [key, value] = param.split('=');
-                        url.searchParams.set(key, value);
-                    } else if (param === 'centre' && centre) {
+            if (!start_date || !end_date) {
+                return '';
+            }
+
+            return start_date + ' - ' + end_date;
+        }
+
+        function UpdateDashboardCardLinks() {
+            const centre = $('#dcentre').val();
+            const date_range = GetDashboardDateRange();
+            const years = $('#year_filter').val() || [];
+
+            dashboard_card_routes.forEach(function(route_config) {
+                $(route_config.selector).each(function() {
+                    const url = new URL(route_config.route, window.location.origin);
+
+                    if (centre) {
                         url.searchParams.set('centre', centre);
-                    } else if (param === 'date' && dateRangeValue) {
-                        url.searchParams.set('date', dateRangeValue);
                     }
-                });
 
-                // Update the href attribute with the properly encoded URL
-                $(item.selector).attr('href', url.toString());
+                    if (date_range) {
+                        url.searchParams.set('date_range', date_range);
+                    }
+
+                    years.forEach(function(year) {
+                        url.searchParams.append('years[]', year);
+                    });
+
+                    Object.entries(route_config.static_params || {}).forEach(function([key, value]) {
+                        url.searchParams.set(key, value);
+                    });
+
+                    if (route_config.receipt_status) {
+                        const receipt_status = $(this).data('receipt-status');
+
+                        if (receipt_status) {
+                            url.searchParams.set('receipt_status', receipt_status);
+                        }
+                    }
+
+                    $(this).attr('href', url.toString());
+                });
             });
         }
 
-        updateLinks(centre, dateRangeValue);
+        UpdateDashboardCardLinks();
 
-        dcentre.on('change', function() {
-            centre = $(this).val();
-            updateLinks(centre, dateRangeValue);
-        });
-
-        daterange.on('change', function() {
-            dateRangeValue = $(this).val();
-            updateLinks(centre, dateRangeValue);
-        });
+        $('#SearchButtons').on('click', UpdateDashboardCardLinks);
+        $('#dcentre, #year_filter').on('change', UpdateDashboardCardLinks);
+        $('#daterange').on('apply.daterangepicker cancel.daterangepicker', UpdateDashboardCardLinks);
     });
 </script>

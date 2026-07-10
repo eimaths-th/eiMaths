@@ -503,7 +503,7 @@
                         <div class="col-md-6 col-sm-6 col-lg-6  col-xl-3 col-12">
                             {{-- return to receipt with centre --}}
                             <a href="{{ route('receipts', ['centre' => Auth::user()->department->id]) }}" target="_blank"
-                                class="text-dark receipt-link">
+                                class="text-dark receipt-link" data-receipt-status="all">
                                 <div class="info-box">
                                     <span class="info-box-icon bg-warning"><i
                                             class="fa-solid fa-file-invoice-dollar"></i></span>
@@ -518,7 +518,7 @@
                         <div class="col-md-6 col-sm-6 col-lg-6  col-xl-3 col-12">
                             {{-- return to receipt with centre --}}
                             <a href="{{ route('receipts', ['centre' => Auth::user()->department->id]) }}" target="_blank"
-                                class="text-dark receipt-link">
+                                class="text-dark receipt-link" data-receipt-status="paid">
                                 <div class="info-box">
                                     <span class="info-box-icon bg-warning"><i class="fa-solid fa-cash-register"></i></span>
                                     <div class="info-box-content">
@@ -548,7 +548,7 @@
                         </div>
                         <div class="col-md-6 col-sm-6 col-lg-6  col-xl-3 col-12">
                             <a href="{{ route('receipts', ['centre' => Auth::user()->department->id]) }}" target="_blank"
-                                class="text-dark receipt-link">
+                                class="text-dark receipt-link" data-receipt-status="paid">
                                 <div class="info-box">
                                     <span class="info-box-icon bg-warning"><i
                                             class="fa-solid fa-hand-holding-dollar"></i></span>

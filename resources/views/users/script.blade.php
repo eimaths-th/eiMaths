@@ -92,6 +92,11 @@
         });
 
 
+        const dashboard_filter_params = new URLSearchParams(window.location.search);
+        const dashboard_years = dashboard_filter_params.getAll('years[]');
+        const dashboard_date_range = dashboard_filter_params.get('date_range');
+        const dashboard_centre = dashboard_filter_params.get('centre');
+
         var table = $('#Listview').DataTable({
             /*"aoColumnDefs": [
             {
@@ -106,7 +111,13 @@
             "sPaginationType": "full_numbers",
             "dom": 'T<"clear">lfrtip',
                 */
-            ajax: '',
+            ajax: {
+                data: function(d) {
+                    d.centre = dashboard_centre;
+                    d.date_range = dashboard_date_range;
+                    d.years = dashboard_years;
+                }
+            },
             serverSide: true,
             processing: true,
             language: {

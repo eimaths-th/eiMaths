@@ -82,6 +82,9 @@
     $(document).ready(function() {
         let id;
         var urlParams = new URLSearchParams(window.location.search);
+        const dashboard_years = urlParams.getAll('years[]');
+        const dashboard_date_range = urlParams.get('date_range');
+        const dashboard_centre = urlParams.get('centre');
         if (urlParams.has('new')) {
             // 'new' parameter exists, call your function here and pass the URL parameters
             showOverlay();
@@ -313,6 +316,10 @@
         // Call the function to set initial field values on page load
         retrieveFieldValues();
 
+        if (/^\d{4}-\d{2}-\d{2} - \d{4}-\d{2}-\d{2}$/.test(dashboard_date_range || '')) {
+            [startDate, endDate] = dashboard_date_range.split(' - ');
+        }
+
         let daterange = () => {
             $('#reservation').daterangepicker({
                 startDate: startDate,
@@ -351,6 +358,9 @@
         const table_option = {
             ajax: {
                 data: function(d) {
+                    d.centre = dashboard_centre;
+                    d.date_range = dashboard_date_range;
+                    d.years = dashboard_years;
 
                     if (reservationChanged && $('#reservation').val()) {
                         d.sdate = $('#reservation').val();

@@ -241,6 +241,37 @@ class ReceiptController extends Controller
             if ($centre && $centre !== '1') {
                 $query->where('centre', $centre);
             }
+
+            $date_range = $request->input('date_range');
+            if (is_string($date_range) && preg_match('/^\d{4}-\d{2}-\d{2} - \d{4}-\d{2}-\d{2}$/', $date_range)) {
+                [$start_date, $end_date] = explode(' - ', $date_range);
+                $query->whereBetween('payment_date', [$start_date, $end_date . ' 23:59:59']);
+            }
+
+            $years = $request->input('years', []);
+            $valid_years = is_array($years)
+                ? array_values(array_filter($years, fn ($year) => preg_match('/^\d{4}$/', (string) $year)))
+                : [];
+
+            if (!empty($valid_years)) {
+                $query->where(function ($year_query) use ($valid_years) {
+                    foreach ($valid_years as $year) {
+                        $year_query->orWhereYear('payment_date', $year);
+                    }
+                });
+            }
+
+            $receipt_status = $request->input('receipt_status');
+            if ($receipt_status === 'paid' || $receipt_status === 'pending') {
+                $order_status = $receipt_status === 'paid' ? 1 : 0;
+                $query->whereExists(function ($order_query) use ($order_status) {
+                    $order_query->select(DB::raw(1))
+                        ->from('orders')
+                        ->whereColumn('orders.id', 'receipts.oid')
+                        ->where('orders.status', $order_status);
+                });
+            }
+
             if ($request->date) { // e.g. "2025-10"
                 [$year, $month] = explode('-', $request->date);
                 $query->whereYear('payment_date', $year)
@@ -503,9 +534,37 @@ class ReceiptController extends Controller
                 $query->where('orders.centre', Auth::user()->department->id);
             }
 
-            if ($centre && $reservationValue) {
+            if ($centre) {
                 $query->where('orders.centre', $centre);
+            }
+
+            if ($reservationValue) {
                 $query->where('orders.created_at', 'like', $reservationValue . '%');
+            }
+
+            $date_range = $request->input('date_range');
+            $years = $request->input('years', []);
+            $valid_years = is_array($years)
+                ? array_values(array_filter($years, fn ($year) => preg_match('/^\d{4}$/', (string) $year)))
+                : [];
+            $has_dashboard_date_range = is_string($date_range)
+                && preg_match('/^\d{4}-\d{2}-\d{2} - \d{4}-\d{2}-\d{2}$/', $date_range);
+
+            if ($has_dashboard_date_range || !empty($valid_years)) {
+                $query->join('receipts', 'orders.id', '=', 'receipts.oid');
+
+                if ($has_dashboard_date_range) {
+                    [$start_date, $end_date] = explode(' - ', $date_range);
+                    $query->whereBetween('receipts.payment_date', [$start_date, $end_date . ' 23:59:59']);
+                }
+
+                if (!empty($valid_years)) {
+                    $query->where(function ($year_query) use ($valid_years) {
+                        foreach ($valid_years as $year) {
+                            $year_query->orWhereYear('receipts.payment_date', $year);
+                        }
+                    });
+                }
             }
 
             if (!empty($request->get('sdate'))) {

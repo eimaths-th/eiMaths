@@ -95,6 +95,16 @@
             }
         }
 
+        const dashboard_filter_params = new URLSearchParams(window.location.search);
+        const dashboard_years = dashboard_filter_params.getAll('years[]');
+        const dashboard_date_range = dashboard_filter_params.get('date_range');
+        const dashboard_centre = dashboard_filter_params.get('centre');
+        const dashboard_receipt_status = dashboard_filter_params.get('receipt_status');
+
+        if (/^\d{4}-\d{2}-\d{2} - \d{4}-\d{2}-\d{2}$/.test(dashboard_date_range || '')) {
+            [startDate, endDate] = dashboard_date_range.split(' - ');
+        }
+
         let daterange = () => {
             $('#reservation').daterangepicker({
                 startDate: startDate,
@@ -131,6 +141,10 @@
         var table_option = {
             ajax: {
                 data: function(d) {
+                    d.centre = dashboard_centre;
+                    d.date_range = dashboard_date_range;
+                    d.years = dashboard_years;
+                    d.receipt_status = dashboard_receipt_status;
 
                     if (reservationChanged && $('#reservation').val()) {
                         d.sdate = $('#reservation').val();
