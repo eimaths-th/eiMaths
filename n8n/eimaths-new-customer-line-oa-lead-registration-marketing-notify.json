@@ -32,6 +32,20 @@
     },
     {
       "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const expected_crm_base_url = 'https://app.eimaths-th.com';\nconst configured_crm_base_url = String($json.config?.crmBaseUrl || '').replace(/\\\/+$/, '');\n\nif (configured_crm_base_url !== expected_crm_base_url) {\n  throw new Error('Blocked non-production CRM target: ' + (configured_crm_base_url || '(empty)'));\n}\n\nreturn $input.item;"
+      },
+      "id": "f6b81b7d-1ec1-4d98-9f3a-3c82867e0131",
+      "name": "Enforce Production CRM Target",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4624,
+        2656
+      ]
+    },
+    {
+      "parameters": {
         "url": "={{ 'https://api.line.me/v2/bot/profile/' + $json.lineUserId }}",
         "sendHeaders": true,
         "headerParameters": {
@@ -285,7 +299,10 @@
       "position": [
         7776,
         2496
-      ]
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
@@ -298,6 +315,20 @@
       "typeVersion": 2,
       "position": [
         8000,
+        2496
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const production_origin = 'https://app.eimaths-th.com';\nconst notification_text = String($json.notificationText || '').replace(/https:\\/\\/[^\\/\\s]+(?=\\/admin\\/crm\\/leads)/g, production_origin);\n\nreturn {\n  json: {\n    ...$json,\n    notificationText: notification_text\n  }\n};"
+      },
+      "id": "5d3c9a82-63d2-49d3-8d25-2f18a995114e",
+      "name": "Enforce Production CRM URL",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        8112,
         2496
       ]
     },
@@ -321,7 +352,7 @@
         "sendBody": true,
         "contentType": "raw",
         "rawContentType": "application/json",
-        "body": "={{ JSON.stringify({ to: $('Normalize LINE Event').item.json.config.marketingGroupId, messages: [{ type: 'text', text: $('Build CRM Notification').item.json.notificationText }] }) }}",
+        "body": "={{ JSON.stringify({ to: $('Normalize LINE Event').item.json.config.marketingGroupId, messages: [{ type: 'text', text: $('Enforce Production CRM URL').item.json.notificationText }] }) }}",
         "options": {}
       },
       "id": "4c10dce7-e0ea-4d02-810a-a1a2400c10d1",
@@ -629,6 +660,17 @@
       "main": [
         [
           {
+            "node": "Enforce Production CRM Target",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enforce Production CRM Target": {
+      "main": [
+        [
+          {
             "node": "Get LINE Profile",
             "type": "main",
             "index": 0
@@ -784,6 +826,17 @@
       ]
     },
     "Build CRM Notification": {
+      "main": [
+        [
+          {
+            "node": "Enforce Production CRM URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enforce Production CRM URL": {
       "main": [
         [
           {

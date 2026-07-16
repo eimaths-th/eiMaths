@@ -423,11 +423,9 @@ class CrmLeadService
     private function preserveTrackedAttribution(CrmLead $lead, array $incoming): array
     {
         $hasExistingCampaignAttribution = filled($lead->utm_source)
-            && $lead->utm_source !== 'line'
-            && filled($lead->utm_campaign)
-            && $lead->utm_campaign !== 'unknown';
+            && strtolower((string) $lead->utm_source) !== 'line';
 
-        $incomingLooksLikeLineFallback = ($incoming['utm_source'] ?? null) === 'line'
+        $incomingLooksLikeLineFallback = strtolower((string) ($incoming['utm_source'] ?? '')) === 'line'
             && (($incoming['utm_campaign'] ?? null) === 'unknown' || blank($incoming['utm_campaign'] ?? null));
 
         if (! $hasExistingCampaignAttribution || ! $incomingLooksLikeLineFallback) {
