@@ -9,7 +9,7 @@ the first text message:
 NEW_CUSTOMER_LINE_CHANNEL_ACCESS_TOKEN=New Customer LINE OA Messaging API token
 LINE_MARKETING_CHANNEL_ACCESS_TOKEN=token used by the bot in the marketing LINE group
 LINE_MARKETING_GROUP_ID=LINE group ID that receives new lead alerts
-EIMATHS_CRM_BASE_URL=https://test-web.eimaths-th.com
+EIMATHS_CRM_BASE_URL=https://app.eimaths-th.com
 CRM_INTEGRATION_TOKEN=shared secret used by the CRM API
 ```
 
