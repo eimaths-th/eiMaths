@@ -55,6 +55,28 @@ class N8nProductionCrmWorkflowTest extends TestCase
         $this->assertSame(['Notify Marketing Team'], $urlGuardTargets);
     }
 
+    public function test_line_loading_runs_before_ai_validation_without_blocking_the_reply(): void
+    {
+        $loading = $this->node('Show LINE Loading');
+        $restore = $this->node('Restore AI Validation Request');
+
+        $this->assertSame('n8n-nodes-base.httpRequest', $loading['type']);
+        $this->assertSame('POST', $loading['parameters']['method']);
+        $this->assertSame('https://api.line.me/v2/bot/chat/loading/start', $loading['parameters']['url']);
+        $this->assertStringContainsString('chatId: $json.lineUserId', $loading['parameters']['body']);
+        $this->assertStringContainsString('loadingSeconds: 30', $loading['parameters']['body']);
+        $this->assertTrue($loading['continueOnFail']);
+        $this->assertSame('n8n-nodes-base.code', $restore['type']);
+
+        $aiBranch = array_column($this->workflow['connections']['Should Use AI Validation?']['main'][0], 'node');
+        $loadingTargets = array_column($this->workflow['connections']['Show LINE Loading']['main'][0], 'node');
+        $restoreTargets = array_column($this->workflow['connections']['Restore AI Validation Request']['main'][0], 'node');
+
+        $this->assertSame(['Show LINE Loading'], $aiBranch);
+        $this->assertSame(['Restore AI Validation Request'], $loadingTargets);
+        $this->assertSame(['AI Validation Agent'], $restoreTargets);
+    }
+
     private function node(string $name): array
     {
         foreach ($this->workflow['nodes'] as $node) {

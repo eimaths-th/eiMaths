@@ -558,6 +558,53 @@
     },
     {
       "parameters": {
+        "method": "POST",
+        "url": "https://api.line.me/v2/bot/chat/loading/start",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ 'Bearer ' + $('Normalize LINE Event').item.json.config.lineToken }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({ chatId: $json.lineUserId, loadingSeconds: 30 }) }}",
+        "options": {}
+      },
+      "id": "a6d8e8a5-28a5-4bc8-81ad-bdf1ce5ec8d2",
+      "name": "Show LINE Loading",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        6640,
+        2592
+      ],
+      "retryOnFail": false,
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "return { json: $('Prepare AI Validation Request').item.json };"
+      },
+      "id": "c5cd7a9d-7ec1-4c61-95b7-25bdbf13c30e",
+      "name": "Restore AI Validation Request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        6880,
+        2592
+      ]
+    },
+    {
+      "parameters": {
         "promptType": "define",
         "text": "={{ 'ตรวจสอบคำตอบล่าสุดของผู้ปกครองใน LINE chatbot ของ eiMaths ตามข้อมูลนี้เท่านั้น\\n\\n' + JSON.stringify($json.aiValidationRequest || {}, null, 2) }}",
         "options": {
@@ -957,7 +1004,7 @@
       "main": [
         [
           {
-            "node": "AI Validation Agent",
+            "node": "Show LINE Loading",
             "type": "main",
             "index": 0
           }
@@ -965,6 +1012,28 @@
         [
           {
             "node": "Apply Conversation Decision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Show LINE Loading": {
+      "main": [
+        [
+          {
+            "node": "Restore AI Validation Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Restore AI Validation Request": {
+      "main": [
+        [
+          {
+            "node": "AI Validation Agent",
             "type": "main",
             "index": 0
           }
