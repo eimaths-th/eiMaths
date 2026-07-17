@@ -11,6 +11,7 @@ class TrackingLink extends Model
 
     protected $fillable = [
         'tracking_code',
+        'short_code',
         'name',
         'base_url',
         'utm_source',
@@ -31,5 +32,19 @@ class TrackingLink extends Model
     public function leads()
     {
         return $this->hasMany(CrmLead::class, 'tracking_link_id');
+    }
+
+    public function clicks()
+    {
+        return $this->hasMany(TrackingLinkClick::class);
+    }
+
+    public function getShortUrlAttribute(): ?string
+    {
+        if (! $this->short_code) {
+            return null;
+        }
+
+        return rtrim(config('tracking.public_short_base_url'), '/') . '/go/' . $this->short_code;
     }
 }

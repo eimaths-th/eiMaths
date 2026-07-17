@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\CrmLeadApiController;
 use App\Http\Controllers\Api\ParentAuthController;
 use App\Http\Controllers\Api\N8nLineCrmController;
 use App\Http\Controllers\FaqController;
+use App\Http\Controllers\TrackingLinkController;
 
 
 
@@ -28,6 +29,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::get('/blogs', [App\Http\Controllers\BlogController::class, 'api_show']);
 Route::get('/blogs/{slug}', [App\Http\Controllers\BlogController::class, 'api_show_by_slug']);
 Route::get('/faqs', [FaqController::class, 'ApiIndex']);
+Route::get('/public/tracking-links/{shortCode}', [TrackingLinkController::class, 'resolve'])
+    ->where('shortCode', '[A-Za-z0-9]+')
+    ->middleware('throttle:120,1');
 
 //Route::middleware('cors')->post('/applogin', [APIController::class, 'login']);
 // Parent Authentication Routes

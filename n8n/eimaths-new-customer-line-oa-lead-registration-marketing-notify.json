@@ -113,6 +113,19 @@
     },
     {
       "parameters": {
+        "jsCode": "const item = $json || {};\nconst normalized_text = String(item.normalizedText || '').trim().toLowerCase();\nconst registration_completed = Boolean(item.completedAt) || item.handoverReason === 'registration_completed';\nconst exact_restart_command = /^(?:เริ่มใหม่)(?:ค่ะ|ครับ)?$/.test(normalized_text);\n\nif (registration_completed && !exact_restart_command) {\n  return {\n    json: {\n      ...item,\n      directDecision: null,\n      hasDirectDecision: false,\n      postCompletionSilence: true\n    }\n  };\n}\n\nreturn { json: item };"
+      },
+      "id": "b8d4cb0d-3e4c-46d1-9f8f-86c4f0e88d7a",
+      "name": "Guard Completed Conversation",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5520,
+        2656
+      ]
+    },
+    {
+      "parameters": {
         "conditions": {
           "options": {
             "caseSensitive": true,
@@ -576,7 +589,7 @@
         "sendBody": true,
         "contentType": "raw",
         "rawContentType": "application/json",
-        "body": "={{ JSON.stringify({ chatId: $json.lineUserId, loadingSeconds: 30 }) }}",
+        "body": "={{ JSON.stringify({ chatId: $('Normalize LINE Event').item.json.lineUserId, loadingSeconds: 60 }) }}",
         "options": {}
       },
       "id": "a6d8e8a5-28a5-4bc8-81ad-bdf1ce5ec8d2",
@@ -587,7 +600,9 @@
         6640,
         2592
       ],
-      "retryOnFail": false,
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 1000,
       "continueOnFail": true
     },
     {
@@ -688,6 +703,45 @@
         6528,
         2720
       ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $json || {};\n\nif (!item.postCompletionSilence) {\n  return { json: item };\n}\n\nreturn {\n  json: {\n    ...item,\n    consentDecision: {\n      action: 'silent_handover',\n      nextState: 'handover_to_staff',\n      consentStatus: item.consentStatus,\n      replyText: ''\n    },\n    needsFieldValidation: false\n  }\n};"
+      },
+      "id": "71c59c80-8bfd-4b62-a4d2-a20ddbbff7f9",
+      "name": "Enforce Post-Completion Silence",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5968,
+        2784
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $json || {};\n\nif (item.eventType !== 'follow') {\n  return { json: item };\n}\n\nconst now_iso = item.nowIso || new Date().toISOString();\nconst conversation = {\n  state: 'waiting_consent',\n  consentStatus: 'pending',\n  answers: {},\n  createdAt: now_iso,\n  startedAt: now_iso,\n  followedAt: now_iso,\n  lastMessageAt: now_iso,\n  invalidCountByState: {},\n  totalInvalidCount: 0,\n  handoverReplyCount: 0,\n  postCompletionReplyCount: 0,\n  handoverNotifiedAt: null,\n  handoverReason: null,\n  completedAt: null,\n  aiValidationSummary: [],\n  currentStudentIndex: 0,\n  displayName: item.displayName || null,\n  pictureUrl: item.pictureUrl || null\n};\n\nconst store = $getWorkflowStaticData('global');\nstore.conversations = store.conversations || {};\nif (item.lineUserId) {\n  store.conversations[item.lineUserId] = conversation;\n}\n\nreturn {\n  json: {\n    ...item,\n    nowIso: now_iso,\n    conversationState: conversation.state,\n    consentStatus: conversation.consentStatus,\n    existingAnswers: {},\n    currentStudentIndex: 0,\n    invalidCountByState: {},\n    handoverReplyCount: 0,\n    postCompletionReplyCount: 0,\n    handoverNotifiedAt: null,\n    handoverReason: null,\n    completedAt: null\n  }\n};"
+      },
+      "id": "8bf2bc21-10ef-4902-b0e9-757d4c58a9c2",
+      "name": "Reset Conversation on Follow",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5296,
+        2656
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $json || {};\nconst text = String(item.normalizedText || '').trim().toLowerCase();\nconst is_consent_state = item.conversationState === 'waiting_consent' || item.consentStatus === 'pending';\nconst refusal_pattern = /^(?:ไม่|ไม่ค่ะ|ไม่คะ|ไม่ครับ|ไม่เอา|ไม่เอาค่ะ|ไม่เอาครับ|ไม่ต้องการ|ไม่ต้องการค่ะ|ไม่ต้องการครับ|ไม่สะดวก|ไม่สะดวกค่ะ|ไม่สะดวกครับ)$/;\n\nif (is_consent_state && refusal_pattern.test(text)) {\n  return {\n    json: {\n      ...item,\n      normalizedText: 'ไม่ยินยอม',\n      lowerText: 'ไม่ยินยอม'\n    }\n  };\n}\n\nreturn { json: item };"
+      },
+      "id": "d68e640f-98bc-4f4e-9d2a-4be9e2c5b23c",
+      "name": "Normalize Consent Refusal",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5744,
+        2784
+      ]
     }
   ],
   "pinData": {},
@@ -756,6 +810,17 @@
       "main": [
         [
           {
+            "node": "Reset Conversation on Follow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reset Conversation on Follow": {
+      "main": [
+        [
+          {
             "node": "Detect Global Intent",
             "type": "main",
             "index": 0
@@ -764,6 +829,17 @@
       ]
     },
     "Detect Global Intent": {
+      "main": [
+        [
+          {
+            "node": "Guard Completed Conversation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guard Completed Conversation": {
       "main": [
         [
           {
@@ -785,6 +861,17 @@
         ],
         [
           {
+            "node": "Normalize Consent Refusal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Consent Refusal": {
+      "main": [
+        [
+          {
             "node": "Consent Gate",
             "type": "main",
             "index": 0
@@ -793,6 +880,17 @@
       ]
     },
     "Consent Gate": {
+      "main": [
+        [
+          {
+            "node": "Enforce Post-Completion Silence",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enforce Post-Completion Silence": {
       "main": [
         [
           {

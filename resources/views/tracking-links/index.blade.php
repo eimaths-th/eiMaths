@@ -20,6 +20,12 @@
     <div class="container-fluid">
         @if (Session::has('success'))
             <div class="alert alert-success">{{ Session::get('success') }}</div>
+            @if (Session::has('short_url'))
+                <div class="alert alert-info">
+                    <strong>Short link:</strong>
+                    <a href="{{ Session::get('short_url') }}" target="_blank" rel="noopener">{{ Session::get('short_url') }}</a>
+                </div>
+            @endif
         @endif
 
         @if ($errors->any())
@@ -157,6 +163,7 @@
                                 <th>Created by</th>
                                 <th>Created at</th>
                                 <th>Leads</th>
+                                <th>Short link</th>
                                 <th>Link</th>
                                 <th>Action</th>
                             </tr>
@@ -175,6 +182,16 @@
                                         <a href="{{ route('crm.leads.index', ['tracking_link_id' => $link->id]) }}" class="badge badge-info">
                                             {{ $link->leads_count }}
                                         </a>
+                                    </td>
+                                    <td style="min-width: 220px;">
+                                        <div class="input-group input-group-sm">
+                                            <input type="text" id="short-tracking-link-{{ $link->id }}" value="{{ $link->short_url }}" class="form-control" readonly>
+                                            <div class="input-group-append">
+                                                <button type="button" class="btn btn-outline-success copy-link-btn" data-copy-target="short-tracking-link-{{ $link->id }}" title="Copy short link">
+                                                    <i class="fas fa-copy"></i>
+                                                </button>
+                                            </div>
+                                        </div>
                                     </td>
                                     <td style="min-width: 320px;">
                                         <div class="input-group input-group-sm">
@@ -198,7 +215,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="10" class="text-center">No tracking links created yet.</td>
+                                    <td colspan="11" class="text-center">No tracking links created yet.</td>
                                 </tr>
                             @endforelse
                         </tbody>

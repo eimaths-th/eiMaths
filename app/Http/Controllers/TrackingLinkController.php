@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\CrmLead;
+use App\Models\TrackingLinkClick;
 use App\Models\TrackingLink;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -17,6 +18,7 @@ class TrackingLinkController extends Controller
             'links' => TrackingLink::query()
                 ->with('creator:id,name')
                 ->withCount('leads')
+                ->withCount('clicks')
                 ->latest()
                 ->paginate(20),
         ]);
@@ -39,6 +41,7 @@ class TrackingLinkController extends Controller
         }
 
         $data['tracking_code'] = Str::lower(Str::random(32));
+        $data['short_code'] = $this->generateShortCode();
         $query = array_filter([
             'utm_source' => $data['utm_source'],
             'utm_medium' => $data['utm_medium'],
@@ -57,7 +60,48 @@ class TrackingLinkController extends Controller
         return redirect()
             ->route('tracking-links.index')
             ->with('success', 'Tracking link created successfully.')
-            ->with('generated_url', $trackingLink->generated_url);
+            ->with('generated_url', $trackingLink->generated_url)
+            ->with('short_url', $trackingLink->short_url);
+    }
+
+    public function resolve(Request $request, string $shortCode)
+    {
+        $trackingLink = TrackingLink::query()
+            ->where('short_code', $shortCode)
+            ->firstOrFail();
+
+        $this->assertAllowedDestination($trackingLink->base_url);
+
+        try {
+            $forwardedIp = (string) $request->header('X-Forwarded-For');
+            $clientIp = trim(explode(',', $forwardedIp ?: $request->ip())[0]);
+
+            TrackingLinkClick::create([
+                'tracking_link_id' => $trackingLink->id,
+                'ip_hash' => $clientIp !== ''
+                    ? hash_hmac('sha256', $clientIp, (string) config('app.key'))
+                    : null,
+                'user_agent' => $request->header('User-Agent'),
+                'referrer' => $request->header('X-Tracking-Referrer') ?: $request->header('Referer'),
+                'landing_page' => $request->header('X-Tracking-Landing-Page'),
+            ]);
+        } catch (\Throwable $exception) {
+            report($exception);
+        }
+
+        return response()->json([
+            'success' => true,
+            'tracking_code' => $trackingLink->tracking_code,
+            'short_code' => $trackingLink->short_code,
+            'destination_url' => $this->buildGeneratedUrl($trackingLink->base_url, [
+                'utm_source' => $trackingLink->utm_source,
+                'utm_medium' => $trackingLink->utm_medium,
+                'utm_campaign' => $trackingLink->utm_campaign,
+                'utm_content' => $trackingLink->utm_content,
+                'utm_term' => $trackingLink->utm_term,
+                'tracking_code' => $trackingLink->tracking_code,
+            ]),
+        ]);
     }
 
     public function destroy(TrackingLink $trackingLink)
@@ -90,6 +134,7 @@ class TrackingLinkController extends Controller
         $links = TrackingLink::query()
             ->withTrashed()
             ->with('creator:id,name')
+            ->withCount('clicks')
             ->when($creatorId, fn ($query) => $query->where('created_by', $creatorId))
             ->withCount(['leads as leads_count' => $applyLeadFilters])
             ->withCount(['leads as active_leads_count' => function ($query) use ($applyLeadFilters) {
@@ -146,6 +191,27 @@ class TrackingLinkController extends Controller
         return rtrim($baseUrl, '?&')
             . $separator
             . http_build_query($query, '', '&', PHP_QUERY_RFC3986);
+    }
+
+    private function generateShortCode(): string
+    {
+        do {
+            $shortCode = Str::lower(Str::random(8));
+        } while (TrackingLink::withTrashed()->where('short_code', $shortCode)->exists());
+
+        return $shortCode;
+    }
+
+    private function assertAllowedDestination(string $baseUrl): void
+    {
+        $host = strtolower((string) parse_url($baseUrl, PHP_URL_HOST));
+        $allowedHosts = [
+            'eimaths-th.com',
+            'www.eimaths-th.com',
+            'app.eimaths-th.com',
+        ];
+
+        abort_unless(in_array($host, $allowedHosts, true), 404);
     }
 
     private function normalizeTag(?string $value): ?string

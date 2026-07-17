@@ -79,6 +79,7 @@
                             <th>Created by</th>
                             <th>Source / Medium</th>
                             <th>Campaign</th>
+                            <th class="text-center">Clicks</th>
                             <th class="text-center">Leads</th>
                             <th class="text-center">Active</th>
                             <th class="text-center">Enrolled</th>
@@ -100,6 +101,7 @@
                                     {{ $link->utm_campaign }}
                                     @if($link->utm_content)<div class="small text-muted">{{ $link->utm_content }}</div>@endif
                                 </td>
+                                <td class="text-center">{{ number_format($link->clicks_count) }}</td>
                                 <td class="text-center"><strong>{{ number_format($link->leads_count) }}</strong></td>
                                 <td class="text-center">{{ number_format($link->active_leads_count) }}</td>
                                 <td class="text-center">{{ number_format($link->enrolled_leads_count) }}</td>
@@ -111,7 +113,7 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="9" class="text-center text-muted py-4">No tracking links found.</td></tr>
+                            <tr><td colspan="10" class="text-center text-muted py-4">No tracking links found.</td></tr>
                         @endforelse
                     </tbody>
                 </table>
