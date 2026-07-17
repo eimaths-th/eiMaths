@@ -259,6 +259,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/admin/crm/leads/{lead}', [CrmLeadController::class, 'show'])->name('admin.crm.leads.show');
 
     Route::get('/tracking-links', [TrackingLinkController::class, 'index'])->name('tracking-links.index');
+    Route::get('/tracking-links/report', [TrackingLinkController::class, 'report'])->name('tracking-links.report');
     Route::post('/tracking-links', [TrackingLinkController::class, 'store'])->name('tracking-links.store');
     Route::delete('/tracking-links/{trackingLink}', [TrackingLinkController::class, 'destroy'])->name('tracking-links.destroy');
 

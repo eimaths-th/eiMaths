@@ -15,7 +15,7 @@ class CrmLeadController extends Controller
         $archivedStatuses = ['superseded', 'cancelled', 'cancelled_by_restart'];
 
         $leads = CrmLead::query()
-            ->with('assignedStaff:id,name')
+            ->with(['assignedStaff:id,name', 'trackingLink:id,name'])
             ->when($request->filled('status'), fn ($query) => $query->where('lead_status', $request->status))
             ->when(! $request->filled('status'), fn ($query) => $query
                 ->where('is_active', true)
@@ -25,6 +25,8 @@ class CrmLeadController extends Controller
             ->when($request->filled('campaign'), fn ($query) => $query->where('utm_campaign', $request->campaign))
             ->when($request->filled('created_from'), fn ($query) => $query->where('created_from', $request->created_from))
             ->when($request->filled('staff_id'), fn ($query) => $query->where('assigned_staff_id', $request->staff_id))
+            ->when($request->filled('tracking_link_id'), fn ($query) => $query->where('tracking_link_id', $request->tracking_link_id))
+            ->when($request->filled('tracking_creator_id'), fn ($query) => $query->where('tracking_link_creator_id', $request->tracking_creator_id))
             ->when($request->filled('date_from'), fn ($query) => $query->whereDate('created_at', '>=', $request->date_from))
             ->when($request->filled('date_to'), fn ($query) => $query->whereDate('created_at', '<=', $request->date_to))
             ->when($request->filled('search'), function ($query) use ($request) {
@@ -50,12 +52,22 @@ class CrmLeadController extends Controller
             'lineSources' => CrmLead::query()->whereNotNull('line_source')->distinct()->orderBy('line_source')->pluck('line_source'),
             'campaigns' => CrmLead::query()->whereNotNull('utm_campaign')->distinct()->orderBy('utm_campaign')->pluck('utm_campaign'),
             'createdFromOptions' => CrmLead::CREATED_FROM,
+            'trackingCreators' => User::query()
+                ->whereIn('id', CrmLead::query()->whereNotNull('tracking_link_creator_id')->select('tracking_link_creator_id'))
+                ->orderBy('name')
+                ->get(['id', 'name']),
         ]);
     }
 
     public function show(CrmLead $lead)
     {
-        $lead->load(['assignedStaff:id,name', 'notes.creator:id,name', 'duplicateOf:id,parent_name,phone']);
+        $lead->load([
+            'assignedStaff:id,name',
+            'notes.creator:id,name',
+            'duplicateOf:id,parent_name,phone',
+            'trackingLink:id,name,tracking_code,deleted_at',
+            'trackingLinkCreator:id,name',
+        ]);
 
         return view('crm.leads.show', [
             'lead' => $lead,

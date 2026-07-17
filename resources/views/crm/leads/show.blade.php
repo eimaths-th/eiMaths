@@ -101,6 +101,11 @@
                         <hr>
                         <h5>Tracking</h5>
                         <p><strong>Created from:</strong> {{ $lead->created_from_label }}</p>
+                        <div class="alert {{ $lead->tracking_link_id ? 'alert-info' : 'alert-light border' }}">
+                            <p class="mb-1"><strong>Tracking link:</strong> {{ $lead->tracking_link_name ?: '-' }}</p>
+                            <p class="mb-1"><strong>Link created by:</strong> {{ $lead->tracking_link_creator_name ?: '-' }}</p>
+                            <p class="mb-0"><strong>Tracking code:</strong> <span class="text-break">{{ $lead->tracking_link_code ?: '-' }}</span></p>
+                        </div>
                         <div class="row">
                             <div class="col-md-6">
                                 <p><strong>Source:</strong> {{ $lead->utm_source ?: '-' }}</p>

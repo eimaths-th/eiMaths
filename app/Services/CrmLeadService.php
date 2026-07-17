@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\CrmLead;
+use App\Models\TrackingLink;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -16,6 +17,7 @@ class CrmLeadService
 
     public function createFromRegistration(array $data): CrmLead
     {
+        $data = $this->applyTrackingLinkAttribution($data);
         $data['created_from'] = $data['created_from'] ?? 'unknown';
         $data['lead_status'] = $data['lead_status'] ?? 'new_lead';
         if ($data['created_from'] === 'lead_registration_website' && blank($data['utm_source'] ?? null)) {
@@ -68,6 +70,7 @@ class CrmLeadService
      */
     public function createManyFromRegistration(array $data): array
     {
+        $data = $this->applyTrackingLinkAttribution($data);
         $data['created_from'] = $data['created_from'] ?? 'unknown';
         $data['lead_status'] = $data['lead_status'] ?? 'new_lead';
         if ($data['created_from'] === 'lead_registration_website' && blank($data['utm_source'] ?? null)) {
@@ -194,6 +197,7 @@ class CrmLeadService
 
     public function createOrUpdateFromLiffLogin(array $data): CrmLead
     {
+        $data = $this->applyTrackingLinkAttribution($data);
         $data['line_follow_status'] = $data['line_follow_status'] ?? 'unknown';
         $data['line_source'] = $data['line_source'] ?? 'new_customer_line_oa';
         $data['utm_source'] = $data['utm_source'] ?: 'website';
@@ -411,6 +415,11 @@ class CrmLeadService
             'referrer',
             'landing_page',
             'first_touch_source',
+            'tracking_link_id',
+            'tracking_link_code',
+            'tracking_link_name',
+            'tracking_link_creator_id',
+            'tracking_link_creator_name',
         ] as $field) {
             if (filled($lead->{$field})) {
                 $data[$field] = $lead->{$field};
@@ -418,6 +427,71 @@ class CrmLeadService
         }
 
         return $data;
+    }
+
+    private function applyTrackingLinkAttribution(array $data): array
+    {
+        $trackingCode = trim((string) ($data['tracking_code'] ?? ''));
+        $trackingLinkQuery = TrackingLink::withTrashed()->with('creator:id,name');
+
+        if ($trackingCode !== '') {
+            $trackingLink = $trackingLinkQuery
+                ->where('tracking_code', $trackingCode)
+                ->first();
+        } else {
+            $trackingLink = $this->findUniqueLegacyTrackingLink($trackingLinkQuery, $data);
+        }
+
+        if (! $trackingLink) {
+            return $data;
+        }
+
+        return $this->applyResolvedTrackingLink($data, $trackingLink);
+    }
+
+    private function applyResolvedTrackingLink(array $data, TrackingLink $trackingLink): array
+    {
+
+        foreach (['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'] as $field) {
+            $data[$field] = $trackingLink->{$field};
+        }
+
+        $data['tracking_link_id'] = $trackingLink->id;
+        $data['tracking_link_code'] = $trackingLink->tracking_code;
+        $data['tracking_link_name'] = $trackingLink->name;
+        $data['tracking_link_creator_id'] = $trackingLink->created_by;
+        $data['tracking_link_creator_name'] = $trackingLink->creator?->name
+            ?: $trackingLink->created_by_name
+            ?: 'System';
+        $data['first_touch_source'] = $trackingLink->utm_source;
+
+        return $data;
+    }
+
+    private function findUniqueLegacyTrackingLink($query, array $data): ?TrackingLink
+    {
+        foreach (['utm_source', 'utm_medium', 'utm_campaign'] as $requiredField) {
+            if (blank($data[$requiredField] ?? null)) {
+                return null;
+            }
+
+            $query->where($requiredField, $data[$requiredField]);
+        }
+
+        foreach (['utm_content', 'utm_term'] as $optionalField) {
+            $value = $data[$optionalField] ?? null;
+            $query->where(function ($subQuery) use ($optionalField, $value) {
+                if (blank($value)) {
+                    $subQuery->whereNull($optionalField)->orWhere($optionalField, '');
+                } else {
+                    $subQuery->where($optionalField, $value);
+                }
+            });
+        }
+
+        $matches = $query->limit(2)->get();
+
+        return $matches->count() === 1 ? $matches->first() : null;
     }
 
     private function preserveTrackedAttribution(CrmLead $lead, array $incoming): array

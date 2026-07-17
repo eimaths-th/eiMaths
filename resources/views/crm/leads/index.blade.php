@@ -119,6 +119,25 @@
                                 <a href="{{ route('crm.leads.index') }}" class="btn btn-secondary flex-grow-1"><i class="fas fa-undo mr-1"></i> Reset</a>
                             </div>
                         </div>
+                        <div class="row">
+                            <div class="col-md-3 col-sm-6 mb-3">
+                                <label class="form-label font-weight-bold text-muted small mb-1">Tracking Link Creator</label>
+                                <select name="tracking_creator_id" class="form-control">
+                                    <option value="">All creators</option>
+                                    @foreach($trackingCreators as $creator)
+                                        <option value="{{ $creator->id }}" @selected((string) request('tracking_creator_id') === (string) $creator->id)>{{ $creator->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            @if(request('tracking_link_id'))
+                                <input type="hidden" name="tracking_link_id" value="{{ request('tracking_link_id') }}">
+                                <div class="col-md-5 col-sm-6 mb-3 d-flex align-items-end">
+                                    <div class="alert alert-info py-2 mb-0 w-100">
+                                        Showing leads from Tracking Link #{{ request('tracking_link_id') }}
+                                    </div>
+                                </div>
+                            @endif
+                        </div>
                     </form>
                 </div>
 
@@ -230,6 +249,14 @@
                                             </span>
                                         @else
                                             <span class="text-muted">-</span>
+                                        @endif
+                                        @if($lead->tracking_link_name)
+                                            <div class="small mt-2 font-weight-bold text-primary" title="Tracking code: {{ $lead->tracking_link_code }}">
+                                                <i class="fas fa-link mr-1"></i>{{ $lead->tracking_link_name }}
+                                            </div>
+                                            <div class="small text-muted">
+                                                by {{ $lead->tracking_link_creator_name ?: 'System' }}
+                                            </div>
                                         @endif
                                     </td>
                                     <td>

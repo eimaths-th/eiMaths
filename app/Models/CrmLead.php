@@ -62,6 +62,11 @@ class CrmLead extends Model
         'utm_campaign',
         'utm_content',
         'utm_term',
+        'tracking_link_id',
+        'tracking_link_code',
+        'tracking_link_name',
+        'tracking_link_creator_id',
+        'tracking_link_creator_name',
         'fbclid',
         'gclid',
         'ttclid',
@@ -125,6 +130,16 @@ class CrmLead extends Model
     public function duplicateOf()
     {
         return $this->belongsTo(self::class, 'duplicate_of_lead_id');
+    }
+
+    public function trackingLink()
+    {
+        return $this->belongsTo(TrackingLink::class, 'tracking_link_id')->withTrashed();
+    }
+
+    public function trackingLinkCreator()
+    {
+        return $this->belongsTo(User::class, 'tracking_link_creator_id');
     }
 
     public function getStatusLabelAttribute(): string

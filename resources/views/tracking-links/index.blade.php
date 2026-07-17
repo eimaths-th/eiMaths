@@ -7,6 +7,11 @@
             <div class="col-sm-6">
                 <h1>Tracking Link Generator</h1>
             </div>
+            <div class="col-sm-6">
+                <a href="{{ route('tracking-links.report') }}" class="btn btn-info float-sm-right">
+                    <i class="fas fa-chart-bar mr-1"></i> View Report
+                </a>
+            </div>
         </div>
     </div>
 </section>
@@ -151,6 +156,7 @@
                                 <th>Content</th>
                                 <th>Created by</th>
                                 <th>Created at</th>
+                                <th>Leads</th>
                                 <th>Link</th>
                                 <th>Action</th>
                             </tr>
@@ -165,6 +171,11 @@
                                     <td>{{ $link->utm_content ?: '-' }}</td>
                                     <td>{{ $link->creator->name ?? 'System' }}</td>
                                     <td>{{ optional($link->created_at)->format('Y-m-d H:i') }}</td>
+                                    <td class="text-center">
+                                        <a href="{{ route('crm.leads.index', ['tracking_link_id' => $link->id]) }}" class="badge badge-info">
+                                            {{ $link->leads_count }}
+                                        </a>
+                                    </td>
                                     <td style="min-width: 320px;">
                                         <div class="input-group input-group-sm">
                                             <input type="text" id="tracking-link-{{ $link->id }}" value="{{ $link->generated_url }}" class="form-control" readonly>
@@ -187,7 +198,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="9" class="text-center">No tracking links created yet.</td>
+                                    <td colspan="10" class="text-center">No tracking links created yet.</td>
                                 </tr>
                             @endforelse
                         </tbody>

@@ -15,9 +15,15 @@
     </a>
 </li>
 <li class="nav-item">
-    <a href="{{ route('tracking-links.index') }}" class="nav-link {{ Request::routeIs('tracking-links.*') ? 'active' : '' }}">
+    <a href="{{ route('tracking-links.index') }}" class="nav-link {{ Request::routeIs('tracking-links.index') ? 'active' : '' }}">
         <i class="nav-icon fas fa-link"></i>
         <p>Tracking Link Generator</p>
+    </a>
+</li>
+<li class="nav-item">
+    <a href="{{ route('tracking-links.report') }}" class="nav-link {{ Request::routeIs('tracking-links.report') ? 'active' : '' }}">
+        <i class="nav-icon fas fa-chart-bar"></i>
+        <p>Tracking Link Report</p>
     </a>
 </li>
 
