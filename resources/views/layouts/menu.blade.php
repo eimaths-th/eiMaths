@@ -8,23 +8,32 @@
 </li>
 @endcan
 {{--  --}}
-<li class="nav-item">
-    <a href="{{ route('crm.leads.index') }}" class="nav-link {{ Request::routeIs('crm.leads.*') ? 'active' : '' }}">
+<li class="nav-item {{ Request::routeIs('crm.leads.*', 'tracking-links.*') ? 'menu-open' : '' }}">
+    <a href="#" class="nav-link {{ Request::routeIs('crm.leads.*', 'tracking-links.*') ? 'active' : '' }}">
         <i class="nav-icon fas fa-user-check"></i>
         <p>CRM Leads</p>
+        <i class="fas fa-angle-left right"></i>
     </a>
-</li>
-<li class="nav-item">
-    <a href="{{ route('tracking-links.index') }}" class="nav-link {{ Request::routeIs('tracking-links.index') ? 'active' : '' }}">
-        <i class="nav-icon fas fa-link"></i>
-        <p>Tracking Link Generator</p>
-    </a>
-</li>
-<li class="nav-item">
-    <a href="{{ route('tracking-links.report') }}" class="nav-link {{ Request::routeIs('tracking-links.report') ? 'active' : '' }}">
-        <i class="nav-icon fas fa-chart-bar"></i>
-        <p>Tracking Link Report</p>
-    </a>
+    <ul class="nav nav-treeview">
+        <li class="nav-item">
+            <a href="{{ route('crm.leads.index') }}" class="nav-link {{ Request::routeIs('crm.leads.*') ? 'active' : '' }}">
+                <i class="nav-icon fas fa-users"></i>
+                <p>Leads List</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{{ route('tracking-links.index') }}" class="nav-link {{ Request::routeIs('tracking-links.index') ? 'active' : '' }}">
+                <i class="nav-icon fas fa-link"></i>
+                <p>Tracking Link Generator</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{{ route('tracking-links.report') }}" class="nav-link {{ Request::routeIs('tracking-links.report') ? 'active' : '' }}">
+                <i class="nav-icon fas fa-chart-bar"></i>
+                <p>Tracking Link Report</p>
+            </a>
+        </li>
+    </ul>
 </li>
 
 @can('student-list')
