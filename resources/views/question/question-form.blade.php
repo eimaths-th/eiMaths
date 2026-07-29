@@ -306,6 +306,24 @@
                             <div class="text-danger mt-2">{{ $message }}</div>
                         @enderror
                     </div>
+
+                    <!-- Google Drive solution video -->
+                    <div class="mb-3">
+                        <label for="answer_explanation_video_url" class="form-label">
+                            Google Drive Solution Video Link
+                        </label>
+                        <input type="url" id="answer_explanation_video_url"
+                            class="form-control" name="answer_explanation_video_url"
+                            placeholder="https://drive.google.com/file/d/FILE_ID/view"
+                            value="{{ $question->answer_explanation_video_url ?? old('answer_explanation_video_url') }}">
+                        <small class="form-text text-muted">
+                            Share the video as “Anyone with the link — Viewer”. It will appear only on the student result page.
+                        </small>
+                        @error('answer_explanation_video_url')
+                            <div class="text-danger mt-2">{{ $message }}</div>
+                        @enderror
+                    </div>
+
                     <!-- More info link -->
                     <div class="mb-3">
                         <label for="more_info_link" class="form-label">More info link</label>

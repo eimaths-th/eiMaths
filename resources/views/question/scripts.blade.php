@@ -400,6 +400,7 @@
             formData.append('section', $('#section').val());
             formData.append('code_snippet', $('#code_snippet').val());
             formData.append('answer_explanation', $('#answer_explanation').val());
+            formData.append('answer_explanation_video_url', $('#answer_explanation_video_url').val());
             formData.append('more_info_link', $("#more_info_link").val());
 
             // Append main question image
@@ -578,6 +579,7 @@
                     $('#text').val(res.question.text);
                     $('#code_snippet').val(res.question.code_snippet);
                     $('#answer_explanation').val(res.question.answer_explanation);
+                    $('#answer_explanation_video_url').val(res.question.answer_explanation_video_url);
                     $('#more_info_link').val(res.question.more_info_link);
                     $('#type').val(res.question.type);
                     $('#level').val(res.question.level).trigger('change');
@@ -658,6 +660,7 @@
                     $('#text').val(res.question.text);
                     $('#code_snippet').val(res.question.code_snippet);
                     $('#answer_explanation').val(res.question.answer_explanation);
+                    $('#answer_explanation_video_url').val(res.question.answer_explanation_video_url);
                     $('#more_info_link').val(res.question.more_info_link);
                     $('#type').val(res.question.type);
                     $('#level').val(res.question.level).trigger('change');
@@ -830,6 +833,7 @@
             formData1.append('section', $('#section').val());
             formData1.append('code_snippet', $('#code_snippet').val());
             formData1.append('answer_explanation', $('#answer_explanation').val());
+            formData1.append('answer_explanation_video_url', $('#answer_explanation_video_url').val());
 
             formData1.append('more_info_link', $('#more_info_link').val());
             // formData1.append('type', selectedType);
@@ -973,6 +977,7 @@
             formData1.append('section', $('#section').val());
             formData1.append('code_snippet', $('#code_snippet').val());
             formData1.append('answer_explanation', $('#answer_explanation').val());
+            formData1.append('answer_explanation_video_url', $('#answer_explanation_video_url').val());
 
             formData1.append('more_info_link', $('#more_info_link').val());
             // formData1.append('type', selectedType);
