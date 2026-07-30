@@ -15,7 +15,24 @@
     }
 
     const dashboardChartRegistry = {};
+    const dashboardObservedChartElements = new WeakSet();
     let dashboardChartResizeTimer;
+    const dashboardChartResizeObserver = typeof ResizeObserver === 'function'
+        ? new ResizeObserver(function(entries) {
+            entries.forEach(function(entry) {
+                const chartEntry = dashboardChartRegistry[entry.target.id];
+
+                if (!chartEntry || chartEntry.type !== 'echarts' || !entry.contentRect.width || !entry.contentRect.height) {
+                    return;
+                }
+
+                chartEntry.instance.resize({
+                    width: Math.floor(entry.contentRect.width),
+                    height: Math.floor(entry.contentRect.height),
+                });
+            });
+        })
+        : null;
 
     function RegisterDashboardChart(elementId, type, instance, defaultChartHeight) {
         const element = document.getElementById(elementId);
@@ -27,6 +44,11 @@
             defaultChartHeight: existingEntry ? existingEntry.defaultChartHeight : defaultChartHeight,
             defaultContainerHeight: existingEntry ? existingEntry.defaultContainerHeight : element.style.height,
         };
+
+        if (dashboardChartResizeObserver && !dashboardObservedChartElements.has(element)) {
+            dashboardObservedChartElements.add(element);
+            dashboardChartResizeObserver.observe(element);
+        }
     }
 
     function RenderEChartsDashboardChart(elementId, options) {
@@ -118,7 +140,10 @@
             const chartHeight = isMaximized ? maximizedHeight : chartEntry.defaultChartHeight;
 
             if (chartEntry.type === 'echarts') {
+                const chartWidth = Math.floor(element.getBoundingClientRect().width || element.clientWidth);
+
                 chartEntry.instance.resize({
+                    width: chartWidth,
                     height: chartHeight,
                 });
             } else {
@@ -137,7 +162,7 @@
 
             window.setTimeout(function() {
                 ResizeDashboardCardCharts(cardElement, true);
-            }, 200);
+            }, 350);
         });
 
         $(document).on('minimized.lte.cardwidget', '[data-card-widget="maximize"]', function(event, card) {
@@ -145,7 +170,7 @@
 
             window.setTimeout(function() {
                 ResizeDashboardCardCharts(cardElement, false);
-            }, 200);
+            }, 350);
         });
 
         $(document).on('expanded.lte.cardwidget', '[data-card-widget="collapse"]', function(event, card) {
@@ -491,6 +516,21 @@
                 labelLine: {
                     show: true
                 },
+            }],
+            media: [{
+                query: {
+                    minWidth: 800,
+                    minHeight: 600
+                },
+                option: {
+                    legend: {
+                        top: '3%'
+                    },
+                    series: [{
+                        radius: '75%',
+                        center: ['50%', '52%']
+                    }]
+                }
             }]
         };
 
