@@ -16,6 +16,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string $section
  * @property string $code_snippet
  * @property string $answer_explanation
+ * @property string $answer_explanation_video_url
+ * @property string $answer_explanation_video_provider
  * @property string $more_info_link
  * @property string $written_answer
  * @property string $type
@@ -45,6 +47,8 @@ class Question extends Model
         'code_snippet',
         'answer_explanation',
         'answer_explanation_image',
+        'answer_explanation_video_url',
+        'answer_explanation_video_provider',
         'more_info_link',
         'written_answer',
         'type',
@@ -55,6 +59,44 @@ class Question extends Model
         'created_by',
         'updated_by',
     ];
+
+    public static function extractGoogleDriveFileId(?string $url): ?string
+    {
+        $url = trim((string) $url);
+
+        if ($url === '') {
+            return null;
+        }
+
+        $parts = parse_url($url);
+        $host = strtolower($parts['host'] ?? '');
+
+        if (!in_array($host, ['drive.google.com', 'www.drive.google.com'], true)) {
+            return null;
+        }
+
+        $path = $parts['path'] ?? '';
+
+        if (preg_match('~/file/d/([A-Za-z0-9_-]+)~', $path, $matches)) {
+            return $matches[1];
+        }
+
+        parse_str($parts['query'] ?? '', $query);
+        $fileId = $query['id'] ?? null;
+
+        return is_string($fileId) && preg_match('/^[A-Za-z0-9_-]+$/', $fileId)
+            ? $fileId
+            : null;
+    }
+
+    public function getAnswerExplanationVideoEmbedUrlAttribute(): ?string
+    {
+        $fileId = self::extractGoogleDriveFileId($this->answer_explanation_video_url);
+
+        return $fileId
+            ? "https://drive.google.com/file/d/{$fileId}/preview"
+            : null;
+    }
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany

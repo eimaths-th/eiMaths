@@ -585,7 +585,12 @@
 
                                 </div>
 
-                                @if ($result->question->answer_explanation || $result->question->answer_explanation_image)
+                                @php
+                                    $solutionVideoEmbedUrl = $canViewSolutionVideos
+                                        ? $result->question->answer_explanation_video_embed_url
+                                        : null;
+                                @endphp
+                                @if ($result->question->answer_explanation || $result->question->answer_explanation_image || $solutionVideoEmbedUrl)
                                     <!-- Answer Explanation Section -->
                                     <div style="margin-top: 24px; padding: 20px; background: rgba(255, 255, 255, 0.8); border-radius: 12px; border: 1px solid rgba(249, 115, 22, 0.2); backdrop-filter: blur(5px);">
                                         <h4 style="font-size: 16px; font-weight: 600; color: #64748b; margin: 0 0 12px 0; text-transform: uppercase; letter-spacing: 0.5px;">
@@ -603,6 +608,25 @@
                                                      alt="Answer Explanation Image"
                                                      style="max-width: 50%; height: auto; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); transition: transform 0.2s ease;">
                                             </div>
+                                        @endif
+                                        @if ($solutionVideoEmbedUrl)
+                                            <details style="margin-top: 18px;">
+                                                <summary
+                                                    style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; border-radius: 8px; background: linear-gradient(135deg, #f97316 0%, #fb923c 100%); color: #fff; font-weight: 700; cursor: pointer; user-select: none;">
+                                                    ▶ ดูวิดีโอวิธีทำ
+                                                </summary>
+                                                <div
+                                                    style="position: relative; width: 100%; padding-top: 56.25%; margin-top: 16px; overflow: hidden; border-radius: 12px; background: #000; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);">
+                                                    <iframe
+                                                        src="{{ $solutionVideoEmbedUrl }}"
+                                                        title="Solution video for question {{ $loop->iteration }}"
+                                                        loading="lazy"
+                                                        allow="autoplay; encrypted-media; picture-in-picture"
+                                                        allowfullscreen
+                                                        style="position: absolute; inset: 0; width: 100%; height: 100%; border: 0;">
+                                                    </iframe>
+                                                </div>
+                                            </details>
                                         @endif
                                     </div>
                                 @endif

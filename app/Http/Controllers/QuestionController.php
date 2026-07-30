@@ -190,6 +190,7 @@ class QuestionController extends Controller
             'type' => 'required|in:written,options,image,fraction',
             'code_snippet' => 'nullable|string',
             'answer_explanation' => 'nullable|string',
+            'answer_explanation_video_url' => $this->googleDriveVideoRules(),
             'more_info_link' => 'nullable|url',
         ], [
             'level.required' => 'Please add Question grade',
@@ -319,6 +320,10 @@ class QuestionController extends Controller
         $question->section = $validatedData['section'];
         $question->code_snippet = $validatedData['code_snippet'] ?? null;
         $question->answer_explanation = $validatedData['answer_explanation'] ?? null;
+        $question->answer_explanation_video_url = $validatedData['answer_explanation_video_url'] ?? null;
+        $question->answer_explanation_video_provider = !empty($validatedData['answer_explanation_video_url'])
+            ? 'google_drive'
+            : null;
         $question->more_info_link = $validatedData['more_info_link'] ?? null;
         $question->written_answer = $validatedData['type'] === 'written' ? $request->written_answer : null;
         $question->created_by = Auth::user()->id;
@@ -451,6 +456,7 @@ class QuestionController extends Controller
             'type' => 'required|in:written,options,image,fraction',
             'code_snippet' => 'nullable|string',
             'answer_explanation' => 'nullable|string',
+            'answer_explanation_video_url' => $this->googleDriveVideoRules(),
             'more_info_link' => 'nullable|url',
         ], [
             'level.required' => 'Please add Question grade',
@@ -596,6 +602,10 @@ class QuestionController extends Controller
             'level' => $request->input('level'),
             'section' => $request->input('section'),
             'answer_explanation' => $request->input('answer_explanation'),
+            'answer_explanation_video_url' => $validatedData['answer_explanation_video_url'] ?? null,
+            'answer_explanation_video_provider' => !empty($validatedData['answer_explanation_video_url'])
+                ? 'google_drive'
+                : null,
             'more_info_link' => $request->input('more_info_link'),
             'type' => $request->input('type'),
             'updated_by' => Auth::user()->id,
@@ -748,6 +758,20 @@ class QuestionController extends Controller
         return response()->json([
             'success' => 'Question updated successfully!'
         ]);
+    }
+
+    private function googleDriveVideoRules(): array
+    {
+        return [
+            'nullable',
+            'url',
+            'max:2048',
+            function (string $attribute, mixed $value, \Closure $fail): void {
+                if ($value && Question::extractGoogleDriveFileId((string) $value) === null) {
+                    $fail('Please enter a valid Google Drive video link.');
+                }
+            },
+        ];
     }
 
     /**
