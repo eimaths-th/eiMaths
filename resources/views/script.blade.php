@@ -14,6 +14,165 @@
         currentMonth = new Date().getMonth();
     }
 
+    const dashboardChartRegistry = {};
+    let dashboardChartResizeTimer;
+
+    function RegisterDashboardChart(elementId, type, instance, defaultChartHeight) {
+        const element = document.getElementById(elementId);
+        const existingEntry = dashboardChartRegistry[elementId];
+
+        dashboardChartRegistry[elementId] = {
+            type: type,
+            instance: instance,
+            defaultChartHeight: existingEntry ? existingEntry.defaultChartHeight : defaultChartHeight,
+            defaultContainerHeight: existingEntry ? existingEntry.defaultContainerHeight : element.style.height,
+        };
+    }
+
+    function RenderEChartsDashboardChart(elementId, options) {
+        const element = document.getElementById(elementId);
+        const existingEntry = dashboardChartRegistry[elementId];
+        const chart = existingEntry && existingEntry.type === 'echarts'
+            ? existingEntry.instance
+            : (echarts.getInstanceByDom(element) || echarts.init(element));
+
+        chart.setOption(options, true);
+        RegisterDashboardChart(elementId, 'echarts', chart, element.getBoundingClientRect().height || 380);
+
+        const cardElement = element.closest('.card');
+
+        if (cardElement && cardElement.classList.contains('maximized-card')) {
+            ResizeDashboardCardCharts(cardElement, true);
+        }
+    }
+
+    function RenderApexDashboardChart(elementId, options) {
+        const element = document.getElementById(elementId);
+        const existingEntry = dashboardChartRegistry[elementId];
+        const defaultChartHeight = Number(options.chart && options.chart.height) || 380;
+
+        let renderPromise;
+        let chart;
+
+        if (existingEntry && existingEntry.type === 'apex') {
+            chart = existingEntry.instance;
+            renderPromise = chart.updateOptions(options, false, true);
+            RegisterDashboardChart(elementId, 'apex', existingEntry.instance, defaultChartHeight);
+        } else {
+            chart = new ApexCharts(element, options);
+            renderPromise = chart.render();
+            RegisterDashboardChart(elementId, 'apex', chart, defaultChartHeight);
+        }
+
+        const cardElement = element.closest('.card');
+
+        if (cardElement && cardElement.classList.contains('maximized-card')) {
+            Promise.resolve(renderPromise).then(function() {
+                ResizeDashboardCardCharts(cardElement, true);
+            });
+        }
+    }
+
+    function GetMaximizedChartHeight(cardElement) {
+        const header = cardElement.querySelector('.card-header');
+        const body = cardElement.querySelector('.card-body');
+        const footer = cardElement.querySelector('.card-footer');
+        const bodyStyle = window.getComputedStyle(body);
+        const cardHeight = cardElement.getBoundingClientRect().height || window.innerHeight;
+        const verticalPadding = parseFloat(bodyStyle.paddingTop || 0) + parseFloat(bodyStyle.paddingBottom || 0);
+
+        return Math.max(
+            320,
+            Math.floor(
+                cardHeight
+                - (header ? header.getBoundingClientRect().height : 0)
+                - (footer ? footer.getBoundingClientRect().height : 0)
+                - verticalPadding
+                - 16
+            )
+        );
+    }
+
+    function ResizeDashboardCardCharts(cardElement, isMaximized) {
+        if (!cardElement) {
+            return;
+        }
+
+        const maximizedHeight = isMaximized ? GetMaximizedChartHeight(cardElement) : null;
+
+        Object.entries(dashboardChartRegistry).forEach(function([elementId, chartEntry]) {
+            const element = document.getElementById(elementId);
+
+            if (!element || element.closest('.card') !== cardElement) {
+                return;
+            }
+
+            if (isMaximized) {
+                element.style.height = maximizedHeight + 'px';
+            } else if (chartEntry.defaultContainerHeight) {
+                element.style.height = chartEntry.defaultContainerHeight;
+            } else {
+                element.style.removeProperty('height');
+            }
+
+            const chartHeight = isMaximized ? maximizedHeight : chartEntry.defaultChartHeight;
+
+            if (chartEntry.type === 'echarts') {
+                chartEntry.instance.resize({
+                    height: chartHeight,
+                });
+            } else {
+                chartEntry.instance.updateOptions({
+                    chart: {
+                        height: chartHeight,
+                    },
+                }, false, false);
+            }
+        });
+    }
+
+    function InitializeDashboardChartResize() {
+        $(document).on('maximized.lte.cardwidget', '[data-card-widget="maximize"]', function(event, card) {
+            const cardElement = card && card.length ? card[0] : $(this).closest('.card')[0];
+
+            window.setTimeout(function() {
+                ResizeDashboardCardCharts(cardElement, true);
+            }, 200);
+        });
+
+        $(document).on('minimized.lte.cardwidget', '[data-card-widget="maximize"]', function(event, card) {
+            const cardElement = card && card.length ? card[0] : $(this).closest('.card')[0];
+
+            window.setTimeout(function() {
+                ResizeDashboardCardCharts(cardElement, false);
+            }, 200);
+        });
+
+        $(document).on('expanded.lte.cardwidget', '[data-card-widget="collapse"]', function(event, card) {
+            const cardElement = card && card.length ? card[0] : $(this).closest('.card')[0];
+
+            window.setTimeout(function() {
+                ResizeDashboardCardCharts(cardElement, cardElement.classList.contains('maximized-card'));
+            }, 350);
+        });
+
+        window.addEventListener('resize', function() {
+            window.clearTimeout(dashboardChartResizeTimer);
+            dashboardChartResizeTimer = window.setTimeout(function() {
+                Object.entries(dashboardChartRegistry).forEach(function([elementId, chartEntry]) {
+                    const element = document.getElementById(elementId);
+                    const cardElement = element ? element.closest('.card') : null;
+
+                    if (cardElement && cardElement.classList.contains('maximized-card')) {
+                        ResizeDashboardCardCharts(cardElement, true);
+                    } else if (chartEntry.type === 'echarts') {
+                        chartEntry.instance.resize();
+                    }
+                });
+            }, 100);
+        });
+    }
+
     function SetDashboardDateRange(startDate, endDate, persist = true) {
         const $daterange = $('#daterange');
         const displayFormat = startDate.format('DD/MM/YYYY') + ' - ' + endDate.format('DD/MM/YYYY');
@@ -400,9 +559,7 @@
         try {
             const datas = await student_by_level();
             const options = student_by_level_chart_data(datas);
-            var chart_data = echarts.init(document.getElementById("chart_student_by_level"));
-            chart_data.setOption(options);
-            window.addEventListener('resize', chart_data.resize);
+            RenderEChartsDashboardChart('chart_student_by_level', options);
         } catch (error) {
             console.error('Error:', error);
         }
@@ -584,9 +741,7 @@
             const datas = await student_by_centre();
 
             const options = student_by_centre_chart_data(datas);
-            var chart_data = echarts.init(document.getElementById("student_by_centre"));
-            chart_data.setOption(options);
-            window.addEventListener('resize', chart_data.resize);
+            RenderEChartsDashboardChart('student_by_centre', options);
         } catch (error) {
             console.error('Error:', error);
         }
@@ -739,9 +894,7 @@
             const datas = await receipt_sum_by_date();
 
             const options = receipt_sum_by_date_chart_data(datas);
-            var chart_data = new ApexCharts(document.querySelector("#receipt_sum_by_date"), options);
-            chart_data.render();
-            chart_data.updateOptions(options);
+            RenderApexDashboardChart('receipt_sum_by_date', options);
         } catch (error) {
             console.error('Error:', error);
         }
@@ -853,9 +1006,7 @@
             const datas = await receipt_sum_by_month();
 
             const options = receipt_sum_by_month_chart_data(datas);
-            var chart_data = new ApexCharts(document.querySelector("#receipt_sum_by_month"), options);
-            chart_data.render();
-            chart_data.updateOptions(options);
+            RenderApexDashboardChart('receipt_sum_by_month', options);
         } catch (error) {
             console.error('Error:', error);
         }
@@ -965,9 +1116,7 @@
             const datas = await receipt_sum_by_year();
 
             const options = receipt_sum_by_year_chart_data(datas);
-            var chart_data = new ApexCharts(document.querySelector("#receipt_sum_by_year"), options);
-            chart_data.render();
-            chart_data.updateOptions(options);
+            RenderApexDashboardChart('receipt_sum_by_year', options);
         } catch (error) {
             console.error('Error:', error);
         }
@@ -1093,9 +1242,7 @@
         try {
             const datas = await daily_study_date();
             const options = daily_study_chart_data(datas);
-            var chart_data = new ApexCharts(document.querySelector("#daily_study"), options);
-            chart_data.render();
-            chart_data.updateOptions(options);
+            RenderApexDashboardChart('daily_study', options);
         } catch (error) {
             console.error('Error:', error);
         }
@@ -1217,9 +1364,7 @@
             const datas = await student_status();
 
             const options = student_status_chart_data(datas);
-            var chart_data = echarts.init(document.getElementById("student_status"));
-            chart_data.setOption(options);
-            window.addEventListener('resize', chart_data.resize);
+            RenderEChartsDashboardChart('student_status', options);
         } catch (error) {
             console.error('Error:', error);
         }
@@ -1228,6 +1373,7 @@
 
     $(document).ready(() => {
 
+        InitializeDashboardChartResize();
         InitializeDateRangePicker();
         InitializeSelect2();
         retrieveFieldValues();

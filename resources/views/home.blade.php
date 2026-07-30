@@ -312,6 +312,15 @@
             padding: 20px;
         }
 
+        /* Allow AdminLTE maximized cards to escape the content stacking context. */
+        html.maximized-card .content {
+            z-index: 1041;
+        }
+
+        html.maximized-card .card.maximized-card {
+            border-radius: 0;
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .dashboard-premium {
