@@ -534,7 +534,7 @@ class ReceiptController extends Controller
                 $query->where('orders.centre', Auth::user()->department->id);
             }
 
-            if ($centre) {
+            if ($centre && $centre !== '1') {
                 $query->where('orders.centre', $centre);
             }
 

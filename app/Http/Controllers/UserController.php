@@ -71,7 +71,7 @@ class UserController extends Controller
                         $q->where('name', $role);
                     });
                 })
-                ->when($centre, function ($query) use ($centre) {
+                ->when($centre && $centre !== '1', function ($query) use ($centre) {
                     $query->whereHas('department', function ($q) use ($centre) {
                         $q->where('id', $centre);
                     });

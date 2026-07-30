@@ -249,7 +249,7 @@ class ContactController extends Controller
                 ->where('discontinued', '0');
 
             $centre = $request->get('centre');
-            if ($centre) {
+            if ($centre && $centre !== '1') {
                 $query->where('contacts.centre', $centre);
             }
 

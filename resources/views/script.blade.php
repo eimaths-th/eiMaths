@@ -14,18 +14,44 @@
         currentMonth = new Date().getMonth();
     }
 
+    function SetDashboardDateRange(startDate, endDate, persist = true) {
+        const $daterange = $('#daterange');
+        const displayFormat = startDate.format('DD/MM/YYYY') + ' - ' + endDate.format('DD/MM/YYYY');
+        const backendStartDate = startDate.format('YYYY-MM-DD');
+        const backendEndDate = endDate.format('YYYY-MM-DD');
+        const picker = $daterange.data('daterangepicker');
+
+        $daterange.val(displayFormat);
+        $daterange.data('start-date', backendStartDate);
+        $daterange.data('end-date', backendEndDate);
+
+        if (picker) {
+            picker.setStartDate(startDate);
+            picker.setEndDate(endDate);
+        }
+
+        if (persist) {
+            localStorage.setItem('savedDateRange', displayFormat);
+            localStorage.setItem('savedStartDate', backendStartDate);
+            localStorage.setItem('savedEndDate', backendEndDate);
+        }
+    }
+
     function retrieveFieldValues() {
         var savedDateRange = localStorage.getItem('savedDateRange');
         var savedStartDate = localStorage.getItem('savedStartDate');
         var savedEndDate = localStorage.getItem('savedEndDate');
         var savedYears = localStorage.getItem('savedYears');
         var savedSearchCentre = localStorage.getItem('searchCentre');
+        var parsedStartDate = moment(savedStartDate, 'YYYY-MM-DD', true);
+        var parsedEndDate = moment(savedEndDate, 'YYYY-MM-DD', true);
 
         // Set field values from local storage
-        if (savedDateRange && savedStartDate && savedEndDate) {
-            $('#daterange').val(savedDateRange);
-            $('#daterange').data('start-date', savedStartDate);
-            $('#daterange').data('end-date', savedEndDate);
+        if (savedDateRange && parsedStartDate.isValid() && parsedEndDate.isValid()) {
+            SetDashboardDateRange(parsedStartDate, parsedEndDate);
+        } else {
+            // Keep the visible default and the values sent to the backend in sync.
+            SetDashboardDateRange(moment().startOf('year'), moment().endOf('year'));
         }
         if (savedYears) {
             var years = JSON.parse(savedYears);
@@ -72,17 +98,7 @@
         });
 
         $('#daterange').on('apply.daterangepicker', function(ev, picker) {
-            const displayFormat = picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY');
-            $(this).val(displayFormat);
-            // Store in YYYY-MM-DD format for backend
-            $(this).data('start-date', picker.startDate.format('YYYY-MM-DD'));
-            $(this).data('end-date', picker.endDate.format('YYYY-MM-DD'));
-            
-            // Save to localStorage
-            localStorage.setItem('savedDateRange', displayFormat);
-            localStorage.setItem('savedStartDate', picker.startDate.format('YYYY-MM-DD'));
-            localStorage.setItem('savedEndDate', picker.endDate.format('YYYY-MM-DD'));
-            
+            SetDashboardDateRange(picker.startDate, picker.endDate);
             StoreFieldValues();
         });
 
@@ -127,16 +143,7 @@
         // Set to current month (first day to last day)
         const startOfMonth = moment().startOf('month');
         const endOfMonth = moment().endOf('month');
-        const displayFormat = startOfMonth.format('DD/MM/YYYY') + ' - ' + endOfMonth.format('DD/MM/YYYY');
-        
-        $('#daterange').val(displayFormat);
-        $('#daterange').data('start-date', startOfMonth.format('YYYY-MM-DD'));
-        $('#daterange').data('end-date', endOfMonth.format('YYYY-MM-DD'));
-        
-        // Save to localStorage
-        localStorage.setItem('savedDateRange', displayFormat);
-        localStorage.setItem('savedStartDate', startOfMonth.format('YYYY-MM-DD'));
-        localStorage.setItem('savedEndDate', endOfMonth.format('YYYY-MM-DD'));
+        SetDashboardDateRange(startOfMonth, endOfMonth);
         
         $('#year_filter').val(null).trigger('change');
 
@@ -209,11 +216,20 @@
 
     function StoreFieldValues() {
         var dateRange = $('#daterange').val();
+        var startDate = $('#daterange').data('start-date');
+        var endDate = $('#daterange').data('end-date');
         var years = $('#year_filter').val();
         var searchCentre = $('#dcentre').val();
 
         // Store values in local storage
         localStorage.setItem('savedDateRange', dateRange);
+        if (startDate && endDate) {
+            localStorage.setItem('savedStartDate', startDate);
+            localStorage.setItem('savedEndDate', endDate);
+        } else {
+            localStorage.removeItem('savedStartDate');
+            localStorage.removeItem('savedEndDate');
+        }
         localStorage.setItem('savedYears', JSON.stringify(years));
         localStorage.setItem('searchCentre', searchCentre);
     }
@@ -605,7 +621,7 @@
             $('#treceipt').html(response.total_receipt)
             $('#pareceipt').html(response.total_receipt_pay)
             $('#preceipt').html(response.total_receipt_pen)
-            $('#tincome').html(response.total_income)
+            $('#tincome').html(FormatDashboardAmount(response.total_income))
             // Process the response as needed
             return response.receipt_sum_by_date;
         } catch (error) {
@@ -613,6 +629,19 @@
             throw error;
         }
     };
+
+    function FormatDashboardAmount(value) {
+        const amount = Number(value);
+
+        if (!Number.isFinite(amount)) {
+            return '0';
+        }
+
+        return amount.toLocaleString('en-US', {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 2,
+        });
+    }
 
     const receipt_sum_by_date_chart_data = (data) => {
         const labels = data.map(entry => entry.payment_date);
@@ -1270,7 +1299,8 @@
                 $(route_config.selector).each(function() {
                     const url = new URL(route_config.route, window.location.origin);
 
-                    if (centre) {
+                    // Centre 1 is the dashboard's "all centres" sentinel.
+                    if (centre && String(centre) !== '1') {
                         url.searchParams.set('centre', centre);
                     }
 
