@@ -248,9 +248,13 @@ class ContactController extends Controller
                 ->join("terms as pterms", "contacts.term", "=", "pterms.id")
                 ->where('discontinued', '0');
 
-            $centre = $request->get('centre');
-            if ($centre && $centre !== '1') {
-                $query->where('contacts.centre', $centre);
+            if (Auth::user()->isHq()) {
+                $centre = $request->get('centre');
+                if ($centre && $centre !== '1') {
+                    $query->where('contacts.centre', $centre);
+                }
+            } else {
+                $query->where('contacts.centre', Auth::user()->department_id);
             }
 
             $date_range = $request->input('date_range');
@@ -270,10 +274,6 @@ class ContactController extends Controller
                         $year_query->orWhereYear('contacts.created_at', $year);
                     }
                 });
-            }
-
-            if (!Gate::allows('all-centre')) {
-                $query->where('centre', Auth::user()->department->id);
             }
 
             if (!empty($request->get('sdate'))) {
@@ -532,8 +532,8 @@ class ContactController extends Controller
      */
     public function create($centre)
     {
-        if ($centre == 0) {
-            $centre = Auth::user()->department->id;
+        if (!Auth::user()->isHq() || (int) $centre === 0) {
+            $centre = Auth::user()->department_id;
         }
         $rnumber = studentRunningNumber::pre_generate($centre);
         return response()->json([
@@ -703,9 +703,15 @@ class ContactController extends Controller
 
     public function store(Request $request)
     {
+        if (!Auth::user()->isHq()) {
+            $request->merge([
+                'centre' => Auth::user()->department_id,
+            ]);
+        }
 
         //
         $validator = Validator::make($request->all(), [
+            'centre' => 'required|integer|exists:departments,id',
             'name' => 'required|string|max:255|unique:contacts',
             'start_date' => 'required|string|max:10',
             //'start_term' => 'required',

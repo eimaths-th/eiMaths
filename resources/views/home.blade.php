@@ -393,7 +393,7 @@
                                 <i class="fas fa-building text-warning"></i> Centre
                             </label>
                             <select name="dcentre" id="dcentre" class="form-control form-control-md"
-                                @cannot('all-centre') disabled @endcannot>
+                                @unless(Auth::user()->isHq()) disabled @endunless>
                                 @foreach ($centre as $key2)
                                     @if ($key2->id != 4 && $key2->id != 5)
                                         <option value="{{ $key2->id }}"

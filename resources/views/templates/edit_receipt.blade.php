@@ -179,14 +179,28 @@
                 </td>
             </tr>
             <tr>
-                <td>
-                    <font class="grey"><b> คุณ {{ $data->parent_name }} / {{ $data->parent_mobile }}
-                        </b> </font>
+                <td colspan="3" style="padding-right: 15px;">
+                    @php
+                        $usesDefaultBilling = trim((string) $data->billing_details) ===
+                            trim((string) $default_billing_details);
+                    @endphp
+                    <div class="mb-2">
+                        <label class="mr-3 mb-0">
+                            <input type="radio" name="billing_source" value="parent"
+                                {{ $usesDefaultBilling ? 'checked' : '' }}>
+                            ใช้ข้อมูลผู้ปกครองเดิม
+                        </label>
+                        <label class="mb-0">
+                            <input type="radio" name="billing_source" value="custom"
+                                {{ !$usesDefaultBilling ? 'checked' : '' }}>
+                            กรอกข้อมูลเอง
+                        </label>
+                    </div>
+                    <textarea class="form-control" id="billing_details" name="billing_details" rows="4"
+                        maxlength="2000" placeholder="ชื่อบุคคลหรือบริษัท ที่อยู่ เบอร์โทร เลขประจำตัวผู้เสียภาษี"
+                        {{ $usesDefaultBilling ? 'readonly' : '' }}>{{ $data->billing_details }}</textarea>
+                    <textarea id="default_billing_details" class="d-none">{{ $default_billing_details }}</textarea>
                 </td>
-                <td align="right" style="padding-left:15px;" class="grey">
-                </td>
-                <td align="left" style="padding-left:12px;"> <b>
-                        {{-- {{ $etype }} --}}</b></td>
                 <td align="right" class="grey">วันที่ / Date</td>
                 <td style="padding-left:5px;"> <input type="text" class="form-control AddDate" id="rdate"
                         name="rdate" value="{{ $date }} " required></td>

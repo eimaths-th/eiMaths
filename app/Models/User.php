@@ -69,6 +69,11 @@ class User extends Authenticatable
         return $this->belongsTo(Department::class);
     }
 
+    public function isHq(): bool
+    {
+        return (int) $this->department_id === Department::HQ_ID;
+    }
+
     /**
      * Get the position that the user holds.
      */

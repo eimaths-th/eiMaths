@@ -241,9 +241,14 @@
             var years = JSON.parse(savedYears);
             $('#year_filter').val(years).trigger('change');
         }
-        if (savedSearchCentre) {
-            $('#dcentre').val(savedSearchCentre);
-        }
+        @if (Auth::user()->isHq())
+            if (savedSearchCentre) {
+                $('#dcentre').val(savedSearchCentre);
+            }
+        @else
+            $('#dcentre').val('{{ Auth::user()->department_id }}');
+            localStorage.setItem('searchCentre', '{{ Auth::user()->department_id }}');
+        @endif
     }
 
     function InitializeDateRangePicker() {

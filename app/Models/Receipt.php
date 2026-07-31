@@ -17,6 +17,7 @@ class Receipt extends Model
         'ref',
         'student_no',
         'student_name',
+        'billing_details',
         'receipt_number',
         'payment_date',
         'oid',

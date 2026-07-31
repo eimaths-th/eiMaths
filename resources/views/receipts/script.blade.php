@@ -426,6 +426,18 @@
 
         })
 
+        $(document).on('change', 'input[name="billing_source"]', function() {
+            const billingDetails = $('#billing_details');
+
+            if ($(this).val() === 'parent') {
+                billingDetails
+                    .val($('#default_billing_details').val())
+                    .prop('readonly', true);
+            } else {
+                billingDetails.prop('readonly', false).trigger('focus');
+            }
+        });
+
 
         let lid;
         $(document).on('click', '#getLogData', function(e) {
@@ -566,50 +578,16 @@
 
 
 
+            // Description is the only required field in each receipt item.
+            // Keep empty numeric values aligned with their row and let the server store them as null.
             $("input[name='quantity[]']").each(function() {
-                var amountInput = $(this);
-                var value = parseFloat(amountInput.val());
-
-                if (isNaN(value) || value % 0.5 !== 0) {
-                    // Invalid amount input
-                    amountInput.addClass("is-invalid");
-                    amountInput.removeClass("is-valid");
-                    amountInput.siblings(".error-message").text(
-                        "กรุณาระบุจำนวน");
-                    toastr.error('กรุณาระบุจำนวน', {
-                        timeOut: 5000
-                    });
-                    isValid = false;
-                } else {
-                    // Valid amount input
-                    amountInput.removeClass("is-invalid");
-                    amountInput.addClass("is-valid");
-                    amountValues.push(value);
-                }
+                $(this).removeClass("is-invalid is-valid");
+                amountValues.push($(this).val().trim());
             });
 
-
-            // Collect price values and validate
             $("input[name='price[]']").each(function() {
-                var priceInput = $(this);
-                var value = parseFloat(priceInput.val());
-
-                if (isNaN(value) || value <= 0) {
-                    // Invalid price input
-                    priceInput.addClass("is-invalid");
-                    priceInput.removeClass("is-valid");
-                    priceInput.siblings(".error-message").text(
-                        "กรุณาระบุราคาต่อหน่วย");
-                    toastr.error('กรุณาระบุราคาต่อหน่วย', {
-                        timeOut: 5000
-                    });
-                    isValid = false;
-                } else {
-                    // Valid price input
-                    priceInput.removeClass("is-invalid");
-                    priceInput.addClass("is-valid");
-                    priceValues.push(value);
-                }
+                $(this).removeClass("is-invalid is-valid");
+                priceValues.push($(this).val().trim());
             });
 
             /*  if (!document.getElementsByName('imgFiles[]').length) {
@@ -650,6 +628,7 @@
             var formData = {
                 receipt_number: rnmtValue,
                 receipt_date: rdValue,
+                billing_details: $('#billing_details').val(),
                 charge: $('#charge').val(),
                 payment: $("input[name='payment']:checked").val(),
                 des: desValues,
@@ -762,7 +741,7 @@
 
         });
 
-        netc = net + parseInt($("#charge").val());
+        netc = net + (parseFloat($("#charge").val()) || 0);
         $("#nonv").val(btotal.toFixed(2));
         $("#vatp").val(vatp.toFixed(2));
         $("#dis").val(dtotal.toFixed(2));
@@ -782,10 +761,6 @@
 
     $(document).on('input', 'input[name="quantity[]"], input[name="price[]"], input[name="discount[]"],#charge',
         async function() {
-            var value = $(this).val().trim();
-            if (value === '') {
-                $(this).val(0);
-            }
             var row = $(this).closest('tr');
             await calculateTotal(row);
             summary_total();

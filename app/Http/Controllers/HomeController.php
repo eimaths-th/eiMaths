@@ -40,6 +40,9 @@ class HomeController extends Controller
     public function index()
     {
         $centre = Department::where([['status', '1']])
+            ->when(!auth()->user()->isHq(), function ($query) {
+                $query->where('id', auth()->user()->department_id);
+            })
             ->orderBy("name", "asc")->get();
 
         return view('home', [

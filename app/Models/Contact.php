@@ -103,6 +103,24 @@ class Contact extends Model implements AuthenticatableContract
         return $this->belongsTo(Department::class, 'centre', 'id');
     }
 
+    public function defaultBillingDetails(): string
+    {
+        $name = $this->father_name ?: $this->mother_name;
+        $mobile = $this->father_name ? $this->father_mobile : $this->mother_mobile;
+
+        if (!$name && !$mobile) {
+            return '';
+        }
+
+        $details = $name ? 'คุณ ' . trim($name) : '';
+
+        if ($mobile) {
+            $details .= ($details ? ' / ' : '') . trim($mobile);
+        }
+
+        return $details;
+    }
+
     /**
      * Query contacts by centre (2, 3) and group by centre, order by id desc
      * @return \Illuminate\Database\Eloquent\Collection

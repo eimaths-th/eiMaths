@@ -77,15 +77,17 @@
                                                     <select style="width: 100%;"
                                                         class="productl select2 select2_single form-control"
                                                         id="AddCentre" name="centre" multiple="multiple"
-                                                        @cannot('all-centre') disabled @endcannot>
+                                                        @unless(Auth::user()->isHq()) disabled @endunless>
                                                         <!-- <option value="" selected>Select Student</option>
                                                                                                                                                                                                                                                                                                                                                                                                     <option value="" selected>Select Parent</option>-->
                                                         @foreach ($centre as $key2)
-                                                            <option value="{{ $key2->id }}"
-                                                                @if (Auth::user()->department->id == (int) $key2->id) selected @endif>
-                                                                {{-- {{ $key2->code }} --}}
-                                                                {{ $key2->name }}
-                                                            </option>
+                                                            @if (Auth::user()->isHq() || Auth::user()->department_id === (int) $key2->id)
+                                                                <option value="{{ $key2->id }}"
+                                                                    @if (Auth::user()->department_id === (int) $key2->id) selected @endif>
+                                                                    {{-- {{ $key2->code }} --}}
+                                                                    {{ $key2->name }}
+                                                                </option>
+                                                            @endif
                                                         @endforeach
 
                                                     </select>

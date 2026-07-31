@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 use App\Interfaces\MoneyConvertServiceInterface;
 use Maatwebsite\Excel\Facades\Excel;
 use PDF;
@@ -754,6 +755,14 @@ class ReceiptController extends Controller
             return redirect()->back()->with('error', 'Receipt data not found.');
         }
 
+        $receiptData = $datas->first();
+        $contact = Contact::find($receiptData->cid);
+        $defaultBillingDetails = $contact ? $contact->defaultBillingDetails() : '';
+
+        if (!filled($receiptData->billing_details)) {
+            $receiptData->billing_details = $defaultBillingDetails;
+        }
+
         $receipt_detail = receipt_details::where("receipt_id", $id)->orderby('id')->get();
 
 
@@ -798,7 +807,8 @@ class ReceiptController extends Controller
             'net_price' => $net_price,
             'discount_val' => $discount_val,
             'date' => $formattedDate,
-            'data' => $datas->first(),
+            'data' => $receiptData,
+            'default_billing_details' => $defaultBillingDetails,
             'items' => $receipt_detail,
         ];
 
@@ -915,9 +925,29 @@ class ReceiptController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $validator = Validator::make($request->all(), [
+            'billing_details' => 'nullable|string|max:2000',
+            'des' => 'required|array|min:1',
+            'des.*' => 'required|string|max:255',
+            'amount' => 'nullable|array',
+            'amount.*' => 'nullable|numeric|min:0',
+            'price' => 'nullable|array',
+            'price.*' => 'nullable|numeric|min:0',
+            'unit' => 'nullable|array',
+            'unit.*' => 'nullable|string|max:255',
+            'discount' => 'nullable|array',
+            'discount.*' => 'nullable|numeric|min:0',
+            'tax' => 'nullable|array',
+            'tax.*' => 'nullable|in:0,1',
+            'charge' => 'nullable|numeric|min:0',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()->all()]);
+        }
 
         $datao = [
-            'orther_fee' => $request->get('charge'),
+            'orther_fee' => filled($request->get('charge')) ? $request->get('charge') : null,
             'updated_by' => Auth::id()
         ];
 
@@ -928,6 +958,9 @@ class ReceiptController extends Controller
             'payment_date' => $request->get('receipt_date'),
             'payment' => $request->get('payment'),
             'total_fee' => (float) $request->get('total'),
+            'billing_details' => filled($request->get('billing_details'))
+                ? trim($request->get('billing_details'))
+                : null,
             'updated_by' => Auth::id()
         ];
 
@@ -937,28 +970,23 @@ class ReceiptController extends Controller
         Order::find($receipt->oid)->update($datao);
         receipt_details::where('receipt_id', $id)->delete();
 
-        $amounts = $request->input('amount');
-        $prices = $request->input('price');
-        $des = $request->input('des');
-        $unit = $request->input('unit');
-        $discount = $request->input('discount');
-        $tax = $request->input('tax');
+        $amounts = $request->input('amount', []);
+        $prices = $request->input('price', []);
+        $descriptions = $request->input('des', []);
+        $units = $request->input('unit', []);
+        $discounts = $request->input('discount', []);
+        $taxes = $request->input('tax', []);
 
-
-        if (is_array($amounts) && is_array($prices) && count($amounts) === count($prices)) {
-            foreach ($amounts as $index => $amount) {
-                if (isset($amounts[$index])) { // Check if the index exists in $sids array
-                    $rDetail = new receipt_details();
-                    $rDetail->receipt_id = $id;
-                    $rDetail->quantity = $amount;
-                    $rDetail->price = $prices[$index];
-                    $rDetail->des = $des[$index];
-                    $rDetail->unit = $unit[$index];
-                    $rDetail->discount = $discount[$index];
-                    $rDetail->tax = $tax[$index];
-                    $rDetail->save();
-                }
-            }
+        foreach ($descriptions as $index => $description) {
+            $rDetail = new receipt_details();
+            $rDetail->receipt_id = $id;
+            $rDetail->quantity = filled($amounts[$index] ?? null) ? $amounts[$index] : null;
+            $rDetail->price = filled($prices[$index] ?? null) ? $prices[$index] : null;
+            $rDetail->des = trim($description);
+            $rDetail->unit = filled($units[$index] ?? null) ? trim($units[$index]) : null;
+            $rDetail->discount = filled($discounts[$index] ?? null) ? $discounts[$index] : null;
+            $rDetail->tax = filled($taxes[$index] ?? null) ? $taxes[$index] : 0;
+            $rDetail->save();
         }
 
         //file att

@@ -174,14 +174,9 @@
                 <td width="30%" style="padding-left:5px;"> <b> {{ $data->doc_number }} </b></td>
             </tr>
             <tr>
-                <td>
-                    <font class="grey"><b> คุณ {{ $data->parent_name }} / {{ $data->parent_mobile }}
-                        </b> </font>
+                <td colspan="3">
+                    <font class="grey"><b style="white-space: pre-line;">{{ $data->billing_details }}</b></font>
                 </td>
-                <td align="right" style="padding-left:15px;" class="grey">
-                </td>
-                <td align="left" style="padding-left:12px;"> <b>
-                        {{-- {{ $etype }} --}}</b></td>
                 <td align="right" class="grey">วันที่ / Date</td>
                 <td style="padding-left:5px;"> <b>{{ $date }}</b></td>
             </tr>

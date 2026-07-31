@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Department extends Model
 {
     use HasFactory;
+
+    public const HQ_ID = 1;
+
     protected $fillable = [
         'name',
         'code',

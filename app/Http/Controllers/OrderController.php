@@ -753,6 +753,7 @@ class OrderController extends Controller
             $receipt->courses_pending_id = $order->courses_pending_id;
             $receipt->student_no = $order->contact->code;
             $receipt->student_name = $order->contact->name;
+            $receipt->billing_details = $order->contact->defaultBillingDetails();
             $receipt->receipt_number = ReceiptRunningNumber::generate($order->centre);
             $receipt->payment_date = date("Y-m-d");
             $receipt->oid = $order->id;
@@ -1052,6 +1053,7 @@ class OrderController extends Controller
         $receipt->cid = $order->cid;
         $receipt->student_no = $order->contact->code;
         $receipt->student_name = $order->contact->name;
+        $receipt->billing_details = $order->contact->defaultBillingDetails();
         //$receipt->receipt_number = ReceiptRunningNumber::generate($order->centre);
         //$receipt->payment_date = date("Y-m-d");
         $receipt->oid = $order->id;

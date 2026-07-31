@@ -10,7 +10,6 @@ use App\Models\Receipt;
 use App\Models\Histrories;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Gate;
 /* use Carbon\Carbon;
 use DateInterval;
 use DateTime;
@@ -28,6 +27,17 @@ class DashboardController extends Controller
     {
         $this->middleware('auth');
         //$this->middleware('permission:dashboard-view', ['only' => ['index']]);
+    }
+
+    protected function selectedCentre(Request $request): string
+    {
+        $user = Auth::user();
+
+        if (!$user->isHq()) {
+            return (string) $user->department_id;
+        }
+
+        return (string) $request->input('dcentre', Department::HQ_ID);
     }
 
     function formatDuration($sec)
@@ -51,7 +61,7 @@ class DashboardController extends Controller
 
     public function dashboard_student_by_level(Request $request)
     {
-        $dcentreValue = $request->input('dcentre');
+        $dcentreValue = $this->selectedCentre($request);
         // Ignore date_range and years filters
 
         $results = Contact::select(
@@ -85,7 +95,7 @@ class DashboardController extends Controller
 
     public function dashboard_student_by_centre(Request $request)
     {
-        $dcentreValue = $request->input('dcentre');
+        $dcentreValue = $this->selectedCentre($request);
         $dateRangeValue = $request->input('date_range');
         $yearsValue = $request->input('years');
 
@@ -97,7 +107,7 @@ class DashboardController extends Controller
             ->join('departments', 'contacts.centre', '=', 'departments.id') // Adjust the join condition based on your actual schema
             ->where('contacts.centre', '!=', 1);
 
-        if (!Gate::allows('all-centre')) {
+        if ($dcentreValue !== (string) Department::HQ_ID) {
             $results->where('contacts.centre', $dcentreValue);
         }
 
@@ -150,7 +160,7 @@ class DashboardController extends Controller
 
     public function dashboard_teacher_by_centre(Request $request)
     {
-        $dcentreValue = $request->input('dcentre');
+        $dcentreValue = $this->selectedCentre($request);
         $dateRangeValue = $request->input('date_range');
         $yearsValue = $request->input('years');
         $role = 'Teacher';
@@ -166,7 +176,7 @@ class DashboardController extends Controller
                 $query->where('name', $role);
             });
 
-        if (!Gate::allows('all-centre')) {
+        if ($dcentreValue !== (string) Department::HQ_ID) {
             $results->where('users.department_id', $dcentreValue);
         }
 
@@ -219,7 +229,7 @@ class DashboardController extends Controller
 
     public function today_study_student_by_centre(Request $request)
     {
-        $dcentreValue = $request->input('dcentre');
+        $dcentreValue = $this->selectedCentre($request);
         $dateRangeValue = $request->input('date_range');
         $yearsValue = $request->input('years');
 
@@ -230,7 +240,7 @@ class DashboardController extends Controller
         )
             ->join('departments', 'histrories.centre', '=', 'departments.id'); // Adjust the join condition based on your actual schema
 
-        if (!Gate::allows('all-centre')) {
+        if ($dcentreValue !== (string) Department::HQ_ID) {
             $results->where('histrories.centre', $dcentreValue);
         }
 
@@ -286,7 +296,7 @@ class DashboardController extends Controller
     public function receipt_sum_by_date(Request $request)
     {
         // dd($request->all());
-        $dcentreValue = $request->input('dcentre');
+        $dcentreValue = $this->selectedCentre($request);
         $dateRangeValue = $request->input('date_range');
         $yearsValue = $request->input('years');
 
@@ -341,7 +351,7 @@ class DashboardController extends Controller
 
     public function receipt_sum_by_month(Request $request)
     {
-        $dcentreValue = $request->input('dcentre');
+        $dcentreValue = $this->selectedCentre($request);
         $dateRangeValue = $request->input('date_range');
         $yearsValue = $request->input('years');
 
@@ -395,7 +405,7 @@ class DashboardController extends Controller
 
     public function receipt_sum_by_year(Request $request)
     {
-        $dcentreValue = $request->input('dcentre');
+        $dcentreValue = $this->selectedCentre($request);
         $dateRangeValue = $request->input('date_range');
         $yearsValue = $request->input('years');
 
@@ -449,7 +459,7 @@ class DashboardController extends Controller
 
     public function dashboard_student_status(Request $request)
     {
-        $dcentreValue = $request->input('dcentre');
+        $dcentreValue = $this->selectedCentre($request);
         // Ignore date_range and years filters
 
         $results = Contact::select(
@@ -492,7 +502,7 @@ class DashboardController extends Controller
 
     public function daily_study(Request $request)
     {
-        $dcentreValue = $request->input('dcentre');
+        $dcentreValue = $this->selectedCentre($request);
         $dateRangeValue = $request->input('date_range');
         $yearsValue = $request->input('years');
 
