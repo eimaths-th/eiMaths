@@ -667,11 +667,19 @@ class OrderController extends Controller
 
     public function update(Request $request, $id)
     {
-        //
-        // dd($request->all());
+        $order = Order::with('contact')->find($id);
+
+        if (!$order || !$order->contact) {
+            return response()->json(['errors' => ['Order or student data not found.']], 404);
+        }
+
+        if (!Gate::allows('all-centre') && (int) $order->centre !== (int) Auth::user()->department->id) {
+            abort(403);
+        }
+
         $rules = [
             'order_number' => 'required|string|max:20',
-            'cid' => 'required|integer|max:255',
+            'cid' => 'required|integer|exists:contacts,id',
         ];
 
 
@@ -684,7 +692,9 @@ class OrderController extends Controller
         $status = $request->get('status');
 
         $data = [
-            'cid' => $request->get('cid'),
+            // The student is fixed by the existing order. Do not trust a client-supplied
+            // student id to change the owner while a receipt is being created.
+            'cid' => $order->cid,
             'ref' => $request->get('ref'),
             'courses_pending_id' => $request->get('courses_pending_id'),
             'total_price' => $request->get('total_cost'),
@@ -700,7 +710,6 @@ class OrderController extends Controller
             'updated_by' => Auth::id()
         ];
 
-        $order = Order::find($id);
         $order->update($data);
 
         /* OrderDetail::where('order_id', $id)->delete();
