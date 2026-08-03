@@ -66,7 +66,7 @@ class Contact extends Model implements AuthenticatableContract
     /**
      * @var array
      */
-    protected $fillable = ['ref', 'ctype', 'order', 'centre', 'code', 'free_course', 'type', 'start_date', 'start_term', 'name', 'nickname', 'school', 'gender', 'birth_date', 'password', 'password_generated_at', 'address', 'postcode', 'telephone', 'father_name', 'father_email', 'father_mobile', 'mother_name', 'mother_email', 'mother_mobile', 'level', 'term', 'bookuse', 'level_name', 'term_name', 'bookuse_name', 'level2', 'term2', 'bookuse2', 'level2_name', 'term2_name', 'bookuse2_name', 'discontinued', 'discontinued_date', 'discontinued_reason', 'created_by', 'updated_by', 'created_at', 'updated_at'];
+    protected $fillable = ['ref', 'ctype', 'order', 'new_student_order_id', 'centre', 'code', 'free_course', 'type', 'start_date', 'start_term', 'name', 'nickname', 'school', 'gender', 'birth_date', 'password', 'password_generated_at', 'address', 'postcode', 'telephone', 'father_name', 'father_email', 'father_mobile', 'mother_name', 'mother_email', 'mother_mobile', 'level', 'term', 'bookuse', 'level_name', 'term_name', 'bookuse_name', 'level2', 'term2', 'bookuse2', 'level2_name', 'term2_name', 'bookuse2_name', 'discontinued', 'discontinued_date', 'discontinued_reason', 'created_by', 'updated_by', 'created_at', 'updated_at'];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
@@ -78,6 +78,11 @@ class Contact extends Model implements AuthenticatableContract
     public function order()
     {
         return $this->hasOne(Order::class, 'cid', 'id');
+    }
+
+    public function NewStudentOrder()
+    {
+        return $this->belongsTo(Order::class, 'new_student_order_id');
     }
 
     public function histrories()

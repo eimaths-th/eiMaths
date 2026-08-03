@@ -542,6 +542,7 @@
         const dashboard_years = dashboard_filter_params.getAll('years[]');
         const dashboard_date_range = dashboard_filter_params.get('date_range');
         const dashboard_centre = dashboard_filter_params.get('centre');
+        const dashboard_shipment_id = dashboard_filter_params.get('shipment_id');
         let reservationChanged = false;
 
         $("#reservation").change(function() {
@@ -555,6 +556,7 @@
                     d.centre = dashboard_centre;
                     d.date_range = dashboard_date_range;
                     d.years = dashboard_years;
+                    d.shipment_id = dashboard_shipment_id;
 
                     if (reservationChanged && $('#reservation').val()) {
                         d.sdate = $('#reservation').val();
@@ -651,6 +653,12 @@
                     data: 'bookuse_name',
                     name: 'bookuse_name'
                 },
+                {
+                    data: 'book_receipt',
+                    name: 'book_receipt',
+                    orderable: false,
+                    searchable: false
+                },
                 /*  {
                      data: 'start_term_name',
                      name: 'start_term_name'
@@ -713,13 +721,13 @@
                 } else if (searchType === '2' || searchType === '7') {
                     table.column(4).search(keyword).draw();
                 } else if (searchType === '3') {
-                    table.column(14).search(keyword).draw();
-                } else if (searchType === '4') {
                     table.column(15).search(keyword).draw();
+                } else if (searchType === '4') {
+                    table.column(16).search(keyword).draw();
                 } else if (searchType === '5') {
                     table.column(10).search(keyword).draw();
                 } else if (searchType === '6') {
-                    table.column(11).search(keyword).draw();
+                    table.column(12).search(keyword).draw();
                 }
             } else {
                 // Handle the case where searchType or keyword is empty

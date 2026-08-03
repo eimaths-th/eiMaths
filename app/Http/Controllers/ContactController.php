@@ -17,6 +17,7 @@ use App\Models\Histrories;
 use App\Models\OrderDetail;
 use App\Models\OrderDetailList;
 use App\Models\OrderRunningNumber;
+use App\Services\BookReceiptService;
 use Illuminate\Support\Facades\Gate;
 
 use Maatwebsite\Excel\Facades\Excel;
@@ -42,7 +43,7 @@ class ContactController extends Controller
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(private readonly BookReceiptService $book_receipt_service)
     {
         //$this->middleware('auth');
         $this->middleware('permission:student-list|student-create|student-edit|student-delete', ['only' => ['index', 'show']]);
@@ -236,17 +237,67 @@ class ContactController extends Controller
     {
         //  dd($request->all());
 
+        $shipment_id = $request->query('shipment_id');
+        if ($shipment_id !== null && $shipment_id !== '') {
+            if (filter_var($shipment_id, FILTER_VALIDATE_INT) === false || (int) $shipment_id < 1) {
+                abort(422, 'The shipment_id must be a positive integer.');
+            }
+
+            $shipment_id = (int) $shipment_id;
+        } else {
+            $shipment_id = null;
+        }
+
+        $shipment_context = $shipment_id === null
+            ? null
+            : $this->book_receipt_service->ResolveShipmentForActor($shipment_id, Auth::user());
+
         if ($request->ajax()) {
             //sleep(2);
+            $book_receipt_summary = DB::table('orders')
+                ->join('order_detail_lists', 'orders.id', '=', 'order_detail_lists.order_id')
+                ->select('orders.cid as student_id')
+                ->selectRaw("SUM(CASE WHEN TRIM(COALESCE(order_detail_lists.book, '')) <> '' THEN 1 ELSE 0 END) as book_receipt_total_count")
+                ->selectRaw("SUM(CASE WHEN TRIM(COALESCE(order_detail_lists.book, '')) <> '' AND order_detail_lists.received_at IS NOT NULL THEN 1 ELSE 0 END) as book_receipt_received_count")
+                ->groupBy('orders.cid');
+
+            if ($shipment_id !== null) {
+                $book_receipt_summary->whereExists(function ($shipment_query) use ($shipment_id): void {
+                    $shipment_query
+                        ->select(DB::raw('1'))
+                        ->from('book_shipment_items as receipt_summary_shipment_items')
+                        ->whereColumn(
+                            'receipt_summary_shipment_items.source_order_detail_list_id',
+                            'order_detail_lists.id'
+                        )
+                        ->where('receipt_summary_shipment_items.book_shipment_id', $shipment_id);
+                });
+            }
+
             $query = Contact::select(
                 "contacts.*",
-                "departments.name as centre_name"
+                "departments.name as centre_name",
+                DB::raw('COALESCE(book_receipt_summary.book_receipt_total_count, 0) as book_receipt_total_count'),
+                DB::raw('COALESCE(book_receipt_summary.book_receipt_received_count, 0) as book_receipt_received_count')
             )
                 ->join("departments", "contacts.centre", "=", "departments.id")
                 ->join("levels", "contacts.level", "=", "levels.id")
                 ->join("bookuses", "contacts.bookuse", "=", "bookuses.id")
                 ->join("terms as pterms", "contacts.term", "=", "pterms.id")
+                ->leftJoinSub($book_receipt_summary, 'book_receipt_summary', function ($join): void {
+                    $join->on('book_receipt_summary.student_id', '=', 'contacts.id');
+                })
                 ->where('discontinued', '0');
+
+            if ($shipment_id !== null) {
+                $query->whereExists(function ($shipment_query) use ($shipment_id): void {
+                    $shipment_query
+                        ->select(DB::raw('1'))
+                        ->from('book_shipment_items as student_shipment_items')
+                        ->whereColumn('student_shipment_items.source_student_id', 'contacts.id')
+                        ->where('student_shipment_items.book_shipment_id', $shipment_id);
+                });
+            }
 
             if (Auth::user()->isHq()) {
                 $centre = $request->get('centre');
@@ -338,6 +389,15 @@ class ContactController extends Controller
                         return $row->bookuse_name;
                     }
                 })
+                ->addColumn('book_receipt', function ($row) {
+                    return view('contacts.book-receipts.status', [
+                        'student_id' => $row->id,
+                        'student_code' => $row->code,
+                        'student_name' => $row->name,
+                        'received_count' => (int) $row->book_receipt_received_count,
+                        'total_count' => (int) $row->book_receipt_total_count,
+                    ])->render();
+                })
                 ->addColumn('more', function ($row) {
                     return '';
                 })
@@ -368,7 +428,7 @@ class ContactController extends Controller
                         $html .= '<button type="button" class="btn btn-sm btn-danger disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-trash"></i> Delete</button> ';
                     }
                     return $html;
-                })->rawColumns(['checkbox', 'action', 'more'])->toJson();
+                })->rawColumns(['checkbox', 'action', 'book_receipt', 'more'])->toJson();
             /* ->filter(function ($instance) use ($request) {
                     if ($request->get('approved') == '0' || $request->get('approved') == '1') {
                         $instance->where('contacts.code', $request->get('approved'));
@@ -395,7 +455,10 @@ class ContactController extends Controller
         //dd($term);
 
         return view('contacts.index')->with(
-            ['centre' => $centre]
+            [
+                'centre' => $centre,
+                'shipment_context' => $shipment_context,
+            ]
         )
             ->with(['bookuse' => $bookuse])
             ->with(['level' => $level])
@@ -909,6 +972,7 @@ class ContactController extends Controller
         }
 
         $contact->order = $order->id;
+        $contact->new_student_order_id = $order->id;
         $contact->save();
 
         $input_order_detail['order_id'] = $order->id;

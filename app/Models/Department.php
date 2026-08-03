@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Department extends Model
 {
@@ -36,5 +37,10 @@ class Department extends Model
 
     public function histrories() {
         return $this->hasMany(Histrories::class, 'student_id');
+    }
+
+    public function BookShipments(): HasMany
+    {
+        return $this->hasMany(BookShipment::class, 'destination_centre_id');
     }
 }

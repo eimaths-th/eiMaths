@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Order extends Model
 {
@@ -31,6 +32,16 @@ class Order extends Model
     public function contact()
     {
         return $this->belongsTo(Contact::class, 'cid', 'id');
+    }
+
+    public function NewStudentContacts(): HasMany
+    {
+        return $this->hasMany(Contact::class, 'new_student_order_id');
+    }
+
+    public function orderDetailLists(): HasMany
+    {
+        return $this->hasMany(OrderDetailList::class, 'order_id');
     }
 
     public function affiliateCommissions()

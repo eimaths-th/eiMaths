@@ -39,9 +39,9 @@
 @endcan
 
 @can('student-list')
-    <li class="nav-item {{ in_array(Request::route()->getName(), ['contacts', 'guest.report', 'demo.list', 'discontinued', 'contacts.graduated', 'histories.index', 'parent.index', 'ei_form.backEndIndex']) ? 'menu-open' : '' }}">
+    <li class="nav-item {{ in_array(Request::route()->getName(), ['contacts', 'guest.report', 'demo.list', 'discontinued', 'contacts.graduated', 'histories.index', 'parent.index', 'ei_form.backEndIndex']) || Request::routeIs('book-shipments.*', 'incoming-book-shipments.*') ? 'menu-open' : '' }}">
         <a href="#"
-            class="nav-link {{ in_array(Request::route()->getName(), ['contacts', 'guest.report', 'demo.list', 'discontinued', 'contacts.graduated', 'histories.index', 'parent.index', 'ei_form.backEndIndex']) ? 'active' : '' }}">
+            class="nav-link {{ in_array(Request::route()->getName(), ['contacts', 'guest.report', 'demo.list', 'discontinued', 'contacts.graduated', 'histories.index', 'parent.index', 'ei_form.backEndIndex']) || Request::routeIs('book-shipments.*', 'incoming-book-shipments.*') ? 'active' : '' }}">
             <i class="nav-icon fas fa-graduation-cap"></i>
             <p>Students Management</p>
             <i class="fas fa-angle-left right"></i>
@@ -53,6 +53,30 @@
                     <p>Students List</p>
                 </a>
             </li>
+            @if ($book_shipment_alert_role === 'centre')
+                <li class="nav-item">
+                    <a href="{{ route('incoming-book-shipments.index') }}"
+                        class="nav-link {{ Request::routeIs('incoming-book-shipments.*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-inbox"></i>
+                        <p>
+                            Incoming Book Shipments
+                            <span class="badge badge-warning ml-1" data-book-shipment-badge="centre" hidden aria-label="No incoming shipments waiting"></span>
+                        </p>
+                    </a>
+                </li>
+            @endif
+            @if ($book_shipment_alert_role === 'hq')
+                <li class="nav-item">
+                    <a href="{{ route('book-shipments.index') }}"
+                        class="nav-link {{ Request::routeIs('book-shipments.*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-boxes-stacked"></i>
+                        <p>
+                            Book Shipments
+                            <span class="badge badge-warning ml-1" data-book-shipment-badge="hq" hidden aria-label="No unread Centre receipt notifications"></span>
+                        </p>
+                    </a>
+                </li>
+            @endif
             <li class="nav-item">
                 <a href="{{ route('guest.report') }}" class="nav-link {{ Route::currentRouteName() == 'guest.report' ? 'active' : '' }}">
                     <i class="nav-icon fa-solid fa-comment-dots"></i>
@@ -100,6 +124,47 @@
         </ul>
     </li>
 @endcan
+@if ($book_shipment_alert_role === 'hq' && !auth()->user()->can('student-list'))
+    <li class="nav-item {{ Request::routeIs('book-shipments.*') ? 'menu-open' : '' }}">
+        <a href="#" class="nav-link {{ Request::routeIs('book-shipments.*') ? 'active' : '' }}">
+            <i class="nav-icon fas fa-graduation-cap"></i>
+            <p>Students Management</p>
+            <i class="fas fa-angle-left right"></i>
+        </a>
+        <ul class="nav nav-treeview">
+            <li class="nav-item">
+                <a href="{{ route('book-shipments.index') }}" class="nav-link {{ Request::routeIs('book-shipments.*') ? 'active' : '' }}">
+                    <i class="nav-icon fas fa-boxes-stacked"></i>
+                    <p>
+                        Book Shipments
+                        <span class="badge badge-warning ml-1" data-book-shipment-badge="hq" hidden aria-label="No unread Centre receipt notifications"></span>
+                    </p>
+                </a>
+            </li>
+        </ul>
+    </li>
+@endif
+@if ($book_shipment_alert_role === 'centre' && !auth()->user()->can('student-list'))
+    <li class="nav-item {{ Request::routeIs('incoming-book-shipments.*') ? 'menu-open' : '' }}">
+        <a href="#" class="nav-link {{ Request::routeIs('incoming-book-shipments.*') ? 'active' : '' }}">
+            <i class="nav-icon fas fa-graduation-cap"></i>
+            <p>Students Management</p>
+            <i class="fas fa-angle-left right"></i>
+        </a>
+        <ul class="nav nav-treeview">
+            <li class="nav-item">
+                <a href="{{ route('incoming-book-shipments.index') }}"
+                    class="nav-link {{ Request::routeIs('incoming-book-shipments.*') ? 'active' : '' }}">
+                    <i class="nav-icon fas fa-inbox"></i>
+                    <p>
+                        Incoming Book Shipments
+                        <span class="badge badge-warning ml-1" data-book-shipment-badge="centre" hidden aria-label="No incoming shipments waiting"></span>
+                    </p>
+                </a>
+            </li>
+        </ul>
+    </li>
+@endif
 @can('blog-list')
     <li class="nav-item">
         <a href="{{ route('blogs.index') }}" class="nav-link {{ Request::is('blogs*') ? 'active' : '' }}">

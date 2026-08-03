@@ -19,6 +19,10 @@ use App\Http\Controllers\TeachingPeriodController;
 use App\Http\Controllers\TrackingLinkController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\BlogController;
+use App\Http\Controllers\BookReceiptController;
+use App\Http\Controllers\BookShipmentController;
+use App\Http\Controllers\BookShipmentNotificationController;
+use App\Http\Controllers\IncomingBookShipmentController;
 use App\Http\Controllers\CrmLeadController;
 use App\Http\Controllers\ImageUploadController;
 use App\Http\Controllers\QuestionBulkController;
@@ -63,6 +67,37 @@ Route::group(['middleware' => ['auth']], function () {
     Route::put('/contacts/save/{id}', [App\Http\Controllers\ContactController::class, 'update'])->name('contacts.save');
     Route::delete('/contacts/destroy', [App\Http\Controllers\ContactController::class, 'destroy'])->name('contacts.destroy');
     Route::post('/contacts/destroy_all', [App\Http\Controllers\ContactController::class, 'destroy_all'])->name('contacts.destroy_all');
+    Route::get('/contacts/{contact}/book-receipts', [BookReceiptController::class, 'Index'])->name('contacts.book-receipts.index');
+    Route::post('/contacts/{contact}/book-receipts/receive-all', [BookReceiptController::class, 'ReceiveAll'])->name('contacts.book-receipts.receive-all');
+    Route::put('/contacts/{contact}/book-receipts/{order_detail_list}', [BookReceiptController::class, 'Update'])->name('contacts.book-receipts.update');
+    Route::delete('/contacts/{contact}/book-receipts/{order_detail_list}', [BookReceiptController::class, 'Destroy'])->name('contacts.book-receipts.destroy');
+    Route::get('/contacts/{contact}/book-receipts/{order_detail_list}/logs', [BookReceiptController::class, 'Logs'])->name('contacts.book-receipts.logs');
+    Route::post('/book-shipment-notifications/{notification_id}/read', [BookShipmentNotificationController::class, 'Read'])
+        ->name('book-shipment-notifications.read');
+    Route::get('/book-shipments', [BookShipmentController::class, 'Index'])
+        ->name('book-shipments.index');
+    Route::get('/book-shipments/candidates', [BookShipmentController::class, 'Candidates'])
+        ->name('book-shipments.candidates');
+    Route::get('/book-shipments/receipt-alert-summary', [BookShipmentController::class, 'ReceiptAlertSummary'])
+        ->name('book-shipments.receipt-alert-summary');
+    Route::post('/book-shipments', [BookShipmentController::class, 'Store'])
+        ->name('book-shipments.store');
+    Route::get('/book-shipments/{book_shipment}', [BookShipmentController::class, 'Show'])
+        ->name('book-shipments.show');
+    Route::put('/book-shipments/{book_shipment}', [BookShipmentController::class, 'Update'])
+        ->name('book-shipments.update');
+    Route::post('/book-shipments/{book_shipment}/dispatch', [BookShipmentController::class, 'Dispatch'])
+        ->name('book-shipments.dispatch');
+    Route::post('/book-shipments/{book_shipment}/cancel', [BookShipmentController::class, 'Cancel'])
+        ->name('book-shipments.cancel');
+    Route::get('/incoming-book-shipments', [IncomingBookShipmentController::class, 'Index'])
+        ->name('incoming-book-shipments.index');
+    Route::get('/incoming-book-shipments/pending-summary', [IncomingBookShipmentController::class, 'PendingSummary'])
+        ->name('incoming-book-shipments.pending-summary');
+    Route::get('/incoming-book-shipments/{book_shipment}', [IncomingBookShipmentController::class, 'Show'])
+        ->name('incoming-book-shipments.show');
+    Route::post('/incoming-book-shipments/{book_shipment}/receive', [IncomingBookShipmentController::class, 'Receive'])
+        ->name('incoming-book-shipments.receive');
     Route::get('contacts/{id}/fast-history', [ContactController::class, 'fastHistory'])->name('contacts.fastHistory');
     Route::get('/contacts/export-by-centre', [App\Http\Controllers\ContactController::class, 'exportContactsByCentre'])->name('contacts.exportByCentre');
     Route::get('/contacts/get-by-centre', [App\Http\Controllers\ContactController::class, 'getContactsByCentre'])->name('contacts.getByCentre');

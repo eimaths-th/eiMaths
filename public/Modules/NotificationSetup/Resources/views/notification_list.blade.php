@@ -46,7 +46,20 @@
                                     @foreach(Auth::user()->notifications as $notification)
                                         <tr>
                                             <td>
-                                                @if ($notification->read_at==null)
+                                                @if ($notification->type === \App\Notifications\BookShipmentNotification::class)
+                                                    <form method="POST"
+                                                        action="{{ route('book-shipment-notifications.read', $notification->id) }}">
+                                                        @csrf
+                                                        <button type="submit" class="btn btn-link text-left p-0">
+                                                            <span class="d-block notifi_par notify_{{$notification->id}}">
+                                                                {{ $notification->data['title'] ?? 'Book shipment notification' }}
+                                                            </span>
+                                                            <span class="d-block notifi_par notify_{{$notification->id}}">
+                                                                {{ $notification->data['body'] ?? '' }}
+                                                            </span>
+                                                        </button>
+                                                    </form>
+                                                @elseif ($notification->read_at==null)
                                                     <a href="#" class="unread_notification" id="{{$notification->id}}"
                                                        title="Mark As Read"
                                                        data-notification_id="{{$notification->id}}">
@@ -78,7 +91,15 @@
                                                     </button>
                                                     <div class="dropdown-menu dropdown-menu-right"
                                                          aria-labelledby="dropdownMenu1{{@$notification->id}}">
-                                                        @if(!empty($notification->data['actionText']??''))
+                                                        @if ($notification->type === \App\Notifications\BookShipmentNotification::class)
+                                                            <form method="POST"
+                                                                action="{{ route('book-shipment-notifications.read', $notification->id) }}">
+                                                                @csrf
+                                                                <button type="submit" class="dropdown-item edit_brand">
+                                                                    {{ $notification->data['actionText'] ?? 'Open shipment' }}
+                                                                </button>
+                                                            </form>
+                                                        @elseif(!empty($notification->data['actionText']??''))
                                                             <a class="dropdown-item edit_brand"
                                                                href="{{@$notification->data['actionURL']??''}}">{{@$notification->data['actionText']??''}}</a>
                                                         @endif

@@ -21,10 +21,29 @@
     <meta name="msapplication-tap-highlight" content="no">
 
     @include('layouts.includes.css')
+    @if (auth()->check() && auth()->user()->department && (int) auth()->user()->disable === 0 && (int) auth()->user()->department->status === 1)
+        <link rel="stylesheet" href="{{ asset('css/book-shipment-realtime-alert.css') }}">
+    @endif
     @yield('style')
 </head>
 
 <body class="hold-transition sidebar-mini layout-fixed layout-footer-fixed">
+    @php
+        $authenticated_user = auth()->user();
+        $book_shipment_alert_role = null;
+        if (
+            $authenticated_user
+            && $authenticated_user->department
+            && (int) $authenticated_user->disable === 0
+            && (int) $authenticated_user->department->status === 1
+        ) {
+            if ($authenticated_user->isHq() && $authenticated_user->can('book-shipment-list')) {
+                $book_shipment_alert_role = 'hq';
+            } elseif (!$authenticated_user->isHq() && $authenticated_user->can('book-shipment-receive')) {
+                $book_shipment_alert_role = 'centre';
+            }
+        }
+    @endphp
     <div id="loadingi"></div>
     <div class="wrapper">
         <!-- Main Header -->
@@ -42,9 +61,21 @@
         @include('layouts.footer')
 
     </div>
+    @if ($book_shipment_alert_role !== null)
+        @include('book-shipments.partials.realtime-alert', [
+            'book_shipment_alert_role' => $book_shipment_alert_role,
+            'authenticated_user' => $authenticated_user,
+        ])
+    @endif
 </body>
 
 @include('layouts.includes.js')
+
+@if ($book_shipment_alert_role === 'centre')
+    <script type="module" src="{{ asset('js/centre-incoming-shipment-alert.js') }}"></script>
+@elseif ($book_shipment_alert_role === 'hq')
+    <script type="module" src="{{ asset('js/hq-centre-receipt-alert.js') }}"></script>
+@endif
 
 
 <script>

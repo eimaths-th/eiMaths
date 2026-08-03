@@ -86,6 +86,22 @@
                         </div>
 
                         <div class="card-body">
+                            @if ($shipment_context)
+                                <div class="alert alert-info" role="status">
+                                    <strong>Shipment {{ $shipment_context->shipment_number }}</strong>
+                                    <span class="ml-2">
+                                        Destination:
+                                        {{ $shipment_context->destination_centre_name ?: ($shipment_context->DestinationCentre?->name ?: 'Centre') }}
+                                    </span>
+                                    <a
+                                        class="btn btn-sm btn-outline-primary ml-2"
+                                        href="{{ url('/book-shipments/' . $shipment_context->id) }}"
+                                    >
+                                        Open shipment
+                                    </a>
+                                </div>
+                            @endif
+
                             @if ($message = Session::get('success'))
                                 {{--  <div class="alert alert-success">
                                     <p>{{ $message }}</p>
@@ -184,6 +200,7 @@
                                                     <th>Level</th>
                                                     <th>Term</th>
                                                     <th>BookUse </th>
+                                                    <th>Book Receipt</th>
                                                     {{-- <th>Start Term</th> --}}
                                                     <th {{-- class="none" --}}>Telephone</th>
                                                     <th>Father Mobile</th>
@@ -220,9 +237,12 @@
 
     @include('contacts.receipt')
 
+    @include('contacts.book-receipts.modal')
+
     {{--  {!! $data->render() !!} --}}
 @endsection
 
 @section('script')
     @include('contacts.script')
+    @include('contacts.book-receipts.script')
 @endsection
