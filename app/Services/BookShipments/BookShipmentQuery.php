@@ -23,13 +23,22 @@ class BookShipmentQuery
         User $actor,
         int $destination_centre_id,
         ?string $search,
-        int $per_page
+        int $per_page,
+        ?int $draft_shipment_id = null
     ): LengthAwarePaginator {
         $this->AssertHqPermission($actor, 'book-shipment-create');
         $this->AssertEligibleDestination($destination_centre_id);
 
+        $allowed_shipment_id = $this->ResolveCandidateDraftId(
+            $destination_centre_id,
+            $draft_shipment_id
+        );
         $per_page = $this->NormalizePerPage($per_page);
-        $candidate_query = $this->BuildCandidateQuery($destination_centre_id, $search);
+        $candidate_query = $this->BuildCandidateQuery(
+            $destination_centre_id,
+            $search,
+            $allowed_shipment_id
+        );
         $total_students = (clone $candidate_query)
             ->distinct()
             ->count('contacts.id');
@@ -115,6 +124,29 @@ class BookShipmentQuery
                 'pageName' => 'page',
             ]
         );
+    }
+
+    private function ResolveCandidateDraftId(
+        int $destination_centre_id,
+        ?int $draft_shipment_id
+    ): ?int {
+        if ($draft_shipment_id === null) {
+            return null;
+        }
+
+        $shipment = BookShipment::query()->whereKey($draft_shipment_id)->first();
+        if (!$shipment) {
+            throw (new ModelNotFoundException())->setModel(BookShipment::class, [$draft_shipment_id]);
+        }
+
+        if (
+            $shipment->status !== BookShipment::STATUS_DRAFT
+            || (int) $shipment->destination_centre_id !== $destination_centre_id
+        ) {
+            throw new BookShipmentException(BookShipmentException::STATE_CONFLICT);
+        }
+
+        return (int) $shipment->id;
     }
 
     public function GetEligibleSourceBooks(
@@ -227,12 +259,42 @@ class BookShipmentQuery
             ->first();
 
         return [
+            'active_shipment_count' => $this->CountActiveHqShipments(),
             'unread_count' => $unread_count,
             'latest_event_cursor' => $latest_event === null
                 ? null
                 : $latest_event->created_at?->toIso8601String() . '|' . $latest_event->id,
             'latest_unread_notification' => $this->MapReceiptAlertNotification($latest_unread_notification),
         ];
+    }
+
+    private function CountActiveHqShipments(): int
+    {
+        return (int) BookShipment::query()
+            ->where(function (EloquentBuilder $active_query): void {
+                $active_query
+                    ->whereIn('book_shipments.status', [
+                        BookShipment::STATUS_DRAFT,
+                        BookShipment::STATUS_DISPATCHED,
+                    ])
+                    ->orWhere(function (EloquentBuilder $centre_received_query): void {
+                        $centre_received_query
+                            ->where('book_shipments.status', BookShipment::STATUS_CENTRE_RECEIVED)
+                            ->whereNot(function (EloquentBuilder $completed_query): void {
+                                $this->ApplyDerivedStatusFilter(
+                                    $completed_query,
+                                    BookShipment::DERIVED_COMPLETED
+                                );
+                            })
+                            ->whereNot(function (EloquentBuilder $issue_query): void {
+                                $this->ApplyDerivedStatusFilter(
+                                    $issue_query,
+                                    BookShipment::DERIVED_COMPLETED_WITH_ISSUES
+                                );
+                            });
+                    });
+            })
+            ->count();
     }
 
     private function MapReceiptAlertNotification($notification): ?array

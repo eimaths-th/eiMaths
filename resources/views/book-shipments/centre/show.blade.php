@@ -239,7 +239,10 @@
                                 <button class="btn centre-receipt-submit" type="submit">Confirm receipt</button>
                             </div>
                         @else
-                            <div class="alert alert-success mb-0">The Centre has recorded this shipment. Open Student List to track student delivery.</div>
+                            <div class="alert alert-success mb-3">The Centre has recorded this shipment. Open Student List to track student delivery.</div>
+                            @if (auth()->user()->can('student-list'))
+                                <a class="btn btn-primary" href="{{ url('/contacts?shipment_id=' . $shipment->id) }}">Open shipment Student List</a>
+                            @endif
                         @endif
                     </form>
                 </section>

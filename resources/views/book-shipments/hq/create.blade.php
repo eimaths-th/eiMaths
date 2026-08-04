@@ -2,18 +2,33 @@
     $shipment = $shipment ?? null;
     $destinations = $destinations ?? collect();
     $is_draft_update = $shipment !== null && $shipment->status === \App\Models\BookShipment::STATUS_DRAFT;
-    $initial_selection = $shipment
-        ? $shipment->Items->pluck('source_order_detail_list_id')->filter()->map(fn ($book_id) => (int) $book_id)->values()->all()
+    $initial_selected_books = $shipment
+        ? $shipment->Items
+            ->map(fn ($item): array => [
+                'source_book_id' => $item->source_order_detail_list_id === null
+                    ? null
+                    : (int) $item->source_order_detail_list_id,
+                'student_code' => $item->source_student_code,
+                'student_name' => $item->source_student_name,
+                'book_name' => $item->book_name,
+                'level' => $item->level,
+                'term' => $item->term,
+                'order_number' => $item->source_order_number,
+            ])
+            ->filter(fn (array $book): bool => $book['source_book_id'] !== null)
+            ->values()
+            ->all()
         : [];
 @endphp
 
 <section class="book-shipment-card mb-4" id="book-shipment-editor" aria-labelledby="book-shipment-editor-title"
     data-mode="{{ $is_draft_update ? 'update' : 'create' }}"
+    data-draft-shipment-id="{{ $shipment?->id ?? '' }}"
     data-candidates-url="{{ route('book-shipments.candidates') }}"
     data-store-url="{{ route('book-shipments.store') }}"
     data-update-url="{{ $shipment ? route('book-shipments.update', ['book_shipment' => $shipment->id]) : '' }}"
     data-show-url="{{ $shipment ? route('book-shipments.show', ['book_shipment' => $shipment->id]) : '' }}"
-    data-initial-selection="@json($initial_selection)">
+    data-selection-module-url="{{ asset('js/book-shipment-draft-selection.js') }}">
     <div class="book-shipment-card-header d-flex flex-wrap align-items-center justify-content-between">
         <div>
             <span class="book-shipment-eyebrow text-dark">{{ $is_draft_update ? 'Draft editor' : 'New dispatch' }}</span>
@@ -62,10 +77,44 @@
             <div class="p-4 text-center text-muted small">No candidates loaded.</div>
         </div>
 
-        <div class="d-flex flex-wrap align-items-center justify-content-between border-top mt-3 pt-3">
-            <div class="small text-muted" aria-live="polite">
-                Selected books: <strong id="book-shipment-selected-count">{{ count($initial_selection) }}</strong>
+        <section class="book-shipment-selected mt-3" aria-labelledby="book-shipment-selected-title">
+            <div class="d-flex flex-wrap align-items-center justify-content-between mb-2">
+                <h3 id="book-shipment-selected-title" class="mb-0">Selected books</h3>
+                <span class="small text-muted" aria-live="polite">
+                    Selected books: <strong id="book-shipment-selected-count">{{ count($initial_selected_books) }}</strong>
+                </span>
             </div>
+            <div id="book-shipment-selected-list" aria-live="polite">
+                @forelse ($initial_selected_books as $selected_book)
+                    <div class="book-shipment-selected-row"
+                        data-selected-book-id="{{ $selected_book['source_book_id'] }}"
+                        data-student-code="{{ $selected_book['student_code'] }}"
+                        data-student-name="{{ $selected_book['student_name'] }}"
+                        data-book-name="{{ $selected_book['book_name'] }}"
+                        data-level="{{ $selected_book['level'] }}"
+                        data-term="{{ $selected_book['term'] }}"
+                        data-order-number="{{ $selected_book['order_number'] }}">
+                        <div>
+                            <strong>{{ $selected_book['student_code'] ?: 'Student' }} — {{ $selected_book['student_name'] ?: 'Unnamed student' }}</strong>
+                            <span class="d-block small text-muted">
+                                {{ $selected_book['book_name'] ?: 'Unnamed book' }} · {{ $selected_book['level'] ?: 'No level' }} · Term {{ $selected_book['term'] ?: '—' }} · {{ $selected_book['order_number'] ?: 'No order number' }}
+                            </span>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline-danger" data-remove-selected-book data-book-id="{{ $selected_book['source_book_id'] }}">
+                            Remove
+                        </button>
+                    </div>
+                @empty
+                    <p class="book-shipment-selected-empty text-muted small mb-0">No books selected yet. Choose an eligible book above.</p>
+                @endforelse
+            </div>
+            <p class="book-shipment-selected-empty text-muted small mb-0 d-none" id="book-shipment-selected-guidance">
+                A draft must contain at least one book. Use Discard draft if this draft should be cancelled.
+            </p>
+        </section>
+
+        <div class="d-flex flex-wrap align-items-center justify-content-between border-top mt-3 pt-3">
+            <div class="small text-muted" aria-live="polite">Review the selected books before saving.</div>
             <button id="book-shipment-save-draft" class="btn book-shipment-button mt-2 mt-sm-0" type="button" disabled>
                 {{ $is_draft_update ? 'Save draft changes' : 'Save shipment draft' }}
             </button>

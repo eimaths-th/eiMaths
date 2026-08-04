@@ -48,6 +48,15 @@
             margin: 0;
         }
 
+        .book-shipment-danger-card {
+            border-color: #f1b8bd;
+        }
+
+        .book-shipment-danger-card .book-shipment-detail-card-header {
+            background: #fff5f5;
+            color: #842029;
+        }
+
         .book-shipment-snapshot dt {
             color: #68778a;
             font-size: .72rem;
@@ -84,6 +93,8 @@
                 transition: none !important;
             }
         }
+
+        @include('book-shipments.hq.editor-style')
     </style>
 @endsection
 
@@ -202,6 +213,24 @@
                             <form method="POST" action="{{ route('book-shipments.dispatch', ['book_shipment' => $shipment->id]) }}" data-transition-form data-transition="dispatch" data-action-url="{{ route('book-shipments.dispatch', ['book_shipment' => $shipment->id]) }}">
                                 @csrf
                                 <button class="btn btn-primary" type="submit">Dispatch shipment</button>
+                            </form>
+                        </div>
+                    </section>
+                @endif
+
+                @if ($shipment->status === \App\Models\BookShipment::STATUS_DRAFT && auth()->user()->can('book-shipment-cancel'))
+                    <section class="book-shipment-detail-card book-shipment-danger-card mb-4" aria-labelledby="book-shipment-discard-title">
+                        <div class="book-shipment-detail-card-header"><h2 id="book-shipment-discard-title">Discard this draft</h2></div>
+                        <div class="p-3">
+                            <p class="small text-muted">Discarding keeps the shipment history and releases its selected books for another attempt. This action cannot be undone.</p>
+                            <form method="POST" action="{{ route('book-shipments.discard', ['book_shipment' => $shipment->id]) }}" data-transition-form data-transition="discard" data-action-url="{{ route('book-shipments.discard', ['book_shipment' => $shipment->id]) }}" data-success-url="{{ route('book-shipments.index') }}">
+                                @csrf
+                                <div class="form-group">
+                                    <label for="book-shipment-discard-reason">Draft discard reason <span class="text-danger">(required)</span></label>
+                                    <textarea class="form-control" id="book-shipment-discard-reason" name="reason" rows="3" minlength="3" maxlength="1000" aria-describedby="book-shipment-discard-error"></textarea>
+                                    <div class="invalid-feedback d-block" id="book-shipment-discard-error" aria-live="polite"></div>
+                                </div>
+                                <button class="btn btn-danger" type="submit">Discard this draft</button>
                             </form>
                         </div>
                     </section>

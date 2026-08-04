@@ -16,6 +16,7 @@ class BookShipmentLog extends Model
     public const ACTION_ITEMS_UPDATED = 'ITEMS_UPDATED';
     public const ACTION_DISPATCHED = 'DISPATCHED';
     public const ACTION_CANCELLED = 'CANCELLED';
+    public const ACTION_DRAFT_DISCARDED = 'DRAFT_DISCARDED';
     public const ACTION_CENTRE_RECEIVED = 'CENTRE_RECEIVED';
 
     protected $fillable = [

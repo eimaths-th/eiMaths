@@ -54,6 +54,8 @@ export function ValidateHqSummary(summary) {
     const summary_data = summary?.data;
     if (
         !summary_data
+        || !Number.isSafeInteger(summary_data.active_shipment_count)
+        || summary_data.active_shipment_count < 0
         || !Number.isSafeInteger(summary_data.unread_count)
         || summary_data.unread_count < 0
         || !IsValidCursor(summary_data.latest_event_cursor)
@@ -74,6 +76,7 @@ export function ValidateHqSummary(summary) {
     }
 
     return {
+        active_shipment_count: summary_data.active_shipment_count,
         unread_count: summary_data.unread_count,
         latest_event_cursor: summary_data.latest_event_cursor,
         latest_unread_notification,
@@ -89,7 +92,7 @@ export function CreateHqSummaryHandler(dependencies) {
             throw new Error('Invalid HQ receipt alert summary');
         }
 
-        dependencies.UpdateBadgeCount(validated_summary.unread_count);
+        dependencies.UpdateBadgeCount(validated_summary.active_shipment_count);
 
         let stored_toast_cursor = null;
         try {
@@ -370,16 +373,16 @@ async function FetchAndRenderHqLedger(
     RenderHqLedger(document_object, ledger_response, current_url, detail_base_url);
 }
 
-function RenderHqBadgeCount(document_object, unread_count) {
-    const badge_text = FormatBadgeCount(unread_count);
+function RenderHqBadgeCount(document_object, active_shipment_count) {
+    const badge_text = FormatBadgeCount(active_shipment_count);
     document_object.querySelectorAll('[data-book-shipment-badge="hq"]').forEach((badge_element) => {
         badge_element.textContent = badge_text;
         badge_element.hidden = badge_text === '';
         badge_element.setAttribute(
             'aria-label',
             badge_text === ''
-                ? 'No unread Centre receipt notifications'
-                : `${unread_count} unread Centre receipt notification${unread_count === 1 ? '' : 's'}`,
+                ? 'No active book shipments'
+                : `${active_shipment_count} active book shipment${active_shipment_count === 1 ? '' : 's'}`,
         );
     });
 }
@@ -418,7 +421,7 @@ export function CreateHqCentreReceiptAlert(dependencies) {
     const summary_handler = CreateHqSummaryHandler({
         ReadToastCursor: () => dependencies.Storage.getItem(storage_key),
         WriteToastCursor: (next_cursor) => dependencies.Storage.setItem(storage_key, next_cursor),
-        UpdateBadgeCount: (unread_count) => RenderHqBadgeCount(document_object, unread_count),
+        UpdateBadgeCount: (active_shipment_count) => RenderHqBadgeCount(document_object, active_shipment_count),
         ShowToast: (toast_event) => RenderHqToast(root_element, toast_event),
         IsLedgerOpen: dependencies.IsLedgerOpen,
         RefreshLedger: () => FetchAndRenderHqLedger(

@@ -208,6 +208,8 @@
                 transition: none !important;
             }
         }
+
+        @include('book-shipments.hq.editor-style')
     </style>
 @endsection
 

@@ -266,10 +266,7 @@ class BookShipmentService
     public function Cancel(BookShipment $shipment, User $actor, string $reason): BookShipment
     {
         $this->AssertHqPermission($actor, 'book-shipment-cancel');
-        $reason = trim($reason);
-        if (mb_strlen($reason) < 3 || mb_strlen($reason) > 1000) {
-            throw new BookShipmentException(BookShipmentException::CANCELLATION_REASON_INVALID);
-        }
+        $reason = $this->NormalizeCancellationReason($reason);
 
         $cancelled_shipment = DB::transaction(function () use ($shipment, $actor, $reason): BookShipment {
             $locked_shipment = $this->LockShipment($shipment);
@@ -311,6 +308,59 @@ class BookShipmentService
         });
 
         return $this->RefreshShipment($cancelled_shipment);
+    }
+
+    public function DiscardDraft(BookShipment $shipment, User $actor, string $reason): BookShipment
+    {
+        $this->AssertHqPermission($actor, 'book-shipment-cancel');
+        $reason = $this->NormalizeCancellationReason($reason);
+
+        $discarded_shipment = DB::transaction(function () use ($shipment, $actor, $reason): BookShipment {
+            $locked_shipment = $this->LockShipment($shipment);
+            if ($locked_shipment->status !== BookShipment::STATUS_DRAFT) {
+                throw new BookShipmentException(BookShipmentException::STATE_CONFLICT);
+            }
+
+            $items = $this->LockShipmentItems($locked_shipment);
+            $source_book_ids = $items
+                ->pluck('source_order_detail_list_id')
+                ->filter()
+                ->map(static fn ($source_book_id): int => (int) $source_book_id)
+                ->sort()
+                ->values()
+                ->all();
+            $source_books = $this->LockSourceBooks($source_book_ids)->keyBy('id');
+
+            foreach ($items as $item) {
+                $source_book = $source_books->get($item->source_order_detail_list_id);
+                if (
+                    $source_book
+                    && (int) $source_book->active_book_shipment_item_id === (int) $item->id
+                ) {
+                    $source_book->forceFill(['active_book_shipment_item_id' => null])->save();
+                }
+            }
+
+            $cancelled_at = now();
+            $locked_shipment->forceFill([
+                'status' => BookShipment::STATUS_CANCELLED,
+                'cancelled_by' => $actor->id,
+                'cancelled_by_name' => $actor->name,
+                'cancelled_at' => $cancelled_at,
+                'cancellation_reason' => $reason,
+            ])->save();
+            $this->CreateLog(
+                $locked_shipment,
+                $actor,
+                BookShipmentLog::ACTION_DRAFT_DISCARDED,
+                $cancelled_at,
+                $reason
+            );
+
+            return $locked_shipment;
+        });
+
+        return $this->RefreshShipment($discarded_shipment);
     }
 
     public function ReceiveAtCentre(
@@ -648,6 +698,16 @@ class BookShipmentService
         sort($normalized_ids, SORT_NUMERIC);
 
         return $normalized_ids;
+    }
+
+    private function NormalizeCancellationReason(string $reason): string
+    {
+        $normalized_reason = trim($reason);
+        if (mb_strlen($normalized_reason) < 3 || mb_strlen($normalized_reason) > 1000) {
+            throw new BookShipmentException(BookShipmentException::CANCELLATION_REASON_INVALID);
+        }
+
+        return $normalized_reason;
     }
 
     private function AssertHqPermission(User $actor, string $permission): void

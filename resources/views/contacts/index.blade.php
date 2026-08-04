@@ -87,6 +87,11 @@
 
                         <div class="card-body">
                             @if ($shipment_context)
+                                @php
+                                    $shipment_context_url = auth()->user()->isHq()
+                                        ? route('book-shipments.show', ['book_shipment' => $shipment_context->id])
+                                        : route('incoming-book-shipments.show', ['book_shipment' => $shipment_context->id]);
+                                @endphp
                                 <div class="alert alert-info" role="status">
                                     <strong>Shipment {{ $shipment_context->shipment_number }}</strong>
                                     <span class="ml-2">
@@ -95,7 +100,7 @@
                                     </span>
                                     <a
                                         class="btn btn-sm btn-outline-primary ml-2"
-                                        href="{{ url('/book-shipments/' . $shipment_context->id) }}"
+                                        href="{{ $shipment_context_url }}"
                                     >
                                         Open shipment
                                     </a>

@@ -60,7 +60,7 @@
                         <i class="nav-icon fas fa-inbox"></i>
                         <p>
                             Incoming Book Shipments
-                            <span class="badge badge-warning ml-1" data-book-shipment-badge="centre" hidden aria-label="No incoming shipments waiting"></span>
+                            <span class="badge badge-danger ml-1" data-book-shipment-badge="centre" hidden aria-label="No incoming shipments waiting"></span>
                         </p>
                     </a>
                 </li>
@@ -72,7 +72,7 @@
                         <i class="nav-icon fas fa-boxes-stacked"></i>
                         <p>
                             Book Shipments
-                            <span class="badge badge-warning ml-1" data-book-shipment-badge="hq" hidden aria-label="No unread Centre receipt notifications"></span>
+                            <span class="badge badge-danger ml-1" data-book-shipment-badge="hq" hidden aria-label="No active book shipments"></span>
                         </p>
                     </a>
                 </li>
@@ -137,7 +137,7 @@
                     <i class="nav-icon fas fa-boxes-stacked"></i>
                     <p>
                         Book Shipments
-                        <span class="badge badge-warning ml-1" data-book-shipment-badge="hq" hidden aria-label="No unread Centre receipt notifications"></span>
+                        <span class="badge badge-danger ml-1" data-book-shipment-badge="hq" hidden aria-label="No active book shipments"></span>
                     </p>
                 </a>
             </li>
@@ -158,7 +158,7 @@
                     <i class="nav-icon fas fa-inbox"></i>
                     <p>
                         Incoming Book Shipments
-                        <span class="badge badge-warning ml-1" data-book-shipment-badge="centre" hidden aria-label="No incoming shipments waiting"></span>
+                        <span class="badge badge-danger ml-1" data-book-shipment-badge="centre" hidden aria-label="No incoming shipments waiting"></span>
                     </p>
                 </a>
             </li>

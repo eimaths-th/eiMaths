@@ -23,7 +23,7 @@ class BookShipmentController extends Controller
         $this->middleware('permission:book-shipment-list')->only(['Index', 'Show', 'ReceiptAlertSummary']);
         $this->middleware('permission:book-shipment-create')->only(['Candidates', 'Store', 'Update']);
         $this->middleware('permission:book-shipment-dispatch')->only(['Dispatch']);
-        $this->middleware('permission:book-shipment-cancel')->only(['Cancel']);
+        $this->middleware('permission:book-shipment-cancel')->only(['Cancel', 'Discard']);
     }
 
     public function Index(Request $request)
@@ -54,13 +54,20 @@ class BookShipmentController extends Controller
 
     public function Candidates(CandidateBookShipmentRequest $request): JsonResponse
     {
-        $validated = $request->validated();
-        $candidates = $this->book_shipment_query->GetCandidates(
-            auth()->user(),
-            (int) $validated['destination_centre_id'],
-            $validated['search'] ?? null,
-            (int) ($validated['per_page'] ?? 20)
-        );
+        try {
+            $validated = $request->validated();
+            $candidates = $this->book_shipment_query->GetCandidates(
+                auth()->user(),
+                (int) $validated['destination_centre_id'],
+                $validated['search'] ?? null,
+                (int) ($validated['per_page'] ?? 20),
+                isset($validated['draft_shipment_id'])
+                    ? (int) $validated['draft_shipment_id']
+                    : null
+            );
+        } catch (BookShipmentException $exception) {
+            return $this->ShipmentErrorResponse($exception);
+        }
 
         return $this->PaginatorResponse($candidates);
     }
@@ -150,6 +157,23 @@ class BookShipmentController extends Controller
             );
 
             return $this->MutationResponse($shipment, 'Book shipment cancelled.');
+        } catch (BookShipmentException $exception) {
+            return $this->ShipmentErrorResponse($exception);
+        }
+    }
+
+    public function Discard(
+        CancelBookShipmentRequest $request,
+        BookShipment $book_shipment
+    ): JsonResponse {
+        try {
+            $shipment = $this->book_shipment_service->DiscardDraft(
+                $book_shipment,
+                auth()->user(),
+                $request->validated()['reason']
+            );
+
+            return $this->MutationResponse($shipment, 'Book shipment draft discarded.');
         } catch (BookShipmentException $exception) {
             return $this->ShipmentErrorResponse($exception);
         }

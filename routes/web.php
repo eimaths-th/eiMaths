@@ -90,6 +90,8 @@ Route::group(['middleware' => ['auth']], function () {
         ->name('book-shipments.dispatch');
     Route::post('/book-shipments/{book_shipment}/cancel', [BookShipmentController::class, 'Cancel'])
         ->name('book-shipments.cancel');
+    Route::post('/book-shipments/{book_shipment}/discard', [BookShipmentController::class, 'Discard'])
+        ->name('book-shipments.discard');
     Route::get('/incoming-book-shipments', [IncomingBookShipmentController::class, 'Index'])
         ->name('incoming-book-shipments.index');
     Route::get('/incoming-book-shipments/pending-summary', [IncomingBookShipmentController::class, 'PendingSummary'])

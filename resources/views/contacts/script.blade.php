@@ -1,5 +1,5 @@
 <script>
-    $(document).ready(function() {
+    $(document).ready(async function() {
 
         function showOverlay() {
             $('#overlay').css({
@@ -543,6 +543,9 @@
         const dashboard_date_range = dashboard_filter_params.get('date_range');
         const dashboard_centre = dashboard_filter_params.get('centre');
         const dashboard_shipment_id = dashboard_filter_params.get('shipment_id');
+        const {
+            BuildShipmentStudentListStateOptions,
+        } = await import(@json(asset('js/shipment-student-list-state.js')));
         let reservationChanged = false;
 
         $("#reservation").change(function() {
@@ -551,6 +554,7 @@
         });
 
         const table_option = {
+            ...BuildShipmentStudentListStateOptions(dashboard_shipment_id),
             ajax: {
                 data: function(d) {
                     d.centre = dashboard_centre;
@@ -591,7 +595,6 @@
             //searching: false,
             iDisplayLength: 10,
             lengthMenu: [10, 25, 50, 75, 100],
-            stateSave: true,
             autoWidth: false,
             fixedHeader: true,
             responsive: {
