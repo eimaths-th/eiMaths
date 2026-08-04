@@ -202,7 +202,7 @@ export function CreateCentreIncomingShipmentAlert(dependencies) {
 export function BootstrapCentreIncomingShipmentAlert({
     DocumentObject = globalThis.document,
     WindowObject = globalThis.window,
-    FetchImplementation = globalThis.fetch,
+    FetchImplementation = globalThis.fetch?.bind(globalThis),
     Storage = WindowObject?.localStorage,
 } = {}) {
     if (!DocumentObject || !WindowObject || !FetchImplementation || !Storage) {

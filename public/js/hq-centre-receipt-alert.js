@@ -463,7 +463,7 @@ export function CreateHqCentreReceiptAlert(dependencies) {
 export function BootstrapHqCentreReceiptAlert({
     DocumentObject = globalThis.document,
     WindowObject = globalThis.window,
-    FetchImplementation = globalThis.fetch,
+    FetchImplementation = globalThis.fetch?.bind(globalThis),
     Storage = WindowObject?.localStorage,
 } = {}) {
     if (!DocumentObject || !WindowObject || !FetchImplementation || !Storage) {
