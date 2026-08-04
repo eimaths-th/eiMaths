@@ -3,87 +3,78 @@
 @section('style')
     <style>
         .centre-shipment-page {
-            --centre-ink: #152238;
-            --centre-paper: #f5f7fb;
-            --centre-line: #dbe2ec;
-            --centre-mint: #2f9b78;
-            --centre-amber: #f2b84b;
+            --centre-ink: #343a40;
+            --centre-paper: #f4f6f9;
+            --centre-line: #dee2e6;
+            --centre-primary: #007bff;
             background: var(--centre-paper);
             color: var(--centre-ink);
             min-height: calc(100vh - 57px);
         }
 
         .centre-shipment-hero {
-            background: var(--centre-ink);
-            color: #fff;
-            overflow: hidden;
-            padding: 2.2rem 0 2rem;
-            position: relative;
-        }
-
-        .centre-shipment-hero::after {
-            border: 1px solid rgba(47, 155, 120, .35);
-            border-radius: 50%;
-            content: '';
-            height: 18rem;
-            position: absolute;
-            right: -5rem;
-            top: -8rem;
-            width: 18rem;
+            background: #fff;
+            border-bottom: 1px solid var(--centre-line);
+            color: var(--centre-ink);
+            padding: 1rem 0;
         }
 
         .centre-shipment-eyebrow {
-            color: #6fe0b5;
+            color: #6c757d;
             font-size: .72rem;
             font-weight: 700;
-            letter-spacing: .16em;
+            letter-spacing: .08em;
             text-transform: uppercase;
         }
 
         .centre-shipment-hero h1 {
-            font-size: clamp(1.8rem, 3vw, 2.8rem);
+            color: var(--centre-ink);
+            font-size: clamp(1.65rem, 3vw, 2.25rem);
             font-weight: 700;
-            letter-spacing: -.035em;
-            margin: .35rem 0 .55rem;
+            letter-spacing: normal;
+            margin: .25rem 0 .35rem;
         }
 
         .centre-shipment-hero p {
-            color: rgba(255, 255, 255, .72);
+            color: #6c757d;
             margin: 0;
             max-width: 42rem;
         }
 
         .centre-shipment-content {
-            padding: 1.5rem 0 3rem;
+            padding: 1rem 0 2rem;
         }
 
         .centre-shipment-card {
             background: #fff;
             border: 1px solid var(--centre-line);
-            border-radius: .45rem;
-            box-shadow: 0 8px 24px rgba(21, 34, 56, .05);
+            border-radius: .25rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .08);
         }
 
         .centre-shipment-card-header {
-            border-bottom: 1px solid var(--centre-line);
-            padding: 1rem 1.25rem;
+            background: var(--centre-primary);
+            border-bottom: 0;
+            color: #fff;
+            padding: .75rem 1.25rem;
         }
 
         .centre-shipment-card-header h2 {
+            color: #fff;
             font-size: 1rem;
             font-weight: 700;
             margin: 0;
         }
 
         .centre-shipment-filter {
-            background: #eef2f7;
+            background: #f8f9fa;
             border: 1px solid var(--centre-line);
-            border-radius: .45rem;
+            border-radius: .25rem;
             padding: 1rem;
         }
 
         .centre-shipment-filter label {
-            color: #536174;
+            color: #495057;
             font-size: .75rem;
             font-weight: 700;
             letter-spacing: .03em;
@@ -97,30 +88,30 @@
         .centre-shipment-page button:focus,
         .centre-shipment-page input:focus,
         .centre-shipment-page select:focus {
-            border-color: var(--centre-mint);
-            box-shadow: 0 0 0 .2rem rgba(47, 155, 120, .2);
-            outline: 3px solid rgba(47, 155, 120, .22);
+            border-color: #80bdff;
+            box-shadow: 0 0 0 .2rem rgba(0, 123, 255, .2);
+            outline: 3px solid rgba(0, 123, 255, .25);
             outline-offset: 2px;
         }
 
         .centre-shipment-button {
-            background: var(--centre-mint);
-            border-color: var(--centre-mint);
+            background: var(--centre-primary);
+            border-color: var(--centre-primary);
             color: #fff;
             font-weight: 700;
         }
 
         .centre-shipment-button:hover,
         .centre-shipment-button:focus {
-            background: #267d62;
-            border-color: #267d62;
+            background: #0069d9;
+            border-color: #0062cc;
             color: #fff;
         }
 
         .centre-shipment-table thead th {
             background: #f8fafc;
             border-bottom: 2px solid var(--centre-line);
-            color: #536174;
+            color: #495057;
             font-size: .72rem;
             letter-spacing: .05em;
             text-transform: uppercase;
@@ -132,7 +123,7 @@
         }
 
         .centre-shipment-number {
-            color: var(--centre-ink);
+            color: var(--centre-primary);
             font-weight: 700;
         }
 

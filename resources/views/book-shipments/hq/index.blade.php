@@ -3,106 +3,97 @@
 @section('style')
     <style>
         .book-shipment-page {
-            --shipment-ink: #152238;
-            --shipment-paper: #f5f7fb;
-            --shipment-line: #dbe2ec;
-            --shipment-amber: #f2b84b;
-            --shipment-mint: #2f9b78;
-            --shipment-rust: #d66b57;
+            --shipment-ink: #343a40;
+            --shipment-paper: #f4f6f9;
+            --shipment-line: #dee2e6;
+            --shipment-primary: #007bff;
             background: var(--shipment-paper);
             min-height: calc(100vh - 57px);
             color: var(--shipment-ink);
         }
 
         .book-shipment-hero {
-            background: var(--shipment-ink);
-            color: #fff;
-            padding: 2.2rem 0 2rem;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .book-shipment-hero::after {
-            content: '';
-            position: absolute;
-            width: 18rem;
-            height: 18rem;
-            border: 1px solid rgba(242, 184, 75, .32);
-            border-radius: 50%;
-            right: -5rem;
-            top: -8rem;
+            background: #fff;
+            border-bottom: 1px solid var(--shipment-line);
+            color: var(--shipment-ink);
+            padding: 1rem 0;
         }
 
         .book-shipment-eyebrow {
-            color: var(--shipment-amber);
+            color: #6c757d;
             font-size: .72rem;
             font-weight: 700;
-            letter-spacing: .16em;
+            letter-spacing: .08em;
             text-transform: uppercase;
         }
 
         .book-shipment-hero h1 {
-            font-size: clamp(1.8rem, 3vw, 2.8rem);
+            color: var(--shipment-ink);
+            font-size: clamp(1.65rem, 3vw, 2.25rem);
             font-weight: 700;
-            letter-spacing: -.035em;
-            margin: .35rem 0 .55rem;
+            letter-spacing: normal;
+            margin: .25rem 0 .35rem;
         }
 
         .book-shipment-hero p {
-            color: rgba(255, 255, 255, .72);
+            color: #6c757d;
             margin: 0;
             max-width: 42rem;
         }
 
         .book-shipment-hero-stat {
-            border-left: 1px solid rgba(255, 255, 255, .2);
+            border-left: 1px solid var(--shipment-line);
             padding-left: 1.25rem;
         }
 
         .book-shipment-hero-stat strong {
+            color: var(--shipment-ink);
             display: block;
             font-size: 1.65rem;
             line-height: 1;
         }
 
         .book-shipment-hero-stat span {
-            color: rgba(255, 255, 255, .62);
+            color: #6c757d;
             font-size: .78rem;
         }
 
         .book-shipment-content {
-            padding: 1.5rem 0 3rem;
+            padding: 1rem 0 2rem;
         }
 
         .book-shipment-card {
             background: #fff;
             border: 1px solid var(--shipment-line);
-            border-radius: .45rem;
-            box-shadow: 0 8px 24px rgba(21, 34, 56, .05);
+            border-radius: .25rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .08);
         }
 
         .book-shipment-card-header {
-            border-bottom: 1px solid var(--shipment-line);
-            padding: 1rem 1.25rem;
+            background: var(--shipment-primary);
+            border-bottom: 0;
+            color: #fff;
+            padding: .75rem 1.25rem;
         }
 
         .book-shipment-card-header h2,
         .book-shipment-card-header h3 {
+            color: #fff;
             font-size: 1rem;
             font-weight: 700;
             margin: 0;
         }
 
         .book-shipment-filter {
-            background: #eef2f7;
+            background: #f8f9fa;
             border: 1px solid var(--shipment-line);
-            border-radius: .45rem;
+            border-radius: .25rem;
             padding: 1rem;
         }
 
         .book-shipment-filter label,
         .book-shipment-field label {
-            color: #536174;
+            color: #495057;
             font-size: .75rem;
             font-weight: 700;
             letter-spacing: .03em;
@@ -113,22 +104,22 @@
         .book-shipment-filter .form-control:focus,
         .book-shipment-field .form-control:focus,
         .book-shipment-field .custom-select:focus {
-            border-color: var(--shipment-amber);
-            box-shadow: 0 0 0 .2rem rgba(242, 184, 75, .2);
+            border-color: #80bdff;
+            box-shadow: 0 0 0 .2rem rgba(0, 123, 255, .2);
         }
 
         .book-shipment-button {
-            background: var(--shipment-amber);
-            border-color: var(--shipment-amber);
-            color: #152238;
+            background: var(--shipment-primary);
+            border-color: var(--shipment-primary);
+            color: #fff;
             font-weight: 700;
         }
 
         .book-shipment-button:hover,
         .book-shipment-button:focus {
-            background: #f5c866;
-            border-color: #f5c866;
-            color: #152238;
+            background: #0069d9;
+            border-color: #0062cc;
+            color: #fff;
         }
 
         .book-shipment-button:focus,
@@ -136,14 +127,14 @@
         .book-shipment-page button:focus,
         .book-shipment-page input:focus,
         .book-shipment-page select:focus {
-            outline: 3px solid rgba(242, 184, 75, .55);
+            outline: 3px solid rgba(0, 123, 255, .25);
             outline-offset: 2px;
         }
 
         .book-shipment-table thead th {
             background: #f8fafc;
             border-bottom: 2px solid var(--shipment-line);
-            color: #536174;
+            color: #495057;
             font-size: .72rem;
             letter-spacing: .05em;
             text-transform: uppercase;
@@ -155,12 +146,12 @@
         }
 
         .book-shipment-number {
-            color: var(--shipment-ink);
+            color: var(--shipment-primary);
             font-weight: 700;
         }
 
         .book-shipment-number:hover {
-            color: #8b6419;
+            color: #0056b3;
         }
 
         .book-shipment-status {
@@ -193,7 +184,7 @@
         @media (max-width: 767.98px) {
             .book-shipment-hero-stat {
                 border-left: 0;
-                border-top: 1px solid rgba(255, 255, 255, .2);
+                border-top: 1px solid var(--shipment-line);
                 margin-top: 1.25rem;
                 padding-left: 0;
                 padding-top: 1rem;

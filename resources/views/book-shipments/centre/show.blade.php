@@ -3,62 +3,66 @@
 @section('style')
     <style>
         .centre-receipt-page {
-            --centre-ink: #152238;
-            --centre-paper: #f5f7fb;
-            --centre-line: #dbe2ec;
-            --centre-mint: #2f9b78;
-            --centre-amber: #f2b84b;
+            --centre-ink: #343a40;
+            --centre-paper: #f4f6f9;
+            --centre-line: #dee2e6;
+            --centre-primary: #007bff;
             background: var(--centre-paper);
             color: var(--centre-ink);
             min-height: calc(100vh - 57px);
         }
 
         .centre-receipt-hero {
-            background: var(--centre-ink);
-            color: #fff;
-            padding: 1.5rem 0 1.7rem;
+            background: #fff;
+            border-bottom: 1px solid var(--centre-line);
+            color: var(--centre-ink);
+            padding: 1rem 0;
         }
 
         .centre-receipt-hero h1 {
-            font-size: clamp(1.7rem, 3vw, 2.45rem);
+            color: var(--centre-ink);
+            font-size: clamp(1.45rem, 3vw, 2rem);
             font-weight: 700;
-            letter-spacing: -.035em;
-            margin: .55rem 0 .45rem;
+            letter-spacing: normal;
+            margin: .35rem 0 .3rem;
         }
 
         .centre-receipt-hero p {
-            color: rgba(255, 255, 255, .72);
+            color: #6c757d;
             margin: 0;
         }
 
         .centre-receipt-back {
-            color: #6fe0b5;
+            color: var(--centre-primary);
             font-size: .85rem;
             font-weight: 700;
         }
 
         .centre-receipt-back:hover,
         .centre-receipt-back:focus {
-            color: #fff;
+            color: #0056b3;
         }
 
         .centre-receipt-content {
-            padding: 1.5rem 0 3rem;
+            padding: 1rem 0 2rem;
         }
 
         .centre-receipt-card {
             background: #fff;
             border: 1px solid var(--centre-line);
-            border-radius: .45rem;
-            box-shadow: 0 8px 24px rgba(21, 34, 56, .05);
+            border-radius: .25rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .08);
         }
 
         .centre-receipt-card-header {
-            border-bottom: 1px solid var(--centre-line);
-            padding: 1rem 1.25rem;
+            background: var(--centre-primary);
+            border-bottom: 0;
+            color: #fff;
+            padding: .75rem 1.25rem;
         }
 
         .centre-receipt-card-header h2 {
+            color: #fff;
             font-size: 1rem;
             font-weight: 700;
             margin: 0;
@@ -67,7 +71,7 @@
         .centre-receipt-table thead th {
             background: #f8fafc;
             border-bottom: 2px solid var(--centre-line);
-            color: #536174;
+            color: #495057;
             font-size: .72rem;
             letter-spacing: .05em;
             text-transform: uppercase;
@@ -84,23 +88,23 @@
         .centre-receipt-page button:focus,
         .centre-receipt-page select:focus,
         .centre-receipt-page textarea:focus {
-            border-color: var(--centre-mint);
-            box-shadow: 0 0 0 .2rem rgba(47, 155, 120, .2);
-            outline: 3px solid rgba(47, 155, 120, .22);
+            border-color: #80bdff;
+            box-shadow: 0 0 0 .2rem rgba(0, 123, 255, .2);
+            outline: 3px solid rgba(0, 123, 255, .25);
             outline-offset: 2px;
         }
 
         .centre-receipt-submit {
-            background: var(--centre-mint);
-            border-color: var(--centre-mint);
+            background: #28a745;
+            border-color: #28a745;
             color: #fff;
             font-weight: 700;
         }
 
         .centre-receipt-submit:hover,
         .centre-receipt-submit:focus {
-            background: #267d62;
-            border-color: #267d62;
+            background: #218838;
+            border-color: #1e7e34;
             color: #fff;
         }
 
