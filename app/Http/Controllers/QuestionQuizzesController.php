@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Question;
+use App\Services\Images\ImageSourceContext;
+use App\Services\Images\ImageUploadStorageService;
 use App\Models\Quiz;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -12,6 +14,12 @@ use Illuminate\Validation\Rule;
 
 class QuestionQuizzesController extends Controller
 {
+    private ImageUploadStorageService $image_upload_storage_service;
+
+    public function __construct(ImageUploadStorageService $image_upload_storage_service)
+    {
+        $this->image_upload_storage_service = $image_upload_storage_service;
+    }
     /**
      * Display a listing of the resource.
      */
@@ -436,18 +444,24 @@ class QuestionQuizzesController extends Controller
                 if (isset($questionn['img_name']) && $questionn['img_name'] instanceof \Illuminate\Http\UploadedFile) {
                     $imgName = $questionn['img_name'];
                     if ($imgName instanceof \Illuminate\Http\UploadedFile) {
-                        $fileName = time() . '_' . uniqid() . '.' . $imgName->getClientOriginalExtension();
-                        $imgName->move(public_path('img_questions'), $fileName);
-                        $question->update(['img_name' => $fileName]);
+                        $stored_image = $this->image_upload_storage_service->StoreUploadedImage(
+                            $imgName,
+                            'img_questions',
+                            ImageSourceContext::QUIZ_QUESTION_IMAGE,
+                        );
+                        $question->update(['img_name' => $stored_image->filename]);
                     }
                 }
 
                 if (isset($questionn['answer_explanation_image']) && $questionn['answer_explanation_image'] instanceof \Illuminate\Http\UploadedFile) {
                     $answerExplanationImage = $questionn['answer_explanation_image'];
                     if ($answerExplanationImage instanceof \Illuminate\Http\UploadedFile) {
-                        $fileName = time() . '_' . uniqid() . '.' . $answerExplanationImage->getClientOriginalExtension();
-                        $answerExplanationImage->move(public_path('img_questions'), $fileName);
-                        $question->update(['answer_explanation_image' => $fileName]);
+                        $stored_image = $this->image_upload_storage_service->StoreUploadedImage(
+                            $answerExplanationImage,
+                            'img_questions',
+                            ImageSourceContext::QUIZ_EXPLANATION_IMAGE,
+                        );
+                        $question->update(['answer_explanation_image' => $stored_image->filename]);
                     }
                 }
 
@@ -462,15 +476,15 @@ class QuestionQuizzesController extends Controller
                 } elseif ($questionn['type'] === 'image') {
                     $question->images()->delete();
                     foreach ($questionn['imgOptions'] as $index => $imgOption) {
-                        $path = null;
                         if (isset($imgOption['file']) && $imgOption['file'] instanceof \Illuminate\Http\UploadedFile) {
-
-                            $fileName = time() . '_' . uniqid() . '.' . $imgOption['file']->getClientOriginalExtension();
-
-                            $filePath = $imgOption['file']->move(public_path('images_options'), $fileName);
+                            $stored_image = $this->image_upload_storage_service->StoreUploadedImage(
+                                $imgOption['file'],
+                                'images_options',
+                                ImageSourceContext::QUIZ_IMAGE_OPTION,
+                            );
 
                             $question->images()->create([
-                                'img_name' => $fileName,
+                                'img_name' => $stored_image->filename,
                                 'correct' => $imgOption['correct'],
                             ]);
                         }

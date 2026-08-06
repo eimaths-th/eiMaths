@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Option;
 use App\Models\Question;
+use App\Services\Images\ImageSourceContext;
+use App\Services\Images\ImageUploadStorageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -11,6 +13,12 @@ use Illuminate\Support\Facades\Validator;
 
 class QuestionController extends Controller
 {
+    private ImageUploadStorageService $image_upload_storage_service;
+
+    public function __construct(ImageUploadStorageService $image_upload_storage_service)
+    {
+        $this->image_upload_storage_service = $image_upload_storage_service;
+    }
     /**
      * Display a listing of the resource.
      */
@@ -334,18 +342,22 @@ class QuestionController extends Controller
         
         // Save main image
         if ($request->hasFile('img_name')) {
-            $file = $request->file('img_name');
-            $fileName = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('img_questions'), $fileName);
-            $question->update(['img_name' => $fileName]);
+            $stored_image = $this->image_upload_storage_service->StoreUploadedImage(
+                $request->file('img_name'),
+                'img_questions',
+                ImageSourceContext::QUESTION_IMAGE,
+            );
+            $question->update(['img_name' => $stored_image->filename]);
         }
 
         // Save answer explanation image
         if ($request->hasFile('answer_explanation_image')) {
-            $file = $request->file('answer_explanation_image');
-            $fileName = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('img_questions'), $fileName);
-            $question->update(['answer_explanation_image' => $fileName]);
+            $stored_image = $this->image_upload_storage_service->StoreUploadedImage(
+                $request->file('answer_explanation_image'),
+                'img_questions',
+                ImageSourceContext::QUESTION_EXPLANATION_IMAGE,
+            );
+            $question->update(['answer_explanation_image' => $stored_image->filename]);
         }
 
         // Store answer options
@@ -362,10 +374,13 @@ class QuestionController extends Controller
         if ($validatedData['type'] === 'image') {
             foreach ($request->imgOptions as $imgOption) {
                 if (isset($imgOption['file']) && $imgOption['file'] instanceof \Illuminate\Http\UploadedFile) {
-                    $fileName = time() . '_' . uniqid() . '.' . $imgOption['file']->getClientOriginalExtension();
-                    $imgOption['file']->move(public_path('images_options'), $fileName);
+                    $stored_image = $this->image_upload_storage_service->StoreUploadedImage(
+                        $imgOption['file'],
+                        'images_options',
+                        ImageSourceContext::QUESTION_IMAGE_OPTION,
+                    );
                     $question->images()->create([
-                        'img_name' => $fileName,
+                        'img_name' => $stored_image->filename,
                         'correct' => $imgOption['correct'],
                     ]);
                 }
@@ -615,18 +630,16 @@ class QuestionController extends Controller
         // Handle answer explanation image
         $oldAnswerExplanationImage = $question->answer_explanation_image;
         $removeAnswerExplanationImage = $request->input('remove_answer_explanation_image') === '1';
+        $newAnswerExplanationImage = null;
 
         // 1. If user uploads a new answer explanation image
         if ($request->hasFile('answer_explanation_image')) {
-            // Delete old answer explanation image if exists
-            if ($oldAnswerExplanationImage && file_exists(public_path('img_questions/' . $oldAnswerExplanationImage))) {
-                unlink(public_path('img_questions/' . $oldAnswerExplanationImage));
-            }
-
-            $file = $request->file('answer_explanation_image');
-            $fileName = 'explanation_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('img_questions'), $fileName);
-            $updateData['answer_explanation_image'] = $fileName;
+            $newAnswerExplanationImage = $this->image_upload_storage_service->StoreUploadedImage(
+                $request->file('answer_explanation_image'),
+                'img_questions',
+                ImageSourceContext::QUESTION_EXPLANATION_IMAGE,
+            );
+            $updateData['answer_explanation_image'] = $newAnswerExplanationImage->filename;
         }
         // 2. If user removes the existing answer explanation image
         elseif ($removeAnswerExplanationImage && $oldAnswerExplanationImage) {
@@ -644,20 +657,21 @@ class QuestionController extends Controller
 
         // Update the question with all fields
         $question->update($updateData);
+        if ($newAnswerExplanationImage !== null && $oldAnswerExplanationImage && $oldAnswerExplanationImage !== $newAnswerExplanationImage->filename) {
+            $this->image_upload_storage_service->DeleteStoredImage(public_path('img_questions/' . $oldAnswerExplanationImage));
+        }
         $oldImgName = $request->input('old_img_name');
+        $oldQuestionImage = $question->getOriginal('img_name');
+        $newQuestionImage = null;
 
         // 1. If user uploads a new image
         if ($request->hasFile('img_name')) {
-            // Delete old one if exists
-            if ($oldImgName && file_exists(public_path('img_questions/' . $oldImgName))) {
-                unlink(public_path('img_questions/' . $oldImgName));
-            }
-
-            $img = $request->file('img_name');
-            $fileName = time() . '_' . uniqid() . '.' . $img->getClientOriginalExtension();
-            $img->move(public_path('img_questions'), $fileName);
-
-            $question->img_name = $fileName;
+            $newQuestionImage = $this->image_upload_storage_service->StoreUploadedImage(
+                $request->file('img_name'),
+                'img_questions',
+                ImageSourceContext::QUESTION_IMAGE,
+            );
+            $question->img_name = $newQuestionImage->filename;
         }
 
         // 2. If no new image uploaded but user kept the old one
@@ -675,6 +689,10 @@ class QuestionController extends Controller
         }
 
         $question->save();
+        $old_question_image_to_delete = $oldImgName ?: $oldQuestionImage;
+        if ($newQuestionImage !== null && $old_question_image_to_delete && $old_question_image_to_delete !== $newQuestionImage->filename) {
+            $this->image_upload_storage_service->DeleteStoredImage(public_path('img_questions/' . $old_question_image_to_delete));
+        }
 
         // dd('no');
 
@@ -720,11 +738,14 @@ class QuestionController extends Controller
             if ($request->has('imgOptions')) {
                 foreach ($validatedImageOptions['imgOptions'] as $imgOption) {
                     if (isset($imgOption['file']) && $imgOption['file'] instanceof \Illuminate\Http\UploadedFile) {
-                        $fileName = time() . '_' . uniqid() . '.' . $imgOption['file']->getClientOriginalExtension();
-                        $filePath = $imgOption['file']->move(public_path('images_options'), $fileName);
+                        $stored_image = $this->image_upload_storage_service->StoreUploadedImage(
+                            $imgOption['file'],
+                            'images_options',
+                            ImageSourceContext::QUESTION_IMAGE_OPTION,
+                        );
 
                         $question->images()->create([
-                            'img_name' => $fileName,
+                            'img_name' => $stored_image->filename,
                             'correct' => $imgOption['correct'],
                         ]);
                     }

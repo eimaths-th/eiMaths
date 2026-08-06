@@ -7,6 +7,8 @@ use App\Services\FileUploadService;
 use App\Services\MoneyConvertService;
 use App\Interfaces\MoneyConvertServiceInterface;
 use App\Models\Contact;
+use App\Services\Images\Contracts\ImageConversionDriver;
+use App\Services\Images\InterventionImageConversionDriver;
 use Illuminate\Database\Console\Migrations\StatusCommand;
 
 use Illuminate\Pagination\Paginator;
@@ -26,6 +28,7 @@ class AppServiceProvider extends ServiceProvider
             return new FileUploadService();
         });
         $this->app->bind(MoneyConvertServiceInterface::class, MoneyConvertService::class);
+        $this->app->bind(ImageConversionDriver::class, InterventionImageConversionDriver::class);
     }
 
     /**

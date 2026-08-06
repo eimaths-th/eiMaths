@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\DB;
@@ -20,10 +19,18 @@ use App\Models\HistoryStudentImg;
 use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\OrderDetailList;
+use App\Services\Images\ImageSourceContext;
+use App\Services\Images\ImageUploadStorageService;
 use Carbon\Carbon;
 
 class APIController extends Controller
 {
+    private ImageUploadStorageService $image_upload_storage_service;
+
+    public function __construct(ImageUploadStorageService $image_upload_storage_service)
+    {
+        $this->image_upload_storage_service = $image_upload_storage_service;
+    }
 
     public function login(Request $request)
     {
@@ -371,10 +378,12 @@ class APIController extends Controller
 
         if ($request->hasFile('file')) {
             $image = $request->file('file');
-            $imageName = $image->getClientOriginalName();
-
-            $newname = Str::random(40) . "_" . $imageName;
-            $image->move(public_path('file_upload'), $newname);
+            $stored_image = $this->image_upload_storage_service->StoreUploadedImage(
+                $image,
+                'file_upload',
+                ImageSourceContext::API_STUDENT_HISTORY_IMAGE,
+            );
+            $newname = $stored_image->filename;
         } else {
             $newname = '';
         }
@@ -405,8 +414,12 @@ class APIController extends Controller
             $uploadedFileNames = [];
             foreach ($request->file('files') as $file) {
                 if ($file->isValid()) {
-                    $newname = Str::random(40) . "_" . $file->getClientOriginalName();
-                    $file->move(public_path('file_upload'), $newname);
+                    $stored_image = $this->image_upload_storage_service->StoreUploadedImage(
+                        $file,
+                        'file_upload',
+                        ImageSourceContext::API_STUDENT_HISTORY_IMAGE,
+                    );
+                    $newname = $stored_image->filename;
                     $uploadedFileNames[] = $newname;
 
                     // Save file details to database
@@ -454,9 +467,12 @@ class APIController extends Controller
             $uploadedFileNames = [];
             foreach ($request->file('files') as $file) {
                 if ($file->isValid()) {
-                    $newname = Str::random(40) . "_" . $file->getClientOriginalName();
-                    $file->move(public_path('file_upload'), $newname);
-                    $uploadedFileNames[] = $newname;
+                    $stored_image = $this->image_upload_storage_service->StoreUploadedImage(
+                        $file,
+                        'file_upload',
+                        ImageSourceContext::API_STUDENT_HISTORY_IMAGE,
+                    );
+                    $uploadedFileNames[] = $stored_image->filename;
                 }
             }
 

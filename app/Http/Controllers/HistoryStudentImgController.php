@@ -3,12 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Models\FileUpload;
+use App\Services\Images\ImageSourceContext;
+use App\Services\Images\ImageUploadStorageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
 
 class HistoryStudentImgController extends Controller
 {
+    private ImageUploadStorageService $image_upload_storage_service;
+
+    public function __construct(ImageUploadStorageService $image_upload_storage_service)
+    {
+        $this->image_upload_storage_service = $image_upload_storage_service;
+    }
     /**
      * Display a listing of the resource.
      */
@@ -55,13 +62,22 @@ class HistoryStudentImgController extends Controller
 
             if (!is_array($oldfile)) {
 
-                $newname = Str::random(40) . "_" . $imageName;
-                $image->move(public_path('file_upload'), $newname);
+                $stored_image = $this->image_upload_storage_service->StoreUploadedImage(
+                    $image,
+                    'file_upload',
+                    ImageSourceContext::API_STUDENT_HISTORY_IMAGE,
+                );
 
-                $imageUpload = new FileUpload();
-                $imageUpload->filename = $newname;
-                $imageUpload->oldname = $imageName;
-                $imageUpload->save();
+                try {
+                    $newname = $stored_image->filename;
+                    $imageUpload = new FileUpload();
+                    $imageUpload->filename = $newname;
+                    $imageUpload->oldname = $imageName;
+                    $imageUpload->save();
+                } catch (\Throwable $exception) {
+                    $this->image_upload_storage_service->DeleteStoredImage($stored_image->absolute_path);
+                    throw $exception;
+                }
             }
 
             //return response()->json(['success' => $newname]);

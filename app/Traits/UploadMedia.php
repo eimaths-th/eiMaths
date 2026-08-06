@@ -2,9 +2,14 @@
 
 namespace App\Traits;
 
+use App\Services\Images\ImageConversionOptions;
+use App\Services\Images\ImageConversionService;
+use App\Services\Images\ImageSourceContext;
 use Carbon\Carbon;
 use Google_Client;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 use Modules\AmazonS3\Http\Controllers\AmazonS3Controller;
 use Modules\BunnyStorage\Service\BunnyVideoStream;
 use Modules\Setting\Entities\MediaManager;
@@ -66,7 +71,7 @@ trait UploadMedia
         }
 
         $originalName = $file->getClientOriginalName();
-        $fileExtension = pathinfo($originalName, PATHINFO_EXTENSION);
+        $fileExtension = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
         $ignoreType = [
             'php',
             'js',
@@ -82,60 +87,100 @@ trait UploadMedia
             abort('403');
 
         }
-        $fileSizeInKB = round(filesize($file) / 1024);
-        $host = Settings('active_storage') ?: 'LocalStorage';
+        $conversion_service = app(ImageConversionService::class);
+        $conversion_result = null;
+        $is_convertible_image = $file instanceof UploadedFile
+            && in_array($fileExtension, ['jpg', 'jpeg', 'png'], true);
 
-        $domain = SaasDomain();
-        $current_date = Carbon::now()->format('d-m-Y');
-        $dir = 'public/uploads/' . $domain . '/files/' . $current_date;
-        $data = [
-            'original_name' => $originalName,
-            'extension' => $fileExtension,
-            'type' => self::extToType($fileExtension),
-            'size' => $fileSizeInKB,
-        ];
-
-        if (in_array($host, ['AmazonS3', 'GoogleDrive', 'BunnyCDN', 'DigitalOcean', 'Wasabi', 'Backblaze', 'Dropbox', 'Contabo'])) {
-            $fileContents = file_get_contents($file);
-            $fileContentsBase64 = base64_encode($fileContents);
-
-
-            switch ($host) {
-                case 'GoogleDrive':
-                    $drive = new GoogleDriveController(new Google_Client());
-                    $fileUrl = $drive->storeContentInGDrive(base64_decode($fileContentsBase64), $originalName);
-                    break;
-
-                case 'AmazonS3':
-                    $fileUrl = AmazonS3Controller::s3Upload('s3', $fileContentsBase64, $fileExtension);
-                    break;
-
-                case 'BunnyCDN':
-                    $fileUrl = self::uploadToStorage('google', $fileContentsBase64, $fileExtension);
-                    break;
-
-                default:
-                    break;
-            }
-            $data['file_name'] = $fileUrl;
-            $data['storage'] = $host;
-        } else {
-
-            if (!File::isDirectory($dir)) {
-                File::makeDirectory($dir, 0777, true, true);
+        try {
+            if ($is_convertible_image) {
+                $conversion_result = $conversion_service->PrepareUploadedImage(
+                    $file,
+                    ImageConversionOptions::ForOriginalDimensions(ImageSourceContext::MEDIA_MANAGER),
+                );
             }
 
-            $file->move($dir, $originalName);
-            $data['file_name'] = $dir . '/' . $originalName;
-            $data['storage'] = 'local';
+            $selected_file_path = $conversion_result?->selected_path ?? $file->getRealPath() ?: $file->getPathname();
+            $selected_extension = $conversion_result?->extension ?? $fileExtension;
+            $selected_size_bytes = $conversion_result?->size_bytes ?? self::ReadMediaFileSize($selected_file_path);
+            $stored_name = $conversion_result !== null
+                ? Str::uuid()->toString() . '.' . $selected_extension
+                : $originalName;
+            $host = Settings('active_storage') ?: 'LocalStorage';
+            $domain = SaasDomain();
+            $current_date = Carbon::now()->format('d-m-Y');
+            $dir = 'public/uploads/' . $domain . '/files/' . $current_date;
+            $data = [
+                'original_name' => $originalName,
+                'extension' => $selected_extension,
+                'type' => self::extToType($selected_extension),
+                'size' => round($selected_size_bytes / 1024),
+            ];
+
+            if (in_array($host, ['AmazonS3', 'GoogleDrive', 'BunnyCDN', 'DigitalOcean', 'Wasabi', 'Backblaze', 'Dropbox', 'Contabo'])) {
+                $file_contents = file_get_contents($selected_file_path);
+                if ($file_contents === false) {
+                    throw new \RuntimeException('The media content could not be read.');
+                }
+
+                $file_contents_base64 = base64_encode($file_contents);
+                switch ($host) {
+                    case 'GoogleDrive':
+                        $drive = new GoogleDriveController(new Google_Client());
+                        $file_url = $drive->storeContentInGDrive(base64_decode($file_contents_base64), $stored_name);
+                        break;
+
+                    case 'AmazonS3':
+                        $file_url = AmazonS3Controller::s3Upload('s3', $file_contents_base64, $selected_extension);
+                        break;
+
+                    case 'BunnyCDN':
+                        $file_url = self::uploadToStorage('google', $file_contents_base64, $selected_extension);
+                        break;
+
+                    default:
+                        $file_url = null;
+                        break;
+                }
+
+                if ($file_url === null) {
+                    throw new \RuntimeException('The remote media provider did not return a file URL.');
+                }
+
+                $data['file_name'] = $file_url;
+                $data['storage'] = $host;
+            } else {
+                if (!File::isDirectory($dir)) {
+                    File::makeDirectory($dir, 0777, true, true);
+                }
+
+                $destination_path = $dir . '/' . $stored_name;
+                if ($conversion_result !== null) {
+                    if (!File::copy($selected_file_path, $destination_path)) {
+                        throw new \RuntimeException('The converted media could not be stored.');
+                    }
+                } else {
+                    $file->move($dir, $stored_name);
+                }
+
+                $data['file_name'] = $destination_path;
+                $data['storage'] = 'local';
+            }
+
+            return $data;
+        } finally {
+            if ($conversion_result !== null) {
+                $conversion_service->CleanupPreparedImage($conversion_result);
+            }
         }
-
-        return $data;
     }
 
     private static function extToType($ext)
     {
+        $ext = strtolower($ext);
         if (in_array($ext, ['png', 'jpeg', 'jpg'])) {
+            $type = 'image';
+        } elseif ($ext === 'webp') {
             $type = 'image';
         } elseif (in_array($ext, ['mp4'])) {
             $type = 'video';
@@ -147,6 +192,16 @@ trait UploadMedia
             $type = 'invalid';
         }
         return $type;
+    }
+
+    private static function ReadMediaFileSize(string $path): int
+    {
+        $size_bytes = @filesize($path);
+        if ($size_bytes === false) {
+            throw new \RuntimeException('The media size could not be read.');
+        }
+
+        return (int) $size_bytes;
     }
 
     public function generateLink($media_id, $usable_id, $class, $used_for)

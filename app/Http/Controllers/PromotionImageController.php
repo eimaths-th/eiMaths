@@ -3,11 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Models\PromotionImage;
+use App\Services\Images\ImageSourceContext;
+use App\Services\Images\ImageUploadStorageService;
+use App\Services\Images\StoredImageFile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Throwable;
 
 class PromotionImageController extends Controller
 {
+    private ImageUploadStorageService $image_upload_storage_service;
+
+    public function __construct(ImageUploadStorageService $image_upload_storage_service)
+    {
+        $this->image_upload_storage_service = $image_upload_storage_service;
+    }
     /**
      * Display a listing of the resource.
      */
@@ -40,33 +50,52 @@ class PromotionImageController extends Controller
             'is_for_affiliate' => 'nullable|boolean',
         ]);
 
+        $stored_image = null;
+        $stored_video_path = null;
+
         // Handle file upload
         if ($request->hasFile('image')) {
             $file = $request->file('image');
-            $random = Str::random(10);
-            $originalName = $file->getClientOriginalName();
-            $fileName = time() . '-' . $random . '_' . $originalName; 
-            
-            // Determine directory based on type
-            $directory = $request->type == 'video' ? 'video/promotion' : 'img/promotion';
-            
-            // Move the file
-            $file->move(public_path($directory), $fileName);
-
-            $filePath = $directory . '/' . $fileName;
+            if ($request->type === 'image') {
+                $stored_image = $this->image_upload_storage_service->StoreUploadedImage(
+                    $file,
+                    'img/promotion',
+                    ImageSourceContext::PROMOTION_IMAGE,
+                );
+                $filePath = $stored_image->relative_path;
+            } else {
+                $random = Str::random(10);
+                $originalName = $file->getClientOriginalName();
+                $fileName = time() . '-' . $random . '_' . $originalName;
+                $directory = 'video/promotion';
+                $stored_video_path = public_path($directory . '/' . $fileName);
+                $file->move(public_path($directory), $fileName);
+                $filePath = $directory . '/' . $fileName;
+            }
         } else {
             return back()->with('error', 'No file uploaded.');
         }
 
-        // Store details in database
-        $promotion = new PromotionImage();
-        $promotion->title = $request->title;
-        $promotion->url = $request->url;
-        $promotion->img = $filePath; 
-        $promotion->type = $request->type;
-        $promotion->description = $request->description;
-        $promotion->is_for_affiliate = $request->has('is_for_affiliate') ? 1 : 0;
-        $promotion->save();
+        try {
+            // Store details in database
+            $promotion = new PromotionImage();
+            $promotion->title = $request->title;
+            $promotion->url = $request->url;
+            $promotion->img = $filePath;
+            $promotion->type = $request->type;
+            $promotion->description = $request->description;
+            $promotion->is_for_affiliate = $request->has('is_for_affiliate') ? 1 : 0;
+            $promotion->save();
+        } catch (Throwable $exception) {
+            if ($stored_image instanceof StoredImageFile) {
+                $this->image_upload_storage_service->DeleteStoredImage($stored_image->absolute_path);
+            }
+            if ($stored_video_path !== null) {
+                @unlink($stored_video_path);
+            }
+
+            throw $exception;
+        }
 
         return back()->with('success', 'Marketing content uploaded successfully!');
     }

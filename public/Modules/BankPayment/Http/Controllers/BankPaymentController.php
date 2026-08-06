@@ -3,6 +3,10 @@
 namespace Modules\BankPayment\Http\Controllers;
 
 use App\DepositRecord;
+use App\Services\Images\ImageConversionOptions;
+use App\Services\Images\ImageConversionResult;
+use App\Services\Images\ImageConversionService;
+use App\Services\Images\ImageSourceContext;
 use App\Traits\ImageStore;
 use App\Traits\SendNotification;
 use App\User;
@@ -12,13 +16,23 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 use Modules\BankPayment\Entities\BankPaymentRequest;
 use Modules\Organization\Entities\OrganizationFinance;
 use Modules\Organization\Events\CourseSellCommissionEvent;
+use Throwable;
 
 class BankPaymentController extends Controller
 {
     use ImageStore, SendNotification;
+
+    private ImageConversionService $image_conversion_service;
+
+    public function __construct(ImageConversionService $image_conversion_service)
+    {
+        $this->image_conversion_service = $image_conversion_service;
+    }
 
     /**
      * Display a listing of the resource.
@@ -48,37 +62,80 @@ class BankPaymentController extends Controller
     public function store(Request $request)
     {
 
+        $stored_absolute_path = null;
+        $image_path = null;
+
         try {
 
-            $payment = new BankPaymentRequest();
-            $payment->user_id = Auth::user()->id ?? 0;
-            $payment->bank_name = $request->bank_name;
-            $payment->branch_name = $request->branch_name;
-            $payment->account_number = $request->account_number;
-            $payment->account_holder = $request->account_holder;
-            $payment->account_type = $request->type;
-            $payment->amount = $request->deposit_amount;
-
-
             if ($request->hasFile('image')) {
-
-                $image = $request->file('image');
-
-                $name = md5($request->account_number . rand(0, 10000)) . '.' . $image->getClientOriginalExtension();
-                $upload_path = 'public/uploads/bankpayment/';
-                $image->move($upload_path, $name);
-                $payment->image = 'public/uploads/bankpayment/' . $name;
-
+                [$stored_absolute_path, $image_path] = $this->StoreBankPaymentImage($request->file('image'));
             }
-            $payment->save();
+
+            DB::transaction(function () use ($request, $image_path): void {
+                $payment = new BankPaymentRequest();
+                $payment->user_id = Auth::user()->id ?? 0;
+                $payment->bank_name = $request->bank_name;
+                $payment->branch_name = $request->branch_name;
+                $payment->account_number = $request->account_number;
+                $payment->account_holder = $request->account_holder;
+                $payment->account_type = $request->type;
+                $payment->amount = $request->deposit_amount;
+                $payment->image = $image_path ?? null;
+                $payment->save();
+            });
 
             Toastr::success(trans('payment.Your request has pending. Please wait for approved'), trans('common.Success'));
 
             return true;
-        } catch (\Exception $e) {
+        } catch (Throwable $e) {
+            if ($stored_absolute_path !== null && is_file($stored_absolute_path)) {
+                @unlink($stored_absolute_path);
+            }
             Toastr::error($e->getMessage(), trans('common.Failed'));
             return false;
 
+        }
+    }
+
+    /** @return array{0: string, 1: string} */
+    private function StoreBankPaymentImage(\Illuminate\Http\UploadedFile $uploaded_file): array
+    {
+        $folder_path = 'uploads/bankpayment';
+        $destination_directory = public_path($folder_path);
+        File::ensureDirectoryExists($destination_directory);
+        $conversion_result = null;
+        $stored_absolute_path = null;
+
+        try {
+            if (in_array(strtolower($uploaded_file->getClientOriginalExtension()), ['jpg', 'jpeg', 'png'], true)) {
+                $conversion_result = $this->image_conversion_service->PrepareUploadedImage(
+                    $uploaded_file,
+                    ImageConversionOptions::ForOriginalDimensions(ImageSourceContext::BANK_PAYMENT_IMAGE),
+                );
+                $stored_extension = $conversion_result->extension;
+                $source_path = $conversion_result->selected_path;
+            } else {
+                $stored_extension = strtolower($uploaded_file->getClientOriginalExtension());
+                $source_path = $uploaded_file->getRealPath() ?: $uploaded_file->getPathname();
+            }
+
+            $stored_basename = Str::uuid()->toString() . '.' . $stored_extension;
+            $stored_absolute_path = $destination_directory . DIRECTORY_SEPARATOR . $stored_basename;
+            if (!File::copy($source_path, $stored_absolute_path)) {
+                throw new \RuntimeException('The bank payment image could not be stored.');
+            }
+
+            return [$stored_absolute_path, 'public/' . $folder_path . '/' . $stored_basename];
+        } catch (Throwable $exception) {
+            if ($stored_absolute_path !== null && is_file($stored_absolute_path)) {
+                @unlink($stored_absolute_path);
+            }
+
+            throw $exception;
+        } finally {
+            if ($conversion_result instanceof ImageConversionResult) {
+                $this->image_conversion_service->CleanupPreparedImage($conversion_result);
+            }
         }
     }
 

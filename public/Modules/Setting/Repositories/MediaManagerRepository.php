@@ -5,6 +5,7 @@ namespace Modules\Setting\Repositories;
 use App\Traits\UploadMedia;
 use Illuminate\Support\Facades\Auth;
 use Modules\Setting\Entities\MediaManager;
+use Throwable;
 
 class MediaManagerRepository
 {
@@ -69,7 +70,16 @@ class MediaManagerRepository
     {
         $file_info = $this->mediaUpload($file);
         $file_info['user_id'] = Auth::id();
-        return MediaManager::create($file_info);
+
+        try {
+            return MediaManager::create($file_info);
+        } catch (Throwable $exception) {
+            if (!empty($file_info['file_name'])) {
+                $this->deleteFile($file_info['file_name']);
+            }
+
+            throw $exception;
+        }
     }
 
     public function destroy($id)

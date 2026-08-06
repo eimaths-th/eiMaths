@@ -8,6 +8,9 @@ use App\Models\Feedback;
 use App\Models\HistoryStudentImg;
 use App\Models\Histrories;
 use App\Models\Parents;
+use App\Services\Images\ImageSourceContext;
+use App\Services\Images\ImageUploadStorageService;
+use App\Services\Images\StoredImageFile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -20,6 +23,12 @@ use App\Mail\RegistrationConfirmation;
 
 class ParentAuthController extends Controller
 {
+    private ImageUploadStorageService $image_upload_storage_service;
+
+    public function __construct(ImageUploadStorageService $image_upload_storage_service)
+    {
+        $this->image_upload_storage_service = $image_upload_storage_service;
+    }
     /**
      * Login parent and return token
      *
@@ -154,15 +163,8 @@ class ParentAuthController extends Controller
 
             $user = Parents::find($validated['parent_id']);
 
-            // Debug information (will be removed later)
-            Log::info('Debug Info:', [
-                'provided_password' => $validated['old_password'],
-                'stored_hash' => $user->password,
-                'check_result' => Hash::check($validated['old_password'], $user->password)
-            ]);
-
             if (!Hash::check($validated['old_password'], $user->password)) {
-                Log::error('Password mismatch for user ID: ' . $user->id);
+                Log::warning('parent_password_verification.failed', ['parent_id' => $user->id]);
                 return response()->json([
                     'success' => false,
                     'message' => 'Old password is incorrect'
@@ -193,6 +195,8 @@ class ParentAuthController extends Controller
     }
     public function feedback(Request $request)
     {
+        $stored_image = null;
+
         try {
             $validated = $request->validate([
                 'parent_id' => 'required|exists:parents,id',
@@ -211,19 +215,18 @@ class ParentAuthController extends Controller
 
             $user = Parents::find($validated['parent_id']);
 
-            // Debug information (will be removed later)
-            Log::info('Feedback Info:', [
+            Log::info('parent_feedback.received', [
                 'parent_id' => $user->id,
-                'title' => $validated['title'],
-                'description' => $validated['description']
+                'has_image' => $request->hasFile('image_feedback'),
             ]);
 
             if ($request->hasFile('image_feedback')) {
-                $image = $request->file('image_feedback');
-                $randomString = Str::random(10); // Use Laravel's Str helper
-                $imageName = time() . '_' . $randomString . '.' . $image->getClientOriginalExtension();
-                $image->move(public_path('feedback_images'), $imageName);
-                $validated['image_feedback'] = $imageName;
+                $stored_image = $this->image_upload_storage_service->StoreUploadedImage(
+                    $request->file('image_feedback'),
+                    'feedback_images',
+                    ImageSourceContext::PARENT_FEEDBACK_IMAGE,
+                );
+                $validated['image_feedback'] = $stored_image->filename;
             } else {
                 $validated['image_feedback'] = null; // Set to null if no image is uploaded
             }
@@ -248,6 +251,9 @@ class ParentAuthController extends Controller
                 'errors' => $e->errors()
             ], 422);
         } catch (\Exception $e) {
+            if ($stored_image instanceof StoredImageFile) {
+                $this->image_upload_storage_service->DeleteStoredImage($stored_image->absolute_path);
+            }
             Log::error('Password reset error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,

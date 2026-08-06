@@ -5,9 +5,14 @@ namespace App\Http\Controllers;
 use App\Mail\RegistrationConfirmation;
 use App\Mail\CoursePendingConfirmation;
 use App\Services\TelegramService;
+use App\Services\Images\ImageConversionOptions;
+use App\Services\Images\ImageConversionResult;
+use App\Services\Images\ImageConversionService;
+use App\Services\Images\ImageSourceContext;
 use App\Models\bookuse;
 use App\Models\Contact;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Modules\CourseSetting\Entities\Course;
 use Modules\CourseSetting\Entities\CourseLevel;
 use Modules\Localization\Entities\Language;
@@ -23,6 +28,7 @@ use App\Models\Sterm;
 use App\Models\studentRunningNumber;
 use App\Models\term;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Modules\CourseSetting\Entities\Category;
 use Brian2694\Toastr\Facades\Toastr;
@@ -36,12 +42,19 @@ use GuzzleHttp\Client;
 use Svg\Tag\Rect;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
+use Throwable;
 
 
 // use Toastr;
 
 class CourseController extends Controller
 {
+    private ImageConversionService $image_conversion_service;
+
+    public function __construct(ImageConversionService $image_conversion_service)
+    {
+        $this->image_conversion_service = $image_conversion_service;
+    }
     public function coursePageSection(Request $request)
     {
         $query = Course::with([
@@ -351,43 +364,34 @@ class CourseController extends Controller
             'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        // Save the image
-        $today = Carbon::now()->format('d-m-Y');
-        $folderPath = "uploads/main/files/{$today}";
-        $imagePath = '';
-        // Store the uploaded image
-        if ($request->hasFile('image')) {
-            if (!file_exists(public_path($folderPath))) {
-                mkdir(public_path($folderPath), 0777, true);
-            }
-            $fileName = Str::random(10) . '-' . $request->file('image')->getClientOriginalName();
-            $request->file('image')->move(public_path($folderPath), $fileName);
+        $image_path = null;
+
+        try {
+            $image_path = $this->StoreCourseImage($request->file('image'));
+
+            DB::transaction(function () use ($request, $image_path): void {
+                $add_course = new Course;
+                $add_course->category_id = $request->input('category_id');
+                $add_course->user_id = Auth::id();
+                $add_course->lang_id = $request->input('lang_id');
+                $add_course->title = $request->input('title');
+                $add_course->slug = $request->input('title');
+                $add_course->image = $image_path;
+                $add_course->thumbnail = $image_path;
+                $add_course->price = $request->input('price');
+                $add_course->publish = $request->input('publish');
+                $add_course->status = $request->input('status');
+                $add_course->level = $request->input('level');
+                $add_course->type = $request->input('type');
+                $add_course->scope = $request->input('scope');
+                $add_course->mode_of_delivery = $request->input('mode_of_delivery');
+                $add_course->show_mode_of_delivery = $request->input('show_mode_of_delivery');
+                $add_course->save();
+            });
+        } catch (Throwable $exception) {
+            $this->DeleteStoredCourseImage($image_path);
+            throw $exception;
         }
-        // dd($folderPath, $request->all());
-        $imagePath = 'public/' . $folderPath . '/' . $fileName;
-
-        $addCourse = new Course;
-        $addCourse->category_id = $request->input('category_id');
-        $addCourse->user_id = Auth::id();
-        $addCourse->lang_id = $request->input('lang_id');
-        $addCourse->title = $request->input('title');
-        $addCourse->slug = $request->input('title');
-        $addCourse->image = $imagePath; // Path after storing the image
-        $addCourse->thumbnail = $imagePath; // Path after storing the image
-        $addCourse->price = $request->input('price');
-
-        $addCourse->publish = $request->input('publish'); // Assuming radio button values are 1 or 0
-        $addCourse->status = $request->input('status'); // Assuming radio button values are 1 or 0
-        $addCourse->level = $request->input('level'); // Assuming radio button values are 1 or 0
-        $addCourse->type = $request->input('type'); // Assuming radio button values are 1 or 0
-        $addCourse->scope = $request->input('scope'); // Assuming radio button values are 1 or 0
-        $addCourse->mode_of_delivery = $request->input('mode_of_delivery'); // Assuming radio button values are 1 or 0
-        $addCourse->show_mode_of_delivery = $request->input('show_mode_of_delivery'); // Assuming radio button values are 1 or 0
-
-
-
-        // Save the course
-        $addCourse->save();
 
         return response()->json(['success' => true, 'message' => 'Course added successfully.']);
     }
@@ -432,41 +436,42 @@ class CourseController extends Controller
             // 'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // Add image validation
         ]);
         $course = Course::findOrFail($id);
-        $oldPath = $course->image;
-        $imagePath = $oldPath;
-        // Store the uploaded image
-        if ($request->hasFile('image')) {
-            if (file_exists(public_path($oldPath)) && $oldPath != 'default_image_path') {
-                unlink(public_path($oldPath));  // Delete old image file
-            }
+        $old_path = $course->image;
+        $image_path = $old_path;
+        $new_image_path = null;
 
-            $today = Carbon::now()->format('d-m-Y');
-            $folderPath = "uploads/main/files/{$today}";
-            if (!file_exists(public_path($folderPath))) {
-                mkdir(public_path($folderPath), 0777, true);
-            }
-            $fileName = Str::random(10) . '-' . $request->file('image')->getClientOriginalName();
-            $request->file('image')->move(public_path($folderPath), $fileName);
-            $imagePath = 'public/' . $folderPath . '/' . $fileName;
+        if ($request->hasFile('image')) {
+            $new_image_path = $this->StoreCourseImage($request->file('image'));
+            $image_path = $new_image_path;
         }
 
-        $course->category_id = $request->input('category_id');
-        $course->user_id = Auth::id();
-        $course->lang_id = $request->input('lang_id');
-        $course->title = $request->input('title');
-        $course->slug = $request->input('title');
-        $course->image = $imagePath;
-        $course->thumbnail = $imagePath;
-        $course->price = $request->input('price');
-        $course->publish = $request->input('publish');
-        $course->status = $request->input('status');
-        $course->level = $request->input('level');
-        $course->type = $request->input('type');
-        $course->scope = $request->input('scope');
-        $course->mode_of_delivery = $request->input('mode_of_delivery');
-        $course->show_mode_of_delivery = $request->input('show_mode_of_delivery');
-        // Save the course
-        $course->save();
+        try {
+            DB::transaction(function () use ($request, $course, $image_path): void {
+                $course->category_id = $request->input('category_id');
+                $course->user_id = Auth::id();
+                $course->lang_id = $request->input('lang_id');
+                $course->title = $request->input('title');
+                $course->slug = $request->input('title');
+                $course->image = $image_path;
+                $course->thumbnail = $image_path;
+                $course->price = $request->input('price');
+                $course->publish = $request->input('publish');
+                $course->status = $request->input('status');
+                $course->level = $request->input('level');
+                $course->type = $request->input('type');
+                $course->scope = $request->input('scope');
+                $course->mode_of_delivery = $request->input('mode_of_delivery');
+                $course->show_mode_of_delivery = $request->input('show_mode_of_delivery');
+                $course->save();
+            });
+        } catch (Throwable $exception) {
+            $this->DeleteStoredCourseImage($new_image_path);
+            throw $exception;
+        }
+
+        if ($new_image_path !== null && $old_path !== null && $old_path !== $new_image_path) {
+            $this->DeleteStoredCourseImage($old_path);
+        }
 
         return response()->json(['success' => true, 'message' => 'Course updated successfully.']);
     }
@@ -1215,29 +1220,150 @@ class CourseController extends Controller
             return response()->json(['success' => false, 'message' => 'Course pending not found.'], 404);
         }
 
-        // Handle the file upload
-        $folderPath = "img/payment_slips";
-        $imagePath = '';
-
-        if ($request->hasFile('payment_slip')) {
-            // dd( $request->all(),$coursePending);
-
-            $fileName = time() . Str::random(10) . '-' . $request->file('payment_slip')->getClientOriginalName();
-
-            $request->file('payment_slip')->move(public_path($folderPath), $fileName);
-            $imagePath =  $folderPath . '/' . $fileName;
-
-            $coursePending->update(['slip' => $imagePath]);
-            // dd( $request->all(),$coursePending);
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Slip uploaded successfully',
-                'coursePending_id' => $coursePending->id // Return the file URL
-            ]);
+        if (!$request->hasFile('payment_slip')) {
+            return response()->json(['success' => false, 'message' => 'No file uploaded.'], 400);
         }
 
-        return response()->json(['success' => false, 'message' => 'No file uploaded.'], 400);
+        $old_slip_path = $coursePending->slip;
+        $new_slip_path = null;
+
+        try {
+            [, $new_slip_path] = $this->StoreCoursePaymentSlip($request->file('payment_slip'));
+
+            DB::transaction(function () use ($coursePending, $new_slip_path): void {
+                $coursePending->update(['slip' => $new_slip_path]);
+            });
+        } catch (Throwable $exception) {
+            if ($new_slip_path !== null) {
+                $this->DeletePublicRelativeImage($new_slip_path);
+            }
+
+            throw $exception;
+        }
+
+        if ($old_slip_path !== null && $old_slip_path !== $new_slip_path) {
+            $this->DeletePublicRelativeImage($old_slip_path);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Slip uploaded successfully',
+            'coursePending_id' => $coursePending->id,
+        ]);
+    }
+
+    private function StoreCourseImage(UploadedFile $uploaded_file): string
+    {
+        $folder_path = 'uploads/main/files/' . Carbon::now()->format('d-m-Y');
+
+        if (!$this->IsConvertibleImageUpload($uploaded_file)) {
+            [, $stored_path] = $this->StoreLegacyPublicImage($uploaded_file, $folder_path, true);
+
+            return $stored_path;
+        }
+
+        [, $stored_path] = $this->StorePreparedPublicImage(
+            $uploaded_file,
+            ImageConversionOptions::ForOriginalDimensions(ImageSourceContext::COURSE_IMAGE),
+            $folder_path,
+            true,
+        );
+
+        return $stored_path;
+    }
+
+    /** @return array{0: string, 1: string} */
+    private function StoreCoursePaymentSlip(UploadedFile $uploaded_file): array
+    {
+        $folder_path = 'img/payment_slips';
+
+        if (!$this->IsConvertibleImageUpload($uploaded_file)) {
+            return $this->StoreLegacyPublicImage($uploaded_file, $folder_path, false);
+        }
+
+        return $this->StorePreparedPublicImage(
+            $uploaded_file,
+            ImageConversionOptions::ForOriginalDimensions(ImageSourceContext::COURSE_PAYMENT_SLIP),
+            $folder_path,
+            false,
+        );
+    }
+
+    /** @return array{0: string, 1: string} */
+    private function StorePreparedPublicImage(
+        UploadedFile $uploaded_file,
+        ImageConversionOptions $conversion_options,
+        string $folder_path,
+        bool $include_public_prefix,
+    ): array {
+        $conversion_result = null;
+        $stored_absolute_path = null;
+        $stored_relative_path = null;
+
+        try {
+            $conversion_result = $this->image_conversion_service->PrepareUploadedImage(
+                $uploaded_file,
+                $conversion_options,
+            );
+            $destination_directory = public_path($folder_path);
+            File::ensureDirectoryExists($destination_directory);
+            $stored_basename = Str::uuid()->toString() . '.' . $conversion_result->extension;
+            $stored_relative_path = ($include_public_prefix ? 'public/' : '') . $folder_path . '/' . $stored_basename;
+            $stored_absolute_path = $destination_directory . DIRECTORY_SEPARATOR . $stored_basename;
+
+            if (!File::copy($conversion_result->selected_path, $stored_absolute_path)) {
+                throw new \RuntimeException('The prepared course image could not be stored.');
+            }
+
+            return [$stored_absolute_path, $stored_relative_path];
+        } catch (Throwable $exception) {
+            if ($stored_absolute_path !== null && is_file($stored_absolute_path)) {
+                @unlink($stored_absolute_path);
+            }
+
+            throw $exception;
+        } finally {
+            if ($conversion_result instanceof ImageConversionResult) {
+                $this->image_conversion_service->CleanupPreparedImage($conversion_result);
+            }
+        }
+    }
+
+    /** @return array{0: string, 1: string} */
+    private function StoreLegacyPublicImage(UploadedFile $uploaded_file, string $folder_path, bool $include_public_prefix): array
+    {
+        $destination_directory = public_path($folder_path);
+        File::ensureDirectoryExists($destination_directory);
+        $stored_basename = Str::random(10) . '-' . $uploaded_file->getClientOriginalName();
+        $stored_absolute_path = $destination_directory . DIRECTORY_SEPARATOR . $stored_basename;
+        $uploaded_file->move($destination_directory, $stored_basename);
+
+        return [
+            $stored_absolute_path,
+            ($include_public_prefix ? 'public/' : '') . $folder_path . '/' . $stored_basename,
+        ];
+    }
+
+    private function IsConvertibleImageUpload(UploadedFile $uploaded_file): bool
+    {
+        return in_array(strtolower($uploaded_file->getClientOriginalExtension()), ['jpg', 'jpeg', 'png'], true);
+    }
+
+    private function DeleteStoredCourseImage(?string $stored_path): void
+    {
+        if ($stored_path === null || $stored_path === '' || $stored_path === 'default_image_path') {
+            return;
+        }
+
+        $this->DeletePublicRelativeImage(str_starts_with($stored_path, 'public/') ? substr($stored_path, 7) : $stored_path);
+    }
+
+    private function DeletePublicRelativeImage(string $relative_path): void
+    {
+        $absolute_path = public_path(ltrim($relative_path, '/\\'));
+        if (is_file($absolute_path)) {
+            @unlink($absolute_path);
+        }
     }
 
     public function senMail(Request $request)

@@ -4,14 +4,23 @@ namespace App\Http\Controllers;
 
 use App\Models\Blog;
 use App\Services\BlogContentRenderer;
+use App\Services\Images\ImageConversionOptions;
+use App\Services\Images\ImageConversionResult;
+use App\Services\Images\ImageConversionService;
+use App\Services\Images\ImageSourceContext;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Throwable;
 use Yajra\DataTables\Facades\DataTables;
 
 class BlogController extends Controller
 {
+    private ImageConversionService $image_conversion_service;
+
     private function generate_thai_slug(string $text): string
     {
         $slug = preg_replace('/[^\p{Thai}a-zA-Z0-9\s\-:]/u', '', trim($text));
@@ -22,8 +31,9 @@ class BlogController extends Controller
         return $slug;
     }
 
-    public function __construct()
+    public function __construct(ImageConversionService $image_conversion_service)
     {
+        $this->image_conversion_service = $image_conversion_service;
         // $this->middleware('permission:blog-list', ['only' => ['index','show']]); // Comment out for public API access
         // For API read-only access, we don't need permission middleware for index and show_by_slug
 
@@ -118,8 +128,10 @@ class BlogController extends Controller
         }
 
         $thumbnail_path = null;
+        $new_thumbnail_path = null;
         if ($request->hasFile('thumbnail')) {
-            $thumbnail_path = $request->file('thumbnail')->store('thumbnails', 'public');
+            $new_thumbnail_path = $this->StoreBlogThumbnail($request->file('thumbnail'));
+            $thumbnail_path = $new_thumbnail_path;
         }
 
         if ($request->meta_keywords) {
@@ -137,18 +149,28 @@ class BlogController extends Controller
             $request->meta_keywords = implode(',', $keyword_array); // แปลงกลับเป็นสตริงคั่นด้วยเครื่องหมาย ,
         }
 
-        $blog = Blog::create([
-            'thumbnail' => $thumbnail_path,
-            'title' => $request->title,
-            'slug' => $slug,
-            'content' => $request->content,
-            'meta_description' => $request->meta_description,
-            'meta_keywords' => $request->meta_keywords,
-            'is_published' => $request->is_published ?? false,
-            'published_at' => $request->is_published ? now() : null,
-            'user_id' => auth()->id(), // Set the author of the blog
-            'pen_name' => $request->pen_name,
-        ]);
+        try {
+            $blog = DB::transaction(function () use ($request, $thumbnail_path, $slug) {
+                return Blog::create([
+                    'thumbnail' => $thumbnail_path,
+                    'title' => $request->title,
+                    'slug' => $slug,
+                    'content' => $request->content,
+                    'meta_description' => $request->meta_description,
+                    'meta_keywords' => $request->meta_keywords,
+                    'is_published' => $request->is_published ?? false,
+                    'published_at' => $request->is_published ? now() : null,
+                    'user_id' => auth()->id(), // Set the author of the blog
+                    'pen_name' => $request->pen_name,
+                ]);
+            });
+        } catch (Throwable $exception) {
+            if ($new_thumbnail_path !== null) {
+                Storage::disk('public')->delete($new_thumbnail_path);
+            }
+
+            throw $exception;
+        }
 
         return redirect()->route('blogs.index')->with('success', 'Blog created successfully.');
     }
@@ -306,12 +328,12 @@ class BlogController extends Controller
             return redirect()->back()->with('error', 'Slug already exists. Please choose a different slug.');
         }
 
-        $thumbnail_path = $blog->thumbnail;
+        $old_thumbnail_path = $blog->thumbnail;
+        $thumbnail_path = $old_thumbnail_path;
+        $new_thumbnail_path = null;
         if ($request->hasFile('thumbnail')) {
-            if ($blog->thumbnail) {
-                Storage::disk('public')->delete($blog->thumbnail);
-            }
-            $thumbnail_path = $request->file('thumbnail')->store('thumbnails', 'public');
+            $new_thumbnail_path = $this->StoreBlogThumbnail($request->file('thumbnail'));
+            $thumbnail_path = $new_thumbnail_path;
         }
 
         if ($request->meta_keywords) {
@@ -332,22 +354,70 @@ class BlogController extends Controller
         // เก็บ content เก่าก่อนอัปเดต
         $old_content = $blog->content;
 
-        $blog->update([
-            'title' => $request->title,
-            'slug' => $slug,
-            'content' => $request->content,
-            'thumbnail' => $thumbnail_path,
-            'meta_description' => $request->meta_description,
-            'meta_keywords' => $request->meta_keywords,
-            'is_published' => $request->is_published ?? false,
-            'published_at' => $request->is_published ? now() : null,
-            'pen_name' => $request->pen_name,
-        ]);
+        try {
+            DB::transaction(function () use ($blog, $request, $slug, $thumbnail_path): void {
+                $blog->update([
+                    'title' => $request->title,
+                    'slug' => $slug,
+                    'content' => $request->content,
+                    'thumbnail' => $thumbnail_path,
+                    'meta_description' => $request->meta_description,
+                    'meta_keywords' => $request->meta_keywords,
+                    'is_published' => $request->is_published ?? false,
+                    'published_at' => $request->is_published ? now() : null,
+                    'pen_name' => $request->pen_name,
+                ]);
+            });
+        } catch (Throwable $exception) {
+            if ($new_thumbnail_path !== null) {
+                Storage::disk('public')->delete($new_thumbnail_path);
+            }
+
+            throw $exception;
+        }
+
+        if ($new_thumbnail_path !== null && $old_thumbnail_path !== null) {
+            if (!Storage::disk('public')->delete($old_thumbnail_path)) {
+                Log::warning('blog_thumbnail.old_delete_failed', [
+                    'blog_id' => $blog->id,
+                ]);
+            }
+        }
 
         // Auto delete รูปภาพที่ไม่ได้ใช้งาน
         $this->AutoDeleteUnusedImages($old_content, $request->content);
 
         return redirect()->route('blogs.index')->with('success', 'Blog updated successfully.');
+    }
+
+    private function StoreBlogThumbnail(UploadedFile $uploaded_file): string
+    {
+        $conversion_result = null;
+        $thumbnail_path = null;
+
+        try {
+            $conversion_result = $this->image_conversion_service->PrepareUploadedImage(
+                $uploaded_file,
+                ImageConversionOptions::ForOriginalDimensions(ImageSourceContext::BLOG_THUMBNAIL),
+            );
+            $thumbnail_path = 'thumbnails/' . Str::uuid()->toString() . '.' . $conversion_result->extension;
+            $selected_bytes = file_get_contents($conversion_result->selected_path);
+            if ($selected_bytes === false || !Storage::disk('public')->put($thumbnail_path, $selected_bytes)) {
+                throw new \RuntimeException('The blog thumbnail could not be stored.');
+            }
+
+            return $thumbnail_path;
+        } catch (Throwable $exception) {
+            if ($thumbnail_path !== null) {
+                Storage::disk('public')->delete($thumbnail_path);
+            }
+
+            throw $exception;
+        } finally {
+            if ($conversion_result instanceof ImageConversionResult) {
+                $this->image_conversion_service->CleanupPreparedImage($conversion_result);
+            }
+        }
     }
 
     /**
