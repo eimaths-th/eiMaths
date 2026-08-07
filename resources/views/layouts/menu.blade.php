@@ -7,6 +7,47 @@
     </a>
 </li>
 @endcan
+
+@if (auth()->check()
+    && auth()->user()->hasVerifiedEmail()
+    && auth()->user()->AffiliateProfile?->status?->value === 'ACTIVE'
+    && (bool) config('affiliate.features.wallet_withdrawals', false))
+    @php
+        $affiliate_finance_route = request()->routeIs(
+            'affiliate.dashboard',
+            'affiliate.payout-accounts.index',
+            'affiliate.withdrawals.index',
+        );
+    @endphp
+    <li class="nav-item {{ $affiliate_finance_route ? 'menu-open' : '' }}">
+        <a href="#" class="nav-link {{ $affiliate_finance_route ? 'active' : '' }}">
+            <i class="nav-icon fas fa-wallet"></i>
+            <p>Affiliate Finance</p>
+            <i class="fas fa-angle-left right"></i>
+        </a>
+        <ul class="nav nav-treeview">
+            <li class="nav-item">
+                <a href="{{ route('affiliate.dashboard') }}" class="nav-link {{ request()->routeIs('affiliate.dashboard') ? 'active' : '' }}">
+                    <i class="nav-icon fas fa-chart-line"></i>
+                    <p>Affiliate Dashboard</p>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{{ route('affiliate.payout-accounts.index') }}" class="nav-link {{ request()->routeIs('affiliate.payout-accounts.*') ? 'active' : '' }}">
+                    <i class="nav-icon fas fa-credit-card"></i>
+                    <p>Payout Accounts</p>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{{ route('affiliate.withdrawals.index') }}" class="nav-link {{ request()->routeIs('affiliate.withdrawals.index') ? 'active' : '' }}">
+                    <i class="nav-icon fas fa-money-bill-transfer"></i>
+                    <p>Withdrawals</p>
+                </a>
+            </li>
+        </ul>
+    </li>
+@endif
+
 {{--  --}}
 @can('crm-leads-menu-view')
 <li class="nav-item {{ Request::routeIs('crm.leads.*', 'tracking-links.*') ? 'menu-open' : '' }}">
@@ -312,11 +353,8 @@
     <li
         class="nav-item {{ in_array(Request::route()->getName(), [
             'affiliate.index',
-            'affiliate-configurations.index',
             'affiliate.courses',
             'courses.pending.index',
-            'config-withdraw.index',
-            'commission-list.index',
             'categories.index',
             'course.list',
             'course.level.list',
@@ -331,11 +369,8 @@
         <a href="#"
             class="nav-link {{ in_array(Request::route()->getName(), [
                 'affiliate.index',
-                'affiliate-configurations.index',
                 'affiliate.courses',
                 'courses.pending.index',
-                'config-withdraw.index',
-                'commission-list.index',
                 'categories.index',
                 'course.list',
                 'course.level.list',
@@ -358,20 +393,6 @@
                     class="nav-link {{ Request::is('courses.pending.index') ? 'active' : '' }}">
                     <i class="nav-icon fa-solid fa-comment-dots"></i>
                     <p>Courses Pending</p>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="{{ route('config-withdraw.index') }}"
-                    class="nav-link {{ Request::is('config-withdraw.index') ? 'active' : '' }}">
-                    <i class="nav-icon fa-solid fa-comment-dots"></i>
-                    <p>Config Withdraw</p>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="{{ route('commission-list.index') }}"
-                    class="nav-link {{ Request::is('commission-list.index') ? 'active' : '' }}">
-                    <i class="nav-icon fa-solid fa-comment-dots"></i>
-                    <p>Commission List</p>
                 </a>
             </li>
             <li class="nav-item">
@@ -440,12 +461,12 @@
                     <p>Affiliate Frontend</p>
                 </a>
             </li>
-            @can('role-list')
+            @can('affiliate-list')
                 <li class="nav-item">
-                    <a href="{{ route('affiliate-configurations.index') }}"
-                        class="nav-link {{ Request::is('affiliate-configurations.index') ? 'active' : '' }}">
-                        <i class="nav-icon fa-solid fa-comment-dots"></i>
-                        <p>Commission Config</p>
+                    <a href="{{ route('affiliate.admin.index') }}"
+                        class="nav-link {{ request()->routeIs('affiliate.admin.*') ? 'active' : '' }}">
+                        <i class="nav-icon fa-solid fa-user-check"></i>
+                        <p>Affiliate Accounts</p>
                     </a>
                 </li>
             @endcan
@@ -457,6 +478,16 @@
                 </a>
             </li>
         </ul>
+    </li>
+@endcan
+
+@can('affiliate-withdrawal-list')
+    <li class="nav-item">
+        <a href="{{ route('affiliate.withdrawals.admin.index') }}"
+            class="nav-link {{ request()->routeIs('affiliate.withdrawals.admin.*') ? 'active' : '' }}">
+            <i class="nav-icon fa-solid fa-money-bill-transfer"></i>
+            <p>Affiliate Withdrawals</p>
+        </a>
     </li>
 @endcan
 @can('quiz-manage')
@@ -558,9 +589,9 @@
 
 @can('user-list')
     <li
-        class="nav-item {{ in_array(Request::route()->getName(), ['users.index', 'users.affiliate', 'roles.index', 'permission.index', 'line-api.index', 'generate.system', 'generate.student', 'student.login']) ? 'menu-open' : '' }}">
+        class="nav-item {{ in_array(Request::route()->getName(), ['users.index', 'affiliate.admin.index', 'roles.index', 'permission.index', 'line-api.index', 'generate.system', 'generate.student', 'student.login']) ? 'menu-open' : '' }}">
         <a href="#"
-            class="nav-link {{ in_array(Request::route()->getName(), ['users.index', 'users.affiliate', 'roles.index', 'permission.index', 'line-api.index', 'generate.system', 'generate.student', 'student.login']) ? 'active' : '' }}">
+            class="nav-link {{ in_array(Request::route()->getName(), ['users.index', 'affiliate.admin.index', 'roles.index', 'permission.index', 'line-api.index', 'generate.system', 'generate.student', 'student.login']) ? 'active' : '' }}">
             <i class="nav-icon fas fa-user-gear"></i>
             <p>User Management</p>
             <i class="fas fa-angle-left right"></i>
@@ -574,8 +605,8 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ route('users.affiliate') }}"
-                        class="nav-link {{ Request::route()->getName() == 'users.affiliate' ? 'active' : '' }}">
+                    <a href="{{ route('affiliate.admin.index') }}"
+                        class="nav-link {{ Request::route()->getName() == 'affiliate.admin.index' ? 'active' : '' }}">
                         <i class="nav-icon fa-solid fa-comment-dots"></i>
                         <p>Users Affiliate</p>
                     </a>

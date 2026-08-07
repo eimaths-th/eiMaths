@@ -2,17 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Domain\Affiliate\Enums\AffiliateProfileStatus;
 use App\Models\User;
+use App\Domain\Affiliate\Services\AffiliateAccountService;
+use App\Http\Requests\Affiliate\RegisterAffiliateRequest;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Exception;
-
-// use Brian2694\Toastr\Toastr;
-use Brian2694\Toastr\Facades\Toastr;
 
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
-use Modules\Affiliate\Entities\AffiliateLink;
-use Modules\Affiliate\Repositories\AffiliateRepository;
 
 class AffiliateAuthController extends Controller
 {
@@ -21,10 +20,10 @@ class AffiliateAuthController extends Controller
      */
     public $page = [];
     public $custom_field = [];
-    protected $affiliateRepo;
+    protected AffiliateAccountService $account_service;
 
     // Constructor or method to initialize the $page property
-    public function __construct(AffiliateRepository $affiliateRepo)
+    public function __construct(AffiliateAccountService $account_service)
     {
         $this->page = [
             "id" => 1,
@@ -80,7 +79,7 @@ class AffiliateAuthController extends Controller
             "required_institute" => 0,
             "editable_institute" => 1
         ];
-        $this->affiliateRepo = $affiliateRepo;
+        $this->account_service = $account_service;
     }
 
     public function showRegistrationFrom()
@@ -93,58 +92,29 @@ class AffiliateAuthController extends Controller
     }
     public function generateUrl($dataGenerate)
     {
-        //
-        return $this->affiliateRepo->firstCreate($dataGenerate);
+        abort(410, 'Legacy Affiliate link generation is no longer available.');
     }
 
-    public function register(Request $request)
+    public function register(RegisterAffiliateRequest $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'phone' => 'required|string|regex:/^[0-9]{10,15}$/|unique:users,phone',
-            'password' => 'required|string|min:8|confirmed',
-        ]);
+        $this->account_service->Register($request->validated());
 
-        $user = User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'phone' => $validated['phone'],
-            'affiliate_request' => 1,
-            'language_code' => 'en',
-            'department_id' => 5,
-            'referral' => generateUniqueId(),
-            'position_id' => 13,
-            'password' => bcrypt($validated['password']),
-        ]);
+        return redirect()->route('affiliate.waiting')->with('success', 'Registration received. Verify your email before approval.');
+    }
 
+    public function Waiting(Request $request): RedirectResponse|View
+    {
+        $affiliate_user = $request->user();
 
-        $user->assignRole('Affiliate-user');
-
-        $referral = $user->referral;
-        $user_id = $user->id;
-        // gennerate url
-        if ($referral) {
-            # code...
-            $user_name = $referral;
-            $url = route('affiliate.courses');
-            $affiliate_link =  $url  . '?ref=' . $referral;
-            // dd($affiliate_link, $url, $user_name);
-            $dataGenerate = [
-                '_token' => csrf_token(),
-                'user_id' => $user_id,
-                'user_name' => $user_name,
-                'url' => $url,
-                'affiliate_link' => $affiliate_link
-            ];
-            // dd($dataGenerate);
-            $this->generateUrl($dataGenerate);
+        if (
+            $affiliate_user instanceof User
+            && $affiliate_user->hasRole('Affiliate-user')
+            && $affiliate_user->AffiliateProfile?->status === AffiliateProfileStatus::ACTIVE
+        ) {
+            return redirect()->route('affiliate.dashboard');
         }
 
-        auth()->login($user);
-
-        // Redirect or return response
-        return redirect()->route('my_affiliate.index')->with('success', 'Registration successful!');
+        return view('affiliate.auth.waiting');
     }
 
     public function login()
@@ -170,7 +140,11 @@ class AffiliateAuthController extends Controller
         // }
         $page = $this->page;
         if (Auth::check()) {
-            return redirect()->route('welcome');
+            return Auth::user()->hasRole('Affiliate-user')
+                ? (Auth::user()->AffiliateProfile?->status?->value === 'ACTIVE'
+                    ? redirect()->route('affiliate.dashboard')
+                    : redirect()->route('affiliate.waiting'))
+                : redirect()->route('welcome');
         }
         return view('affiliate.auth.login', compact('page'));
     }
@@ -184,20 +158,7 @@ class AffiliateAuthController extends Controller
      */
     public function addOrUpdatePaypalAccount(Request $request)
     {
-        // dd($request->all());
-        $validate_rules = [
-            'paypal_account' => 'required',
-        ];
-        $request->validate($validate_rules, validationMessage($validate_rules));
-        try {
-            $this->affiliateRepo->addOrUpdatePaypalAccountUser($request->all());
-            $this->affiliateRepo->addOrUpdateBankAccount($request->all());
-            Toastr::success('Operation successful', 'Success');
-            return back();
-        } catch (Exception $e) {
-            Toastr::error($e->getMessage(), trans('common.Error'));
-            return response()->json(['error' => $e->getMessage()], 503);
-        }
+        abort(410, 'Legacy payout account endpoint has been replaced.');
     }
 
     public function create()

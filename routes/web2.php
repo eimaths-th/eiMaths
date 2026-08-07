@@ -2,12 +2,8 @@
 
 use App\Http\Controllers\AffiliateAuthController;
 use App\Http\Controllers\AffiliateContentController;
-use App\Http\Controllers\AffiliateConfigurationsController;
 use App\Http\Controllers\AffiliateController;
-use App\Http\Controllers\AffiliateTransactionController;
 use App\Http\Controllers\AssignQuizToStudentController;
-use App\Http\Controllers\CommissionListControler;
-use App\Http\Controllers\ConfigWithdrawController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\EiFormController;
@@ -35,13 +31,11 @@ use App\Http\Livewire\Question\QuestionForm;
 use App\Http\Livewire\Question\QuestionList;
 use App\Http\Livewire\Quiz\QuizForm;
 use App\Http\Livewire\Quiz\QuizList;
-use App\Models\affiliateConfigCommission;
 use App\Models\Contact;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Modules\Affiliate\Entities\AffiliateConfiguration;
 
 /*
 |--------------------------------------------------------------------------
@@ -214,18 +208,6 @@ Route::group(['middleware' => ['auth', 'affiliate.redirect']], function () {
     Route::get('/courses/pending/fetch/slip/{id}', [CourseController::class, 'fetchSlip'])->name('courses.pending.fetch.receipt');
     Route::get('/courses/pending/getCheckRefStudnet', [CourseController::class, 'getCheckRefStudnet'])->name('courses.pending.getCheckRefStudnet');
 
-    Route::get('/commission-list', [CommissionListControler::class, 'index'])->name('commission-list.index');
-    Route::post('/commission/update-status', [CommissionListControler::class, 'updateStatus'])->name('commission-list.updateStatus');
-    Route::post('/commission-list/view', [CommissionListControler::class, 'show'])->name('commission-list.view');
-    Route::get('/affiliate-configurations', [AffiliateConfigurationsController::class, 'index'])->name('affiliate-configurations.index');
-    Route::post('/update-commission-config', [AffiliateConfigurationsController::class, 'update'])->name('affiliate-configurations.update');
-
-    Route::get('/config-withdraw', [ConfigWithdrawController::class, 'index'])->name('config-withdraw.index');
-    Route::post('/config-withdraw/approve', [ConfigWithdrawController::class, 'approve_withdraw'])->name('config_withdraw.approve');
-    Route::post('/commission/updateConfigComission', [AffiliateConfigurationsController::class, 'updateConfigComission'])->name('commission.updateConfigComission');
-    Route::post('/approve-withdraws', [ConfigWithdrawController::class, 'approveWithdraws'])->name('withdraw.approve-all');
-    Route::post('/config-withdraw/view', [ConfigWithdrawController::class, 'show'])->name('config-withdraw.view');
-
 
     //feedback routes
     Route::get('/feedback', [FeedbackController::class, 'index'])->name('feedback.index');
@@ -266,32 +248,22 @@ Route::get('/normalize', [App\Http\Controllers\HomeController::class, 'normalize
 Route::get('thank-you', [ContactController::class, 'thank_you'])->name('demo.thank_you');
 
 
-Route::get('/affiliate', [AffiliateController::class, 'fontend'])->name('affiliate.index');
-Route::get('/courses', [AffiliateController::class, 'courses'])->name('affiliate.courses');
+Route::get('/affiliate', [AffiliateController::class, 'fontend'])->middleware('affiliate.referral')->name('affiliate.index');
+Route::get('/courses', [AffiliateController::class, 'courses'])->middleware('affiliate.referral')->name('affiliate.courses');
 // Route::get('/courses', [CourseController::class, 'coursePageSection'])->name('courses.page.section');
 
 Route::get('/affiliate/registration', [AffiliateAuthController::class, 'showRegistrationFrom'])->name('affiliate.registration');
 Route::post('/affiliate/register', [AffiliateAuthController::class, 'register'])->name('affiliate.register');
+Route::get('/affiliate/waiting', [AffiliateAuthController::class, 'Waiting'])->name('affiliate.waiting');
 Route::get('/affiliate/login', [AffiliateAuthController::class, 'login'])->name('affiliate.login');
 
 Route::post('/affiliate/logout', [AffiliateAuthController::class, 'logout'])->name('affiliate.logout');
 
-Route::post('/affiliate/my_affiliate/add-or-update-paypal-account', [AffiliateAuthController::class, 'addOrUpdatePaypalAccount'])->name('add_or_update_paypal_account');
 // In your web.php routes file
-Route::post('/courses/pending', [CourseController::class, 'coursesPendingStore'])->name('courses.pending.store');
+Route::post('/courses/pending', [CourseController::class, 'coursesPendingStore'])->middleware('affiliate.referral')->name('courses.pending.store');
 Route::get('/courses/findPeriodOptions/{department_id}/{day}', [AffiliateController::class, 'findPeriodOptions'])->name('courses.findPeriodOptions');
 Route::post('/payment/upload', [CourseController::class, 'uploadSlip'])->name('payment.upload');
 Route::POST('/senMailconfirm', [CourseController::class, 'senMail'])->name('senMailconfirm');
-
-
-// Route::get('/affiliate/my_affiliate', )->name('my_affiliate.index');
-Route::get('/affiliate/my_affiliate/content', [AffiliateContentController::class, 'index'])->name('my_affiliate.content');
-Route::resource('/affiliate/my_affiliate', AffiliateController::class)->except(['destroy']);
-Route::resource('/affiliate/my_affiliate/withdraw', AffiliateTransactionController::class)->except(['destroy']);
-
-// Route::resource('withdraw_request', 'AffiliateTransactionController')->except(['destroy']);
-Route::post('destroy/withdraw_request', [AffiliateTransactionController::class, 'destroy'])->name('withdraw.destroy');
-Route::post('balance-transfer-to-wallet', [AffiliateTransactionController::class, 'balanceTransferToWallet'])->name('balance_transfer_to_wallet');
 
 
 

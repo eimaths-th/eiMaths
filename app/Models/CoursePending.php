@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Domain\Affiliate\Models\AffiliateProfile;
 
 class CoursePending extends Model
 {
@@ -36,6 +37,16 @@ class CoursePending extends Model
         'price',
         'slip',
     ];
+
+    protected $casts = [
+        'affiliate_captured_at' => 'immutable_datetime',
+        'affiliate_expires_at' => 'immutable_datetime',
+    ];
+
+    public function AffiliateProfile()
+    {
+        return $this->belongsTo(AffiliateProfile::class, 'affiliate_profile_id');
+    }
     public function affiliateCommissions()
     {
         return $this->hasMany(AffiliateCommissionList::class, 'courses_pending_id');

@@ -82,7 +82,7 @@
                                 @php
                                     $affiliateRoute = null;
                                     try {
-                                        $affiliateRoute = route('my_affiliate.index');
+                                        $affiliateRoute = route('affiliate.dashboard');
                                     } catch (Exception $e) {
                                         // Route doesn't exist
                                     }

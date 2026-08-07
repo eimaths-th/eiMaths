@@ -1,4 +1,5 @@
-@extends(theme('auth.layouts.app'))
+@extends('affiliate.auth.layouts.app')
+@section('title', 'Waiting for Approval')
 @section('content')
 
     <style>

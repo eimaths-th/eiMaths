@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Domain\Affiliate\Models\AffiliateCommissionSourceItem;
 
 class OrderDetailList extends Model
 {
@@ -34,5 +35,10 @@ class OrderDetailList extends Model
     public function ActiveBookShipmentItem(): BelongsTo
     {
         return $this->belongsTo(BookShipmentItem::class, 'active_book_shipment_item_id');
+    }
+
+    public function AffiliateCommissionSourceItems(): HasMany
+    {
+        return $this->hasMany(AffiliateCommissionSourceItem::class, 'order_detail_list_id');
     }
 }

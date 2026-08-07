@@ -128,7 +128,7 @@
                                     <div class="profile_info_iner collaps_part_content">
                                         @if (Auth::user()->hasRole('Affiliate-user'))
                                             {{-- <a href="{{ route('studentDashboard') }}">{{ __('dashboard.Dashboard') }}</a> --}}
-                                            <a href="{{ route('my_affiliate.index') }}">Dashboard</a>
+                                            <a href="{{ route('affiliate.dashboard') }}">Dashboard</a>
                                             {{-- <a href="{{ auth()->user()->username ? route('profileUniqueUrl', auth()->user()->username) : '' }}">{{ __('frontendmanage.My Profile') }}</a> --}}
                                             {{-- <a href="#">My Profile</a> --}}
                                             {{-- <a href="{{ route('users.settings') }}">{{ __('frontend.Account Settings') }}</a> --}}
@@ -140,13 +140,19 @@
                                             @endif
                                         @else
                                             {{-- <a href="{{ route('dashboard') }}">{{ __('dashboard.Dashboard') }}</a> --}}
-                                            <a href="{{ route('my_affiliate.index') }}">Dashboard</a>
+                                            <a href="{{ route('affiliate.dashboard') }}">Dashboard</a>
                                             {{-- <a href="#">My Profile</a>
                                             <a href="#">Account Settings</a> --}}
 
                                             {{-- <a href="{{ auth()->user()->name ? route('profileUniqueUrl', auth()->user()->name) : '' }}">{{ __('frontendmanage.My Profile') }}</a> --}}
 
                                             {{-- <a href="{{ route('users.settings') }}">{{ __('frontend.Account Settings') }}</a> --}}
+                                        @endif
+                                        @if (auth()->user()->hasVerifiedEmail()
+                                            && auth()->user()->AffiliateProfile?->status?->value === 'ACTIVE'
+                                            && (bool) config('affiliate.features.wallet_withdrawals', false))
+                                            <a href="{{ route('affiliate.payout-accounts.index') }}">Payout Accounts</a>
+                                            <a href="{{ route('affiliate.withdrawals.index') }}">Withdrawals</a>
                                         @endif
                                         {{-- @if (isModuleActive('UserType'))
                                             @foreach (auth()->user()->userRoles as $role)

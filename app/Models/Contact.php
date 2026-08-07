@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Auth\Authenticatable;
 use App\Exports\ContactsExport;
+use App\Domain\Affiliate\Models\AffiliateAttribution;
 
 /**
  * @property integer $id
@@ -83,6 +84,11 @@ class Contact extends Model implements AuthenticatableContract
     public function NewStudentOrder()
     {
         return $this->belongsTo(Order::class, 'new_student_order_id');
+    }
+
+    public function CurrentAffiliateAttribution()
+    {
+        return $this->belongsTo(AffiliateAttribution::class, 'current_affiliate_attribution_id');
     }
 
     public function histrories()

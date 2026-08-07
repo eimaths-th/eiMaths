@@ -19,7 +19,9 @@ class RedirectIfAffiliateUser
         $user = Auth::user();
         // dd($user);
         if ($user && $user->hasRole('Affiliate-user')) {
-            return redirect()->route('my_affiliate.index');
+            return $user->AffiliateProfile?->status?->value === 'ACTIVE'
+                ? redirect()->route('affiliate.dashboard')
+                : redirect()->route('affiliate.waiting');
         }
 
         return $next($request);

@@ -96,7 +96,8 @@ class RoleController extends Controller
     {
         $validator =  Validator::make($request->all(), [
             'name' => 'required|string|max:255|unique:roles',
-            'permission' => 'required'
+            'permission' => 'nullable|array',
+            'permission.*' => 'integer|exists:permissions,id',
         ]);
 
 
@@ -105,8 +106,10 @@ class RoleController extends Controller
             return response()->json(['errors' => $validator->errors()->all()]);
         }
 
-        $role = Role::create(['name' => $request->input('name')]);
-        $role->syncPermissions($request->input('permission'));
+        DB::transaction(function () use ($request): void {
+            $role = Role::create(['name' => $request->input('name')]);
+            $role->syncPermissions($request->input('permission', []));
+        });
 
         /* return redirect()->route('roles.index')
             ->with('success', 'Role created successfully'); */

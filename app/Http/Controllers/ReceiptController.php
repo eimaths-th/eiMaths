@@ -26,11 +26,14 @@ use Illuminate\Support\Facades\Validator;
 use App\Interfaces\MoneyConvertServiceInterface;
 use Maatwebsite\Excel\Facades\Excel;
 use PDF;
+use App\Domain\Affiliate\Events\AffiliatePaymentConfirmed;
+use App\Domain\Affiliate\Services\AffiliateFinancialSourceGuard;
 
 class ReceiptController extends Controller
 {
 
     protected $MoneyConvertService;
+    protected AffiliateFinancialSourceGuard $financial_source_guard;
     //payment
     const datap = array(array("id" => "1", "name" => "เงินสด/Cash"), array("id" => "2", "name" => "โอนเงิน/Transfer"), array("id" => "3", "name" => "บัตรเครดิต/Credit Card"));
 
@@ -39,7 +42,10 @@ class ReceiptController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    function __construct(MoneyConvertServiceInterface $MoneyConvertService)
+    function __construct(
+        MoneyConvertServiceInterface $MoneyConvertService,
+        AffiliateFinancialSourceGuard $financial_source_guard,
+    )
     {
         $this->middleware('permission:receipt-list|receipt-show|receipt-create|receipt-edit|receipt-delete', ['only' => ['index', 'show']]);
         $this->middleware('permission:receipt-show', ['only' => ['show']]);
@@ -48,6 +54,7 @@ class ReceiptController extends Controller
         $this->middleware('permission:receipt-delete', ['only' => ['destroy']]);
 
         $this->MoneyConvertService = $MoneyConvertService;
+        $this->financial_source_guard = $financial_source_guard;
     }
 
     public function update_name($name, $id)
@@ -134,6 +141,8 @@ class ReceiptController extends Controller
         $maxPrice = $datas_list->max('oprice');
         $maxBPrice = $datas_list->max('obprice');
 
+        $receipt = Receipt::findOrFail($id);
+        $this->financial_source_guard->AssertReceiptUpdateAllowed($receipt, [], true);
         receipt_details::where('receipt_id', $id)->delete();
 
         $receipt_detail = new receipt_details();
@@ -810,6 +819,7 @@ class ReceiptController extends Controller
             'data' => $receiptData,
             'default_billing_details' => $defaultBillingDetails,
             'items' => $receipt_detail,
+            'affiliate_financial_locked' => $this->financial_source_guard->IsReceiptLocked(Receipt::findOrFail($id)),
         ];
 
         // dd($data);
@@ -965,6 +975,10 @@ class ReceiptController extends Controller
         ];
 
         $receipt = Receipt::find($id);
+        if (!$receipt) {
+            return response()->json(['errors' => ['Receipt not found.']], 404);
+        }
+        $this->financial_source_guard->AssertReceiptUpdateAllowed($receipt, $data, true);
         $receipt->update($data);
 
         Order::find($receipt->oid)->update($datao);
@@ -1019,6 +1033,16 @@ class ReceiptController extends Controller
     {
         $id = $request->get('id');
         $receipt = Receipt::find($id);
+        if (!$receipt) {
+            return response()->json(['errors' => ['Receipt not found.']], 404);
+        }
+        $this->financial_source_guard->AssertReceiptUpdateAllowed($receipt, [
+            'receipt_number' => 'generated',
+            'level' => $request->get('book'),
+            'total_fee' => $request->get('price'),
+            'payment_date' => date('Y-m-d'),
+            'status' => 1,
+        ], false);
 
         /* if ($row->book_term == 4) {
             $nextbook = bookuse::select("bookuses.*", "levels.price as nprice")
@@ -1033,12 +1057,15 @@ class ReceiptController extends Controller
        */
 
         //invoice
-        $receipt->receipt_number = ReceiptRunningNumber::generate($receipt->centre);
-        $receipt->level = $request->get('book');
-        $receipt->total_fee = $request->get('price');
-        $receipt->payment_date = date("Y-m-d");
-        $receipt->status = 1;
-        $receipt->save();
+        DB::transaction(function () use ($receipt, $request): void {
+            $receipt->receipt_number = ReceiptRunningNumber::generate($receipt->centre);
+            $receipt->level = $request->get('book');
+            $receipt->total_fee = $request->get('price');
+            $receipt->payment_date = date("Y-m-d");
+            $receipt->status = 1;
+            $receipt->save();
+            event(new AffiliatePaymentConfirmed($receipt->id, now(), (string) ($request->header('X-Correlation-ID') ?: \Illuminate\Support\Str::uuid())));
+        });
 
 
         return response()->json(['success' => true, 'message' => 'Generate Receipt successfully']);

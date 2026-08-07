@@ -1,0 +1,14 @@
+<?php
+
+namespace App\Domain\Affiliate\Enums;
+
+enum AffiliateLedgerEntryType: string
+{
+    case OPENING_BALANCE = 'OPENING_BALANCE';
+    case COMMISSION_RELEASE = 'COMMISSION_RELEASE';
+    case COMMISSION_REVERSAL = 'COMMISSION_REVERSAL';
+    case WITHDRAWAL_RESERVE = 'WITHDRAWAL_RESERVE';
+    case WITHDRAWAL_RELEASE = 'WITHDRAWAL_RELEASE';
+    case WITHDRAWAL_PAID = 'WITHDRAWAL_PAID';
+    case ADJUSTMENT = 'ADJUSTMENT';
+}
