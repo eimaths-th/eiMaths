@@ -69,6 +69,9 @@ class Kernel extends HttpKernel
         'student.auth' => \App\Http\Middleware\StudentAuth::class,
         'auth.userOrStudent' => \App\Http\Middleware\CheckUserOrStudent::class,
         'guest.quiz' => \App\Http\Middleware\GuestQuizAuth::class,
+        'affiliate.feature' => \App\Http\Middleware\RequireAffiliateFeature::class,
+        'affiliate.correlation' => \App\Http\Middleware\AttachAffiliateCorrelationId::class,
+        'affiliate.referral' => \App\Http\Middleware\CaptureAffiliateReferral::class,
     ];
 
 

@@ -677,6 +677,10 @@
                     }
 
                     $('#EditModalBodyTable').html(res.table_html);
+                    if (res.affiliate_financial_locked || res.data.affiliate_financial_locked) {
+                        $('#EditModalBodyTable').find('input, textarea, select, button').prop('disabled', true);
+                        $('#EditModalBodyTable').before('<div class="alert alert-warning" role="alert">Financial source locked: commission evidence already exists. Metadata-only changes remain server-authorized.</div>');
+                    }
                     $('.imgs').html(res.imgs);
                     if (res.data.status == 1) {
                         $('#SubmitEditFormp').css('display', 'none');

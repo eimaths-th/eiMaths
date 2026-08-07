@@ -43,6 +43,7 @@ use Svg\Tag\Rect;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Throwable;
+use App\Domain\Affiliate\Services\AffiliateAttributionService;
 
 
 // use Toastr;
@@ -50,10 +51,12 @@ use Throwable;
 class CourseController extends Controller
 {
     private ImageConversionService $image_conversion_service;
+    private AffiliateAttributionService $affiliate_attribution_service;
 
-    public function __construct(ImageConversionService $image_conversion_service)
+    public function __construct(ImageConversionService $image_conversion_service, AffiliateAttributionService $affiliate_attribution_service)
     {
         $this->image_conversion_service = $image_conversion_service;
+        $this->affiliate_attribution_service = $affiliate_attribution_service;
     }
     public function coursePageSection(Request $request)
     {
@@ -1118,11 +1121,13 @@ class CourseController extends Controller
             'price' => 'required|string|max:255',
 
         ]);
-        $validatedData['ref'] = $request->ref ?? '';
+        $affiliate_context = $request->attributes->get('affiliate_referral_context');
+        $validatedData['ref'] = '';
         $validatedData['status'] = '1';
 
 
         $create = CoursePending::create($validatedData);
+        $this->affiliate_attribution_service->PersistPendingBridge($create, $affiliate_context);
         //line api test
         // $message = "New Course Pending Created:\n"
         //     . "Ref: {$validatedData['ref']}\n"
@@ -1684,6 +1689,15 @@ class CourseController extends Controller
         $input_order['ref'] = $ref_code;
         $input_order['courses_pending_id'] = $courses_pending_id;
         $order = Order::create($input_order);
+        $course_pending = CoursePending::find($courses_pending_id);
+        if ($course_pending !== null) {
+            $this->affiliate_attribution_service->BindPendingToContact(
+                $course_pending,
+                $contact,
+                'course_pending_new_student',
+            );
+        }
+        $this->affiliate_attribution_service->SnapshotOrder($contact, $order);
 
         foreach ($bookss as $dresult) {
             foreach ($dresult as $book) {
@@ -1729,9 +1743,6 @@ class CourseController extends Controller
         $status = 'wait';
         $this->updateWaitingForPayment($status, $courses_pending_id);
 
-        if ($request->get('ref')) {
-            $commmissionList = create_commmission_list($order->id, $courses_pending_id, $request->get('ref')); // on helper
-        }
         $select_list_contact = '<option value="' . $contact->id . '" > ' . $contact->name . '</option>';
         return response()->json([
             'success' => 'Added student information successfully.',
@@ -1741,14 +1752,6 @@ class CourseController extends Controller
             'coin' => $coin,
         ]);
     }
-
-    // private function create_commmission_list($courses_pending_id, $order_id)
-    // {
-    //     dd(
-    //         $courses_pending_id,
-    //         $order_id,
-    //     );
-    // }
 
     private function sendBroadcastMessage($accessToken, $message)
     {

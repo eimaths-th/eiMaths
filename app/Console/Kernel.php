@@ -12,7 +12,14 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // $schedule->command('inspire')->hourly();
+        $schedule->command('affiliate:release-commissions')
+            ->everyMinute()
+            ->withoutOverlapping()
+            ->when(fn (): bool => (bool) config('affiliate.features.commission_release', false));
+        $schedule->command('affiliate:reconcile-wallets')
+            ->dailyAt('01:30')
+            ->withoutOverlapping()
+            ->when(fn (): bool => (bool) config('affiliate.features.wallet_withdrawals', false));
     }
 
     /**

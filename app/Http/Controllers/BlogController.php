@@ -34,12 +34,10 @@ class BlogController extends Controller
     public function __construct(ImageConversionService $image_conversion_service)
     {
         $this->image_conversion_service = $image_conversion_service;
-        // $this->middleware('permission:blog-list', ['only' => ['index','show']]); // Comment out for public API access
-        // For API read-only access, we don't need permission middleware for index and show_by_slug
-
-        // $this->middleware('permission:blog-create', ['only' => ['create','store']]);
-        // $this->middleware('permission:blog-edit', ['only' => ['edit','update']]);
-        // $this->middleware('permission:blog-delete', ['only' => ['destroy']]);
+        $this->middleware('permission:blog-list', ['only' => ['index', 'show']]);
+        $this->middleware('permission:blog-create', ['only' => ['create', 'store']]);
+        $this->middleware('permission:blog-edit', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:blog-delete', ['only' => ['destroy']]);
     }
 
     /**

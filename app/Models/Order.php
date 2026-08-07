@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Domain\Affiliate\Models\AffiliateAttribution;
 
 class Order extends Model
 {
@@ -43,6 +44,15 @@ class Order extends Model
     {
         return $this->hasMany(OrderDetailList::class, 'order_id');
     }
+
+    public function AffiliateAttribution()
+    {
+        return $this->belongsTo(AffiliateAttribution::class, 'affiliate_attribution_id');
+    }
+
+    protected $casts = [
+        'affiliate_commission_rate_basis_points' => 'integer',
+    ];
 
     public function affiliateCommissions()
     {

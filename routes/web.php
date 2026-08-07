@@ -40,8 +40,6 @@ Route::group(['middleware' => ['auth']], function () {
     //Route::delete('/roles/destroy', [RoleController::class, 'destroy'])->name('roles.destroy');
     Route::post('/roles/destroy_all', [RoleController::class, 'destroy_all'])->name('roles.destroy_all');
     Route::resource('users', UserController::class);
-    Route::get('/users/admin/affiliate', [UserController::class,  'affiliateUser'])->name('users.affiliate');
-    Route::DELETE('/users/admin/affiliate/destroy', [UserController::class,  'destroyAffiliateUser'])->name('users.affiliate.destroy');
 
     Route::get('/logout', [UserController::class, 'perform'])->name('logout.perform');
     Route::get('/users/edit/{id}', [UserController::class, 'edit'])->name('users.edit2');
@@ -248,7 +246,9 @@ Route::group(['middleware' => ['auth']], function () {
         $user = Auth::user();
         if ($user) {
             if ($user->hasRole('Affiliate-user')) {
-                return redirect()->route('my_affiliate.index');
+                return $user->AffiliateProfile?->status?->value === 'ACTIVE'
+                    ? redirect()->route('affiliate.dashboard')
+                    : redirect()->route('affiliate.waiting');
             }
             if ($user->hasRole('User')) {
                 return redirect()->route('welcome');
@@ -268,7 +268,9 @@ Route::group(['middleware' => ['auth']], function () {
     //     }
     //     return redirect()->route('home.index'); // Adjust this as needed
     // });
-    Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+    Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])
+        ->middleware('affiliate.redirect')
+        ->name('home');
     Route::post('/contact/export', [ContactController::class, 'exportContact'])->name('contact.export');
     Route::post('/reciept/export', [ReceiptController::class, 'exportReciept'])->name('reciept.export');
 
@@ -288,17 +290,18 @@ Route::group(['middleware' => ['auth']], function () {
     // Image Upload
     Route::post('/upload/image', [ImageUploadController::class, 'upload'])->name('upload.image');
 
-    Route::get('/crm/leads', [CrmLeadController::class, 'index'])->name('crm.leads.index');
-    Route::get('/crm/leads/{lead}', [CrmLeadController::class, 'show'])->name('crm.leads.show');
-    Route::put('/crm/leads/{lead}', [CrmLeadController::class, 'update'])->name('crm.leads.update');
-    Route::post('/crm/leads/{lead}/notes', [CrmLeadController::class, 'storeNote'])->name('crm.leads.notes.store');
-    Route::get('/admin/crm/leads', [CrmLeadController::class, 'index'])->name('admin.crm.leads.index');
-    Route::get('/admin/crm/leads/{lead}', [CrmLeadController::class, 'show'])->name('admin.crm.leads.show');
-
-    Route::get('/tracking-links', [TrackingLinkController::class, 'index'])->name('tracking-links.index');
-    Route::get('/tracking-links/report', [TrackingLinkController::class, 'report'])->name('tracking-links.report');
-    Route::post('/tracking-links', [TrackingLinkController::class, 'store'])->name('tracking-links.store');
-    Route::delete('/tracking-links/{trackingLink}', [TrackingLinkController::class, 'destroy'])->name('tracking-links.destroy');
+    Route::middleware('permission:crm-leads-menu-view')->group(function () {
+        Route::get('/crm/leads', [CrmLeadController::class, 'index'])->name('crm.leads.index');
+        Route::get('/crm/leads/{lead}', [CrmLeadController::class, 'show'])->name('crm.leads.show');
+        Route::put('/crm/leads/{lead}', [CrmLeadController::class, 'update'])->name('crm.leads.update');
+        Route::post('/crm/leads/{lead}/notes', [CrmLeadController::class, 'storeNote'])->name('crm.leads.notes.store');
+        Route::get('/admin/crm/leads', [CrmLeadController::class, 'index'])->name('admin.crm.leads.index');
+        Route::get('/admin/crm/leads/{lead}', [CrmLeadController::class, 'show'])->name('admin.crm.leads.show');
+        Route::get('/tracking-links', [TrackingLinkController::class, 'index'])->name('tracking-links.index');
+        Route::get('/tracking-links/report', [TrackingLinkController::class, 'report'])->name('tracking-links.report');
+        Route::post('/tracking-links', [TrackingLinkController::class, 'store'])->name('tracking-links.store');
+        Route::delete('/tracking-links/{trackingLink}', [TrackingLinkController::class, 'destroy'])->name('tracking-links.destroy');
+    });
 
 });
 
@@ -307,7 +310,7 @@ Route::get('/teacher', function () {
 });
 
 
-Auth::routes();
+Auth::routes(['verify' => true]);
 Route::get('/auth/google', [App\Http\Controllers\GoogleController::class, 'loginWithGoogle'])->name('google.login');
 Route::get('/auth/google/callback', [App\Http\Controllers\GoogleController::class, 'callbackFromGoogle'])->name('google.callback');
 Route::get('/blank', [App\Http\Controllers\HomeController::class, 'blank'])->name('blank');

@@ -34,6 +34,9 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 
 use Carbon\Carbon;
+use App\Domain\Affiliate\Services\AffiliateAttributionService;
+use App\Domain\Affiliate\Services\AffiliateFinancialSourceGuard;
+use App\Domain\Affiliate\Exceptions\AffiliateDomainException;
 
 class ContactController extends Controller
 {
@@ -43,7 +46,11 @@ class ContactController extends Controller
      *
      * @return void
      */
-    public function __construct(private readonly BookReceiptService $book_receipt_service)
+    public function __construct(
+        private readonly BookReceiptService $book_receipt_service,
+        private readonly AffiliateAttributionService $affiliate_attribution_service,
+        private readonly AffiliateFinancialSourceGuard $financial_source_guard,
+    )
     {
         //$this->middleware('auth');
         $this->middleware('permission:student-list|student-create|student-edit|student-delete', ['only' => ['index', 'show']]);
@@ -950,6 +957,9 @@ class ContactController extends Controller
         $input_order['total_price'] = $mprice + $mbprice;
         $input_order['ref'] = $request->get('ref');
         $order = Order::create($input_order);
+        $affiliate_context = $this->affiliate_attribution_service->ReadCookie($request->cookie(config('affiliate.cookie_name')));
+        $this->affiliate_attribution_service->BindToContact($contact, $affiliate_context, 'contact_store');
+        $this->affiliate_attribution_service->SnapshotOrder($contact, $order);
         $input_order['free_course'] = $request->get('free_course', 0);
         $input_order['free_course_reason'] = $request->get('free_course_reason');
         $order->update($input_order);
@@ -1214,6 +1224,10 @@ class ContactController extends Controller
         $input_order['free_course'] = $request->get('free_course', 0);
         $input_order['free_course_reason'] = $request->get('free_course_reason');
         $order = Order::create($input_order);
+        $contact = Contact::where('id', $request->get('student'))->firstOrFail();
+        $affiliate_context = $this->affiliate_attribution_service->ReadCookie($request->cookie(config('affiliate.cookie_name')));
+        $this->affiliate_attribution_service->BindToContact($contact, $affiliate_context, 'contact_receipt');
+        $this->affiliate_attribution_service->SnapshotOrder($contact, $order);
 
         foreach ($bookss as $dresult) {
             foreach ($dresult as $book) {
@@ -1272,11 +1286,6 @@ class ContactController extends Controller
             $input_order_detail2['quantity'] = 1;
             $input_order_detail2['price'] = $fprice2;
             $order_detail2 = OrderDetail::create($input_order_detail2);
-        }
-
-        // dd($request->all());
-        if ($request->get('ref')) {
-            $commmissionList = create_commmission_list($order->id, $courses_pending_id, $request->get('ref')); // on helper
         }
 
         $select_list_contact = '<option value="' . $contact->id . '" > ' . $contact->name . '</option>';
@@ -1660,6 +1669,13 @@ class ContactController extends Controller
         ];
 
         $contact = Contact::find($id);
+        if (!$contact) {
+            return response()->json(['errors' => ['Student not found.']], 404);
+        }
+        $order = Order::find($contact->order);
+        if ($order) {
+            $this->financial_source_guard->AssertTuitionReplacementAllowed($order, collect());
+        }
         $contact->update($contactd);
 
         $order = Order::find($contact->order);
@@ -1799,9 +1815,11 @@ class ContactController extends Controller
     public function destroy(Request $request)
     {
         $id = $request->get('id');
-        Contact::find($id)->delete();
+        $contact = Contact::findOrFail($id);
+        $this->financial_source_guard->AssertContactDeletionAllowed($contact);
         $this->order_clear($id);
         $this->receive_clear($id);
+        $contact->delete();
 
         return ['success' => true, 'message' => 'Deleted student successfully'];
     }
@@ -1812,9 +1830,11 @@ class ContactController extends Controller
         $arr_del  = $request->get('table_records'); //$arr_ans is Array MacAddress
 
         for ($xx = 0; $xx < count($arr_del); $xx++) {
-            Contact::find($arr_del[$xx])->delete();
+            $contact = Contact::findOrFail($arr_del[$xx]);
+            $this->financial_source_guard->AssertContactDeletionAllowed($contact);
             $this->order_clear($arr_del[$xx]);
             $this->receive_clear($arr_del[$xx]);
+            $contact->delete();
         }
 
         return redirect('/contacts')->with('success', 'Deleted student successfully');
@@ -1827,6 +1847,12 @@ class ContactController extends Controller
 
             // Find and delete orders where 'status' is '1'
             $deletedOrderIds = Order::where('cid', $id)->pluck('id')->toArray();
+            foreach ($deletedOrderIds as $deleted_order_id) {
+                $order = Order::find($deleted_order_id);
+                if ($order) {
+                    $this->financial_source_guard->AssertOrderCancellationAllowed($order);
+                }
+            }
             Order::where('cid', $id)->delete();
 
             // Delete related records from the 'order_detail' table
@@ -1837,6 +1863,9 @@ class ContactController extends Controller
             DB::commit();
 
             // Commit the transaction if everything was successful
+        } catch (AffiliateDomainException $e) {
+            DB::rollBack();
+            throw $e;
         } catch (\Exception $e) {
             DB::rollBack();
 
@@ -1849,9 +1878,15 @@ class ContactController extends Controller
     {
         try {
             DB::beginTransaction();
+            foreach (Receipt::where('cid', $id)->get() as $receipt) {
+                $this->financial_source_guard->AssertReceiptUpdateAllowed($receipt, [], true);
+            }
             Receipt::where('cid', $id)->delete();
 
             DB::commit();
+        } catch (AffiliateDomainException $e) {
+            DB::rollBack();
+            throw $e;
         } catch (\Exception $e) {
             DB::rollBack();
         }

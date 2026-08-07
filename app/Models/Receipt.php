@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use App\Domain\Affiliate\Models\AffiliateCommission;
 
 class Receipt extends Model
 {
@@ -38,6 +39,11 @@ class Receipt extends Model
     public function affiliateCommissions()
     {
         return $this->hasMany(AffiliateCommissionList::class, 'receipt_id');
+    }
+
+    public function AffiliateCommissionRecords()
+    {
+        return $this->hasMany(AffiliateCommission::class, 'receipt_id');
     }
     public function contact()
     {

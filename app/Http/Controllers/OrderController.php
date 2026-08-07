@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use AddCommissionListInAffiliate;
 use App\Models\Order;
 use App\Models\ReceiptRunningNumber;
 use App\Models\OrderDetail;
@@ -24,7 +23,6 @@ use App\Models\Invoice;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Interfaces\MoneyConvertServiceInterface;
-use App\Models\AffiliateCommissionList;
 use App\Models\CoursePending;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
@@ -35,21 +33,26 @@ use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\File;
 use Detection\MobileDetect;
 use Exception;
-use Modules\Affiliate\Entities\AffiliateConfiguration;
 use PDF;
+use App\Domain\Affiliate\Events\AffiliatePaymentConfirmed;
+use App\Domain\Affiliate\Services\AffiliateFinancialSourceGuard;
 
 
 class OrderController extends Controller
 {
 
     protected $MoneyConvertService;
+    protected AffiliateFinancialSourceGuard $financial_source_guard;
 
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    function __construct(MoneyConvertServiceInterface $MoneyConvertService)
+    function __construct(
+        MoneyConvertServiceInterface $MoneyConvertService,
+        AffiliateFinancialSourceGuard $financial_source_guard,
+    )
     {
         $this->middleware('permission:order-list|order-show|order-create|order-edit|order-delete', ['only' => ['index', 'show']]);
         $this->middleware('permission:order-show', ['only' => ['show']]);
@@ -58,6 +61,7 @@ class OrderController extends Controller
         $this->middleware('permission:order-delete', ['only' => ['destroy']]);
 
         $this->MoneyConvertService = $MoneyConvertService;
+        $this->financial_source_guard = $financial_source_guard;
     }
     /**
      * Display a listing of the resource.
@@ -540,6 +544,7 @@ class OrderController extends Controller
 
         return response()->json([
             'data' => $data,
+            'affiliate_financial_locked' => $this->financial_source_guard->IsOrderLocked($data),
             //'datas' => $datas,
             'table_html' => $data_html,
             'imgs' => $img,
@@ -608,63 +613,6 @@ class OrderController extends Controller
         }
     }
 
-    // private function update_commmission_list($courses_pending_id, $order_id, $reciept_id)
-    // {
-    //     // Retrieve the order by ID and update the receipt_id
-    //     AffiliateCommissionList::where([
-    //         'order_id' => $order_id,
-    //         'courses_pending_id' => $courses_pending_id,
-    //     ])->update(['reciept_id' => $reciept_id, 'status' => 'paid']); // Correct format
-    // }
-    // private function update_commmission_list2($payment_to, $order_id, $reciept_id)
-    // {
-    //     // Retrieve the order by ID and update the receipt_id
-    //     AffiliateCommissionList::where([
-    //         'order_id' => $order_id,
-    //         'payment_to' => $payment_to,
-    //     ])->update(['reciept_id' => $reciept_id, 'status' => 'paid']); // Correct format
-    // }
-
-    private function sent_ref_to_reciept($ref, $order_id,$courses_pending_id)
-    {
-        $month = date('m');
-        $year = date('Y');
-        $user = User::where('referral', $ref)->first();
-        $order = Order::find($order_id);
-        $aff_config = AffiliateConfiguration::find(3);
-        $commission_rate = $aff_config->value / 100;
-        AffiliateCommissionList::create([
-            'payment_to' => $user->id,
-            'courses_pending_id' => $courses_pending_id,
-            'order_id' => $order_id,
-            'month' => $month,
-            'year' => $year,
-            'status' => 'pending',
-            'commission_amount' => ($order->total_price - ($order->register_fee + $order->access_fee)) * $commission_rate,
-        ]);
-    }
-
-    private function update_commmission_list($order_id, $receipt_id, $courses_pending_id = null, $payment_to = null)
-    {
-        $conditions = ['order_id' => $order_id];
-
-        if ($courses_pending_id) {
-            $conditions['courses_pending_id'] = $courses_pending_id;
-        }
-
-        if ($payment_to) {
-            $conditions['payment_to'] = $payment_to;
-        }
-        // dd($conditions);
-        // Use where with an array for conditions
-        $testbug = AffiliateCommissionList::where($conditions)->update([
-            'reciept_id' => $receipt_id,
-            'status' => 'paid',
-        ]);
-        return $testbug;
-    }
-
-
     public function update(Request $request, $id)
     {
         $order = Order::with('contact')->find($id);
@@ -710,7 +658,33 @@ class OrderController extends Controller
             'updated_by' => Auth::id()
         ];
 
-        $order->update($data);
+        $this->financial_source_guard->AssertOrderUpdateAllowed($order, $data);
+        $receipt = DB::transaction(function () use ($order, $data, $status, $request) {
+            $order->update($data);
+            if ((int) $status !== 1) {
+                return null;
+            }
+
+            $new_receipt = new Receipt();
+            $new_receipt->centre = $order->centre;
+            $new_receipt->cid = $order->cid;
+            $new_receipt->ref = $order->ref;
+            $new_receipt->courses_pending_id = $order->courses_pending_id;
+            $new_receipt->student_no = $order->contact->code;
+            $new_receipt->student_name = $order->contact->name;
+            $new_receipt->billing_details = $order->contact->defaultBillingDetails();
+            $new_receipt->receipt_number = ReceiptRunningNumber::generate($order->centre);
+            $new_receipt->payment_date = date("Y-m-d");
+            $new_receipt->oid = $order->id;
+            $new_receipt->payment = $order->payment;
+            $new_receipt->level = $order->contact->level_name;
+            $new_receipt->total_fee = $order->total_price;
+            $new_receipt->start_term = $order->contact->start_term;
+            $new_receipt->save();
+            event(new AffiliatePaymentConfirmed($new_receipt->id, now(), (string) ($request->header('X-Correlation-ID') ?: \Illuminate\Support\Str::uuid())));
+
+            return $new_receipt;
+        });
 
         /* OrderDetail::where('order_id', $id)->delete();
 
@@ -754,52 +728,11 @@ class OrderController extends Controller
         }
 
         //receipt
-        if ($status == 1) {
-            $receipt = new Receipt();
-            $receipt->centre = $order->centre;
-            $receipt->cid = $order->cid;
-            $receipt->ref = $order->ref;
-            $receipt->courses_pending_id = $order->courses_pending_id;
-            $receipt->student_no = $order->contact->code;
-            $receipt->student_name = $order->contact->name;
-            $receipt->billing_details = $order->contact->defaultBillingDetails();
-            $receipt->receipt_number = ReceiptRunningNumber::generate($order->centre);
-            $receipt->payment_date = date("Y-m-d");
-            $receipt->oid = $order->id;
-            $receipt->payment = $order->payment;
-            $receipt->level = $order->contact->level_name;
-            $receipt->total_fee = $order->total_price;
-            $receipt->start_term = $order->contact->start_term;
-            $receipt->save();
-
-            $check = AffiliateCommissionList::where('order_id', $order->id)->get();
-            // $check = AffiliateCommissionList::where('order_id', $order->id)->count();
-            $c = count($check);
-
-            if ($c == 0 && $order->ref) { 
-
-                // $commission  = $this->sent_ref_to_reciept($order->ref, $receipt->oid, $receipt->courses_pending_id ?? null);
-                create_commmission_list($receipt->oid, $receipt->courses_pending_id ?? null, $order->ref);
-            }
-
+        if ($status == 1 && $receipt !== null) {
             if ($order->courses_pending_id) {
                 $statusss = 'succ';
                 $this->updateWaitingForPayment($statusss, $receipt->courses_pending_id);
             }
-
-            $user_payment_to = User::where('referral', $order->ref)->first();
-
-            if ($order->ref && $order->courses_pending_id) {
-                # code...
-                $testbug = $this->update_commmission_list($receipt->oid, $receipt->id, $receipt->courses_pending_id, $user_payment_to->id);
-                // dd('1', $testbug, 'true');
-            } elseif ($order->ref && !$order->courses_pending_id) {
-
-                $this->update_commmission_list($receipt->oid, $receipt->id, null, $user_payment_to->id);
-                
-            }
-
-            // dd($order->ref, $order->courses_pending_id);
 
             $datas = Receipt::select(
                 "receipts.*",
@@ -940,26 +873,28 @@ class OrderController extends Controller
     {
 
         $order = Order::find($id);
+        if (!$order) {
+            return response()->json(['errors' => ['Order not found.']], 404);
+        }
+        $this->financial_source_guard->AssertOrderCancellationAllowed($order);
         $contact = $order->cid;
-        if ($order) {
-            $order->delete();
+        $order->delete();
 
-            OrderDetail::where('order_id', $id)->delete();
-            OrderDetailList::where('order_id', $id)->delete();
+        OrderDetail::where('order_id', $id)->delete();
+        OrderDetailList::where('order_id', $id)->delete();
 
-            $filestore = FileStore::where([
-                ['module', 'orders'],
-                ['module_id', $id],
-            ])->get();
+        $filestore = FileStore::where([
+            ['module', 'orders'],
+            ['module_id', $id],
+        ])->get();
 
-            if (!$filestore->isEmpty()) {
-                foreach ($filestore as $file) {
-                    $filePath = public_path('file_store/' . $file->filename);
-                    if (file_exists($filePath)) {
-                        unlink($filePath);
-                    }
-                    $file->delete();
+        if (!$filestore->isEmpty()) {
+            foreach ($filestore as $file) {
+                $filePath = public_path('file_store/' . $file->filename);
+                if (file_exists($filePath)) {
+                    unlink($filePath);
                 }
+                $file->delete();
             }
         }
 

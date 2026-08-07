@@ -276,7 +276,7 @@
                                         <i class="fas fa-external-link-alt me-2"></i>
                                         เข้าสู่หน้าพันธมิตร
                                     </a>
-                                    <a href="/affiliate/my_affiliate" class="btn-custom btn-outline">
+                                    <a href="{{ route('affiliate.dashboard') }}" class="btn-custom btn-outline">
                                         <i class="fas fa-user-tie me-2"></i>
                                         จัดการพันธมิตรของฉัน
                                     </a>

@@ -541,6 +541,10 @@
                     $('#EditRegisterFee').val(res.data.register_fee);
                     $('#EditPromotion').val(res.data.promotion);
                     $('#EditModalBodyTable').html(res.table_html);
+                    if (res.affiliate_financial_locked) {
+                        $('#EditTotalCost, #EditRefund, #EditRegisterFee, #EditAccessFee, #EditOtherFee, #EditDiscount, #EditDiscountBook, #EditPayment').prop('disabled', true);
+                        $('#EditModalBodyTable').before('<div class="alert alert-warning" role="alert">Financial source locked: commission evidence already exists. Server authorization remains authoritative.</div>');
+                    }
                     $('.imgs').html(res.imgs);
                     console.log(res.data.status);
                     if (res.data.status == 1) {
