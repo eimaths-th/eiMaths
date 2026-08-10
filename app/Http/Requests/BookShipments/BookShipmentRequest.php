@@ -18,12 +18,32 @@ abstract class BookShipmentRequest extends FormRequest
         return $actor !== null && (int) $actor->disable === 0;
     }
 
+    public function messages(): array
+    {
+        return [
+            'required' => trans('book-shipments.validation.required', [], 'th'),
+            'array' => trans('book-shipments.validation.array', [], 'th'),
+            'integer' => trans('book-shipments.validation.integer', [], 'th'),
+            'min' => trans('book-shipments.validation.min', [], 'th'),
+            'distinct' => trans('book-shipments.validation.distinct', [], 'th'),
+            'string' => trans('book-shipments.validation.string', [], 'th'),
+            'in' => trans('book-shipments.validation.in', [], 'th'),
+            'max' => trans('book-shipments.validation.max', [], 'th'),
+            'prohibited' => trans('book-shipments.validation.prohibited', [], 'th'),
+        ];
+    }
+
+    public function attributes(): array
+    {
+        return trans('book-shipments.validation.attributes', [], 'th');
+    }
+
     protected function failedValidation(ValidatorContract $validator): void
     {
         throw new HttpResponseException(response()->json([
             'error' => [
                 'code' => 'VALIDATION_FAILED',
-                'message' => 'The request data is invalid.',
+                'message' => trans('book-shipments.messages.invalid_request', [], 'th'),
                 'details' => $validator->errors()->toArray(),
             ],
         ], Response::HTTP_UNPROCESSABLE_ENTITY));
@@ -48,7 +68,7 @@ abstract class BookShipmentRequest extends FormRequest
             if (!$is_eligible) {
                 $destination_validator->errors()->add(
                     $field,
-                    'The destination Centre is not eligible.'
+                    trans('book-shipments.messages.destination_validation', [], 'th')
                 );
             }
         });

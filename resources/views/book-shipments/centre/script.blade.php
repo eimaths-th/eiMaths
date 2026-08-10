@@ -1,7 +1,17 @@
+@php
+    $user_messages = [
+        'receive_error' => trans('book-shipments.messages.could_not_receive', [], 'th'),
+        'result_required' => 'กรุณาเลือกผลการตรวจรับให้ครบทุกรายการหนังสือ',
+        'issue_note_required' => trans('book-shipments.centre.missing_or_damaged_note', [], 'th'),
+        'saving' => 'กำลังบันทึกผลการรับหนังสือ…',
+    ];
+@endphp
+
 <script>
     (() => {
         const receipt_form = document.querySelector('[data-receive-form]');
         const status_message = document.getElementById('centre-receipt-status');
+        const user_messages = @json($user_messages);
 
         if (!receipt_form) {
             return;
@@ -29,7 +39,7 @@
             });
             const payload = await response.json().catch(() => ({}));
             if (!response.ok) {
-                throw new Error(payload.error?.message || 'The shipment could not be received.');
+                throw new Error(payload.error?.message || user_messages.receive_error);
             }
 
             return payload;
@@ -48,11 +58,11 @@
                 const note = note_input?.value.trim() || '';
 
                 if (!centre_status && !validation_message) {
-                    validation_message = 'Choose a result for every book.';
+                    validation_message = user_messages.result_required;
                 }
 
                 if (['MISSING', 'DAMAGED'].includes(centre_status) && !note && !validation_message) {
-                    validation_message = 'Missing and damaged books require a note.';
+                    validation_message = user_messages.issue_note_required;
                 }
 
                 item_results.push({
@@ -68,7 +78,7 @@
             }
 
             submit_button.disabled = true;
-            set_status('Saving receipt…');
+            set_status(user_messages.saving);
 
             try {
                 await request_json(receipt_form.dataset.actionUrl, {

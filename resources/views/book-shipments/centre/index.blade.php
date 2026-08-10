@@ -157,20 +157,20 @@
 @section('content')
     @php
         $derived_status_labels = [
-            \App\Models\BookShipment::DERIVED_WAITING_FOR_CENTRE => 'Waiting for Centre',
-            \App\Models\BookShipment::DERIVED_PENDING_STUDENT_DELIVERY => 'Pending student delivery',
-            \App\Models\BookShipment::DERIVED_COMPLETED => 'Completed',
-            \App\Models\BookShipment::DERIVED_COMPLETED_WITH_ISSUES => 'Completed with issues',
-            \App\Models\BookShipment::DERIVED_CANCELLED => 'Cancelled',
+            \App\Models\BookShipment::DERIVED_WAITING_FOR_CENTRE => trans('book-shipments.status.WAITING_FOR_CENTRE', [], 'th'),
+            \App\Models\BookShipment::DERIVED_PENDING_STUDENT_DELIVERY => trans('book-shipments.status.PENDING_STUDENT_DELIVERY', [], 'th'),
+            \App\Models\BookShipment::DERIVED_COMPLETED => trans('book-shipments.status.COMPLETED', [], 'th'),
+            \App\Models\BookShipment::DERIVED_COMPLETED_WITH_ISSUES => trans('book-shipments.status.COMPLETED_WITH_ISSUES', [], 'th'),
+            \App\Models\BookShipment::DERIVED_CANCELLED => trans('book-shipments.status.CANCELLED', [], 'th'),
         ];
     @endphp
 
     <div class="centre-shipment-page">
         <section class="centre-shipment-hero" aria-labelledby="centre-shipment-page-title">
             <div class="container-fluid">
-                <span class="centre-shipment-eyebrow">Centre receiving desk</span>
-                <h1 id="centre-shipment-page-title">Incoming Book Shipments</h1>
-                <p>Check each New Student book, record its condition, and confirm the delivery back to HQ.</p>
+                <span class="centre-shipment-eyebrow">{{ trans('book-shipments.centre.eyebrow', [], 'th') }}</span>
+                <h1 id="centre-shipment-page-title">{{ trans('book-shipments.centre.title', [], 'th') }}</h1>
+                <p>{{ trans('book-shipments.centre.description', [], 'th') }}</p>
             </div>
         </section>
 
@@ -178,34 +178,34 @@
             <div class="container-fluid">
                 <section class="centre-shipment-card mb-4" aria-labelledby="centre-shipment-filter-title">
                     <div class="centre-shipment-card-header d-flex align-items-center justify-content-between">
-                        <h2 id="centre-shipment-filter-title">Incoming shipment ledger</h2>
-                        <span class="text-muted small">Centre: {{ auth()->user()->department?->name ?: '—' }}</span>
+                        <h2 id="centre-shipment-filter-title">{{ trans('book-shipments.centre.ledger_title', [], 'th') }}</h2>
+                        <span class="text-muted small">{{ trans('book-shipments.centre.centre_prefix', [], 'th') }} {{ auth()->user()->department?->name ?: '—' }}</span>
                     </div>
                     <div class="p-3">
                         <form class="centre-shipment-filter" method="GET" action="{{ route('incoming-book-shipments.index') }}" role="search">
                             <div class="row align-items-end">
                                 <div class="col-lg-4 mb-3 mb-lg-0">
-                                    <label for="incoming-shipment-number-filter">Shipment number</label>
+                                    <label for="incoming-shipment-number-filter">{{ trans('book-shipments.centre.shipment_number', [], 'th') }}</label>
                                     <input id="incoming-shipment-number-filter" class="form-control" name="shipment_number"
                                         value="{{ request('shipment_number') }}" placeholder="BS-202608-000001">
                                 </div>
                                 <div class="col-lg-3 mb-3 mb-lg-0">
-                                    <label for="incoming-derived-status-filter">Progress status</label>
+                                    <label for="incoming-derived-status-filter">{{ trans('book-shipments.centre.progress_status', [], 'th') }}</label>
                                     <select id="incoming-derived-status-filter" class="custom-select" name="derived_status">
-                                        <option value="">All statuses</option>
+                                        <option value="">{{ trans('book-shipments.centre.all_statuses', [], 'th') }}</option>
                                         @foreach ($derived_status_labels as $status_value => $status_label)
                                             <option value="{{ $status_value }}" @selected(request('derived_status') === $status_value)>{{ $status_label }}</option>
                                         @endforeach
                                     </select>
                                 </div>
                                 <div class="col-lg-3 mb-3 mb-lg-0">
-                                    <label for="incoming-created-from-filter">Created from</label>
+                                    <label for="incoming-created-from-filter">{{ trans('book-shipments.centre.created_from', [], 'th') }}</label>
                                     <input id="incoming-created-from-filter" class="form-control" type="date" name="created_from"
                                         value="{{ request('created_from') }}">
                                 </div>
                                 <div class="col-lg-2 d-flex">
-                                    <button class="btn centre-shipment-button mr-2" type="submit">Filter</button>
-                                    <a class="btn btn-outline-secondary" href="{{ route('incoming-book-shipments.index') }}">Reset</a>
+                                    <button class="btn centre-shipment-button mr-2" type="submit">{{ trans('book-shipments.centre.filter', [], 'th') }}</button>
+                                    <a class="btn btn-outline-secondary" href="{{ route('incoming-book-shipments.index') }}">{{ trans('book-shipments.centre.reset', [], 'th') }}</a>
                                 </div>
                             </div>
                         </form>
@@ -214,17 +214,17 @@
 
                 <section class="centre-shipment-card" aria-labelledby="incoming-shipment-table-title">
                     <div class="centre-shipment-card-header">
-                        <h2 id="incoming-shipment-table-title">Shipments awaiting your action</h2>
+                        <h2 id="incoming-shipment-table-title">{{ trans('book-shipments.centre.awaiting_action', [], 'th') }}</h2>
                     </div>
                     <div class="table-responsive">
                         <table class="table centre-shipment-table mb-0">
                             <thead>
                                 <tr>
-                                    <th scope="col">Shipment</th>
-                                    <th scope="col">Items</th>
-                                    <th scope="col">Progress</th>
-                                    <th scope="col">Dispatched</th>
-                                    <th scope="col"><span class="sr-only">Actions</span></th>
+                                    <th scope="col">{{ trans('book-shipments.centre.shipment', [], 'th') }}</th>
+                                    <th scope="col">{{ trans('book-shipments.centre.items', [], 'th') }}</th>
+                                    <th scope="col">{{ trans('book-shipments.centre.progress', [], 'th') }}</th>
+                                    <th scope="col">{{ trans('book-shipments.centre.dispatched', [], 'th') }}</th>
+                                    <th scope="col"><span class="sr-only">{{ trans('book-shipments.hq.actions', [], 'th') }}</span></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -245,7 +245,7 @@
                                             <a class="centre-shipment-number" href="{{ route('incoming-book-shipments.show', ['book_shipment' => $shipment->id]) }}">
                                                 {{ $shipment->shipment_number }}
                                             </a>
-                                            <div class="small text-muted">{{ $shipment->created_at?->format('d M Y H:i') ?: '—' }}</div>
+                                            <div class="small text-muted">{{ $shipment->created_at?->format('d/m/Y H:i') ?: '—' }}</div>
                                         </td>
                                         <td>{{ $progress['total_count'] ?? 0 }}</td>
                                         <td>
@@ -253,19 +253,18 @@
                                                 {{ $derived_status_labels[$derived_status] ?? $derived_status }}
                                             </span>
                                             <div class="small text-muted mt-1">
-                                                {{ $progress['centre_received_count'] ?? 0 }} Centre received ·
-                                                {{ $progress['missing_count'] ?? 0 }} missing · {{ $progress['damaged_count'] ?? 0 }} damaged
+                                                {{ trans('book-shipments.centre.issue_counts', ['received' => $progress['centre_received_count'] ?? 0, 'missing' => $progress['missing_count'] ?? 0, 'damaged' => $progress['damaged_count'] ?? 0], 'th') }}
                                             </div>
                                         </td>
-                                        <td>{{ $shipment->dispatched_at?->format('d M Y H:i') ?: '—' }}</td>
+                                        <td>{{ $shipment->dispatched_at?->format('d/m/Y H:i') ?: '—' }}</td>
                                         <td class="text-right">
-                                            <a class="btn btn-sm btn-outline-secondary" href="{{ route('incoming-book-shipments.show', ['book_shipment' => $shipment->id]) }}">View</a>
+                                            <a class="btn btn-sm btn-outline-secondary" href="{{ route('incoming-book-shipments.show', ['book_shipment' => $shipment->id]) }}">{{ trans('book-shipments.centre.view', [], 'th') }}</a>
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
                                         <td class="text-center text-muted py-5" colspan="5">
-                                            No incoming shipments match this search.
+                                            {{ trans('book-shipments.centre.no_results', [], 'th') }}
                                         </td>
                                     </tr>
                                 @endforelse

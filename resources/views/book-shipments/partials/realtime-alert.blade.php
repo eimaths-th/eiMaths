@@ -31,19 +31,19 @@
             <h2 class="book-shipment-alert__title" data-book-shipment-alert-title></h2>
             <p class="book-shipment-alert__message" data-book-shipment-alert-message></p>
             <a class="btn btn-sm btn-primary" data-book-shipment-alert-centre-action href="#" hidden>
-                View shipment
+                {{ trans('book-shipments.realtime.view_shipment', [], 'th') }}
             </a>
             <form method="POST" action="#" data-book-shipment-alert-read-form hidden>
                 @csrf
                 <button class="btn btn-sm btn-primary" type="submit" data-book-shipment-alert-hq-action disabled>
-                    Open shipment
+                    {{ trans('book-shipments.realtime.open_shipment', [], 'th') }}
                 </button>
             </form>
         </div>
         <button
             class="book-shipment-alert__dismiss"
             type="button"
-            aria-label="Dismiss notification"
+            aria-label="{{ trans('book-shipments.realtime.dismiss', [], 'th') }}"
             data-book-shipment-alert-dismiss
         >
             <span aria-hidden="true">&times;</span>

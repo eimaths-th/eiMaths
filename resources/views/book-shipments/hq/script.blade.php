@@ -1,8 +1,52 @@
+@php
+    $user_messages = [
+        'another_action' => trans('book-shipments.hq.another_action', [], 'th'),
+        'action_failed' => trans('book-shipments.hq.action_failed', [], 'th'),
+        'selection_editor_load_error' => trans('book-shipments.hq.selection_editor_load_error', [], 'th'),
+        'selected_books_empty' => trans('book-shipments.hq.selected_books_empty', [], 'th'),
+        'student_fallback' => trans('book-shipments.hq.student_fallback', [], 'th'),
+        'unnamed_student' => trans('book-shipments.hq.unnamed_student', [], 'th'),
+        'unnamed_book' => trans('book-shipments.hq.unnamed_book', [], 'th'),
+        'no_level' => trans('book-shipments.hq.no_level', [], 'th'),
+        'term' => trans('book-shipments.hq.term', [], 'th'),
+        'no_order_number' => trans('book-shipments.hq.no_order_number', [], 'th'),
+        'remove' => trans('book-shipments.hq.remove', [], 'th'),
+        'show_books' => trans('book-shipments.hq.show_books', [], 'th'),
+        'hide_books' => trans('book-shipments.hq.hide_books', [], 'th'),
+        'no_eligible_books' => trans('book-shipments.hq.no_eligible_books', [], 'th'),
+        'select_all_books_for' => trans('book-shipments.hq.select_all_books_for', [], 'th'),
+        'select_book_for' => trans('book-shipments.hq.select_book_for', [], 'th'),
+        'replacement_for' => trans('book-shipments.hq.replacement_for', [], 'th'),
+        'page_summary' => trans('book-shipments.hq.page_summary', [], 'th'),
+        'previous' => trans('book-shipments.hq.previous', [], 'th'),
+        'next' => trans('book-shipments.hq.next', [], 'th'),
+        'choose_centre_begin' => trans('book-shipments.hq.choose_centre_begin', [], 'th'),
+        'loading' => 'กำลังโหลดหนังสือนักเรียนใหม่ที่จัดส่งได้…',
+        'student_count_loaded' => trans('book-shipments.hq.student_count_loaded', [], 'th'),
+        'no_candidates_loaded' => trans('book-shipments.hq.no_candidates_loaded', [], 'th'),
+        'select_at_least_one' => trans('book-shipments.hq.select_at_least_one', [], 'th'),
+        'saving' => trans('book-shipments.hq.saving', [], 'th'),
+        'save_draft_changes' => trans('book-shipments.hq.save_draft_changes', [], 'th'),
+        'save_draft' => trans('book-shipments.hq.save_draft', [], 'th'),
+        'reason_validation' => trans('book-shipments.hq.reason_validation', [], 'th'),
+        'confirm_dispatch' => trans('book-shipments.hq.confirm_dispatch', [], 'th'),
+        'confirm_discard' => trans('book-shipments.hq.confirm_discard', [], 'th'),
+        'confirm_cancel' => trans('book-shipments.hq.confirm_cancel', [], 'th'),
+        'dispatching' => trans('book-shipments.hq.dispatching', [], 'th'),
+        'discarding' => trans('book-shipments.hq.discarding', [], 'th'),
+        'cancelling' => trans('book-shipments.hq.cancelling', [], 'th'),
+    ];
+@endphp
+
 <script>
     (async () => {
         const csrf_token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
         const editor = document.getElementById('book-shipment-editor');
         const detail_status = document.getElementById('book-shipment-detail-status');
+        const user_messages = @json($user_messages);
+
+        const format_message = (template, replacements = {}) => Object.entries(replacements)
+            .reduce((message, [placeholder, value]) => message.replaceAll(`:${placeholder}`, String(value)), template);
 
         const set_text = (element, value) => {
             if (element) {
@@ -40,13 +84,13 @@
 
             if (response.status === 409) {
                 set_text(detail_status || document.getElementById('book-shipment-editor-status'),
-                    'Another action changed this shipment. Reloading the current state.');
+                    user_messages.another_action);
                 window.location.reload();
                 return null;
             }
 
             if (!response.ok) {
-                const error = new Error(read_error_message(payload, 'The shipment action could not be completed.'));
+                const error = new Error(read_error_message(payload, user_messages.action_failed));
                 error.payload = payload;
                 error.status = response.status;
                 throw error;
@@ -70,7 +114,7 @@
                 const selection_module = await import(editor.dataset.selectionModuleUrl);
                 selection_factory = selection_module.CreateBookShipmentDraftSelection;
             } catch (error) {
-                set_text(editor_status, 'The draft selection editor could not be loaded. Reload the page and try again.');
+                set_text(editor_status, user_messages.selection_editor_load_error);
                 return;
             }
 
@@ -114,7 +158,7 @@
                 if (!books.length) {
                     const empty_message = document.createElement('p');
                     empty_message.className = 'book-shipment-selected-empty text-muted small mb-0';
-                    empty_message.textContent = 'No books selected yet. Choose an eligible book above.';
+                    empty_message.textContent = user_messages.selected_books_empty;
                     selected_list.appendChild(empty_message);
                     if (selected_guidance) {
                         selected_guidance.classList.remove('d-none');
@@ -133,10 +177,10 @@
 
                     const selected_details = document.createElement('div');
                     const student_label = document.createElement('strong');
-                    student_label.textContent = `${book.student_code || 'Student'} — ${book.student_name || 'Unnamed student'}`;
+                    student_label.textContent = `${book.student_code || user_messages.student_fallback} — ${book.student_name || user_messages.unnamed_student}`;
                     const book_meta = document.createElement('span');
                     book_meta.className = 'd-block small text-muted';
-                    book_meta.textContent = `${book.book_name || 'Unnamed book'} · ${book.level || 'No level'} · Term ${book.term || '—'} · ${book.order_number || 'No order number'}`;
+                    book_meta.textContent = `${book.book_name || user_messages.unnamed_book} · ${book.level || user_messages.no_level} · ${user_messages.term} ${book.term || '—'} · ${book.order_number || user_messages.no_order_number}`;
                     selected_details.append(student_label, book_meta);
 
                     const remove_button = document.createElement('button');
@@ -144,7 +188,7 @@
                     remove_button.className = 'btn btn-sm btn-outline-danger';
                     remove_button.dataset.removeSelectedBook = 'true';
                     remove_button.dataset.bookId = String(book.source_book_id);
-                    remove_button.textContent = 'Remove';
+                    remove_button.textContent = user_messages.remove;
 
                     selected_row.append(selected_details, remove_button);
                     selected_list.appendChild(selected_row);
@@ -159,7 +203,7 @@
                 if (!students.length) {
                     const empty_message = document.createElement('p');
                     empty_message.className = 'text-muted small p-4 mb-0';
-                    empty_message.textContent = 'No eligible New Student books match this search.';
+                    empty_message.textContent = user_messages.no_eligible_books;
                     candidate_list.appendChild(empty_message);
                     return;
                 }
@@ -177,18 +221,20 @@
                     student_checkbox.id = `student-${student.student_id}`;
                     student_checkbox.dataset.studentSelect = 'true';
                     student_checkbox.dataset.studentId = String(student.student_id);
-                    student_checkbox.setAttribute('aria-label', `Select all books for ${student.student_name || student.student_code || 'student'}`);
+                    student_checkbox.setAttribute('aria-label', format_message(user_messages.select_all_books_for, {
+                        student: student.student_name || student.student_code || user_messages.student_fallback,
+                    }));
                     set_student_checkbox_state(student_checkbox, student.books || []);
 
                     const student_label = document.createElement('label');
                     student_label.className = 'mb-0 mr-3';
                     student_label.setAttribute('for', student_checkbox.id);
-                    student_label.textContent = `${student.student_code || 'Student'} — ${student.student_name || 'Unnamed student'}`;
+                    student_label.textContent = `${student.student_code || user_messages.student_fallback} — ${student.student_name || user_messages.unnamed_student}`;
 
                     const expand_button = document.createElement('button');
                     expand_button.type = 'button';
                     expand_button.className = 'btn btn-sm btn-link ml-auto';
-                    expand_button.textContent = 'Show books';
+                    expand_button.textContent = user_messages.show_books;
                     expand_button.setAttribute('aria-expanded', 'false');
                     expand_button.dataset.expandBooks = 'true';
                     const books_id = `student-books-${student.student_id}`;
@@ -213,18 +259,21 @@
                         book_checkbox.dataset.bookSelect = 'true';
                         book_checkbox.dataset.bookId = String(book.source_book_id);
                         book_checkbox.dataset.studentId = String(student.student_id);
-                        book_checkbox.setAttribute('aria-label', `Select ${book.book_name || 'book'} for ${student.student_name || student.student_code || 'student'}`);
+                        book_checkbox.setAttribute('aria-label', format_message(user_messages.select_book_for, {
+                            book: book.book_name || user_messages.unnamed_book,
+                            student: student.student_name || student.student_code || user_messages.student_fallback,
+                        }));
 
                         const book_text = document.createElement('span');
                         const book_title = document.createElement('strong');
-                        book_title.textContent = book.book_name || 'Unnamed book';
+                        book_title.textContent = book.book_name || user_messages.unnamed_book;
                         const book_meta = document.createElement('span');
                         book_meta.className = 'd-block small text-muted';
-                        book_meta.textContent = `${book.level || 'No level'} · Term ${book.term || '—'} · ${book.order_number || 'No order number'}`;
+                        book_meta.textContent = `${book.level || user_messages.no_level} · ${user_messages.term} ${book.term || '—'} · ${book.order_number || user_messages.no_order_number}`;
                         if (book.replacement_for_shipment_item_id) {
                             const replacement_context = document.createElement('span');
                             replacement_context.className = 'd-block small text-warning';
-                            replacement_context.textContent = `Replacement for shipment item ${book.replacement_for_shipment_item_id}`;
+                            replacement_context.textContent = format_message(user_messages.replacement_for, { id: book.replacement_for_shipment_item_id });
                             book_meta.appendChild(replacement_context);
                         }
                         book_text.append(book_title, book_meta);
@@ -240,18 +289,22 @@
                 pagination.className = 'd-flex justify-content-between align-items-center p-3';
                 const page_label = document.createElement('span');
                 page_label.className = 'small text-muted';
-                page_label.textContent = `Page ${meta.current_page} of ${meta.last_page} · ${meta.total} student(s)`;
+                page_label.textContent = format_message(user_messages.page_summary, {
+                    current: meta.current_page,
+                    last: meta.last_page,
+                    total: meta.total,
+                });
                 const page_controls = document.createElement('div');
                 const previous_button = document.createElement('button');
                 previous_button.type = 'button';
                 previous_button.className = 'btn btn-sm btn-outline-secondary mr-2';
-                previous_button.textContent = 'Previous';
+                previous_button.textContent = user_messages.previous;
                 previous_button.disabled = meta.current_page <= 1;
                 previous_button.dataset.candidatePage = String(meta.current_page - 1);
                 const next_button = document.createElement('button');
                 next_button.type = 'button';
                 next_button.className = 'btn btn-sm btn-outline-secondary';
-                next_button.textContent = 'Next';
+                next_button.textContent = user_messages.next;
                 next_button.disabled = meta.current_page >= meta.last_page;
                 next_button.dataset.candidatePage = String(meta.current_page + 1);
                 page_controls.append(previous_button, next_button);
@@ -324,7 +377,7 @@
                 if (expand_button) {
                     const is_expanded = expand_button.getAttribute('aria-expanded') === 'true';
                     expand_button.setAttribute('aria-expanded', String(!is_expanded));
-                    expand_button.textContent = is_expanded ? 'Show books' : 'Hide books';
+                    expand_button.textContent = is_expanded ? user_messages.show_books : user_messages.hide_books;
                     const books_panel = document.getElementById(expand_button.getAttribute('aria-controls'));
                     if (books_panel) {
                         books_panel.hidden = is_expanded;
@@ -341,7 +394,7 @@
             const load_candidates = async (page = 1) => {
                 const destination_id = destination_select?.value;
                 if (!destination_id) {
-                    set_text(editor_status, 'Choose a destination Centre before loading candidates.');
+                    set_text(editor_status, user_messages.choose_centre_begin);
                     return;
                 }
 
@@ -351,7 +404,7 @@
 
                 is_loading = true;
                 load_button.disabled = true;
-                set_text(editor_status, 'Loading eligible New Student books…');
+                set_text(editor_status, user_messages.loading);
                 const query = new URLSearchParams({
                     destination_centre_id: destination_id,
                     search: search_input?.value || '',
@@ -369,7 +422,7 @@
                     }
                     current_page = payload.meta.current_page;
                     render_candidate_page(payload.data || [], payload.meta);
-                    set_text(editor_status, `${payload.meta.total} student(s) with eligible books loaded.`);
+                    set_text(editor_status, format_message(user_messages.student_count_loaded, { count: payload.meta.total }));
                     update_selection_summary();
                 } catch (error) {
                     set_text(editor_status, error.message);
@@ -391,9 +444,9 @@
                     candidate_list.replaceChildren();
                     const empty_message = document.createElement('p');
                     empty_message.className = 'text-muted small p-4 mb-0';
-                    empty_message.textContent = 'No candidates loaded.';
+                    empty_message.textContent = user_messages.no_candidates_loaded;
                     candidate_list.appendChild(empty_message);
-                    set_text(editor_status, 'Choose a Centre to begin.');
+                    set_text(editor_status, user_messages.choose_centre_begin);
                 }
             });
 
@@ -406,13 +459,13 @@
 
             save_button?.addEventListener('click', async () => {
                 if (selected_books.Count() === 0 || is_saving) {
-                    set_text(editor_status, 'Select at least one book before saving.');
+                    set_text(editor_status, user_messages.select_at_least_one);
                     return;
                 }
 
                 is_saving = true;
                 update_selection_summary();
-                save_button.textContent = 'Saving…';
+                save_button.textContent = user_messages.saving;
                 const source_book_ids = selected_books.SourceBookIds();
                 const is_update = editor.dataset.mode === 'update';
                 const request_body = { source_book_ids };
@@ -438,7 +491,7 @@
                     set_text(editor_status, error.message);
                 } finally {
                     is_saving = false;
-                    save_button.textContent = editor.dataset.mode === 'update' ? 'Save draft changes' : 'Save shipment draft';
+                    save_button.textContent = editor.dataset.mode === 'update' ? user_messages.save_draft_changes : user_messages.save_draft;
                     update_selection_summary();
                 }
             });
@@ -463,28 +516,28 @@
                     const reason = transition_reason?.value.trim() || '';
                     set_text(transition_error, '');
                     if (reason.length < 3 || reason.length > 1000) {
-                        const reason_label = transition === 'discard' ? 'discard' : 'cancellation';
-                        set_text(transition_error, `Enter a ${reason_label} reason between 3 and 1000 characters.`);
+                        const reason_label = transition === 'discard' ? 'ยกเลิกแบบร่าง' : 'ยกเลิกการจัดส่ง';
+                        set_text(transition_error, format_message(user_messages.reason_validation, { type: reason_label }));
                         transition_reason?.focus();
                         return;
                     }
                 }
 
                 const confirmation_message = transition === 'dispatch'
-                    ? 'Dispatch this shipment? The selected books will become immutable.'
+                    ? user_messages.confirm_dispatch
                     : transition === 'discard'
-                        ? 'Discard this draft? The selected books will become available for another attempt.'
-                        : 'Cancel this shipment? The selected books will become available for another attempt.';
+                        ? user_messages.confirm_discard
+                        : user_messages.confirm_cancel;
                 if (!window.confirm(confirmation_message)) {
                     return;
                 }
 
                 submit_button.disabled = true;
                 const status_message = transition === 'dispatch'
-                    ? 'Dispatching shipment…'
+                    ? user_messages.dispatching
                     : transition === 'discard'
-                        ? 'Discarding draft…'
-                        : 'Cancelling shipment…';
+                        ? user_messages.discarding
+                        : user_messages.cancelling;
                 set_text(detail_status, status_message);
                 const request_body = requires_reason
                     ? { reason: transition_reason.value.trim() }
