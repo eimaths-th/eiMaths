@@ -11,5 +11,7 @@ return [
         'negative_balance_withdrawal' => 'ไม่สามารถถอนเงินขณะยอดคงเหลือที่ใช้ได้ไม่เป็นบวก',
         'actor_separation' => 'ผู้อนุมัติและผู้จ่ายเงินต้องเป็นคนละคน',
         'idempotency_conflict' => 'Idempotency key นี้ถูกใช้กับรายการอื่นแล้ว',
+        'password_confirmation_required' => 'กรุณายืนยันรหัสผ่านปัจจุบันก่อนเปลี่ยนรายละเอียดบัญชีรับเงิน',
+        'payout_account_cooldown' => 'ไม่สามารถถอนเงินได้ชั่วคราวหลังจากเปลี่ยนบัญชีรับเงิน',
     ],
 ];

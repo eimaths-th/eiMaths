@@ -11,5 +11,7 @@ return [
         'negative_balance_withdrawal' => 'Withdrawal is unavailable while the available balance is not positive.',
         'actor_separation' => 'The approving and paying users must be different.',
         'idempotency_conflict' => 'The idempotency key was already used for another operation.',
+        'password_confirmation_required' => 'Confirm the current password before changing payout account details.',
+        'payout_account_cooldown' => 'Withdrawals are temporarily blocked after a payout account change.',
     ],
 ];

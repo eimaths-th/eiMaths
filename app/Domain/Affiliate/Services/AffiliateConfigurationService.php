@@ -68,6 +68,18 @@ class AffiliateConfigurationService
         }
     }
 
+    public function AssertAffiliateRegistrationDeliveryAvailable(): void
+    {
+        $this->AssertAffiliateWritesAvailable();
+
+        if (
+            strtolower((string) config('app.env')) === 'production'
+            && strtolower(trim((string) config('mail.default'))) === 'log'
+        ) {
+            throw AffiliateDomainException::ConfigurationInvalid('Affiliate registration email delivery is not configured.');
+        }
+    }
+
     private function IntegerSetting(string $key, int $minimum, ?int $maximum): int
     {
         $value = (int) $this->Setting($key);

@@ -14,6 +14,10 @@ return [
 
     'maintenance_mode' => env('AFFILIATE_MAINTENANCE_MODE', false),
 
+    'abuse' => [
+        'registration_attempts_per_minute' => env('AFFILIATE_REGISTRATION_ATTEMPTS_PER_MINUTE', 5),
+    ],
+
     'batch_sizes' => [
         'commission_release' => 100,
         'reconciliation' => 100,

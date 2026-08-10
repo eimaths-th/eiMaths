@@ -13,6 +13,7 @@ class UpsertBankAccountRequest extends FormRequest
             'bank_name' => ['required', 'string', 'max:255'],
             'account_number' => ['required', 'string', 'max:32'],
             'account_name' => ['required', 'string', 'max:255'],
+            'current_password' => ['required', 'string', 'max:255'],
         ];
     }
 }

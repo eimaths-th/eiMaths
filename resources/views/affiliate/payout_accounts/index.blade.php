@@ -29,6 +29,8 @@
                     <h3 class="h5">PromptPay</h3>
                     <label for="promptpay_identifier">PromptPay number</label>
                     <input id="promptpay_identifier" name="promptpay_identifier" class="form-control" inputmode="numeric" maxlength="16" placeholder="0812345678" value="{{ old('promptpay_identifier') }}" required>
+                    <label for="promptpay_current_password" class="mt-2">Current password</label>
+                    <input id="promptpay_current_password" name="current_password" type="password" class="form-control" autocomplete="current-password" required>
                     <button type="submit" class="btn btn-primary mt-3">Save PromptPay</button>
                 </form>
             </div>
@@ -43,6 +45,8 @@
                     <input id="account_name" name="account_name" class="form-control" maxlength="255" value="{{ old('account_name') }}" required>
                     <label for="account_number" class="mt-2">Account number</label>
                     <input id="account_number" name="account_number" class="form-control" inputmode="numeric" maxlength="32" value="{{ old('account_number') }}" required>
+                    <label for="bank_current_password" class="mt-2">Current password</label>
+                    <input id="bank_current_password" name="current_password" type="password" class="form-control" autocomplete="current-password" required>
                     <button type="submit" class="btn btn-primary mt-3">Save bank account</button>
                 </form>
             </div>
@@ -56,7 +60,12 @@
         @else
             <ul>
                 @foreach ($payout_accounts as $payout_account)
-                    <li>{{ $payout_account->payout_type->value }} — {{ $payout_account->masked_label }}</li>
+                    <li>
+                        {{ $payout_account->payout_type->value }} — {{ $payout_account->masked_label }}
+                        @if ($payout_account->payout_cooldown_until?->isFuture())
+                            <span class="text-warning">(Withdrawal cooling period until {{ $payout_account->payout_cooldown_until->toDateTimeString() }})</span>
+                        @endif
+                    </li>
                 @endforeach
             </ul>
         @endif

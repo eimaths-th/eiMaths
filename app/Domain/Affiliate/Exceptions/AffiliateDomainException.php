@@ -79,4 +79,14 @@ final class AffiliateDomainException extends RuntimeException
     {
         return new self('The idempotency key was already used for a different operation.', 'AFFILIATE_IDEMPOTENCY_CONFLICT', 409, 'affiliate.errors.idempotency_conflict');
     }
+
+    public static function PasswordConfirmationRequired(): self
+    {
+        return new self('Confirm the current password before changing payout account details.', 'AFFILIATE_PASSWORD_CONFIRMATION_REQUIRED', 422, 'affiliate.errors.password_confirmation_required');
+    }
+
+    public static function PayoutAccountCoolingDown(): self
+    {
+        return new self('Withdrawals are temporarily blocked after a payout account change.', 'AFFILIATE_PAYOUT_ACCOUNT_COOLDOWN', 409, 'affiliate.errors.payout_account_cooldown');
+    }
 }

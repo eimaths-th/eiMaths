@@ -31,6 +31,7 @@ class AffiliateWithdrawalRequest extends Model
         'request_key',
         'approval_key',
         'payment_key',
+        'payment_reference',
         'closure_key',
     ];
 
@@ -60,6 +61,15 @@ class AffiliateWithdrawalRequest extends Model
         static::updating(function (self $withdrawal): void {
             if (array_intersect(array_keys($withdrawal->getDirty()), self::IMMUTABLE_FIELDS) !== []) {
                 throw new LogicException('Affiliate withdrawal source fields are immutable.');
+            }
+
+            $dirty = $withdrawal->getDirty();
+            if (
+                array_key_exists('payment_reference', $dirty)
+                && $withdrawal->getOriginal('payment_reference') !== null
+                && $dirty['payment_reference'] !== $withdrawal->getOriginal('payment_reference')
+            ) {
+                throw new LogicException('Affiliate withdrawal payment evidence is immutable.');
             }
         });
     }

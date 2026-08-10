@@ -35,6 +35,9 @@ class AffiliateReconciliationService
         if ($wallet === null) {
             $issues[] = $this->OpenIssue('affiliate_wallet_balances', $profile->id, 'WALLET_PROJECTION_MISSING', 'HIGH', ['expected_available_minor' => $ledger_available, 'expected_reserved_minor' => $ledger_reserved]);
         } else {
+            if ((int) $wallet->available_balance_minor < 0) {
+                $issues[] = $this->OpenIssue('affiliate_wallet_balances', $profile->id, 'NEGATIVE_AVAILABLE_BALANCE', 'HIGH', ['available_balance_minor' => $wallet->available_balance_minor]);
+            }
             if ((int) $wallet->available_balance_minor !== $ledger_available) {
                 $issues[] = $this->OpenIssue('affiliate_wallet_balances', $profile->id, 'AVAILABLE_BALANCE_MISMATCH', 'HIGH', ['projection' => $wallet->available_balance_minor, 'ledger' => $ledger_available]);
             }
@@ -49,10 +52,13 @@ class AffiliateReconciliationService
     public function ReconcileAll(int $batch = 100): int
     {
         $count = 0;
-        AffiliateProfile::query()->orderBy('id')->limit(min(max($batch, 1), 1000))->each(function (AffiliateProfile $profile) use (&$count): void {
+        $chunk_size = min(max($batch, 1), 1000);
+
+        AffiliateProfile::query()->orderBy('id')->each(function (AffiliateProfile $profile) use (&$count): void {
             $this->ReconcileProfile($profile);
             $count++;
-        });
+        }, $chunk_size);
+
         return $count;
     }
 

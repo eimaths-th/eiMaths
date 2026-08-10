@@ -30,6 +30,7 @@
                     <th scope="col">Payout account</th>
                     <th scope="col">Amount</th>
                     <th scope="col">Status</th>
+                    <th scope="col">Payment reference</th>
                     <th scope="col">Requested at</th>
                     <th scope="col">Actions</th>
                 </tr>
@@ -43,6 +44,7 @@
                     <td>{{ $withdrawal->payout_type?->value }} — {{ optional($withdrawal->AffiliatePayoutAccount)->masked_label ?: 'snapshot' }}</td>
                     <td>{{ number_format($withdrawal->amount_minor / 100, 2) }}</td>
                     <td>{{ $withdrawal->status->value }}</td>
+                    <td>{{ $withdrawal->payment_reference ?? '—' }}</td>
                     <td>{{ optional($withdrawal->requested_at)->toDateTimeString() }}</td>
                     <td>
                         <div class="d-flex flex-wrap" style="gap: .5rem;">
@@ -64,9 +66,10 @@
                             @endif
 
                             @if ($withdrawal->status->value === 'APPROVED' && auth()->user()->can('affiliate-withdrawal-pay'))
-                                <form method="POST" action="{{ route('affiliate.withdrawals.admin.pay', $withdrawal) }}">
+                                <form method="POST" action="{{ route('affiliate.withdrawals.admin.pay', $withdrawal) }}" class="d-flex flex-wrap" style="gap: .25rem;">
                                     @csrf
                                     <input type="hidden" name="transition_key" value="{{ (string) \Illuminate\Support\Str::uuid() }}">
+                                    <input type="text" name="payment_reference" class="form-control form-control-sm" placeholder="Bank transaction reference" aria-label="Bank transaction reference" maxlength="255" required>
                                     <button type="submit" class="btn btn-sm btn-primary">Mark as paid</button>
                                 </form>
                             @endif
@@ -99,7 +102,7 @@
                     </td>
                 </tr>
             @empty
-                <tr><td colspan="8">No withdrawal requests yet.</td></tr>
+                <tr><td colspan="9">No withdrawal requests yet.</td></tr>
             @endforelse
             </tbody>
         </table>

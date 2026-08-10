@@ -21,7 +21,7 @@ class AffiliateAccountService
 
     public function Register(array $validated): User
     {
-        $this->configuration_service->AssertAffiliateWritesAvailable();
+        $this->configuration_service->AssertAffiliateRegistrationDeliveryAvailable();
         $user = null;
         DB::transaction(function () use ($validated, &$user): void {
             $user = User::create([
