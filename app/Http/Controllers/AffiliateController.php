@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Domain\Affiliate\Services\AffiliateConfigurationService;
+use App\Domain\Affiliate\ValueObjects\Money;
 use App\Models\AffiliateCommissionList;
 use App\Models\affiliateUserCourseCount;
 use App\Models\CoursePending;
@@ -30,10 +32,15 @@ class AffiliateController extends Controller
      * Display a listing of the resource.
      */
     protected $affiliateRepo;
+    private AffiliateConfigurationService $affiliate_configuration_service;
 
-    public function __construct(AffiliateRepository $affiliateRepo)
+    public function __construct(
+        AffiliateRepository $affiliate_repository,
+        AffiliateConfigurationService $affiliate_configuration_service,
+    )
     {
-        $this->affiliateRepo = $affiliateRepo;
+        $this->affiliateRepo = $affiliate_repository;
+        $this->affiliate_configuration_service = $affiliate_configuration_service;
     }
     public function fontend()
     {
@@ -42,8 +49,32 @@ class AffiliateController extends Controller
         // dd($teaching_periods);
         $days = ['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Thursday', 'Friday'];
         $qr_payment = QRCodePayMent::first();
+        $affiliate_policy = [
+            'commission_rate_percent' => $this->FormatBasisPointsAsPercent(
+                $this->affiliate_configuration_service->CommissionRateBasisPoints(),
+            ),
+            'commission_holding_days' => $this->affiliate_configuration_service->CommissionHoldingDays(),
+            'attribution_duration_days' => $this->affiliate_configuration_service->AttributionDurationDays(),
+            'minimum_withdrawal_baht' => Money::FromMinor(
+                $this->affiliate_configuration_service->MinimumWithdrawalMinor(),
+            )->Decimal(),
+            'is_withdrawal_approval_required' => $this->affiliate_configuration_service->IsWithdrawalApprovalRequired(),
+        ];
 
-        return view('affiliate.index', compact('departments', 'days', 'qr_payment'));
+        return view('affiliate.index', compact('departments', 'days', 'qr_payment', 'affiliate_policy'));
+    }
+
+    private function FormatBasisPointsAsPercent(int $basis_points): string
+    {
+        $whole_percent = intdiv($basis_points, 100);
+        $fractional_percent = $basis_points % 100;
+        if ($fractional_percent === 0) {
+            return (string) $whole_percent;
+        }
+
+        $fractional_digits = rtrim(str_pad((string) $fractional_percent, 2, '0', STR_PAD_LEFT), '0');
+
+        return $whole_percent . '.' . $fractional_digits;
     }
     public function index(Request $request)
     {

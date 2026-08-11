@@ -4,11 +4,8 @@
 <main class="container py-4" aria-labelledby="affiliate-dashboard-title">
     <h1 id="affiliate-dashboard-title">Affiliate dashboard</h1>
     <p>Referral code: <code>{{ $profile->referral_code }}</code></p>
-    <nav aria-label="Affiliate finance navigation">
-        <a href="{{ route('affiliate.dashboard') }}">Dashboard</a> ·
-        <a href="{{ route('affiliate.payout-accounts.index') }}">Payout accounts</a> ·
-        <a href="{{ route('affiliate.withdrawals.index') }}">Withdrawals</a>
-    </nav>
+    @include('affiliate.partials.navigation')
+    @include('affiliate.partials.analytics-summary')
 
     @if (session('success'))
         <div class="alert alert-success" role="status">{{ session('success') }}</div>

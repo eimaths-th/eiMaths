@@ -1,6 +1,6 @@
 {{-- <x-laravel-ui-adminlte::adminlte-layout> --}}
 <!doctype html>
-<html lang="{{ Request::routeIs('book-shipments.*', 'incoming-book-shipments.*') ? 'th' : 'en' }}">
+<html lang="{{ app()->getLocale() }}">
 
 <head>
     <meta charset="utf-8">
@@ -9,7 +9,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta http-equiv="Content-Language" content="{{ Request::routeIs('book-shipments.*', 'incoming-book-shipments.*') ? 'th' : 'en' }}">
+    <meta http-equiv="Content-Language" content="{{ app()->getLocale() }}">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title> {{ config('app.name') }} {{ config('app.subtitle') }}</title>
     <link rel="icon" type="image/x-icon" href="{{ asset('images/cropped-footer-logo-32x32.png') }}">

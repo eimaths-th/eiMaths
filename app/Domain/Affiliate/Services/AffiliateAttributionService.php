@@ -5,6 +5,7 @@ namespace App\Domain\Affiliate\Services;
 use App\Domain\Affiliate\Enums\AffiliateProfileStatus;
 use App\Domain\Affiliate\Models\AffiliateProfile;
 use App\Domain\Affiliate\ValueObjects\AffiliateReferralCookie;
+use App\Domain\Affiliate\ValueObjects\AffiliateClickContext;
 use App\Domain\Affiliate\Models\AffiliateAttribution;
 use App\Models\Contact;
 use App\Models\CoursePending;
@@ -29,8 +30,8 @@ class AffiliateAttributionService
             return null;
         }
 
-        $now = CarbonImmutable::now('UTC');
         $existing = $this->ReadCookie($request->cookie(config('affiliate.cookie_name')));
+        $now = CarbonImmutable::now('UTC');
         if ($existing !== null && $existing->IsValidAt($now) && $this->IsActiveProfile($existing->affiliate_profile_id)) {
             return $existing;
         }
@@ -48,11 +49,42 @@ class AffiliateAttributionService
             return null;
         }
 
+        return $this->CaptureResolvedReferral($request, $profile);
+    }
+
+    public function CaptureResolvedReferral(
+        Request $request,
+        AffiliateProfile $profile,
+        ?AffiliateClickContext $click_context = null,
+    ): ?AffiliateReferralCookie {
+        if (!$this->feature_gate->IsEnabled('referral_capture') || !$this->IsActiveProfile($profile->id)) {
+            return null;
+        }
+
+        $now = CarbonImmutable::now('UTC');
+        $existing = $this->ReadCookie($request->cookie(config('affiliate.cookie_name')));
+        if ($existing !== null && $existing->IsValidAt($now) && $this->IsActiveProfile($existing->affiliate_profile_id)) {
+            return $existing;
+        }
+
         $context = new AffiliateReferralCookie(
             $profile->id,
             $now,
             $now->addDays($this->configuration_service->AttributionDurationDays()),
+            click_event_id: $click_context?->click_event_id,
+            content_id: $click_context?->content_id,
+            campaign_code: $click_context?->campaign_code,
+            source_type: $click_context?->source_type,
+            unique_window_key: $click_context?->unique_window_key,
+            destination_target: $click_context?->destination_target,
         );
+        $this->QueueCookie($request, $context);
+
+        return $context;
+    }
+
+    private function QueueCookie(Request $request, AffiliateReferralCookie $context): void
+    {
         Cookie::queue(cookie()->make(
             config('affiliate.cookie_name'),
             json_encode($context->ToArray(), JSON_THROW_ON_ERROR),
@@ -64,8 +96,6 @@ class AffiliateAttributionService
             false,
             'lax',
         ));
-
-        return $context;
     }
 
     public function ReadCookie(?string $raw_cookie): ?AffiliateReferralCookie
@@ -95,13 +125,14 @@ class AffiliateAttributionService
                 return null;
             }
 
-            $attribution = AffiliateAttribution::create([
+            $attribution = new AffiliateAttribution([
                 'affiliate_profile_id' => $context->affiliate_profile_id,
                 'contact_id' => $locked_contact->id,
                 'captured_at' => $context->captured_at,
                 'expires_at' => $context->expires_at,
                 'source_context' => $source_context,
             ]);
+            $attribution->forceFill($this->ContextAttributes($context))->save();
             $locked_contact->forceFill(['current_affiliate_attribution_id' => $attribution->id])->save();
 
             return $attribution->fresh(['AffiliateProfile', 'Contact']);
@@ -126,6 +157,12 @@ class AffiliateAttributionService
                 (int) $pending->affiliate_profile_id,
                 CarbonImmutable::instance($pending->affiliate_captured_at),
                 CarbonImmutable::instance($pending->affiliate_expires_at),
+                click_event_id: $pending->affiliate_click_event_id,
+                content_id: $pending->affiliate_content_id,
+                campaign_code: $pending->affiliate_campaign_code,
+                source_type: $pending->affiliate_source_type,
+                unique_window_key: $pending->affiliate_unique_window_key,
+                destination_target: $pending->affiliate_captured_destination,
             );
         } catch (\Throwable) {
             return null;
@@ -163,6 +200,12 @@ class AffiliateAttributionService
             'affiliate_profile_id' => $context->affiliate_profile_id,
             'affiliate_captured_at' => $context->captured_at,
             'affiliate_expires_at' => $context->expires_at,
+            'affiliate_click_event_id' => $context->click_event_id,
+            'affiliate_content_id' => $context->content_id,
+            'affiliate_campaign_code' => $context->campaign_code,
+            'affiliate_source_type' => $context->source_type,
+            'affiliate_unique_window_key' => $context->unique_window_key,
+            'affiliate_captured_destination' => $context->destination_target,
         ])->save();
 
         return $pending->fresh();
@@ -174,5 +217,17 @@ class AffiliateAttributionService
             ->whereKey($profile_id)
             ->where('status', AffiliateProfileStatus::ACTIVE)
             ->exists();
+    }
+
+    private function ContextAttributes(AffiliateReferralCookie $context): array
+    {
+        return [
+            'affiliate_click_event_id' => $context->click_event_id,
+            'affiliate_content_id' => $context->content_id,
+            'affiliate_campaign_code' => $context->campaign_code,
+            'affiliate_source_type' => $context->source_type,
+            'affiliate_unique_window_key' => $context->unique_window_key,
+            'affiliate_captured_destination' => $context->destination_target,
+        ];
     }
 }

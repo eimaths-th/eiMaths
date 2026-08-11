@@ -1,0 +1,8 @@
+.affiliate-portal { --affiliate-ink: #172033; --affiliate-accent: #0f766e; color: var(--affiliate-ink); }
+.affiliate-portal a, .affiliate-portal button { min-height: 44px; }
+.affiliate-portal :focus-visible { outline: 3px solid #f59e0b; outline-offset: 2px; }
+.affiliate-portal table { width: 100%; border-collapse: collapse; }
+.affiliate-portal th, .affiliate-portal td { border: 1px solid #cbd5e1; padding: .65rem; text-align: start; }
+.affiliate-portal table { display: block; overflow-x: auto; }
+@media (max-width: 640px) { .affiliate-portal dl { display: grid; grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .affiliate-portal *, .affiliate-portal *::before, .affiliate-portal *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; } }

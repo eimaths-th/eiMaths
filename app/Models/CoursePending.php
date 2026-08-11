@@ -4,7 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Domain\Affiliate\Models\AffiliateClickEvent;
 use App\Domain\Affiliate\Models\AffiliateProfile;
+use App\Models\AffiliateContent;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class CoursePending extends Model
 {
@@ -39,6 +42,9 @@ class CoursePending extends Model
     ];
 
     protected $casts = [
+        'affiliate_profile_id' => 'integer',
+        'affiliate_click_event_id' => 'integer',
+        'affiliate_content_id' => 'integer',
         'affiliate_captured_at' => 'immutable_datetime',
         'affiliate_expires_at' => 'immutable_datetime',
     ];
@@ -46,6 +52,14 @@ class CoursePending extends Model
     public function AffiliateProfile()
     {
         return $this->belongsTo(AffiliateProfile::class, 'affiliate_profile_id');
+    }
+    public function AffiliateClickEvent(): BelongsTo
+    {
+        return $this->belongsTo(AffiliateClickEvent::class, 'affiliate_click_event_id');
+    }
+    public function AffiliateContent(): BelongsTo
+    {
+        return $this->belongsTo(AffiliateContent::class, 'affiliate_content_id');
     }
     public function affiliateCommissions()
     {

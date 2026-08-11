@@ -20,6 +20,10 @@ class Kernel extends ConsoleKernel
             ->dailyAt('01:30')
             ->withoutOverlapping()
             ->when(fn (): bool => (bool) config('affiliate.features.wallet_withdrawals', false));
+        $schedule->command('affiliate:prune-click-events')
+            ->dailyAt('02:15')
+            ->withoutOverlapping()
+            ->when(fn (): bool => (bool) config('affiliate.features.click_tracking', false));
     }
 
     /**

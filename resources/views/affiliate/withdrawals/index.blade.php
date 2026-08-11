@@ -3,7 +3,7 @@
 @section('content')
 <main class="container py-4" aria-labelledby="affiliate-withdrawals-title">
     <h1 id="affiliate-withdrawals-title">Withdrawals</h1>
-    <p><a href="{{ route('affiliate.dashboard') }}">Affiliate dashboard</a> · <a href="{{ route('affiliate.payout-accounts.index') }}">Payout accounts</a></p>
+    @include('affiliate.partials.navigation')
 
     @if (session('success'))
         <div class="alert alert-success" role="status">{{ session('success') }}</div>

@@ -9,8 +9,44 @@ use App\Http\Controllers\Affiliate\AffiliateCommissionAdminController;
 use App\Http\Controllers\Affiliate\AffiliateFinanceAdminController;
 use App\Http\Controllers\Affiliate\AffiliateReconciliationController;
 use App\Http\Controllers\Affiliate\AffiliatePayoutAccountPageController;
+use App\Http\Controllers\Affiliate\AffiliateTrackingController;
+use App\Http\Controllers\Affiliate\AffiliateAnalyticsController;
+use App\Http\Controllers\Affiliate\AffiliateMediaController;
+use App\Http\Controllers\AffiliateContentManageController;
 use App\Http\Controllers\Affiliate\AffiliateWithdrawalPageController;
 use Illuminate\Support\Facades\Route;
+
+Route::get('/r/{referral_code}/{campaign_code}', [AffiliateTrackingController::class, 'Media'])
+    ->middleware(['affiliate.correlation', 'throttle:affiliate-click'])
+    ->where('referral_code', '[A-Za-z0-9-]{3,64}')
+    ->where('campaign_code', '[a-z0-9]+(?:-[a-z0-9]+)*')
+    ->name('affiliate.tracking.media');
+
+Route::get('/r/{referral_code}', [AffiliateTrackingController::class, 'Direct'])
+    ->middleware(['affiliate.correlation', 'throttle:affiliate-click'])
+    ->where('referral_code', '[A-Za-z0-9-]{3,64}')
+    ->name('affiliate.tracking.direct');
+
+Route::middleware(['auth', 'verified', 'affiliate.locale', 'affiliate.correlation', 'affiliate.feature:analytics'])
+    ->prefix('affiliate/analytics')
+    ->group(function (): void {
+        Route::get('/', [AffiliateAnalyticsController::class, 'Index'])->name('affiliate.analytics.index');
+        Route::get('/data', [AffiliateAnalyticsController::class, 'Data'])->name('affiliate.analytics.data');
+    });
+
+Route::get('/affiliate/media', [AffiliateMediaController::class, 'Index'])
+    ->middleware(['auth', 'verified', 'affiliate.locale', 'affiliate.correlation', 'affiliate.feature:media_library'])
+    ->name('affiliate.media.index');
+
+Route::middleware(['auth', 'affiliate.locale', 'affiliate.correlation', 'affiliate.feature:administration', 'permission:affiliate-content-manage'])
+    ->prefix('affiliate-content-manage')
+    ->group(function (): void {
+        Route::get('/', [AffiliateContentManageController::class, 'Index'])->name('affiliate-content-manage.index');
+        Route::post('/', [AffiliateContentManageController::class, 'StoreValidated'])->name('affiliate-content-manage.store');
+        Route::put('/{affiliate_content}', [AffiliateContentManageController::class, 'UpdateValidated'])->name('affiliate-content-manage.update');
+        Route::delete('/{affiliate_content}', [AffiliateContentManageController::class, 'Destroy'])->name('affiliate-content-manage.destroy');
+        Route::post('/toggle-status', [AffiliateContentManageController::class, 'ToggleStatusValidated'])->name('affiliate-content-manage.toggle-status');
+    });
 
 Route::middleware(['auth', 'affiliate.correlation', 'affiliate.feature:administration'])->prefix('admin/affiliates')->group(function (): void {
     Route::get('/', [AffiliateAccountAdminController::class, 'index'])
@@ -30,30 +66,30 @@ Route::middleware(['auth', 'affiliate.correlation', 'affiliate.feature:administr
         ->name('affiliate.admin.deactivate');
 });
 
-Route::middleware(['auth', 'verified', 'affiliate.correlation', 'affiliate.feature:wallet_withdrawals'])->prefix('affiliate/payout-accounts')->group(function (): void {
+Route::middleware(['auth', 'verified', 'affiliate.locale', 'affiliate.correlation', 'affiliate.feature:wallet_withdrawals'])->prefix('affiliate/payout-accounts')->group(function (): void {
     Route::put('/promptpay', [AffiliatePayoutAccountController::class, 'PromptPay'])->name('affiliate.payout-accounts.promptpay');
     Route::put('/bank', [AffiliatePayoutAccountController::class, 'Bank'])->name('affiliate.payout-accounts.bank');
 });
 
-Route::middleware(['auth', 'verified', 'affiliate.correlation', 'affiliate.feature:wallet_withdrawals'])->prefix('affiliate/withdrawals')->group(function (): void {
+Route::middleware(['auth', 'verified', 'affiliate.locale', 'affiliate.correlation', 'affiliate.feature:wallet_withdrawals'])->prefix('affiliate/withdrawals')->group(function (): void {
     Route::post('/', [AffiliateWithdrawalController::class, 'Store'])->name('affiliate.withdrawals.store');
     Route::post('/{withdrawal}/cancel', [AffiliateWithdrawalController::class, 'Cancel'])->name('affiliate.withdrawals.cancel');
 });
 
 Route::get('/affiliate/dashboard', [AffiliateDashboardController::class, 'Index'])
-    ->middleware(['auth', 'verified', 'affiliate.correlation', 'affiliate.feature:wallet_withdrawals'])
+    ->middleware(['auth', 'verified', 'affiliate.locale', 'affiliate.correlation', 'affiliate.feature:wallet_withdrawals'])
     ->name('affiliate.dashboard');
 
 Route::get('/affiliate/payout-accounts', [AffiliatePayoutAccountPageController::class, 'Index'])
-    ->middleware(['auth', 'verified', 'affiliate.correlation', 'affiliate.feature:wallet_withdrawals'])
+    ->middleware(['auth', 'verified', 'affiliate.locale', 'affiliate.correlation', 'affiliate.feature:wallet_withdrawals'])
     ->name('affiliate.payout-accounts.index');
 
 Route::get('/affiliate/withdrawals', [AffiliateWithdrawalPageController::class, 'Index'])
-    ->middleware(['auth', 'verified', 'affiliate.correlation', 'affiliate.feature:wallet_withdrawals'])
+    ->middleware(['auth', 'verified', 'affiliate.locale', 'affiliate.correlation', 'affiliate.feature:wallet_withdrawals'])
     ->name('affiliate.withdrawals.index');
 
 Route::get('/affiliate/my_affiliate', fn () => redirect()->route('affiliate.dashboard'))
-    ->middleware(['auth', 'verified', 'affiliate.correlation', 'affiliate.feature:wallet_withdrawals'])
+    ->middleware(['auth', 'verified', 'affiliate.locale', 'affiliate.correlation', 'affiliate.feature:wallet_withdrawals'])
     ->name('my_affiliate.index');
 
 Route::middleware(['auth', 'affiliate.correlation', 'affiliate.feature:wallet_withdrawals'])->prefix('admin/affiliate-withdrawals')->group(function (): void {

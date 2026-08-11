@@ -29,7 +29,7 @@ class AffiliateAccountService
                 'email' => strtolower(trim($validated['email'])),
                 'phone' => $validated['phone'],
                 'affiliate_request' => 1,
-                'language_code' => 'en',
+                'language_code' => (string) config('affiliate.default_locale', 'th'),
                 'department_id' => 5,
                 'position_id' => 13,
                 'referral' => $this->GenerateReferralCode(),

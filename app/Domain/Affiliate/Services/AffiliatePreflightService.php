@@ -24,6 +24,8 @@ class AffiliatePreflightService
             $this->RegistrationMailDriverCheck(),
             $this->QueueDriverCheck(),
             $this->AffiliateSettingsCheck(),
+            $this->VisitorHashKeyCheck(),
+            $this->DestinationHostsCheck(),
             $this->MailDeliveryCheck(),
             $this->SchedulerHostCheck(),
             $this->AccessReviewCheck(),
@@ -102,6 +104,34 @@ class AffiliatePreflightService
         }
 
         return $this->BuildCheck('affiliate_settings', self::STATUS_PASS, 'Affiliate database settings passed type and range validation.');
+    }
+
+    private function VisitorHashKeyCheck(): array
+    {
+        if (!(bool) config('affiliate.features.click_tracking', false)) {
+            return $this->BuildCheck('visitor_hash_key', self::STATUS_UNKNOWN, 'Click tracking is disabled; the independent visitor hash key is not required.');
+        }
+
+        $visitor_hash_key = (string) config('affiliate.visitor_hash_key', '');
+        if (strlen($visitor_hash_key) < 32) {
+            return $this->BuildCheck('visitor_hash_key', self::STATUS_BLOCKED, 'Click tracking requires an independent visitor hash key with at least 32 characters.');
+        }
+
+        return $this->BuildCheck('visitor_hash_key', self::STATUS_PASS, 'The independent visitor hash key is configured.');
+    }
+
+    private function DestinationHostsCheck(): array
+    {
+        if (!(bool) config('affiliate.features.media_library', false)) {
+            return $this->BuildCheck('destination_hosts', self::STATUS_UNKNOWN, 'The media library is disabled; destination host validation is not enabled.');
+        }
+
+        $allowed_hosts = array_filter((array) config('affiliate.allowed_destination_hosts', []));
+        if ($allowed_hosts === []) {
+            return $this->BuildCheck('destination_hosts', self::STATUS_BLOCKED, 'The media library requires at least one allowed destination host.');
+        }
+
+        return $this->BuildCheck('destination_hosts', self::STATUS_PASS, 'Allowed destination hosts are configured.');
     }
 
     private function MailDeliveryCheck(): array

@@ -18,11 +18,24 @@
         </include>
     </source>
     <php>
-        <env name="APP_ENV" value="testing"/>
+        <env name="APP_ENV" value="testing" force="true"/>
+        <env name="AFFILIATE_FEATURE_REFERRAL_CAPTURE" value="false" force="true"/>
+        <env name="AFFILIATE_FEATURE_COMMISSION_CREATION" value="false" force="true"/>
+        <env name="AFFILIATE_FEATURE_COMMISSION_RELEASE" value="false" force="true"/>
+        <env name="AFFILIATE_FEATURE_CONFIRMED_REFUNDS" value="false" force="true"/>
+        <env name="AFFILIATE_FEATURE_WALLET_WITHDRAWALS" value="false" force="true"/>
+        <env name="AFFILIATE_FEATURE_ADMINISTRATION" value="false" force="true"/>
+        <env name="AFFILIATE_FEATURE_CLICK_TRACKING" value="false" force="true"/>
+        <env name="AFFILIATE_FEATURE_ANALYTICS" value="false" force="true"/>
+        <env name="AFFILIATE_FEATURE_MEDIA_LIBRARY" value="false" force="true"/>
+        <env name="AFFILIATE_DEFAULT_LOCALE" value="th" force="true"/>
+        <env name="AFFILIATE_VISITOR_HASH_KEY" value="test-only-affiliate-visitor-key-32-chars" force="true"/>
+        <env name="AFFILIATE_ALLOWED_DESTINATION_HOSTS" value="localhost" force="true"/>
+        <env name="AFFILIATE_MAINTENANCE_MODE" value="false" force="true"/>
         <env name="BCRYPT_ROUNDS" value="4"/>
         <env name="CACHE_DRIVER" value="array"/>
-        <env name="DB_CONNECTION" value="sqlite"/>
-        <env name="DB_DATABASE" value=":memory:"/>
+        <env name="DB_CONNECTION" value="sqlite" force="true"/>
+        <env name="DB_DATABASE" value=":memory:" force="true"/>
         <env name="MAIL_MAILER" value="array"/>
         <env name="QUEUE_CONNECTION" value="sync"/>
         <env name="SESSION_DRIVER" value="array"/>

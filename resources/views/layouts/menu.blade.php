@@ -44,6 +44,22 @@
                     <p>Withdrawals</p>
                 </a>
             </li>
+            @if ((bool) config('affiliate.features.analytics', false))
+                <li class="nav-item">
+                    <a href="{{ route('affiliate.analytics.index') }}" class="nav-link {{ request()->routeIs('affiliate.analytics.*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-chart-pie"></i>
+                        <p>Analytics</p>
+                    </a>
+                </li>
+            @endif
+            @if ((bool) config('affiliate.features.media_library', false))
+                <li class="nav-item">
+                    <a href="{{ route('affiliate.media.index') }}" class="nav-link {{ request()->routeIs('affiliate.media.*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-photo-film"></i>
+                        <p>Media</p>
+                    </a>
+                </li>
+            @endif
         </ul>
     </li>
 @endif

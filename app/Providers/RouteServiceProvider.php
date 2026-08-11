@@ -48,6 +48,18 @@ class RouteServiceProvider extends ServiceProvider
                 });
         });
 
+        RateLimiter::for('affiliate-click', function (Request $request) {
+            $max_attempts = max(1, (int) config('affiliate.abuse.click_attempts_per_minute', 120));
+            $user_agent = strtolower(trim((string) $request->header('User-Agent', '')));
+            $transient_key = hash('sha256', $request->ip() . "\n" . $user_agent);
+
+            return Limit::perMinute($max_attempts)
+                ->by('affiliate-click:' . $transient_key)
+                ->response(function (Request $limited_request, array $headers) {
+                    return response('Too many requests. Please try again later.', 429, $headers);
+                });
+        });
+
         $this->routes(function () {
             Route::middleware('api')
                 ->prefix('api')

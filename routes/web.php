@@ -200,11 +200,6 @@ Route::group(['middleware' => ['auth']], function () {
     Route::resource('promotion-img', PromotionImageController::class);
     Route::resource('footer-setting', FooterSettingController::class);
 
-    // Affiliate Content Management (แยกจาก Promotion)
-    Route::get('/affiliate-content-manage', [App\Http\Controllers\AffiliateContentManageController::class, 'index'])->name('affiliate-content-manage.index');
-    Route::post('/affiliate-content-manage', [App\Http\Controllers\AffiliateContentManageController::class, 'Store'])->name('affiliate-content-manage.store');
-    Route::delete('/affiliate-content-manage/{id}', [App\Http\Controllers\AffiliateContentManageController::class, 'Destroy'])->name('affiliate-content-manage.destroy');
-    Route::post('/affiliate-content-manage/toggle-status', [App\Http\Controllers\AffiliateContentManageController::class, 'ToggleStatus'])->name('affiliate-content-manage.toggle-status');
     //createOrUpdate
     Route::post('/footer-setting/createOrUpdate', [FooterSettingController::class, 'createOrUpdate'])->name('footer-setting.createOrUpdate');
 
