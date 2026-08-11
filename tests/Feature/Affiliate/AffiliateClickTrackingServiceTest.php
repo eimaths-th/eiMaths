@@ -13,6 +13,7 @@ use App\Models\User;
 use Carbon\CarbonImmutable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Hash;
 use PHPUnit\Framework\Attributes\Test;
@@ -33,6 +34,7 @@ class AffiliateClickTrackingServiceTest extends TestCase
     #[Test]
     public function SequentialAcceptedClicksAggregateAndAppendRawEvents(): void
     {
+        Log::spy();
         $profile = $this->CreateProfile('AFF-CLICK-001');
         $service = app(AffiliateClickTrackingService::class);
         $target = $service->ResolveDirect($profile->referral_code, '/courses/math');
@@ -54,6 +56,9 @@ class AffiliateClickTrackingServiceTest extends TestCase
         $this->assertSame(1, AffiliateClickDailyMetric::query()->sum('unique_clicks'));
         $this->assertSame('direct', $first->source_type);
         $this->assertSame('/courses/math', $target->destination_target);
+        Log::shouldHaveReceived('warning')->with('affiliate.click.accepted', \Mockery::on(
+            static fn (array $context): bool => $context['is_unique'] === false || $context['is_unique'] === true,
+        ))->twice();
     }
 
     #[Test]

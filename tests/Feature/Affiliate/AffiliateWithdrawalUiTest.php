@@ -119,7 +119,7 @@ class AffiliateWithdrawalUiTest extends TestCase
         $response = $this->actingAs($owner)->get(route('affiliate.dashboard'));
 
         $response->assertOk()
-            ->assertSee('View withdrawals')
+            ->assertSee(trans('affiliate.dashboard.view_withdrawals', [], 'th'))
             ->assertDontSee('action="' . route('affiliate.withdrawals.cancel', $withdrawal) . '"', false)
             ->assertDontSee('Cancelled by affiliate');
     }

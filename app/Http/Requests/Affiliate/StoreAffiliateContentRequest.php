@@ -52,8 +52,14 @@ class StoreAffiliateContentRequest extends FormRequest
         $allowed = $type === 'image'
             ? ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
             : ['video/mp4', 'video/quicktime', 'video/x-msvideo', 'video/x-ms-wmv'];
+        $allowed_extensions = $type === 'image'
+            ? ['jpg', 'jpeg', 'png', 'gif', 'webp']
+            : ['mp4', 'mov', 'avi', 'wmv'];
         if (! in_array(strtolower((string) $file->getMimeType()), $allowed, true)) {
             $validator->errors()->add('file', 'The uploaded file MIME type does not match the selected media type.');
+        }
+        if (! in_array(strtolower((string) $file->getClientOriginalExtension()), $allowed_extensions, true)) {
+            $validator->errors()->add('file', 'The uploaded file extension is not allowed for the selected media type.');
         }
     }
 }

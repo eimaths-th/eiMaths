@@ -1,14 +1,6 @@
-export async function CopyText(text, options = {}) {
-    const navigator_object = options.Navigator ?? options.navigator ?? globalThis.navigator;
-    const fallback = options.Fallback ?? options.fallback;
-    if (navigator_object?.clipboard?.writeText) {
-        await navigator_object.clipboard.writeText(String(text));
-        return { status: 'copied', value: String(text) };
-    }
-    if (typeof fallback !== 'function') throw new Error('Clipboard is unavailable.');
-    await fallback(String(text));
-    return { status: 'copied', value: String(text) };
-}
+import { CopyText } from './affiliate-clipboard.js';
+
+export { CopyText };
 
 export async function ShareMedia(media, options = {}) {
     const navigator_object = options.Navigator ?? options.navigator ?? globalThis.navigator;
@@ -43,6 +35,7 @@ export function InitializeAffiliateMediaLibrary(options = {}) {
     if (!root?.querySelectorAll) return null;
     const fallback = options.Fallback ?? options.fallback;
     const navigator_object = options.Navigator ?? options.navigator ?? globalThis.navigator;
+    const translations = options.Translations ?? options.translations ?? ReadEmbeddedTranslations(root);
     const bind = (selector, action) => root.querySelectorAll(selector).forEach((button) => {
         button.addEventListener('click', async () => {
             const card = button.closest('[data-media-card]') ?? button;
@@ -55,13 +48,23 @@ export function InitializeAffiliateMediaLibrary(options = {}) {
             try {
                 if (resolved.type === 'copy') {
                     await CopyText(resolved.value, { Navigator: navigator_object, Fallback: fallback });
-                    if (feedback) feedback.textContent = 'Copied.';
+                    SetMediaFeedback(feedback, translations.copied ?? 'Copied.', 'success');
                 } else {
                     const result = await ShareMedia(resolved, { Navigator: navigator_object, Copy: (value) => CopyText(value, { Navigator: navigator_object, Fallback: fallback }) });
-                    if (feedback) feedback.textContent = result.status === 'cancelled' ? '' : result.status === 'shared' ? 'Shared.' : 'Tracking link copied.';
+                    if (result.status === 'cancelled') {
+                        SetMediaFeedback(feedback, '', '');
+                    } else {
+                        SetMediaFeedback(
+                            feedback,
+                            result.status === 'shared'
+                                ? translations.shared ?? 'Shared.'
+                                : translations.tracking_link_copied ?? 'Tracking link copied.',
+                            'success',
+                        );
+                    }
                 }
             } catch {
-                if (feedback) feedback.textContent = 'Action unavailable.';
+                SetMediaFeedback(feedback, translations.action_unavailable ?? 'Action unavailable.', 'error');
             } finally {
                 button.disabled = previously_disabled;
                 button.removeAttribute('aria-busy');
@@ -73,4 +76,25 @@ export function InitializeAffiliateMediaLibrary(options = {}) {
     bind('[data-media-copy-link]', 'link');
     bind('[data-media-share]', 'share');
     return { Root: root };
+}
+
+function SetMediaFeedback(feedback, message, state) {
+    if (!feedback) return;
+    feedback.textContent = message;
+    if (state) {
+        feedback.setAttribute('data-media-feedback-state', state);
+    } else {
+        feedback.removeAttribute('data-media-feedback-state');
+    }
+}
+
+function ReadEmbeddedTranslations(root) {
+    const node = root.querySelector?.('[data-media-translations]');
+    if (!node) return {};
+    try {
+        const translations = JSON.parse(node.textContent ?? '{}');
+        return translations && typeof translations === 'object' ? translations : {};
+    } catch {
+        return {};
+    }
 }

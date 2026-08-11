@@ -70,7 +70,9 @@ class AffiliateAnalyticsApiTest extends TestCase
         $this->actingAs($user)->getJson(route('affiliate.analytics.data', [
             'from' => '2026-08-04',
             'to' => '2026-08-03',
-        ]))->assertStatus(422)->assertJsonValidationErrors(['to']);
+        ]))->assertStatus(422)
+            ->assertJsonValidationErrors(['to'])
+            ->assertJsonPath('errors.to.0', 'กรุณาเลือกวันเริ่มต้นที่ไม่เกินวันสิ้นสุด');
     }
 
     public function test_disabled_analytics_feature_is_not_exposed(): void

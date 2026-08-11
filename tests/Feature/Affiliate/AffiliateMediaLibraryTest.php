@@ -39,7 +39,11 @@ class AffiliateMediaLibraryTest extends TestCase
         $response->assertOk()
             ->assertViewIs('affiliate.media.index')
             ->assertSee('Spring &amp; Summer', false)
-            ->assertSee(route('affiliate.tracking.media', [$profile->referral_code, $current->campaign_code]), false)
+            ->assertDontSee('data-media-copy-caption', false)
+            ->assertDontSee('data-media-copy-link', false)
+            ->assertSee('data-media-share', false)
+            ->assertSee('id="affiliate-media-tracking-url-' . $current->id . '"', false)
+            ->assertSee('value="' . route('affiliate.tracking.media', [$profile->referral_code, $current->campaign_code]) . '"', false)
             ->assertDontSee('disabled-library')
             ->assertDontSee('archived-library');
     }

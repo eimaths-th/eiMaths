@@ -15,6 +15,8 @@ use Illuminate\Support\Facades\Auth;
 
 class AffiliateAuthController extends Controller
 {
+    private const PENDING_USER_ID_SESSION_KEY = 'affiliate_pending_user_id';
+
     /**
      * Display a listing of the resource.
      */
@@ -97,7 +99,8 @@ class AffiliateAuthController extends Controller
 
     public function register(RegisterAffiliateRequest $request)
     {
-        $this->account_service->Register($request->validated());
+        $affiliate_user = $this->account_service->Register($request->validated());
+        $request->session()->put(self::PENDING_USER_ID_SESSION_KEY, $affiliate_user->getKey());
 
         return redirect()->route('affiliate.waiting')->with('success', 'Registration received. Verify your email before approval.');
     }
@@ -111,10 +114,101 @@ class AffiliateAuthController extends Controller
             && $affiliate_user->hasRole('Affiliate-user')
             && $affiliate_user->AffiliateProfile?->status === AffiliateProfileStatus::ACTIVE
         ) {
+            $request->session()->forget(self::PENDING_USER_ID_SESSION_KEY);
+
             return redirect()->route('affiliate.dashboard');
         }
 
-        return view('affiliate.auth.waiting');
+        $session_affiliate_user = $this->PendingSessionUser($request);
+        if (
+            $request->user() === null
+            && $session_affiliate_user?->AffiliateProfile?->status === AffiliateProfileStatus::ACTIVE
+        ) {
+            $request->session()->forget(self::PENDING_USER_ID_SESSION_KEY);
+
+            return redirect()->route('affiliate.login')->with('affiliate_account_approved', true);
+        }
+
+        $pending_email_user = $this->PendingEmailUser($request);
+
+        return view('affiliate.auth.waiting', [
+            'show_resend_verification' => $pending_email_user instanceof User,
+            'show_email_resend_fallback' => !$pending_email_user instanceof User
+                && $request->user() === null
+                && !$request->session()->has(self::PENDING_USER_ID_SESSION_KEY),
+            'show_verified_waiting_message' => $session_affiliate_user?->email_verified_at !== null
+                && $session_affiliate_user?->AffiliateProfile?->status === AffiliateProfileStatus::PENDING_APPROVAL,
+        ]);
+    }
+
+    public function ResendVerification(Request $request): RedirectResponse
+    {
+        $pending_user = $this->PendingEmailUser($request);
+
+        if (
+            !$pending_user instanceof User
+            && $request->user() === null
+            && !$request->session()->has(self::PENDING_USER_ID_SESSION_KEY)
+        ) {
+            $validated = $request->validate([
+                'email' => ['nullable', 'email', 'max:255'],
+            ]);
+            $email = strtolower(trim((string) ($validated['email'] ?? '')));
+
+            if ($email !== '') {
+                $pending_user = User::query()
+                    ->whereRaw('LOWER(email) = ?', [$email])
+                    ->whereNull('email_verified_at')
+                    ->whereHas('AffiliateProfile', function ($query): void {
+                        $query->where('status', AffiliateProfileStatus::PENDING_EMAIL->value);
+                    })
+                    ->first();
+            }
+        }
+
+        if ($pending_user instanceof User) {
+            $pending_user->sendEmailVerificationNotification();
+        }
+
+        return redirect()->route('affiliate.waiting')->with('affiliate_verification_sent', true);
+    }
+
+    private function PendingEmailUser(Request $request): ?User
+    {
+        $authenticated_user = $request->user();
+
+        if (
+            $authenticated_user instanceof User
+            && $authenticated_user->email_verified_at === null
+            && $authenticated_user->AffiliateProfile?->status === AffiliateProfileStatus::PENDING_EMAIL
+        ) {
+            return $authenticated_user;
+        }
+
+        $pending_user = $this->PendingSessionUser($request);
+        if (
+            !$pending_user instanceof User
+            || $pending_user->email_verified_at !== null
+            || $pending_user->AffiliateProfile?->status !== AffiliateProfileStatus::PENDING_EMAIL
+        ) {
+            return null;
+        }
+
+        return $pending_user;
+    }
+
+    private function PendingSessionUser(Request $request): ?User
+    {
+        $pending_user_id = $request->session()->get(self::PENDING_USER_ID_SESSION_KEY);
+        if (is_int($pending_user_id)) {
+            $normalized_user_id = $pending_user_id;
+        } elseif (is_string($pending_user_id) && ctype_digit($pending_user_id)) {
+            $normalized_user_id = (int) $pending_user_id;
+        } else {
+            return null;
+        }
+
+        return User::query()->whereKey($normalized_user_id)->first();
     }
 
     public function login()

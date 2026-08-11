@@ -172,6 +172,7 @@ class AffiliateClickTrackingService
                         source_type: $target->source_type,
                         unique_window_key: $unique_window_key,
                         destination_target: $target->destination_target,
+                        is_unique: $is_unique,
                     );
                 });
                 $this->audit_service->EmitSignal('click.accepted', $correlation_id, [
@@ -179,7 +180,7 @@ class AffiliateClickTrackingService
                     'click_event_id' => $context->click_event_id,
                     'campaign_code' => $target->campaign_code,
                     'source_type' => $target->source_type,
-                    'is_unique' => $context->unique_window_key,
+                    'is_unique' => $context->is_unique,
                 ]);
 
                 return $context;

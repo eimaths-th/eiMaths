@@ -20,6 +20,7 @@ class UpdateAffiliateContentRequest extends FormRequest
             'file' => ['prohibited'],
             'title' => ['sometimes', 'required', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:1000'],
+            'status' => ['sometimes', 'required', 'in:enabled,disabled'],
             'destination_target' => ['sometimes', 'required', 'string', 'max:2048'],
             'publish_starts_at' => ['nullable', 'date'],
             'publish_ends_at' => ['nullable', 'date', 'after:publish_starts_at'],

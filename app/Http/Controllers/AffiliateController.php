@@ -61,7 +61,18 @@ class AffiliateController extends Controller
             'is_withdrawal_approval_required' => $this->affiliate_configuration_service->IsWithdrawalApprovalRequired(),
         ];
 
-        return view('affiliate.index', compact('departments', 'days', 'qr_payment', 'affiliate_policy'));
+        $affiliate_capabilities = [
+            'analytics' => (bool) config('affiliate.features.analytics', false),
+            'media' => (bool) config('affiliate.features.media_library', false),
+        ];
+
+        return view('affiliate.index', compact(
+            'departments',
+            'days',
+            'qr_payment',
+            'affiliate_policy',
+            'affiliate_capabilities',
+        ));
     }
 
     private function FormatBasisPointsAsPercent(int $basis_points): string

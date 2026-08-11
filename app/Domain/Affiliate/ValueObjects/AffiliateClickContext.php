@@ -13,6 +13,7 @@ final readonly class AffiliateClickContext
         public string $source_type,
         public string $unique_window_key,
         public string $destination_target,
+        public bool $is_unique = false,
     ) {
         if ($this->click_event_id < 1 || ($this->content_id !== null && $this->content_id < 1)) {
             throw new InvalidArgumentException('Affiliate click context identifiers are invalid.');

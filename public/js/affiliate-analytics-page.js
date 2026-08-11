@@ -1,4 +1,5 @@
 import { CreateAffiliateAnalyticsPoller } from './affiliate-analytics-poller.js';
+import { CopyText } from './affiliate-clipboard.js';
 
 export function ParseAffiliateAnalyticsPayload(payload) {
     if (!payload || typeof payload !== 'object' || !payload.range || !payload.kpis || !Array.isArray(payload.daily_series) || !Array.isArray(payload.recent_sales) || !Array.isArray(payload.top_media) || !payload.sales_pagination) {
@@ -33,6 +34,7 @@ export function InitializeAffiliateAnalyticsPage(options = {}) {
     if (!root) return null;
     const locale = options.Locale ?? options.locale ?? globalThis.document?.documentElement?.lang ?? 'en-US';
     const initial_payload = options.Payload ?? options.payload ?? ReadEmbeddedPayload(root);
+    const translations = options.Translations ?? options.translations ?? ReadEmbeddedTranslations(root);
     let current_payload = ParseAffiliateAnalyticsPayload(initial_payload);
     let chart = null;
 
@@ -44,21 +46,11 @@ export function InitializeAffiliateAnalyticsPage(options = {}) {
         RenderMediaTable(root, current_payload, locale);
         RenderPagination(root, current_payload);
         RenderGeneratedAt(root, current_payload);
-        chart = RenderChart(root, current_payload, chart, options.Chart ?? globalThis.Chart);
+        chart = RenderChart(root, current_payload, chart, options.Chart ?? globalThis.Chart, translations.clicks_label ?? 'Clicks');
     };
     render(current_payload);
 
-    const endpoint = options.Endpoint ?? options.endpoint ?? root.dataset.dataEndpoint ?? '/affiliate/analytics/data';
-    const fetcher = options.Fetch ?? options.fetch ?? globalThis.fetch;
-    const poller = CreateAffiliateAnalyticsPoller({
-        Fetch: ({ signal }) => fetcher(BuildEndpoint(endpoint, current_payload.range, current_payload.sales_pagination.current_page), { headers: { Accept: 'application/json' }, signal }).then((response) => response),
-        HandleData: (payload) => { render(payload.data ?? payload); SetLiveMessage(root, ''); },
-        HandleError: () => SetLiveMessage(root, 'Analytics refresh is temporarily unavailable.'),
-        ClearWarning: () => SetLiveMessage(root, ''),
-        SetTimeout: options.SetTimeout,
-        ClearTimeout: options.ClearTimeout,
-        IsHidden: options.IsHidden,
-    });
+    const poller = CreateAnalyticsPoller(root, () => current_payload, render, options, translations);
 
     root.querySelectorAll('[data-affiliate-analytics-refresh]').forEach((button) => button.addEventListener('click', () => poller.RetryNow()));
     root.querySelectorAll('[data-analytics-preset]').forEach((button) => button.addEventListener('click', () => {
@@ -77,10 +69,107 @@ export function InitializeAffiliateAnalyticsPage(options = {}) {
     return { Poller: poller, Render: render, GetPayload: () => current_payload };
 }
 
+export function InitializeAffiliateReferralCopyActions(options = {}) {
+    const root = options.Root ?? options.root ?? globalThis.document;
+    if (!root?.querySelectorAll) return null;
+    const translations = options.Translations ?? options.translations ?? ReadEmbeddedTranslations(root);
+    BindAffiliateReferralCopyActions(root, translations, options);
+    return { Root: root };
+}
+
+export function InitializeAffiliateAnalyticsSummary(options = {}) {
+    const root = options.Root ?? options.root ?? globalThis.document?.querySelector('[data-affiliate-analytics-summary]');
+    if (!root) return null;
+    const locale = options.Locale ?? options.locale ?? globalThis.document?.documentElement?.lang ?? 'en-US';
+    const initial_payload = options.Payload ?? options.payload ?? ReadEmbeddedPayload(root);
+    const translations = options.Translations ?? options.translations ?? ReadEmbeddedTranslations(root);
+    let current_payload = ParseAffiliateAnalyticsPayload(initial_payload);
+
+    const render = (payload) => {
+        current_payload = ParseAffiliateAnalyticsPayload(payload);
+        RenderKpis(root, current_payload, locale);
+        RenderGeneratedAt(root, current_payload);
+    };
+    render(current_payload);
+
+    const poller = CreateAnalyticsPoller(root, () => current_payload, render, options, translations);
+    root.querySelectorAll('[data-affiliate-analytics-refresh]').forEach((button) => button.addEventListener('click', () => poller.RetryNow()));
+    BindAffiliateReferralCopyActions(root.parentElement ?? root, translations, options);
+    if (options.Start !== false) poller.Start();
+
+    return { Poller: poller, Render: render, GetPayload: () => current_payload };
+}
+
+function BindAffiliateReferralCopyActions(root, translations, options) {
+    if (!root?.querySelectorAll) return;
+    const copy_translations = translations ?? {};
+    const navigator_object = options.Navigator ?? options.navigator;
+    const fallback = options.Fallback ?? options.fallback;
+    const feedback = root.querySelector?.('[data-affiliate-referral-feedback]');
+    const bind = (selector, success_message) => root.querySelectorAll(selector).forEach((button) => {
+        button.addEventListener('click', async () => {
+            const value = String(button.dataset?.affiliateCopyValue ?? '');
+            const localized_success_message = button.dataset?.affiliateCopySuccess ?? success_message;
+            const unavailable_message = button.dataset?.affiliateCopyUnavailable ?? copy_translations.copy_unavailable ?? 'Copy is unavailable.';
+            if (!value) {
+                if (feedback) feedback.textContent = unavailable_message;
+                return;
+            }
+            const previously_disabled = button.disabled;
+            button.disabled = true;
+            button.setAttribute('aria-busy', 'true');
+            try {
+                await CopyText(value, { Navigator: navigator_object, Fallback: fallback });
+                if (feedback) feedback.textContent = localized_success_message;
+            } catch {
+                if (feedback) feedback.textContent = unavailable_message;
+            } finally {
+                button.disabled = previously_disabled;
+                button.removeAttribute('aria-busy');
+                button.focus?.();
+            }
+        });
+    });
+
+    bind('[data-affiliate-copy-referral-code]', copy_translations.referral_code_copied ?? 'Referral code copied.');
+    bind('[data-affiliate-copy-referral-link]', copy_translations.referral_link_copied ?? 'Referral link copied.');
+}
+
+function CreateAnalyticsPoller(root, GetPayload, Render, options, translations) {
+    const endpoint = options.Endpoint ?? options.endpoint ?? root.dataset.endpoint ?? root.dataset.dataEndpoint ?? '/affiliate/analytics/data';
+    const fetcher = options.Fetch ?? options.fetch ?? globalThis.fetch;
+
+    return CreateAffiliateAnalyticsPoller({
+        Fetch: ({ signal }) => fetcher(
+            BuildEndpoint(endpoint, GetPayload().range, GetPayload().sales_pagination.current_page),
+            { headers: { Accept: 'application/json' }, signal },
+        ).then((response) => response),
+        HandleData: (payload) => { Render(payload.data ?? payload); SetLiveMessage(root, ''); },
+        HandleError: () => SetLiveMessage(root, translations.refresh_warning ?? 'Analytics refresh is temporarily unavailable.'),
+        ClearWarning: () => SetLiveMessage(root, ''),
+        SetTimeout: options.SetTimeout,
+        ClearTimeout: options.ClearTimeout,
+        IsHidden: options.IsHidden,
+        AddVisibilityListener: options.AddVisibilityListener,
+        RemoveVisibilityListener: options.RemoveVisibilityListener,
+    });
+}
+
 function ReadEmbeddedPayload(root) {
     const node = root.querySelector('[data-affiliate-analytics-json]');
     if (!node) throw new Error('Affiliate analytics payload is missing.');
     return JSON.parse(node.textContent ?? '{}');
+}
+
+function ReadEmbeddedTranslations(root) {
+    const node = root.querySelector('[data-affiliate-analytics-translations]');
+    if (!node) return {};
+    try {
+        const translations = JSON.parse(node.textContent ?? '{}');
+        return translations && typeof translations === 'object' ? translations : {};
+    } catch {
+        return {};
+    }
 }
 
 function RenderKpis(root, payload, locale) {
@@ -154,13 +243,13 @@ function RenderGeneratedAt(root, payload) {
     });
 }
 
-function RenderChart(root, payload, previous_chart, ChartConstructor) {
+function RenderChart(root, payload, previous_chart, ChartConstructor, clicks_label) {
     if (previous_chart?.destroy) previous_chart.destroy();
     const canvas = root.querySelector('[data-affiliate-daily-chart]');
     if (!canvas || typeof ChartConstructor !== 'function') return null;
     return new ChartConstructor(canvas.getContext('2d'), {
         type: 'line',
-        data: { labels: payload.daily_series.map((day) => day.metric_date), datasets: [{ label: 'Clicks', data: payload.daily_series.map((day) => day.total_clicks) }] },
+        data: { labels: payload.daily_series.map((day) => day.metric_date), datasets: [{ label: clicks_label, data: payload.daily_series.map((day) => day.total_clicks) }] },
         options: { animation: globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches ? false : undefined },
     });
 }

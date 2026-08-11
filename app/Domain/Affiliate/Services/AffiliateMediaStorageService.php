@@ -27,6 +27,10 @@ class AffiliateMediaStorageService
         'video/x-ms-wmv' => 'wmv',
     ];
 
+    private const IMAGE_ALLOWED_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+
+    private const VIDEO_ALLOWED_EXTENSIONS = ['mp4', 'mov', 'avi', 'wmv'];
+
     public function __construct(private readonly ImageUploadStorageService $image_upload_storage_service)
     {
     }
@@ -38,6 +42,10 @@ class AffiliateMediaStorageService
         $extension_map = $type === 'image' ? self::IMAGE_MIME_EXTENSIONS : ($type === 'video' ? self::VIDEO_MIME_EXTENSIONS : []);
         if (! isset($extension_map[$mime_type])) {
             throw new InvalidArgumentException('Affiliate media type does not match the server-observed MIME type.');
+        }
+        $allowed_extensions = $type === 'image' ? self::IMAGE_ALLOWED_EXTENSIONS : self::VIDEO_ALLOWED_EXTENSIONS;
+        if (! in_array(strtolower((string) $file->getClientOriginalExtension()), $allowed_extensions, true)) {
+            throw new InvalidArgumentException('Affiliate media file extension is not allowed for the selected media type.');
         }
 
         if ($type === 'image') {

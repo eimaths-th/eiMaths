@@ -34,7 +34,7 @@ class AffiliateDashboardQuery
 
         return [
             'profile' => $profile,
-            'referral_url' => route('affiliate.tracking.direct', ['referral_code' => $profile->referral_code]),
+            'referral_url' => route('affiliate.courses', ['ref' => $profile->referral_code]),
             'analytics_summary' => $analytics_summary,
             'wallet' => $wallet,
             'commissions' => AffiliateCommission::query()

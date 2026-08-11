@@ -1,72 +1,137 @@
 @extends('layouts.app')
 
 @section('content')
-<main class="container py-4" aria-labelledby="affiliate-dashboard-title">
-    <h1 id="affiliate-dashboard-title">Affiliate dashboard</h1>
-    <p>Referral code: <code>{{ $profile->referral_code }}</code></p>
-    @include('affiliate.partials.navigation')
-    @include('affiliate.partials.analytics-summary')
-
-    @if (session('success'))
-        <div class="alert alert-success" role="status">{{ session('success') }}</div>
-    @endif
-
-    @if ($errors->any())
-        <div class="alert alert-danger" role="alert">
-            <ul class="mb-0">
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
-
-    <section class="row" aria-label="Wallet summary">
-        <div class="col-md-6">
-            <h2>Available balance</h2>
-            <p>{{ number_format($wallet->available_balance_minor / 100, 2) }}</p>
-        </div>
-        <div class="col-md-6">
-            <h2>Reserved balance</h2>
-            <p>{{ number_format($wallet->reserved_balance_minor / 100, 2) }}</p>
+<main class="affiliate-portal" aria-labelledby="affiliate-dashboard-title">
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-8">
+                    <h1 id="affiliate-dashboard-title" class="mb-0">{{ __('affiliate.dashboard.title') }}</h1>
+                </div>
+            </div>
         </div>
     </section>
 
-    <section class="mt-4" aria-labelledby="commission-history-title">
-        <h2 id="commission-history-title">Commission history</h2>
-        <table class="table" aria-describedby="commission-history-title">
-            <thead><tr><th scope="col">ID</th><th scope="col">Status</th><th scope="col">Amount</th><th scope="col">Release at</th></tr></thead>
-            <tbody>
-            @forelse ($commissions as $commission)
-                <tr><td>{{ $commission->id }}</td><td>{{ $commission->status->value }}</td><td>{{ number_format($commission->commission_minor / 100, 2) }}</td><td>{{ optional($commission->release_at)->toDateTimeString() }}</td></tr>
-            @empty
-                <tr><td colspan="4">No commissions yet.</td></tr>
-            @endforelse
-            </tbody>
-        </table>
-        {{ $commissions->links() }}
-    </section>
+    <section class="content">
+        <div class="container-fluid">
+            @include('affiliate.partials.navigation')
 
-    <section class="mt-4" aria-labelledby="withdrawal-history-title">
-        <h2 id="withdrawal-history-title">Withdrawal history</h2>
-        <p><a href="{{ route('affiliate.withdrawals.index') }}">Open withdrawals</a></p>
-        <table class="table" aria-describedby="withdrawal-history-title">
-            <thead><tr><th scope="col">ID</th><th scope="col">Status</th><th scope="col">Amount</th><th scope="col">Requested at</th><th scope="col">Details</th></tr></thead>
-            <tbody>
-            @forelse ($withdrawals as $withdrawal)
-                <tr>
-                    <td>{{ $withdrawal->id }}</td>
-                    <td>{{ $withdrawal->status->value }}</td>
-                    <td>{{ number_format($withdrawal->amount_minor / 100, 2) }}</td>
-                    <td>{{ optional($withdrawal->requested_at)->toDateTimeString() }}</td>
-                    <td><a href="{{ route('affiliate.withdrawals.index') }}">View withdrawals</a></td>
-                </tr>
-            @empty
-                <tr><td colspan="5">No withdrawals yet.</td></tr>
-            @endforelse
-            </tbody>
-        </table>
-        {{ $withdrawals->links() }}
+            <section class="affiliate-page-intro p-3 mb-4" aria-label="{{ __('affiliate.dashboard.referral_code') }}">
+                <div class="d-flex flex-wrap align-items-center mb-2">
+                    <strong>{{ __('affiliate.dashboard.referral_code') }}:</strong>
+                    <code class="ml-1" data-affiliate-referral-code>{{ $profile->referral_code }}</code>
+                    <button class="btn btn-outline-primary btn-sm ml-3" type="button" data-affiliate-copy-referral-code data-affiliate-copy-value="{{ $profile->referral_code }}" data-affiliate-copy-success="{{ __('affiliate.dashboard.referral_code_copied') }}" data-affiliate-copy-unavailable="{{ __('affiliate.dashboard.copy_unavailable') }}">
+                        {{ __('affiliate.dashboard.copy_referral_code') }}
+                    </button>
+                </div>
+                <div class="d-flex flex-wrap align-items-center">
+                    <strong class="mr-2">{{ __('affiliate.dashboard.referral_link') }}:</strong>
+                    <a class="affiliate-referral-link text-break mr-3" href="{{ $referral_url }}" data-affiliate-referral-url>{{ $referral_url }}</a>
+                    <button class="btn btn-primary btn-sm" type="button" data-affiliate-copy-referral-link data-affiliate-copy-value="{{ $referral_url }}" data-affiliate-copy-success="{{ __('affiliate.dashboard.referral_link_copied') }}" data-affiliate-copy-unavailable="{{ __('affiliate.dashboard.copy_unavailable') }}">
+                        {{ __('affiliate.dashboard.copy_referral_link') }}
+                    </button>
+                </div>
+                <span class="d-block text-muted mt-2" role="status" aria-live="polite" data-affiliate-referral-feedback></span>
+            </section>
+
+            @include('affiliate.partials.analytics-summary')
+
+            @if (session('success'))
+                <div class="alert alert-success" role="status">{{ session('success') }}</div>
+            @endif
+
+            @if ($errors->any())
+                <div class="alert alert-danger" role="alert">
+                    <ul class="mb-0">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            <section class="mb-4" aria-label="{{ __('affiliate.dashboard.wallet_summary') }}">
+                <div class="row">
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <div class="card card-primary affiliate-card h-100">
+                            <div class="card-header"><h2 class="card-title">{{ __('affiliate.dashboard.available_balance') }}</h2></div>
+                            <div class="card-body"><p class="h3 mb-0">{{ number_format($wallet->available_balance_minor / 100, 2) }}</p></div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card card-primary affiliate-card h-100">
+                            <div class="card-header"><h2 class="card-title">{{ __('affiliate.dashboard.reserved_balance') }}</h2></div>
+                            <div class="card-body"><p class="h3 mb-0">{{ number_format($wallet->reserved_balance_minor / 100, 2) }}</p></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="card card-primary affiliate-card mb-4" aria-labelledby="commission-history-title">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <h2 id="commission-history-title" class="card-title">{{ __('affiliate.dashboard.commission_history') }}</h2>
+                </div>
+                <div class="card-body p-0">
+                    <div class="affiliate-table-scroll">
+                        <table class="table table-bordered table-striped table-hover mb-0" aria-describedby="commission-history-title">
+                            <thead><tr><th scope="col">{{ __('affiliate.dashboard.id') }}</th><th scope="col">{{ __('affiliate.dashboard.status') }}</th><th scope="col">{{ __('affiliate.dashboard.amount') }}</th><th scope="col">{{ __('affiliate.dashboard.release_at') }}</th></tr></thead>
+                            <tbody>
+                            @forelse ($commissions as $commission)
+                                <tr><td>{{ $commission->id }}</td><td>{{ $commission->status->value }}</td><td>{{ number_format($commission->commission_minor / 100, 2) }}</td><td>{{ optional($commission->release_at)->toDateTimeString() }}</td></tr>
+                            @empty
+                                <tr><td colspan="4">{{ __('affiliate.dashboard.no_commissions') }}</td></tr>
+                            @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                @if ($commissions->hasPages())
+                    <div class="card-footer">{{ $commissions->links() }}</div>
+                @endif
+            </section>
+
+            <section class="card card-primary affiliate-card" aria-labelledby="withdrawal-history-title">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <h2 id="withdrawal-history-title" class="card-title">{{ __('affiliate.dashboard.withdrawal_history') }}</h2>
+                    <a class="btn btn-light btn-sm" href="{{ route('affiliate.withdrawals.index') }}">{{ __('affiliate.dashboard.open_withdrawals') }}</a>
+                </div>
+                <div class="card-body p-0">
+                    <div class="affiliate-table-scroll">
+                        <table class="table table-bordered table-striped table-hover mb-0" aria-describedby="withdrawal-history-title">
+                            <thead><tr><th scope="col">{{ __('affiliate.dashboard.id') }}</th><th scope="col">{{ __('affiliate.dashboard.status') }}</th><th scope="col">{{ __('affiliate.dashboard.amount') }}</th><th scope="col">{{ __('affiliate.dashboard.requested_at') }}</th><th scope="col">{{ __('affiliate.dashboard.details') }}</th></tr></thead>
+                            <tbody>
+                            @forelse ($withdrawals as $withdrawal)
+                                <tr>
+                                    <td>{{ $withdrawal->id }}</td>
+                                    <td>{{ $withdrawal->status->value }}</td>
+                                    <td>{{ number_format($withdrawal->amount_minor / 100, 2) }}</td>
+                                    <td>{{ optional($withdrawal->requested_at)->toDateTimeString() }}</td>
+                                    <td><a href="{{ route('affiliate.withdrawals.index') }}">{{ __('affiliate.dashboard.view_withdrawals') }}</a></td>
+                                </tr>
+                            @empty
+                                <tr><td colspan="5">{{ __('affiliate.dashboard.no_withdrawals') }}</td></tr>
+                            @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                @if ($withdrawals->hasPages())
+                    <div class="card-footer">{{ $withdrawals->links() }}</div>
+                @endif
+            </section>
+        </div>
     </section>
 </main>
+@endsection
+
+@section('style')
+<link rel="stylesheet" href="{{ asset('css/affiliate-portal.css') }}">
+@endsection
+
+@section('script')
+<script type="module">
+    import { InitializeAffiliateAnalyticsSummary, InitializeAffiliateReferralCopyActions } from '{{ asset('js/affiliate-analytics-page.js') }}';
+    const analytics_summary = InitializeAffiliateAnalyticsSummary();
+    if (!analytics_summary) InitializeAffiliateReferralCopyActions();
+</script>
 @endsection

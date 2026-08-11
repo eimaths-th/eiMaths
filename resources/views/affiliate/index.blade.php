@@ -14,6 +14,18 @@
         @endphp
     @endif
     <div id="content-area">
+        <section class="container affiliate-capabilities" aria-labelledby="affiliate-capabilities-title">
+            <h2 id="affiliate-capabilities-title">{{ __('affiliate.landing.capabilities_title') }}</h2>
+            @if ($affiliate_capabilities['analytics'])
+                <p>{{ __('affiliate.landing.analytics_enabled') }}</p>
+            @endif
+            @if ($affiliate_capabilities['media'])
+                <p>{{ __('affiliate.landing.media_enabled') }}</p>
+            @endif
+            @if (! $affiliate_capabilities['analytics'] && ! $affiliate_capabilities['media'])
+                <p>{{ __('affiliate.landing.analytics_unavailable_guidance') }}</p>
+            @endif
+        </section>
         <div class="full-page" data-type="component-text" data-preview="" data-aoraeditor-title="All Section"
             data-aoraeditor-categories="Affiliate Page">
             <div class="row">

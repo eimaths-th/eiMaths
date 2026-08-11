@@ -12,6 +12,11 @@
             </div>
             <div class="login_wrapper_content">
                 <h4>ยินดีต้อนรับกลับ กรุณาเข้าสู่ระบบ<br>เข้าสู่บัญชีของคุณ </h4>
+                @if (session('affiliate_account_approved'))
+                    <div class="alert alert-success" role="status">
+                        {{ __('affiliate.registration.account_approved') }}
+                    </div>
+                @endif
 
                 <div class="socail_links">
 

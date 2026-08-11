@@ -4,6 +4,7 @@ namespace Tests\Feature\Affiliate;
 
 use App\Domain\Affiliate\Models\AffiliateConfiguration;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Config;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -45,5 +46,55 @@ class AffiliateLandingPageTest extends TestCase
         $response->assertSeeText('7 วันเต็ม');
         $response->assertSeeText('90 วัน');
         $response->assertSeeText('12.34 บาท');
+    }
+
+    #[Test]
+    public function LandingPageDoesNotAdvertiseDisabledCapabilities(): void
+    {
+        Config::set('affiliate.features.analytics', false);
+        Config::set('affiliate.features.media_library', false);
+
+        $response = $this->get(route('affiliate.index'));
+
+        $response->assertDontSeeText('Filtered click activity and confirmed receipt-backed sales and income analytics update near real time every 60 seconds.');
+        $response->assertDontSeeText('Approved image and video assets, captions, downloads, and server-generated campaign links are available.');
+        $response->assertSeeText('Do not treat unavailable analytics as confirmed evidence.');
+    }
+
+    #[Test]
+    public function LandingPageAdvertisesOnlyEnabledAnalytics(): void
+    {
+        Config::set('affiliate.features.analytics', true);
+        Config::set('affiliate.features.media_library', false);
+
+        $response = $this->get(route('affiliate.index'));
+
+        $response->assertSeeText('Filtered click activity and confirmed receipt-backed sales and income analytics update near real time every 60 seconds.');
+        $response->assertDontSeeText('Approved image and video assets, captions, downloads, and server-generated campaign links are available.');
+    }
+
+    #[Test]
+    public function LandingPageAdvertisesOnlyEnabledMedia(): void
+    {
+        Config::set('affiliate.features.analytics', false);
+        Config::set('affiliate.features.media_library', true);
+
+        $response = $this->get(route('affiliate.index'));
+
+        $response->assertDontSeeText('Filtered click activity and confirmed receipt-backed sales and income analytics update near real time every 60 seconds.');
+        $response->assertSeeText('Approved image and video assets, captions, downloads, and server-generated campaign links are available.');
+    }
+
+    #[Test]
+    public function LandingPageAdvertisesBothEnabledCapabilities(): void
+    {
+        Config::set('affiliate.features.analytics', true);
+        Config::set('affiliate.features.media_library', true);
+
+        $response = $this->get(route('affiliate.index'));
+
+        $response->assertSeeText('Filtered click activity and confirmed receipt-backed sales and income analytics update near real time every 60 seconds.');
+        $response->assertSeeText('Approved image and video assets, captions, downloads, and server-generated campaign links are available.');
+        $response->assertDontSeeText('Do not treat unavailable analytics as confirmed evidence.');
     }
 }

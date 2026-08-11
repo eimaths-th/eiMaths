@@ -62,7 +62,12 @@ class AffiliateFinanceNavigationTest extends TestCase
         $withdrawal_response = $this->actingAs($owner)->get(route('affiliate.withdrawals.index'));
         $withdrawal_response->assertOk()
             ->assertViewIs('affiliate.withdrawals.index')
-            ->assertSeeInOrder(['Available balance', '2,600.00', 'Reserved balance', '1,000.00'])
+            ->assertSeeInOrder([
+                trans('affiliate.withdrawals.available_balance', [], 'th'),
+                '2,600.00',
+                trans('affiliate.withdrawals.reserved_balance', [], 'th'),
+                '1,000.00',
+            ])
             ->assertSee('10.00')
             ->assertSee((string) $payout_account->id)
             ->assertSee((string) $withdrawal->id);
@@ -76,7 +81,12 @@ class AffiliateFinanceNavigationTest extends TestCase
 
         $response->assertOk()
             ->assertViewIs('affiliate.withdrawals.index')
-            ->assertSeeInOrder(['Available balance', '0.00', 'Reserved balance', '0.00']);
+            ->assertSeeInOrder([
+                trans('affiliate.withdrawals.available_balance', [], 'th'),
+                '0.00',
+                trans('affiliate.withdrawals.reserved_balance', [], 'th'),
+                '0.00',
+            ]);
     }
 
     public function test_inactive_affiliate_cannot_render_finance_pages(): void

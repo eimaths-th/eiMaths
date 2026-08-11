@@ -29,8 +29,14 @@ class AffiliateDashboardAnalyticsTest extends TestCase
 
         $response->assertOk()
             ->assertSee('data-affiliate-analytics-summary', false)
-            ->assertSee(route('affiliate.tracking.direct', 'AFF-DASHBOARD-ANALYTICS'), false)
-            ->assertSee(route('affiliate.analytics.index'), false);
+            ->assertSee('data-affiliate-analytics-json', false)
+            ->assertSee('affiliate-analytics-page.js', false)
+            ->assertSee('data-endpoint="' . route('affiliate.analytics.data') . '"', false)
+            ->assertSee(route('affiliate.courses', ['ref' => 'AFF-DASHBOARD-ANALYTICS']), false)
+            ->assertSee(route('affiliate.analytics.index'), false)
+            ->assertSee('data-affiliate-copy-referral-code', false)
+            ->assertSee('data-affiliate-copy-referral-link', false)
+            ->assertSee(trans('affiliate.dashboard.copy_referral_code', [], 'th'), false);
 
         Config::set('affiliate.features.analytics', false);
         $hidden = $this->actingAs($user)->get(route('affiliate.dashboard'));

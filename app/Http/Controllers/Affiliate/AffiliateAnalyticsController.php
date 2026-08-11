@@ -29,7 +29,7 @@ class AffiliateAnalyticsController extends Controller
         } catch (AffiliateDomainException $exception) {
             return response()->json([
                 'error_code' => $exception->ErrorCode(),
-                'message' => $exception->Reason(),
+                'message' => __($exception->SafeTranslationKey()),
             ], $exception->StatusCode());
         } catch (Throwable $exception) {
             return $this->RefreshFailure($request, $exception);
@@ -53,7 +53,7 @@ class AffiliateAnalyticsController extends Controller
         } catch (AffiliateDomainException $exception) {
             return response()->json([
                 'error_code' => $exception->ErrorCode(),
-                'message' => $exception->Reason(),
+                'message' => __($exception->SafeTranslationKey()),
             ], $exception->StatusCode());
         } catch (Throwable $exception) {
             return $this->RefreshFailure($request, $exception);
@@ -72,7 +72,7 @@ class AffiliateAnalyticsController extends Controller
 
         return response()->json([
             'error_code' => 'AFFILIATE_ANALYTICS_UNAVAILABLE',
-            'message' => 'Affiliate analytics are temporarily unavailable.',
+            'message' => __('affiliate.feedback.refresh_failed'),
         ], 500);
     }
 }

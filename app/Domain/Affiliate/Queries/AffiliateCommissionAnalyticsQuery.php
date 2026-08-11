@@ -69,10 +69,8 @@ class AffiliateCommissionAnalyticsQuery
         return AffiliateCommission::query()
             ->where('affiliate_commissions.affiliate_profile_id', $profile->id)
             ->whereNotNull('affiliate_commissions.receipt_id')
-            ->whereBetween('affiliate_commissions.created_at', [
-                $range->CommissionFromLocal()->format('Y-m-d H:i:s'),
-                $range->CommissionToLocalExclusive()->format('Y-m-d H:i:s'),
-            ]);
+            ->where('affiliate_commissions.created_at', '>=', $range->CommissionFromLocal()->format('Y-m-d H:i:s'))
+            ->where('affiliate_commissions.created_at', '<', $range->CommissionToLocalExclusive()->format('Y-m-d H:i:s'));
     }
 
     private function DailySeries(AffiliateProfile $profile, AffiliateAnalyticsRange $range): array

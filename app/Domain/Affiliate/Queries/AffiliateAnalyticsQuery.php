@@ -131,7 +131,6 @@ class AffiliateAnalyticsQuery
             ->get()
             ->keyBy('campaign_code');
         $titles = DB::table('affiliate_contents')
-            ->where('affiliate_contents.deleted_at', null)
             ->whereIn('campaign_code', $campaign_codes->all())
             ->pluck('title', 'campaign_code');
 
