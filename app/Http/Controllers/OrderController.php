@@ -31,11 +31,14 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Collection;
 use Detection\MobileDetect;
 use Exception;
 use PDF;
 use App\Domain\Affiliate\Events\AffiliatePaymentConfirmed;
 use App\Domain\Affiliate\Services\AffiliateFinancialSourceGuard;
+use App\Domain\Financial\Services\ReceiptDetailBuilder;
+use App\Domain\Financial\ValueObjects\ReceiptDetailDraft;
 
 
 class OrderController extends Controller
@@ -43,6 +46,7 @@ class OrderController extends Controller
 
     protected $MoneyConvertService;
     protected AffiliateFinancialSourceGuard $financial_source_guard;
+    protected ReceiptDetailBuilder $receipt_detail_builder;
 
     /**
      * Display a listing of the resource.
@@ -52,6 +56,7 @@ class OrderController extends Controller
     function __construct(
         MoneyConvertServiceInterface $MoneyConvertService,
         AffiliateFinancialSourceGuard $financial_source_guard,
+        ReceiptDetailBuilder $receipt_detail_builder,
     )
     {
         $this->middleware('permission:order-list|order-show|order-create|order-edit|order-delete', ['only' => ['index', 'show']]);
@@ -62,6 +67,7 @@ class OrderController extends Controller
 
         $this->MoneyConvertService = $MoneyConvertService;
         $this->financial_source_guard = $financial_source_guard;
+        $this->receipt_detail_builder = $receipt_detail_builder;
     }
     /**
      * Display a listing of the resource.
@@ -734,138 +740,30 @@ class OrderController extends Controller
                 $this->updateWaitingForPayment($statusss, $receipt->courses_pending_id);
             }
 
-            $datas = Receipt::select(
-                "receipts.*",
-                "receipts.receipt_number as doc_number",
-                "contacts.name as cname",
-                "contacts.telephone as ctelephone",
-                "contacts.code as ccode",
-                "contacts.bookuse_name as book",
-                "departments.name as centre_name",
-                "orders.total_price as totalp",
-                "orders.refund as refund",
-                "orders.register_fee as register_fee",
-                "orders.access_fee as access_fee",
-                "orders.orther_fee as orther_fee",
-                "orders.discount as discount",
-                "receipts.payment as payment",
-                "orders.discount_book as discount_book",
-                DB::raw("CASE
-                WHEN contacts.father_name IS NOT NULL AND contacts.father_name != '' THEN contacts.father_name
-                WHEN contacts.mother_name IS NOT NULL AND contacts.mother_name != '' THEN contacts.mother_name
-                ELSE NULL
-                END AS parent_name"),
-                DB::raw("CASE
-                WHEN contacts.father_name IS NOT NULL AND contacts.father_name != '' THEN contacts.father_mobile
-                WHEN contacts.mother_name IS NOT NULL AND contacts.mother_name != '' THEN contacts.mother_mobile
-                ELSE NULL
-                END AS parent_mobile")
-
-            )
-                ->join("contacts", "contacts.id", "=", "receipts.cid")
-                ->join("orders", "orders.id", "=", "receipts.oid")
-                ->join("departments", "contacts.centre", "=", "departments.id")
-                ->where("receipts.id", $receipt->id)
-                ->get();
-
-            $datas_list = OrderDetailList::select(
-                "order_detail_lists.id as id",
-                "order_detail_lists.price as oprice",
-                "order_detail_lists.bprice as obprice",
-                DB::raw("SUBSTRING(order_detail_lists.level, 1, 1) as first_char"),
-                DB::raw("COUNT(*) as row_count"),
-                DB::raw("SUM(order_detail_lists.price) as total_price"),
-                DB::raw("SUM(order_detail_lists.bprice) as total_bprice")
-            )->where('order_id', $datas[0]->oid)
-                ->groupBy(
-                    'first_char',
-                    'order_detail_lists.price',
-                    'order_detail_lists.bprice',
-                    'order_detail_lists.id',
-
-                )->get();
-
-
-
-            // Check if the data exists before proceeding
-            if ($datas->isEmpty()) {
-                return redirect()->back()->with('error', 'Receipt data not found.');
-            }
-
-            $qty = 0;
-            foreach ($datas_list as $price_list) {
-                $ccname = $price_list->first_char;
-                $qty = $qty + $price_list->row_count;
-            }
-
-            // Data to pass to the view
-            if ($datas_list[0]->first_char == "K") {
-                $ccname = "Kindergarten";
-            } else if ($datas_list[0]->first_char == "P") {
-                $ccname = "Primary school";
-            }
-
-            $maxPrice = $datas_list->max('oprice');
-            $maxBPrice = $datas_list->max('obprice');
-
-            $receipt_detail = new receipt_details();
-            $receipt_detail->receipt_id = $receipt->id;
-            $receipt_detail->des = 'ค่าคอร์สเรียน ' . $ccname;
-            $receipt_detail->unit = '';
-            $receipt_detail->quantity = $qty;
-            $receipt_detail->price = $maxPrice;
-            $receipt_detail->discount = $datas[0]->discount;
-            $receipt_detail->tax = 1;
-            $receipt_detail->save();
-
-            $receipt_detail = new receipt_details();
-            $receipt_detail->receipt_id = $receipt->id;
-            $receipt_detail->des = 'ค่าหนังสือ';
-            $receipt_detail->unit = '';
-            $receipt_detail->quantity = $qty;
-            $receipt_detail->price = $maxBPrice;
-            $receipt_detail->discount = $datas[0]->discount_book;
-            $receipt_detail->tax = 0;
-            $receipt_detail->save();
-
-            if ($datas[0]->refund !== "" and $datas[0]->refund !== "0.00") {
-                $receipt_detail = new receipt_details();
-                $receipt_detail->receipt_id = $receipt->id;
-                $receipt_detail->des = 'ค่ามัดจำ';
-                $receipt_detail->unit = '';
-                $receipt_detail->quantity = 1;
-                $receipt_detail->price = $datas[0]->refund;
-                $receipt_detail->discount = '0.00';
-                $receipt_detail->tax = 1;
-                $receipt_detail->save();
-            };
-
-            if ($datas[0]->register_fee !== "" and $datas[0]->register_fee !== "0.00") {
-                $receipt_detail = new receipt_details();
-                $receipt_detail->receipt_id = $receipt->id;
-                $receipt_detail->des = 'ค่าลงทะเบียนแรกเข้า';
-                $receipt_detail->unit = '';
-                $receipt_detail->quantity = 1;
-                $receipt_detail->price = $datas[0]->register_fee;
-                $receipt_detail->discount = '0.00';
-                $receipt_detail->tax = 1;
-                $receipt_detail->save();
-            };
-
-            if ($datas[0]->access_fee !== "" and $datas[0]->access_fee !== "0.00") {
-                $receipt_detail = new receipt_details();
-                $receipt_detail->receipt_id = $receipt->id;
-                $receipt_detail->des = 'ค่าอุปกรณ์การเรียน';
-                $receipt_detail->unit = '';
-                $receipt_detail->quantity = 1;
-                $receipt_detail->price = $datas[0]->access_fee;
-                $receipt_detail->discount = '0.00';
-                $receipt_detail->tax = 1;
-                $receipt_detail->save();
-            };
+            $receipt_detail_drafts = $this->receipt_detail_builder->BuildForOrder($order->fresh());
+            $this->PersistReceiptDetailDrafts($receipt->id, $receipt_detail_drafts);
         }
 
         return response()->json(['success' => 'Save Data completed', 'status' => $order->status]);
+    }
+
+    private function PersistReceiptDetailDrafts(int $receipt_id, Collection $receipt_detail_drafts): void
+    {
+        foreach ($receipt_detail_drafts as $receipt_detail_draft) {
+            if (!$receipt_detail_draft instanceof ReceiptDetailDraft) {
+                throw new \UnexpectedValueException('Receipt detail draft has an invalid type.');
+            }
+
+            $receipt_detail = new receipt_details();
+            $receipt_detail->receipt_id = $receipt_id;
+            $receipt_detail->des = $receipt_detail_draft->description;
+            $receipt_detail->unit = $receipt_detail_draft->unit;
+            $receipt_detail->quantity = $receipt_detail_draft->quantity;
+            $receipt_detail->price = $receipt_detail_draft->UnitPriceDecimal();
+            $receipt_detail->discount = $receipt_detail_draft->DiscountDecimal();
+            $receipt_detail->tax = $receipt_detail_draft->legacy_tax;
+            $receipt_detail->save();
+        }
     }
 
 

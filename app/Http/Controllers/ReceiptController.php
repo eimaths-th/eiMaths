@@ -8,7 +8,6 @@ use App\Models\Receipt;
 use App\Models\receipt_details;
 use App\Models\ReceiptRunningNumber;
 use App\Models\Order;
-use App\Models\OrderDetailList;
 use App\Models\bookuse;
 use App\Models\Contact;
 use App\Models\Department;
@@ -23,17 +22,21 @@ use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Collection;
 use App\Interfaces\MoneyConvertServiceInterface;
 use Maatwebsite\Excel\Facades\Excel;
 use PDF;
 use App\Domain\Affiliate\Events\AffiliatePaymentConfirmed;
 use App\Domain\Affiliate\Services\AffiliateFinancialSourceGuard;
+use App\Domain\Financial\Services\ReceiptDetailBuilder;
+use App\Domain\Financial\ValueObjects\ReceiptDetailDraft;
 
 class ReceiptController extends Controller
 {
 
     protected $MoneyConvertService;
     protected AffiliateFinancialSourceGuard $financial_source_guard;
+    protected ReceiptDetailBuilder $receipt_detail_builder;
     //payment
     const datap = array(array("id" => "1", "name" => "เงินสด/Cash"), array("id" => "2", "name" => "โอนเงิน/Transfer"), array("id" => "3", "name" => "บัตรเครดิต/Credit Card"));
 
@@ -45,6 +48,7 @@ class ReceiptController extends Controller
     function __construct(
         MoneyConvertServiceInterface $MoneyConvertService,
         AffiliateFinancialSourceGuard $financial_source_guard,
+        ReceiptDetailBuilder $receipt_detail_builder,
     )
     {
         $this->middleware('permission:receipt-list|receipt-show|receipt-create|receipt-edit|receipt-delete', ['only' => ['index', 'show']]);
@@ -55,6 +59,7 @@ class ReceiptController extends Controller
 
         $this->MoneyConvertService = $MoneyConvertService;
         $this->financial_source_guard = $financial_source_guard;
+        $this->receipt_detail_builder = $receipt_detail_builder;
     }
 
     public function update_name($name, $id)
@@ -99,107 +104,35 @@ class ReceiptController extends Controller
             ->where("receipts.id", $id)
             ->get();
 
-        $datas_list = OrderDetailList::select(
-            "order_detail_lists.id as id",
-            "order_detail_lists.price as oprice",
-            "order_detail_lists.bprice as obprice",
-            DB::raw("SUBSTRING(order_detail_lists.level, 1, 1) as first_char"),
-            DB::raw("COUNT(*) as row_count"),
-            DB::raw("SUM(order_detail_lists.price) as total_price"),
-            DB::raw("SUM(order_detail_lists.bprice) as total_bprice")
-        )->where('order_id', $datas[0]->oid)
-            ->groupBy(
-                'first_char',
-                'order_detail_lists.price',
-                'order_detail_lists.bprice',
-                'order_detail_lists.id',
-
-            )->get();
-
-
-
         // Check if the data exists before proceeding
         if ($datas->isEmpty()) {
             return redirect()->back()->with('error', 'Receipt data not found.');
         }
 
-
-        $qty = 0;
-        foreach ($datas_list as $price_list) {
-            $ccname = $price_list->first_char;
-            $qty = $qty + $price_list->row_count;
-        }
-
-
-        // Data to pass to the view
-        if ($datas_list[0]->first_char == "K") {
-            $ccname = "Kindergarten";
-        } else if ($datas_list[0]->first_char == "P") {
-            $ccname = "Primary school";
-        }
-
-        $maxPrice = $datas_list->max('oprice');
-        $maxBPrice = $datas_list->max('obprice');
-
         $receipt = Receipt::findOrFail($id);
         $this->financial_source_guard->AssertReceiptUpdateAllowed($receipt, [], true);
+        $receipt_detail_drafts = $this->receipt_detail_builder->BuildForOrder(Order::findOrFail($datas[0]->oid));
         receipt_details::where('receipt_id', $id)->delete();
+        $this->PersistReceiptDetailDrafts($id, $receipt_detail_drafts);
+    }
 
-        $receipt_detail = new receipt_details();
-        $receipt_detail->receipt_id = $id;
-        $receipt_detail->des = 'ค่าคอร์สเรียน ' . $ccname;
-        $receipt_detail->unit = '';
-        $receipt_detail->quantity = $qty;
-        $receipt_detail->price = $maxPrice;
-        $receipt_detail->discount = $datas[0]->discount;
-        $receipt_detail->tax = 1;
-        $receipt_detail->save();
+    private function PersistReceiptDetailDrafts(int $receipt_id, Collection $receipt_detail_drafts): void
+    {
+        foreach ($receipt_detail_drafts as $receipt_detail_draft) {
+            if (!$receipt_detail_draft instanceof ReceiptDetailDraft) {
+                throw new \UnexpectedValueException('Receipt detail draft has an invalid type.');
+            }
 
-        $receipt_detail = new receipt_details();
-        $receipt_detail->receipt_id = $id;
-        $receipt_detail->des = 'ค่าหนังสือ';
-        $receipt_detail->unit = '';
-        $receipt_detail->quantity = $qty;
-        $receipt_detail->price = $maxBPrice;
-        $receipt_detail->discount = $datas[0]->discount_book;
-        $receipt_detail->tax = 0;
-        $receipt_detail->save();
-
-        if ($datas[0]->refund !== "" and $datas[0]->refund !== "0.00") {
             $receipt_detail = new receipt_details();
-            $receipt_detail->receipt_id = $id;
-            $receipt_detail->des = 'ค่ามัดจำ';
-            $receipt_detail->unit = '';
-            $receipt_detail->quantity = 1;
-            $receipt_detail->price = $datas[0]->refund;
-            $receipt_detail->discount = '0.00';
-            $receipt_detail->tax = 1;
+            $receipt_detail->receipt_id = $receipt_id;
+            $receipt_detail->des = $receipt_detail_draft->description;
+            $receipt_detail->unit = $receipt_detail_draft->unit;
+            $receipt_detail->quantity = $receipt_detail_draft->quantity;
+            $receipt_detail->price = $receipt_detail_draft->UnitPriceDecimal();
+            $receipt_detail->discount = $receipt_detail_draft->DiscountDecimal();
+            $receipt_detail->tax = $receipt_detail_draft->legacy_tax;
             $receipt_detail->save();
-        };
-
-        if ($datas[0]->register_fee !== "" and $datas[0]->register_fee !== "0.00") {
-            $receipt_detail = new receipt_details();
-            $receipt_detail->receipt_id = $id;
-            $receipt_detail->des = 'ค่าลงทะเบียนแรกเข้า';
-            $receipt_detail->unit = '';
-            $receipt_detail->quantity = 1;
-            $receipt_detail->price = $datas[0]->register_fee;
-            $receipt_detail->discount = '0.00';
-            $receipt_detail->tax = 1;
-            $receipt_detail->save();
-        };
-
-        if ($datas[0]->access_fee !== "" and $datas[0]->access_fee !== "0.00") {
-            $receipt_detail = new receipt_details();
-            $receipt_detail->receipt_id = $id;
-            $receipt_detail->des = 'ค่าอุปกรณ์การเรียน';
-            $receipt_detail->unit = '';
-            $receipt_detail->quantity = 1;
-            $receipt_detail->price = $datas[0]->access_fee;
-            $receipt_detail->discount = '0.00';
-            $receipt_detail->tax = 1;
-            $receipt_detail->save();
-        };
+        }
     }
 
     /**
