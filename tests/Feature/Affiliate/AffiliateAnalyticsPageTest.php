@@ -9,6 +9,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Hash;
 use PHPUnit\Framework\Attributes\Test;
+use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
 class AffiliateAnalyticsPageTest extends TestCase
@@ -19,6 +20,7 @@ class AffiliateAnalyticsPageTest extends TestCase
     {
         Config::set('affiliate.features.analytics', true);
         $user = User::factory()->create(['password' => Hash::make('secret')]);
+        $user->assignRole(Role::findOrCreate('Affiliate-user', 'web'));
         AffiliateProfile::create([
             'user_id' => $user->id,
             'referral_code' => 'AFF-ANALYTICS-PAGE',
@@ -47,6 +49,7 @@ class AffiliateAnalyticsPageTest extends TestCase
     {
         Config::set('affiliate.features.analytics', true);
         $user = User::factory()->create(['password' => Hash::make('secret')]);
+        $user->assignRole(Role::findOrCreate('Affiliate-user', 'web'));
         AffiliateProfile::create([
             'user_id' => $user->id,
             'referral_code' => 'AFF-ANALYTICS-SHELL',

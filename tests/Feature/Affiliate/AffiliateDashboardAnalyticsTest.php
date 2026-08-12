@@ -8,6 +8,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
 class AffiliateDashboardAnalyticsTest extends TestCase
@@ -17,6 +18,7 @@ class AffiliateDashboardAnalyticsTest extends TestCase
     public function test_dashboard_shows_the_analytics_summary_only_when_enabled(): void
     {
         $user = User::factory()->create(['password' => Hash::make('secret')]);
+        $user->assignRole(Role::findOrCreate('Affiliate-user', 'web'));
         AffiliateProfile::create([
             'user_id' => $user->id,
             'referral_code' => 'AFF-DASHBOARD-ANALYTICS',

@@ -15,6 +15,7 @@ class AffiliateTranslationStructureTest extends TestCase
         'content_admin',
         'payout_accounts',
         'withdrawals',
+        'employee_access',
         'statuses',
         'validation',
         'feedback',

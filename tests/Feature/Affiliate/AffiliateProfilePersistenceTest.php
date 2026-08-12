@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Hash;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class AffiliateProfilePersistenceTest extends TestCase
@@ -43,6 +44,25 @@ class AffiliateProfilePersistenceTest extends TestCase
         AffiliateProfile::create([
             'user_id' => $second_user->id,
             'referral_code' => 'AFF-UNIQUE-001',
+            'status' => AffiliateProfileStatus::ACTIVE,
+        ]);
+    }
+
+    #[Test]
+    public function AffiliateProfileUserIdIsUnique(): void
+    {
+        $user = User::factory()->create(['password' => Hash::make('secret')]);
+
+        AffiliateProfile::create([
+            'user_id' => $user->id,
+            'referral_code' => 'AFF-OWNER-001',
+            'status' => AffiliateProfileStatus::ACTIVE,
+        ]);
+
+        $this->expectException(QueryException::class);
+        AffiliateProfile::create([
+            'user_id' => $user->id,
+            'referral_code' => 'AFF-OWNER-002',
             'status' => AffiliateProfileStatus::ACTIVE,
         ]);
     }

@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
 class AffiliateMediaLibraryTest extends TestCase
@@ -29,6 +30,7 @@ class AffiliateMediaLibraryTest extends TestCase
             'referral_code' => 'AFF-MEDIA-LIBRARY',
             'status' => AffiliateProfileStatus::ACTIVE,
         ]);
+        $user->assignRole(Role::findOrCreate('Affiliate-user', 'web'));
         $current = $this->CreateContent($user, 'Spring & Summer', 'spring-library', 'enabled');
         $this->CreateContent($user, 'Disabled', 'disabled-library', 'disabled');
         $archived = $this->CreateContent($user, 'Archived', 'archived-library', 'enabled');
@@ -56,6 +58,7 @@ class AffiliateMediaLibraryTest extends TestCase
             'referral_code' => 'AFF-MEDIA-FILTER',
             'status' => AffiliateProfileStatus::ACTIVE,
         ]);
+        $user->assignRole(Role::findOrCreate('Affiliate-user', 'web'));
         $this->CreateContent($user, 'Video lesson', 'video-lesson', 'enabled', 'video');
         $this->CreateContent($user, 'Image lesson', 'image-lesson', 'enabled', 'image');
 

@@ -12,6 +12,8 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Hash;
+use PHPUnit\Framework\Attributes\Test;
+use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
 class AffiliateFinanceNavigationTest extends TestCase
@@ -22,6 +24,7 @@ class AffiliateFinanceNavigationTest extends TestCase
     {
         parent::setUp();
         Config::set('affiliate.features.wallet_withdrawals', true);
+        Config::set('affiliate.features.employee_enrollment', true);
     }
 
     public function test_active_affiliate_can_render_dashboard_payout_and_withdrawal_pages(): void
@@ -101,8 +104,7 @@ class AffiliateFinanceNavigationTest extends TestCase
         ] as $route_name) {
             $response = $this->actingAs($owner)->get(route($route_name));
 
-            $response->assertRedirect();
-            $response->assertSessionHasErrors('affiliate');
+            $response->assertRedirect(route('affiliate.waiting'));
         }
     }
 
@@ -177,12 +179,117 @@ class AffiliateFinanceNavigationTest extends TestCase
         $this->assertStringNotContainsString('href="' . route('affiliate.withdrawals.index') . '"', $header);
     }
 
+    #[Test]
+    public function ActiveUnverifiedEmployeeNavigationMatchesPortalAccess(): void
+    {
+        [$employee] = $this->CreateEmployeeAffiliate(false, 'AFF-NAV-EMPLOYEE-');
+
+        $dashboard_response = $this->actingAs($employee)->get(route('affiliate.dashboard'));
+        $dashboard_response->assertOk()
+            ->assertSee('href="' . route('affiliate.payout-accounts.index') . '"', false)
+            ->assertSee('href="' . route('affiliate.withdrawals.index') . '"', false);
+
+        $menu = view('layouts.menu', ['book_shipment_alert_role' => null])->render();
+        $header = view('affiliate.frontend.header')->render();
+        $navigation = view('affiliate.partials.navigation')->render();
+
+        foreach ([$menu, $header, $navigation] as $rendered_view) {
+            $this->assertStringContainsString('href="' . route('affiliate.dashboard') . '"', $rendered_view);
+            $this->assertStringContainsString('href="' . route('affiliate.payout-accounts.index') . '"', $rendered_view);
+            $this->assertStringContainsString('href="' . route('affiliate.withdrawals.index') . '"', $rendered_view);
+        }
+    }
+
+    #[Test]
+    public function UnverifiedExternalNavigationDoesNotAdvertiseAffiliateMemberRoutes(): void
+    {
+        [$external_user] = $this->CreateExternalAffiliate(false, 'AFF-NAV-UNVERIFIED-');
+
+        $this->actingAs($external_user);
+        $menu = view('layouts.menu', ['book_shipment_alert_role' => null])->render();
+        $header = view('affiliate.frontend.header')->render();
+
+        foreach ([$menu, $header] as $rendered_view) {
+            $this->assertStringNotContainsString('href="' . route('affiliate.dashboard') . '"', $rendered_view);
+            $this->assertStringNotContainsString('href="' . route('affiliate.payout-accounts.index') . '"', $rendered_view);
+            $this->assertStringNotContainsString('href="' . route('affiliate.withdrawals.index') . '"', $rendered_view);
+        }
+    }
+
+    #[Test]
+    public function PendingEmployeeNavigationShowsOnlyEmployeeStatusEntryPoint(): void
+    {
+        [$employee] = $this->CreateEmployeeAffiliate(false, 'AFF-NAV-PENDING-');
+        $employee->AffiliateProfile()->update(['status' => 'PENDING_APPROVAL']);
+
+        $this->actingAs($employee);
+        $menu = view('layouts.menu', ['book_shipment_alert_role' => null])->render();
+        $header = view('affiliate.frontend.header')->render();
+
+        foreach ([$menu, $header] as $rendered_view) {
+            $this->assertStringContainsString('href="' . route('affiliate.employee-access.show') . '"', $rendered_view);
+            $this->assertStringNotContainsString('href="' . route('affiliate.dashboard') . '"', $rendered_view);
+            $this->assertStringNotContainsString('href="' . route('affiliate.payout-accounts.index') . '"', $rendered_view);
+            $this->assertStringNotContainsString('href="' . route('affiliate.withdrawals.index') . '"', $rendered_view);
+        }
+    }
+
+    #[Test]
+    public function DisabledWalletFeatureHidesAffiliateFinanceDestinations(): void
+    {
+        [$external_user] = $this->CreateExternalAffiliate(true, 'AFF-NAV-DISABLED-');
+        Config::set('affiliate.features.wallet_withdrawals', false);
+
+        $this->actingAs($external_user);
+        $menu = view('layouts.menu', ['book_shipment_alert_role' => null])->render();
+        $header = view('affiliate.frontend.header')->render();
+
+        foreach ([$menu, $header] as $rendered_view) {
+            $this->assertStringNotContainsString('href="' . route('affiliate.dashboard') . '"', $rendered_view);
+            $this->assertStringNotContainsString('href="' . route('affiliate.payout-accounts.index') . '"', $rendered_view);
+            $this->assertStringNotContainsString('href="' . route('affiliate.withdrawals.index') . '"', $rendered_view);
+        }
+    }
+
+    private function CreateEmployeeAffiliate(bool $verified, string $referral_prefix): array
+    {
+        $user = User::factory()->create([
+            'email_verified_at' => $verified ? now() : null,
+            'password' => Hash::make('secret'),
+        ]);
+        $user->assignRole(Role::findOrCreate('Teacher', 'web'));
+        $profile = AffiliateProfile::create([
+            'user_id' => $user->id,
+            'referral_code' => $referral_prefix . $user->id,
+            'status' => 'ACTIVE',
+        ]);
+
+        return [$user->fresh(), $profile->fresh()];
+    }
+
+    private function CreateExternalAffiliate(bool $verified, string $referral_prefix): array
+    {
+        $user = User::factory()->create([
+            'email_verified_at' => $verified ? now() : null,
+            'password' => Hash::make('secret'),
+        ]);
+        $user->assignRole(Role::findOrCreate('Affiliate-user', 'web'));
+        $profile = AffiliateProfile::create([
+            'user_id' => $user->id,
+            'referral_code' => $referral_prefix . $user->id,
+            'status' => 'ACTIVE',
+        ]);
+
+        return [$user->fresh(), $profile->fresh()];
+    }
+
     private function CreateActiveAffiliate(string $referral_prefix): array
     {
         $owner = User::factory()->create([
             'email_verified_at' => now(),
             'password' => Hash::make('secret'),
         ]);
+        $owner->assignRole(Role::findOrCreate('Affiliate-user', 'web'));
         $profile = AffiliateProfile::create([
             'user_id' => $owner->id,
             'referral_code' => $referral_prefix . $owner->id,

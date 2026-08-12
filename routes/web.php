@@ -1,5 +1,6 @@
 <?php
 
+use App\Domain\Affiliate\Services\AffiliateEmployeeEligibility;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\EiFormController;
 use App\Http\Controllers\FooterSettingController;
@@ -240,7 +241,11 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/', function () {
         $user = Auth::user();
         if ($user) {
-            if ($user->hasRole('Affiliate-user')) {
+            $eligibility = app(AffiliateEmployeeEligibility::class);
+            if ($eligibility->IsEligible($user)) {
+                return redirect()->route('home');
+            }
+            if ($eligibility->IsAffiliateOnly($user)) {
                 return $user->AffiliateProfile?->status?->value === 'ACTIVE'
                     ? redirect()->route('affiliate.dashboard')
                     : redirect()->route('affiliate.waiting');

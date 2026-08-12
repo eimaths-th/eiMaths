@@ -2,6 +2,8 @@
 
 namespace App\Domain\Affiliate\Services;
 
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Throwable;
 
 class AffiliatePreflightService
@@ -26,6 +28,7 @@ class AffiliatePreflightService
             $this->AffiliateSettingsCheck(),
             $this->VisitorHashKeyCheck(),
             $this->DestinationHostsCheck(),
+            $this->AffiliateProfileOwnershipCheck(),
             $this->MailDeliveryCheck(),
             $this->SchedulerHostCheck(),
             $this->AccessReviewCheck(),
@@ -132,6 +135,46 @@ class AffiliatePreflightService
         }
 
         return $this->BuildCheck('destination_hosts', self::STATUS_PASS, 'Allowed destination hosts are configured.');
+    }
+
+    private function AffiliateProfileOwnershipCheck(): array
+    {
+        if (!Schema::hasTable('affiliate_profiles')) {
+            return $this->BuildCheck(
+                'affiliate_profile_ownership',
+                self::STATUS_UNKNOWN,
+                'The Affiliate profile table is not installed in this environment.'
+            );
+        }
+
+        try {
+            $duplicate_owners_exist = DB::table('affiliate_profiles')
+                ->whereNotNull('user_id')
+                ->select('user_id')
+                ->groupBy('user_id')
+                ->havingRaw('COUNT(*) > 1')
+                ->exists();
+        } catch (Throwable) {
+            return $this->BuildCheck(
+                'affiliate_profile_ownership',
+                self::STATUS_BLOCKED,
+                'Affiliate profile ownership safety could not be established.'
+            );
+        }
+
+        if ($duplicate_owners_exist) {
+            return $this->BuildCheck(
+                'affiliate_profile_ownership',
+                self::STATUS_BLOCKED,
+                'Duplicate Affiliate profile owners exist; the ownership constraint cannot be enabled safely.'
+            );
+        }
+
+        return $this->BuildCheck(
+            'affiliate_profile_ownership',
+            self::STATUS_PASS,
+            'Affiliate profile ownership has no duplicate user records.'
+        );
     }
 
     private function MailDeliveryCheck(): array

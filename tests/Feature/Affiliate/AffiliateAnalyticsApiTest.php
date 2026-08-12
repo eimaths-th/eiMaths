@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
 class AffiliateAnalyticsApiTest extends TestCase
@@ -42,6 +43,7 @@ class AffiliateAnalyticsApiTest extends TestCase
             'referral_code' => 'AFF-ANALYTICS-API',
             'status' => AffiliateProfileStatus::ACTIVE,
         ]);
+        $user->assignRole(Role::findOrCreate('Affiliate-user', 'web'));
 
         $response = $this->actingAs($user)->getJson(route('affiliate.analytics.data', [
             'from' => '2026-08-01',
@@ -66,6 +68,7 @@ class AffiliateAnalyticsApiTest extends TestCase
             'referral_code' => 'AFF-ANALYTICS-VALIDATION',
             'status' => AffiliateProfileStatus::ACTIVE,
         ]);
+        $user->assignRole(Role::findOrCreate('Affiliate-user', 'web'));
 
         $this->actingAs($user)->getJson(route('affiliate.analytics.data', [
             'from' => '2026-08-04',
@@ -84,6 +87,7 @@ class AffiliateAnalyticsApiTest extends TestCase
             'referral_code' => 'AFF-ANALYTICS-OFF',
             'status' => AffiliateProfileStatus::ACTIVE,
         ]);
+        $user->assignRole(Role::findOrCreate('Affiliate-user', 'web'));
 
         $this->actingAs($user)->getJson(route('affiliate.analytics.data', [
             'from' => '2026-08-01',

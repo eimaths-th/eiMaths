@@ -9,6 +9,8 @@ use App\Domain\Affiliate\Services\AffiliateAccountService;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
+use PHPUnit\Framework\Attributes\Test;
+use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
 class AffiliateAccountLifecycleTest extends TestCase
@@ -48,5 +50,24 @@ class AffiliateAccountLifecycleTest extends TestCase
 
         $this->expectException(AffiliateDomainException::class);
         app(AffiliateAccountService::class)->Reactivate($profile, $actor, 'No');
+    }
+
+    #[Test]
+    public function EmployeeLifecycleTransitionsDoNotAssignAffiliateRole(): void
+    {
+        $employee = User::factory()->create(['password' => Hash::make('secret')]);
+        $employee->assignRole(Role::findOrCreate('Teacher', 'web'));
+        $actor = User::factory()->create(['password' => Hash::make('secret')]);
+        $profile = AffiliateProfile::create([
+            'user_id' => $employee->id,
+            'referral_code' => 'AFF-EMPLOYEE-LIFECYCLE-' . $employee->id,
+            'status' => AffiliateProfileStatus::PENDING_APPROVAL,
+        ]);
+
+        app(AffiliateAccountService::class)->Approve($profile, $actor);
+
+        $this->assertTrue($employee->fresh()->hasRole('Teacher'));
+        $this->assertFalse($employee->fresh()->hasRole('Affiliate-user'));
+        $this->assertSame(AffiliateProfileStatus::ACTIVE, $profile->fresh()->status);
     }
 }

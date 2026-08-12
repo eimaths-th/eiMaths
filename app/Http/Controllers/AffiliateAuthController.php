@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Domain\Affiliate\Enums\AffiliateProfileStatus;
 use App\Models\User;
 use App\Domain\Affiliate\Services\AffiliateAccountService;
+use App\Domain\Affiliate\Services\AffiliateEmployeeEligibility;
 use App\Http\Requests\Affiliate\RegisterAffiliateRequest;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -23,9 +24,13 @@ class AffiliateAuthController extends Controller
     public $page = [];
     public $custom_field = [];
     protected AffiliateAccountService $account_service;
+    protected AffiliateEmployeeEligibility $eligibility;
 
     // Constructor or method to initialize the $page property
-    public function __construct(AffiliateAccountService $account_service)
+    public function __construct(
+        AffiliateAccountService $account_service,
+        AffiliateEmployeeEligibility $eligibility,
+    )
     {
         $this->page = [
             "id" => 1,
@@ -82,6 +87,7 @@ class AffiliateAuthController extends Controller
             "editable_institute" => 1
         ];
         $this->account_service = $account_service;
+        $this->eligibility = $eligibility;
     }
 
     public function showRegistrationFrom()
@@ -109,9 +115,13 @@ class AffiliateAuthController extends Controller
     {
         $affiliate_user = $request->user();
 
+        if ($affiliate_user instanceof User && $this->eligibility->IsEligible($affiliate_user)) {
+            return redirect()->route('affiliate.employee-access.show');
+        }
+
         if (
             $affiliate_user instanceof User
-            && $affiliate_user->hasRole('Affiliate-user')
+            && $this->eligibility->IsAffiliateOnly($affiliate_user)
             && $affiliate_user->AffiliateProfile?->status === AffiliateProfileStatus::ACTIVE
         ) {
             $request->session()->forget(self::PENDING_USER_ID_SESSION_KEY);
@@ -234,8 +244,13 @@ class AffiliateAuthController extends Controller
         // }
         $page = $this->page;
         if (Auth::check()) {
-            return Auth::user()->hasRole('Affiliate-user')
-                ? (Auth::user()->AffiliateProfile?->status?->value === 'ACTIVE'
+            $authenticated_user = Auth::user();
+            if ($authenticated_user instanceof User && $this->eligibility->IsEligible($authenticated_user)) {
+                return redirect()->route('home');
+            }
+
+            return $authenticated_user instanceof User && $this->eligibility->IsAffiliateOnly($authenticated_user)
+                ? ($authenticated_user->AffiliateProfile?->status?->value === 'ACTIVE'
                     ? redirect()->route('affiliate.dashboard')
                     : redirect()->route('affiliate.waiting'))
                 : redirect()->route('welcome');

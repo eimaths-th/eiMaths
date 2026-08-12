@@ -16,6 +16,7 @@ class AffiliateAccountService
     public function __construct(
         private readonly AffiliateConfigurationService $configuration_service,
         private readonly AffiliateAuditService $audit_service,
+        private readonly AffiliateReferralCodeGenerator $referral_code_generator,
     ) {
     }
 
@@ -32,7 +33,7 @@ class AffiliateAccountService
                 'language_code' => (string) config('affiliate.default_locale', 'th'),
                 'department_id' => 5,
                 'position_id' => 13,
-                'referral' => $this->GenerateReferralCode(),
+                'referral' => $this->referral_code_generator->Generate(),
                 'password' => Hash::make($validated['password']),
             ]);
 
@@ -124,12 +125,4 @@ class AffiliateAccountService
         });
     }
 
-    private function GenerateReferralCode(): string
-    {
-        do {
-            $code = 'AFF-' . Str::upper(Str::random(10));
-        } while (AffiliateProfile::where('referral_code', $code)->exists());
-
-        return $code;
-    }
 }

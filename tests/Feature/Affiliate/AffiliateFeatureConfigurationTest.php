@@ -35,6 +35,22 @@ class AffiliateFeatureConfigurationTest extends TestCase
     }
 
     #[Test]
+    public function EmployeeEnrollmentIsDisabledByDefaultInTests(): void
+    {
+        $this->assertFalse((bool) config('affiliate.features.employee_enrollment'));
+    }
+
+    #[Test]
+    public function EmployeeEnrollmentUsesTheApprovedRoleAndRateLimitConfiguration(): void
+    {
+        $this->assertSame(
+            ['Admin', 'SystemAdmin', 'BranchAdmin', 'Teacher', 'blog'],
+            config('affiliate.employee_roles')
+        );
+        $this->assertSame(6, (int) config('affiliate.abuse.employee_enrollment_attempts_per_minute'));
+    }
+
+    #[Test]
     public function EnabledMediaLibraryRequiresDestinationHost(): void
     {
         Config::set('affiliate.features.media_library', true);

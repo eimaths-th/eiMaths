@@ -28,6 +28,9 @@
         <env name="AFFILIATE_FEATURE_CLICK_TRACKING" value="false" force="true"/>
         <env name="AFFILIATE_FEATURE_ANALYTICS" value="false" force="true"/>
         <env name="AFFILIATE_FEATURE_MEDIA_LIBRARY" value="false" force="true"/>
+        <env name="AFFILIATE_FEATURE_EMPLOYEE_ENROLLMENT" value="false" force="true"/>
+        <env name="AFFILIATE_EMPLOYEE_ROLES" value="Admin,SystemAdmin,BranchAdmin,Teacher,blog" force="true"/>
+        <env name="AFFILIATE_EMPLOYEE_ENROLLMENT_ATTEMPTS_PER_MINUTE" value="6" force="true"/>
         <env name="AFFILIATE_DEFAULT_LOCALE" value="th" force="true"/>
         <env name="AFFILIATE_VISITOR_HASH_KEY" value="test-only-affiliate-visitor-key-32-chars" force="true"/>
         <env name="AFFILIATE_ALLOWED_DESTINATION_HOSTS" value="localhost" force="true"/>

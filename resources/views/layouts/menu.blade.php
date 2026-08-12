@@ -1,4 +1,25 @@
 <!-- need to remove -->
+@php
+    $authenticated_user = auth()->user();
+    $affiliate_portal_access_service = app(\App\Domain\Affiliate\Services\AffiliatePortalAccess::class);
+    $affiliate_employee_eligibility_service = app(\App\Domain\Affiliate\Services\AffiliateEmployeeEligibility::class);
+    $affiliate_portal_can_access = $authenticated_user !== null
+        && $affiliate_portal_access_service->CanAccess($authenticated_user);
+    $show_employee_affiliate_status = $authenticated_user !== null
+        && (bool) config('affiliate.features.employee_enrollment', false)
+        && $affiliate_employee_eligibility_service->IsEligible($authenticated_user)
+        && !$affiliate_portal_can_access;
+@endphp
+
+@if ($show_employee_affiliate_status)
+    <li class="nav-item">
+        <a href="{{ route('affiliate.employee-access.show') }}" class="nav-link {{ request()->routeIs('affiliate.employee-access.*') ? 'active' : '' }}">
+            <i class="nav-icon fas fa-handshake"></i>
+            <p>{{ __('affiliate.employee_access.menu_label') }}</p>
+        </a>
+    </li>
+@endif
+
 @can('dashboard')
 <li class="nav-item">
     <a href="{{ route('home') }}" class="nav-link {{ Request::is('home') ? 'active' : '' }}">
@@ -8,10 +29,7 @@
 </li>
 @endcan
 
-@if (auth()->check()
-    && auth()->user()->hasVerifiedEmail()
-    && auth()->user()->AffiliateProfile?->status?->value === 'ACTIVE'
-    && (bool) config('affiliate.features.wallet_withdrawals', false))
+@if ($affiliate_portal_can_access && (bool) config('affiliate.features.wallet_withdrawals', false))
     @php
         $affiliate_finance_route = request()->routeIs(
             'affiliate.dashboard',

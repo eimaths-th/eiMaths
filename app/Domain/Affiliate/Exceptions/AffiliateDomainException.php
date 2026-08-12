@@ -55,6 +55,11 @@ final class AffiliateDomainException extends RuntimeException
         return new self('The requested Affiliate resource is not owned by the authenticated user.', 'AFFILIATE_OWNERSHIP_DENIED', 403, 'affiliate.errors.ownership_denied');
     }
 
+    public static function EmployeeEnrollmentDenied(): self
+    {
+        return new self('The authenticated user is not eligible for employee Affiliate enrollment.', 'AFFILIATE_EMPLOYEE_ENROLLMENT_DENIED', 403, 'affiliate.errors.employee_enrollment_denied');
+    }
+
     public static function ConfigurationInvalid(string $reason = 'Affiliate configuration is invalid.'): self
     {
         return new self($reason, 'AFFILIATE_CONFIGURATION_INVALID', 503, 'affiliate.errors.configuration_invalid');

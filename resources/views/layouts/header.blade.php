@@ -1,3 +1,11 @@
+@php
+    $show_employee_affiliate_entry = false;
+    if (auth()->check() && (bool) config('affiliate.features.employee_enrollment', false)) {
+        $employee_affiliate_eligibility = app(\App\Domain\Affiliate\Services\AffiliateEmployeeEligibility::class);
+        $show_employee_affiliate_entry = $employee_affiliate_eligibility->IsEligible(auth()->user());
+    }
+@endphp
+
 <nav class="main-header navbar navbar-expand navbar-white navbar-light">
     <!-- Left navbar links -->
     <ul class="navbar-nav">
@@ -69,6 +77,13 @@
                         <small>Member since {{ Auth::user()->created_at->format('M. Y') }}</small>
                     </p>
                 </li>
+                @if ($show_employee_affiliate_entry)
+                    <li>
+                        <a class="dropdown-item" href="{{ route('affiliate.employee-access.show') }}">
+                            {{ __('affiliate.employee_access.menu_label') }}
+                        </a>
+                    </li>
+                @endif
                 <!-- Menu Footer-->
                 <li class="user-footer">
                     <a href="#" class="btn btn-default btn-flat">Profile</a>

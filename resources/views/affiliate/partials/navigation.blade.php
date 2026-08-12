@@ -1,8 +1,8 @@
 @php
-    $affiliate_profile = auth()->user()?->AffiliateProfile;
-    $affiliate_navigation_visible = auth()->check()
-        && auth()->user()->hasVerifiedEmail()
-        && $affiliate_profile?->status?->value === 'ACTIVE';
+    $affiliate_navigation_user = auth()->user();
+    $affiliate_portal_access_service = app(\App\Domain\Affiliate\Services\AffiliatePortalAccess::class);
+    $affiliate_navigation_visible = $affiliate_navigation_user !== null
+        && $affiliate_portal_access_service->CanAccess($affiliate_navigation_user);
 @endphp
 
 @if ($affiliate_navigation_visible)

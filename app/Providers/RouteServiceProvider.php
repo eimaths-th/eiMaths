@@ -60,6 +60,23 @@ class RouteServiceProvider extends ServiceProvider
                 });
         });
 
+        RateLimiter::for('affiliate-employee-enrollment', function (Request $request) {
+            $max_attempts = max(1, (int) config('affiliate.abuse.employee_enrollment_attempts_per_minute', 6));
+
+            return Limit::perMinute($max_attempts)
+                ->by('affiliate-employee-enrollment:' . (string) $request->user()?->getAuthIdentifier())
+                ->response(function (Request $limited_request, array $headers) {
+                    Log::warning('affiliate.employee_enrollment.rate_limited', [
+                        'user_id' => $limited_request->user()?->getAuthIdentifier(),
+                        'route' => $limited_request->route()?->getName(),
+                        'correlation_id' => $limited_request->attributes->get('affiliate_correlation_id'),
+                        'operation' => 'affiliate.employee-enrollment.store',
+                    ]);
+
+                    return response(__('affiliate.employee_access.rate_limited'), 429, $headers);
+                });
+        });
+
         $this->routes(function () {
             Route::middleware('api')
                 ->prefix('api')

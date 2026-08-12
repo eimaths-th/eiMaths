@@ -40,6 +40,25 @@ class AffiliateRegistrationTest extends TestCase
         $this->assertNotSame('', (string) $user->fresh()->AffiliateProfile->referral_code);
     }
 
+    #[Test]
+    public function ExternalRegistrationRetainsAffiliateRolePendingEmailAndVerificationNotification(): void
+    {
+        Notification::fake();
+        Role::findOrCreate('Affiliate-user', 'web');
+
+        $user = app(AffiliateAccountService::class)->Register([
+            'name' => 'External Affiliate Contract',
+            'email' => 'external-affiliate-contract@example.test',
+            'phone' => '0812345678',
+            'password' => 'password-123',
+            'password_confirmation' => 'password-123',
+        ]);
+
+        $this->assertTrue($user->fresh()->hasRole('Affiliate-user'));
+        $this->assertSame(AffiliateProfileStatus::PENDING_EMAIL, $user->fresh()->AffiliateProfile->status);
+        Notification::assertSentTo($user, VerifyEmail::class);
+    }
+
     public function test_production_registration_fails_closed_when_mail_driver_is_log(): void
     {
         Config::set('app.env', 'production');

@@ -14,6 +14,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
 class AffiliateWithdrawalUiTest extends TestCase
@@ -252,6 +253,7 @@ class AffiliateWithdrawalUiTest extends TestCase
             'email_verified_at' => now(),
             'password' => Hash::make('secret'),
         ]);
+        $owner->assignRole(Role::findOrCreate('Affiliate-user', 'web'));
         $profile = AffiliateProfile::create([
             'user_id' => $owner->id,
             'referral_code' => 'AFF-UI-' . $owner->id,

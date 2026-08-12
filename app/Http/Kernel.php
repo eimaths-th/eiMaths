@@ -73,6 +73,8 @@ class Kernel extends HttpKernel
         'affiliate.correlation' => \App\Http\Middleware\AttachAffiliateCorrelationId::class,
         'affiliate.locale' => \App\Http\Middleware\SetAffiliateLocale::class,
         'affiliate.referral' => \App\Http\Middleware\CaptureAffiliateReferral::class,
+        'affiliate.employee-eligibility' => \App\Http\Middleware\EnsureAffiliateEmployeeEligibility::class,
+        'affiliate.portal-access' => \App\Http\Middleware\EnsureAffiliatePortalAccess::class,
     ];
 
 

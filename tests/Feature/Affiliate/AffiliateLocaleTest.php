@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Hash;
 use PHPUnit\Framework\Attributes\Test;
+use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
 class AffiliateLocaleTest extends TestCase
@@ -92,6 +93,7 @@ class AffiliateLocaleTest extends TestCase
             'language_code' => $language_code,
             'password' => Hash::make('secret'),
         ]);
+        $user->assignRole(Role::findOrCreate('Affiliate-user', 'web'));
         $profile = AffiliateProfile::create([
             'user_id' => $user->id,
             'referral_code' => 'AFF-LOCALE-' . $user->id,
