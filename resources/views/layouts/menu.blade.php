@@ -343,6 +343,15 @@
                     <p>Payment Receipt</p>
                 </a>
             </li>
+            @if (config('financial-documents.credit_note.enabled') && auth()->user()?->can('credit-note-list'))
+                <li class="nav-item">
+                    <a href="{{ route('credit-notes.index') }}"
+                        class="nav-link {{ request()->routeIs('credit-notes.*') ? 'active' : '' }}">
+                        <i class="nav-icon fa-solid fa-file-invoice-dollar"></i>
+                        <p>Credit Notes</p>
+                    </a>
+                </li>
+            @endif
             {{--  <li class="nav-item">
                 <a href="{{ route('receipts', ['type' => 1]) }}"
                     class="nav-link {{ Route::currentRouteName() == 'receipts' && request('type') == 1 ? 'active' : '' }}">

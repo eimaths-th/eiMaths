@@ -1,0 +1,47 @@
+<?php
+
+return [
+    'navigation' => ['title' => 'ใบลดหนี้', 'register' => 'ทะเบียนใบลดหนี้'],
+    'statuses' => ['draft' => 'ฉบับร่าง', 'issued' => 'ออกแล้ว', 'cancelled' => 'ยกเลิกแล้ว'],
+    'reasons' => [
+        'product_price_overstated' => 'ราคาสินค้าสูงเกินจริง',
+        'service_price_overstated' => 'ค่าบริการสูงเกินจริง',
+        'product_defect_damage_or_shortage' => 'สินค้าชำรุด เสียหาย หรือขาดจำนวน',
+        'service_nonconformity_or_shortage' => 'บริการไม่เป็นไปตามข้อตกลงหรือไม่ครบถ้วน',
+        'product_return' => 'รับคืนสินค้า',
+        'statutory_compensation' => 'ชดเชยตามกฎหมาย',
+        'advance_deposit_or_reservation_return' => 'คืนเงินล่วงหน้า มัดจำ หรือจอง',
+        'commercial_return_or_exchange' => 'คืนหรือเปลี่ยนสินค้าเชิงพาณิชย์',
+        'defective_service_termination' => 'เลิกบริการที่บกพร่อง',
+        'service_not_provided_termination' => 'เลิกบริการที่ไม่ได้ให้บริการ',
+    ],
+    'fields' => [
+        'buyer_name' => 'ชื่อผู้ซื้อ', 'buyer_address' => 'ที่อยู่ผู้ซื้อ', 'buyer_tax_id' => 'เลขประจำตัวผู้เสียภาษีผู้ซื้อ',
+        'reason' => 'เหตุผล', 'reason_details' => 'รายละเอียดเหตุผล', 'adjustment_event_date' => 'วันที่เกิดเหตุปรับปรุง',
+        'original' => 'เดิม', 'corrected' => 'แก้ไขแล้ว', 'difference' => 'ส่วนต่าง', 'vat' => 'ภาษีมูลค่าเพิ่ม',
+        'exempt' => 'ยกเว้นภาษี', 'out_of_scope' => 'นอกขอบเขตภาษี', 'gross_revenue' => 'รายได้รวม',
+        'issued_credit_notes' => 'ใบลดหนี้ที่ออก', 'cancelled_credit_notes' => 'ใบลดหนี้ที่ยกเลิก', 'net_revenue' => 'รายได้สุทธิ',
+    ],
+    'validation' => ['invalid_request' => 'ข้อมูลใบลดหนี้ไม่ถูกต้อง', 'idempotency_key' => 'กรุณาระบุคีย์ idempotency ที่ถูกต้อง'],
+    'errors' => [
+        'domain' => 'ไม่สามารถดำเนินการใบลดหนี้ได้', 'disabled' => 'ยังไม่เปิดใช้งานใบลดหนี้', 'source_incomplete' => 'ข้อมูลต้นทางใบเสร็จไม่ครบถ้วน',
+        'source_total_mismatch' => 'ยอดรวมต้นทางใบเสร็จไม่ตรงกัน', 'draft_exists' => 'มีฉบับร่างใบลดหนี้ของใบเสร็จนี้อยู่แล้ว', 'fully_credited' => 'ใบเสร็จไม่มียอดที่ลดได้อีก',
+        'stale_draft' => 'ฉบับร่างถูกแก้ไขโดยการทำงานอื่นแล้ว', 'source_changed' => 'ข้อมูลต้นทางใบเสร็จเปลี่ยนหลังสร้างฉบับร่าง', 'over_credit' => 'ยอดลดเกินยอดคงเหลือ',
+        'invalid_state' => 'สถานะใบลดหนี้ไม่อนุญาตให้ดำเนินการนี้', 'buyer_details_incomplete' => 'ข้อมูลภาษีผู้ซื้อไม่ครบถ้วน', 'issuer_configuration_invalid' => 'ข้อมูลผู้ออกใบลดหนี้ไม่ครบถ้วน',
+        'affiliate_adjustment_failed' => 'ไม่สามารถปรับคอมมิชชัน Affiliate ได้', 'idempotency_conflict' => 'คีย์ idempotency ถูกใช้กับรายการอื่นแล้ว', 'pdf_generation_failed' => 'ไม่สามารถสร้าง PDF ใบลดหนี้ได้',
+        'financial_source_locked' => 'แหล่งการเงินถูกล็อกด้วยหลักฐานใบลดหนี้', 'internal' => 'ไม่สามารถดำเนินการใบลดหนี้ได้',
+        'codes' => [
+            'CREDIT_NOTE_DISABLED' => 'ยังไม่เปิดใช้งานใบลดหนี้', 'CREDIT_NOTE_SOURCE_INCOMPLETE' => 'ข้อมูลต้นทางใบเสร็จไม่ครบถ้วน', 'CREDIT_NOTE_SOURCE_TOTAL_MISMATCH' => 'ยอดรวมต้นทางไม่ตรงกัน',
+            'CREDIT_NOTE_DRAFT_EXISTS' => 'มีฉบับร่างอยู่แล้ว', 'CREDIT_NOTE_FULLY_CREDITED' => 'ไม่มียอดที่ลดได้อีก', 'CREDIT_NOTE_STALE_DRAFT' => 'ฉบับร่างล้าสมัย',
+            'CREDIT_NOTE_SOURCE_CHANGED' => 'ข้อมูลต้นทางเปลี่ยนแปลง', 'CREDIT_NOTE_UNKNOWN_LINE_TYPE' => 'ประเภทรายการทางการเงินไม่ทราบ', 'CREDIT_NOTE_OVER_CREDIT' => 'ยอดลดเกินคงเหลือ',
+            'CREDIT_NOTE_INVALID_STATE' => 'สถานะไม่อนุญาต', 'CREDIT_NOTE_INVALID_EVENT_DATE' => 'วันที่เหตุการณ์ไม่ถูกต้อง', 'CREDIT_NOTE_BUYER_DETAILS_INCOMPLETE' => 'ข้อมูลผู้ซื้อไม่ครบ',
+            'CREDIT_NOTE_ISSUER_CONFIGURATION_INVALID' => 'ข้อมูลผู้ออกไม่ครบ', 'CREDIT_NOTE_AFFILIATE_ADJUSTMENT_FAILED' => 'ปรับ Affiliate ไม่สำเร็จ', 'CREDIT_NOTE_IDEMPOTENCY_CONFLICT' => 'คีย์ซ้ำกับรายการอื่น',
+            'CREDIT_NOTE_PDF_GENERATION_FAILED' => 'สร้าง PDF ไม่สำเร็จ', 'CREDIT_NOTE_FINANCIAL_SOURCE_LOCKED' => 'แหล่งการเงินถูกล็อก', 'CREDIT_NOTE_INTERNAL_ERROR' => 'เกิดข้อผิดพลาดภายใน',
+        ],
+    ],
+    'actions' => ['create' => 'สร้างฉบับร่าง', 'save' => 'บันทึกฉบับร่าง', 'issue' => 'ออกใบลดหนี้', 'cancel' => 'ยกเลิกใบลดหนี้', 'view' => 'ดู', 'print' => 'พิมพ์', 'pdf' => 'PDF', 'export' => 'ส่งออก', 'unavailable' => 'ไม่สามารถสร้างใบลดหนี้ได้'],
+    'register' => ['empty' => 'ไม่พบใบลดหนี้', 'status' => 'สถานะ', 'number' => 'เลขที่', 'original_receipt' => 'ใบเสร็จต้นฉบับ', 'adjustment_date' => 'วันที่ปรับปรุง', 'difference' => 'ส่วนต่าง'],
+    'document' => ['heading' => 'ใบลดหนี้ / CREDIT NOTE', 'issuer' => 'ผู้ออกเอกสาร', 'buyer' => 'ผู้ซื้อ', 'items' => 'รายการ', 'reason' => 'เหตุผล', 'signature' => 'ลายมือชื่อผู้มีอำนาจ', 'draft_watermark' => 'ฉบับร่าง', 'cancelled_watermark' => 'ยกเลิกแล้ว'],
+    'reporting' => ['issued_total' => 'ใบลดหนี้ที่ออก', 'cancelled_total' => 'ใบลดหนี้ที่ยกเลิก', 'net' => 'รายได้สุทธิ'],
+    'accessibility' => ['loading' => 'กำลังโหลดข้อมูลใบลดหนี้', 'error' => 'ไม่สามารถโหลดข้อมูลใบลดหนี้', 'status' => 'สถานะเอกสาร'],
+];

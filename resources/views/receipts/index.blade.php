@@ -63,6 +63,17 @@
                                     });
                                 </script>
                             @endif
+                            @if ($errors->any())
+                                @foreach ($errors->all() as $error)
+                                    <script>
+                                        toastr.error(@json($error, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE), {
+                                            timeOut: 8000,
+                                            closeButton: true,
+                                            progressBar: true
+                                        });
+                                    </script>
+                                @endforeach
+                            @endif
                             <div class="row ">
                                 <div class="col-xs-12 col-sm-12 col-md-12">
                                     <div class="row float-lg-left">

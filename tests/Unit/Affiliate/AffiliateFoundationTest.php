@@ -84,6 +84,8 @@ class AffiliateFoundationTest extends TestCase
             'WITHDRAWAL_RELEASE',
             'WITHDRAWAL_PAID',
             'ADJUSTMENT',
+            'CREDIT_NOTE_COMMISSION_REVERSAL',
+            'CREDIT_NOTE_COMMISSION_RESTORATION',
         ], array_column(AffiliateLedgerEntryType::cases(), 'value'));
         $this->assertSame(['REQUESTED', 'APPROVED', 'PAID', 'REJECTED', 'CANCELLED'], array_column(AffiliateWithdrawalStatus::cases(), 'value'));
         $this->assertSame(['OPEN', 'RESOLVED'], array_column(AffiliateReconciliationStatus::cases(), 'value'));

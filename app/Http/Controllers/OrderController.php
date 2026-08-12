@@ -26,6 +26,7 @@ use App\Interfaces\MoneyConvertServiceInterface;
 use App\Models\CoursePending;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
@@ -36,17 +37,20 @@ use Detection\MobileDetect;
 use Exception;
 use PDF;
 use App\Domain\Affiliate\Events\AffiliatePaymentConfirmed;
-use App\Domain\Affiliate\Services\AffiliateFinancialSourceGuard;
+use App\Domain\Financial\Services\FinancialSourceGuard;
 use App\Domain\Financial\Services\ReceiptDetailBuilder;
 use App\Domain\Financial\ValueObjects\ReceiptDetailDraft;
+use App\Domain\CreditNote\Enums\ReceiptLineType;
+use App\Domain\CreditNote\Services\ReceiptLineMetadataResolver;
 
 
 class OrderController extends Controller
 {
 
     protected $MoneyConvertService;
-    protected AffiliateFinancialSourceGuard $financial_source_guard;
+    protected FinancialSourceGuard $financial_source_guard;
     protected ReceiptDetailBuilder $receipt_detail_builder;
+    protected ReceiptLineMetadataResolver $receipt_line_metadata_resolver;
 
     /**
      * Display a listing of the resource.
@@ -55,8 +59,9 @@ class OrderController extends Controller
      */
     function __construct(
         MoneyConvertServiceInterface $MoneyConvertService,
-        AffiliateFinancialSourceGuard $financial_source_guard,
+        FinancialSourceGuard $financial_source_guard,
         ReceiptDetailBuilder $receipt_detail_builder,
+        ReceiptLineMetadataResolver $receipt_line_metadata_resolver,
     )
     {
         $this->middleware('permission:order-list|order-show|order-create|order-edit|order-delete', ['only' => ['index', 'show']]);
@@ -68,6 +73,7 @@ class OrderController extends Controller
         $this->MoneyConvertService = $MoneyConvertService;
         $this->financial_source_guard = $financial_source_guard;
         $this->receipt_detail_builder = $receipt_detail_builder;
+        $this->receipt_line_metadata_resolver = $receipt_line_metadata_resolver;
     }
     /**
      * Display a listing of the resource.
@@ -762,6 +768,11 @@ class OrderController extends Controller
             $receipt_detail->price = $receipt_detail_draft->UnitPriceDecimal();
             $receipt_detail->discount = $receipt_detail_draft->DiscountDecimal();
             $receipt_detail->tax = $receipt_detail_draft->legacy_tax;
+            $this->ApplyReceiptLineMetadata(
+                $receipt_detail,
+                $receipt_detail_draft->line_type,
+                $receipt_detail_draft->legacy_tax,
+            );
             $receipt_detail->save();
         }
     }
@@ -909,5 +920,21 @@ class OrderController extends Controller
         $order->save();
 
         return response()->json(['success' => true, 'message' => 'Confirm Order successfully']);
+    }
+
+    private function ApplyReceiptLineMetadata(
+        receipt_details $receipt_detail,
+        ReceiptLineType $line_type,
+        int $legacy_tax,
+    ): void {
+        if (!Schema::hasColumn('receipt_details', 'line_type')
+            || !Schema::hasColumn('receipt_details', 'tax_treatment')
+            || !Schema::hasColumn('receipt_details', 'vat_rate_basis_points')) {
+            return;
+        }
+        $metadata = $this->receipt_line_metadata_resolver->ResolveGenerated($line_type, $legacy_tax);
+        $receipt_detail->line_type = $metadata->line_type;
+        $receipt_detail->tax_treatment = $metadata->tax_treatment;
+        $receipt_detail->vat_rate_basis_points = $metadata->vat_rate_basis_points;
     }
 }

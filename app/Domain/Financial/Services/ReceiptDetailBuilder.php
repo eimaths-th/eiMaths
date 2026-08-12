@@ -2,6 +2,7 @@
 
 namespace App\Domain\Financial\Services;
 
+use App\Domain\CreditNote\Enums\ReceiptLineType;
 use App\Domain\Financial\Exceptions\ReceiptDetailCalculationException;
 use App\Domain\Financial\ValueObjects\ReceiptDetailDraft;
 use App\Models\Order;
@@ -65,6 +66,7 @@ final class ReceiptDetailBuilder
                 unit_price_minor: $group['unit_price_minor'],
                 discount_minor: $tuition_allocations[$group_key],
                 legacy_tax: 1,
+                line_type: ReceiptLineType::TUITION,
             ));
         }
 
@@ -82,12 +84,13 @@ final class ReceiptDetailBuilder
                 unit_price_minor: $group['unit_price_minor'],
                 discount_minor: $book_allocations[$group_key],
                 legacy_tax: 0,
+                line_type: ReceiptLineType::BOOK,
             ));
         }
 
-        $this->AppendFee($drafts, $order->refund, $order_id, 'ค่ามัดจำ');
-        $this->AppendFee($drafts, $order->register_fee, $order_id, 'ค่าลงทะเบียนแรกเข้า');
-        $this->AppendFee($drafts, $order->access_fee, $order_id, 'ค่าอุปกรณ์การเรียน');
+        $this->AppendFee($drafts, $order->refund, $order_id, 'ค่ามัดจำ', ReceiptLineType::DEPOSIT);
+        $this->AppendFee($drafts, $order->register_fee, $order_id, 'ค่าลงทะเบียนแรกเข้า', ReceiptLineType::REGISTRATION_FEE);
+        $this->AppendFee($drafts, $order->access_fee, $order_id, 'ค่าอุปกรณ์การเรียน', ReceiptLineType::EQUIPMENT);
 
         $other_fee_minor = $this->ParseOptionalMinor($order->orther_fee, $order_id, 'other fee');
         $stored_total_minor = $this->ParseRequiredMinor($order->total_price, $order_id, 'order total');
@@ -182,7 +185,7 @@ final class ReceiptDetailBuilder
         return $allocations;
     }
 
-    private function AppendFee(Collection $drafts, mixed $raw_amount, int $order_id, string $description): void
+    private function AppendFee(Collection $drafts, mixed $raw_amount, int $order_id, string $description, ReceiptLineType $line_type): void
     {
         $amount_minor = $this->ParseOptionalMinor($raw_amount, $order_id, $description);
         if ($amount_minor === 0) {
@@ -196,6 +199,7 @@ final class ReceiptDetailBuilder
             unit_price_minor: $amount_minor,
             discount_minor: 0,
             legacy_tax: 1,
+            line_type: $line_type,
         ));
     }
 

@@ -16,6 +16,8 @@ use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Auth;
+use App\Domain\CreditNote\Contracts\AffiliateCreditNoteAdjustment;
+use App\Domain\Affiliate\Services\AffiliateCreditNoteAdjustmentService;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -29,6 +31,7 @@ class AppServiceProvider extends ServiceProvider
         });
         $this->app->bind(MoneyConvertServiceInterface::class, MoneyConvertService::class);
         $this->app->bind(ImageConversionDriver::class, InterventionImageConversionDriver::class);
+        $this->app->bind(AffiliateCreditNoteAdjustment::class, AffiliateCreditNoteAdjustmentService::class);
     }
 
     /**

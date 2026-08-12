@@ -43,5 +43,12 @@
         <env name="QUEUE_CONNECTION" value="sync"/>
         <env name="SESSION_DRIVER" value="array"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
+        <env name="CREDIT_NOTE_FEATURE_ENABLED" value="false" force="true"/>
+        <env name="CREDIT_NOTE_FINANCIAL_ACTIONS_ENABLED" value="false" force="true"/>
+        <env name="CREDIT_NOTE_ISSUER_LEGAL_NAME" value="Demo Credit Note Issuer" force="true"/>
+        <env name="CREDIT_NOTE_ISSUER_LEGAL_ADDRESS" value="Demo Test Address" force="true"/>
+        <env name="CREDIT_NOTE_ISSUER_TAX_ID" value="0105561171606" force="true"/>
+        <env name="CREDIT_NOTE_ISSUER_BRANCH_TYPE" value="head_office" force="true"/>
+        <env name="CREDIT_NOTE_ISSUER_BRANCH_CODE" value="00000" force="true"/>
     </php>
 </phpunit>

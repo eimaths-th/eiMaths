@@ -107,4 +107,9 @@ class AffiliateCommission extends Model
     {
         return $this->hasMany(AffiliateCommissionReversal::class, 'affiliate_commission_id');
     }
+
+    public function CreditNoteAdjustments(): HasMany
+    {
+        return $this->hasMany(AffiliateCommissionCreditNoteAdjustment::class, 'affiliate_commission_id');
+    }
 }

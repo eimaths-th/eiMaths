@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Financial;
 
+use App\Domain\CreditNote\Enums\ReceiptLineType;
 use App\Domain\Financial\Exceptions\ReceiptDetailCalculationException;
 use App\Domain\Financial\Services\ReceiptDetailBuilder;
 use App\Models\Order;
@@ -33,12 +34,12 @@ class ReceiptDetailBuilderTest extends TestCase
         $drafts = (new ReceiptDetailBuilder())->BuildForOrder($order);
 
         $this->assertSame([
-            ['description' => 'ค่าคอร์สเรียน Kindergarten', 'quantity' => 2, 'price_minor' => 300000, 'discount_minor' => 0, 'tax' => 1, 'net_minor' => 600000],
-            ['description' => 'ค่าคอร์สเรียน Kindergarten', 'quantity' => 3, 'price_minor' => 400000, 'discount_minor' => 0, 'tax' => 1, 'net_minor' => 1200000],
-            ['description' => 'ค่าหนังสือ', 'quantity' => 2, 'price_minor' => 150000, 'discount_minor' => 0, 'tax' => 0, 'net_minor' => 300000],
-            ['description' => 'ค่าหนังสือ', 'quantity' => 3, 'price_minor' => 290000, 'discount_minor' => 0, 'tax' => 0, 'net_minor' => 870000],
-            ['description' => 'ค่าลงทะเบียนแรกเข้า', 'quantity' => 1, 'price_minor' => 75000, 'discount_minor' => 0, 'tax' => 1, 'net_minor' => 75000],
-            ['description' => 'ค่าอุปกรณ์การเรียน', 'quantity' => 1, 'price_minor' => 50000, 'discount_minor' => 0, 'tax' => 1, 'net_minor' => 50000],
+            ['description' => 'ค่าคอร์สเรียน Kindergarten', 'quantity' => 2, 'price_minor' => 300000, 'discount_minor' => 0, 'tax' => 1, 'line_type' => ReceiptLineType::TUITION->value, 'net_minor' => 600000],
+            ['description' => 'ค่าคอร์สเรียน Kindergarten', 'quantity' => 3, 'price_minor' => 400000, 'discount_minor' => 0, 'tax' => 1, 'line_type' => ReceiptLineType::TUITION->value, 'net_minor' => 1200000],
+            ['description' => 'ค่าหนังสือ', 'quantity' => 2, 'price_minor' => 150000, 'discount_minor' => 0, 'tax' => 0, 'line_type' => ReceiptLineType::BOOK->value, 'net_minor' => 300000],
+            ['description' => 'ค่าหนังสือ', 'quantity' => 3, 'price_minor' => 290000, 'discount_minor' => 0, 'tax' => 0, 'line_type' => ReceiptLineType::BOOK->value, 'net_minor' => 870000],
+            ['description' => 'ค่าลงทะเบียนแรกเข้า', 'quantity' => 1, 'price_minor' => 75000, 'discount_minor' => 0, 'tax' => 1, 'line_type' => ReceiptLineType::REGISTRATION_FEE->value, 'net_minor' => 75000],
+            ['description' => 'ค่าอุปกรณ์การเรียน', 'quantity' => 1, 'price_minor' => 50000, 'discount_minor' => 0, 'tax' => 1, 'line_type' => ReceiptLineType::EQUIPMENT->value, 'net_minor' => 50000],
         ], $this->SummarizeDrafts($drafts));
     }
 
@@ -56,8 +57,8 @@ class ReceiptDetailBuilderTest extends TestCase
         $drafts = (new ReceiptDetailBuilder())->BuildForOrder($order);
 
         $this->assertSame([
-            ['description' => 'ค่าคอร์สเรียน Kindergarten', 'quantity' => 2, 'price_minor' => 400000, 'discount_minor' => 0, 'tax' => 1, 'net_minor' => 800000],
-            ['description' => 'ค่าหนังสือ', 'quantity' => 2, 'price_minor' => 290000, 'discount_minor' => 0, 'tax' => 0, 'net_minor' => 580000],
+            ['description' => 'ค่าคอร์สเรียน Kindergarten', 'quantity' => 2, 'price_minor' => 400000, 'discount_minor' => 0, 'tax' => 1, 'line_type' => ReceiptLineType::TUITION->value, 'net_minor' => 800000],
+            ['description' => 'ค่าหนังสือ', 'quantity' => 2, 'price_minor' => 290000, 'discount_minor' => 0, 'tax' => 0, 'line_type' => ReceiptLineType::BOOK->value, 'net_minor' => 580000],
         ], $this->SummarizeDrafts($drafts));
     }
 
@@ -139,6 +140,7 @@ class ReceiptDetailBuilderTest extends TestCase
             'price_minor' => $draft->unit_price_minor,
             'discount_minor' => $draft->discount_minor,
             'tax' => $draft->legacy_tax,
+            'line_type' => $draft->line_type->value,
             'net_minor' => $draft->NetMinor(),
         ])->all();
     }

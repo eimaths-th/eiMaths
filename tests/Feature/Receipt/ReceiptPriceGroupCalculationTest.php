@@ -6,6 +6,7 @@ use App\Domain\Affiliate\Enums\AffiliateCommissionStatus;
 use App\Domain\Affiliate\Models\AffiliateAttribution;
 use App\Domain\Affiliate\Models\AffiliateCommission;
 use App\Domain\Affiliate\Models\AffiliateProfile;
+use App\Domain\CreditNote\Enums\ReceiptLineType;
 use App\Http\Controllers\ReceiptController;
 use App\Models\Contact;
 use App\Models\Department;
@@ -61,12 +62,12 @@ class ReceiptPriceGroupCalculationTest extends TestCase
         $this->assertSame('30950.00', $this->NormalizeDecimal((string) $order->fresh()->total_price));
         $this->assertSame('30950.00', $this->NormalizeDecimal((string) $receipt->total_fee));
         $this->assertSame([
-            ['description' => 'ค่าคอร์สเรียน Kindergarten', 'quantity' => 2, 'price' => '3000.00', 'discount' => '0.00', 'tax' => 1],
-            ['description' => 'ค่าคอร์สเรียน Kindergarten', 'quantity' => 3, 'price' => '4000.00', 'discount' => '0.00', 'tax' => 1],
-            ['description' => 'ค่าหนังสือ', 'quantity' => 2, 'price' => '1500.00', 'discount' => '0.00', 'tax' => 0],
-            ['description' => 'ค่าหนังสือ', 'quantity' => 3, 'price' => '2900.00', 'discount' => '0.00', 'tax' => 0],
-            ['description' => 'ค่าลงทะเบียนแรกเข้า', 'quantity' => 1, 'price' => '750.00', 'discount' => '0.00', 'tax' => 1],
-            ['description' => 'ค่าอุปกรณ์การเรียน', 'quantity' => 1, 'price' => '500.00', 'discount' => '0.00', 'tax' => 1],
+            ['description' => 'ค่าคอร์สเรียน Kindergarten', 'quantity' => 2, 'price' => '3000.00', 'discount' => '0.00', 'tax' => 1, 'line_type' => ReceiptLineType::TUITION->value],
+            ['description' => 'ค่าคอร์สเรียน Kindergarten', 'quantity' => 3, 'price' => '4000.00', 'discount' => '0.00', 'tax' => 1, 'line_type' => ReceiptLineType::TUITION->value],
+            ['description' => 'ค่าหนังสือ', 'quantity' => 2, 'price' => '1500.00', 'discount' => '0.00', 'tax' => 0, 'line_type' => ReceiptLineType::BOOK->value],
+            ['description' => 'ค่าหนังสือ', 'quantity' => 3, 'price' => '2900.00', 'discount' => '0.00', 'tax' => 0, 'line_type' => ReceiptLineType::BOOK->value],
+            ['description' => 'ค่าลงทะเบียนแรกเข้า', 'quantity' => 1, 'price' => '750.00', 'discount' => '0.00', 'tax' => 1, 'line_type' => ReceiptLineType::REGISTRATION_FEE->value],
+            ['description' => 'ค่าอุปกรณ์การเรียน', 'quantity' => 1, 'price' => '500.00', 'discount' => '0.00', 'tax' => 1, 'line_type' => ReceiptLineType::EQUIPMENT->value],
         ], $this->SummarizeDetails($receipt));
     }
 
@@ -102,12 +103,12 @@ class ReceiptPriceGroupCalculationTest extends TestCase
         $this->assertSame($order_total_before, $this->NormalizeDecimal((string) $order->fresh()->total_price));
         $this->assertSame($receipt_total_before, $this->NormalizeDecimal((string) $receipt->fresh()->total_fee));
         $this->assertSame([
-            ['description' => 'ค่าคอร์สเรียน Kindergarten', 'quantity' => 2, 'price' => '3000.00', 'discount' => '0.00', 'tax' => 1],
-            ['description' => 'ค่าคอร์สเรียน Kindergarten', 'quantity' => 3, 'price' => '4000.00', 'discount' => '0.00', 'tax' => 1],
-            ['description' => 'ค่าหนังสือ', 'quantity' => 2, 'price' => '1500.00', 'discount' => '0.00', 'tax' => 0],
-            ['description' => 'ค่าหนังสือ', 'quantity' => 3, 'price' => '2900.00', 'discount' => '0.00', 'tax' => 0],
-            ['description' => 'ค่าลงทะเบียนแรกเข้า', 'quantity' => 1, 'price' => '750.00', 'discount' => '0.00', 'tax' => 1],
-            ['description' => 'ค่าอุปกรณ์การเรียน', 'quantity' => 1, 'price' => '500.00', 'discount' => '0.00', 'tax' => 1],
+            ['description' => 'ค่าคอร์สเรียน Kindergarten', 'quantity' => 2, 'price' => '3000.00', 'discount' => '0.00', 'tax' => 1, 'line_type' => ReceiptLineType::TUITION->value],
+            ['description' => 'ค่าคอร์สเรียน Kindergarten', 'quantity' => 3, 'price' => '4000.00', 'discount' => '0.00', 'tax' => 1, 'line_type' => ReceiptLineType::TUITION->value],
+            ['description' => 'ค่าหนังสือ', 'quantity' => 2, 'price' => '1500.00', 'discount' => '0.00', 'tax' => 0, 'line_type' => ReceiptLineType::BOOK->value],
+            ['description' => 'ค่าหนังสือ', 'quantity' => 3, 'price' => '2900.00', 'discount' => '0.00', 'tax' => 0, 'line_type' => ReceiptLineType::BOOK->value],
+            ['description' => 'ค่าลงทะเบียนแรกเข้า', 'quantity' => 1, 'price' => '750.00', 'discount' => '0.00', 'tax' => 1, 'line_type' => ReceiptLineType::REGISTRATION_FEE->value],
+            ['description' => 'ค่าอุปกรณ์การเรียน', 'quantity' => 1, 'price' => '500.00', 'discount' => '0.00', 'tax' => 1, 'line_type' => ReceiptLineType::EQUIPMENT->value],
         ], $this->SummarizeDetails($receipt));
     }
 
@@ -239,6 +240,7 @@ class ReceiptPriceGroupCalculationTest extends TestCase
                 'price' => $this->NormalizeDecimal((string) $detail->price),
                 'discount' => $this->NormalizeDecimal((string) $detail->discount),
                 'tax' => (int) $detail->tax,
+                'line_type' => $detail->line_type?->value,
             ])
             ->all();
     }

@@ -334,6 +334,14 @@ class DashboardController extends Controller
 
         $summaryByDate->groupBy('payment_date');
         $datas = $summaryByDate->get();
+        [$credit_from, $credit_to] = $this->DashboardDateBounds($dateRangeValue, $yearsValue);
+        $credit_rows = $this->CreditNoteRevenueEnabled()
+            ? app(\App\Domain\CreditNote\Queries\CreditNoteRevenueQuery::class)->ByDate($credit_from, $credit_to, $dcentreValue !== '1' ? (int) $dcentreValue : null)
+            : [];
+        $credit_totals = $this->CreditNoteRevenueEnabled()
+            ? app(\App\Domain\CreditNote\Queries\CreditNoteRevenueQuery::class)->Totals($credit_from, $credit_to, $dcentreValue !== '1' ? (int) $dcentreValue : null)
+            : $this->EmptyCreditNoteTotals();
+        $datas = $this->MergeDashboardCreditNoteRows($datas, $credit_rows, 'payment_date');
 
         $totalTransactionsSum = $datas->sum('total_transactions');
         $totalTransactionsPay = $datas->sum('total_transactions_payment');
@@ -345,6 +353,11 @@ class DashboardController extends Controller
             'total_receipt_pay' => $totalTransactionsPay,
             'total_receipt_pen' => $totalTransactionsPen,
             'total_income' => $totalFeeSum,
+            'issued_credit_note_total' => $this->MinorToDashboardDecimal($credit_totals['issued_minor']),
+            'cancelled_credit_note_total' => $this->MinorToDashboardDecimal($credit_totals['cancelled_minor']),
+            'net_revenue' => $this->MinorToDashboardDecimal($this->DashboardDecimalToMinor($totalFeeSum) + $credit_totals['net_minor']),
+            'total_credit_notes_issued' => $credit_totals['issued_count'],
+            'total_credit_notes_cancelled' => $credit_totals['cancelled_count'],
             'receipt_sum_by_date' => $datas,
         ]);
     }
@@ -388,6 +401,14 @@ class DashboardController extends Controller
 
         $summaryByMonth->groupBy('month');
         $datas = $summaryByMonth->get();
+        [$credit_from, $credit_to] = $this->DashboardDateBounds($dateRangeValue, $yearsValue);
+        $credit_rows = $this->CreditNoteRevenueEnabled()
+            ? app(\App\Domain\CreditNote\Queries\CreditNoteRevenueQuery::class)->ByMonth($credit_from, $credit_to, $dcentreValue !== '1' ? (int) $dcentreValue : null)
+            : [];
+        $credit_totals = $this->CreditNoteRevenueEnabled()
+            ? app(\App\Domain\CreditNote\Queries\CreditNoteRevenueQuery::class)->Totals($credit_from, $credit_to, $dcentreValue !== '1' ? (int) $dcentreValue : null)
+            : $this->EmptyCreditNoteTotals();
+        $datas = $this->MergeDashboardCreditNoteRows($datas, $credit_rows, 'month');
 
         $totalTransactionsSum = $datas->sum('total_transactions');
         $totalTransactionsPay = $datas->sum('total_transactions_payment');
@@ -399,6 +420,11 @@ class DashboardController extends Controller
             'total_receipt_pay' => $totalTransactionsPay,
             'total_receipt_pen' => $totalTransactionsPen,
             'total_income' => $totalFeeSum,
+            'issued_credit_note_total' => $this->MinorToDashboardDecimal($credit_totals['issued_minor']),
+            'cancelled_credit_note_total' => $this->MinorToDashboardDecimal($credit_totals['cancelled_minor']),
+            'net_revenue' => $this->MinorToDashboardDecimal($this->DashboardDecimalToMinor($totalFeeSum) + $credit_totals['net_minor']),
+            'total_credit_notes_issued' => $credit_totals['issued_count'],
+            'total_credit_notes_cancelled' => $credit_totals['cancelled_count'],
             'receipt_sum_by_month' => $datas,
         ]);
     }
@@ -442,6 +468,14 @@ class DashboardController extends Controller
 
         $summaryByYear->groupBy('year');
         $datas = $summaryByYear->get();
+        [$credit_from, $credit_to] = $this->DashboardDateBounds($dateRangeValue, $yearsValue);
+        $credit_rows = $this->CreditNoteRevenueEnabled()
+            ? app(\App\Domain\CreditNote\Queries\CreditNoteRevenueQuery::class)->ByYear($credit_from, $credit_to, $dcentreValue !== '1' ? (int) $dcentreValue : null)
+            : [];
+        $credit_totals = $this->CreditNoteRevenueEnabled()
+            ? app(\App\Domain\CreditNote\Queries\CreditNoteRevenueQuery::class)->Totals($credit_from, $credit_to, $dcentreValue !== '1' ? (int) $dcentreValue : null)
+            : $this->EmptyCreditNoteTotals();
+        $datas = $this->MergeDashboardCreditNoteRows($datas, $credit_rows, 'year');
 
         $totalTransactionsSum = $datas->sum('total_transactions');
         $totalTransactionsPay = $datas->sum('total_transactions_payment');
@@ -453,6 +487,11 @@ class DashboardController extends Controller
             'total_receipt_pay' => $totalTransactionsPay,
             'total_receipt_pen' => $totalTransactionsPen,
             'total_income' => $totalFeeSum,
+            'issued_credit_note_total' => $this->MinorToDashboardDecimal($credit_totals['issued_minor']),
+            'cancelled_credit_note_total' => $this->MinorToDashboardDecimal($credit_totals['cancelled_minor']),
+            'net_revenue' => $this->MinorToDashboardDecimal($this->DashboardDecimalToMinor($totalFeeSum) + $credit_totals['net_minor']),
+            'total_credit_notes_issued' => $credit_totals['issued_count'],
+            'total_credit_notes_cancelled' => $credit_totals['cancelled_count'],
             'receipt_sum_by_year' => $datas,
         ]);
     }
@@ -538,5 +577,84 @@ class DashboardController extends Controller
         return response()->json([
             'daily_study' => $datas,
         ]);
+    }
+
+    private function DashboardDateBounds(?string $date_range, $years): array
+    {
+        if (is_string($date_range) && preg_match('/\A(\d{4}-\d{2}-\d{2})\s-\s(\d{4}-\d{2}-\d{2})\z/D', $date_range, $matches)) {
+            return [$matches[1], $matches[2]];
+        }
+        $years = array_values(array_filter(array_map('intval', (array) $years), static fn (int $year): bool => $year >= 1900 && $year <= 2200));
+        if ($years !== []) {
+            return [min($years) . '-01-01', max($years) . '-12-31'];
+        }
+        return [date('Y-01-01'), date('Y-12-31')];
+    }
+
+    private function MergeDashboardCreditNoteRows($rows, array $credit_rows, string $key_field)
+    {
+        $rows = collect($rows);
+        $indexed = $rows->keyBy(static fn ($row): string => (string) ($row->{$key_field} ?? ''));
+        foreach ($credit_rows as $key => $credit) {
+            $key = (string) $key;
+            $row = $indexed->get($key);
+            if ($row === null) {
+                $row = (object) [
+                    $key_field => $key,
+                    'total_transactions' => 0,
+                    'total_transactions_payment' => 0,
+                    'total_transactions_pending' => 0,
+                    'total_fee_sum' => 0,
+                ];
+                $indexed->put($key, $row);
+            }
+            $gross_minor = $this->DashboardDecimalToMinor($row->total_fee_sum ?? 0);
+            $row->issued_credit_note_total = $this->MinorToDashboardDecimal((int) ($credit['issued_minor'] ?? 0));
+            $row->cancelled_credit_note_total = $this->MinorToDashboardDecimal((int) ($credit['cancelled_minor'] ?? 0));
+            $row->net_revenue = $this->MinorToDashboardDecimal($gross_minor + (int) ($credit['net_minor'] ?? 0));
+            $row->total_credit_notes_issued = (int) ($credit['issued_count'] ?? 0);
+            $row->total_credit_notes_cancelled = (int) ($credit['cancelled_count'] ?? 0);
+        }
+        foreach ($indexed as $row) {
+            $key = (string) ($row->{$key_field} ?? '');
+            if (!isset($row->issued_credit_note_total)) {
+                $row->issued_credit_note_total = '0.00';
+                $row->cancelled_credit_note_total = '0.00';
+                $row->net_revenue = $this->MinorToDashboardDecimal($this->DashboardDecimalToMinor($row->total_fee_sum ?? 0));
+                $row->total_credit_notes_issued = 0;
+                $row->total_credit_notes_cancelled = 0;
+            }
+            $indexed->put($key, $row);
+        }
+        return $indexed->sortKeys()->values();
+    }
+
+    private function DashboardDecimalToMinor($amount): int
+    {
+        return \App\Domain\CreditNote\ValueObjects\CreditNoteMoney::FromDecimal((string) $amount, true)->Minor();
+    }
+
+    private function MinorToDashboardDecimal(int $minor): string
+    {
+        return \App\Domain\CreditNote\ValueObjects\CreditNoteMoney::FromMinor($minor)->Decimal();
+    }
+
+    private function CreditNoteRevenueEnabled(): bool
+    {
+        return (bool) config('financial-documents.credit_note.enabled', false);
+    }
+
+    private function EmptyCreditNoteTotals(): array
+    {
+        return [
+            'gross_minor' => 0,
+            'issued_minor' => 0,
+            'cancelled_minor' => 0,
+            'net_minor' => 0,
+            'credit_note_count' => 0,
+            'issued_count' => 0,
+            'cancelled_count' => 0,
+            'receipt_count' => 0,
+        ];
     }
 }

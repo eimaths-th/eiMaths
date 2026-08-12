@@ -2,6 +2,7 @@
 
 namespace App\Domain\Financial\ValueObjects;
 
+use App\Domain\CreditNote\Enums\ReceiptLineType;
 use OverflowException;
 
 final readonly class ReceiptDetailDraft
@@ -13,6 +14,7 @@ final readonly class ReceiptDetailDraft
         public int $unit_price_minor,
         public int $discount_minor,
         public int $legacy_tax,
+        public ReceiptLineType $line_type,
     ) {
     }
 

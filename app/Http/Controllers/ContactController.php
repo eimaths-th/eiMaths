@@ -35,7 +35,7 @@ use Illuminate\Support\Str;
 
 use Carbon\Carbon;
 use App\Domain\Affiliate\Services\AffiliateAttributionService;
-use App\Domain\Affiliate\Services\AffiliateFinancialSourceGuard;
+use App\Domain\Financial\Services\FinancialSourceGuard;
 use App\Domain\Affiliate\Exceptions\AffiliateDomainException;
 
 class ContactController extends Controller
@@ -49,7 +49,7 @@ class ContactController extends Controller
     public function __construct(
         private readonly BookReceiptService $book_receipt_service,
         private readonly AffiliateAttributionService $affiliate_attribution_service,
-        private readonly AffiliateFinancialSourceGuard $financial_source_guard,
+        private readonly FinancialSourceGuard $financial_source_guard,
     )
     {
         //$this->middleware('auth');

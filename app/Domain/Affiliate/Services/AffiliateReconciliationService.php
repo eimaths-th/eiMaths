@@ -7,6 +7,7 @@ use App\Domain\Affiliate\Models\AffiliateLedgerEntry;
 use App\Domain\Affiliate\Models\AffiliateProfile;
 use App\Domain\Affiliate\Models\AffiliateReconciliationIssue;
 use App\Domain\Affiliate\Models\AffiliateWalletBalance;
+use App\Domain\Affiliate\Models\AffiliateCommission;
 use App\Models\User;
 
 class AffiliateReconciliationService
@@ -45,6 +46,19 @@ class AffiliateReconciliationService
                 $issues[] = $this->OpenIssue('affiliate_wallet_balances', $profile->id, 'RESERVED_BALANCE_MISMATCH', 'HIGH', ['projection' => $wallet->reserved_balance_minor, 'ledger' => $ledger_reserved]);
             }
         }
+
+        AffiliateCommission::query()->where('affiliate_profile_id', $profile->id)->orderBy('id')->each(function (AffiliateCommission $commission) use (&$issues): void {
+            $external_reversal_minor = (int) $commission->Reversals()->sum('reversal_minor');
+            $credit_note_delta_minor = (int) $commission->CreditNoteAdjustments()->sum('commission_reversal_delta_minor');
+            $expected_reversed_minor = $external_reversal_minor + $credit_note_delta_minor;
+            if ($expected_reversed_minor !== (int) $commission->reversed_minor) {
+                $issues[] = $this->OpenIssue('affiliate_commissions', $commission->id, 'COMMISSION_REVERSAL_EVIDENCE_MISMATCH', 'HIGH', [
+                    'projection_reversed_minor' => (int) $commission->reversed_minor,
+                    'external_reversal_minor' => $external_reversal_minor,
+                    'credit_note_delta_minor' => $credit_note_delta_minor,
+                ]);
+            }
+        });
 
         return ['affiliate_profile_id' => $profile->id, 'ledger_available_minor' => $ledger_available, 'ledger_reserved_minor' => $ledger_reserved, 'issues' => $issues];
     }
