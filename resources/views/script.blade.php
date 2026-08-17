@@ -822,6 +822,10 @@
             $('#pareceipt').html(response.total_receipt_pay)
             $('#preceipt').html(response.total_receipt_pen)
             $('#tincome').html(FormatDashboardAmount(response.total_income))
+            $('#credit-note-gross').html(FormatDashboardAmount(response.total_income))
+            $('#credit-note-issued').html(FormatDashboardAmount(response.issued_credit_note_total))
+            $('#credit-note-cancelled').html(FormatDashboardAmount(response.cancelled_credit_note_total))
+            $('#credit-note-net').html(FormatDashboardAmount(response.net_revenue))
             // Process the response as needed
             return response.receipt_sum_by_date;
         } catch (error) {
@@ -847,6 +851,9 @@
         const labels = data.map(entry => entry.payment_date);
         const totalReceiptData = data.map(entry => entry.total_transactions);
         const totalPriceData = data.map(entry => entry.total_fee_sum);
+        const issuedCreditNoteData = data.map(entry => entry.issued_credit_note_total || '0.00');
+        const cancelledCreditNoteData = data.map(entry => entry.cancelled_credit_note_total || '0.00');
+        const netRevenueData = data.map(entry => entry.net_revenue || entry.total_fee_sum || '0.00');
 
         const option = {
             series: [{
@@ -859,6 +866,9 @@
                     type: 'column',
                     data: totalPriceData,
                 },
+                { name: 'Issued Credit Notes', type: 'line', data: issuedCreditNoteData },
+                { name: 'Cancelled Credit Notes', type: 'line', data: cancelledCreditNoteData },
+                { name: 'Net Revenue', type: 'line', data: netRevenueData },
             ],
             markers: {
                 size: 5,
@@ -980,6 +990,9 @@
         const labels = data.map(entry => entry.month);
         const totalReceiptData = data.map(entry => entry.total_transactions);
         const totalPriceData = data.map(entry => entry.total_fee_sum);
+        const issuedCreditNoteData = data.map(entry => entry.issued_credit_note_total || '0.00');
+        const cancelledCreditNoteData = data.map(entry => entry.cancelled_credit_note_total || '0.00');
+        const netRevenueData = data.map(entry => entry.net_revenue || entry.total_fee_sum || '0.00');
 
         const option = {
             series: [{
@@ -992,6 +1005,9 @@
                     type: 'column',
                     data: totalPriceData,
                 },
+                { name: 'Issued Credit Notes', type: 'line', data: issuedCreditNoteData },
+                { name: 'Cancelled Credit Notes', type: 'line', data: cancelledCreditNoteData },
+                { name: 'Net Revenue', type: 'line', data: netRevenueData },
             ],
             markers: {
                 size: 5,
@@ -1092,6 +1108,9 @@
         const labels = data.map(entry => entry.year);
         const totalReceiptData = data.map(entry => entry.total_transactions);
         const totalPriceData = data.map(entry => entry.total_fee_sum);
+        const issuedCreditNoteData = data.map(entry => entry.issued_credit_note_total || '0.00');
+        const cancelledCreditNoteData = data.map(entry => entry.cancelled_credit_note_total || '0.00');
+        const netRevenueData = data.map(entry => entry.net_revenue || entry.total_fee_sum || '0.00');
 
         const option = {
             series: [{
@@ -1104,6 +1123,9 @@
                     type: 'column',
                     data: totalPriceData,
                 },
+                { name: 'Issued Credit Notes', type: 'line', data: issuedCreditNoteData },
+                { name: 'Cancelled Credit Notes', type: 'line', data: cancelledCreditNoteData },
+                { name: 'Net Revenue', type: 'line', data: netRevenueData },
             ],
             markers: {
                 size: 6,

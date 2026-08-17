@@ -246,6 +246,7 @@
                     </td>
                     <td bgcolor="#FF6900" align="center" class="whiteh" width="10%">ส่วนลด <br>Discount</td>
                     <td bgcolor="#FF6900" align="center" class="whiteh" width="15%">จำนวนเงิน <br>Amount</td>
+                    <td bgcolor="#FF6900" align="center" class="whiteh" width="12%">ประเภท <br>Line Type</td>
                     <td bgcolor="#FF6900" align="center" class="whiteh">Vat</td>
                 </tr>
                 @foreach ($items as $x => $receipt_detail)
@@ -279,6 +280,19 @@
                             <input type="text" class="form-control" name="total[]"
                                 value="{{ number_format($receipt_detail['price'] * $receipt_detail['quantity'] - $receipt_detail['discount'], 2, '.') }}"
                                 readonly>
+                        </td>
+                        @php
+                            $lineTypeValue = $receipt_detail->line_type?->value ?? 'unknown';
+                        @endphp
+                        <td align="center">
+                            <label class="sr-only" for="line-type-{{ $x }}">Line type</label>
+                            <select class="form-control" id="line-type-{{ $x }}" name="line_type[]">
+                                @foreach (['tuition', 'book', 'deposit', 'registration_fee', 'equipment', 'other', 'service_charge', 'unknown'] as $lineTypeOption)
+                                    <option value="{{ $lineTypeOption }}" {{ $lineTypeValue === $lineTypeOption ? 'selected' : '' }}>
+                                        {{ $lineTypeOption }}
+                                    </option>
+                                @endforeach
+                            </select>
                         </td>
                         <td align="center">
                             <input type="checkbox" name="tax[]" value="1"

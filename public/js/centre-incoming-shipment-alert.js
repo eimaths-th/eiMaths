@@ -126,8 +126,8 @@ function RenderCentreBadgeCount(document_object, pending_count) {
         badge_element.setAttribute(
             'aria-label',
             badge_text === ''
-                ? 'No incoming shipments waiting'
-                : `${pending_count} incoming shipment${pending_count === 1 ? '' : 's'} waiting`,
+                ? 'ไม่มีหนังสือที่รอรับ'
+                : `มีรายการจัดส่งหนังสือรอตรวจรับ ${pending_count} รายการ`,
         );
     });
 }
@@ -145,12 +145,12 @@ function RenderCentreToast(root_element, index_url, detail_base_url, toast_event
     const is_new_shipment = toast_event.event_type === 'new_shipment';
     const latest_shipment = toast_event.latest_shipment;
     title_element.textContent = is_new_shipment
-        ? 'New book shipment from HQ'
-        : 'Incoming book shipments';
+        ? 'มีรายการจัดส่งหนังสือใหม่จากศูนย์จัดส่ง'
+        : 'รายการหนังสือที่กำลังจัดส่งเข้า';
     message_element.textContent = is_new_shipment
-        ? `${latest_shipment.shipment_number} with ${latest_shipment.item_count} book${latest_shipment.item_count === 1 ? '' : 's'} is waiting for receipt.`
-        : `${toast_event.pending_count} book${toast_event.pending_count === 1 ? '' : 's'} from HQ ${toast_event.pending_count === 1 ? 'is' : 'are'} waiting for receipt.`;
-    action_element.textContent = is_new_shipment ? 'View shipment' : 'View incoming shipments';
+        ? `${latest_shipment.shipment_number} มีหนังสือ ${latest_shipment.item_count} เล่มรอตรวจรับ`
+        : `มีรายการจัดส่งหนังสือจากศูนย์จัดส่ง ${toast_event.pending_count} รายการรอตรวจรับ`;
+    action_element.textContent = is_new_shipment ? 'ดูรายการจัดส่ง' : 'ดูรายการที่กำลังจัดส่งเข้า';
     action_element.href = is_new_shipment
         ? BuildDetailUrl(detail_base_url, latest_shipment.id)
         : index_url;

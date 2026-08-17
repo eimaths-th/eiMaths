@@ -7,6 +7,7 @@ use App\Domain\Affiliate\Models\AffiliateLedgerEntry;
 use App\Domain\Affiliate\Models\AffiliateProfile;
 use App\Domain\Affiliate\Models\AffiliateReconciliationIssue;
 use App\Domain\Affiliate\Models\AffiliateWalletBalance;
+use App\Domain\Affiliate\Models\AffiliateCommission;
 use App\Models\User;
 
 class AffiliateReconciliationService
@@ -35,6 +36,9 @@ class AffiliateReconciliationService
         if ($wallet === null) {
             $issues[] = $this->OpenIssue('affiliate_wallet_balances', $profile->id, 'WALLET_PROJECTION_MISSING', 'HIGH', ['expected_available_minor' => $ledger_available, 'expected_reserved_minor' => $ledger_reserved]);
         } else {
+            if ((int) $wallet->available_balance_minor < 0) {
+                $issues[] = $this->OpenIssue('affiliate_wallet_balances', $profile->id, 'NEGATIVE_AVAILABLE_BALANCE', 'HIGH', ['available_balance_minor' => $wallet->available_balance_minor]);
+            }
             if ((int) $wallet->available_balance_minor !== $ledger_available) {
                 $issues[] = $this->OpenIssue('affiliate_wallet_balances', $profile->id, 'AVAILABLE_BALANCE_MISMATCH', 'HIGH', ['projection' => $wallet->available_balance_minor, 'ledger' => $ledger_available]);
             }
@@ -43,16 +47,32 @@ class AffiliateReconciliationService
             }
         }
 
+        AffiliateCommission::query()->where('affiliate_profile_id', $profile->id)->orderBy('id')->each(function (AffiliateCommission $commission) use (&$issues): void {
+            $external_reversal_minor = (int) $commission->Reversals()->sum('reversal_minor');
+            $credit_note_delta_minor = (int) $commission->CreditNoteAdjustments()->sum('commission_reversal_delta_minor');
+            $expected_reversed_minor = $external_reversal_minor + $credit_note_delta_minor;
+            if ($expected_reversed_minor !== (int) $commission->reversed_minor) {
+                $issues[] = $this->OpenIssue('affiliate_commissions', $commission->id, 'COMMISSION_REVERSAL_EVIDENCE_MISMATCH', 'HIGH', [
+                    'projection_reversed_minor' => (int) $commission->reversed_minor,
+                    'external_reversal_minor' => $external_reversal_minor,
+                    'credit_note_delta_minor' => $credit_note_delta_minor,
+                ]);
+            }
+        });
+
         return ['affiliate_profile_id' => $profile->id, 'ledger_available_minor' => $ledger_available, 'ledger_reserved_minor' => $ledger_reserved, 'issues' => $issues];
     }
 
     public function ReconcileAll(int $batch = 100): int
     {
         $count = 0;
-        AffiliateProfile::query()->orderBy('id')->limit(min(max($batch, 1), 1000))->each(function (AffiliateProfile $profile) use (&$count): void {
+        $chunk_size = min(max($batch, 1), 1000);
+
+        AffiliateProfile::query()->orderBy('id')->each(function (AffiliateProfile $profile) use (&$count): void {
             $this->ReconcileProfile($profile);
             $count++;
-        });
+        }, $chunk_size);
+
         return $count;
     }
 

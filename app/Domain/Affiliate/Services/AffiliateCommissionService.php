@@ -213,7 +213,8 @@ class AffiliateCommissionService
 
             $commission = AffiliateCommission::query()->where('receipt_id', $receipt->id)->lockForUpdate()->firstOrFail();
             $refunded_before = (int) $commission->Reversals()->sum('refunded_tuition_minor');
-            if ($refunded_before + $refunded_minor > $commission->eligible_tuition_minor) {
+            $credit_note_reversed_before = (int) $commission->CreditNoteAdjustments()->sum('tuition_reversal_delta_minor');
+            if ($refunded_before + $credit_note_reversed_before + $refunded_minor > $commission->eligible_tuition_minor) {
                 throw AffiliateDomainException::StateConflict('Refunded tuition exceeds the remaining eligible tuition.');
             }
 

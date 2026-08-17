@@ -1,0 +1,579 @@
+/* Credit Note screen language: AdminLTE blue structure with the eiMaths orange accent. */
+.credit-note-page-shell {
+    min-height: 100%;
+    background: #f4f6f9;
+}
+
+.credit-note-editor-header {
+    padding-top: 1.35rem;
+    padding-bottom: .9rem;
+}
+
+.credit-note-eyebrow,
+.credit-note-section-kicker {
+    color: #6b7785;
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+}
+
+.credit-note-editor-header h1 {
+    color: #1d2b3a;
+    font-size: 1.75rem;
+    font-weight: 600;
+}
+
+.credit-note-editor-header h1 .text-muted {
+    display: inline-block;
+    margin-left: .4rem;
+    color: #7c8997 !important;
+    font-size: 1rem;
+    font-weight: 400;
+    vertical-align: middle;
+}
+
+.credit-note-page-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .45rem;
+}
+
+.credit-note-page-actions .btn {
+    border-radius: .25rem;
+    font-size: .82rem;
+    font-weight: 600;
+}
+
+.credit-note-workspace-card {
+    border-top-width: 3px;
+    box-shadow: 0 8px 24px rgba(24, 39, 58, .06);
+}
+
+.credit-note-feedback {
+    display: flex;
+    align-items: flex-start;
+    gap: .35rem;
+    margin-bottom: 1rem;
+    border-radius: .35rem;
+    font-size: .88rem;
+}
+
+.credit-note-feedback-details {
+    margin-top: .4rem;
+    font-size: .82rem;
+    line-height: 1.5;
+}
+
+.credit-note-feedback-details code {
+    color: inherit;
+    font-size: .78rem;
+}
+
+.credit-note-workspace-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    background: #fff;
+}
+
+.credit-note-workspace-copy {
+    min-width: 0;
+}
+
+.credit-note-workspace-copy .card-title {
+    display: block;
+    float: none;
+    margin: 0;
+    line-height: 1.35;
+}
+
+.credit-note-workspace-copy .small {
+    display: block;
+    margin-top: .35rem !important;
+    line-height: 1.4;
+}
+
+.credit-note-header-status {
+    flex: 0 0 auto;
+    align-self: flex-start;
+    margin-left: auto;
+    text-align: right;
+}
+
+.credit-note-workspace-header .card-title {
+    color: #203246;
+    font-size: 1.05rem;
+    font-weight: 600;
+}
+
+.credit-note-workspace-header .small {
+    font-size: .8rem;
+}
+
+.credit-note-workspace-card > .card-body {
+    position: relative;
+    padding: 1.5rem;
+    overflow: hidden;
+}
+
+.credit-note-workspace-card > .card-body > *:not(.credit-note-watermark) {
+    position: relative;
+    z-index: 1;
+}
+
+.credit-note-draft-banner {
+    display: flex;
+    align-items: center;
+    gap: .85rem;
+    margin-bottom: 1.5rem;
+    padding: .75rem 1rem;
+    border: 1px solid #f1d184;
+    border-left: 4px solid #f39c12;
+    border-radius: .25rem;
+    background: #fff9e8;
+    color: #624a15;
+}
+
+.credit-note-draft-banner strong,
+.credit-note-draft-banner span {
+    display: block;
+}
+
+.credit-note-draft-banner strong {
+    font-size: .9rem;
+}
+
+.credit-note-draft-banner span {
+    margin-top: .15rem;
+    color: #7b6531;
+    font-size: .78rem;
+}
+
+.credit-note-draft-icon {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background: #f39c12;
+    color: #fff !important;
+}
+
+.credit-note-watermark {
+    position: absolute !important;
+    top: 11rem;
+    right: 2rem;
+    z-index: 0;
+    color: rgba(0, 123, 255, .045);
+    font-size: clamp(4rem, 12vw, 8rem);
+    font-weight: 800;
+    letter-spacing: .2em;
+    line-height: 1;
+    pointer-events: none;
+    transform: rotate(-18deg);
+    user-select: none;
+}
+
+.credit-note-form-section {
+    margin-bottom: 1.75rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #e6ebf0;
+}
+
+.credit-note-section-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.credit-note-section-heading h3 {
+    margin: .2rem 0 0;
+    color: #203246;
+    font-size: 1.05rem;
+    font-weight: 600;
+}
+
+.credit-note-section-heading > i {
+    color: #007bff;
+    font-size: 1.1rem;
+    opacity: .8;
+}
+
+.credit-note-form-section .form-group > label,
+.credit-note-cancel-form label {
+    color: #455464;
+    font-size: .78rem;
+    font-weight: 600;
+}
+
+.credit-note-form-section .form-control,
+.credit-note-cancel-form .form-control {
+    border-color: #d9e1e8;
+    border-radius: .25rem;
+    color: #263748;
+    font-size: .86rem;
+}
+
+.credit-note-form-section .form-control:focus,
+.credit-note-cancel-form .form-control:focus,
+.credit-note-source-table .form-control:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 .2rem rgba(0, 123, 255, .14);
+}
+
+.credit-note-form-section textarea.form-control {
+    resize: vertical;
+}
+
+.credit-note-section-help {
+    margin-top: -.45rem;
+    color: #748190;
+    font-size: .8rem;
+}
+
+.credit-note-source-section {
+    margin-bottom: 1.5rem;
+}
+
+.credit-note-source-table {
+    min-width: 760px;
+    margin-bottom: 0;
+    border: 1px solid #e1e7ed;
+    color: #314253;
+    font-size: .82rem;
+}
+
+.credit-note-source-table thead th {
+    padding: .75rem .8rem;
+    border-top: 0;
+    border-bottom: 2px solid #005cbf;
+    background: #007bff;
+    color: #fff;
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .03em;
+    text-transform: uppercase;
+    vertical-align: middle;
+}
+
+.credit-note-source-table tbody td {
+    padding: .75rem .8rem;
+    border-color: #e8edf2;
+    vertical-align: middle;
+}
+
+.credit-note-source-table tbody tr:hover {
+    background: #f8fbff;
+}
+
+.credit-note-source-table .credit-note-entry-column {
+    width: 16%;
+}
+
+.credit-note-line-number {
+    display: inline-block;
+    min-width: 1.65rem;
+    margin-right: .35rem;
+    color: #007bff;
+    font-size: .7rem;
+    font-weight: 700;
+    letter-spacing: .04em;
+}
+
+.credit-note-line-description {
+    color: #263748;
+    font-weight: 600;
+}
+
+.credit-note-tax-label {
+    color: #465768;
+    font-size: .78rem;
+}
+
+.credit-note-source-table .input-group-text {
+    border-color: #d9e1e8;
+    background: #f4f6f9;
+    color: #697989;
+    font-size: .72rem;
+}
+
+.credit-note-source-row-incomplete {
+    background: #fffdf6;
+}
+
+.credit-note-source-row-incomplete td {
+    color: #7b6a41;
+}
+
+.credit-note-totals {
+    margin: 1.5rem 0;
+    padding: 1.2rem;
+    border: 1px solid #dfe7ef;
+    border-radius: .3rem;
+    background: #f8fafc;
+}
+
+.credit-note-totals .credit-note-section-heading {
+    margin-bottom: .85rem;
+}
+
+.credit-note-total-card {
+    position: relative;
+    min-height: 5.2rem;
+    margin-bottom: .75rem;
+    padding: .8rem .9rem .7rem;
+    overflow: hidden;
+    border: 1px solid #e0e7ee;
+    border-left: 3px solid #aebbc8;
+    border-radius: .25rem;
+    background: #fff;
+}
+
+.credit-note-total-card-blue { border-left-color: #007bff; }
+.credit-note-total-card-orange { border-left-color: #f39c12; }
+.credit-note-total-card-purple { border-left-color: #6f42c1; }
+
+.credit-note-total-label,
+.credit-note-total-currency {
+    display: block;
+    color: #718090;
+    font-size: .7rem;
+    font-weight: 600;
+    letter-spacing: .02em;
+    text-transform: uppercase;
+}
+
+.credit-note-total-card strong {
+    display: inline-block;
+    margin-top: .3rem;
+    color: #203246;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.credit-note-total-currency {
+    display: inline-block;
+    margin-left: .25rem;
+    text-transform: none;
+}
+
+.credit-note-form-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-top: 1px solid #e6ebf0;
+}
+
+.credit-note-form-actions .btn,
+.credit-note-next-actions .btn,
+.credit-note-action-panel .btn {
+    border-radius: .25rem;
+    font-size: .82rem;
+    font-weight: 600;
+}
+
+.credit-note-next-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .75rem;
+    margin-top: .25rem;
+    padding-top: 1rem;
+    border-top: 1px dashed #d8e0e8;
+}
+
+.credit-note-next-actions > form {
+    display: flex;
+    align-items: center;
+    margin: 0;
+}
+
+.credit-note-next-actions .btn {
+    display: inline-flex;
+    min-height: 2.5rem;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+}
+
+.credit-note-cancel-form {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    margin: 0;
+}
+
+.credit-note-cancel-form .form-control {
+    min-width: 14rem;
+    height: 2.5rem;
+}
+
+.credit-note-action-panel {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem;
+    border: 1px solid #f1caca;
+    border-left: 4px solid #dc3545;
+    border-radius: .25rem;
+    background: #fff8f8;
+}
+
+.credit-note-inline-form {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    margin: 0;
+}
+
+.credit-note-inline-form .form-control {
+    min-width: 15rem;
+    height: 2.5rem;
+}
+
+.credit-note-inline-form .btn {
+    display: inline-flex;
+    min-height: 2.5rem;
+    height: 2.5rem;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+}
+
+.credit-note-timeline {
+    margin-top: 1.75rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid #e6ebf0;
+}
+
+.credit-note-timeline-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: .75rem;
+}
+
+.credit-note-timeline-entry {
+    position: relative;
+    min-height: 4.25rem;
+    padding: .75rem .75rem .75rem 2.1rem;
+    border: 1px solid #e2e8ee;
+    border-radius: .25rem;
+    background: #fff;
+}
+
+.credit-note-timeline-dot {
+    position: absolute;
+    top: 1rem;
+    left: .8rem;
+    width: .65rem;
+    height: .65rem;
+    border-radius: 50%;
+    background: #8795a3;
+    box-shadow: 0 0 0 4px #eef2f5;
+}
+
+.credit-note-timeline-dot-created { background: #007bff; box-shadow: 0 0 0 4px #e5f1ff; }
+.credit-note-timeline-dot-issued { background: #28a745; box-shadow: 0 0 0 4px #e7f6eb; }
+.credit-note-timeline-dot-cancelled { background: #dc3545; box-shadow: 0 0 0 4px #fbe8ea; }
+
+.credit-note-timeline-label {
+    display: block;
+    color: #748190;
+    font-size: .7rem;
+    font-weight: 700;
+    letter-spacing: .03em;
+    text-transform: uppercase;
+}
+
+.credit-note-timeline-entry strong {
+    display: block;
+    margin-top: .25rem;
+    color: #2d4053;
+    font-size: .85rem;
+    font-weight: 600;
+}
+
+.credit-note-status {
+    display: inline-flex;
+    min-width: 5.5rem;
+    align-items: center;
+    justify-content: center;
+    padding: .28rem .6rem;
+    border: 1px solid #6c757d;
+    border-radius: 999px;
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .03em;
+    text-transform: uppercase;
+}
+
+.credit-note-status-draft { border-color: #e6b94d; background: #fff3cd; color: #664d03; }
+.credit-note-status-issued { border-color: #86c79c; background: #d1e7dd; color: #0f5132; }
+.credit-note-status-cancelled { border-color: #e5a6ac; background: #f8d7da; color: #842029; }
+
+.credit-note-table th,
+.credit-note-table td {
+    vertical-align: middle;
+}
+
+@media (max-width: 767.98px) {
+    .credit-note-workspace-card > .card-body {
+        padding: 1rem;
+    }
+
+    .credit-note-workspace-header,
+    .credit-note-action-panel,
+    .credit-note-form-actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .credit-note-header-status {
+        margin-left: 0;
+        text-align: left;
+    }
+
+    .credit-note-page-actions,
+    .credit-note-page-actions .btn {
+        width: 100%;
+    }
+
+    .credit-note-page-actions .btn {
+        text-align: center;
+    }
+
+    .credit-note-timeline-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .credit-note-cancel-form,
+    .credit-note-cancel-form .form-control,
+    .credit-note-cancel-form .btn {
+        width: 100%;
+    }
+
+    .credit-note-cancel-form {
+        align-items: stretch;
+        flex-direction: column;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .credit-note-page-shell *,
+    .credit-note-page-shell *::before,
+    .credit-note-page-shell *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+    }
+}

@@ -71,7 +71,13 @@ class Kernel extends HttpKernel
         'guest.quiz' => \App\Http\Middleware\GuestQuizAuth::class,
         'affiliate.feature' => \App\Http\Middleware\RequireAffiliateFeature::class,
         'affiliate.correlation' => \App\Http\Middleware\AttachAffiliateCorrelationId::class,
+        'affiliate.locale' => \App\Http\Middleware\SetAffiliateLocale::class,
         'affiliate.referral' => \App\Http\Middleware\CaptureAffiliateReferral::class,
+        'affiliate.employee-eligibility' => \App\Http\Middleware\EnsureAffiliateEmployeeEligibility::class,
+        'affiliate.portal-access' => \App\Http\Middleware\EnsureAffiliatePortalAccess::class,
+        'credit-note.correlation' => \App\Http\Middleware\AttachCreditNoteCorrelationId::class,
+        'credit-note.feature' => \App\Http\Middleware\RequireCreditNoteFeature::class,
+        'credit-note.responses' => \App\Http\Middleware\HandleCreditNoteResponses::class,
     ];
 
 

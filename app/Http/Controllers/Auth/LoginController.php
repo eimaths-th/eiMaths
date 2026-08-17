@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Domain\Affiliate\Services\AffiliateEmployeeEligibility;
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
@@ -38,7 +39,9 @@ class LoginController extends Controller
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(
+        private readonly AffiliateEmployeeEligibility $eligibility,
+    )
     {
         $this->middleware('guest')->except('logout');
     }
@@ -59,8 +62,11 @@ class LoginController extends Controller
                     ->withErrors(['email' => 'Please contact the administrator.']);
             }
 
-            // Check if user has the 'affiliate-user' role
-            if ($user->hasRole('Affiliate-user')) {
+            if ($this->eligibility->IsEligible($user)) {
+                return $this->sendLoginResponse($request);
+            }
+
+            if ($this->eligibility->IsAffiliateOnly($user)) {
                 return $user->AffiliateProfile?->status?->value === 'ACTIVE'
                     ? redirect()->route('affiliate.dashboard')
                     : redirect()->route('affiliate.waiting');

@@ -4,17 +4,24 @@ import {
 } from './book-shipment-alert-poller.js';
 
 const DERIVED_STATUS_PRESENTATION = {
-    DRAFT: { status_class: 'draft', label: 'Draft' },
-    WAITING_FOR_CENTRE: { status_class: 'waiting', label: 'Waiting for Centre' },
-    PENDING_STUDENT_DELIVERY: { status_class: 'pending', label: 'Pending student delivery' },
-    COMPLETED: { status_class: 'complete', label: 'Completed' },
-    COMPLETED_WITH_ISSUES: { status_class: 'issue', label: 'Completed with issues' },
-    CANCELLED: { status_class: 'cancelled', label: 'Cancelled' },
+    DRAFT: { status_class: 'draft', label: 'แบบร่าง' },
+    WAITING_FOR_CENTRE: { status_class: 'waiting', label: 'รอศูนย์รับหนังสือ' },
+    PENDING_STUDENT_DELIVERY: { status_class: 'pending', label: 'รอส่งต่อให้นักเรียน' },
+    COMPLETED: { status_class: 'complete', label: 'เสร็จสิ้น' },
+    COMPLETED_WITH_ISSUES: { status_class: 'issue', label: 'เสร็จสิ้นแต่มีปัญหา' },
+    CANCELLED: { status_class: 'cancelled', label: 'ยกเลิก' },
+};
+
+const STORED_STATUS_LABELS = {
+    DRAFT: 'แบบร่าง',
+    DISPATCHED: 'จัดส่งแล้ว',
+    CENTRE_RECEIVED: 'ศูนย์รับแล้ว',
+    CANCELLED: 'ยกเลิก',
 };
 
 const MONTH_LABELS = [
-    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+    '01', '02', '03', '04', '05', '06',
+    '07', '08', '09', '10', '11', '12',
 ];
 
 function IsPositiveInteger(value) {
@@ -151,7 +158,7 @@ function FormatCreatedLabel(created_at) {
         return '—';
     }
 
-    return `${match[3]} ${MONTH_LABELS[month_number - 1]} ${match[1]} ${match[4]}:${match[5]}`;
+    return `${match[3]}/${MONTH_LABELS[month_number - 1]}/${match[1]} ${match[4]}:${match[5]}`;
 }
 
 export function BuildHqLedgerRowModel(shipment, detail_base_url) {
@@ -179,7 +186,7 @@ export function BuildHqLedgerRowModel(shipment, detail_base_url) {
             : '—',
         destination_centre_name: IsNonEmptyString(shipment.destination_centre_name)
             ? shipment.destination_centre_name
-            : 'Centre unavailable',
+            : 'ไม่พบข้อมูลศูนย์',
         status_class: status_presentation.status_class,
         derived_status_label: status_presentation.label,
         stored_status: shipment.status,
@@ -230,7 +237,7 @@ function BuildLedgerRow(document_object, row_model) {
     status_cell.appendChild(CreateElement(
         document_object,
         'div',
-        `Stored: ${row_model.stored_status}`,
+        `สถานะในระบบ: ${STORED_STATUS_LABELS[row_model.stored_status] ?? row_model.stored_status}`,
         'small text-muted mt-1',
     ));
 
@@ -239,7 +246,7 @@ function BuildLedgerRow(document_object, row_model) {
     items_cell.appendChild(CreateElement(
         document_object,
         'div',
-        `${row_model.centre_received_count} Centre received`,
+        `${row_model.centre_received_count} ศูนย์รับแล้ว`,
         'small text-muted',
     ));
 
@@ -252,7 +259,7 @@ function BuildLedgerRow(document_object, row_model) {
     delivery_cell.appendChild(CreateElement(
         document_object,
         'div',
-        `${row_model.missing_count} missing · ${row_model.damaged_count} damaged`,
+        `${row_model.missing_count} สูญหาย · ${row_model.damaged_count} ชำรุด`,
         'small text-muted',
     ));
 
@@ -260,7 +267,7 @@ function BuildLedgerRow(document_object, row_model) {
 
     const action_cell = document_object.createElement('td');
     action_cell.className = 'text-right';
-    const action_link = CreateElement(document_object, 'a', 'View', 'btn btn-sm btn-outline-secondary');
+    const action_link = CreateElement(document_object, 'a', 'ดูรายละเอียด', 'btn btn-sm btn-outline-secondary');
     action_link.href = row_model.detail_url;
     action_cell.appendChild(action_link);
 
@@ -289,7 +296,7 @@ function RenderLedgerPagination(document_object, pagination_element, current_url
     }
 
     const navigation_element = document_object.createElement('nav');
-    navigation_element.setAttribute('aria-label', 'Shipment ledger pages');
+    navigation_element.setAttribute('aria-label', 'หน้ารายการจัดส่งหนังสือ');
     const list_element = document_object.createElement('ul');
     list_element.className = 'pagination mb-0';
 
@@ -338,7 +345,7 @@ export function RenderHqLedger(document_object, ledger_response, current_url, de
         const empty_cell = CreateElement(
             document_object,
             'td',
-            'No shipments match these filters.',
+            'ไม่พบรายการจัดส่งตามเงื่อนไขนี้',
             'book-shipment-empty',
         );
         empty_cell.colSpan = 7;
@@ -381,8 +388,8 @@ function RenderHqBadgeCount(document_object, active_shipment_count) {
         badge_element.setAttribute(
             'aria-label',
             badge_text === ''
-                ? 'No active book shipments'
-                : `${active_shipment_count} active book shipment${active_shipment_count === 1 ? '' : 's'}`,
+                ? 'ไม่มีรายการจัดส่งหนังสือที่กำลังดำเนินการ'
+                : `มีรายการจัดส่งหนังสือที่กำลังดำเนินการ ${active_shipment_count} รายการ`,
         );
     });
 }
@@ -398,8 +405,8 @@ function RenderHqToast(root_element, toast_event) {
     }
 
     const notification = toast_event.notification;
-    title_element.textContent = 'Centre received a book shipment';
-    message_element.textContent = `${notification.shipment_number} has been received by the Centre.`;
+    title_element.textContent = 'ศูนย์รับหนังสือแล้ว';
+    message_element.textContent = `ศูนย์ยืนยันการรับรายการจัดส่ง ${notification.shipment_number} แล้ว`;
     form_element.action = notification.read_url;
     form_element.hidden = false;
     action_element.disabled = false;

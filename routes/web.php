@@ -1,5 +1,6 @@
 <?php
 
+use App\Domain\Affiliate\Services\AffiliateEmployeeEligibility;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\EiFormController;
 use App\Http\Controllers\FooterSettingController;
@@ -200,11 +201,6 @@ Route::group(['middleware' => ['auth']], function () {
     Route::resource('promotion-img', PromotionImageController::class);
     Route::resource('footer-setting', FooterSettingController::class);
 
-    // Affiliate Content Management (แยกจาก Promotion)
-    Route::get('/affiliate-content-manage', [App\Http\Controllers\AffiliateContentManageController::class, 'index'])->name('affiliate-content-manage.index');
-    Route::post('/affiliate-content-manage', [App\Http\Controllers\AffiliateContentManageController::class, 'Store'])->name('affiliate-content-manage.store');
-    Route::delete('/affiliate-content-manage/{id}', [App\Http\Controllers\AffiliateContentManageController::class, 'Destroy'])->name('affiliate-content-manage.destroy');
-    Route::post('/affiliate-content-manage/toggle-status', [App\Http\Controllers\AffiliateContentManageController::class, 'ToggleStatus'])->name('affiliate-content-manage.toggle-status');
     //createOrUpdate
     Route::post('/footer-setting/createOrUpdate', [FooterSettingController::class, 'createOrUpdate'])->name('footer-setting.createOrUpdate');
 
@@ -245,7 +241,11 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/', function () {
         $user = Auth::user();
         if ($user) {
-            if ($user->hasRole('Affiliate-user')) {
+            $eligibility = app(AffiliateEmployeeEligibility::class);
+            if ($eligibility->IsEligible($user)) {
+                return redirect()->route('home');
+            }
+            if ($eligibility->IsAffiliateOnly($user)) {
                 return $user->AffiliateProfile?->status?->value === 'ACTIVE'
                     ? redirect()->route('affiliate.dashboard')
                     : redirect()->route('affiliate.waiting');

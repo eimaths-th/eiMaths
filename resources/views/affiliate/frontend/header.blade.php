@@ -1,3 +1,17 @@
+@php
+    $frontend_authenticated_user = auth()->user();
+    $frontend_portal_access_service = app(\App\Domain\Affiliate\Services\AffiliatePortalAccess::class);
+    $frontend_employee_eligibility_service = app(\App\Domain\Affiliate\Services\AffiliateEmployeeEligibility::class);
+    $frontend_wallet_enabled = (bool) config('affiliate.features.wallet_withdrawals', false);
+    $frontend_employee_is_eligible = $frontend_authenticated_user !== null
+        && $frontend_employee_eligibility_service->IsEligible($frontend_authenticated_user);
+    $frontend_is_affiliate_only = $frontend_authenticated_user !== null
+        && $frontend_employee_eligibility_service->IsAffiliateOnly($frontend_authenticated_user);
+    $frontend_can_access_affiliate = $frontend_authenticated_user !== null
+        && $frontend_portal_access_service->CanAccess($frontend_authenticated_user);
+    $frontend_show_employee_entry = $frontend_employee_is_eligible && !$frontend_can_access_affiliate;
+@endphp
+
 <header>
     <div id="sticky-header" class="header_area ">
         <div class="container-fluid">
@@ -126,9 +140,11 @@
                                         </span>
                                     </div>
                                     <div class="profile_info_iner collaps_part_content">
-                                        @if (Auth::user()->hasRole('Affiliate-user'))
+                                        @if ($frontend_is_affiliate_only)
                                             {{-- <a href="{{ route('studentDashboard') }}">{{ __('dashboard.Dashboard') }}</a> --}}
-                                            <a href="{{ route('affiliate.dashboard') }}">Dashboard</a>
+                                            @if ($frontend_can_access_affiliate && $frontend_wallet_enabled)
+                                                <a href="{{ route('affiliate.dashboard') }}">Dashboard</a>
+                                            @endif
                                             {{-- <a href="{{ auth()->user()->username ? route('profileUniqueUrl', auth()->user()->username) : '' }}">{{ __('frontendmanage.My Profile') }}</a> --}}
                                             {{-- <a href="#">My Profile</a> --}}
                                             {{-- <a href="{{ route('users.settings') }}">{{ __('frontend.Account Settings') }}</a> --}}
@@ -138,9 +154,14 @@
                                                 <a
                                                     href="{{ routeIsExist('affiliate.users.request') ? route('affiliate.users.request') : '' }}">{{ __('frontend.Join Affiliate Program') }}</a>
                                             @endif
+                                        @elseif ($frontend_employee_is_eligible)
+                                            @if ($frontend_show_employee_entry)
+                                                <a href="{{ route('affiliate.employee-access.show') }}">{{ __('affiliate.employee_access.menu_label') }}</a>
+                                            @elseif ($frontend_can_access_affiliate && $frontend_wallet_enabled)
+                                                <a href="{{ route('affiliate.dashboard') }}">Dashboard</a>
+                                            @endif
                                         @else
                                             {{-- <a href="{{ route('dashboard') }}">{{ __('dashboard.Dashboard') }}</a> --}}
-                                            <a href="{{ route('affiliate.dashboard') }}">Dashboard</a>
                                             {{-- <a href="#">My Profile</a>
                                             <a href="#">Account Settings</a> --}}
 
@@ -148,9 +169,7 @@
 
                                             {{-- <a href="{{ route('users.settings') }}">{{ __('frontend.Account Settings') }}</a> --}}
                                         @endif
-                                        @if (auth()->user()->hasVerifiedEmail()
-                                            && auth()->user()->AffiliateProfile?->status?->value === 'ACTIVE'
-                                            && (bool) config('affiliate.features.wallet_withdrawals', false))
+                                        @if ($frontend_can_access_affiliate && $frontend_wallet_enabled)
                                             <a href="{{ route('affiliate.payout-accounts.index') }}">Payout Accounts</a>
                                             <a href="{{ route('affiliate.withdrawals.index') }}">Withdrawals</a>
                                         @endif

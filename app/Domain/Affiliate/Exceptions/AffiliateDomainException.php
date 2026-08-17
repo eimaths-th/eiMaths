@@ -55,6 +55,11 @@ final class AffiliateDomainException extends RuntimeException
         return new self('The requested Affiliate resource is not owned by the authenticated user.', 'AFFILIATE_OWNERSHIP_DENIED', 403, 'affiliate.errors.ownership_denied');
     }
 
+    public static function EmployeeEnrollmentDenied(): self
+    {
+        return new self('The authenticated user is not eligible for employee Affiliate enrollment.', 'AFFILIATE_EMPLOYEE_ENROLLMENT_DENIED', 403, 'affiliate.errors.employee_enrollment_denied');
+    }
+
     public static function ConfigurationInvalid(string $reason = 'Affiliate configuration is invalid.'): self
     {
         return new self($reason, 'AFFILIATE_CONFIGURATION_INVALID', 503, 'affiliate.errors.configuration_invalid');
@@ -78,5 +83,15 @@ final class AffiliateDomainException extends RuntimeException
     public static function IdempotencyConflict(): self
     {
         return new self('The idempotency key was already used for a different operation.', 'AFFILIATE_IDEMPOTENCY_CONFLICT', 409, 'affiliate.errors.idempotency_conflict');
+    }
+
+    public static function PasswordConfirmationRequired(): self
+    {
+        return new self('Confirm the current password before changing payout account details.', 'AFFILIATE_PASSWORD_CONFIRMATION_REQUIRED', 422, 'affiliate.errors.password_confirmation_required');
+    }
+
+    public static function PayoutAccountCoolingDown(): self
+    {
+        return new self('Withdrawals are temporarily blocked after a payout account change.', 'AFFILIATE_PAYOUT_ACCOUNT_COOLDOWN', 409, 'affiliate.errors.payout_account_cooldown');
     }
 }

@@ -29,7 +29,7 @@ class RequireAffiliateFeature
         } catch (AffiliateDomainException $exception) {
             return response()->json([
                 'error_code' => $exception->ErrorCode(),
-                'message' => $exception->Reason(),
+                'message' => __($exception->SafeTranslationKey()),
             ], $exception->StatusCode());
         }
     }

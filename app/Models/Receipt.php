@@ -45,6 +45,11 @@ class Receipt extends Model
     {
         return $this->hasMany(AffiliateCommission::class, 'receipt_id');
     }
+
+    public function CreditNotes()
+    {
+        return $this->hasMany(\App\Domain\CreditNote\Models\CreditNote::class, 'receipt_id');
+    }
     public function contact()
     {
         return $this->belongsTo(Contact::class, 'cid', 'id');
@@ -53,6 +58,11 @@ class Receipt extends Model
     public function department()
     {
         return $this->belongsTo(Department::class, 'centre', 'id');
+    }
+
+    public function orderRecord()
+    {
+        return $this->belongsTo(Order::class, 'oid', 'id');
     }
 
     public function orderDetails()

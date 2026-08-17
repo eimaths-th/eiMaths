@@ -9,7 +9,7 @@ use Spatie\Permission\PermissionRegistrar;
 return new class extends Migration
 {
     private const SETTINGS = [
-        'commission_rate_basis_points' => '2000',
+        'commission_rate_basis_points' => '1500',
         'commission_holding_days' => '10',
         'attribution_duration_days' => '180',
         'minimum_withdrawal_minor' => '1000',

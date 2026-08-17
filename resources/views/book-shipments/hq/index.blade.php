@@ -207,12 +207,12 @@
 @section('content')
     @php
         $derived_status_labels = [
-            \App\Models\BookShipment::DERIVED_DRAFT => 'Draft',
-            \App\Models\BookShipment::DERIVED_WAITING_FOR_CENTRE => 'Waiting for Centre',
-            \App\Models\BookShipment::DERIVED_PENDING_STUDENT_DELIVERY => 'Pending student delivery',
-            \App\Models\BookShipment::DERIVED_COMPLETED => 'Completed',
-            \App\Models\BookShipment::DERIVED_COMPLETED_WITH_ISSUES => 'Completed with issues',
-            \App\Models\BookShipment::DERIVED_CANCELLED => 'Cancelled',
+            \App\Models\BookShipment::DERIVED_DRAFT => trans('book-shipments.status.DRAFT', [], 'th'),
+            \App\Models\BookShipment::DERIVED_WAITING_FOR_CENTRE => trans('book-shipments.status.WAITING_FOR_CENTRE', [], 'th'),
+            \App\Models\BookShipment::DERIVED_PENDING_STUDENT_DELIVERY => trans('book-shipments.status.PENDING_STUDENT_DELIVERY', [], 'th'),
+            \App\Models\BookShipment::DERIVED_COMPLETED => trans('book-shipments.status.COMPLETED', [], 'th'),
+            \App\Models\BookShipment::DERIVED_COMPLETED_WITH_ISSUES => trans('book-shipments.status.COMPLETED_WITH_ISSUES', [], 'th'),
+            \App\Models\BookShipment::DERIVED_CANCELLED => trans('book-shipments.status.CANCELLED', [], 'th'),
         ];
     @endphp
 
@@ -221,14 +221,14 @@
             <div class="container-fluid">
                 <div class="row align-items-end">
                     <div class="col-lg-8">
-                        <span class="book-shipment-eyebrow">HQ dispatch desk</span>
-                        <h1 id="book-shipment-page-title">Book Shipments</h1>
-                        <p>Prepare New Student books, send them to the right Centre, and keep every acknowledgement visible.</p>
+                        <span class="book-shipment-eyebrow">{{ trans('book-shipments.hq.eyebrow', [], 'th') }}</span>
+                        <h1 id="book-shipment-page-title">{{ trans('book-shipments.hq.title', [], 'th') }}</h1>
+                        <p>{{ trans('book-shipments.hq.description', [], 'th') }}</p>
                     </div>
                     <div class="col-lg-4 mt-4 mt-lg-0">
                         <div class="book-shipment-hero-stat">
                             <strong>{{ $shipments->total() }}</strong>
-                            <span>shipments in the current result</span>
+                            <span>{{ trans('book-shipments.hq.result_count', ['count' => $shipments->total()], 'th') }}</span>
                         </div>
                     </div>
                 </div>
@@ -245,21 +245,21 @@
 
                 <section class="book-shipment-card mb-4" aria-labelledby="book-shipment-filter-title">
                     <div class="book-shipment-card-header d-flex align-items-center justify-content-between">
-                        <h2 id="book-shipment-filter-title">Shipment ledger</h2>
-                        <span class="text-muted small">Server-filtered results</span>
+                        <h2 id="book-shipment-filter-title">{{ trans('book-shipments.hq.ledger_title', [], 'th') }}</h2>
+                        <span class="text-muted small">{{ trans('book-shipments.hq.filtered_results', [], 'th') }}</span>
                     </div>
                     <div class="p-3">
                         <form class="book-shipment-filter mb-3" method="GET" action="{{ route('book-shipments.index') }}" role="search">
                             <div class="row">
                                 <div class="col-lg-3 col-md-6 mb-3 mb-lg-0">
-                                    <label for="shipment-number-filter">Shipment number</label>
+                                    <label for="shipment-number-filter">{{ trans('book-shipments.hq.shipment_number', [], 'th') }}</label>
                                     <input id="shipment-number-filter" class="form-control" type="search" name="shipment_number"
                                         value="{{ request('shipment_number') }}" maxlength="50" placeholder="BS-202608-000001">
                                 </div>
                                 <div class="col-lg-3 col-md-6 mb-3 mb-lg-0">
-                                    <label for="destination-centre-filter">Destination Centre</label>
+                                    <label for="destination-centre-filter">{{ trans('book-shipments.hq.destination_centre', [], 'th') }}</label>
                                     <select id="destination-centre-filter" class="custom-select" name="destination_centre_id">
-                                        <option value="">All Centres</option>
+                                        <option value="">{{ trans('book-shipments.hq.all_centres', [], 'th') }}</option>
                                         @foreach ($destinations as $destination)
                                             <option value="{{ $destination->id }}" @selected((string) request('destination_centre_id') === (string) $destination->id)>
                                                 {{ $destination->code }} — {{ $destination->name }}
@@ -268,23 +268,23 @@
                                     </select>
                                 </div>
                                 <div class="col-lg-2 col-md-6 mb-3 mb-lg-0">
-                                    <label for="stored-status-filter">Stored status</label>
+                                    <label for="stored-status-filter">{{ trans('book-shipments.hq.stored_status', [], 'th') }}</label>
                                     <select id="stored-status-filter" class="custom-select" name="status">
-                                        <option value="">All stored statuses</option>
+                                        <option value="">{{ trans('book-shipments.hq.all_stored_statuses', [], 'th') }}</option>
                                         @foreach ([
-                                            \App\Models\BookShipment::STATUS_DRAFT => 'Draft',
-                                            \App\Models\BookShipment::STATUS_DISPATCHED => 'Dispatched',
-                                            \App\Models\BookShipment::STATUS_CENTRE_RECEIVED => 'Centre received',
-                                            \App\Models\BookShipment::STATUS_CANCELLED => 'Cancelled',
+                                            \App\Models\BookShipment::STATUS_DRAFT => trans('book-shipments.stored_status.DRAFT', [], 'th'),
+                                            \App\Models\BookShipment::STATUS_DISPATCHED => trans('book-shipments.stored_status.DISPATCHED', [], 'th'),
+                                            \App\Models\BookShipment::STATUS_CENTRE_RECEIVED => trans('book-shipments.stored_status.CENTRE_RECEIVED', [], 'th'),
+                                            \App\Models\BookShipment::STATUS_CANCELLED => trans('book-shipments.stored_status.CANCELLED', [], 'th'),
                                         ] as $status_value => $status_label)
                                             <option value="{{ $status_value }}" @selected(request('status') === $status_value)>{{ $status_label }}</option>
                                         @endforeach
                                     </select>
                                 </div>
                                 <div class="col-lg-2 col-md-6 mb-3 mb-lg-0">
-                                    <label for="derived-status-filter">Progress status</label>
+                                    <label for="derived-status-filter">{{ trans('book-shipments.hq.progress_status', [], 'th') }}</label>
                                     <select id="derived-status-filter" class="custom-select" name="derived_status">
-                                        <option value="">All statuses</option>
+                                        <option value="">{{ trans('book-shipments.hq.all_statuses', [], 'th') }}</option>
                                         @foreach ($derived_status_labels as $status_value => $status_label)
                                             <option value="{{ $status_value }}" @selected(request('derived_status') === $status_value)>{{ $status_label }}</option>
                                         @endforeach
@@ -293,17 +293,17 @@
                             </div>
                             <div class="row mt-3">
                                 <div class="col-lg-3 col-md-6 mb-3 mb-lg-0">
-                                    <label for="created-from-filter">Created from</label>
+                                    <label for="created-from-filter">{{ trans('book-shipments.hq.created_from', [], 'th') }}</label>
                                     <input id="created-from-filter" class="form-control" type="date" name="created_from" value="{{ request('created_from') }}">
                                 </div>
                                 <div class="col-lg-3 col-md-6 mb-3 mb-lg-0">
-                                    <label for="created-to-filter">Created to</label>
+                                    <label for="created-to-filter">{{ trans('book-shipments.hq.created_to', [], 'th') }}</label>
                                     <input id="created-to-filter" class="form-control" type="date" name="created_to" value="{{ request('created_to') }}">
                                 </div>
                                 <div class="col-lg-6 col-md-12 d-flex align-items-end">
                                     <div class="w-100 d-flex">
-                                        <button class="btn book-shipment-button mr-2" type="submit">Filter</button>
-                                        <a class="btn btn-outline-secondary" href="{{ route('book-shipments.index') }}">Reset</a>
+                                        <button class="btn book-shipment-button mr-2" type="submit">{{ trans('book-shipments.hq.filter', [], 'th') }}</button>
+                                        <a class="btn btn-outline-secondary" href="{{ route('book-shipments.index') }}">{{ trans('book-shipments.hq.reset', [], 'th') }}</a>
                                     </div>
                                 </div>
                             </div>
@@ -311,16 +311,16 @@
 
                         <div class="table-responsive">
                             <table class="table book-shipment-table table-hover mb-0" data-book-shipment-ledger>
-                                <caption class="sr-only">HQ book shipment ledger</caption>
+                                <caption class="sr-only">{{ trans('book-shipments.hq.ledger_title', [], 'th') }}</caption>
                                 <thead>
                                     <tr>
-                                        <th scope="col">Shipment</th>
-                                        <th scope="col">Destination</th>
-                                        <th scope="col">Status</th>
-                                        <th scope="col">Items</th>
-                                        <th scope="col">Student delivery</th>
-                                        <th scope="col">Created</th>
-                                        <th scope="col"><span class="sr-only">Actions</span></th>
+                                        <th scope="col">{{ trans('book-shipments.hq.shipment', [], 'th') }}</th>
+                                        <th scope="col">{{ trans('book-shipments.hq.destination', [], 'th') }}</th>
+                                        <th scope="col">{{ trans('book-shipments.hq.status', [], 'th') }}</th>
+                                        <th scope="col">{{ trans('book-shipments.hq.items', [], 'th') }}</th>
+                                        <th scope="col">{{ trans('book-shipments.hq.student_delivery', [], 'th') }}</th>
+                                        <th scope="col">{{ trans('book-shipments.hq.created', [], 'th') }}</th>
+                                        <th scope="col"><span class="sr-only">{{ trans('book-shipments.hq.actions', [], 'th') }}</span></th>
                                     </tr>
                                 </thead>
                                 <tbody data-book-shipment-ledger-body>
@@ -345,34 +345,34 @@
                                             </td>
                                             <td>
                                                 <strong>{{ $shipment->destination_centre_code ?: '—' }}</strong>
-                                                <div class="small text-muted">{{ $shipment->destination_centre_name ?: 'Centre unavailable' }}</div>
+                                                <div class="small text-muted">{{ $shipment->destination_centre_name ?: trans('book-shipments.hq.centre_unavailable', [], 'th') }}</div>
                                             </td>
                                             <td>
                                                 <span class="book-shipment-status book-shipment-status--{{ $status_class }}">
                                                     {{ $derived_status_labels[$derived_status] ?? $derived_status }}
                                                 </span>
-                                                <div class="small text-muted mt-1">Stored: {{ $shipment->status }}</div>
+                                                <div class="small text-muted mt-1">{{ trans('book-shipments.hq.stored_prefix', ['status' => trans('book-shipments.stored_status.' . $shipment->status, [], 'th')], 'th') }}</div>
                                             </td>
                                             <td>
                                                 <strong>{{ $progress['total_count'] ?? 0 }}</strong>
-                                                <div class="small text-muted">{{ $progress['centre_received_count'] ?? 0 }} Centre received</div>
+                                                <div class="small text-muted">{{ trans('book-shipments.hq.centre_received_count', ['count' => $progress['centre_received_count'] ?? 0], 'th') }}</div>
                                             </td>
                                             <td>
                                                 <strong>{{ $progress['student_received_count'] ?? 0 }} / {{ $progress['centre_received_count'] ?? 0 }}</strong>
-                                                <div class="small text-muted">{{ $progress['missing_count'] ?? 0 }} missing · {{ $progress['damaged_count'] ?? 0 }} damaged</div>
+                                                <div class="small text-muted">{{ trans('book-shipments.hq.issue_counts', ['missing' => $progress['missing_count'] ?? 0, 'damaged' => $progress['damaged_count'] ?? 0], 'th') }}</div>
                                             </td>
-                                            <td class="small text-muted">{{ $shipment->created_at?->format('d M Y H:i') ?: '—' }}</td>
+                                            <td class="small text-muted">{{ $shipment->created_at?->format('d/m/Y H:i') ?: '—' }}</td>
                                             <td class="text-right">
                                                 <a class="btn btn-sm btn-outline-secondary" href="{{ route('book-shipments.show', ['book_shipment' => $shipment->id]) }}">
-                                                    View
+                                                    {{ trans('book-shipments.hq.view', [], 'th') }}
                                                 </a>
                                             </td>
                                         </tr>
                                     @empty
                                         <tr>
                                             <td class="book-shipment-empty" colspan="7">
-                                                <strong>No shipments match these filters.</strong>
-                                                <div class="small mt-1">Choose a Centre above or create the first shipment from the panel.</div>
+                                                <strong>{{ trans('book-shipments.hq.empty_title', [], 'th') }}</strong>
+                                                <div class="small mt-1">{{ trans('book-shipments.hq.empty_description', [], 'th') }}</div>
                                             </td>
                                         </tr>
                                     @endforelse

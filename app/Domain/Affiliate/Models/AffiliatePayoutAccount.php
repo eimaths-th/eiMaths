@@ -16,12 +16,14 @@ class AffiliatePayoutAccount extends Model
         'details_encrypted',
         'masked_label',
         'is_active',
+        'payout_cooldown_until',
     ];
 
     protected $casts = [
         'payout_type' => AffiliatePayoutType::class,
         'details_encrypted' => 'encrypted:array',
         'is_active' => 'boolean',
+        'payout_cooldown_until' => 'immutable_datetime',
     ];
 
     public function AffiliateProfile(): BelongsTo

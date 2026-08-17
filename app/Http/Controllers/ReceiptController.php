@@ -22,18 +22,28 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Collection;
 use App\Interfaces\MoneyConvertServiceInterface;
 use Maatwebsite\Excel\Facades\Excel;
 use PDF;
 use App\Domain\Affiliate\Events\AffiliatePaymentConfirmed;
-use App\Domain\Affiliate\Services\AffiliateFinancialSourceGuard;
+use App\Domain\Financial\Services\FinancialSourceGuard;
+use App\Domain\Financial\Services\ReceiptDetailBuilder;
+use App\Domain\Financial\ValueObjects\ReceiptDetailDraft;
+use App\Domain\CreditNote\Enums\ReceiptLineType;
+use App\Domain\CreditNote\Services\ReceiptLineMetadataResolver;
+use App\Domain\CreditNote\Queries\CreditNoteRevenueQuery;
 
 class ReceiptController extends Controller
 {
 
     protected $MoneyConvertService;
-    protected AffiliateFinancialSourceGuard $financial_source_guard;
+    protected FinancialSourceGuard $financial_source_guard;
+    protected ReceiptDetailBuilder $receipt_detail_builder;
+    protected ReceiptLineMetadataResolver $receipt_line_metadata_resolver;
+    protected CreditNoteRevenueQuery $credit_note_revenue_query;
     //payment
     const datap = array(array("id" => "1", "name" => "เงินสด/Cash"), array("id" => "2", "name" => "โอนเงิน/Transfer"), array("id" => "3", "name" => "บัตรเครดิต/Credit Card"));
 
@@ -44,7 +54,10 @@ class ReceiptController extends Controller
      */
     function __construct(
         MoneyConvertServiceInterface $MoneyConvertService,
-        AffiliateFinancialSourceGuard $financial_source_guard,
+        FinancialSourceGuard $financial_source_guard,
+        ReceiptDetailBuilder $receipt_detail_builder,
+        ReceiptLineMetadataResolver $receipt_line_metadata_resolver,
+        CreditNoteRevenueQuery $credit_note_revenue_query,
     )
     {
         $this->middleware('permission:receipt-list|receipt-show|receipt-create|receipt-edit|receipt-delete', ['only' => ['index', 'show']]);
@@ -55,6 +68,9 @@ class ReceiptController extends Controller
 
         $this->MoneyConvertService = $MoneyConvertService;
         $this->financial_source_guard = $financial_source_guard;
+        $this->receipt_detail_builder = $receipt_detail_builder;
+        $this->receipt_line_metadata_resolver = $receipt_line_metadata_resolver;
+        $this->credit_note_revenue_query = $credit_note_revenue_query;
     }
 
     public function update_name($name, $id)
@@ -99,107 +115,16 @@ class ReceiptController extends Controller
             ->where("receipts.id", $id)
             ->get();
 
-        $datas_list = OrderDetailList::select(
-            "order_detail_lists.id as id",
-            "order_detail_lists.price as oprice",
-            "order_detail_lists.bprice as obprice",
-            DB::raw("SUBSTRING(order_detail_lists.level, 1, 1) as first_char"),
-            DB::raw("COUNT(*) as row_count"),
-            DB::raw("SUM(order_detail_lists.price) as total_price"),
-            DB::raw("SUM(order_detail_lists.bprice) as total_bprice")
-        )->where('order_id', $datas[0]->oid)
-            ->groupBy(
-                'first_char',
-                'order_detail_lists.price',
-                'order_detail_lists.bprice',
-                'order_detail_lists.id',
-
-            )->get();
-
-
-
         // Check if the data exists before proceeding
         if ($datas->isEmpty()) {
             return redirect()->back()->with('error', 'Receipt data not found.');
         }
 
-
-        $qty = 0;
-        foreach ($datas_list as $price_list) {
-            $ccname = $price_list->first_char;
-            $qty = $qty + $price_list->row_count;
-        }
-
-
-        // Data to pass to the view
-        if ($datas_list[0]->first_char == "K") {
-            $ccname = "Kindergarten";
-        } else if ($datas_list[0]->first_char == "P") {
-            $ccname = "Primary school";
-        }
-
-        $maxPrice = $datas_list->max('oprice');
-        $maxBPrice = $datas_list->max('obprice');
-
         $receipt = Receipt::findOrFail($id);
         $this->financial_source_guard->AssertReceiptUpdateAllowed($receipt, [], true);
+        $receipt_detail_drafts = $this->receipt_detail_builder->BuildForOrder($receipt->orderRecord()->firstOrFail());
         receipt_details::where('receipt_id', $id)->delete();
-
-        $receipt_detail = new receipt_details();
-        $receipt_detail->receipt_id = $id;
-        $receipt_detail->des = 'ค่าคอร์สเรียน ' . $ccname;
-        $receipt_detail->unit = '';
-        $receipt_detail->quantity = $qty;
-        $receipt_detail->price = $maxPrice;
-        $receipt_detail->discount = $datas[0]->discount;
-        $receipt_detail->tax = 1;
-        $receipt_detail->save();
-
-        $receipt_detail = new receipt_details();
-        $receipt_detail->receipt_id = $id;
-        $receipt_detail->des = 'ค่าหนังสือ';
-        $receipt_detail->unit = '';
-        $receipt_detail->quantity = $qty;
-        $receipt_detail->price = $maxBPrice;
-        $receipt_detail->discount = $datas[0]->discount_book;
-        $receipt_detail->tax = 0;
-        $receipt_detail->save();
-
-        if ($datas[0]->refund !== "" and $datas[0]->refund !== "0.00") {
-            $receipt_detail = new receipt_details();
-            $receipt_detail->receipt_id = $id;
-            $receipt_detail->des = 'ค่ามัดจำ';
-            $receipt_detail->unit = '';
-            $receipt_detail->quantity = 1;
-            $receipt_detail->price = $datas[0]->refund;
-            $receipt_detail->discount = '0.00';
-            $receipt_detail->tax = 1;
-            $receipt_detail->save();
-        };
-
-        if ($datas[0]->register_fee !== "" and $datas[0]->register_fee !== "0.00") {
-            $receipt_detail = new receipt_details();
-            $receipt_detail->receipt_id = $id;
-            $receipt_detail->des = 'ค่าลงทะเบียนแรกเข้า';
-            $receipt_detail->unit = '';
-            $receipt_detail->quantity = 1;
-            $receipt_detail->price = $datas[0]->register_fee;
-            $receipt_detail->discount = '0.00';
-            $receipt_detail->tax = 1;
-            $receipt_detail->save();
-        };
-
-        if ($datas[0]->access_fee !== "" and $datas[0]->access_fee !== "0.00") {
-            $receipt_detail = new receipt_details();
-            $receipt_detail->receipt_id = $id;
-            $receipt_detail->des = 'ค่าอุปกรณ์การเรียน';
-            $receipt_detail->unit = '';
-            $receipt_detail->quantity = 1;
-            $receipt_detail->price = $datas[0]->access_fee;
-            $receipt_detail->discount = '0.00';
-            $receipt_detail->tax = 1;
-            $receipt_detail->save();
-        };
+        $this->PersistReceiptDetailDrafts($id, $receipt_detail_drafts);
     }
 
     /**
@@ -310,8 +235,9 @@ class ReceiptController extends Controller
             }
 
 
-            $datas = $query->orderBy("id", "desc")
+            $datas = $query->with('orderRecord')->orderBy("id", "desc")
                 ->get();
+            $datas->each(static fn (Receipt $receipt) => $receipt->makeHidden('orderRecord'));
             // dd($request->all(), $datas);
             return datatables()->of($datas)
                 ->editColumn('checkbox', function ($row) {
@@ -371,10 +297,25 @@ class ReceiptController extends Controller
                     } else {
                         $html .= '<button type="button" class="btn btn-sm btn-danger btn-share disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa-solid fa-file-pdf"></i> PDF</button> ';
                     }
+                    if (
+                        config('financial-documents.credit_note.enabled', false)
+                        && Gate::allows('credit-note-create')
+                        && $this->IsPaidReceipt($row)
+                    ) {
+                        $html .= view('credit-notes.partials.receipt-actions', ['receipt' => $row])->render();
+                    }
                     return "<div class='col-sm-2 col-md-2 col-xl-2'>" . $html . "</div>";
                 })->rawColumns(['checkbox', 'action', 'total_fee'])->toJson();
         }
         return view('receipts.index');
+    }
+
+    private function IsPaidReceipt(Receipt $receipt): bool
+    {
+        return (
+            (int) ($receipt->status ?? 0) === 1
+            || (int) ($receipt->orderRecord?->status ?? 0) === 1
+        ) && trim((string) ($receipt->payment_date ?? '')) !== '';
     }
 
 
@@ -949,6 +890,8 @@ class ReceiptController extends Controller
             'discount.*' => 'nullable|numeric|min:0',
             'tax' => 'nullable|array',
             'tax.*' => 'nullable|in:0,1',
+            'line_type' => 'nullable|array',
+            'line_type.*' => 'nullable|in:tuition,book,deposit,registration_fee,equipment,other,service_charge,unknown',
             'charge' => 'nullable|numeric|min:0',
         ]);
 
@@ -990,6 +933,7 @@ class ReceiptController extends Controller
         $units = $request->input('unit', []);
         $discounts = $request->input('discount', []);
         $taxes = $request->input('tax', []);
+        $line_types = $request->input('line_type', []);
 
         foreach ($descriptions as $index => $description) {
             $rDetail = new receipt_details();
@@ -1000,6 +944,16 @@ class ReceiptController extends Controller
             $rDetail->unit = filled($units[$index] ?? null) ? trim($units[$index]) : null;
             $rDetail->discount = filled($discounts[$index] ?? null) ? $discounts[$index] : null;
             $rDetail->tax = filled($taxes[$index] ?? null) ? $taxes[$index] : 0;
+            if ($this->ReceiptLineMetadataColumnsAvailable()) {
+                $metadata = $this->receipt_line_metadata_resolver->ResolveEdited(
+                    $rDetail->des,
+                    (int) $rDetail->tax,
+                    $line_types[$index] ?? null,
+                );
+                $rDetail->line_type = $metadata->line_type;
+                $rDetail->tax_treatment = $metadata->tax_treatment;
+                $rDetail->vat_rate_basis_points = $metadata->vat_rate_basis_points;
+            }
             $rDetail->save();
         }
 
@@ -1107,6 +1061,16 @@ class ReceiptController extends Controller
             // คำนวณยอดรวมทั้งหมด
             $grand_total = $branch_revenue->sum('total_revenue');
             $total_receipts = $branch_revenue->sum('total_receipts');
+            $credit_note_rows = $this->CreditNoteRevenueEnabled()
+                ? $this->credit_note_revenue_query->ByBranch($current_date, $current_date)
+                : [];
+            $branch_revenue = $branch_revenue->map(function ($row) use ($credit_note_rows) {
+                $credit = $credit_note_rows[(string) $row->centre] ?? [];
+                return $this->AddCreditNoteRevenueFields($row, $credit);
+            });
+            $credit_totals = $this->CreditNoteRevenueEnabled()
+                ? $this->credit_note_revenue_query->Totals($current_date, $current_date)
+                : $this->EmptyCreditNoteTotals();
 
             return response()->json([
                 'success' => true,
@@ -1115,6 +1079,11 @@ class ReceiptController extends Controller
                     'date' => $current_date,
                     'grand_total' => $grand_total,
                     'total_receipts' => $total_receipts,
+                    'issued_credit_note_total' => $this->MinorToDecimal($credit_totals['issued_minor']),
+                    'cancelled_credit_note_total' => $this->MinorToDecimal($credit_totals['cancelled_minor']),
+                    'net_revenue' => $this->MinorToDecimal($this->DecimalToMinor($grand_total) + $credit_totals['net_minor']),
+                    'total_credit_notes_issued' => $credit_totals['issued_count'],
+                    'total_credit_notes_cancelled' => $credit_totals['cancelled_count'],
                     'branches' => $branch_revenue,
                 ],
             ], 200, ['Content-Type' => 'application/json;charset=UTF-8'], JSON_UNESCAPED_UNICODE);
@@ -1133,6 +1102,9 @@ class ReceiptController extends Controller
         try {
             $month = $request->input('month');
             $year = $request->input('year');
+            if (!preg_match('/\A(?:0?[1-9]|1[0-2])\z/D', (string) $month) || !preg_match('/\A[0-9]{4}\z/D', (string) $year)) {
+                return response()->json(['success' => false, 'message' => 'Invalid month or year.'], 422);
+            }
 
             // Query รายได้แยกตามสาขา เฉพาะวันนี้
             $branch_revenue = Receipt::select(
@@ -1155,6 +1127,18 @@ class ReceiptController extends Controller
             // คำนวณยอดรวมทั้งหมด
             $grand_total = $branch_revenue->sum('total_revenue');
             $total_receipts = $branch_revenue->sum('total_receipts');
+            $from_date = sprintf('%04d-%02d-01', (int) $year, (int) $month);
+            $to_date = date('Y-m-t', strtotime($from_date));
+            $credit_note_rows = $this->CreditNoteRevenueEnabled()
+                ? $this->credit_note_revenue_query->ByBranch($from_date, $to_date)
+                : [];
+            $branch_revenue = $branch_revenue->map(function ($row) use ($credit_note_rows) {
+                $credit = $credit_note_rows[(string) $row->centre] ?? [];
+                return $this->AddCreditNoteRevenueFields($row, $credit);
+            });
+            $credit_totals = $this->CreditNoteRevenueEnabled()
+                ? $this->credit_note_revenue_query->Totals($from_date, $to_date)
+                : $this->EmptyCreditNoteTotals();
 
             return response()->json([
                 'success' => true,
@@ -1163,6 +1147,11 @@ class ReceiptController extends Controller
                     'date' => $month.'-'.$year,
                     'grand_total' => $grand_total,
                     'total_receipts' => $total_receipts,
+                    'issued_credit_note_total' => $this->MinorToDecimal($credit_totals['issued_minor']),
+                    'cancelled_credit_note_total' => $this->MinorToDecimal($credit_totals['cancelled_minor']),
+                    'net_revenue' => $this->MinorToDecimal($this->DecimalToMinor($grand_total) + $credit_totals['net_minor']),
+                    'total_credit_notes_issued' => $credit_totals['issued_count'],
+                    'total_credit_notes_cancelled' => $credit_totals['cancelled_count'],
                     'branches' => $branch_revenue,
                 ],
             ], 200, ['Content-Type' => 'application/json;charset=UTF-8'], JSON_UNESCAPED_UNICODE);
@@ -1174,5 +1163,90 @@ class ReceiptController extends Controller
                 'error' => $e->getMessage(),
             ], 500);
         }
+    }
+
+    private function PersistReceiptDetailDrafts(int $receipt_id, Collection $receipt_detail_drafts): void
+    {
+        foreach ($receipt_detail_drafts as $receipt_detail_draft) {
+            if (!$receipt_detail_draft instanceof ReceiptDetailDraft) {
+                throw new \UnexpectedValueException('Receipt detail draft has an invalid type.');
+            }
+
+            $receipt_detail = new receipt_details();
+            $receipt_detail->receipt_id = $receipt_id;
+            $receipt_detail->des = $receipt_detail_draft->description;
+            $receipt_detail->unit = $receipt_detail_draft->unit;
+            $receipt_detail->quantity = $receipt_detail_draft->quantity;
+            $receipt_detail->price = $receipt_detail_draft->UnitPriceDecimal();
+            $receipt_detail->discount = $receipt_detail_draft->DiscountDecimal();
+            $receipt_detail->tax = $receipt_detail_draft->legacy_tax;
+            $this->ApplyReceiptLineMetadata(
+                $receipt_detail,
+                $receipt_detail_draft->line_type,
+                $receipt_detail_draft->legacy_tax,
+            );
+            $receipt_detail->save();
+        }
+    }
+
+    private function ApplyReceiptLineMetadata(
+        receipt_details $receipt_detail,
+        ReceiptLineType $line_type,
+        int $legacy_tax,
+    ): void {
+        if (!$this->ReceiptLineMetadataColumnsAvailable()) {
+            return;
+        }
+        $metadata = $this->receipt_line_metadata_resolver->ResolveGenerated($line_type, $legacy_tax);
+        $receipt_detail->line_type = $metadata->line_type;
+        $receipt_detail->tax_treatment = $metadata->tax_treatment;
+        $receipt_detail->vat_rate_basis_points = $metadata->vat_rate_basis_points;
+    }
+
+    private function ReceiptLineMetadataColumnsAvailable(): bool
+    {
+        return Schema::hasColumn('receipt_details', 'line_type')
+            && Schema::hasColumn('receipt_details', 'tax_treatment')
+            && Schema::hasColumn('receipt_details', 'vat_rate_basis_points');
+    }
+
+    private function AddCreditNoteRevenueFields($row, array $credit): object
+    {
+        $gross_minor = $this->DecimalToMinor($row->total_revenue ?? 0);
+        $row->issued_credit_note_total = $this->MinorToDecimal((int) ($credit['issued_minor'] ?? 0));
+        $row->cancelled_credit_note_total = $this->MinorToDecimal((int) ($credit['cancelled_minor'] ?? 0));
+        $row->net_revenue = $this->MinorToDecimal($gross_minor + (int) ($credit['net_minor'] ?? 0));
+        $row->total_credit_notes_issued = (int) ($credit['issued_count'] ?? 0);
+        $row->total_credit_notes_cancelled = (int) ($credit['cancelled_count'] ?? 0);
+        return $row;
+    }
+
+    private function DecimalToMinor($amount): int
+    {
+        return \App\Domain\CreditNote\ValueObjects\CreditNoteMoney::FromDecimal((string) $amount, true)->Minor();
+    }
+
+    private function MinorToDecimal(int $minor): string
+    {
+        return \App\Domain\CreditNote\ValueObjects\CreditNoteMoney::FromMinor($minor)->Decimal();
+    }
+
+    private function CreditNoteRevenueEnabled(): bool
+    {
+        return (bool) config('financial-documents.credit_note.enabled', false);
+    }
+
+    private function EmptyCreditNoteTotals(): array
+    {
+        return [
+            'gross_minor' => 0,
+            'issued_minor' => 0,
+            'cancelled_minor' => 0,
+            'net_minor' => 0,
+            'credit_note_count' => 0,
+            'issued_count' => 0,
+            'cancelled_count' => 0,
+            'receipt_count' => 0,
+        ];
     }
 }

@@ -6,6 +6,7 @@ use App\Domain\Affiliate\Models\AffiliateWithdrawalRequest;
 use App\Domain\Affiliate\Services\AffiliateWithdrawalService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Affiliate\BulkApproveWithdrawalRequest;
+use App\Http\Requests\Affiliate\PayWithdrawalRequest;
 use App\Http\Requests\Affiliate\WithdrawalTransitionRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -65,11 +66,12 @@ class AffiliateWithdrawalAdminController extends Controller
         return response()->json($this->Serialize($result));
     }
 
-    public function Pay(AffiliateWithdrawalRequest $withdrawal, WithdrawalTransitionRequest $request)
+    public function Pay(AffiliateWithdrawalRequest $withdrawal, PayWithdrawalRequest $request)
     {
         $result = $this->withdrawal_service->Pay(
             $withdrawal,
             $request->user(),
+            $request->validated('payment_reference'),
             $request->validated('transition_key'),
             $this->CorrelationId($request),
         );
@@ -128,6 +130,7 @@ class AffiliateWithdrawalAdminController extends Controller
             'approved_at' => $withdrawal->approved_at?->toIso8601String(),
             'paid_by' => $withdrawal->paid_by,
             'paid_at' => $withdrawal->paid_at?->toIso8601String(),
+            'payment_reference' => $withdrawal->payment_reference,
         ];
     }
 

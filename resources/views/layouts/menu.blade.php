@@ -1,4 +1,25 @@
 <!-- need to remove -->
+@php
+    $authenticated_user = auth()->user();
+    $affiliate_portal_access_service = app(\App\Domain\Affiliate\Services\AffiliatePortalAccess::class);
+    $affiliate_employee_eligibility_service = app(\App\Domain\Affiliate\Services\AffiliateEmployeeEligibility::class);
+    $affiliate_portal_can_access = $authenticated_user !== null
+        && $affiliate_portal_access_service->CanAccess($authenticated_user);
+    $show_employee_affiliate_status = $authenticated_user !== null
+        && (bool) config('affiliate.features.employee_enrollment', false)
+        && $affiliate_employee_eligibility_service->IsEligible($authenticated_user)
+        && !$affiliate_portal_can_access;
+@endphp
+
+@if ($show_employee_affiliate_status)
+    <li class="nav-item">
+        <a href="{{ route('affiliate.employee-access.show') }}" class="nav-link {{ request()->routeIs('affiliate.employee-access.*') ? 'active' : '' }}">
+            <i class="nav-icon fas fa-handshake"></i>
+            <p>{{ __('affiliate.employee_access.menu_label') }}</p>
+        </a>
+    </li>
+@endif
+
 @can('dashboard')
 <li class="nav-item">
     <a href="{{ route('home') }}" class="nav-link {{ Request::is('home') ? 'active' : '' }}">
@@ -8,10 +29,7 @@
 </li>
 @endcan
 
-@if (auth()->check()
-    && auth()->user()->hasVerifiedEmail()
-    && auth()->user()->AffiliateProfile?->status?->value === 'ACTIVE'
-    && (bool) config('affiliate.features.wallet_withdrawals', false))
+@if ($affiliate_portal_can_access && (bool) config('affiliate.features.wallet_withdrawals', false))
     @php
         $affiliate_finance_route = request()->routeIs(
             'affiliate.dashboard',
@@ -44,6 +62,22 @@
                     <p>Withdrawals</p>
                 </a>
             </li>
+            @if ((bool) config('affiliate.features.analytics', false))
+                <li class="nav-item">
+                    <a href="{{ route('affiliate.analytics.index') }}" class="nav-link {{ request()->routeIs('affiliate.analytics.*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-chart-pie"></i>
+                        <p>Analytics</p>
+                    </a>
+                </li>
+            @endif
+            @if ((bool) config('affiliate.features.media_library', false))
+                <li class="nav-item">
+                    <a href="{{ route('affiliate.media.index') }}" class="nav-link {{ request()->routeIs('affiliate.media.*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-photo-film"></i>
+                        <p>Media</p>
+                    </a>
+                </li>
+            @endif
         </ul>
     </li>
 @endif
@@ -309,6 +343,15 @@
                     <p>Payment Receipt</p>
                 </a>
             </li>
+            @if (config('financial-documents.credit_note.enabled') && auth()->user()?->can('credit-note-list'))
+                <li class="nav-item">
+                    <a href="{{ route('credit-notes.index') }}"
+                        class="nav-link {{ request()->routeIs('credit-notes.*') ? 'active' : '' }}">
+                        <i class="nav-icon fa-solid fa-file-invoice-dollar"></i>
+                        <p>Credit Notes</p>
+                    </a>
+                </li>
+            @endif
             {{--  <li class="nav-item">
                 <a href="{{ route('receipts', ['type' => 1]) }}"
                     class="nav-link {{ Route::currentRouteName() == 'receipts' && request('type') == 1 ? 'active' : '' }}">

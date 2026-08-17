@@ -42,6 +42,18 @@ class AffiliateWithdrawalService
             return $existing;
         }
 
+        $wallet_snapshot = AffiliateWalletBalance::query()->where('affiliate_profile_id', $profile->id)->first();
+        if ($wallet_snapshot !== null && $wallet_snapshot->available_balance_minor < 0) {
+            $this->audit_service->OpenIssue(
+                'affiliate_wallet_balances',
+                (int) $profile->id,
+                'NEGATIVE_AVAILABLE_BALANCE',
+                'HIGH',
+                ['available_balance_minor' => $wallet_snapshot->available_balance_minor],
+            );
+            throw AffiliateDomainException::NegativeBalanceWithdrawal();
+        }
+
         return DB::transaction(function () use ($profile, $owner, $amount_minor, $payout_account_id, $request_key, $correlation_id): AffiliateWithdrawalRequest {
             $account = AffiliatePayoutAccount::query()
                 ->whereKey($payout_account_id)
@@ -51,6 +63,9 @@ class AffiliateWithdrawalService
                 ->first();
             if ($account === null) {
                 throw AffiliateDomainException::OwnershipDenied();
+            }
+            if ($account->payout_cooldown_until?->isFuture()) {
+                throw AffiliateDomainException::PayoutAccountCoolingDown();
             }
             $wallet = AffiliateWalletBalance::query()->where('affiliate_profile_id', $profile->id)->lockForUpdate()->first();
             if ($wallet === null || $wallet->available_balance_minor <= 0 || $wallet->available_balance_minor < $amount_minor) {
@@ -89,23 +104,39 @@ class AffiliateWithdrawalService
         });
     }
 
-    public function Pay(AffiliateWithdrawalRequest $withdrawal, User $actor, string $payment_key, string $correlation_id): AffiliateWithdrawalRequest
+    public function Pay(AffiliateWithdrawalRequest $withdrawal, User $actor, string $payment_reference, string $payment_key, string $correlation_id): AffiliateWithdrawalRequest
     {
         $this->configuration_service->AssertAffiliateWritesAvailable();
-        return DB::transaction(function () use ($withdrawal, $actor, $payment_key, $correlation_id): AffiliateWithdrawalRequest {
+        $payment_reference = trim($payment_reference);
+        if ($payment_reference === '') {
+            throw AffiliateDomainException::StateConflict('A payment reference is required before marking a withdrawal as paid.');
+        }
+
+        return DB::transaction(function () use ($withdrawal, $actor, $payment_reference, $payment_key, $correlation_id): AffiliateWithdrawalRequest {
             $locked = AffiliateWithdrawalRequest::query()->whereKey($withdrawal->id)->lockForUpdate()->firstOrFail();
             if ($locked->status === AffiliateWithdrawalStatus::PAID && $locked->payment_key === $payment_key) {
+                if ($locked->payment_reference !== $payment_reference) {
+                    throw AffiliateDomainException::IdempotencyConflict();
+                }
                 return $locked;
             }
             if ($locked->status !== AffiliateWithdrawalStatus::APPROVED) {
                 throw AffiliateDomainException::StateConflict('Withdrawal is not approved for payment.');
             }
             $self_payment = (int) $locked->approved_by === (int) $actor->id;
-            if ($self_payment && !$actor->can('affiliate-withdrawal-pay-self')) {
+            $has_broad_admin_role = $actor->hasAnyRole(['Admin', 'SystemAdmin']);
+            $has_self_payment_permission = $actor->can('affiliate-withdrawal-pay-self') && !$has_broad_admin_role;
+            if ($self_payment && !$has_self_payment_permission) {
                 throw AffiliateDomainException::ActorSeparation();
             }
             $this->wallet_service->ApplyEntry($locked->AffiliateProfile()->firstOrFail(), AffiliateLedgerEntryType::WITHDRAWAL_PAID, 0, -$locked->amount_minor, 'affiliate_withdrawal', $locked->id, 'affiliate:withdrawal-paid:' . $locked->id, $actor, 'WITHDRAWAL_PAID', $correlation_id);
-            $locked->forceFill(['status' => AffiliateWithdrawalStatus::PAID, 'paid_by' => $actor->id, 'paid_at' => now(), 'payment_key' => $payment_key])->save();
+            $locked->forceFill([
+                'status' => AffiliateWithdrawalStatus::PAID,
+                'paid_by' => $actor->id,
+                'paid_at' => now(),
+                'payment_key' => $payment_key,
+                'payment_reference' => $payment_reference,
+            ])->save();
             if ($self_payment) {
                 $this->audit_service->Record(
                     operation: 'withdrawal.self-pay',
@@ -150,13 +181,17 @@ class AffiliateWithdrawalService
         }
         return DB::transaction(function () use ($withdrawal, $actor, $reason, $closure_key, $status, $correlation_id): AffiliateWithdrawalRequest {
             $locked = AffiliateWithdrawalRequest::query()->whereKey($withdrawal->id)->lockForUpdate()->firstOrFail();
+            $profile = $locked->AffiliateProfile()->firstOrFail();
+            if ($status === AffiliateWithdrawalStatus::CANCELLED && (int) $profile->user_id !== (int) $actor->id) {
+                throw AffiliateDomainException::OwnershipDenied();
+            }
             if (in_array($locked->status, [AffiliateWithdrawalStatus::CANCELLED, AffiliateWithdrawalStatus::REJECTED], true) && $locked->closure_key === $closure_key) {
                 return $locked;
             }
             if (!in_array($locked->status, [AffiliateWithdrawalStatus::REQUESTED, AffiliateWithdrawalStatus::APPROVED], true)) {
                 throw AffiliateDomainException::StateConflict('Withdrawal cannot be closed in its current state.');
             }
-            $this->wallet_service->ApplyEntry($locked->AffiliateProfile()->firstOrFail(), AffiliateLedgerEntryType::WITHDRAWAL_RELEASE, $locked->amount_minor, -$locked->amount_minor, 'affiliate_withdrawal', $locked->id, 'affiliate:withdrawal-release:' . $locked->id, $actor, 'WITHDRAWAL_RELEASE', $correlation_id);
+            $this->wallet_service->ApplyEntry($profile, AffiliateLedgerEntryType::WITHDRAWAL_RELEASE, $locked->amount_minor, -$locked->amount_minor, 'affiliate_withdrawal', $locked->id, 'affiliate:withdrawal-release:' . $locked->id, $actor, 'WITHDRAWAL_RELEASE', $correlation_id);
             $locked->forceFill(['status' => $status, 'closed_by' => $actor->id, 'closed_at' => now(), 'decision_reason' => trim($reason), 'closure_key' => $closure_key])->save();
             return $locked->fresh();
         });

@@ -70,7 +70,12 @@ class AffiliateWalletService
             if ($reserved_after < 0) {
                 throw AffiliateDomainException::InsufficientBalance();
             }
-            if ($available_after < 0 && !in_array($entry_type, [AffiliateLedgerEntryType::COMMISSION_REVERSAL, AffiliateLedgerEntryType::ADJUSTMENT], true)) {
+            if ($available_after < 0 && !in_array($entry_type, [
+                AffiliateLedgerEntryType::COMMISSION_RELEASE,
+                AffiliateLedgerEntryType::COMMISSION_REVERSAL,
+                AffiliateLedgerEntryType::CREDIT_NOTE_COMMISSION_REVERSAL,
+                AffiliateLedgerEntryType::ADJUSTMENT,
+            ], true)) {
                 throw AffiliateDomainException::StateConflict('Available balance cannot become negative for this ledger entry.');
             }
 

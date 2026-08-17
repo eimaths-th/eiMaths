@@ -30,27 +30,35 @@ class BookShipmentNotification extends Notification
     {
         $event_content = match ($this->event_type) {
             self::EVENT_DISPATCHED => [
-                'title' => 'Book shipment dispatched',
-                'body' => 'Shipment ' . $this->shipment->shipment_number . ' is waiting for Centre acknowledgement.',
+                'title' => trans('book-shipments.notifications.dispatched_title', [], 'th'),
+                'body' => trans('book-shipments.notifications.dispatched_body', [
+                    'shipment_number' => $this->shipment->shipment_number,
+                ], 'th'),
             ],
             self::EVENT_CENTRE_RECEIVED => [
-                'title' => 'Book shipment received by Centre',
-                'body' => 'Shipment ' . $this->shipment->shipment_number . ' has been acknowledged by the Centre.',
+                'title' => trans('book-shipments.notifications.centre_received_title', [], 'th'),
+                'body' => trans('book-shipments.notifications.centre_received_body', [
+                    'shipment_number' => $this->shipment->shipment_number,
+                ], 'th'),
             ],
             self::EVENT_STUDENT_COMPLETED => [
                 'title' => $this->completion_status === BookShipment::DERIVED_COMPLETED_WITH_ISSUES
-                    ? 'Book shipment completed with issues'
-                    : 'Book shipment student delivery completed',
+                    ? trans('book-shipments.notifications.completed_with_issues_title', [], 'th')
+                    : trans('book-shipments.notifications.completed_title', [], 'th'),
                 'body' => $this->completion_status === BookShipment::DERIVED_COMPLETED_WITH_ISSUES
-                    ? 'Shipment ' . $this->shipment->shipment_number . ' is completed with issues.'
-                    : 'Shipment ' . $this->shipment->shipment_number . ' is complete for student delivery.',
+                    ? trans('book-shipments.notifications.completed_with_issues_body', [
+                        'shipment_number' => $this->shipment->shipment_number,
+                    ], 'th')
+                    : trans('book-shipments.notifications.completed_body', [
+                        'shipment_number' => $this->shipment->shipment_number,
+                    ], 'th'),
             ],
         };
 
         return [
             'title' => $event_content['title'],
             'body' => $event_content['body'],
-            'actionText' => 'Open shipment',
+            'actionText' => trans('book-shipments.notifications.open', [], 'th'),
             'actionURL' => $this->ActionURL(),
             'shipment_id' => $this->shipment->id,
             'shipment_number' => $this->shipment->shipment_number,
