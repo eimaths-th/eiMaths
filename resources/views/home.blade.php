@@ -456,6 +456,14 @@
                 <div class="col-12">
 
 
+                    <!-- Daily Receipt (Always Show) -->
+                    <div class="row" aria-label="Credit Note revenue summary">
+                        <div class="col-md-3"><div class="info-box"><span class="info-box-icon bg-info"><i class="fa-solid fa-receipt"></i></span><div class="info-box-content"><span class="info-box-text">Gross Revenue</span><span id="credit-note-gross" class="info-box-number">0.00</span></div></div></div>
+                        <div class="col-md-3"><div class="info-box"><span class="info-box-icon bg-warning"><i class="fa-solid fa-file-invoice-dollar"></i></span><div class="info-box-content"><span class="info-box-text">Issued Credit Notes</span><span id="credit-note-issued" class="info-box-number">0.00</span></div></div></div>
+                        <div class="col-md-3"><div class="info-box"><span class="info-box-icon bg-secondary"><i class="fa-solid fa-rotate-left"></i></span><div class="info-box-content"><span class="info-box-text">Cancelled Credit Notes</span><span id="credit-note-cancelled" class="info-box-number">0.00</span></div></div></div>
+                        <div class="col-md-3"><div class="info-box"><span class="info-box-icon bg-success"><i class="fa-solid fa-scale-balanced"></i></span><div class="info-box-content"><span class="info-box-text">Net Revenue</span><span id="credit-note-net" class="info-box-number">0.00</span></div></div></div>
+                    </div>
+
                     <div class="row">
 
                         <div class="col-md-6 col-sm-6 col-lg-6  col-xl-3 col-12">
@@ -676,13 +684,6 @@
 
                     </div>
 
-                    <!-- Daily Receipt (Always Show) -->
-                    <div class="row" aria-label="Credit Note revenue summary">
-                        <div class="col-md-3"><div class="info-box"><span class="info-box-icon bg-info"><i class="fa-solid fa-receipt"></i></span><div class="info-box-content"><span class="info-box-text">Gross Revenue</span><span id="credit-note-gross" class="info-box-number">0.00</span></div></div></div>
-                        <div class="col-md-3"><div class="info-box"><span class="info-box-icon bg-warning"><i class="fa-solid fa-file-invoice-dollar"></i></span><div class="info-box-content"><span class="info-box-text">Issued Credit Notes</span><span id="credit-note-issued" class="info-box-number">0.00</span></div></div></div>
-                        <div class="col-md-3"><div class="info-box"><span class="info-box-icon bg-secondary"><i class="fa-solid fa-rotate-left"></i></span><div class="info-box-content"><span class="info-box-text">Cancelled Credit Notes</span><span id="credit-note-cancelled" class="info-box-number">0.00</span></div></div></div>
-                        <div class="col-md-3"><div class="info-box"><span class="info-box-icon bg-success"><i class="fa-solid fa-scale-balanced"></i></span><div class="info-box-content"><span class="info-box-text">Net Revenue</span><span id="credit-note-net" class="info-box-number">0.00</span></div></div></div>
-                    </div>
                     <div class="row">
                         <div class="col-md-12">
                             <div class="card card-primary" style="max-height: 485px">
