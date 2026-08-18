@@ -529,7 +529,7 @@
         <a href="{{ route('affiliate.finance.configuration.edit') }}"
             class="nav-link {{ request()->routeIs('affiliate.finance.configuration.*') ? 'active' : '' }}">
             <i class="nav-icon fas fa-sliders"></i>
-            <p>{{ __('affiliate.configuration.menu_label') }}</p>
+            <p>{{ __('affiliate.configuration.menu_label', [], 'en') }}</p>
         </a>
     </li>
 @endcan
