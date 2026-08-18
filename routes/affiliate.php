@@ -7,6 +7,7 @@ use App\Http\Controllers\Affiliate\AffiliateWithdrawalAdminController;
 use App\Http\Controllers\Affiliate\AffiliateDashboardController;
 use App\Http\Controllers\Affiliate\AffiliateCommissionAdminController;
 use App\Http\Controllers\Affiliate\AffiliateFinanceAdminController;
+use App\Http\Controllers\Affiliate\AffiliateConfigurationPageController;
 use App\Http\Controllers\Affiliate\AffiliateReconciliationController;
 use App\Http\Controllers\Affiliate\AffiliatePayoutAccountPageController;
 use App\Http\Controllers\Affiliate\AffiliateTrackingController;
@@ -146,6 +147,12 @@ Route::middleware(['auth', 'affiliate.correlation', 'affiliate.feature:administr
     Route::put('/configuration', [AffiliateFinanceAdminController::class, 'UpdateConfiguration'])
         ->middleware('permission:affiliate-config-edit')
         ->name('affiliate.finance.configuration.update');
+    Route::get('/configuration/edit', [AffiliateConfigurationPageController::class, 'Edit'])
+        ->middleware('permission:affiliate-config-edit')
+        ->name('affiliate.finance.configuration.edit');
+    Route::post('/configuration/edit', [AffiliateConfigurationPageController::class, 'Update'])
+        ->middleware('permission:affiliate-config-edit')
+        ->name('affiliate.finance.configuration.page.update');
 });
 
 Route::post('/admin/affiliate-finance/receipts/{receipt}/refunds', [AffiliateFinanceAdminController::class, 'RecordRefund'])

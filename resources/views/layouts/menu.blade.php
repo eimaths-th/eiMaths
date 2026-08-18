@@ -524,6 +524,16 @@
     </li>
 @endcan
 
+@can('affiliate-config-edit')
+    <li class="nav-item">
+        <a href="{{ route('affiliate.finance.configuration.edit') }}"
+            class="nav-link {{ request()->routeIs('affiliate.finance.configuration.*') ? 'active' : '' }}">
+            <i class="nav-icon fas fa-sliders"></i>
+            <p>{{ __('affiliate.configuration.menu_label') }}</p>
+        </a>
+    </li>
+@endcan
+
 @can('affiliate-withdrawal-list')
     <li class="nav-item">
         <a href="{{ route('affiliate.withdrawals.admin.index') }}"

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Affiliate;
 
 use App\Domain\Affiliate\Models\AffiliateConfiguration;
-use App\Domain\Affiliate\Services\AffiliateAuditService;
 use App\Domain\Affiliate\Services\AffiliateCommissionService;
 use App\Domain\Affiliate\Services\AffiliateConfigurationService;
 use App\Http\Controllers\Controller;
@@ -18,7 +17,6 @@ class AffiliateFinanceAdminController extends Controller
     public function __construct(
         private readonly AffiliateConfigurationService $configuration_service,
         private readonly AffiliateCommissionService $commission_service,
-        private readonly AffiliateAuditService $audit_service,
     ) {
     }
 
@@ -31,7 +29,6 @@ class AffiliateFinanceAdminController extends Controller
     {
         $values = $request->validated();
         $this->configuration_service->UpdateApprovedSettings($values, $request->user(), $this->CorrelationId($request));
-        $this->audit_service->Record('configuration.update', 'affiliate_configurations', null, $request->user(), [], array_intersect_key($values, array_flip(['commission_rate_basis_points', 'commission_holding_days', 'attribution_duration_days', 'minimum_withdrawal_minor', 'withdrawal_approval_required'])), null, 'SUCCESS', null, $this->CorrelationId($request));
         return $this->Configuration();
     }
 
