@@ -136,6 +136,47 @@ sudo chmod -R ug+rwX storage bootstrap/cache \
 
 Do not make the entire project directory world-writable.
 
+## QR code permission troubleshooting
+
+The affiliate course submission flow generates a PromptPay QR image at
+`public/img/qrcode/qr.png`. If the PHP-FPM process cannot write to that
+directory, the submission returns HTTP 500. The Laravel log contains an error
+similar to:
+
+```text
+file_put_contents(.../public/img/qrcode/qr.png): Failed to open stream: Permission denied
+```
+
+Check the directory and the PHP-FPM service user before retrying the submission:
+
+```bash
+cd /var/www/html/eiMaths_test
+
+ls -ld public/img/qrcode
+test -w public/img/qrcode && echo "qrcode_dir_writable=yes" || echo "qrcode_dir_writable=no"
+sudo -u www-data test -w public/img/qrcode && echo "php_fpm_writable=yes" || echo "php_fpm_writable=no"
+```
+
+If PHP-FPM runs as `www-data`, repair only the QR output directory:
+
+```bash
+sudo chown -R eimaths_thailand2023:www-data public/img/qrcode
+sudo chmod -R ug+rwX public/img/qrcode
+```
+
+Run the write checks again, then retry the submission once. Confirm that no new
+permission error was written to the Laravel log:
+
+```bash
+test -w public/img/qrcode && echo "qrcode_dir_writable=yes" || echo "qrcode_dir_writable=no"
+sudo -u www-data test -w public/img/qrcode && echo "php_fpm_writable=yes" || echo "php_fpm_writable=no"
+tail -n 100 storage/logs/laravel.log
+```
+
+The course-pending record may be created before QR generation runs. Check for
+an existing pending record before retrying or cleaning up a failed attempt, and
+do not delete records blindly.
+
 ## Affiliate background processing
 
 The Affiliate scheduler currently defines these tasks in `app/Console/Kernel.php`:
