@@ -18,6 +18,13 @@ return [
         'verification_completed' => 'Your email has been verified. Your Affiliate application is waiting for approval.',
         'account_approved' => 'Your Affiliate account has been approved. Please log in to continue.',
     ],
+    'notifications' => [
+        'approved_subject' => 'Your Affiliate account has been approved',
+        'approved_greeting' => 'Hello :name,',
+        'approved_body' => 'Your Affiliate account has been approved. Your referral code is :referral_code.',
+        'approved_action' => 'Open Affiliate login',
+        'approved_footer' => 'You can now sign in to use your Affiliate account.',
+    ],
     'dashboard' => [
         'title' => 'Affiliate dashboard',
         'referral_code' => 'Referral code',

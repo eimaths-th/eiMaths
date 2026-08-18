@@ -5,11 +5,14 @@ namespace App\Domain\Affiliate\Services;
 use App\Domain\Affiliate\Enums\AffiliateProfileStatus;
 use App\Domain\Affiliate\Exceptions\AffiliateDomainException;
 use App\Domain\Affiliate\Models\AffiliateProfile;
+use App\Notifications\AffiliateApprovedNotification;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Throwable;
 
 class AffiliateAccountService
 {
@@ -17,6 +20,7 @@ class AffiliateAccountService
         private readonly AffiliateConfigurationService $configuration_service,
         private readonly AffiliateAuditService $audit_service,
         private readonly AffiliateReferralCodeGenerator $referral_code_generator,
+        private readonly AffiliateEmployeeEligibility $employee_eligibility,
     ) {
     }
 
@@ -71,7 +75,10 @@ class AffiliateAccountService
 
     public function Approve(AffiliateProfile $profile, User $actor, ?string $reason = null): AffiliateProfile
     {
-        return $this->Transition($profile, $actor, AffiliateProfileStatus::PENDING_APPROVAL, AffiliateProfileStatus::ACTIVE, 'approved_by', 'approved_at', $reason);
+        $approved_profile = $this->Transition($profile, $actor, AffiliateProfileStatus::PENDING_APPROVAL, AffiliateProfileStatus::ACTIVE, 'approved_by', 'approved_at', $reason);
+        $this->NotifyExternalAffiliateApproval($approved_profile);
+
+        return $approved_profile;
     }
 
     public function Suspend(AffiliateProfile $profile, User $actor, string $reason): AffiliateProfile
@@ -123,6 +130,34 @@ class AffiliateAccountService
 
             return $locked->fresh();
         });
+    }
+
+    private function NotifyExternalAffiliateApproval(AffiliateProfile $profile): void
+    {
+        $user = $profile->User;
+        if (!$user instanceof User || $this->employee_eligibility->IsEligible($user)) {
+            return;
+        }
+
+        if (trim((string) $user->email) === '') {
+            Log::warning('affiliate.approval-notification.skipped', [
+                'affiliate_profile_id' => $profile->id,
+                'user_id' => $profile->user_id,
+                'reason' => 'missing_email',
+            ]);
+
+            return;
+        }
+
+        try {
+            $user->notify(new AffiliateApprovedNotification((string) $profile->referral_code));
+        } catch (Throwable $exception) {
+            Log::error('affiliate.approval-notification.failed', [
+                'affiliate_profile_id' => $profile->id,
+                'user_id' => $profile->user_id,
+                'exception' => $exception,
+            ]);
+        }
     }
 
 }

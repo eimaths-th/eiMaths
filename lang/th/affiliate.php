@@ -18,6 +18,13 @@ return [
         'verification_completed' => 'ยืนยันอีเมลเรียบร้อยแล้ว บัญชี Affiliate ของคุณกำลังรอการอนุมัติ',
         'account_approved' => 'บัญชี Affiliate ของคุณได้รับการอนุมัติแล้ว กรุณาเข้าสู่ระบบเพื่อใช้งานต่อ',
     ],
+    'notifications' => [
+        'approved_subject' => 'บัญชี Affiliate ของคุณได้รับการอนุมัติแล้ว',
+        'approved_greeting' => 'สวัสดีคุณ :name',
+        'approved_body' => 'บัญชี Affiliate ของคุณได้รับการอนุมัติแล้ว รหัสแนะนำของคุณคือ :referral_code',
+        'approved_action' => 'เข้าสู่ระบบ Affiliate',
+        'approved_footer' => 'คุณสามารถเข้าสู่ระบบเพื่อเริ่มใช้งานบัญชี Affiliate ได้แล้ว',
+    ],
     'dashboard' => [
         'title' => 'แดชบอร์ด Affiliate',
         'referral_code' => 'รหัสแนะนำ',
