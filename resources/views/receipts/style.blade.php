@@ -385,4 +385,25 @@
         border-right: 6px solid transparent;
         border-bottom: 6px solid #be2626;
     }
+
+    /* Credit Note creation is the primary action in the receipt action group. */
+    .btn-credit-note-create {
+        border-color: #c2410c;
+        background-color: #c2410c;
+        color: #fff;
+        font-weight: 600;
+    }
+
+    .btn-credit-note-create:hover,
+    .btn-credit-note-create:active {
+        border-color: #9a3412;
+        background-color: #9a3412;
+        color: #fff;
+    }
+
+    .btn-credit-note-create:focus-visible {
+        outline: 2px solid #1f2937;
+        outline-offset: 2px;
+        box-shadow: 0 0 0 4px rgba(194, 65, 12, .28);
+    }
 </style>

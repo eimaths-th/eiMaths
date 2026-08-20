@@ -7,7 +7,9 @@ use App\Domain\CreditNote\Enums\CreditNoteReasonCode;
 use App\Domain\CreditNote\Enums\CreditNoteStatus;
 use App\Models\Department;
 use App\Models\Receipt;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class CreditNote extends Model
 {
@@ -96,6 +98,21 @@ class CreditNote extends Model
     public function Department()
     {
         return $this->belongsTo(Department::class, 'centre_id');
+    }
+
+    public function CreatedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function IssuedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'issued_by');
+    }
+
+    public function CancelledBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'cancelled_by');
     }
 
     public function Items()

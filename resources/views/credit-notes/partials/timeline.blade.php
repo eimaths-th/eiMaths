@@ -10,17 +10,17 @@
         <div class="credit-note-timeline-entry">
             <span class="credit-note-timeline-dot credit-note-timeline-dot-created" aria-hidden="true"></span>
             <span class="credit-note-timeline-label">Created by</span>
-            <strong>{{ $credit_note->created_by ?? '—' }}</strong>
+            <strong>{{ $credit_note->CreatedBy?->name ?? '—' }}</strong>
         </div>
         <div class="credit-note-timeline-entry">
             <span class="credit-note-timeline-dot credit-note-timeline-dot-issued" aria-hidden="true"></span>
             <span class="credit-note-timeline-label">Issued by</span>
-            <strong>{{ $credit_note->issued_by ?? '—' }}</strong>
+            <strong>{{ $credit_note->IssuedBy?->name ?? '—' }}</strong>
         </div>
         <div class="credit-note-timeline-entry">
             <span class="credit-note-timeline-dot credit-note-timeline-dot-cancelled" aria-hidden="true"></span>
             <span class="credit-note-timeline-label">Cancelled by</span>
-            <strong>{{ $credit_note->cancelled_by ?? '—' }}</strong>
+            <strong>{{ $credit_note->CancelledBy?->name ?? '—' }}</strong>
         </div>
     </div>
 </section>

@@ -1,9 +1,12 @@
 @php
     $selected_items = $credit_note->Items->keyBy(fn ($item) => ($item->source_type?->value ?? '') . ':' . $item->source_id);
     $buyer_vat_registered = (string) old('buyer_is_vat_registered', $credit_note->buyer_is_vat_registered ? '1' : '0');
+    $buyer_tax_fields_are_visible = $buyer_vat_registered === '1';
     $buyer_branch_type = (string) old('buyer_branch_type', $credit_note->buyer_branch_type?->value ?? 'head_office');
     $selected_reason_code = (string) old('reason_code', $credit_note->reason_code?->value ?? '');
-    $adjustment_event_date = old('adjustment_event_date', optional($credit_note->adjustment_event_date)->format('Y-m-d'));
+    $default_adjustment_event_date = optional($credit_note->adjustment_event_date)->format('Y-m-d')
+        ?? now((string) config('app.timezone', 'Asia/Bangkok'))->toDateString();
+    $adjustment_event_date = old('adjustment_event_date', $default_adjustment_event_date);
 @endphp
 
 <form id="credit-note-editor" method="POST" action="{{ route('credit-notes.update', $credit_note) }}" novalidate>
@@ -25,32 +28,30 @@
                 <input id="buyer_name" name="buyer_name" class="form-control" value="{{ old('buyer_name', $credit_note->buyer_name) }}" required autocomplete="organization">
             </div>
             <div class="form-group col-md-6">
-                <label for="buyer_tax_id">{{ __('credit-note.fields.buyer_tax_id') }}</label>
-                <input id="buyer_tax_id" name="buyer_tax_id" class="form-control" value="{{ old('buyer_tax_id', $credit_note->buyer_tax_id) }}" inputmode="numeric">
+                <label for="buyer_is_vat_registered">VAT registered</label>
+                <select id="buyer_is_vat_registered" name="buyer_is_vat_registered" class="form-control" required aria-controls="buyer-tax-id-field buyer-branch-type-field buyer-branch-code-field" aria-expanded="{{ $buyer_tax_fields_are_visible ? 'true' : 'false' }}">
+                    <option value="1" @selected($buyer_vat_registered === '1')>Yes</option>
+                    <option value="0" @selected($buyer_vat_registered === '0')>No</option>
+                </select>
             </div>
-            <div class="form-group col-md-7">
+            <div class="form-group col-md-12">
                 <label for="buyer_address">{{ __('credit-note.fields.buyer_address') }}</label>
                 <textarea id="buyer_address" name="buyer_address" class="form-control" rows="3">{{ old('buyer_address', $credit_note->buyer_address) }}</textarea>
             </div>
-            <div class="form-group col-md-5">
-                <div class="form-row">
-                    <div class="form-group col-sm-6">
-                        <label for="buyer_is_vat_registered">VAT registered</label>
-                        <select id="buyer_is_vat_registered" name="buyer_is_vat_registered" class="form-control" required>
-                            <option value="1" @selected($buyer_vat_registered === '1')>Yes</option>
-                            <option value="0" @selected($buyer_vat_registered === '0')>No</option>
-                        </select>
-                    </div>
-                    <div class="form-group col-sm-6">
-                        <label for="buyer_branch_type">Buyer branch</label>
-                        <select id="buyer_branch_type" name="buyer_branch_type" class="form-control">
-                            <option value="head_office" @selected($buyer_branch_type === 'head_office')>Head Office</option>
-                            <option value="branch" @selected($buyer_branch_type === 'branch')>Branch</option>
-                        </select>
-                    </div>
-                </div>
-                <label for="buyer_branch_code">Branch code</label>
-                <input id="buyer_branch_code" name="buyer_branch_code" class="form-control" value="{{ old('buyer_branch_code', $credit_note->buyer_branch_code) }}" pattern="[0-9]{5}" inputmode="numeric">
+            <div id="buyer-tax-id-field" class="form-group col-md-4" data-buyer-tax-field aria-hidden="{{ $buyer_tax_fields_are_visible ? 'false' : 'true' }}" @if (!$buyer_tax_fields_are_visible) hidden @endif>
+                <label for="buyer_tax_id">{{ __('credit-note.fields.buyer_tax_id') }} <span class="text-danger" aria-hidden="true">*</span></label>
+                <input id="buyer_tax_id" name="buyer_tax_id" class="form-control" value="{{ old('buyer_tax_id', $credit_note->buyer_tax_id) }}" inputmode="numeric" data-required-when-vat-registered @required($buyer_tax_fields_are_visible) @disabled(!$buyer_tax_fields_are_visible)>
+            </div>
+            <div id="buyer-branch-type-field" class="form-group col-md-4" data-buyer-tax-field aria-hidden="{{ $buyer_tax_fields_are_visible ? 'false' : 'true' }}" @if (!$buyer_tax_fields_are_visible) hidden @endif>
+                <label for="buyer_branch_type">Buyer branch <span class="text-danger" aria-hidden="true">*</span></label>
+                <select id="buyer_branch_type" name="buyer_branch_type" class="form-control" data-required-when-vat-registered @required($buyer_tax_fields_are_visible) @disabled(!$buyer_tax_fields_are_visible)>
+                    <option value="head_office" @selected($buyer_branch_type === 'head_office')>Head Office</option>
+                    <option value="branch" @selected($buyer_branch_type === 'branch')>Branch</option>
+                </select>
+            </div>
+            <div id="buyer-branch-code-field" class="form-group col-md-4" data-buyer-tax-field aria-hidden="{{ $buyer_tax_fields_are_visible ? 'false' : 'true' }}" @if (!$buyer_tax_fields_are_visible) hidden @endif>
+                <label for="buyer_branch_code">Branch code <span class="text-danger" aria-hidden="true">*</span></label>
+                <input id="buyer_branch_code" name="buyer_branch_code" class="form-control" value="{{ old('buyer_branch_code', $credit_note->buyer_branch_code) }}" pattern="[0-9]{5}" inputmode="numeric" data-required-when-vat-registered @required($buyer_tax_fields_are_visible) @disabled(!$buyer_tax_fields_are_visible)>
             </div>
         </div>
     </div>

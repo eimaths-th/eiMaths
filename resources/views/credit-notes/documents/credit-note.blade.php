@@ -16,19 +16,31 @@
     $issuer_name = filled($credit_note->issuer_name) ? $credit_note->issuer_name : config('financial-documents.credit_note.issuer.legal_name');
     $issuer_address = filled($credit_note->issuer_address) ? $credit_note->issuer_address : config('financial-documents.credit_note.issuer.legal_address');
     $issuer_tax_id = filled($credit_note->issuer_tax_id) ? $credit_note->issuer_tax_id : config('financial-documents.credit_note.issuer.tax_id');
-    $issuer_branch_code = $credit_note->issuer_branch_code ?: config('financial-documents.credit_note.issuer.branch_code', '00000');
     $issuer_name = filled($issuer_name) ? $issuer_name : $receipt_issuer_name;
     $issuer_address = filled($issuer_address) ? $issuer_address : $receipt_issuer_address;
     $issuer_tax_id = filled($issuer_tax_id) ? $issuer_tax_id : $receipt_issuer_tax_id;
-    $buyer_branch_code = $credit_note->buyer_branch_code ?: '00000';
+
+    $buyer_is_vat_registered = $credit_note->buyer_is_vat_registered === true;
+    $buyer_address = filled($credit_note->buyer_address)
+        ? $credit_note->buyer_address
+        : $credit_note->original_billing_details_text;
     $status = $credit_note->status?->value ?? 'draft';
     $status_label = __('credit-note.statuses.' . $status);
     $reason_code = $credit_note->reason_code?->value;
     $reason_label = $reason_code ? __('credit-note.reasons.' . $reason_code) : '—';
     $number = $credit_note->number ?? 'Draft #' . $credit_note->id;
+    $credit_note_date = $credit_note->issue_date ?? $credit_note->adjustment_event_date;
+    $format_money = static fn ($minor): string => number_format(((int) $minor) / 100, 2, '.', ',');
+    $format_quantity = static function ($quantity): string {
+        if ($quantity === null || $quantity === '') {
+            return '—';
+        }
+
+        return rtrim(rtrim(number_format((float) $quantity, 2, '.', ','), '0'), '.');
+    };
 @endphp
 
-<article class="credit-note-paper credit-note-document" aria-labelledby="credit-note-print-title">
+<article class="credit-note-paper credit-note-document credit-note-receipt-document" aria-labelledby="credit-note-print-title">
     @if ($status === 'draft')
         <div class="credit-note-document-watermark" aria-hidden="true">DRAFT</div>
     @elseif ($status === 'cancelled')
@@ -43,153 +55,189 @@
                 </td>
                 <td class="credit-note-receipt-issuer-cell">
                     <p class="credit-note-issuer-name">{{ $issuer_name }}</p>
-                    <p class="credit-note-issuer-contact">{{ $issuer_address }}<br>เลขประจำตัวผู้เสียภาษี : {{ $issuer_tax_id }}@if ($use_receipt_issuer_branding)<br>โทร. {{ $receipt_issuer_phone }}@endif</p>
+                    <p class="credit-note-issuer-contact">
+                        {{ $issuer_address }}<br>
+                        เลขประจำตัวผู้เสียภาษี : {{ $issuer_tax_id }}
+                        @if ($use_receipt_issuer_branding)
+                            <br>โทร. {{ $receipt_issuer_phone }}
+                        @endif
+                    </p>
                 </td>
                 <td class="credit-note-receipt-eimaths-logo-cell">
                     <img class="credit-note-eimaths-logo" src="{{ asset('images/logo.png') }}" alt="eiMaths logo">
                 </td>
             </tr>
         </table>
+
         <table class="credit-note-receipt-title-table" role="presentation">
             <tr>
                 <td></td>
                 <td>
-                    <h1 id="credit-note-print-title">ใบลดหนี้ / Credit Note</h1>
-                    <p>Tax Credit Note document</p>
+                    <h1 id="credit-note-print-title">ใบลดหนี้ / CREDIT NOTE</h1>
                     <span class="credit-note-document-status credit-note-document-status-{{ $status }}">{{ $status_label }}</span>
                 </td>
             </tr>
         </table>
     </header>
 
-    <section class="credit-note-document-meta credit-note-receipt-meta" aria-label="Document reference">
-        <div class="credit-note-document-meta-item">
-            <span class="credit-note-document-meta-label">Document no.</span>
-            <span class="credit-note-document-meta-value">{{ $number }}</span>
-        </div>
-        <div class="credit-note-document-meta-item">
-            <span class="credit-note-document-meta-label">Original receipt</span>
-            <span class="credit-note-document-meta-value">{{ $credit_note->original_receipt_number ?? '—' }}</span>
-        </div>
-        <div class="credit-note-document-meta-item">
-            <span class="credit-note-document-meta-label">Receipt date</span>
-            <span class="credit-note-document-meta-value">{{ optional($credit_note->original_receipt_date)->format('Y-m-d') ?? '—' }}</span>
-        </div>
-        <div class="credit-note-document-meta-item">
-            <span class="credit-note-document-meta-label">Adjustment date</span>
-            <span class="credit-note-document-meta-value">{{ optional($credit_note->adjustment_event_date)->format('Y-m-d') ?? '—' }}</span>
-        </div>
-    </section>
-
-    <table class="credit-note-party-table" role="presentation">
+    <table class="credit-note-receipt-information-table" role="presentation">
         <tr>
-            <td>
-                <span class="credit-note-party-label">Issuer / ผู้ออกเอกสาร</span>
-                <p class="credit-note-party-name">{{ $issuer_name ?: '—' }}</p>
-                <p>{!! nl2br(e((string) $issuer_address)) !!}</p>
-                <p>Tax ID: {{ $issuer_tax_id ?: '—' }}</p>
-                <p>Branch: {{ $issuer_branch_code }}</p>
+            <td class="credit-note-buyer-cell">
+                <span class="credit-note-muted-label">นามผู้ซื้อ, ที่อยู่ / Buyer, Address</span>
+                <strong class="credit-note-buyer-name">{{ $credit_note->buyer_name ?: '—' }}</strong>
+                @if (filled($buyer_address))
+                    <span class="credit-note-buyer-address">{!! nl2br(e((string) $buyer_address)) !!}</span>
+                @endif
+                @if ($buyer_is_vat_registered && filled($credit_note->buyer_tax_id))
+                    <span class="credit-note-buyer-tax">Tax ID: {{ $credit_note->buyer_tax_id }}</span>
+                @endif
+                @if ($buyer_is_vat_registered)
+                    <span class="credit-note-buyer-tax">Branch: {{ $credit_note->buyer_branch_code ?: '00000' }}</span>
+                @endif
             </td>
-            <td>
-                <span class="credit-note-party-label">Buyer / ผู้ซื้อ</span>
-                <p class="credit-note-party-name">{{ $credit_note->buyer_name ?: '—' }}</p>
-                <p>{!! nl2br(e((string) $credit_note->buyer_address)) !!}</p>
-                <p>Tax ID: {{ $credit_note->buyer_tax_id ?: '—' }}</p>
-                <p>Branch: {{ $buyer_branch_code }}</p>
+            <td class="credit-note-reference-cell">
+                <table class="credit-note-reference-fields" role="presentation">
+                    <tr>
+                        <th scope="row">เลขที่ใบลดหนี้ / Credit Note No.</th>
+                        <td>{{ $number }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">วันที่ใบลดหนี้ / Credit Note Date</th>
+                        <td>{{ optional($credit_note_date)->format('Y-m-d') ?? '—' }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">เลขที่ใบเสร็จเดิม / Original Receipt No.</th>
+                        <td>{{ $credit_note->original_receipt_number ?? '—' }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">วันที่ใบเสร็จเดิม / Original Receipt Date</th>
+                        <td>{{ optional($credit_note->original_receipt_date)->format('Y-m-d') ?? '—' }}</td>
+                    </tr>
+                </table>
             </td>
         </tr>
     </table>
 
-    <section class="credit-note-document-section" aria-labelledby="credit-note-items-title">
-        <h2 id="credit-note-items-title">Items / รายการ</h2>
+    <section class="credit-note-document-section credit-note-line-items" aria-labelledby="credit-note-items-title">
+        <h2 id="credit-note-items-title">รายการลดหนี้ / Credit Note Items</h2>
         <table class="credit-note-items-table credit-note-orange-table">
             <thead>
                 <tr>
-                    <th scope="col" style="width: 5%;">No.</th>
-                    <th scope="col">Description</th>
-                    <th scope="col" class="text-right" style="width: 18%;">Original</th>
-                    <th scope="col" class="text-right" style="width: 18%;">Credit amount</th>
-                    <th scope="col" style="width: 18%;">VAT</th>
+                    <th scope="col" class="credit-note-col-number">ลำดับที่<br>No.</th>
+                    <th scope="col" class="credit-note-col-description">รายการ<br>Description</th>
+                    <th scope="col" class="credit-note-col-quantity">จำนวนเดิม<br>Original Qty.</th>
+                    <th scope="col" class="credit-note-col-quantity">จำนวนที่ลด<br>Credit Qty.</th>
+                    <th scope="col" class="credit-note-col-money">ราคาต่อหน่วย<br>Unit Price</th>
+                    <th scope="col" class="credit-note-col-money">ส่วนลดเดิม<br>Original Discount</th>
+                    <th scope="col" class="credit-note-col-money">จำนวนเงินลด<br>Credit Amount</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse ($credit_note->Items as $index => $item)
                     <tr>
-                        <td>{{ $index + 1 }}</td>
-                        <td>{{ $item->description ?: '—' }}</td>
-                        <td class="text-right">{{ number_format(((int) $item->original_line_total_minor) / 100, 2, '.', ',') }}</td>
-                        <td class="text-right">{{ number_format(((int) $item->credit_amount_minor) / 100, 2, '.', ',') }}</td>
-                        <td>{{ $item->tax_treatment?->value ?? '—' }} @if ($item->vat_rate_basis_points !== null)<small>({{ number_format($item->vat_rate_basis_points / 100, 2, '.', '') }}%)</small>@endif</td>
+                        <td class="text-center">{{ $index + 1 }}</td>
+                        <td>
+                            <strong>{{ $item->description ?: '—' }}</strong>
+                            @if (filled($item->unit))
+                                <small>{{ $item->unit }}</small>
+                            @endif
+                        </td>
+                        <td class="text-center">{{ $format_quantity($item->original_quantity) }}</td>
+                        <td class="text-center">{{ $format_quantity($item->credit_quantity) }}</td>
+                        <td class="text-right">{{ $format_money($item->original_unit_price_minor) }}</td>
+                        <td class="text-right">{{ $format_money($item->original_discount_minor) }}</td>
+                        <td class="text-right"><strong>{{ $format_money($item->credit_amount_minor) }}</strong></td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" class="credit-note-items-empty">No credited lines recorded.</td>
+                        <td colspan="7" class="credit-note-items-empty">No credited lines recorded.</td>
                     </tr>
                 @endforelse
             </tbody>
         </table>
     </section>
 
-    <section class="credit-note-document-section credit-note-receipt-summary" aria-labelledby="credit-note-summary-title">
-        <h2 id="credit-note-summary-title">Original / Corrected / Difference</h2>
-        <table class="credit-note-summary-table" role="presentation">
+    <section class="credit-note-document-section credit-note-receipt-summary" aria-label="Original / Corrected / Difference">
+        <table class="credit-note-adjustment-table" role="presentation">
             <tr>
-                <td>
-                    <span class="credit-note-summary-label">Original total</span>
-                    <span class="credit-note-summary-value">{{ number_format(((int) $credit_note->original_grand_total_minor) / 100, 2, '.', ',') }} <span class="credit-note-summary-unit">THB</span></span>
+                <td class="credit-note-reason-cell">
+                    <h2>ข้อมูลอ้างอิงและเหตุผล / Reference &amp; Reason</h2>
+                    <dl class="credit-note-reason-list">
+                        <dt>ใบเสร็จต้นฉบับ / Original Receipt</dt>
+                        <dd>
+                            {{ $credit_note->original_receipt_number ?? '—' }}
+                            @if ($credit_note->original_receipt_date !== null)
+                                · {{ $credit_note->original_receipt_date->format('Y-m-d') }}
+                            @endif
+                        </dd>
+                        <dt>เหตุผล / Reason</dt>
+                        <dd><strong>{{ $reason_label }}</strong></dd>
+                        @if (filled($credit_note->reason_details))
+                            <dd>{!! nl2br(e((string) $credit_note->reason_details)) !!}</dd>
+                        @endif
+                        @if (filled($credit_note->late_issue_reason))
+                            <dt>เหตุผลที่ออกล่าช้า / Late Issue Reason</dt>
+                            <dd>{!! nl2br(e((string) $credit_note->late_issue_reason)) !!}</dd>
+                        @endif
+                    </dl>
                 </td>
-                <td class="credit-note-summary-primary">
-                    <span class="credit-note-summary-label">Corrected total</span>
-                    <span class="credit-note-summary-value">{{ number_format(((int) $credit_note->corrected_grand_total_minor) / 100, 2, '.', ',') }} <span class="credit-note-summary-unit">THB</span></span>
+                <td class="credit-note-summary-cell">
+                    <table class="credit-note-summary-table" role="presentation">
+                        <tr>
+                            <th scope="row">ยอดเดิม / Original Total</th>
+                            <td>{{ $format_money($credit_note->original_grand_total_minor) }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">ยอดหลังลดหนี้ / Corrected Total</th>
+                            <td>{{ $format_money($credit_note->corrected_grand_total_minor) }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">มูลค่าที่คำนวนภาษี / Pre-VAT Amount</th>
+                            <td>{{ $format_money($credit_note->difference_taxable_base_minor) }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">ภาษีมูลค่าเพิ่ม / VAT</th>
+                            <td>{{ $format_money($credit_note->difference_vat_minor) }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">มูลค่าที่ยกเว้นภาษี / Non-VAT Amount</th>
+                            <td>{{ $format_money($credit_note->difference_exempt_minor) }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">ยอดนอกขอบเขตภาษีที่ลด / Out-of-scope Credit</th>
+                            <td>{{ $format_money($credit_note->difference_out_of_scope_minor) }}</td>
+                        </tr>
+                    </table>
                 </td>
-                <td class="credit-note-summary-highlight">
-                    <span class="credit-note-summary-label">Difference</span>
-                    <span class="credit-note-summary-value">{{ number_format(((int) $credit_note->difference_grand_total_minor) / 100, 2, '.', ',') }} <span class="credit-note-summary-unit">THB</span></span>
-                </td>
-                <td>
-                    <span class="credit-note-summary-label">Taxable base difference</span>
-                    <span class="credit-note-summary-value">{{ number_format(((int) $credit_note->difference_taxable_base_minor) / 100, 2, '.', ',') }} <span class="credit-note-summary-unit">THB</span></span>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <span class="credit-note-summary-label">VAT difference</span>
-                    <span class="credit-note-summary-value">{{ number_format(((int) $credit_note->difference_vat_minor) / 100, 2, '.', ',') }} <span class="credit-note-summary-unit">THB</span></span>
-                </td>
-                <td>
-                    <span class="credit-note-summary-label">Exempt difference</span>
-                    <span class="credit-note-summary-value">{{ number_format(((int) $credit_note->difference_exempt_minor) / 100, 2, '.', ',') }} <span class="credit-note-summary-unit">THB</span></span>
-                </td>
-                <td>
-                    <span class="credit-note-summary-label">Out-of-scope difference</span>
-                    <span class="credit-note-summary-value">{{ number_format(((int) $credit_note->difference_out_of_scope_minor) / 100, 2, '.', ',') }} <span class="credit-note-summary-unit">THB</span></span>
-                </td>
-                <td></td>
             </tr>
         </table>
     </section>
 
-    <section class="credit-note-document-section" aria-labelledby="credit-note-reason-title">
-        <h2 id="credit-note-reason-title">Reason / เหตุผล</h2>
-        <div class="credit-note-reason-box">
-            <p><strong>{{ $reason_label }}</strong></p>
-            @if (filled($credit_note->reason_details))
-                <p>{!! nl2br(e((string) $credit_note->reason_details)) !!}</p>
-            @endif
-            @if (filled($credit_note->late_issue_reason))
-                <p><strong>Late issue reason:</strong> {!! nl2br(e((string) $credit_note->late_issue_reason)) !!}</p>
-            @endif
-        </div>
-    </section>
+    <table class="credit-note-total-credit-table" role="presentation">
+        <tr>
+            <th scope="row">ยอดลดหนี้รวม / Total Credit Amount</th>
+            <td class="credit-note-total-credit-copy">ยอดเงินที่ลดจากใบเสร็จต้นฉบับ</td>
+            <td class="credit-note-total-credit-value">{{ $format_money($credit_note->difference_grand_total_minor) }}</td>
+            <td class="credit-note-total-credit-unit">บาท<br>Baht</td>
+        </tr>
+    </table>
 
-    <footer class="credit-note-document-footer credit-note-receipt-footer">
+    <footer class="credit-note-document-footer credit-note-receipt-footer credit-note-reason-footer">
         <table class="credit-note-signature-table" role="presentation">
             <tr>
-                <td>Prepared by: {{ $credit_note->created_by ?? '—' }}</td>
-                <td>Authorised signature / ลายมือชื่อผู้มีอำนาจ</td>
+                <td>
+                    <span class="credit-note-signature-line">................................</span>
+                    <strong>Prepared by: {{ $credit_note->CreatedBy?->name ?? '—' }}</strong>
+                    <span>ผู้จัดทำเอกสาร</span>
+                </td>
+                <td>
+                    <span class="credit-note-signature-line">................................</span>
+                    <strong>Authorised signature</strong>
+                    <span>ลายมือชื่อผู้มีอำนาจ</span>
+                </td>
             </tr>
         </table>
         <img class="credit-note-receipt-banner" src="{{ asset('images/banner.png') }}" alt="">
-        <p class="credit-note-footer-note">This document is generated from the eiMaths financial record. Please retain it with the original receipt.</p>
+        <p class="credit-note-footer-note">This Credit Note refers to the original receipt shown above. Retain both documents together.</p>
     </footer>
 </article>

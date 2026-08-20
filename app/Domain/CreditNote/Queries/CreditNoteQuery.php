@@ -74,7 +74,11 @@ final class CreditNoteQuery
 
     public function Document(User $actor, int $credit_note_id): CreditNote
     {
-        return $this->FindVisibleOrFail($actor, $credit_note_id);
+        return $this->FindVisibleOrFail($actor, $credit_note_id)->load([
+            'CreatedBy:id,name',
+            'IssuedBy:id,name',
+            'CancelledBy:id,name',
+        ]);
     }
 
     public function EditorSource(CreditNote $credit_note): CreditNoteSourceSnapshot
