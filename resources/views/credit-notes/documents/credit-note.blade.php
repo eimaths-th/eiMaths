@@ -27,7 +27,10 @@
     $status = $credit_note->status?->value ?? 'draft';
     $status_label = __('credit-note.statuses.' . $status);
     $reason_code = $credit_note->reason_code?->value;
-    $reason_label = $reason_code ? __('credit-note.reasons.' . $reason_code) : '—';
+    $reason_is_custom = $reason_code === 'other';
+    $reason_label = $reason_is_custom && filled($credit_note->reason_details)
+        ? (string) $credit_note->reason_details
+        : ($reason_code ? __('credit-note.reasons.' . $reason_code) : '—');
     $number = $credit_note->number ?? 'Draft #' . $credit_note->id;
     $credit_note_date = $credit_note->issue_date ?? $credit_note->adjustment_event_date;
     $format_money = static fn ($minor): string => number_format(((int) $minor) / 100, 2, '.', ',');
@@ -172,7 +175,7 @@
                         </dd>
                         <dt>เหตุผล / Reason</dt>
                         <dd><strong>{{ $reason_label }}</strong></dd>
-                        @if (filled($credit_note->reason_details))
+                        @if (!$reason_is_custom && filled($credit_note->reason_details))
                             <dd>{!! nl2br(e((string) $credit_note->reason_details)) !!}</dd>
                         @endif
                         @if (filled($credit_note->late_issue_reason))

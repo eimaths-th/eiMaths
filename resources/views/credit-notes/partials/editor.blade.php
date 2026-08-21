@@ -4,6 +4,8 @@
     $buyer_tax_fields_are_visible = $buyer_vat_registered === '1';
     $buyer_branch_type = (string) old('buyer_branch_type', $credit_note->buyer_branch_type?->value ?? 'head_office');
     $selected_reason_code = (string) old('reason_code', $credit_note->reason_code?->value ?? '');
+    $custom_reason_is_selected = $selected_reason_code === 'other';
+    $reason_details = old('reason_details', $credit_note->reason_details);
     $default_adjustment_event_date = optional($credit_note->adjustment_event_date)->format('Y-m-d')
         ?? now((string) config('app.timezone', 'Asia/Bangkok'))->toDateString();
     $adjustment_event_date = old('adjustment_event_date', $default_adjustment_event_date);
@@ -80,8 +82,11 @@
                 <input id="adjustment_event_date" name="adjustment_event_date" type="date" class="form-control" value="{{ $adjustment_event_date }}" required>
             </div>
             <div class="form-group col-md-6">
-                <label for="reason_details">{{ __('credit-note.fields.reason_details') }}</label>
-                <textarea id="reason_details" name="reason_details" class="form-control" rows="3">{{ old('reason_details', $credit_note->reason_details) }}</textarea>
+                <label for="reason_details">
+                    <span id="reason-details-label-text" data-reason-details-label-text data-custom-label="{{ __('credit-note.fields.custom_reason') }}" data-details-label="{{ __('credit-note.fields.reason_details') }}">{{ $custom_reason_is_selected ? __('credit-note.fields.custom_reason') : __('credit-note.fields.reason_details') }}</span>
+                    <span class="text-danger" aria-hidden="true" data-reason-details-required @if (!$custom_reason_is_selected) hidden @endif>*</span>
+                </label>
+                <textarea id="reason_details" name="reason_details" class="form-control" rows="3" data-reason-details-control @required($custom_reason_is_selected)>{{ $reason_details }}</textarea>
             </div>
             <div class="form-group col-md-6">
                 <label for="late_issue_reason">Late issue reason <span class="text-muted">(if applicable)</span></label>

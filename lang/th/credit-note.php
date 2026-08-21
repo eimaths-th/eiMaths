@@ -14,10 +14,11 @@ return [
         'commercial_return_or_exchange' => 'คืนหรือเปลี่ยนสินค้าเชิงพาณิชย์',
         'defective_service_termination' => 'เลิกบริการที่บกพร่อง',
         'service_not_provided_termination' => 'เลิกบริการที่ไม่ได้ให้บริการ',
+        'other' => 'อื่น ๆ',
     ],
     'fields' => [
         'buyer_name' => 'ชื่อผู้ซื้อ', 'buyer_address' => 'ที่อยู่ผู้ซื้อ', 'buyer_tax_id' => 'เลขประจำตัวผู้เสียภาษีผู้ซื้อ',
-        'reason' => 'เหตุผล', 'reason_details' => 'รายละเอียดเหตุผล', 'adjustment_event_date' => 'วันที่เกิดเหตุปรับปรุง',
+        'reason' => 'เหตุผล', 'reason_details' => 'รายละเอียดเหตุผล', 'custom_reason' => 'เหตุผลที่กำหนดเอง', 'adjustment_event_date' => 'วันที่เกิดเหตุปรับปรุง',
         'original' => 'เดิม', 'corrected' => 'แก้ไขแล้ว', 'difference' => 'ส่วนต่าง', 'vat' => 'ภาษีมูลค่าเพิ่ม',
         'exempt' => 'ยกเว้นภาษี', 'out_of_scope' => 'นอกขอบเขตภาษี', 'gross_revenue' => 'รายได้รวม',
         'issued_credit_notes' => 'ใบลดหนี้ที่ออก', 'cancelled_credit_notes' => 'ใบลดหนี้ที่ยกเลิก', 'net_revenue' => 'รายได้สุทธิ',

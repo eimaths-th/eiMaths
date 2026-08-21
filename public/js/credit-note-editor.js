@@ -9,6 +9,14 @@ export function PreviewTotals(values) {
     return values.reduce((total, value) => total + DecimalToMinor(value), 0n);
 }
 
+export function SyncReasonDetailsField(reason_code_control, reason_details_control, reason_details_label, required_indicator, custom_label, details_label) {
+    const custom_reason_is_selected = String(reason_code_control.value) === 'other';
+
+    reason_details_control.required = custom_reason_is_selected;
+    reason_details_label.textContent = custom_reason_is_selected ? custom_label : details_label;
+    required_indicator.hidden = !custom_reason_is_selected;
+}
+
 export function SetFeedback(message) {
     const target = document.getElementById('credit-note-editor-feedback');
     if (target) target.textContent = String(message);
@@ -40,8 +48,30 @@ export function InitializeBuyerTaxFields(root_document) {
     SyncFields();
 }
 
+export function InitializeReasonFields(root_document) {
+    const reason_code_control = root_document.getElementById('reason_code');
+    const reason_details_control = root_document.getElementById('reason_details');
+    const reason_details_label = root_document.getElementById('reason-details-label-text');
+    const required_indicator = root_document.querySelector('[data-reason-details-required]');
+
+    if (!reason_code_control || !reason_details_control || !reason_details_label || !required_indicator) return;
+
+    const SyncFields = () => SyncReasonDetailsField(
+        reason_code_control,
+        reason_details_control,
+        reason_details_label,
+        required_indicator,
+        reason_details_label.dataset.customLabel,
+        reason_details_label.dataset.detailsLabel,
+    );
+
+    reason_code_control.addEventListener('change', SyncFields);
+    SyncFields();
+}
+
 if (typeof document !== 'undefined') {
     InitializeBuyerTaxFields(document);
+    InitializeReasonFields(document);
     const form = document.getElementById('credit-note-editor');
     if (form) form.addEventListener('submit', () => SetFeedback('Saving Credit Note Draft…'));
 }

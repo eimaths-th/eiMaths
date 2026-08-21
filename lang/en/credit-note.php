@@ -14,10 +14,11 @@ return [
         'commercial_return_or_exchange' => 'Commercial return or exchange',
         'defective_service_termination' => 'Defective service termination',
         'service_not_provided_termination' => 'Service not provided termination',
+        'other' => 'Other',
     ],
     'fields' => [
         'buyer_name' => 'Buyer name', 'buyer_address' => 'Buyer address', 'buyer_tax_id' => 'Buyer tax ID',
-        'reason' => 'Reason', 'reason_details' => 'Reason details', 'adjustment_event_date' => 'Adjustment event date',
+        'reason' => 'Reason', 'reason_details' => 'Reason details', 'custom_reason' => 'Custom reason', 'adjustment_event_date' => 'Adjustment event date',
         'original' => 'Original', 'corrected' => 'Corrected', 'difference' => 'Difference', 'vat' => 'VAT',
         'exempt' => 'Exempt', 'out_of_scope' => 'Out-of-scope', 'gross_revenue' => 'Gross Revenue',
         'issued_credit_notes' => 'Issued Credit Notes', 'cancelled_credit_notes' => 'Cancelled Credit Notes', 'net_revenue' => 'Net Revenue',

@@ -20,7 +20,7 @@ class UpdateCreditNoteRequest extends FormRequest
             'buyer_branch_type' => ['required_if:buyer_is_vat_registered,1', 'nullable', 'in:head_office,branch'],
             'buyer_branch_code' => ['required_if:buyer_is_vat_registered,1', 'nullable', 'regex:/\A[0-9]{5}\z/D'],
             'reason_code' => ['required', 'in:' . implode(',', array_column(CreditNoteReasonCode::cases(), 'value'))],
-            'reason_details' => ['nullable', 'string', 'max:2000'],
+            'reason_details' => ['required_if:reason_code,other', 'nullable', 'string', 'max:2000'],
             'adjustment_event_date' => ['required', 'date_format:Y-m-d'],
             'late_issue_reason' => ['nullable', 'string', 'max:2000'],
             'items' => ['required', 'array', 'min:1', 'max:100'],

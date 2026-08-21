@@ -14,4 +14,5 @@ enum CreditNoteReasonCode: string
     case COMMERCIAL_RETURN_OR_EXCHANGE = 'commercial_return_or_exchange';
     case DEFECTIVE_SERVICE_TERMINATION = 'defective_service_termination';
     case SERVICE_NOT_PROVIDED_TERMINATION = 'service_not_provided_termination';
+    case OTHER = 'other';
 }
