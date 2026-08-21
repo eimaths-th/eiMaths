@@ -1,5 +1,43 @@
 @extends('affiliate.frontend.main')
 @section('style')
+    <style>
+        .affiliate-capabilities {
+            max-width: 760px;
+            margin: 32px auto 0;
+            padding: 20px 24px;
+            border-left: 4px solid var(--system_primery_color);
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.88);
+            text-align: left;
+        }
+
+        .affiliate-capabilities h2 {
+            margin: 0 0 8px;
+            color: var(--system_secendory_color);
+            font-size: 22px;
+            font-weight: 700;
+            line-height: 1.4;
+        }
+
+        .affiliate_bradcam_area .breadcam_text .affiliate-capabilities p {
+            margin: 0;
+            color: #5b5675;
+            font-size: 16px;
+            font-weight: 400;
+            line-height: 1.7;
+        }
+
+        @media only screen and (max-width: 767px) {
+            .affiliate-capabilities {
+                margin-top: 24px;
+                padding: 18px 20px;
+            }
+
+            .affiliate-capabilities h2 {
+                font-size: 20px;
+            }
+        }
+    </style>
 @endsection
 @section('content')
     @if (request('ref'))
@@ -14,18 +52,6 @@
         @endphp
     @endif
     <div id="content-area">
-        <section class="container affiliate-capabilities" aria-labelledby="affiliate-capabilities-title">
-            <h2 id="affiliate-capabilities-title">{{ __('affiliate.landing.capabilities_title') }}</h2>
-            @if ($affiliate_capabilities['analytics'])
-                <p>{{ __('affiliate.landing.analytics_enabled') }}</p>
-            @endif
-            @if ($affiliate_capabilities['media'])
-                <p>{{ __('affiliate.landing.media_enabled') }}</p>
-            @endif
-            @if (! $affiliate_capabilities['analytics'] && ! $affiliate_capabilities['media'])
-                <p>{{ __('affiliate.landing.analytics_unavailable_guidance') }}</p>
-            @endif
-        </section>
         <div class="full-page" data-type="component-text" data-preview="" data-aoraeditor-title="All Section"
             data-aoraeditor-categories="Affiliate Page">
             <div class="row">
@@ -46,6 +72,20 @@
                                             <a class="theme_btn" href="{{ route('affiliate.registration') }}">
                                                 {{-- <a class="theme_btn" href="https://ecommerce.eimaths-th.com/affiliate/registration"> --}}
                                                 เข้าร่วมเป็นครอบครัว Affiliate</a>
+                                            <section class="affiliate-capabilities"
+                                                aria-labelledby="affiliate-capabilities-title">
+                                                <h2 id="affiliate-capabilities-title">
+                                                    {{ __('affiliate.landing.capabilities_title', [], 'th') }}</h2>
+                                                @if ($affiliate_capabilities['analytics'])
+                                                    <p>{{ __('affiliate.landing.analytics_enabled', [], 'th') }}</p>
+                                                @endif
+                                                @if ($affiliate_capabilities['media'])
+                                                    <p>{{ __('affiliate.landing.media_enabled', [], 'th') }}</p>
+                                                @endif
+                                                @if (! $affiliate_capabilities['analytics'] && ! $affiliate_capabilities['media'])
+                                                    <p>{{ __('affiliate.landing.analytics_unavailable_guidance', [], 'th') }}</p>
+                                                @endif
+                                            </section>
                                         </div>
                                     </div>
                                 </div>

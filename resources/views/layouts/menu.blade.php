@@ -70,7 +70,14 @@
                     </a>
                 </li>
             @endif
-            {{-- Media navigation is temporarily hidden until the feature is ready for use. --}}
+            @if ((bool) config('affiliate.features.media_library', false))
+                <li class="nav-item">
+                    <a href="{{ route('affiliate.media.index') }}" class="nav-link {{ request()->routeIs('affiliate.media.*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-photo-film"></i>
+                        <p>Media</p>
+                    </a>
+                </li>
+            @endif
         </ul>
     </li>
 @endif
@@ -472,7 +479,17 @@
                     <p>Promotion</p>
                 </a>
             </li>
-            {{-- Affiliate Content navigation is temporarily hidden until the feature is ready for use. --}}
+            @if ((bool) config('affiliate.features.administration', false))
+                @can('affiliate-content-manage')
+                    <li class="nav-item">
+                        <a href="{{ route('affiliate-content-manage.index') }}"
+                            class="nav-link {{ request()->routeIs('affiliate-content-manage.*') ? 'active' : '' }}">
+                            <i class="nav-icon fa-solid fa-photo-film"></i>
+                            <p>Affiliate Content</p>
+                        </a>
+                    </li>
+                @endcan
+            @endif
             <li class="nav-item">
                 <a href="{{ route('footer-setting.index') }}"
                     class="nav-link {{ Request::is('footer-setting.index') ? 'active' : '' }}">

@@ -261,7 +261,7 @@ return [
         'empty' => 'No evidence is available for this window.',
     ],
     'landing' => [
-        'capabilities_title' => 'Available Affiliate evidence and media',
+        'capabilities_title' => 'Affiliate program capabilities',
         'analytics_enabled' => 'Filtered click activity and confirmed receipt-backed sales and income analytics update near real time every 60 seconds.',
         'media_enabled' => 'Approved image and video assets, captions, downloads, and server-generated campaign links are available.',
         'analytics_unavailable_guidance' => 'Do not treat unavailable analytics as confirmed evidence.',
