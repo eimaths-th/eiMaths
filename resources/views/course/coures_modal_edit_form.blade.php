@@ -68,8 +68,8 @@
                         <div class="col-12">
                             <label for="editCourseImage" class="form-label">ภาพหน้าปกคอร์ส</label>
                             <input type="file" class="form-control" id="editCourseImage" name="image"
-                                accept="image/jpeg,image/png,image/webp">
-                            <div class="form-text">JPG, PNG หรือ WebP ขนาดไม่เกิน 5 MB — แนะนำอัตราส่วน 16:9 อย่างน้อย 1200×675 px</div>
+                                accept="image/jpeg,image/png,.jpg,.jpeg,.png">
+                            <div class="form-text">JPG หรือ PNG ขนาดไม่เกิน 2 MB — แนะนำอัตราส่วน 16:9 อย่างน้อย 1200×675 px</div>
                             <div id="courseImageMissingWarning" class="alert alert-warning py-2 mt-2 mb-0 d-none" role="alert">
                                 ไม่พบไฟล์ภาพเดิมบนเซิร์ฟเวอร์ กรุณาอัปโหลดภาพใหม่ก่อนบันทึก
                             </div>

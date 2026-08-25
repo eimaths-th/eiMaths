@@ -62,8 +62,8 @@
                         <div class="col-12">
                             <label for="courseImage" class="form-label">ภาพหน้าปกคอร์ส <span class="text-danger">*</span></label>
                             <input type="file" class="form-control" id="courseImage" name="image"
-                                accept="image/jpeg,image/png,image/webp" required>
-                            <div class="form-text">JPG, PNG หรือ WebP ขนาดไม่เกิน 5 MB — แนะนำอัตราส่วน 16:9 อย่างน้อย 1200×675 px</div>
+                                accept="image/jpeg,image/png,.jpg,.jpeg,.png" required>
+                            <div class="form-text">JPG หรือ PNG ขนาดไม่เกิน 2 MB — แนะนำอัตราส่วน 16:9 อย่างน้อย 1200×675 px</div>
                             <img id="newCourseImagePreview" alt="ตัวอย่างภาพหน้าปกคอร์ส"
                                 class="img-fluid rounded border mt-2 d-none" style="width: 100%; max-height: 280px; object-fit: cover;">
                         </div>

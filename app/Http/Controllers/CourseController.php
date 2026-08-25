@@ -367,7 +367,7 @@ class CourseController extends Controller
             'about' => 'nullable|string|max:1000',
             'outcomes' => 'nullable|string|max:1000',
             'requirements' => 'nullable|string|max:1000',
-            'image' => 'required|image|mimes:jpeg,png,jpg,webp|max:5120',
+            'image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
         $image_path = null;
@@ -449,7 +449,7 @@ class CourseController extends Controller
             'about' => 'nullable|string|max:1000',
             'outcomes' => 'nullable|string|max:1000',
             'requirements' => 'nullable|string|max:1000',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
         $course = Course::findOrFail($id);
         $old_paths = array_values(array_unique(array_filter([$course->image, $course->thumbnail])));

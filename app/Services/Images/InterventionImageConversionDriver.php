@@ -44,11 +44,19 @@ final class InterventionImageConversionDriver implements ImageConversionDriver
     ): ImageEncodingResult {
         try {
             $image = Image::make($source_path);
-            if ($source_mime_type === 'image/jpeg') {
-                $image->orientate();
-            }
         } catch (Throwable $exception) {
             throw new InvalidUploadedImageException('The uploaded image cannot be decoded.', 0, $exception);
+        }
+
+        // Intervention's orientate() command requires PHP's optional EXIF extension.
+        // The image itself is still valid when EXIF is unavailable, so do not reject
+        // an otherwise decodable JPEG merely because automatic rotation cannot run.
+        if ($source_mime_type === 'image/jpeg' && function_exists('exif_read_data')) {
+            try {
+                $image->orientate();
+            } catch (Throwable) {
+                // Keep the original orientation when EXIF metadata is absent or invalid.
+            }
         }
 
         if ($conversion_options->should_resize) {
