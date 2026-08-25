@@ -121,6 +121,23 @@
             pointer-events: none;
         }
 
+        .courses-hero-section > .container {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1.05fr) minmax(380px, 0.95fr);
+            align-items: center;
+            gap: clamp(2rem, 4vw, 4.5rem);
+        }
+
+        .hero-copy {
+            min-width: 0;
+            text-align: left;
+        }
+
         .hero-badge-tag {
             display: inline-flex;
             align-items: center;
@@ -156,15 +173,15 @@
             font-size: 1.15rem;
             color: #475569;
             max-width: 720px;
-            margin: 0 auto 2rem;
+            margin: 0 0 2rem;
             line-height: 1.6;
         }
 
         .hero-features {
             display: flex;
             flex-wrap: wrap;
-            justify-content: center;
-            gap: 1.25rem;
+            justify-content: flex-start;
+            gap: 0.75rem;
             margin-top: 1.5rem;
         }
 
@@ -185,6 +202,112 @@
         .hero-feature-item i {
             color: #EA580C;
             font-size: 1.1rem;
+        }
+
+        .hero-slider-wrap {
+            position: relative;
+            width: 100%;
+            min-width: 0;
+            padding: 0.65rem;
+            border-radius: 30px;
+            background: rgba(255, 255, 255, 0.72);
+            border: 1px solid rgba(255, 255, 255, 0.95);
+            box-shadow: 0 24px 55px rgba(154, 52, 18, 0.18);
+            backdrop-filter: blur(10px);
+        }
+
+        .hero-slider {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16 / 10;
+            overflow: hidden;
+            border-radius: 23px;
+            background: #FED7AA;
+        }
+
+        .hero-slide {
+            position: absolute;
+            inset: 0;
+            margin: 0;
+            opacity: 0;
+            visibility: hidden;
+            transform: scale(1.035);
+            transition: opacity 0.85s ease, transform 1.1s ease, visibility 0.85s;
+        }
+
+        .hero-slide.is-active {
+            opacity: 1;
+            visibility: visible;
+            transform: scale(1);
+            z-index: 1;
+        }
+
+        .hero-slide img {
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: cover;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .hero-slide {
+                transition: none;
+                transform: none;
+            }
+        }
+
+        .hero-slider-dots {
+            position: absolute;
+            left: 50%;
+            bottom: 1.25rem;
+            z-index: 3;
+            display: flex;
+            gap: 0.45rem;
+            transform: translateX(-50%);
+            padding: 0.38rem 0.55rem;
+            border-radius: 999px;
+            background: rgba(15, 23, 42, 0.42);
+            backdrop-filter: blur(6px);
+        }
+
+        .hero-slider-dot {
+            width: 8px;
+            height: 8px;
+            padding: 0;
+            border: 0;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.58);
+            cursor: pointer;
+            transition: width 0.25s ease, background-color 0.25s ease;
+        }
+
+        .hero-slider-dot.is-active {
+            width: 24px;
+            background: #ffffff;
+        }
+
+        .hero-slider-dot:focus-visible {
+            outline: 3px solid rgba(255, 255, 255, 0.9);
+            outline-offset: 3px;
+        }
+
+        .hero-photo-label {
+            position: absolute;
+            top: 1.25rem;
+            right: 1.25rem;
+            z-index: 3;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            padding: 0.5rem 0.8rem;
+            color: #ffffff;
+            background: rgba(234, 88, 12, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.45);
+            border-radius: 999px;
+            box-shadow: 0 8px 20px rgba(124, 45, 18, 0.2);
+            font-size: 0.76rem;
+            font-weight: 600;
+            backdrop-filter: blur(6px);
         }
 
         /* Filter & Search Bar */
@@ -421,19 +544,6 @@
             font-weight: 600;
         }
 
-        .price-clarity-note {
-            display: flex;
-            align-items: flex-start;
-            gap: 0.65rem;
-            color: #92400E;
-            background: #FFFBEB;
-            border: 1px solid #FDE68A;
-            border-radius: 12px;
-            padding: 0.75rem 1rem;
-            margin: -0.75rem 0 1.5rem;
-            font-size: 0.84rem;
-        }
-
         .category-tab-btn:focus-visible,
         .btn-card-primary:focus-visible,
         .premium-footer .social-link:focus-visible {
@@ -560,6 +670,27 @@
             font-size: 0.85rem;
         }
 
+        @media (max-width: 991.98px) {
+            .hero-layout {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            .hero-copy {
+                text-align: center;
+            }
+            .hero-subtitle {
+                margin-left: auto;
+                margin-right: auto;
+            }
+            .hero-features {
+                justify-content: center;
+            }
+            .hero-slider-wrap {
+                width: min(100%, 720px);
+                margin: 0 auto;
+            }
+        }
+
         @media (max-width: 768px) {
             .hero-title {
                 font-size: 2rem;
@@ -606,6 +737,9 @@
             .courses-hero-section {
                 padding: 1.75rem 0 1.5rem;
             }
+            .hero-layout {
+                gap: 1.25rem;
+            }
             .hero-badge-tag {
                 font-size: 0.78rem;
                 line-height: 1.35;
@@ -636,6 +770,23 @@
                 font-size: 0.74rem;
                 line-height: 1.35;
             }
+            .hero-slider-wrap {
+                padding: 0.4rem;
+                border-radius: 20px;
+            }
+            .hero-slider {
+                aspect-ratio: 4 / 3;
+                border-radius: 16px;
+            }
+            .hero-photo-label {
+                top: 0.85rem;
+                right: 0.85rem;
+                font-size: 0.68rem;
+                padding: 0.4rem 0.65rem;
+            }
+            .hero-slider-dots {
+                bottom: 0.9rem;
+            }
             .filter-section {
                 margin-top: -0.75rem;
                 border-radius: 16px;
@@ -665,10 +816,6 @@
             .courses-grid-modern {
                 grid-template-columns: 1fr;
                 gap: 1.25rem;
-            }
-            .price-clarity-note {
-                margin-top: 0;
-                font-size: 0.78rem;
             }
         }
     </style>
@@ -702,34 +849,70 @@
 
     <!-- Modern Hero Section -->
     <section class="courses-hero-section">
-        <div class="container text-center">
-            <div class="hero-badge-tag">
-                <i class="fas fa-award"></i>
-                <span>สถาบันคณิตศาสตร์คิดวิเคราะห์ eiMaths มาตรฐานสิงคโปร์</span>
-            </div>
-            <h1 class="hero-title">
-                คอร์สเรียนคณิตศาสตร์ <span class="text-gradient">พัฒนาทักษะสู่ความเป็นเลิศ</span>
-            </h1>
-            <p class="hero-subtitle">
-                เรียนรู้คณิตศาสตร์ด้วยกระบวนการ CPA Approach ที่เน้นความเข้าใจจากรูปธรรมสู่ภาพและสัญลักษณ์ ปูพื้นฐานแน่น คิดวิเคราะห์เป็น และพร้อมรับมือทุกโจทย์แข่งขัน
-            </p>
+        <div class="container">
+            <div class="hero-layout">
+                <div class="hero-copy">
+                    <div class="hero-badge-tag">
+                        <i class="fas fa-award"></i>
+                        <span>สถาบันคณิตศาสตร์คิดวิเคราะห์ eiMaths มาตรฐานสิงคโปร์</span>
+                    </div>
+                    <h1 class="hero-title">
+                        คอร์สเรียนคณิตศาสตร์ <span class="text-gradient">พัฒนาทักษะสู่ความเป็นเลิศ</span>
+                    </h1>
+                    <p class="hero-subtitle">
+                        เรียนรู้คณิตศาสตร์ด้วยกระบวนการ CPA Approach ที่เน้นความเข้าใจจากรูปธรรมสู่ภาพและสัญลักษณ์ ปูพื้นฐานแน่น คิดวิเคราะห์เป็น และพร้อมรับมือทุกโจทย์แข่งขัน
+                    </p>
 
-            <div class="hero-features">
-                <div class="hero-feature-item">
-                    <i class="fas fa-shapes"></i>
-                    <span>สื่อการสอนรูปธรรม CPA</span>
+                    <div class="hero-features">
+                        <div class="hero-feature-item">
+                            <i class="fas fa-shapes"></i>
+                            <span>สื่อการสอนรูปธรรม CPA</span>
+                        </div>
+                        <div class="hero-feature-item">
+                            <i class="fas fa-brain"></i>
+                            <span>พัฒนาตรรกะและการคิดวิเคราะห์</span>
+                        </div>
+                        <div class="hero-feature-item">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                            <span>ครูผู้สอนผ่านการรับรองมาตรฐาน</span>
+                        </div>
+                        <div class="hero-feature-item">
+                            <i class="fas fa-chart-line"></i>
+                            <span>ประเมินพัฒนาการรายบุคคล</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="hero-feature-item">
-                    <i class="fas fa-brain"></i>
-                    <span>พัฒนาตรรกะและการคิดวิเคราะห์</span>
-                </div>
-                <div class="hero-feature-item">
-                    <i class="fas fa-chalkboard-teacher"></i>
-                    <span>ครูผู้สอนผ่านการรับรองมาตรฐาน</span>
-                </div>
-                <div class="hero-feature-item">
-                    <i class="fas fa-chart-line"></i>
-                    <span>ประเมินพัฒนาการรายบุคคล</span>
+
+                <div class="hero-slider-wrap" data-hero-slider aria-label="บรรยากาศการเรียน eiMaths">
+                    <div class="hero-photo-label"><i class="fas fa-camera"></i> บรรยากาศการเรียนจริง</div>
+                    <div class="hero-slider">
+                        <figure class="hero-slide is-active" aria-hidden="false">
+                            <img src="{{ asset('uploads/affiliate/hero/eimaths-teacher-high-five.webp') }}"
+                                alt="ครูและนักเรียน eiMaths ทำกิจกรรมร่วมกัน" width="1600" height="1067"
+                                loading="eager" fetchpriority="high" decoding="async">
+                        </figure>
+                        <figure class="hero-slide" aria-hidden="true">
+                            <img src="{{ asset('uploads/affiliate/hero/eimaths-class-thumbs-up.webp') }}"
+                                alt="ครูและนักเรียนในคลาส eiMaths" width="1600" height="1067"
+                                loading="lazy" decoding="async">
+                        </figure>
+                        <figure class="hero-slide" aria-hidden="true">
+                            <img src="{{ asset('uploads/affiliate/hero/eimaths-cpa-shapes.webp') }}"
+                                alt="นักเรียนอนุบาลเรียนรู้รูปทรงด้วยสื่อ CPA" width="1600" height="1067"
+                                loading="lazy" decoding="async">
+                        </figure>
+                        <figure class="hero-slide" aria-hidden="true">
+                            <img src="{{ asset('uploads/affiliate/hero/eimaths-student-group.webp') }}"
+                                alt="กลุ่มนักเรียน eiMaths เรียนคณิตศาสตร์ร่วมกัน" width="1600" height="1067"
+                                loading="lazy" decoding="async">
+                        </figure>
+                    </div>
+                    <div class="hero-slider-dots" role="group" aria-label="เลือกภาพบรรยากาศการเรียน">
+                        <button type="button" class="hero-slider-dot is-active" data-slide-index="0" aria-label="ดูภาพที่ 1" aria-current="true"></button>
+                        <button type="button" class="hero-slider-dot" data-slide-index="1" aria-label="ดูภาพที่ 2"></button>
+                        <button type="button" class="hero-slider-dot" data-slide-index="2" aria-label="ดูภาพที่ 3"></button>
+                        <button type="button" class="hero-slider-dot" data-slide-index="3" aria-label="ดูภาพที่ 4"></button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -776,11 +959,6 @@
                 <div class="courses-result-count">
                     พร้อมให้เรียน <span id="activeCoursesCount">{{ method_exists($courses, 'total') ? $courses->total() : (is_countable($courses) ? count($courses) : 0) }}</span> คอร์ส
                 </div>
-            </div>
-
-            <div class="price-clarity-note" role="note">
-                <i class="fas fa-info-circle mt-1"></i>
-                <span>ราคาที่แสดงเป็นค่าคอร์สเรียน และอาจยังไม่รวมค่าแรกเข้าและอุปกรณ์การเรียน กรุณาตรวจสอบรายละเอียดกับเจ้าหน้าที่ก่อนยืนยันการสมัคร</span>
             </div>
 
             <!-- Modern Courses Grid -->
@@ -963,6 +1141,65 @@
 @endsection
 
 @section('script')
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const slider = document.querySelector('[data-hero-slider]');
+            if (!slider) return;
+
+            const slides = Array.from(slider.querySelectorAll('.hero-slide'));
+            const dots = Array.from(slider.querySelectorAll('.hero-slider-dot'));
+            let activeIndex = 0;
+            let rotationTimer = null;
+
+            const showSlide = (nextIndex) => {
+                activeIndex = (nextIndex + slides.length) % slides.length;
+                slides.forEach((slide, index) => {
+                    const isActive = index === activeIndex;
+                    slide.classList.toggle('is-active', isActive);
+                    slide.setAttribute('aria-hidden', isActive ? 'false' : 'true');
+                });
+                dots.forEach((dot, index) => {
+                    const isActive = index === activeIndex;
+                    dot.classList.toggle('is-active', isActive);
+                    if (isActive) {
+                        dot.setAttribute('aria-current', 'true');
+                    } else {
+                        dot.removeAttribute('aria-current');
+                    }
+                });
+            };
+
+            const stopRotation = () => {
+                if (rotationTimer !== null) {
+                    window.clearInterval(rotationTimer);
+                    rotationTimer = null;
+                }
+            };
+
+            const startRotation = () => {
+                stopRotation();
+                if (!document.hidden && slides.length > 1) {
+                    rotationTimer = window.setInterval(() => showSlide(activeIndex + 1), 5000);
+                }
+            };
+
+            dots.forEach((dot) => {
+                dot.addEventListener('click', () => {
+                    showSlide(Number(dot.dataset.slideIndex || 0));
+                    startRotation();
+                });
+            });
+
+            slider.addEventListener('mouseenter', stopRotation);
+            slider.addEventListener('mouseleave', startRotation);
+            slider.addEventListener('focusin', stopRotation);
+            slider.addEventListener('focusout', startRotation);
+            document.addEventListener('visibilitychange', () => document.hidden ? stopRotation() : startRotation());
+
+            startRotation();
+        });
+    </script>
+
     <script>
         $(document).ready(function() {
             // Auto open Promo Modal if available

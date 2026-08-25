@@ -146,15 +146,6 @@
         flex-shrink: 0;
     }
 
-    .selected-course-price-note {
-        display: block;
-        max-width: 220px;
-        color: #92400E;
-        font-size: 0.7rem;
-        line-height: 1.35;
-        margin-top: 0.25rem;
-    }
-
     .selected-course-price-label {
         font-size: 0.75rem;
         color: #9ca3af;
@@ -383,9 +374,6 @@
             padding-top: 0.5rem;
             margin-top: 0.25rem;
         }
-        .selected-course-price-note {
-            max-width: none;
-        }
         .purchase-modal.premium .modal-footer {
             padding: 0.75rem;
             gap: 0.5rem;
@@ -441,7 +429,6 @@
                         <div class="selected-course-price-wrap">
                             <span class="selected-course-price-label">ค่าคอร์สเรียน</span>
                             <span class="selected-course-price" id="modalCoursePriceDisplay">0 ฿</span>
-                            <small class="selected-course-price-note">อาจยังไม่รวมค่าแรกเข้าและอุปกรณ์การเรียน</small>
                         </div>
                     </div>
 

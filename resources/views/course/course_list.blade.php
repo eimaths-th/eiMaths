@@ -1119,10 +1119,11 @@
             const file = input.files && input.files[0];
             if (!file) return;
 
-            const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
-            if (!allowedTypes.includes(file.type) || file.size > 5 * 1024 * 1024) {
+            const allowedTypes = ['image/jpeg', 'image/png'];
+            const allowedName = /\.(?:jpe?g|png)$/i.test(file.name);
+            if ((!allowedTypes.includes(file.type) && !allowedName) || file.size > 2 * 1024 * 1024) {
                 input.value = '';
-                toastr.error('รองรับเฉพาะ JPG, PNG หรือ WebP ขนาดไม่เกิน 5 MB');
+                toastr.error('รองรับเฉพาะ JPG หรือ PNG ขนาดไม่เกิน 2 MB');
                 return;
             }
 
@@ -1155,7 +1156,9 @@
                     method: 'POST',
                     body: formData,
                     headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
                     }
                 });
                 const data = await courseFetchJson(response);
@@ -1238,6 +1241,7 @@
             const courseId = document.getElementById('editCourseId').value;
             const updateUrl = "{{ route('course.update', ['id' => ':id']) }}".replace(':id', courseId);
             const formData = new FormData(this);
+            formData.set('_method', 'PUT');
             const submitButton = document.querySelector('[form="editCourseForm"][type="submit"]');
             submitButton.disabled = true;
 
@@ -1247,7 +1251,8 @@
                     body: formData,
                     headers: {
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                        'X-HTTP-Method-Override': 'PUT', // Spoof method
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
                     }
                 });
                 const data = await courseFetchJson(response);
