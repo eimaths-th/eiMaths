@@ -1098,62 +1098,103 @@
         });
     </script>
     <script>
-        document.getElementById('addCourseForm').addEventListener('submit', function(event) {
+        function courseTranslatedValue(value) {
+            if (!value) return '';
+            if (typeof value === 'string') return value;
+            return value.en || Object.values(value)[0] || '';
+        }
+
+        async function courseFetchJson(response) {
+            const data = await response.json().catch(() => ({}));
+
+            if (!response.ok) {
+                const validationMessages = data.errors ? Object.values(data.errors).flat().join(' ') : '';
+                throw new Error(validationMessages || data.message || `เกิดข้อผิดพลาด (${response.status})`);
+            }
+
+            return data;
+        }
+
+        function previewCourseImage(input, preview, missingWarning = null) {
+            const file = input.files && input.files[0];
+            if (!file) return;
+
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+            if (!allowedTypes.includes(file.type) || file.size > 5 * 1024 * 1024) {
+                input.value = '';
+                toastr.error('รองรับเฉพาะ JPG, PNG หรือ WebP ขนาดไม่เกิน 5 MB');
+                return;
+            }
+
+            preview.src = URL.createObjectURL(file);
+            preview.classList.remove('d-none');
+            if (missingWarning) missingWarning.classList.add('d-none');
+        }
+
+        document.getElementById('courseImage').addEventListener('change', function() {
+            previewCourseImage(this, document.getElementById('newCourseImagePreview'));
+        });
+
+        document.getElementById('editCourseImage').addEventListener('change', function() {
+            previewCourseImage(
+                this,
+                document.getElementById('courseImagePreview'),
+                document.getElementById('courseImageMissingWarning')
+            );
+        });
+
+        document.getElementById('addCourseForm').addEventListener('submit', async function(event) {
             event.preventDefault(); // Prevent the default form submission
 
-            // Gather form data
             const formData = new FormData(this);
+            const submitButton = document.querySelector('[form="addCourseForm"][type="submit"]');
+            submitButton.disabled = true;
 
-            // Send data via AJAX (example using Fetch API)
-            fetch('{{ route('course.store') }}', {
+            try {
+                const response = await fetch('{{ route('course.store') }}', {
                     method: 'POST',
                     body: formData,
                     headers: {
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                     }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        $('#Listview').DataTable().ajax.reload();
-                        toastr.success(data.message, {
-                            timeOut: 5000
-                        });
+                });
+                const data = await courseFetchJson(response);
 
-                        $('.form').trigger('reset');
-
-                        $('#addCourseModal').modal('hide');
-                        // alert('Course added successfully!');
-                        // location.reload(); // Optionally reload the page or update the UI dynamically
-                    } else {
-                        toastr.error(data.message, {
-                            timeOut: 5000
-                        });
-                    }
-                })
-                .catch(error => console.error('Error:', error));
+                $('#Listview').DataTable().ajax.reload();
+                toastr.success(data.message, { timeOut: 5000 });
+                this.reset();
+                document.getElementById('newCourseImagePreview').classList.add('d-none');
+                bootstrap.Modal.getInstance(document.getElementById('addCourseModal'))?.hide();
+            } catch (error) {
+                toastr.error(error.message, { timeOut: 7000 });
+            } finally {
+                submitButton.disabled = false;
+            }
         });
     </script>
 
     <script>
-        document.addEventListener('click', function(event) {
-            if (event.target.classList.contains('edit-btn')) {
-                const courseId = event.target.getAttribute('data-id');
+        document.addEventListener('click', async function(event) {
+            const editButton = event.target.closest('.edit-btn');
+            if (editButton) {
+                const courseId = editButton.getAttribute('data-id');
                 // console.log(courseId); // Should log the course ID
                 // Remaining logic...
 
                 const editUrl = "{{ route('course.edit', ['id' => ':id']) }}".replace(':id', courseId);
 
-                fetch(editUrl, {
+                try {
+                    const response = await fetch(editUrl, {
                         headers: {
                             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                         }
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            $('#editCourseId').val(data.course.id);
-                            document.getElementById('editCourseTitle').value = data.course.title.en;
+                    });
+                    const data = await courseFetchJson(response);
+
+                    if (data.success) {
+                            document.getElementById('editCourseForm').reset();
+                            document.getElementById('editCourseId').value = data.course.id;
+                            document.getElementById('editCourseTitle').value = data.display_title || courseTranslatedValue(data.course.title);
                             document.getElementById('editCategoryId').value = data.course.category_id;
                             // Add other fields as needed
                             // Populate mode of delivery (set the selected option based on course data)
@@ -1163,85 +1204,62 @@
                             document.getElementById('editCoursePrice').value = data.course.price;
 
                             // Populate status (radio buttons)
-                            if (data.course.status === 1) {
-                                document.getElementById('edittStatusActive').checked = true;
+                            if (Number(data.course.status) === 1) {
+                                document.getElementById('editStatusActive').checked = true;
                                 document.getElementById('editStatusInactive').checked = false;
                             } else {
-                                document.getElementById('edittStatusActive').checked = false;
+                                document.getElementById('editStatusActive').checked = false;
                                 document.getElementById('editStatusInactive').checked = true;
                             }
 
-                            // Handle course image (if any image exists)
+                            document.getElementById('editCourseAbout').value = courseTranslatedValue(data.course.about);
+                            document.getElementById('editCourseOutcomes').value = data.course.affiliate_outcomes || '';
+                            document.getElementById('editCourseRequirements').value = data.course.affiliate_requirements || '';
+
                             const imageElement = document.getElementById('courseImagePreview');
-                            if (data.course.image) {
-                                const imagePath = data.course.image.replace('public/', '');
-                                const imageUrl = "{{ asset('') }}" + imagePath;
-                                imageElement.src = imageUrl;
-
-
-                            } else {
-                                imageElement.src = ''; // Clear image if none exists
-                            }
-
-                            // Populate hidden fields
-                            document.getElementById('editLevel').value = data.course.level || '1';
-                            document.getElementById('editPublish').value = data.course.publish || '1';
-                            document.getElementById('editLang_id').value = data.course.lang_id || '19';
-                            document.getElementById('editUser_id').value = data.course.user_id || '';
-                            document.getElementById('editType').value = data.course.type || '1';
-                            document.getElementById('editScope').value = data.course.scope || '1';
-                            document.getElementById('editShow_mode_of_delivery').value = data.course
-                                .show_mode_of_delivery || '1';
+                            imageElement.src = data.image_url;
+                            imageElement.classList.remove('d-none');
+                            document.getElementById('courseImageMissingWarning').classList.toggle('d-none', data.image_exists);
+                            document.getElementById('editCourseImage').value = '';
 
                             // Show the modal
-                            const modal = new bootstrap.Modal(document.getElementById('editCourseModal'));
+                            const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('editCourseModal'));
                             modal.show();
-                        } else {
-                            alert('Failed to fetch course details.');
-                        }
-                    })
-                    .catch(error => console.error('Error:', error));
+                    }
+                } catch (error) {
+                    toastr.error(error.message, { timeOut: 7000 });
+                }
             }
         });
 
-        document.getElementById('editCourseForm').addEventListener('submit', function(event) {
+        document.getElementById('editCourseForm').addEventListener('submit', async function(event) {
             event.preventDefault();
 
             const courseId = document.getElementById('editCourseId').value;
             const updateUrl = "{{ route('course.update', ['id' => ':id']) }}".replace(':id', courseId);
             const formData = new FormData(this);
+            const submitButton = document.querySelector('[form="editCourseForm"][type="submit"]');
+            submitButton.disabled = true;
 
-            fetch(updateUrl, {
+            try {
+                const response = await fetch(updateUrl, {
                     method: 'POST', // Use POST and spoof PUT
                     body: formData,
                     headers: {
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
                         'X-HTTP-Method-Override': 'PUT', // Spoof method
                     }
-                })
-                .then(response => {
-                    if (!response.ok) throw new Error('HTTP error ' + response.status);
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.success) {
-                        $('#Listview').DataTable().ajax.reload();
-                        toastr.success(data.message, {
-                            timeOut: 5000
-                        });
-                        $('.form').trigger('reset');
+                });
+                const data = await courseFetchJson(response);
 
-                        $('#editCourseModal').modal('hide');
-                        // location.reload();
-                    } else {
-                        // alert('Failed to update course: ' + (data.message || 'Unknown error'));
-                        $('#Listview').DataTable().ajax.reload();
-                        toastr.error(data.message, {
-                            timeOut: 5000
-                        });
-                    }
-                })
-                .catch(error => console.error('Error:', error));
+                $('#Listview').DataTable().ajax.reload(null, false);
+                toastr.success(data.message, { timeOut: 5000 });
+                bootstrap.Modal.getInstance(document.getElementById('editCourseModal'))?.hide();
+            } catch (error) {
+                toastr.error(error.message, { timeOut: 7000 });
+            } finally {
+                submitButton.disabled = false;
+            }
         });
 
         document.addEventListener('click', function(event) {

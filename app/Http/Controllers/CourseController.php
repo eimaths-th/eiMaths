@@ -359,12 +359,15 @@ class CourseController extends Controller
     {
 
         $validated = $request->validate([
-            'title' => 'required|string',
+            'title' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
-            'mode_of_delivery' => 'required|integer',
-            'price' => 'required|numeric',
+            'mode_of_delivery' => 'required|integer|in:1,2,3',
+            'price' => 'required|numeric|min:0',
             'status' => 'required|boolean',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'about' => 'nullable|string|max:1000',
+            'outcomes' => 'nullable|string|max:1000',
+            'requirements' => 'nullable|string|max:1000',
+            'image' => 'required|image|mimes:jpeg,png,jpg,webp|max:5120',
         ]);
 
         $image_path = null;
@@ -376,19 +379,23 @@ class CourseController extends Controller
                 $add_course = new Course;
                 $add_course->category_id = $request->input('category_id');
                 $add_course->user_id = Auth::id();
-                $add_course->lang_id = $request->input('lang_id');
-                $add_course->title = $request->input('title');
-                $add_course->slug = $request->input('title');
+                $title = $this->NormalizeCourseTitle($request->input('title'));
+                $add_course->lang_id = $request->input('lang_id', 19);
+                $add_course->title = $title;
+                $add_course->slug = $title;
                 $add_course->image = $image_path;
                 $add_course->thumbnail = $image_path;
                 $add_course->price = $request->input('price');
-                $add_course->publish = $request->input('publish');
+                $add_course->about = $request->input('about');
+                $add_course->affiliate_outcomes = $request->input('outcomes');
+                $add_course->affiliate_requirements = $request->input('requirements');
+                $add_course->publish = $request->input('publish', 1);
                 $add_course->status = $request->input('status');
-                $add_course->level = $request->input('level');
-                $add_course->type = $request->input('type');
-                $add_course->scope = $request->input('scope');
+                $add_course->level = $request->input('level', 1);
+                $add_course->type = $request->input('type', 1);
+                $add_course->scope = $request->input('scope', 1);
                 $add_course->mode_of_delivery = $request->input('mode_of_delivery');
-                $add_course->show_mode_of_delivery = $request->input('show_mode_of_delivery');
+                $add_course->show_mode_of_delivery = $request->input('show_mode_of_delivery', 1);
                 $add_course->save();
             });
         } catch (Throwable $exception) {
@@ -402,8 +409,15 @@ class CourseController extends Controller
     public function edit(Request $request, $id)
     {
         $course = Course::findOrFail($id);
+        $image_state = $this->GetCourseImageState($course);
 
-        return response()->json(['success' => true, 'course' => $course]);
+        return response()->json([
+            'success' => true,
+            'course' => $course,
+            'display_title' => $this->NormalizeCourseTitle($course->title),
+            'image_url' => $image_state['url'],
+            'image_exists' => $image_state['exists'],
+        ]);
     }
 
     public function destroy($id)
@@ -411,12 +425,8 @@ class CourseController extends Controller
         // Find the course by ID
         $course = Course::findOrFail($id);
 
-        // Get the image path from the course model
-        $imagePath = asset(str_replace('public/', '', $course->image)); // Assuming the image path is stored in the `image` attribute of the course
-
-        // Delete the image file from the server (if it exists)
-        if (file_exists($imagePath)) {
-            unlink($imagePath); // Delete the image file
+        foreach (array_unique(array_filter([$course->image, $course->thumbnail])) as $image_path) {
+            $this->DeleteStoredCourseImage($image_path);
         }
 
         // Attempt to delete the course
@@ -431,15 +441,19 @@ class CourseController extends Controller
 
         // dd($request->all());
         $validated = $request->validate([
-            'title' => 'required|string',
+            'title' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
-            'mode_of_delivery' => 'required|integer',
-            'price' => 'required|numeric',
+            'mode_of_delivery' => 'required|integer|in:1,2,3',
+            'price' => 'required|numeric|min:0',
             'status' => 'required|boolean',
-            // 'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // Add image validation
+            'about' => 'nullable|string|max:1000',
+            'outcomes' => 'nullable|string|max:1000',
+            'requirements' => 'nullable|string|max:1000',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
         ]);
         $course = Course::findOrFail($id);
-        $old_path = $course->image;
+        $old_paths = array_values(array_unique(array_filter([$course->image, $course->thumbnail])));
+        $old_path = $course->image ?: $course->thumbnail;
         $image_path = $old_path;
         $new_image_path = null;
 
@@ -452,19 +466,17 @@ class CourseController extends Controller
             DB::transaction(function () use ($request, $course, $image_path): void {
                 $course->category_id = $request->input('category_id');
                 $course->user_id = Auth::id();
-                $course->lang_id = $request->input('lang_id');
-                $course->title = $request->input('title');
-                $course->slug = $request->input('title');
+                $title = $this->NormalizeCourseTitle($request->input('title'));
+                $course->title = $title;
+                $course->slug = $title;
                 $course->image = $image_path;
                 $course->thumbnail = $image_path;
                 $course->price = $request->input('price');
-                $course->publish = $request->input('publish');
+                $course->about = $request->input('about');
+                $course->affiliate_outcomes = $request->input('outcomes');
+                $course->affiliate_requirements = $request->input('requirements');
                 $course->status = $request->input('status');
-                $course->level = $request->input('level');
-                $course->type = $request->input('type');
-                $course->scope = $request->input('scope');
                 $course->mode_of_delivery = $request->input('mode_of_delivery');
-                $course->show_mode_of_delivery = $request->input('show_mode_of_delivery');
                 $course->save();
             });
         } catch (Throwable $exception) {
@@ -472,11 +484,21 @@ class CourseController extends Controller
             throw $exception;
         }
 
-        if ($new_image_path !== null && $old_path !== null && $old_path !== $new_image_path) {
-            $this->DeleteStoredCourseImage($old_path);
+        if ($new_image_path !== null) {
+            foreach ($old_paths as $stored_path) {
+                if ($stored_path !== $new_image_path) {
+                    $this->DeleteStoredCourseImage($stored_path);
+                }
+            }
         }
 
-        return response()->json(['success' => true, 'message' => 'Course updated successfully.']);
+        $image_state = $this->GetCourseImageState($course->fresh());
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Course updated successfully.',
+            'image_url' => $image_state['url'],
+        ]);
     }
     public function categories()
     {
@@ -1361,6 +1383,31 @@ class CourseController extends Controller
         }
 
         $this->DeletePublicRelativeImage(str_starts_with($stored_path, 'public/') ? substr($stored_path, 7) : $stored_path);
+    }
+
+    /** @return array{url: string, exists: bool} */
+    private function GetCourseImageState(Course $course): array
+    {
+        foreach (array_unique(array_filter([$course->thumbnail, $course->image])) as $stored_path) {
+            $relative_path = ltrim(str_starts_with($stored_path, 'public/') ? substr($stored_path, 7) : $stored_path, '/\\');
+
+            if (is_file(public_path($relative_path))) {
+                return [
+                    'url' => asset($relative_path),
+                    'exists' => true,
+                ];
+            }
+        }
+
+        return [
+            'url' => asset('uploads/ei-defult.jpg'),
+            'exists' => false,
+        ];
+    }
+
+    private function NormalizeCourseTitle(?string $title): string
+    {
+        return preg_replace('/\\s+/u', ' ', trim((string) $title)) ?? trim((string) $title);
     }
 
     private function DeletePublicRelativeImage(string $relative_path): void
