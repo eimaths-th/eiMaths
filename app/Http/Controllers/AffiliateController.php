@@ -212,6 +212,9 @@ class AffiliateController extends Controller
 
         // Retrieve courses with pagination and preserve query string
         $courses = Course::where('status', 1)
+            ->where('type', 1)
+            ->where('scope', 1)
+            ->where('publish', 1)
             ->orderByDesc('id')
             ->paginate(12);
         $courses->appends($request->query());
