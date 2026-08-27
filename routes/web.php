@@ -5,6 +5,7 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\EiFormController;
 use App\Http\Controllers\FooterSettingController;
 use App\Http\Controllers\FaqController;
+use App\Http\Controllers\FaqCategoryController;
 use App\Http\Controllers\HistoriesController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
@@ -286,6 +287,14 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/faqs/{faq}/edit', [FaqController::class, 'Edit'])->name('faqs.edit');
     Route::put('/faqs/{faq}', [FaqController::class, 'Update'])->name('faqs.update');
     Route::delete('/faqs/{faq}', [FaqController::class, 'Destroy'])->name('faqs.destroy');
+
+    // FAQ Categories
+    Route::get('/faq-categories', [FaqCategoryController::class, 'Index'])->name('faq-categories.index');
+    Route::get('/faq-categories/create', [FaqCategoryController::class, 'Create'])->name('faq-categories.create');
+    Route::post('/faq-categories', [FaqCategoryController::class, 'Store'])->name('faq-categories.store');
+    Route::get('/faq-categories/{faq_category}/edit', [FaqCategoryController::class, 'Edit'])->name('faq-categories.edit');
+    Route::put('/faq-categories/{faq_category}', [FaqCategoryController::class, 'Update'])->name('faq-categories.update');
+    Route::delete('/faq-categories/{faq_category}', [FaqCategoryController::class, 'Destroy'])->name('faq-categories.destroy');
 
     // Image Upload
     Route::post('/upload/image', [ImageUploadController::class, 'upload'])->name('upload.image');

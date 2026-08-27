@@ -31,13 +31,16 @@
 <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const answer_element = document.getElementById('answer');
+        const editors = [];
 
-        if (!answer_element) {
-            return;
-        }
+        ['answer', 'answer_en'].forEach(function (element_id) {
+            const answer_element = document.getElementById(element_id);
 
-        const easy_mde = new EasyMDE({
+            if (!answer_element) {
+                return;
+            }
+
+            const easy_mde = new EasyMDE({
             element: answer_element,
             toolbar: [
                 {
@@ -127,7 +130,7 @@
             ],
             uploadImage: true,
             imageUploadFunction: function(file, onSuccess, onError) {
-                const upload_status_container = $('#upload-status-container');
+                const upload_status_container = $('#upload-status-container-' + element_id);
                 const upload_status = $('<div class="upload-status" style="background-color: #f8f9fa; border: 1px solid #ddd; color: #333; padding: 0px 6px; border-radius: 6px; font-size: 12px;">กำลังอัปโหลด... <span class="progress">0%</span></div>');
                 const form_data = new FormData();
 
@@ -197,15 +200,20 @@
             }
         });
 
-        setTimeout(function() {
-            const wrapper = easy_mde.codemirror.getWrapperElement();
-            wrapper.style.fontSize = '16px';
-        }, 100);
+            editors.push(easy_mde);
 
-        const form = answer_element.closest('form');
+            setTimeout(function() {
+                const wrapper = easy_mde.codemirror.getWrapperElement();
+                wrapper.style.fontSize = '16px';
+            }, 100);
+        });
+
+        const form = document.getElementById('answer')?.closest('form');
         if (form) {
             form.addEventListener('submit', function () {
-                easy_mde.codemirror.save();
+                editors.forEach(function (editor) {
+                    editor.codemirror.save();
+                });
             });
         }
     });
