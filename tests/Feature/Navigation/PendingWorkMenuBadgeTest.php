@@ -108,4 +108,26 @@ class PendingWorkMenuBadgeTest extends TestCase
             $menu,
         );
     }
+
+    #[Test]
+    public function PendingWorkNotificationIsRenderedInsideTheNavbar(): void
+    {
+        $admin = User::factory()->create([
+            'email_verified_at' => now(),
+            'password' => Hash::make('secret'),
+            'disable' => 0,
+        ]);
+        $admin->givePermissionTo([
+            Permission::findOrCreate('affiliate-list', 'web'),
+        ]);
+
+        $response = $this->actingAs($admin)->get(route('affiliate.admin.index'));
+        $menu = $response->getContent();
+
+        $this->assertMatchesRegularExpression(
+            '/<nav[^>]*>.*data-pending-work-alert-toggle.*data-pending-work-alert-panel.*<\/nav>/s',
+            $menu,
+        );
+        $this->assertStringNotContainsString('data-pending-work-alert-toast', $menu);
+    }
 }
