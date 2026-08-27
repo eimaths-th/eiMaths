@@ -8,6 +8,7 @@ use App\Domain\Affiliate\Models\AffiliateProfile;
 use App\Domain\Affiliate\Services\AffiliateAccountService;
 use App\Models\Department;
 use App\Models\User;
+use App\Notifications\AffiliateEmailVerificationNotification;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Config;
@@ -56,7 +57,43 @@ class AffiliateRegistrationTest extends TestCase
 
         $this->assertTrue($user->fresh()->hasRole('Affiliate-user'));
         $this->assertSame(AffiliateProfileStatus::PENDING_EMAIL, $user->fresh()->AffiliateProfile->status);
+        Notification::assertSentTo($user, AffiliateEmailVerificationNotification::class);
+    }
+
+    #[Test]
+    public function AffiliateVerificationEmailExplainsApprovalWaitAndContactNumber(): void
+    {
+        Notification::fake();
+
+        $user = app(AffiliateAccountService::class)->Register([
+            'name' => 'Affiliate Approval Notice',
+            'email' => 'affiliate-approval-notice@example.test',
+            'phone' => '0812345678',
+            'password' => 'password-123',
+            'password_confirmation' => 'password-123',
+        ]);
+
+        Notification::assertSentTo($user, AffiliateEmailVerificationNotification::class);
+        $notification = Notification::sent($user, AffiliateEmailVerificationNotification::class)->first();
+        $email_body = (string) $notification->toMail($user)->render();
+
+        $this->assertStringContainsString('ทีมงานจะตรวจสอบและอนุมัติภายในประมาณ 3 วัน', $email_body);
+        $this->assertStringContainsString('06-1620-8666', $email_body);
+    }
+
+    #[Test]
+    public function NonAffiliateVerificationEmailKeepsTheDefaultNotification(): void
+    {
+        Notification::fake();
+        $user = User::factory()->create([
+            'email_verified_at' => null,
+            'password' => Hash::make('secret'),
+        ]);
+
+        $user->sendEmailVerificationNotification();
+
         Notification::assertSentTo($user, VerifyEmail::class);
+        Notification::assertNotSentTo($user, AffiliateEmailVerificationNotification::class);
     }
 
     public function test_production_registration_fails_closed_when_mail_driver_is_log(): void
@@ -175,7 +212,7 @@ class AffiliateRegistrationTest extends TestCase
 
         $response->assertRedirect(route('affiliate.waiting'))
             ->assertSessionHas('affiliate_verification_sent', true);
-        Notification::assertSentTo($affiliate_user, VerifyEmail::class);
+        Notification::assertSentTo($affiliate_user, AffiliateEmailVerificationNotification::class);
         $this->assertFalse(auth()->check());
     }
 
@@ -208,7 +245,7 @@ class AffiliateRegistrationTest extends TestCase
 
         $response->assertRedirect(route('affiliate.waiting'))
             ->assertSessionHas('affiliate_verification_sent', true);
-        Notification::assertSentTo($affiliate_user, VerifyEmail::class);
+        Notification::assertSentTo($affiliate_user, AffiliateEmailVerificationNotification::class);
         $this->assertFalse(auth()->check());
     }
 

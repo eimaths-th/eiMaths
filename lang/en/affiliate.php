@@ -19,6 +19,7 @@ return [
         'account_approved' => 'Your Affiliate account has been approved. Please log in to continue.',
     ],
     'notifications' => [
+        'verification_pending_approval' => 'Our team will review and approve your Affiliate account within approximately 3 days. If it takes longer, please contact 06-1620-8666.',
         'approved_subject' => 'Your Affiliate account has been approved',
         'approved_greeting' => 'Hello :name,',
         'approved_body' => 'Your Affiliate account has been approved. Your referral code is :referral_code.',

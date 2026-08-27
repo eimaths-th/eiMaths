@@ -2,7 +2,10 @@
 
 namespace App\Models;
 
+use App\Domain\Affiliate\Enums\AffiliateProfileStatus;
 use App\Domain\Affiliate\Models\AffiliateProfile;
+use App\Notifications\AffiliateEmailVerificationNotification;
+use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -110,6 +113,17 @@ class User extends Authenticatable implements MustVerifyEmail
     public function AffiliateProfile()
     {
         return $this->hasOne(AffiliateProfile::class, 'user_id');
+    }
+
+    public function sendEmailVerificationNotification(): void
+    {
+        if ($this->AffiliateProfile?->status === AffiliateProfileStatus::PENDING_EMAIL) {
+            $this->notify(new AffiliateEmailVerificationNotification());
+
+            return;
+        }
+
+        $this->notify(new VerifyEmail());
     }
 
     public function isOrganization()

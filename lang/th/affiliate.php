@@ -19,6 +19,7 @@ return [
         'account_approved' => 'บัญชี Affiliate ของคุณได้รับการอนุมัติแล้ว กรุณาเข้าสู่ระบบเพื่อใช้งานต่อ',
     ],
     'notifications' => [
+        'verification_pending_approval' => 'ทีมงานจะตรวจสอบและอนุมัติภายในประมาณ 3 วัน หากใช้เวลานานกว่านั้น กรุณาติดต่อ 06-1620-8666',
         'approved_subject' => 'บัญชี Affiliate ของคุณได้รับการอนุมัติแล้ว',
         'approved_greeting' => 'สวัสดีคุณ :name',
         'approved_body' => 'บัญชี Affiliate ของคุณได้รับการอนุมัติแล้ว รหัสแนะนำของคุณคือ :referral_code',
