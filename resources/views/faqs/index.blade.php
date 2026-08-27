@@ -9,6 +9,11 @@
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
+                    @can('faq-list')
+                        <a href="{{ route('faq-categories.index') }}" class="btn btn-outline-primary mr-2">
+                            <i class="fas fa-folder"></i> Manage Categories
+                        </a>
+                    @endcan
                     @can('faq-create')
                         <a href="{{ route('faqs.create') }}" class="btn btn-success">
                             <i class="fas fa-plus"></i> New FAQ
@@ -34,12 +39,31 @@
                                 toastr.success('{{ Session::get('success') }}', { timeOut: 5000 });
                             </script>
                         @endif
+                        @if (Session::has('error'))
+                            <script>
+                                toastr.error('{{ Session::get('error') }}', { timeOut: 5000 });
+                            </script>
+                        @endif
+
+                        <form method="GET" action="{{ route('faqs.index') }}" class="form-inline mb-3">
+                            <label for="category-filter" class="mr-2">Category</label>
+                            <select id="category-filter" name="category_id" class="form-control mr-2">
+                                <option value="">All categories</option>
+                                @foreach($categories as $category)
+                                    <option value="{{ $category->id }}" {{ (string) $selected_category_id === (string) $category->id ? 'selected' : '' }}>
+                                        {{ $category->name }}{{ $category->name_en ? ' / ' . $category->name_en : '' }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <button type="submit" class="btn btn-primary">Filter</button>
+                        </form>
 
                         <div class="table-responsive">
                             <table class="table table-bordered table-striped">
                                 <thead>
                                     <tr>
                                         <th style="width: 80px;">Position</th>
+                                        <th>Category</th>
                                         <th>Question</th>
                                         <th>Answer</th>
                                         <th style="width: 120px;">Published</th>
@@ -52,6 +76,7 @@
                                     @forelse ($faqs as $faq)
                                         <tr>
                                             <td>{{ $faq->position }}</td>
+                                            <td>{{ optional($faq->category)->name ?? '-' }}</td>
                                             <td>{{ $faq->question }}</td>
                                             <td>{{ \Illuminate\Support\Str::limit($faq->answer, 140) }}</td>
                                             <td>
@@ -76,7 +101,7 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="{{ auth()->user()->can('faq-edit') || auth()->user()->can('faq-delete') ? 5 : 4 }}" class="text-center text-muted">No FAQ records found.</td>
+                                            <td colspan="{{ auth()->user()->can('faq-edit') || auth()->user()->can('faq-delete') ? 6 : 5 }}" class="text-center text-muted">No FAQ records found.</td>
                                         </tr>
                                     @endforelse
                                 </tbody>
