@@ -56,6 +56,11 @@
     </ul>
 
     <ul class="navbar-nav ml-auto">
+        @if (isset($pending_work_alert_enabled) && $pending_work_alert_enabled)
+            @include('partials.pending-work-alert', [
+                'authenticated_user' => $authenticated_user,
+            ])
+        @endif
         <li class="nav-item d-none d-md-inline-block text-nowrap">
             <a class="nav-link" data-widget="fullscreen" href="#" role="button">
                 <i class="fas fa-xl fa-expand-arrows-alt"></i> <b class="text-primary">Zoom in/out screen</b>

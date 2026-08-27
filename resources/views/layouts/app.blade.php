@@ -84,11 +84,6 @@
             'authenticated_user' => $authenticated_user,
         ])
     @endif
-    @if ($pending_work_alert_enabled)
-        @include('partials.pending-work-alert', [
-            'authenticated_user' => $authenticated_user,
-        ])
-    @endif
 </body>
 
 @include('layouts.includes.js')

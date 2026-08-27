@@ -31,6 +31,12 @@ class FakeNode {
 
 class FakeRoot extends FakeNode {
     constructor() {
+        const notification_toggle = new FakeNode();
+        notification_toggle.hidden = false;
+        const notification_badge = new FakeNode();
+        const notification_total = new FakeNode();
+        const notification_panel = new FakeNode();
+        const empty_state = new FakeNode();
         const affiliate_item = new FakeNode({
             '[data-pending-work-item-title]': new FakeNode(),
             '[data-pending-work-item-count]': new FakeNode(),
@@ -47,10 +53,21 @@ class FakeRoot extends FakeNode {
         super({
             '[data-pending-work-alert-toast]': new FakeNode(),
             '[data-pending-work-alert-dismiss]': new FakeNode(),
+            '[data-pending-work-alert-toggle]': notification_toggle,
+            '[data-pending-work-alert-badge]': notification_badge,
+            '[data-pending-work-alert-total]': notification_total,
+            '[data-pending-work-alert-panel]': notification_panel,
+            '[data-pending-work-alert-empty]': empty_state,
             '[data-pending-work-item="affiliate"]': affiliate_item,
             '[data-pending-work-item="book"]': book_item,
         });
         this.attributes = { 'data-storage-key': 'pending-work-alert:1' };
+        this.hidden = false;
+        this.notification_toggle = notification_toggle;
+        this.notification_badge = notification_badge;
+        this.notification_total = notification_total;
+        this.notification_panel = notification_panel;
+        this.empty_state = empty_state;
         this.affiliate_item = affiliate_item;
         this.book_item = book_item;
     }
@@ -93,56 +110,71 @@ function CreateWorkItem(source_id, pending_count, event_type = null) {
     };
 }
 
-test('ShowsCombinedPendingWorkAndRepeatsReminderOnlyAfterThirtyMinutes', () => {
-    let now_ms = 0;
+test('ShowsPendingWorkInNavbarBadgeWithoutOpeningNotificationPanel', () => {
     const root = new FakeRoot();
     const storage = CreateStorage();
     const alert_manager = CreatePendingWorkAlertManager({
         RootElement: root,
         Storage: storage,
-        Now: () => now_ms,
+    });
+
+    alert_manager.HandleWorkItem(CreateWorkItem('affiliate', 1, 'pending_summary'));
+
+    assert.equal(alert_manager.IsPanelOpen(), false);
+    assert.equal(root.notification_panel.hidden, true);
+    assert.equal(root.notification_toggle.attributes['aria-expanded'], 'false');
+    assert.equal(root.notification_badge.hidden, false);
+    assert.equal(root.notification_badge.textContent, '1');
+    assert.equal(root.notification_total.textContent, '1 รายการ');
+    assert.equal(root.affiliate_item.hidden, false);
+    assert.equal(root.affiliate_item.querySelector('[data-pending-work-item-count]').textContent, '1');
+});
+
+test('OpensAndClosesCombinedPendingWorkFromNavbarNotificationButton', () => {
+    const root = new FakeRoot();
+    const storage = CreateStorage();
+    const alert_manager = CreatePendingWorkAlertManager({
+        RootElement: root,
+        Storage: storage,
     });
 
     alert_manager.HandleWorkItem(CreateWorkItem('affiliate', 1, 'pending_summary'));
     alert_manager.HandleWorkItem(CreateWorkItem('book', 2));
 
-    assert.equal(root.querySelector('[data-pending-work-alert-toast]').hidden, false);
+    root.notification_toggle.Click();
+    assert.equal(alert_manager.IsPanelOpen(), true);
+    assert.equal(root.notification_panel.hidden, false);
+    assert.equal(root.notification_toggle.attributes['aria-expanded'], 'true');
+    assert.equal(root.notification_badge.textContent, '3');
+    assert.equal(root.notification_total.textContent, '3 รายการ');
     assert.equal(root.affiliate_item.hidden, false);
     assert.equal(root.book_item.hidden, false);
-    assert.equal(root.affiliate_item.querySelector('[data-pending-work-item-count]').textContent, '1');
-    assert.equal(root.book_item.querySelector('[data-pending-work-item-count]').textContent, '2');
 
     root.querySelector('[data-pending-work-alert-dismiss]').Click();
-    assert.equal(root.querySelector('[data-pending-work-alert-toast]').hidden, true);
-
-    now_ms = 10 * 60 * 1000;
-    alert_manager.HandleWorkItem(CreateWorkItem('affiliate', 1));
-    assert.equal(root.querySelector('[data-pending-work-alert-toast]').hidden, true);
-
-    now_ms = 30 * 60 * 1000;
-    alert_manager.HandleWorkItem(CreateWorkItem('affiliate', 1));
-    assert.equal(root.querySelector('[data-pending-work-alert-toast]').hidden, false);
+    assert.equal(alert_manager.IsPanelOpen(), false);
+    assert.equal(root.notification_panel.hidden, true);
+    assert.equal(root.notification_toggle.attributes['aria-expanded'], 'false');
+    assert.equal(root.notification_badge.hidden, false);
 });
 
-test('ShowsNewPendingWorkImmediatelyBeforeTheReminderInterval', () => {
-    let now_ms = 0;
+test('ShowsEmptyStateAndClearsBadgeWhenAllPendingWorkIsResolved', () => {
     const root = new FakeRoot();
     const storage = CreateStorage();
     const alert_manager = CreatePendingWorkAlertManager({
         RootElement: root,
         Storage: storage,
-        Now: () => now_ms,
     });
 
     alert_manager.HandleWorkItem(CreateWorkItem('affiliate', 1, 'pending_summary'));
-    root.querySelector('[data-pending-work-alert-dismiss]').Click();
+    root.notification_toggle.Click();
 
-    now_ms = 60 * 1000;
-    alert_manager.HandleWorkItem(CreateWorkItem('book', 1, 'new_shipment'));
+    alert_manager.HandleWorkItem(CreateWorkItem('affiliate', 0));
+    alert_manager.HandleWorkItem(CreateWorkItem('book', 0));
 
-    assert.equal(root.querySelector('[data-pending-work-alert-toast]').hidden, false);
-    assert.equal(
-        root.book_item.querySelector('[data-pending-work-item-message]').textContent,
-        'Shipment-001 มีหนังสือ 4 เล่มรอตรวจรับ',
-    );
+    assert.equal(root.notification_panel.hidden, false);
+    assert.equal(root.notification_badge.hidden, true);
+    assert.equal(root.notification_total.textContent, 'ไม่มีงานค้าง');
+    assert.equal(root.empty_state.hidden, false);
+    assert.equal(root.affiliate_item.hidden, true);
+    assert.equal(root.book_item.hidden, true);
 });

@@ -1,6 +1,6 @@
-const REMINDER_INTERVAL_MS = 30 * 60 * 1000;
 const WORK_SOURCE_IDS = ['affiliate', 'book'];
 const SUMMARY_EVENT_TYPE = 'pending_summary';
+const MAX_BADGE_COUNT = 99;
 
 function IsNonEmptyString(value) {
     return typeof value === 'string' && value.trim() !== '';
@@ -39,51 +39,33 @@ function NormalizeWorkItem(work_item) {
     };
 }
 
-function ReadLastShownAt(storage, storage_key) {
-    try {
-        const stored_value = storage.getItem(storage_key);
-        if (stored_value === null) {
-            return null;
-        }
-
-        const last_shown_at = Number(stored_value);
-        return Number.isFinite(last_shown_at) && last_shown_at >= 0 ? last_shown_at : null;
-    } catch (error) {
-        return null;
-    }
-}
-
-function WriteLastShownAt(storage, storage_key, last_shown_at) {
-    try {
-        storage.setItem(storage_key, String(last_shown_at));
-    } catch (error) {
-        // Storage is an enhancement; a transient storage failure must not stop alerts.
-    }
-}
-
 export function CreatePendingWorkAlertManager(dependencies) {
     const root_element = dependencies.RootElement;
-    const storage = dependencies.Storage;
-    const storage_key = dependencies.StorageKey
-        ?? root_element?.getAttribute('data-storage-key');
-    const now = dependencies.Now ?? (() => Date.now());
-    const reminder_interval_ms = dependencies.ReminderIntervalMs ?? REMINDER_INTERVAL_MS;
-    const toast_element = root_element?.querySelector('[data-pending-work-alert-toast]');
+    const document_object = dependencies.DocumentObject;
+    const toggle_element = root_element?.querySelector('[data-pending-work-alert-toggle]');
+    const badge_element = root_element?.querySelector('[data-pending-work-alert-badge]');
+    const total_element = root_element?.querySelector('[data-pending-work-alert-total]');
+    const panel_element = root_element?.querySelector('[data-pending-work-alert-panel]');
+    const empty_element = root_element?.querySelector('[data-pending-work-alert-empty]');
     const dismiss_element = root_element?.querySelector('[data-pending-work-alert-dismiss]');
 
-    if (!root_element || !storage || !IsNonEmptyString(storage_key) || !toast_element) {
+    if (!root_element || !toggle_element || !badge_element || !panel_element) {
         return null;
     }
 
     const work_items = new Map();
-    let last_shown_at = ReadLastShownAt(storage, storage_key);
-    let toast_visible = false;
+    let panel_open = false;
 
-    const HasPendingWork = () => Array.from(work_items.values())
-        .some((work_item) => work_item.pending_count > 0);
+    const GetPendingWorkCount = () => WORK_SOURCE_IDS.reduce((total_count, source_id) => {
+        const work_item = work_items.get(source_id);
+        if (!work_item || work_item.pending_count <= 0) {
+            return total_count;
+        }
 
-    const IsReminderDue = () => last_shown_at === null
-        || now() - last_shown_at >= reminder_interval_ms;
+        return Math.min(Number.MAX_SAFE_INTEGER, total_count + work_item.pending_count);
+    }, 0);
+
+    const HasPendingWork = () => GetPendingWorkCount() > 0;
 
     const RenderWorkItem = (work_item) => {
         const item_element = root_element.querySelector(
@@ -116,6 +98,9 @@ export function CreatePendingWorkAlertManager(dependencies) {
     };
 
     const Render = () => {
+        const pending_work_count = GetPendingWorkCount();
+        const has_pending_work = pending_work_count > 0;
+
         WORK_SOURCE_IDS.forEach((source_id) => {
             const work_item = work_items.get(source_id);
             if (work_item) {
@@ -129,17 +114,84 @@ export function CreatePendingWorkAlertManager(dependencies) {
             }
         });
 
-        toast_element.hidden = !toast_visible || !HasPendingWork();
+        badge_element.textContent = pending_work_count > MAX_BADGE_COUNT
+            ? `${MAX_BADGE_COUNT}+`
+            : String(pending_work_count);
+        badge_element.hidden = !has_pending_work;
+        badge_element.setAttribute(
+            'aria-label',
+            has_pending_work
+                ? `มีงานที่ต้องจัดการ ${pending_work_count} รายการ`
+                : 'ไม่มีงานที่ต้องจัดการ',
+        );
+
+        if (total_element) {
+            total_element.textContent = has_pending_work
+                ? `${pending_work_count} รายการ`
+                : 'ไม่มีงานค้าง';
+        }
+
+        if (empty_element) {
+            empty_element.hidden = has_pending_work;
+        }
+
+        panel_element.hidden = !panel_open;
+        toggle_element.setAttribute('aria-expanded', panel_open ? 'true' : 'false');
+        toggle_element.setAttribute(
+            'aria-label',
+            has_pending_work
+                ? `ดูงานที่ต้องจัดการ มี ${pending_work_count} รายการ`
+                : 'ดูงานที่ต้องจัดการ',
+        );
     };
 
-    const Dismiss = () => {
-        toast_visible = false;
-        last_shown_at = now();
-        WriteLastShownAt(storage, storage_key, last_shown_at);
+    const Open = () => {
+        panel_open = true;
         Render();
     };
 
-    dismiss_element?.addEventListener('click', Dismiss);
+    const Close = () => {
+        panel_open = false;
+        Render();
+    };
+
+    const Toggle = (event) => {
+        event?.preventDefault?.();
+        if (panel_open) {
+            Close();
+            return;
+        }
+
+        Open();
+    };
+
+    const HandleOutsideClick = (event) => {
+        if (!panel_open || typeof root_element.contains !== 'function') {
+            return;
+        }
+
+        if (!root_element.contains(event.target)) {
+            Close();
+        }
+    };
+
+    const HandleKeyDown = (event) => {
+        if (event.key !== 'Escape' || !panel_open) {
+            return;
+        }
+
+        Close();
+        toggle_element.focus?.();
+    };
+
+    toggle_element.addEventListener('click', Toggle);
+    dismiss_element?.addEventListener('click', (event) => {
+        event?.preventDefault?.();
+        Close();
+        toggle_element.focus?.();
+    });
+    document_object?.addEventListener?.('click', HandleOutsideClick);
+    document_object?.addEventListener?.('keydown', HandleKeyDown);
 
     const HandleWorkItem = (work_item) => {
         const normalized_work_item = NormalizeWorkItem(work_item);
@@ -147,7 +199,6 @@ export function CreatePendingWorkAlertManager(dependencies) {
             throw new Error('Invalid pending work alert item');
         }
 
-        const is_immediate_event = normalized_work_item.event_type !== null;
         const display_message = normalized_work_item.event_type !== null
             && normalized_work_item.event_type !== SUMMARY_EVENT_TYPE
             ? normalized_work_item.new_message
@@ -157,27 +208,20 @@ export function CreatePendingWorkAlertManager(dependencies) {
             display_message,
         });
 
-        if (!HasPendingWork()) {
-            toast_visible = false;
-            Render();
-            return;
-        }
-
-        if (is_immediate_event || IsReminderDue()) {
-            toast_visible = true;
-            last_shown_at = now();
-            WriteLastShownAt(storage, storage_key, last_shown_at);
-        }
-
         Render();
     };
 
     Render();
 
     return {
-        Dismiss,
+        Open,
+        Close,
+        Dismiss: Close,
+        Toggle,
         HandleWorkItem,
-        IsToastVisible: () => toast_visible && HasPendingWork(),
+        HasPendingWork,
+        IsPanelOpen: () => panel_open,
+        IsToastVisible: () => panel_open,
         Render,
     };
 }
@@ -207,6 +251,7 @@ export function BootstrapPendingWorkAlert({
 
     const alert_manager = CreatePendingWorkAlertManager({
         RootElement: root_element,
+        DocumentObject,
         Storage,
     });
     if (alert_manager) {
