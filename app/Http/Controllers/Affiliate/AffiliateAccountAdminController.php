@@ -7,41 +7,52 @@ use App\Domain\Affiliate\Queries\AffiliateAccountAdminQuery;
 use App\Domain\Affiliate\Services\AffiliateAccountService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Affiliate\ChangeAffiliateStatusRequest;
+use Illuminate\Http\JsonResponse;
 
 class AffiliateAccountAdminController extends Controller
 {
     public function __construct(
         private readonly AffiliateAccountService $account_service,
         private readonly AffiliateAccountAdminQuery $account_query,
-    ) {
-    }
+    ) {}
 
     public function index()
     {
         return view('affiliate.admin.index', ['affiliate_profiles' => $this->account_query->Paginate()]);
     }
 
+    public function PendingApprovalSummary(): JsonResponse
+    {
+        return response()->json([
+            'data' => $this->account_query->PendingApprovalSummary(auth()->user()),
+        ]);
+    }
+
     public function approve(AffiliateProfile $affiliate_profile, ChangeAffiliateStatusRequest $request)
     {
         $this->account_service->Approve($affiliate_profile, $request->user(), $request->validated('reason'));
+
         return back()->with('success', 'Affiliate approved.');
     }
 
     public function suspend(AffiliateProfile $affiliate_profile, ChangeAffiliateStatusRequest $request)
     {
         $this->account_service->Suspend($affiliate_profile, $request->user(), (string) $request->validated('reason'));
+
         return back()->with('success', 'Affiliate suspended.');
     }
 
     public function reactivate(AffiliateProfile $affiliate_profile, ChangeAffiliateStatusRequest $request)
     {
         $this->account_service->Reactivate($affiliate_profile, $request->user(), $request->validated('reason'));
+
         return back()->with('success', 'Affiliate reactivated.');
     }
 
     public function deactivate(AffiliateProfile $affiliate_profile, ChangeAffiliateStatusRequest $request)
     {
         $this->account_service->Deactivate($affiliate_profile, $request->user(), (string) $request->validated('reason'));
+
         return back()->with('success', 'Affiliate deactivated.');
     }
 }

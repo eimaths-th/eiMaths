@@ -1,0 +1,59 @@
+[data-affiliate-pending-approval-badge] {
+    min-width: 1.45rem;
+    text-align: center;
+}
+
+.affiliate-pending-approval-alert {
+    position: fixed;
+    right: 1.25rem;
+    bottom: 1.25rem;
+    z-index: 1050;
+    display: flex;
+    width: min(25rem, calc(100vw - 2.5rem));
+    padding: 1rem;
+    color: #1f2937;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-left: .35rem solid #f0ad4e;
+    border-radius: .35rem;
+    box-shadow: 0 .5rem 1.5rem rgba(15, 23, 42, .18);
+}
+
+.affiliate-pending-approval-alert__content {
+    flex: 1 1 auto;
+}
+
+.affiliate-pending-approval-alert__title {
+    margin: 0 0 .35rem;
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.affiliate-pending-approval-alert__message {
+    margin: 0 0 .75rem;
+    line-height: 1.45;
+}
+
+.affiliate-pending-approval-alert__dismiss {
+    align-self: flex-start;
+    margin-left: .75rem;
+    padding: 0 .25rem;
+    color: #475569;
+    font-size: 1.35rem;
+    line-height: 1;
+    background: transparent;
+    border: 0;
+}
+
+.affiliate-pending-approval-alert__dismiss:focus,
+.affiliate-pending-approval-alert a:focus,
+.affiliate-pending-approval-alert button:focus {
+    outline: 3px solid #2563eb;
+    outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .affiliate-pending-approval-alert {
+        transition: none;
+    }
+}

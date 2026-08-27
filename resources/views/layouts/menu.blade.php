@@ -20,6 +20,26 @@
     </li>
 @endif
 
+@if (
+    $authenticated_user !== null
+    && (bool) config('affiliate.features.administration', false)
+    && $authenticated_user->can('affiliate-list')
+    && !$authenticated_user->can('course-manage')
+    && !$authenticated_user->can('user-list')
+)
+    <li class="nav-item">
+        <a href="{{ route('affiliate.admin.index') }}"
+            class="nav-link {{ request()->routeIs('affiliate.admin.*') ? 'active' : '' }}">
+            <i class="nav-icon fa-solid fa-user-check"></i>
+            <p>
+                Affiliate Accounts
+                <span class="badge badge-danger ml-1" data-affiliate-pending-approval-badge hidden
+                    aria-label="ไม่มี Affiliate รออนุมัติ"></span>
+            </p>
+        </a>
+    </li>
+@endif
+
 @can('dashboard')
 <li class="nav-item">
     <a href="{{ route('home') }}" class="nav-link {{ Request::is('home') ? 'active' : '' }}">
@@ -118,7 +138,16 @@
         <a href="#"
             class="nav-link {{ in_array(Request::route()->getName(), ['contacts', 'guest.report', 'demo.list', 'discontinued', 'contacts.graduated', 'histories.index', 'parent.index', 'ei_form.backEndIndex']) || Request::routeIs('book-shipments.*', 'incoming-book-shipments.*') ? 'active' : '' }}">
             <i class="nav-icon fas fa-graduation-cap"></i>
-            <p>Students Management</p>
+            <p>
+                Students Management
+                @if ($book_shipment_alert_role === 'centre')
+                    <span class="badge badge-danger ml-1" data-book-shipment-badge="centre" hidden
+                        aria-label="No incoming shipments waiting"></span>
+                @elseif ($book_shipment_alert_role === 'hq')
+                    <span class="badge badge-danger ml-1" data-book-shipment-badge="hq" hidden
+                        aria-label="No active book shipments"></span>
+                @endif
+            </p>
             <i class="fas fa-angle-left right"></i>
         </a>
         <ul class="nav nav-treeview">
@@ -133,10 +162,7 @@
                     <a href="{{ route('incoming-book-shipments.index') }}"
                         class="nav-link {{ Request::routeIs('incoming-book-shipments.*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-inbox"></i>
-                        <p>
-                            Incoming Book Shipments
-                            <span class="badge badge-danger ml-1" data-book-shipment-badge="centre" hidden aria-label="No incoming shipments waiting"></span>
-                        </p>
+                        <p>Incoming Book Shipments</p>
                     </a>
                 </li>
             @endif
@@ -145,10 +171,7 @@
                     <a href="{{ route('book-shipments.index') }}"
                         class="nav-link {{ Request::routeIs('book-shipments.*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-boxes-stacked"></i>
-                        <p>
-                            Book Shipments
-                            <span class="badge badge-danger ml-1" data-book-shipment-badge="hq" hidden aria-label="No active book shipments"></span>
-                        </p>
+                        <p>Book Shipments</p>
                     </a>
                 </li>
             @endif
@@ -203,17 +226,18 @@
     <li class="nav-item {{ Request::routeIs('book-shipments.*') ? 'menu-open' : '' }}">
         <a href="#" class="nav-link {{ Request::routeIs('book-shipments.*') ? 'active' : '' }}">
             <i class="nav-icon fas fa-graduation-cap"></i>
-            <p>Students Management</p>
+            <p>
+                Students Management
+                <span class="badge badge-danger ml-1" data-book-shipment-badge="hq" hidden
+                    aria-label="No active book shipments"></span>
+            </p>
             <i class="fas fa-angle-left right"></i>
         </a>
         <ul class="nav nav-treeview">
             <li class="nav-item">
                 <a href="{{ route('book-shipments.index') }}" class="nav-link {{ Request::routeIs('book-shipments.*') ? 'active' : '' }}">
                     <i class="nav-icon fas fa-boxes-stacked"></i>
-                    <p>
-                        Book Shipments
-                        <span class="badge badge-danger ml-1" data-book-shipment-badge="hq" hidden aria-label="No active book shipments"></span>
-                    </p>
+                    <p>Book Shipments</p>
                 </a>
             </li>
         </ul>
@@ -223,7 +247,11 @@
     <li class="nav-item {{ Request::routeIs('incoming-book-shipments.*') ? 'menu-open' : '' }}">
         <a href="#" class="nav-link {{ Request::routeIs('incoming-book-shipments.*') ? 'active' : '' }}">
             <i class="nav-icon fas fa-graduation-cap"></i>
-            <p>Students Management</p>
+            <p>
+                Students Management
+                <span class="badge badge-danger ml-1" data-book-shipment-badge="centre" hidden
+                    aria-label="No incoming shipments waiting"></span>
+            </p>
             <i class="fas fa-angle-left right"></i>
         </a>
         <ul class="nav nav-treeview">
@@ -231,10 +259,7 @@
                 <a href="{{ route('incoming-book-shipments.index') }}"
                     class="nav-link {{ Request::routeIs('incoming-book-shipments.*') ? 'active' : '' }}">
                     <i class="nav-icon fas fa-inbox"></i>
-                    <p>
-                        Incoming Book Shipments
-                        <span class="badge badge-danger ml-1" data-book-shipment-badge="centre" hidden aria-label="No incoming shipments waiting"></span>
-                    </p>
+                    <p>Incoming Book Shipments</p>
                 </a>
             </li>
         </ul>
@@ -508,15 +533,6 @@
                     <p>Affiliate Frontend</p>
                 </a>
             </li>
-            @can('affiliate-list')
-                <li class="nav-item">
-                    <a href="{{ route('affiliate.admin.index') }}"
-                        class="nav-link {{ request()->routeIs('affiliate.admin.*') ? 'active' : '' }}">
-                        <i class="nav-icon fa-solid fa-user-check"></i>
-                        <p>Affiliate Accounts</p>
-                    </a>
-                </li>
-            @endcan
             <li class="nav-item">
                 <a href="{{ route('affiliate.courses') }}" target="_blank"
                     class="nav-link {{ Request::is('affiliate.courses') ? 'active' : '' }}">
@@ -650,7 +666,11 @@
         <a href="#"
             class="nav-link {{ in_array(Request::route()->getName(), ['users.index', 'affiliate.admin.index', 'roles.index', 'permission.index', 'line-api.index', 'generate.system', 'generate.student', 'student.login']) ? 'active' : '' }}">
             <i class="nav-icon fas fa-user-gear"></i>
-            <p>User Management</p>
+            <p>
+                User Management
+                <span class="badge badge-danger ml-1" data-affiliate-pending-approval-badge hidden
+                    aria-label="ไม่มี Affiliate รออนุมัติ"></span>
+            </p>
             <i class="fas fa-angle-left right"></i>
         </a>
         <ul class="nav nav-treeview">
@@ -665,7 +685,11 @@
                     <a href="{{ route('affiliate.admin.index') }}"
                         class="nav-link {{ Request::route()->getName() == 'affiliate.admin.index' ? 'active' : '' }}">
                         <i class="nav-icon fa-solid fa-comment-dots"></i>
-                        <p>Users Affiliate</p>
+                        <p>
+                            Users Affiliate
+                            <span class="badge badge-danger ml-1" data-affiliate-pending-approval-badge hidden
+                                aria-label="ไม่มี Affiliate รออนุมัติ"></span>
+                        </p>
                     </a>
                 </li>
             @endcan

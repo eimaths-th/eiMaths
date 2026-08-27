@@ -3,6 +3,7 @@ import {
     CreateBookShipmentPoller,
     FormatBadgeCount,
 } from './book-shipment-alert-poller.js';
+import { GetPendingWorkAlertManager } from './pending-work-alert.js';
 
 function IsPositiveInteger(value) {
     return Number.isSafeInteger(value) && value > 0;
@@ -61,6 +62,19 @@ export function CreateCentreSummaryHandler(dependencies) {
         dependencies.UpdateBadgeCount(validated_summary.pending_count);
 
         if (validated_summary.pending_count === 0) {
+            if (dependencies.ToastManager) {
+                dependencies.ToastManager.HandleWorkItem({
+                    source_id: 'book',
+                    pending_count: 0,
+                    event_type: null,
+                    title: 'รายการหนังสือ',
+                    reminder_message: 'ไม่มีรายการหนังสือที่กำลังจัดส่งเข้า',
+                    new_message: 'มีรายการหนังสือใหม่รอตรวจรับ',
+                    action_url: dependencies.IndexUrl,
+                    action_label: 'ดูรายการหนังสือที่กำลังจัดส่งเข้า',
+                });
+            }
+
             return;
         }
 
@@ -77,9 +91,23 @@ export function CreateCentreSummaryHandler(dependencies) {
             throw new Error('Invalid Centre book shipment cursor');
         }
 
-        if (stored_cursor !== latest_cursor) {
+        const event_type = stored_cursor !== latest_cursor
+            ? HasStoredCursor(stored_cursor) ? 'new_shipment' : 'pending_summary'
+            : null;
+        if (dependencies.ToastManager) {
+            dependencies.ToastManager.HandleWorkItem({
+                source_id: 'book',
+                pending_count: validated_summary.pending_count,
+                event_type,
+                title: 'รายการหนังสือ',
+                reminder_message: `มีรายการจัดส่งหนังสือจากศูนย์จัดส่ง ${validated_summary.pending_count} รายการรอตรวจรับ`,
+                new_message: `${latest_shipment.shipment_number} มีหนังสือ ${latest_shipment.item_count} เล่มรอตรวจรับ`,
+                action_url: dependencies.IndexUrl,
+                action_label: 'ดูรายการหนังสือที่กำลังจัดส่งเข้า',
+            });
+        } else if (event_type !== null) {
             dependencies.ShowToast({
-                event_type: HasStoredCursor(stored_cursor) ? 'new_shipment' : 'pending_summary',
+                event_type,
                 pending_count: validated_summary.pending_count,
                 latest_shipment,
             });
@@ -175,6 +203,8 @@ export function CreateCentreIncomingShipmentAlert(dependencies) {
         ReadCursor: () => storage.getItem(storage_key),
         WriteCursor: (next_cursor) => storage.setItem(storage_key, next_cursor),
         UpdateBadgeCount: (pending_count) => RenderCentreBadgeCount(document_object, pending_count),
+        IndexUrl: index_url,
+        ToastManager: dependencies.ToastManager,
         ShowToast: (toast_event) => RenderCentreToast(root_element, index_url, detail_base_url, toast_event),
     });
 
@@ -219,6 +249,7 @@ export function BootstrapCentreIncomingShipmentAlert({
         DocumentObject,
         Storage,
         FetchImplementation,
+        ToastManager: GetPendingWorkAlertManager(),
         IsVisible: () => DocumentObject.visibilityState !== 'hidden',
         ScheduleTimeout: (callback, delay_ms) => WindowObject.setTimeout(callback, delay_ms),
         ClearScheduledTimeout: (timer_id) => WindowObject.clearTimeout(timer_id),

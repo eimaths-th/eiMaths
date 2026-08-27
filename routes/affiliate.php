@@ -70,6 +70,9 @@ Route::middleware(['auth', 'affiliate.correlation', 'affiliate.feature:administr
     Route::get('/', [AffiliateAccountAdminController::class, 'index'])
         ->middleware('permission:affiliate-list')
         ->name('affiliate.admin.index');
+    Route::get('/pending-approval-summary', [AffiliateAccountAdminController::class, 'PendingApprovalSummary'])
+        ->middleware('permission:affiliate-list')
+        ->name('affiliate.admin.pending-summary');
     Route::post('/{affiliate_profile}/approve', [AffiliateAccountAdminController::class, 'approve'])
         ->middleware('permission:affiliate-approve')
         ->name('affiliate.admin.approve');

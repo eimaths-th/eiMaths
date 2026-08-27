@@ -24,6 +24,12 @@
     @if (auth()->check() && auth()->user()->department && (int) auth()->user()->disable === 0 && (int) auth()->user()->department->status === 1)
         <link rel="stylesheet" href="{{ asset('css/book-shipment-realtime-alert.css') }}">
     @endif
+    @if (auth()->check() && (bool) config('affiliate.features.administration', false) && (int) auth()->user()->disable === 0 && auth()->user()->can('affiliate-list'))
+        <link rel="stylesheet" href="{{ asset('css/affiliate-pending-approval-alert.css') }}">
+    @endif
+    @if (auth()->check())
+        <link rel="stylesheet" href="{{ asset('css/pending-work-alert.css') }}">
+    @endif
     @yield('style')
 </head>
 
@@ -43,6 +49,12 @@
                 $book_shipment_alert_role = 'centre';
             }
         }
+        $affiliate_pending_approval_alert_enabled = $authenticated_user
+            && (bool) config('affiliate.features.administration', false)
+            && (int) $authenticated_user->disable === 0
+            && $authenticated_user->can('affiliate-list');
+        $pending_work_alert_enabled = $authenticated_user
+            && ($book_shipment_alert_role !== null || $affiliate_pending_approval_alert_enabled);
     @endphp
     <div id="loadingi"></div>
     <div class="wrapper">
@@ -67,14 +79,30 @@
             'authenticated_user' => $authenticated_user,
         ])
     @endif
+    @if ($affiliate_pending_approval_alert_enabled)
+        @include('affiliate.partials.pending-approval-alert', [
+            'authenticated_user' => $authenticated_user,
+        ])
+    @endif
+    @if ($pending_work_alert_enabled)
+        @include('partials.pending-work-alert', [
+            'authenticated_user' => $authenticated_user,
+        ])
+    @endif
 </body>
 
 @include('layouts.includes.js')
 
+@if ($pending_work_alert_enabled)
+    <script type="module" src="{{ asset('js/pending-work-alert.js') }}"></script>
+@endif
 @if ($book_shipment_alert_role === 'centre')
     <script type="module" src="{{ asset('js/centre-incoming-shipment-alert.js') }}"></script>
 @elseif ($book_shipment_alert_role === 'hq')
     <script type="module" src="{{ asset('js/hq-centre-receipt-alert.js') }}"></script>
+@endif
+@if ($affiliate_pending_approval_alert_enabled)
+    <script type="module" src="{{ asset('js/affiliate-pending-approval-alert.js') }}"></script>
 @endif
 
 

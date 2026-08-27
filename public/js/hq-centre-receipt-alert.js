@@ -2,6 +2,7 @@ import {
     CreateBookShipmentPoller,
     FormatBadgeCount,
 } from './book-shipment-alert-poller.js';
+import { GetPendingWorkAlertManager } from './pending-work-alert.js';
 
 const DERIVED_STATUS_PRESENTATION = {
     DRAFT: { status_class: 'draft', label: 'แบบร่าง' },
@@ -109,14 +110,33 @@ export function CreateHqSummaryHandler(dependencies) {
         }
 
         const latest_event_cursor = validated_summary.latest_event_cursor;
-        if (latest_event_cursor !== null && stored_toast_cursor !== latest_event_cursor) {
-            if (validated_summary.latest_unread_notification !== null) {
-                dependencies.ShowToast({
-                    event_type: 'centre_received',
-                    notification: validated_summary.latest_unread_notification,
-                });
-            }
+        const has_new_event = latest_event_cursor !== null && stored_toast_cursor !== latest_event_cursor;
+        const pending_work_count = Math.max(
+            validated_summary.active_shipment_count,
+            validated_summary.unread_count,
+        );
+        if (dependencies.ToastManager) {
+            const latest_unread_notification = validated_summary.latest_unread_notification;
+            dependencies.ToastManager.HandleWorkItem({
+                source_id: 'book',
+                pending_count: pending_work_count,
+                event_type: has_new_event && latest_unread_notification !== null ? 'centre_received' : null,
+                title: 'รายการหนังสือ',
+                reminder_message: `มีรายการจัดส่งหนังสือที่กำลังดำเนินการ ${pending_work_count} รายการ`,
+                new_message: latest_unread_notification === null
+                    ? 'มีรายการหนังสือใหม่ที่ต้องตรวจสอบ'
+                    : `ศูนย์ยืนยันการรับรายการจัดส่ง ${latest_unread_notification.shipment_number} แล้ว`,
+                action_url: dependencies.IndexUrl,
+                action_label: 'ดูรายการหนังสือ',
+            });
+        } else if (has_new_event && validated_summary.latest_unread_notification !== null) {
+            dependencies.ShowToast({
+                event_type: 'centre_received',
+                notification: validated_summary.latest_unread_notification,
+            });
+        }
 
+        if (has_new_event) {
             try {
                 dependencies.WriteToastCursor(latest_event_cursor);
             } catch (error) {
@@ -417,10 +437,11 @@ export function CreateHqCentreReceiptAlert(dependencies) {
     const root_element = dependencies.RootElement;
     const document_object = dependencies.DocumentObject;
     const summary_url = root_element?.getAttribute('data-summary-url');
+    const index_url = root_element?.getAttribute('data-index-url');
     const detail_base_url = root_element?.getAttribute('data-detail-base-url');
     const storage_key = root_element?.getAttribute('data-storage-key');
 
-    if (!root_element || !document_object || !summary_url || !detail_base_url || !storage_key) {
+    if (!root_element || !document_object || !summary_url || !index_url || !detail_base_url || !storage_key) {
         return null;
     }
 
@@ -429,6 +450,8 @@ export function CreateHqCentreReceiptAlert(dependencies) {
         ReadToastCursor: () => dependencies.Storage.getItem(storage_key),
         WriteToastCursor: (next_cursor) => dependencies.Storage.setItem(storage_key, next_cursor),
         UpdateBadgeCount: (active_shipment_count) => RenderHqBadgeCount(document_object, active_shipment_count),
+        IndexUrl: index_url,
+        ToastManager: dependencies.ToastManager,
         ShowToast: (toast_event) => RenderHqToast(root_element, toast_event),
         IsLedgerOpen: dependencies.IsLedgerOpen,
         RefreshLedger: () => FetchAndRenderHqLedger(
@@ -490,6 +513,7 @@ export function BootstrapHqCentreReceiptAlert({
         DocumentObject,
         Storage,
         FetchImplementation,
+        ToastManager: GetPendingWorkAlertManager(),
         CurrentLedgerUrl: () => `${WindowObject.location.pathname}${WindowObject.location.search}`,
         IsLedgerOpen: () => DocumentObject.querySelector('[data-book-shipment-ledger]') !== null,
         IsVisible: () => DocumentObject.visibilityState !== 'hidden',
