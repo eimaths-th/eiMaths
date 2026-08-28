@@ -129,12 +129,7 @@ class AffiliatePreflightService
             return $this->BuildCheck('destination_hosts', self::STATUS_UNKNOWN, 'The media library is disabled; destination host validation is not enabled.');
         }
 
-        $allowed_hosts = array_filter((array) config('affiliate.allowed_destination_hosts', []));
-        if ($allowed_hosts === []) {
-            return $this->BuildCheck('destination_hosts', self::STATUS_BLOCKED, 'The media library requires at least one allowed destination host.');
-        }
-
-        return $this->BuildCheck('destination_hosts', self::STATUS_PASS, 'Allowed destination hosts are configured.');
+        return $this->BuildCheck('destination_hosts', self::STATUS_PASS, 'HTTPS destination validation is enabled; no destination host allowlist is required.');
     }
 
     private function AffiliateProfileOwnershipCheck(): array

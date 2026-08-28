@@ -11,6 +11,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use LogicException;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
@@ -92,5 +93,31 @@ class AffiliateContentServiceTest extends TestCase
 
         $this->expectException(LogicException::class);
         $service->Update($content, ['campaign_code' => 'changed-campaign'], $actor, 'correlation-reject');
+    }
+
+    #[Test]
+    public function GeneratesAnUnusedCampaignCodeAfterSkippingAnArchivedCollision(): void
+    {
+        $existing = AffiliateContent::create([
+            'title' => 'Archived campaign',
+            'file_path' => 'uploads/affiliate/archived.png',
+            'type' => 'image',
+            'status' => 'enabled',
+        ]);
+        $existing->forceFill([
+            'destination_target' => '/',
+            'campaign_code' => 'cmp-duplicate123',
+        ])->save();
+        $existing->delete();
+
+        Str::createRandomStringsUsingSequence(['duplicate123', 'freshcode123']);
+        try {
+            $campaign_code = app(AffiliateContentService::class)->GenerateUniqueCampaignCode();
+        } finally {
+            Str::createRandomStringsNormally();
+        }
+
+        $this->assertSame('cmp-freshcode123', $campaign_code);
+        $this->assertMatchesRegularExpression('/\Acmp-[a-z0-9]{12}\z/', $campaign_code);
     }
 }

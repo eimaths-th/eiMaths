@@ -84,8 +84,52 @@ class AffiliateContentManagementTest extends TestCase
             ->assertDontSee('affiliate-edit-panel', false)
             ->assertSee('data-bs-toggle="modal"', false)
             ->assertSee('class="modal fade"', false)
+            ->assertSee('data-affiliate-campaign-code-generate', false)
+            ->assertSee('สุ่มรหัส')
+            ->assertSee('<label for="affiliate-content-start-' . $content->id . '">เวลาเริ่มเผยแพร่</label>', false)
+            ->assertSee('<label for="affiliate-content-end-' . $content->id . '">เวลาสิ้นสุดเผยแพร่</label>', false)
+            ->assertSee('<label for="affiliate-create-start">เวลาเริ่มเผยแพร่</label>', false)
+            ->assertSee('<label for="affiliate-create-end">เวลาสิ้นสุดเผยแพร่</label>', false)
             ->assertDontSee('$.ajax', false)
             ->assertDontSee('ลบสื่อนี้', false);
+    }
+
+    #[Test]
+    public function PermittedAdminCanGenerateAnUnusedCampaignCode(): void
+    {
+        $admin = User::factory()->create(['password' => Hash::make('secret')]);
+        $admin->assignRole('Admin');
+        $content = AffiliateContent::create([
+            'title' => 'Existing campaign',
+            'file_path' => 'uploads/affiliate/image/existing.webp',
+            'type' => 'image',
+            'description' => 'Caption',
+            'status' => 'enabled',
+            'created_by' => $admin->id,
+        ]);
+        $content->forceFill([
+            'campaign_code' => 'cmp-existing123',
+            'destination_target' => '/',
+        ])->save();
+
+        $response = $this->actingAs($admin)->get('/affiliate-content-manage/generate-campaign-code');
+
+        $response->assertOk()
+            ->assertHeader('Cache-Control', 'no-store, private')
+            ->assertJsonStructure(['campaign_code']);
+        $campaign_code = $response->json('campaign_code');
+        $this->assertMatchesRegularExpression('/\Acmp-[a-z0-9]{12}\z/', (string) $campaign_code);
+        $this->assertNotSame('cmp-existing123', $campaign_code);
+    }
+
+    #[Test]
+    public function OrdinaryAuthenticatedUsersCannotGenerateCampaignCodes(): void
+    {
+        $user = User::factory()->create(['password' => Hash::make('secret')]);
+
+        $this->actingAs($user)
+            ->get('/affiliate-content-manage/generate-campaign-code')
+            ->assertForbidden();
     }
 
     #[Test]

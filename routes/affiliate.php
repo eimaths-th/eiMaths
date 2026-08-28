@@ -60,6 +60,7 @@ Route::middleware(['auth', 'affiliate.locale', 'affiliate.correlation', 'affilia
     ->prefix('affiliate-content-manage')
     ->group(function (): void {
         Route::get('/', [AffiliateContentManageController::class, 'Index'])->name('affiliate-content-manage.index');
+        Route::get('/generate-campaign-code', [AffiliateContentManageController::class, 'GenerateCampaignCode'])->name('affiliate-content-manage.generate-campaign-code');
         Route::post('/', [AffiliateContentManageController::class, 'StoreValidated'])->name('affiliate-content-manage.store');
         Route::put('/{affiliate_content}', [AffiliateContentManageController::class, 'UpdateValidated'])->name('affiliate-content-manage.update');
         Route::delete('/{affiliate_content}', [AffiliateContentManageController::class, 'Destroy'])->name('affiliate-content-manage.destroy');

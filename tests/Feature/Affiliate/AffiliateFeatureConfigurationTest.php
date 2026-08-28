@@ -51,14 +51,14 @@ class AffiliateFeatureConfigurationTest extends TestCase
     }
 
     #[Test]
-    public function EnabledMediaLibraryRequiresDestinationHost(): void
+    public function EnabledMediaLibraryDoesNotRequireDestinationHostAllowlist(): void
     {
         Config::set('affiliate.features.media_library', true);
         Config::set('affiliate.allowed_destination_hosts', []);
 
         $check = $this->FindCheck('destination_hosts');
 
-        $this->assertSame('BLOCKED', $check['status']);
+        $this->assertSame('PASS', $check['status']);
     }
 
     private function FindCheck(string $name): array

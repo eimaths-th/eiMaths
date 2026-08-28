@@ -144,11 +144,11 @@
                                                 <textarea class="form-control" id="affiliate-content-description-{{ $content->id }}" name="description" maxlength="1000">{{ $content->description }}</textarea>
                                             </div>
                                             <div class="form-group">
-                                                <label for="affiliate-content-start-{{ $content->id }}">{{ __('affiliate.content_admin.publication_window') }}</label>
+                                                <label for="affiliate-content-start-{{ $content->id }}">{{ __('affiliate.content_admin.publication_start') }}</label>
                                                 <input class="form-control" id="affiliate-content-start-{{ $content->id }}" type="datetime-local" name="publish_starts_at" value="{{ optional($content->publish_starts_at)->format('Y-m-d\TH:i') }}">
                                             </div>
                                             <div class="form-group">
-                                                <label for="affiliate-content-end-{{ $content->id }}">{{ __('affiliate.content_admin.publication_window') }}</label>
+                                                <label for="affiliate-content-end-{{ $content->id }}">{{ __('affiliate.content_admin.publication_end') }}</label>
                                                 <input class="form-control" id="affiliate-content-end-{{ $content->id }}" type="datetime-local" name="publish_ends_at" value="{{ optional($content->publish_ends_at)->format('Y-m-d\TH:i') }}">
                                             </div>
                                         </div>
@@ -192,18 +192,25 @@
                         </div>
                         <div class="form-group">
                             <label for="affiliate-create-campaign">{{ __('affiliate.content_admin.campaign_code') }}</label>
-                            <input class="form-control" id="affiliate-create-campaign" type="text" name="campaign_code" value="{{ old('campaign_code') }}" maxlength="96" pattern="[a-z0-9]+(?:-[a-z0-9]+)*" required>
+                            <div class="input-group affiliate-campaign-code-input-group">
+                                <input class="form-control" id="affiliate-create-campaign" type="text" name="campaign_code" value="{{ old('campaign_code') }}" maxlength="96" pattern="[a-z0-9]+(?:-[a-z0-9]+)*" data-affiliate-campaign-code-input aria-describedby="affiliate-create-campaign-help affiliate-create-campaign-status" required>
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-primary" type="button" data-affiliate-campaign-code-generate data-affiliate-campaign-code-endpoint="{{ route('affiliate-content-manage.generate-campaign-code') }}" data-affiliate-campaign-code-generating-message="{{ __('affiliate.content_admin.campaign_code_generating') }}" data-affiliate-campaign-code-generated-message="{{ __('affiliate.content_admin.campaign_code_generated') }}" data-affiliate-campaign-code-generation-failed-message="{{ __('affiliate.content_admin.campaign_code_generation_failed') }}">{{ __('affiliate.content_admin.generate_campaign_code') }}</button>
+                                </div>
+                            </div>
+                            <small id="affiliate-create-campaign-help" class="form-text text-muted">{{ __('affiliate.content_admin.campaign_code_help') }}</small>
+                            <p id="affiliate-create-campaign-status" class="text-muted small mb-0" data-affiliate-campaign-code-status aria-live="polite"></p>
                         </div>
                         <div class="form-group">
                             <label for="affiliate-create-destination">{{ __('affiliate.content_admin.destination') }}</label>
                             <input class="form-control" id="affiliate-create-destination" type="text" name="destination_target" value="{{ old('destination_target', '/') }}" maxlength="2048" required>
                         </div>
                         <div class="form-group">
-                            <label for="affiliate-create-start">{{ __('affiliate.content_admin.publication_window') }}</label>
+                            <label for="affiliate-create-start">{{ __('affiliate.content_admin.publication_start') }}</label>
                             <input class="form-control" id="affiliate-create-start" type="datetime-local" name="publish_starts_at" value="{{ old('publish_starts_at') }}">
                         </div>
                         <div class="form-group">
-                            <label for="affiliate-create-end">{{ __('affiliate.content_admin.publication_window') }}</label>
+                            <label for="affiliate-create-end">{{ __('affiliate.content_admin.publication_end') }}</label>
                             <input class="form-control" id="affiliate-create-end" type="datetime-local" name="publish_ends_at" value="{{ old('publish_ends_at') }}">
                         </div>
                         <div class="affiliate-form-field-full">
@@ -219,4 +226,8 @@
 
 @section('style')
 <link rel="stylesheet" href="{{ asset('css/affiliate-portal.css') }}">
+@endsection
+
+@section('script')
+<script type="module" src="{{ asset('js/affiliate-campaign-code-generator.js') }}"></script>
 @endsection

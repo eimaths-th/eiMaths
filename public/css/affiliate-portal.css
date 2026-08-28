@@ -294,6 +294,12 @@
     grid-column: 1 / -1;
 }
 
+.affiliate-portal .affiliate-campaign-code-input-group .form-control,
+.affiliate-portal .affiliate-campaign-code-input-group .btn {
+    height: 44px;
+    min-height: 44px;
+}
+
 .affiliate-portal .btn,
 .affiliate-portal button,
 .affiliate-portal .affiliate-navigation .nav-link {
