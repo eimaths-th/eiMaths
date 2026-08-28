@@ -14,6 +14,13 @@ class StoreAffiliateContentRequest extends FormRequest
         return $this->user()?->can('affiliate-content-manage') ?? false;
     }
 
+    protected function prepareForValidation(): void
+    {
+        if ($this->boolean('publish_indefinitely')) {
+            $this->merge(['publish_ends_at' => null]);
+        }
+    }
+
     public function rules(): array
     {
         return [
@@ -23,6 +30,7 @@ class StoreAffiliateContentRequest extends FormRequest
             'file' => ['required', 'file', 'max:51200'],
             'destination_target' => ['required', 'string', 'max:2048'],
             'campaign_code' => ['required', 'string', 'max:96', 'regex:/\A[a-z0-9]+(?:-[a-z0-9]+)*\z/D', Rule::unique('affiliate_contents', 'campaign_code')],
+            'publish_indefinitely' => ['sometimes', 'boolean'],
             'publish_starts_at' => ['nullable', 'date'],
             'publish_ends_at' => ['nullable', 'date', 'after:publish_starts_at'],
         ];

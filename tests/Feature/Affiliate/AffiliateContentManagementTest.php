@@ -3,9 +3,12 @@
 namespace Tests\Feature\Affiliate;
 
 use App\Domain\Affiliate\Enums\AffiliateProfileStatus;
+use App\Domain\Affiliate\Services\AffiliateMediaStorageService;
+use App\Domain\Affiliate\ValueObjects\StoredAffiliateMedia;
 use App\Models\AffiliateContent;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Hash;
 use PHPUnit\Framework\Attributes\Test;
@@ -84,14 +87,128 @@ class AffiliateContentManagementTest extends TestCase
             ->assertDontSee('affiliate-edit-panel', false)
             ->assertSee('data-bs-toggle="modal"', false)
             ->assertSee('class="modal fade"', false)
+            ->assertSee('data-affiliate-content-media-type', false)
+            ->assertSee('data-affiliate-content-media-file', false)
+            ->assertSee('data-affiliate-content-media-help', false)
+            ->assertSee('affiliate-content-media-type.js', false)
+            ->assertSee('affiliate-publication-window.js', false)
+            ->assertSee('data-affiliate-publication-unlimited-toggle', false)
+            ->assertSee('id="affiliate-content-unlimited-' . $content->id . '"', false)
+            ->assertSee('id="affiliate-create-unlimited"', false)
+            ->assertSee('data-affiliate-publication-end-field="affiliate-content-end-' . $content->id . '"', false)
+            ->assertSee('data-affiliate-publication-end-field="affiliate-create-end"', false)
             ->assertSee('data-affiliate-campaign-code-generate', false)
             ->assertSee('สุ่มรหัส')
+            ->assertSee('เผยแพร่ไม่มีกำหนด')
             ->assertSee('<label for="affiliate-content-start-' . $content->id . '">เวลาเริ่มเผยแพร่</label>', false)
             ->assertSee('<label for="affiliate-content-end-' . $content->id . '">เวลาสิ้นสุดเผยแพร่</label>', false)
             ->assertSee('<label for="affiliate-create-start">เวลาเริ่มเผยแพร่</label>', false)
             ->assertSee('<label for="affiliate-create-end">เวลาสิ้นสุดเผยแพร่</label>', false)
             ->assertDontSee('$.ajax', false)
             ->assertDontSee('ลบสื่อนี้', false);
+    }
+
+    #[Test]
+    public function CreateFormRetainsTheSelectedVideoTypeAfterValidationRedirect(): void
+    {
+        $admin = User::factory()->create(['password' => Hash::make('secret')]);
+        $admin->assignRole('Admin');
+
+        $response = $this->withSession(['_old_input' => ['type' => 'video']])
+            ->actingAs($admin)
+            ->get(route('affiliate-content-manage.index'));
+
+        $response->assertOk()
+            ->assertSee('<option value="video" selected', false);
+    }
+
+    #[Test]
+    public function CreateRequestTreatsCheckedUnlimitedPublicationAsHavingNoEndTime(): void
+    {
+        $admin = User::factory()->create(['password' => Hash::make('secret')]);
+        $admin->assignRole('Admin');
+        $this->mock(AffiliateMediaStorageService::class)
+            ->shouldReceive('Store')
+            ->once()
+            ->andReturn(new StoredAffiliateMedia(
+                type: 'video',
+                relative_path: 'uploads/affiliate/video/unlimited.mp4',
+                absolute_path: public_path('uploads/affiliate/video/unlimited.mp4'),
+                mime_type: 'video/mp4',
+                extension: 'mp4',
+            ));
+
+        $this->actingAs($admin)->post(route('affiliate-content-manage.store'), [
+            'title' => 'Unlimited campaign',
+            'type' => 'video',
+            'file' => UploadedFile::fake()->create('unlimited.mp4', 10, 'video/mp4'),
+            'description' => 'Always available campaign',
+            'destination_target' => '/courses',
+            'campaign_code' => 'unlimited-campaign',
+            'publish_starts_at' => '2026-08-28T10:00',
+            'publish_ends_at' => '2030-12-31T23:59',
+            'publish_indefinitely' => '1',
+        ])->assertRedirect();
+
+        $content = AffiliateContent::query()->where('campaign_code', 'unlimited-campaign')->firstOrFail();
+        $this->assertSame('2026-08-28 10:00:00', $content->publish_starts_at->format('Y-m-d H:i:s'));
+        $this->assertNull($content->publish_ends_at);
+    }
+
+    #[Test]
+    public function UpdateRequestTreatsCheckedUnlimitedPublicationAsHavingNoEndTime(): void
+    {
+        $admin = User::factory()->create(['password' => Hash::make('secret')]);
+        $admin->assignRole('Admin');
+        $content = AffiliateContent::create([
+            'title' => 'Scheduled campaign',
+            'file_path' => 'uploads/affiliate/video/scheduled.mp4',
+            'type' => 'video',
+            'description' => 'Scheduled caption',
+            'status' => 'enabled',
+            'created_by' => $admin->id,
+        ]);
+        $content->forceFill([
+            'campaign_code' => 'scheduled-campaign',
+            'destination_target' => '/courses',
+            'publish_starts_at' => '2026-08-01 00:00:00',
+            'publish_ends_at' => '2026-08-31 23:59:00',
+        ])->save();
+
+        $this->actingAs($admin)->put(route('affiliate-content-manage.update', $content), [
+            'title' => 'Always available campaign',
+            'destination_target' => '/courses',
+            'publish_starts_at' => '2026-08-28T10:00',
+            'publish_indefinitely' => '1',
+        ])->assertRedirect();
+
+        $content->refresh();
+        $this->assertSame('2026-08-28 10:00:00', $content->publish_starts_at->format('Y-m-d H:i:s'));
+        $this->assertNull($content->publish_ends_at);
+    }
+
+    #[Test]
+    public function PermittedAdminSeesUnlimitedPublicationStatusInTheContentList(): void
+    {
+        $admin = User::factory()->create(['password' => Hash::make('secret')]);
+        $admin->assignRole('Admin');
+        $content = AffiliateContent::create([
+            'title' => 'Always available content',
+            'file_path' => 'uploads/affiliate/video/always-available.mp4',
+            'type' => 'video',
+            'description' => 'Always available caption',
+            'status' => 'enabled',
+            'created_by' => $admin->id,
+        ]);
+        $content->forceFill([
+            'campaign_code' => 'always-available-campaign',
+            'destination_target' => '/',
+        ])->save();
+
+        $this->actingAs($admin)
+            ->get(route('affiliate-content-manage.index'))
+            ->assertOk()
+            ->assertSee('<span data-affiliate-publication-unlimited>ไม่มีกำหนด</span>', false);
     }
 
     #[Test]
