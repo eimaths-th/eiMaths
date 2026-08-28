@@ -13,6 +13,13 @@ class UpdateAffiliateContentRequest extends FormRequest
         return $this->user()?->can('affiliate-content-manage') ?? false;
     }
 
+    protected function prepareForValidation(): void
+    {
+        if ($this->boolean('publish_indefinitely')) {
+            $this->merge(['publish_ends_at' => null]);
+        }
+    }
+
     public function rules(): array
     {
         return [
@@ -22,6 +29,7 @@ class UpdateAffiliateContentRequest extends FormRequest
             'description' => ['nullable', 'string', 'max:1000'],
             'status' => ['sometimes', 'required', 'in:enabled,disabled'],
             'destination_target' => ['sometimes', 'required', 'string', 'max:2048'],
+            'publish_indefinitely' => ['sometimes', 'boolean'],
             'publish_starts_at' => ['nullable', 'date'],
             'publish_ends_at' => ['nullable', 'date', 'after:publish_starts_at'],
         ];

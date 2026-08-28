@@ -13,6 +13,7 @@ use App\Http\Controllers\Affiliate\AffiliatePayoutAccountPageController;
 use App\Http\Controllers\Affiliate\AffiliateTrackingController;
 use App\Http\Controllers\Affiliate\AffiliateAnalyticsController;
 use App\Http\Controllers\Affiliate\AffiliateMediaController;
+use App\Http\Controllers\Affiliate\AffiliateGuideController;
 use App\Http\Controllers\Affiliate\AffiliateEmployeeAccessController;
 use App\Http\Controllers\AffiliateContentManageController;
 use App\Http\Controllers\Affiliate\AffiliateWithdrawalPageController;
@@ -56,10 +57,18 @@ Route::get('/affiliate/media', [AffiliateMediaController::class, 'Index'])
     ->middleware(['auth', 'affiliate.locale', 'affiliate.correlation', 'affiliate.portal-access', 'affiliate.feature:media_library'])
     ->name('affiliate.media.index');
 
+Route::middleware(['auth', 'affiliate.locale', 'affiliate.correlation', 'affiliate.portal-access'])
+    ->prefix('affiliate/guide')
+    ->group(function (): void {
+        Route::get('/', [AffiliateGuideController::class, 'Index'])->name('affiliate.guide.index');
+        Route::get('/document', [AffiliateGuideController::class, 'Document'])->name('affiliate.guide.document');
+    });
+
 Route::middleware(['auth', 'affiliate.locale', 'affiliate.correlation', 'affiliate.feature:administration', 'permission:affiliate-content-manage'])
     ->prefix('affiliate-content-manage')
     ->group(function (): void {
         Route::get('/', [AffiliateContentManageController::class, 'Index'])->name('affiliate-content-manage.index');
+        Route::get('/generate-campaign-code', [AffiliateContentManageController::class, 'GenerateCampaignCode'])->name('affiliate-content-manage.generate-campaign-code');
         Route::post('/', [AffiliateContentManageController::class, 'StoreValidated'])->name('affiliate-content-manage.store');
         Route::put('/{affiliate_content}', [AffiliateContentManageController::class, 'UpdateValidated'])->name('affiliate-content-manage.update');
         Route::delete('/{affiliate_content}', [AffiliateContentManageController::class, 'Destroy'])->name('affiliate-content-manage.destroy');

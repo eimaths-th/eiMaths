@@ -107,6 +107,40 @@
         box-shadow: 0 4px 15px rgba(255, 140, 0, 0.06);
     }
 
+    .affiliate-payment-notice {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+        margin: -0.25rem 0 1.5rem;
+        padding: 0.9rem 1rem;
+        border: 1px solid #f59e0b;
+        border-left: 4px solid #ea580c;
+        border-radius: 12px;
+        background: #fff7ed;
+        color: #7c2d12;
+    }
+
+    .affiliate-payment-notice__icon {
+        flex: 0 0 auto;
+        color: #ea580c;
+        font-size: 1.1rem;
+        line-height: 1.5;
+    }
+
+    .affiliate-payment-notice__title {
+        margin: 0 0 0.25rem;
+        color: #9a3412;
+        font-size: 0.9rem;
+        font-weight: 700;
+    }
+
+    .affiliate-payment-notice__message {
+        margin: 0;
+        color: #7c2d12;
+        font-size: 0.82rem;
+        line-height: 1.6;
+    }
+
     .selected-course-info {
         display: flex;
         align-items: center;
@@ -431,6 +465,20 @@
                             <span class="selected-course-price" id="modalCoursePriceDisplay">0 ฿</span>
                         </div>
                     </div>
+
+                    <aside class="affiliate-payment-notice" role="note" aria-labelledby="affiliate-payment-notice-title">
+                        <div class="affiliate-payment-notice__icon" aria-hidden="true">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div>
+                            <h6 id="affiliate-payment-notice-title" class="affiliate-payment-notice__title">
+                                {{ __('affiliate.course_payment_notice.title') }}
+                            </h6>
+                            <p class="affiliate-payment-notice__message">
+                                {{ __('affiliate.course_payment_notice.message') }}
+                            </p>
+                        </div>
+                    </aside>
 
                     <!-- Hidden Form Inputs for Backend Compatibility -->
                     <input type="hidden" name="course_id" id="course_id" value="">

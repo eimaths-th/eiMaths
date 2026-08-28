@@ -11,6 +11,9 @@
             <a href="{{ route('affiliate.dashboard') }}" class="nav-link {{ request()->routeIs('affiliate.dashboard') ? 'active' : '' }}" @if (request()->routeIs('affiliate.dashboard')) aria-current="page" @endif>
                 <i class="fas fa-chart-line mr-1" aria-hidden="true"></i>{{ __('affiliate.navigation.dashboard') }}
             </a>
+            <a href="{{ route('affiliate.guide.index') }}" class="nav-link {{ request()->routeIs('affiliate.guide.*') ? 'active' : '' }}" @if (request()->routeIs('affiliate.guide.*')) aria-current="page" @endif>
+                <i class="fas fa-book-open mr-1" aria-hidden="true"></i>{{ __('affiliate.navigation.guide') }}
+            </a>
             <a href="{{ route('affiliate.payout-accounts.index') }}" class="nav-link {{ request()->routeIs('affiliate.payout-accounts.*') ? 'active' : '' }}" @if (request()->routeIs('affiliate.payout-accounts.*')) aria-current="page" @endif>
                 <i class="fas fa-credit-card mr-1" aria-hidden="true"></i>{{ __('affiliate.navigation.payout_accounts') }}
             </a>

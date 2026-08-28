@@ -249,7 +249,9 @@ Route::get('thank-you', [ContactController::class, 'thank_you'])->name('demo.tha
 
 
 Route::get('/affiliate', [AffiliateController::class, 'fontend'])->middleware('affiliate.referral')->name('affiliate.index');
-Route::get('/courses', [AffiliateController::class, 'courses'])->middleware('affiliate.referral')->name('affiliate.courses');
+Route::get('/courses', [AffiliateController::class, 'courses'])
+    ->middleware(['affiliate.locale', 'affiliate.referral'])
+    ->name('affiliate.courses');
 // Route::get('/courses', [CourseController::class, 'coursePageSection'])->name('courses.page.section');
 
 Route::get('/affiliate/registration', [AffiliateAuthController::class, 'showRegistrationFrom'])->name('affiliate.registration');

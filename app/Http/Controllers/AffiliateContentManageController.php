@@ -7,8 +7,10 @@ use App\Http\Requests\Affiliate\StoreAffiliateContentRequest;
 use App\Http\Requests\Affiliate\ToggleAffiliateContentStatusRequest;
 use App\Http\Requests\Affiliate\UpdateAffiliateContentRequest;
 use App\Models\AffiliateContent;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
+use RuntimeException;
 
 /**
  * Controller สำหรับ Admin จัดการสื่อการตลาด Affiliate
@@ -28,6 +30,22 @@ class AffiliateContentManageController extends Controller
                 ->orderByDesc('id')
                 ->paginate(10, ['*'], 'content_page'),
         ]);
+    }
+
+    public function GenerateCampaignCode(): JsonResponse
+    {
+        try {
+            $campaign_code = $this->affiliate_content_service->GenerateUniqueCampaignCode();
+        } catch (RuntimeException $exception) {
+            report($exception);
+
+            return response()->json([
+                'message' => __('affiliate.content_admin.campaign_code_generation_failed'),
+            ], 503)->header('Cache-Control', 'no-store, private');
+        }
+
+        return response()->json(['campaign_code' => $campaign_code])
+            ->header('Cache-Control', 'no-store, private');
     }
 
     public function StoreValidated(StoreAffiliateContentRequest $request): RedirectResponse

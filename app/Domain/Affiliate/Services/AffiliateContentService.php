@@ -9,14 +9,36 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use LogicException;
+use Illuminate\Support\Str;
+use RuntimeException;
 
 class AffiliateContentService
 {
+    private const CAMPAIGN_CODE_PREFIX = 'cmp-';
+    private const CAMPAIGN_CODE_RANDOM_LENGTH = 12;
+    private const CAMPAIGN_CODE_GENERATION_ATTEMPTS = 10;
+
     public function __construct(
         private readonly AffiliateDestinationValidator $destination_validator,
         private readonly AffiliateMediaStorageService $media_storage_service,
         private readonly AffiliateAuditService $audit_service,
     ) {
+    }
+
+    public function GenerateUniqueCampaignCode(): string
+    {
+        for ($attempt = 0; $attempt < self::CAMPAIGN_CODE_GENERATION_ATTEMPTS; $attempt++) {
+            $campaign_code = self::CAMPAIGN_CODE_PREFIX . Str::lower(Str::random(self::CAMPAIGN_CODE_RANDOM_LENGTH));
+            $already_exists = DB::table('affiliate_contents')
+                ->where('campaign_code', $campaign_code)
+                ->exists();
+
+            if (! $already_exists) {
+                return $campaign_code;
+            }
+        }
+
+        throw new RuntimeException('Unable to generate a unique Affiliate campaign code.');
     }
 
     public function Create(array $validated, UploadedFile $file, User $actor, string $correlation_id): AffiliateContent

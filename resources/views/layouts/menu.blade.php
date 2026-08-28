@@ -53,6 +53,7 @@
     @php
         $affiliate_finance_route = request()->routeIs(
             'affiliate.dashboard',
+            'affiliate.guide.*',
             'affiliate.payout-accounts.index',
             'affiliate.withdrawals.index',
         );
@@ -68,6 +69,12 @@
                 <a href="{{ route('affiliate.dashboard') }}" class="nav-link {{ request()->routeIs('affiliate.dashboard') ? 'active' : '' }}">
                     <i class="nav-icon fas fa-chart-line"></i>
                     <p>Affiliate Dashboard</p>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{{ route('affiliate.guide.index') }}" class="nav-link {{ request()->routeIs('affiliate.guide.*') ? 'active' : '' }}">
+                    <i class="nav-icon fas fa-book-open"></i>
+                    <p>Affiliate Guide</p>
                 </a>
             </li>
             <li class="nav-item">

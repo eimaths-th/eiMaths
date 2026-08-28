@@ -17,13 +17,14 @@ class AffiliateDestinationValidatorTest extends TestCase
     }
 
     #[Test]
-    public function AcceptsRelativePathsAndExactHttpsHosts(): void
+    public function AcceptsRelativePathsAndAnyHttpsHost(): void
     {
+        Config::set('affiliate.allowed_destination_hosts', ['example.com']);
         $validator = app(AffiliateDestinationValidator::class);
 
         $this->assertSame('/courses/math?level=1', $validator->Normalize('/courses/math?level=1'));
         $this->assertSame('https://example.com/landing', $validator->Normalize('https://example.com/landing'));
-        $this->assertSame('https://shop.example.com/offer', $validator->Normalize('https://shop.example.com/offer'));
+        $this->assertSame('https://external.example/landing', $validator->Normalize('https://external.example/landing'));
     }
 
     #[Test]
@@ -39,7 +40,6 @@ class AffiliateDestinationValidatorTest extends TestCase
             'http://example.com/landing',
             'javascript:alert(1)',
             'https://user:pass@example.com/landing',
-            'https://evil.example.com/landing',
             'https://example.com/landing#bad' . "\n",
         ] as $destination) {
             try {

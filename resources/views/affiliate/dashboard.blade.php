@@ -34,6 +34,18 @@
                 <span class="d-block text-muted mt-2" role="status" aria-live="polite" data-affiliate-referral-feedback></span>
             </section>
 
+            <section class="affiliate-guide-callout mb-4" aria-labelledby="affiliate-guide-callout-title">
+                <div class="affiliate-guide-callout-mark" aria-hidden="true"><i class="fas fa-book-open"></i></div>
+                <div class="affiliate-guide-callout-content">
+                    <p class="affiliate-guide-eyebrow mb-1">{{ __('affiliate.guide.eyebrow') }}</p>
+                    <h2 id="affiliate-guide-callout-title">{{ __('affiliate.guide.intro_title') }}</h2>
+                    <p class="mb-3">{{ __('affiliate.guide.intro') }}</p>
+                    <a class="btn btn-primary" href="{{ route('affiliate.guide.index') }}">
+                        {{ __('affiliate.dashboard.open_guide') }}
+                    </a>
+                </div>
+            </section>
+
             @include('affiliate.partials.analytics-summary')
 
             @if (session('success'))

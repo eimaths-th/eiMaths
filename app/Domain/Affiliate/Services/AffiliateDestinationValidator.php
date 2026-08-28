@@ -9,11 +9,11 @@ final class AffiliateDestinationValidator
     public function Normalize(string $destination_target): string
     {
         if ($destination_target === '' || preg_match('/[\x00-\x1F\x7F]/', $destination_target) || str_contains($destination_target, '\\')) {
-            throw new InvalidArgumentException('Affiliate destinations must be safe relative paths or allowlisted HTTPS URLs.');
+            throw new InvalidArgumentException('Affiliate destinations must be safe relative paths or HTTPS URLs.');
         }
         $destination_target = trim($destination_target);
         if ($destination_target === '') {
-            throw new InvalidArgumentException('Affiliate destinations must be safe relative paths or allowlisted HTTPS URLs.');
+            throw new InvalidArgumentException('Affiliate destinations must be safe relative paths or HTTPS URLs.');
         }
         if (str_starts_with($destination_target, '//')) {
             throw new InvalidArgumentException('Affiliate destinations must not be protocol-relative URLs.');
@@ -32,13 +32,6 @@ final class AffiliateDestinationValidator
         }
 
         $host = strtolower((string) $parts['host']);
-        $allowed_hosts = array_map(
-            static fn (mixed $allowed_host): string => strtolower(trim((string) $allowed_host)),
-            (array) config('affiliate.allowed_destination_hosts', []),
-        );
-        if (! in_array($host, $allowed_hosts, true)) {
-            throw new InvalidArgumentException('Affiliate destination host is not allowlisted.');
-        }
 
         $normalized = 'https://' . $host;
         if (isset($parts['port'])) {

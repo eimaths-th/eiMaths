@@ -78,7 +78,7 @@
                                             @if ($content->publish_ends_at)
                                                 <time datetime="{{ $content->publish_ends_at->toISOString() }}">{{ $content->publish_ends_at->toDateTimeString() }}</time>
                                             @else
-                                                —
+                                                <span data-affiliate-publication-unlimited>{{ __('affiliate.content_admin.publication_unlimited') }}</span>
                                             @endif
                                         </td>
                                         <td>{{ __('affiliate.statuses.' . ($is_archived ? 'archived' : $content->status)) }}</td>
@@ -144,12 +144,17 @@
                                                 <textarea class="form-control" id="affiliate-content-description-{{ $content->id }}" name="description" maxlength="1000">{{ $content->description }}</textarea>
                                             </div>
                                             <div class="form-group">
-                                                <label for="affiliate-content-start-{{ $content->id }}">{{ __('affiliate.content_admin.publication_window') }}</label>
+                                                <label for="affiliate-content-start-{{ $content->id }}">{{ __('affiliate.content_admin.publication_start') }}</label>
                                                 <input class="form-control" id="affiliate-content-start-{{ $content->id }}" type="datetime-local" name="publish_starts_at" value="{{ optional($content->publish_starts_at)->format('Y-m-d\TH:i') }}">
                                             </div>
                                             <div class="form-group">
-                                                <label for="affiliate-content-end-{{ $content->id }}">{{ __('affiliate.content_admin.publication_window') }}</label>
-                                                <input class="form-control" id="affiliate-content-end-{{ $content->id }}" type="datetime-local" name="publish_ends_at" value="{{ optional($content->publish_ends_at)->format('Y-m-d\TH:i') }}">
+                                                <label for="affiliate-content-end-{{ $content->id }}">{{ __('affiliate.content_admin.publication_end') }}</label>
+                                                <input class="form-control" id="affiliate-content-end-{{ $content->id }}" type="datetime-local" name="publish_ends_at" value="{{ optional($content->publish_ends_at)->format('Y-m-d\TH:i') }}" data-affiliate-publication-end-field="affiliate-content-end-{{ $content->id }}" @disabled($content->publish_ends_at === null)>
+                                                <div class="form-check mt-2">
+                                                    <input class="form-check-input" id="affiliate-content-unlimited-{{ $content->id }}" type="checkbox" name="publish_indefinitely" value="1" data-affiliate-publication-unlimited-toggle @checked($content->publish_ends_at === null)>
+                                                    <label class="form-check-label" for="affiliate-content-unlimited-{{ $content->id }}">{{ __('affiliate.content_admin.publication_indefinitely') }}</label>
+                                                </div>
+                                                <small class="form-text text-muted">{{ __('affiliate.content_admin.publication_indefinitely_help') }}</small>
                                             </div>
                                         </div>
                                     </div>
@@ -176,15 +181,16 @@
                         </div>
                         <div class="form-group">
                             <label for="affiliate-create-type">{{ __('affiliate.content_admin.type') }}</label>
-                            <select class="custom-select" id="affiliate-create-type" name="type" required>
-                                <option value="image">{{ __('affiliate.content_admin.image') }}</option>
-                                <option value="video">{{ __('affiliate.content_admin.video') }}</option>
+                            <select class="custom-select" id="affiliate-create-type" name="type" data-affiliate-content-media-type required>
+                                <option value="image" @selected(old('type', 'image') !== 'video')>{{ __('affiliate.content_admin.image') }}</option>
+                                <option value="video" @selected(old('type', 'image') === 'video')>{{ __('affiliate.content_admin.video') }}</option>
                             </select>
                         </div>
                         <div class="form-group affiliate-form-field-full">
                             <label for="affiliate-create-file">{{ __('affiliate.content_admin.file') }}</label>
-                            <input class="form-control-file" id="affiliate-create-file" type="file" name="file" accept="image/jpeg,image/png,image/gif,image/webp,video/mp4,video/quicktime,video/x-msvideo,video/x-ms-wmv" required>
-                            <small class="form-text text-muted">{{ __('affiliate.content_admin.file_help') }}</small>
+                            <input class="form-control-file" id="affiliate-create-file" type="file" name="file" data-affiliate-content-media-file accept="{{ old('type', 'image') === 'video' ? 'video/mp4,video/quicktime,video/x-msvideo,video/x-ms-wmv' : 'image/jpeg,image/png,image/gif,image/webp' }}" aria-describedby="affiliate-create-media-file-help affiliate-create-media-file-status" required>
+                            <small id="affiliate-create-media-file-help" class="form-text text-muted" data-affiliate-content-media-help data-affiliate-media-image-help-message="{{ __('affiliate.content_admin.image_file_help') }}" data-affiliate-media-video-help-message="{{ __('affiliate.content_admin.video_file_help') }}">{{ old('type', 'image') === 'video' ? __('affiliate.content_admin.video_file_help') : __('affiliate.content_admin.image_file_help') }}</small>
+                            <p id="affiliate-create-media-file-status" class="text-muted small mb-0" data-affiliate-content-media-status data-affiliate-media-file-cleared-message="{{ __('affiliate.content_admin.media_file_cleared') }}" aria-live="polite"></p>
                         </div>
                         <div class="form-group affiliate-form-field-full">
                             <label for="affiliate-create-description">{{ __('affiliate.content_admin.description') }}</label>
@@ -192,19 +198,31 @@
                         </div>
                         <div class="form-group">
                             <label for="affiliate-create-campaign">{{ __('affiliate.content_admin.campaign_code') }}</label>
-                            <input class="form-control" id="affiliate-create-campaign" type="text" name="campaign_code" value="{{ old('campaign_code') }}" maxlength="96" pattern="[a-z0-9]+(?:-[a-z0-9]+)*" required>
+                            <div class="input-group affiliate-campaign-code-input-group">
+                                <input class="form-control" id="affiliate-create-campaign" type="text" name="campaign_code" value="{{ old('campaign_code') }}" maxlength="96" pattern="[a-z0-9]+(?:-[a-z0-9]+)*" data-affiliate-campaign-code-input aria-describedby="affiliate-create-campaign-help affiliate-create-campaign-status" required>
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-primary" type="button" data-affiliate-campaign-code-generate data-affiliate-campaign-code-endpoint="{{ route('affiliate-content-manage.generate-campaign-code') }}" data-affiliate-campaign-code-generating-message="{{ __('affiliate.content_admin.campaign_code_generating') }}" data-affiliate-campaign-code-generated-message="{{ __('affiliate.content_admin.campaign_code_generated') }}" data-affiliate-campaign-code-generation-failed-message="{{ __('affiliate.content_admin.campaign_code_generation_failed') }}">{{ __('affiliate.content_admin.generate_campaign_code') }}</button>
+                                </div>
+                            </div>
+                            <small id="affiliate-create-campaign-help" class="form-text text-muted">{{ __('affiliate.content_admin.campaign_code_help') }}</small>
+                            <p id="affiliate-create-campaign-status" class="text-muted small mb-0" data-affiliate-campaign-code-status aria-live="polite"></p>
                         </div>
                         <div class="form-group">
                             <label for="affiliate-create-destination">{{ __('affiliate.content_admin.destination') }}</label>
                             <input class="form-control" id="affiliate-create-destination" type="text" name="destination_target" value="{{ old('destination_target', '/') }}" maxlength="2048" required>
                         </div>
                         <div class="form-group">
-                            <label for="affiliate-create-start">{{ __('affiliate.content_admin.publication_window') }}</label>
+                            <label for="affiliate-create-start">{{ __('affiliate.content_admin.publication_start') }}</label>
                             <input class="form-control" id="affiliate-create-start" type="datetime-local" name="publish_starts_at" value="{{ old('publish_starts_at') }}">
                         </div>
                         <div class="form-group">
-                            <label for="affiliate-create-end">{{ __('affiliate.content_admin.publication_window') }}</label>
-                            <input class="form-control" id="affiliate-create-end" type="datetime-local" name="publish_ends_at" value="{{ old('publish_ends_at') }}">
+                            <label for="affiliate-create-end">{{ __('affiliate.content_admin.publication_end') }}</label>
+                            <input class="form-control" id="affiliate-create-end" type="datetime-local" name="publish_ends_at" value="{{ old('publish_ends_at') }}" data-affiliate-publication-end-field="affiliate-create-end" @disabled(session()->hasOldInput() ? (bool) old('publish_indefinitely') : true)>
+                            <div class="form-check mt-2">
+                                <input class="form-check-input" id="affiliate-create-unlimited" type="checkbox" name="publish_indefinitely" value="1" data-affiliate-publication-unlimited-toggle @checked(session()->hasOldInput() ? (bool) old('publish_indefinitely') : true)>
+                                <label class="form-check-label" for="affiliate-create-unlimited">{{ __('affiliate.content_admin.publication_indefinitely') }}</label>
+                            </div>
+                            <small class="form-text text-muted">{{ __('affiliate.content_admin.publication_indefinitely_help') }}</small>
                         </div>
                         <div class="affiliate-form-field-full">
                             <button class="btn btn-primary" type="submit">{{ __('affiliate.content_admin.upload') }}</button>
@@ -219,4 +237,10 @@
 
 @section('style')
 <link rel="stylesheet" href="{{ asset('css/affiliate-portal.css') }}">
+@endsection
+
+@section('script')
+<script type="module" src="{{ asset('js/affiliate-content-media-type.js') }}"></script>
+<script type="module" src="{{ asset('js/affiliate-campaign-code-generator.js') }}"></script>
+<script type="module" src="{{ asset('js/affiliate-publication-window.js') }}"></script>
 @endsection
