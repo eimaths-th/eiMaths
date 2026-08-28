@@ -149,9 +149,9 @@
                                             </div>
                                             <div class="form-group">
                                                 <label for="affiliate-content-end-{{ $content->id }}">{{ __('affiliate.content_admin.publication_end') }}</label>
-                                                <input class="form-control" id="affiliate-content-end-{{ $content->id }}" type="datetime-local" name="publish_ends_at" value="{{ optional($content->publish_ends_at)->format('Y-m-d\TH:i') }}" data-affiliate-publication-end-field="affiliate-content-end-{{ $content->id }}" @disabled($content->publish_ends_at === null)>
+                                                <input class="form-control" id="affiliate-content-end-{{ $content->id }}" type="datetime-local" name="publish_ends_at" value="{{ optional($content->publish_ends_at)->format('Y-m-d\TH:i') }}" @disabled($content->publish_ends_at === null)>
                                                 <div class="form-check mt-2">
-                                                    <input class="form-check-input" id="affiliate-content-unlimited-{{ $content->id }}" type="checkbox" name="publish_indefinitely" value="1" data-affiliate-publication-unlimited-toggle @checked($content->publish_ends_at === null)>
+                                                    <input class="form-check-input" id="affiliate-content-unlimited-{{ $content->id }}" type="checkbox" name="publish_indefinitely" value="1" data-affiliate-publication-unlimited-toggle data-affiliate-publication-end-field="affiliate-content-end-{{ $content->id }}" @checked($content->publish_ends_at === null)>
                                                     <label class="form-check-label" for="affiliate-content-unlimited-{{ $content->id }}">{{ __('affiliate.content_admin.publication_indefinitely') }}</label>
                                                 </div>
                                                 <small class="form-text text-muted">{{ __('affiliate.content_admin.publication_indefinitely_help') }}</small>
@@ -217,9 +217,9 @@
                         </div>
                         <div class="form-group">
                             <label for="affiliate-create-end">{{ __('affiliate.content_admin.publication_end') }}</label>
-                            <input class="form-control" id="affiliate-create-end" type="datetime-local" name="publish_ends_at" value="{{ old('publish_ends_at') }}" data-affiliate-publication-end-field="affiliate-create-end" @disabled(session()->hasOldInput() ? (bool) old('publish_indefinitely') : true)>
+                            <input class="form-control" id="affiliate-create-end" type="datetime-local" name="publish_ends_at" value="{{ old('publish_ends_at') }}" @disabled(session()->hasOldInput() ? (bool) old('publish_indefinitely') : false)>
                             <div class="form-check mt-2">
-                                <input class="form-check-input" id="affiliate-create-unlimited" type="checkbox" name="publish_indefinitely" value="1" data-affiliate-publication-unlimited-toggle @checked(session()->hasOldInput() ? (bool) old('publish_indefinitely') : true)>
+                                <input class="form-check-input" id="affiliate-create-unlimited" type="checkbox" name="publish_indefinitely" value="1" data-affiliate-publication-unlimited-toggle data-affiliate-publication-end-field="affiliate-create-end" @checked(session()->hasOldInput() ? (bool) old('publish_indefinitely') : false)>
                                 <label class="form-check-label" for="affiliate-create-unlimited">{{ __('affiliate.content_admin.publication_indefinitely') }}</label>
                             </div>
                             <small class="form-text text-muted">{{ __('affiliate.content_admin.publication_indefinitely_help') }}</small>

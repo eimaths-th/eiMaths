@@ -123,6 +123,39 @@ class AffiliateContentManagementTest extends TestCase
     }
 
     #[Test]
+    public function CreateFormStartsWithAnEnabledPublicationEndField(): void
+    {
+        $admin = User::factory()->create(['password' => Hash::make('secret')]);
+        $admin->assignRole('Admin');
+
+        $response = $this->actingAs($admin)
+            ->get(route('affiliate-content-manage.index'))
+            ->assertOk();
+        $html = $response->getContent();
+
+        $this->assertMatchesRegularExpression(
+            '/<input[^>]*id="affiliate-create-end"[^>]*type="datetime-local"[^>]*name="publish_ends_at"[^>]*>/',
+            $html,
+        );
+        $this->assertDoesNotMatchRegularExpression(
+            '/<input[^>]*id="affiliate-create-end"[^>]*\sdisabled(?:\s|>)/',
+            $html,
+        );
+        $this->assertMatchesRegularExpression(
+            '/<input[^>]*id="affiliate-create-unlimited"[^>]*data-affiliate-publication-unlimited-toggle[^>]*>/',
+            $html,
+        );
+        $this->assertMatchesRegularExpression(
+            '/<input[^>]*id="affiliate-create-unlimited"[^>]*data-affiliate-publication-unlimited-toggle[^>]*data-affiliate-publication-end-field="affiliate-create-end"[^>]*>/',
+            $html,
+        );
+        $this->assertDoesNotMatchRegularExpression(
+            '/<input[^>]*id="affiliate-create-unlimited"[^>]*\schecked(?:\s|>)/',
+            $html,
+        );
+    }
+
+    #[Test]
     public function CreateRequestTreatsCheckedUnlimitedPublicationAsHavingNoEndTime(): void
     {
         $admin = User::factory()->create(['password' => Hash::make('secret')]);
