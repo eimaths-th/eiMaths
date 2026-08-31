@@ -58,20 +58,23 @@
                                 @if ($content->type === 'video')
                                     <video class="affiliate-media-preview mb-3" controls preload="metadata" src="{{ asset($content->file_path) }}" aria-label="{{ __('affiliate.media.video_preview', ['title' => $content->title]) }}"></video>
                                 @else
-                                    <img class="affiliate-media-preview mb-3" src="{{ asset($content->file_path) }}" alt="{{ __('affiliate.media.image_preview', ['title' => $content->title]) }}">
+                                    <a
+                                        class="affiliate-media-preview-link mb-3"
+                                        href="{{ asset($content->file_path) }}"
+                                        target="_blank"
+                                        rel="noopener"
+                                        data-media-view
+                                        data-media-view-url="{{ asset($content->file_path) }}"
+                                        data-media-view-title="{{ $content->title }}"
+                                        data-media-view-type="{{ $content->type }}"
+                                        aria-haspopup="dialog"
+                                        aria-label="{{ __('affiliate.media.view_full', ['title' => $content->title]) }}"
+                                    >
+                                        <img class="affiliate-media-preview" src="{{ asset($content->file_path) }}" alt="{{ __('affiliate.media.image_preview', ['title' => $content->title]) }}">
+                                    </a>
                                 @endif
                                 <p>{{ $content->description }}</p>
                                 <p class="mb-2"><strong>{{ __('affiliate.media.campaign') }}:</strong> <code>{{ $content->campaign_code }}</code></p>
-                                <div class="form-group mb-3">
-                                    <label for="affiliate-media-tracking-url-{{ $content->id }}">{{ __('affiliate.media.tracking_link_label') }}</label>
-                                    <input
-                                        class="form-control"
-                                        id="affiliate-media-tracking-url-{{ $content->id }}"
-                                        type="text"
-                                        value="{{ $content->tracking_url }}"
-                                        readonly
-                                    >
-                                </div>
                                 <p class="affiliate-confirmation mb-0">{{ __('affiliate.media.publication_status') }}</p>
                             </div>
                             <div class="card-footer">
@@ -86,6 +89,16 @@
                 </div>
                 <div class="mt-4">{{ $media->withQueryString()->links() }}</div>
             @endif
+
+            <dialog class="affiliate-media-dialog" data-media-dialog aria-labelledby="affiliate-media-dialog-title">
+                <div class="affiliate-media-dialog__header">
+                    <h2 class="affiliate-media-dialog__title" id="affiliate-media-dialog-title" data-media-dialog-title></h2>
+                    <button class="affiliate-media-dialog__close btn btn-light" type="button" data-media-dialog-close aria-label="{{ __('affiliate.media.close_dialog') }}">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="affiliate-media-dialog__content" data-media-dialog-content></div>
+            </dialog>
 
             @php
                 $media_translations = [
@@ -106,6 +119,13 @@
 @endsection
 
 @section('script')
-<script type="module" src="{{ asset('js/affiliate-media-library.js') }}"></script>
-<script type="module">import { InitializeAffiliateMediaLibrary } from '{{ asset('js/affiliate-media-library.js') }}'; InitializeAffiliateMediaLibrary();</script>
+<script type="module">
+    import {
+        InitializeAffiliateMediaLibrary,
+        InitializeAffiliateMediaViewer,
+    } from '{{ asset('js/affiliate-media-library.js') }}';
+
+    InitializeAffiliateMediaLibrary();
+    InitializeAffiliateMediaViewer();
+</script>
 @endsection

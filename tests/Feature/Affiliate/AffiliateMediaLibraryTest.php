@@ -22,10 +22,10 @@ class AffiliateMediaLibraryTest extends TestCase
         Config::set('affiliate.features.media_library', true);
     }
 
-    public function test_active_affiliate_receives_only_current_enabled_media_with_server_tracking_links(): void
+    public function test_active_affiliate_receives_only_current_enabled_media_without_exposing_tracking_link(): void
     {
         $user = User::factory()->create(['password' => Hash::make('secret')]);
-        $profile = AffiliateProfile::create([
+        AffiliateProfile::create([
             'user_id' => $user->id,
             'referral_code' => 'AFF-MEDIA-LIBRARY',
             'status' => AffiliateProfileStatus::ACTIVE,
@@ -44,8 +44,9 @@ class AffiliateMediaLibraryTest extends TestCase
             ->assertDontSee('data-media-copy-caption', false)
             ->assertDontSee('data-media-copy-link', false)
             ->assertSee('data-media-share', false)
-            ->assertSee('id="affiliate-media-tracking-url-' . $current->id . '"', false)
-            ->assertSee('value="' . route('affiliate.tracking.media', [$profile->referral_code, $current->campaign_code]) . '"', false)
+            ->assertSee('data-media-url="' . route('affiliate.tracking.media', ['AFF-MEDIA-LIBRARY', $current->campaign_code]) . '"', false)
+            ->assertDontSee('affiliate-media-tracking-url-' . $current->id, false)
+            ->assertDontSee('ลิงก์ติดตาม', false)
             ->assertDontSee('disabled-library')
             ->assertDontSee('archived-library');
     }
@@ -69,6 +70,30 @@ class AffiliateMediaLibraryTest extends TestCase
 
         Config::set('affiliate.features.media_library', false);
         $this->actingAs($user)->get(route('affiliate.media.index'))->assertStatus(503);
+    }
+
+    public function test_media_preview_exposes_an_accessible_dialog_viewer(): void
+    {
+        $user = User::factory()->create(['password' => Hash::make('secret')]);
+        AffiliateProfile::create([
+            'user_id' => $user->id,
+            'referral_code' => 'AFF-MEDIA-DIALOG',
+            'status' => AffiliateProfileStatus::ACTIVE,
+        ]);
+        $user->assignRole(Role::findOrCreate('Affiliate-user', 'web'));
+        $content = $this->CreateContent($user, 'Dialog image', 'dialog-image', 'enabled');
+
+        $this->actingAs($user)->get(route('affiliate.media.index'))
+            ->assertOk()
+            ->assertSee('<dialog', false)
+            ->assertSee('data-media-dialog', false)
+            ->assertSee('data-media-dialog-title', false)
+            ->assertSee('data-media-dialog-content', false)
+            ->assertSee('data-media-dialog-close', false)
+            ->assertSee('data-media-view', false)
+            ->assertSee('data-media-view-url="' . asset($content->file_path) . '"', false)
+            ->assertSee('target="_blank"', false)
+            ->assertSee('rel="noopener"', false);
     }
 
     private function CreateContent(User $user, string $title, string $campaign_code, string $status, string $type = 'image'): AffiliateContent

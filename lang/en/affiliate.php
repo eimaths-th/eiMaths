@@ -163,6 +163,8 @@ return [
         'publication_status' => 'Published',
         'image_preview' => 'Image preview: :title',
         'video_preview' => 'Video preview: :title',
+        'view_full' => 'View :title full size',
+        'close_dialog' => 'Close media viewer',
         'copied' => 'Copied.',
         'shared' => 'Shared.',
         'tracking_link_copied' => 'Tracking link copied.',

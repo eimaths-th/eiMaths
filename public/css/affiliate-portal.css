@@ -238,8 +238,82 @@
 .affiliate-portal .affiliate-media-preview {
     width: 100%;
     height: 12rem;
-    object-fit: cover;
+    object-fit: contain;
     background: var(--affiliate-paper);
+}
+
+.affiliate-portal .affiliate-media-preview-link {
+    display: block;
+    width: 100%;
+    height: 12rem;
+    overflow: hidden;
+    border: 1px solid #D5DEE7;
+    background: var(--affiliate-paper);
+}
+
+.affiliate-portal .affiliate-media-preview-link:focus-visible {
+    border-color: var(--affiliate-primary);
+}
+
+.affiliate-portal .affiliate-media-dialog {
+    width: min(72rem, calc(100vw - 2rem));
+    max-width: calc(100vw - 2rem);
+    max-height: calc(100vh - 2rem);
+    padding: 0;
+    border: 1px solid #D5DEE7;
+    color: var(--affiliate-ink);
+    background: #FFFFFF;
+}
+
+.affiliate-portal .affiliate-media-dialog::backdrop {
+    background: rgba(36, 54, 75, 0.78);
+}
+
+.affiliate-portal .affiliate-media-dialog__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #D5DEE7;
+    background: var(--affiliate-evidence);
+}
+
+.affiliate-portal .affiliate-media-dialog__title {
+    margin: 0;
+    color: var(--affiliate-ink);
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.affiliate-portal .affiliate-media-dialog__close {
+    flex: 0 0 auto;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0.25rem 0.75rem;
+    color: var(--affiliate-ink);
+    font-size: 1.5rem;
+    line-height: 1;
+}
+
+.affiliate-portal .affiliate-media-dialog__content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 12rem;
+    max-height: calc(100vh - 7rem);
+    padding: 1rem;
+    overflow: auto;
+    background: var(--affiliate-paper);
+}
+
+.affiliate-portal .affiliate-media-dialog__asset {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    height: auto;
+    max-height: calc(100vh - 9rem);
+    object-fit: contain;
 }
 
 .affiliate-portal .affiliate-media-card .card-footer {

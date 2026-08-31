@@ -163,6 +163,8 @@ return [
         'publication_status' => 'เผยแพร่แล้ว',
         'image_preview' => 'ตัวอย่างรูปภาพ: :title',
         'video_preview' => 'ตัวอย่างวิดีโอ: :title',
+        'view_full' => 'เปิดดู :title แบบเต็ม',
+        'close_dialog' => 'ปิดหน้าต่างแสดงสื่อ',
         'copied' => 'คัดลอกแล้ว',
         'shared' => 'แชร์แล้ว',
         'tracking_link_copied' => 'คัดลอกลิงก์ติดตามแล้ว',
