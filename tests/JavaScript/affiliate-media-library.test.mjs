@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
+    BuildShareDestinationUrl,
     CopyText,
     InitializeAffiliateMediaLibrary,
     ResolveMediaAction,
@@ -161,6 +162,23 @@ test('SharesSuccessfullyCancelsQuietlyAndFallsBackToCopy', async () => {
     });
     assert.deepEqual(fallback, { status: 'copied' });
     assert.deepEqual(copied, ['/track']);
+});
+
+test('BuildsSafeShareDestinationUrlsForSupportedChannels', () => {
+    const media = {
+        caption: 'ทดลองเรียน ฟรี',
+        url: 'https://example.test/affiliate/campaign?ref=AFF-1',
+    };
+
+    assert.equal(
+        BuildShareDestinationUrl('facebook', media),
+        'https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fexample.test%2Faffiliate%2Fcampaign%3Fref%3DAFF-1',
+    );
+    assert.equal(
+        BuildShareDestinationUrl('line', media),
+        'https://social-plugins.line.me/lineit/share?url=https%3A%2F%2Fexample.test%2Faffiliate%2Fcampaign%3Fref%3DAFF-1&text=%E0%B8%97%E0%B8%94%E0%B8%A5%E0%B8%AD%E0%B8%87%E0%B9%80%E0%B8%A3%E0%B8%B5%E0%B8%A2%E0%B8%99%20%E0%B8%9F%E0%B8%A3%E0%B8%B5',
+    );
+    assert.equal(BuildShareDestinationUrl('unsupported', media), '');
 });
 
 test('ResolvesCaptionAndTrackingLinkActionsFromDataAttributes', () => {

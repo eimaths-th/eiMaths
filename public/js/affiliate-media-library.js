@@ -30,6 +30,18 @@ export function ResolveMediaAction(card, action) {
     return null;
 }
 
+export function BuildShareDestinationUrl(destination, media) {
+    const url = encodeURIComponent(String(media?.url ?? ''));
+    const caption = encodeURIComponent(String(media?.caption ?? ''));
+    if (destination === 'facebook') {
+        return `https://www.facebook.com/sharer/sharer.php?u=${url}`;
+    }
+    if (destination === 'line') {
+        return `https://social-plugins.line.me/lineit/share?url=${url}&text=${caption}`;
+    }
+    return '';
+}
+
 export function InitializeAffiliateMediaLibrary(options = {}) {
     const root = options.Root ?? options.root ?? globalThis.document;
     if (!root?.querySelectorAll) return null;
@@ -38,7 +50,9 @@ export function InitializeAffiliateMediaLibrary(options = {}) {
     const translations = options.Translations ?? options.translations ?? ReadEmbeddedTranslations(root);
     const bind = (selector, action) => root.querySelectorAll(selector).forEach((button) => {
         button.addEventListener('click', async () => {
-            const card = button.closest('[data-media-card]') ?? button;
+            const card = button.closest('[data-media-card]')
+                ?? button.closest?.('[data-media-share-drawer]')
+                ?? button;
             const resolved = ResolveMediaAction(card, action);
             if (!resolved) return;
             const feedback = card.querySelector?.('[data-media-feedback]');
@@ -76,6 +90,143 @@ export function InitializeAffiliateMediaLibrary(options = {}) {
     bind('[data-media-copy-link]', 'link');
     bind('[data-media-share]', 'share');
     return { Root: root };
+}
+
+export function InitializeAffiliateMediaMenus(options = {}) {
+    const root = options.Root ?? options.root ?? globalThis.document;
+    if (!root?.querySelectorAll) return null;
+
+    const toggles = Array.from(root.querySelectorAll('[data-media-menu-toggle]'));
+    const menus = Array.from(root.querySelectorAll('[data-media-menu]'));
+
+    const SetOpen = (toggle, menu, is_open) => {
+        menu.hidden = !is_open;
+        toggle.setAttribute('aria-expanded', is_open ? 'true' : 'false');
+    };
+
+    const CloseAll = (except_menu = null) => {
+        toggles.forEach((toggle) => {
+            const card = toggle.closest?.('[data-media-card]');
+            const menu = card?.querySelector?.('[data-media-menu]');
+            if (!menu || menu === except_menu) return;
+            SetOpen(toggle, menu, false);
+        });
+    };
+
+    toggles.forEach((toggle) => {
+        const card = toggle.closest?.('[data-media-card]');
+        const menu = card?.querySelector?.('[data-media-menu]');
+        if (!menu) return;
+
+        toggle.addEventListener('click', (event) => {
+            event?.preventDefault?.();
+            event?.stopPropagation?.();
+            const will_open = menu.hidden;
+            CloseAll(menu);
+            SetOpen(toggle, menu, will_open);
+            if (will_open) menu.querySelector?.('a, button')?.focus?.();
+        });
+
+        menu.querySelectorAll?.('a, button').forEach((action) => {
+            action.addEventListener('click', () => SetOpen(toggle, menu, false));
+        });
+    });
+
+    root.addEventListener?.('click', (event) => {
+        if (!event?.target?.closest?.('[data-media-menu-wrap]')) CloseAll();
+    });
+    root.addEventListener?.('keydown', (event) => {
+        if (event?.key !== 'Escape') return;
+        CloseAll();
+    });
+
+    return { Root: root, CloseAll };
+}
+
+export function InitializeAffiliateMediaShareDrawer(options = {}) {
+    const root = options.Root ?? options.root ?? globalThis.document;
+    if (!root?.querySelectorAll) return null;
+
+    const drawer = root.querySelector?.('[data-media-share-drawer]');
+    const close_button = drawer?.querySelector?.('[data-media-share-close]');
+    const title = drawer?.querySelector?.('[data-media-share-title]');
+    const caption = drawer?.querySelector?.('[data-media-share-caption]');
+    const icon = drawer?.querySelector?.('[data-media-share-icon] i');
+    const facebook_link = drawer?.querySelector?.('[data-media-share-facebook]');
+    const line_link = drawer?.querySelector?.('[data-media-share-line]');
+    const native_share = drawer?.querySelector?.('[data-media-share]');
+    const download_link = drawer?.querySelector?.('[data-media-share-download]');
+    if (!drawer || !close_button || !title || !caption || !facebook_link || !line_link || !native_share || !download_link) return null;
+
+    let active_trigger = null;
+
+    const RestoreFocus = () => {
+        const trigger = active_trigger;
+        active_trigger = null;
+        trigger?.focus?.();
+    };
+
+    const Close = () => {
+        if (typeof drawer.close === 'function' && drawer.open) {
+            drawer.close();
+            return;
+        }
+        drawer.removeAttribute?.('open');
+        RestoreFocus();
+    };
+
+    const Open = (trigger) => {
+        const card = trigger?.closest?.('[data-media-card]');
+        if (!card) return;
+
+        const media = {
+            title: String(card.dataset?.mediaTitle ?? ''),
+            caption: String(card.dataset?.mediaCaption ?? ''),
+            url: String(card.dataset?.mediaUrl ?? ''),
+            downloadUrl: String(card.dataset?.mediaDownloadUrl ?? ''),
+            type: String(card.dataset?.mediaType ?? ''),
+        };
+
+        active_trigger = trigger;
+        title.textContent = media.title;
+        caption.textContent = media.caption;
+        facebook_link.href = BuildShareDestinationUrl('facebook', media);
+        line_link.href = BuildShareDestinationUrl('line', media);
+        download_link.href = media.downloadUrl;
+        native_share.dataset.mediaTitle = media.title;
+        native_share.dataset.mediaCaption = media.caption;
+        native_share.dataset.mediaUrl = media.url;
+        if (icon) icon.className = media.type === 'video' ? 'fas fa-video' : 'fas fa-image';
+
+        const menu = trigger.closest?.('[data-media-menu]');
+        if (menu) {
+            menu.hidden = true;
+            const menu_toggle = card.querySelector?.('[data-media-menu-toggle]');
+            menu_toggle?.setAttribute?.('aria-expanded', 'false');
+        }
+
+        if (typeof drawer.showModal === 'function') {
+            drawer.showModal();
+        } else {
+            drawer.setAttribute?.('open', '');
+        }
+        close_button.focus?.();
+    };
+
+    root.querySelectorAll('[data-media-share-panel]').forEach((trigger) => {
+        trigger.addEventListener('click', () => Open(trigger));
+    });
+    close_button.addEventListener('click', Close);
+    drawer.addEventListener('close', RestoreFocus);
+    drawer.addEventListener('cancel', (event) => {
+        event.preventDefault?.();
+        Close();
+    });
+    drawer.addEventListener('click', (event) => {
+        if (event.target === drawer) Close();
+    });
+
+    return { Root: root, Drawer: drawer, Open, Close };
 }
 
 export function InitializeAffiliateMediaViewer(options = {}) {
