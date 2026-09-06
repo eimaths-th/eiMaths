@@ -8,6 +8,11 @@
                 <div class="col-sm-8">
                     <h1 id="affiliate-dashboard-title" class="mb-0">{{ __('affiliate.dashboard.title') }}</h1>
                 </div>
+                <div class="col-sm-4 affiliate-tutorial-launch">
+                    <button type="button" class="btn affiliate-tutorial-button" data-affiliate-tutorial-start aria-haspopup="dialog" aria-controls="affiliate-tutorial" aria-busy="true" disabled>
+                        <i class="fas fa-play-circle mr-1" aria-hidden="true"></i>{{ __('affiliate_tutorial.button') }}
+                    </button>
+                </div>
             </div>
         </div>
     </section>
@@ -62,7 +67,7 @@
                 </div>
             @endif
 
-            <section class="mb-4" aria-label="{{ __('affiliate.dashboard.wallet_summary') }}">
+            <section class="mb-4" aria-label="{{ __('affiliate.dashboard.wallet_summary') }}" data-tutorial-wallet>
                 <div class="row">
                     <div class="col-md-6 mb-3 mb-md-0">
                         <div class="card card-primary affiliate-card h-100">

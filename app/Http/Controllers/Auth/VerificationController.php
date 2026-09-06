@@ -85,6 +85,7 @@ class VerificationController extends Controller
             $profile_status,
             [
                 AffiliateProfileStatus::PENDING_EMAIL,
+                AffiliateProfileStatus::PENDING_IDENTITY,
                 AffiliateProfileStatus::PENDING_APPROVAL,
             ],
             true,

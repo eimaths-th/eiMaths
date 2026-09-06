@@ -18,6 +18,9 @@ class RegisterAffiliateRequest extends FormRequest
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
             'phone' => ['required', 'string', 'regex:/^[0-9]{10,15}$/', 'unique:users,phone'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'terms_accepted' => ['accepted'],
+            'privacy_acknowledged' => ['accepted'],
+            'marketing_consent' => ['nullable', 'boolean'],
         ];
     }
 }

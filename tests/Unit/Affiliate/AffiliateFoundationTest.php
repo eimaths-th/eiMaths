@@ -69,6 +69,7 @@ class AffiliateFoundationTest extends TestCase
     {
         $this->assertSame([
             'PENDING_EMAIL',
+            'PENDING_IDENTITY',
             'PENDING_APPROVAL',
             'ACTIVE',
             'SUSPENDED',

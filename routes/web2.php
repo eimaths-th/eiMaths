@@ -3,6 +3,7 @@
 use App\Http\Controllers\AffiliateAuthController;
 use App\Http\Controllers\AffiliateContentController;
 use App\Http\Controllers\AffiliateController;
+use App\Http\Controllers\Affiliate\AffiliateLegalController;
 use App\Http\Controllers\AssignQuizToStudentController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\CourseController;
@@ -254,15 +255,19 @@ Route::get('/courses', [AffiliateController::class, 'courses'])
     ->name('affiliate.courses');
 // Route::get('/courses', [CourseController::class, 'coursePageSection'])->name('courses.page.section');
 
-Route::get('/affiliate/registration', [AffiliateAuthController::class, 'showRegistrationFrom'])->name('affiliate.registration');
+Route::get('/affiliate/registration', [AffiliateAuthController::class, 'showRegistrationFrom'])->middleware('affiliate.locale')->name('affiliate.registration');
+Route::get('/affiliate/terms', [AffiliateLegalController::class, 'Terms'])->middleware('affiliate.locale')->name('affiliate.terms');
+Route::get('/affiliate/privacy', [AffiliateLegalController::class, 'Privacy'])->middleware('affiliate.locale')->name('affiliate.privacy');
+Route::redirect('/terms', '/affiliate/terms', 301);
+Route::redirect('/privacy', '/affiliate/privacy', 301);
 Route::post('/affiliate/register', [AffiliateAuthController::class, 'register'])
-    ->middleware('throttle:affiliate-registration')
+    ->middleware(['affiliate.locale', 'throttle:affiliate-registration'])
     ->name('affiliate.register');
-Route::get('/affiliate/waiting', [AffiliateAuthController::class, 'Waiting'])->name('affiliate.waiting');
+Route::get('/affiliate/waiting', [AffiliateAuthController::class, 'Waiting'])->middleware('affiliate.locale')->name('affiliate.waiting');
 Route::post('/affiliate/resend-verification', [AffiliateAuthController::class, 'ResendVerification'])
-    ->middleware('throttle:6,1')
+    ->middleware(['affiliate.locale', 'throttle:6,1'])
     ->name('affiliate.verification.resend');
-Route::get('/affiliate/login', [AffiliateAuthController::class, 'login'])->name('affiliate.login');
+Route::get('/affiliate/login', [AffiliateAuthController::class, 'login'])->middleware('affiliate.locale')->name('affiliate.login');
 
 Route::post('/affiliate/logout', [AffiliateAuthController::class, 'logout'])->name('affiliate.logout');
 

@@ -118,7 +118,7 @@ class AffiliateRegistrationTest extends TestCase
         $this->assertDatabaseMissing('users', ['email' => 'blocked-affiliate@example.test']);
     }
 
-    public function test_email_verification_moves_only_pending_email_profile_to_pending_approval(): void
+    public function test_email_verification_moves_only_pending_email_profile_to_pending_identity(): void
     {
         $user = User::factory()->create(['password' => Hash::make('secret'), 'email_verified_at' => null]);
         $profile = AffiliateProfile::create([
@@ -129,7 +129,7 @@ class AffiliateRegistrationTest extends TestCase
 
         app(AffiliateAccountService::class)->MarkEmailVerified($user);
 
-        $this->assertSame(AffiliateProfileStatus::PENDING_APPROVAL, $profile->fresh()->status);
+        $this->assertSame(AffiliateProfileStatus::PENDING_IDENTITY, $profile->fresh()->status);
     }
 
     public function test_affiliate_registration_is_rate_limited_by_client_ip(): void
@@ -164,8 +164,8 @@ class AffiliateRegistrationTest extends TestCase
         $response = $this->get(route('affiliate.waiting'));
 
         $response->assertOk()
-            ->assertSee('Thanks For Registration')
-            ->assertSee('Please Wait For Approval')
+            ->assertSee(trans('frontend.Thanks For Registration', [], 'th'))
+            ->assertSee(trans('frontend.Please Wait For Approval', [], 'th'))
             ->assertDontSee('frontend.Thanks For Registration')
             ->assertDontSee('frontend.Please Wait For Approval');
     }
@@ -189,7 +189,7 @@ class AffiliateRegistrationTest extends TestCase
             ->assertOk()
             ->assertSee('resend-verification-form', false)
             ->assertSee('/affiliate/resend-verification', false)
-            ->assertSee(__('affiliate.registration.resend_verification'));
+            ->assertSee(trans('affiliate.registration.resend_verification', [], 'th'));
     }
 
     #[Test]
@@ -223,7 +223,7 @@ class AffiliateRegistrationTest extends TestCase
             ->assertOk()
             ->assertSee('resend-verification-form', false)
             ->assertSee('affiliate-verification-email', false)
-            ->assertSee(__('affiliate.registration.email'));
+            ->assertSee(trans('affiliate.registration.email', [], 'th'));
     }
 
     #[Test]
@@ -277,7 +277,7 @@ class AffiliateRegistrationTest extends TestCase
             ->assertSessionHas('affiliate_pending_user_id', $affiliate_user->id);
         $this->assertFalse(auth()->check());
         $this->assertNotNull($affiliate_user->fresh()->email_verified_at);
-        $this->assertSame(AffiliateProfileStatus::PENDING_APPROVAL, $affiliate_profile->fresh()->status);
+        $this->assertSame(AffiliateProfileStatus::PENDING_IDENTITY, $affiliate_profile->fresh()->status);
     }
 
     #[Test]
@@ -340,7 +340,7 @@ class AffiliateRegistrationTest extends TestCase
             'affiliate_pending_user_id' => $affiliate_user->id,
         ])->get(route('affiliate.waiting'))
             ->assertOk()
-            ->assertSee(__('affiliate.registration.verification_completed'))
+            ->assertSee(trans('affiliate.registration.approval_pending', [], 'th'))
             ->assertDontSee('resend-verification-form', false);
     }
 
@@ -355,6 +355,8 @@ class AffiliateRegistrationTest extends TestCase
             'phone' => '0812345678',
             'password' => 'password-123',
             'password_confirmation' => 'password-123',
+            'terms_accepted' => '1',
+            'privacy_acknowledged' => '1',
         ]);
 
         $response->assertRedirect(route('affiliate.waiting'))
@@ -423,7 +425,7 @@ class AffiliateRegistrationTest extends TestCase
         $response = $this->actingAs($affiliate_user)->get(route('affiliate.waiting'));
 
         $response->assertOk()
-            ->assertSee('Please Wait For Approval')
+            ->assertSee(trans('frontend.Please Wait For Approval', [], 'th'))
             ->assertDontSee('resend-verification-form', false);
     }
 }

@@ -72,7 +72,7 @@ class AffiliateAuditService
         $sanitized = [];
         foreach ($value as $key => $item) {
             $normalized_key = strtolower((string) $key);
-            if (preg_match('/password|token|cookie|secret|account[_-]?number|promptpay[_-]?identifier|details[_-]?encrypted|payout[_-]?snapshot/', $normalized_key)) {
+            if (preg_match('/password|token|cookie|secret|account[_-]?number|promptpay[_-]?identifier|details[_-]?encrypted|payout[_-]?snapshot|national[_-]?id|identification|card|document|address|postal/', $normalized_key)) {
                 continue;
             }
             $sanitized[$key] = is_array($item) ? $this->Sanitize($item) : $item;

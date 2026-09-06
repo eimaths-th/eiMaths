@@ -94,7 +94,18 @@
                             </div>
                         @elseif ($show_verified_waiting_message ?? false)
                             <div class="affiliate-resend-panel alert alert-success" role="status">
-                                {{ __('affiliate.registration.verification_completed') }}
+                                {{ __('affiliate.registration.approval_pending') }}
+                            </div>
+                        @endif
+                        @if ($show_identity_login ?? false)
+                            <div class="affiliate-resend-panel">
+                                <p>{{ __('affiliate.identity.login_required') }}</p>
+                                <a class="btn theme_btn" href="{{ route('affiliate.login') }}">{{ __('affiliate.identity.login_action') }}</a>
+                            </div>
+                        @endif
+                        @if (session('identity_submitted'))
+                            <div class="affiliate-resend-panel alert alert-success" role="status">
+                                {{ __('affiliate.identity.submitted') }}
                             </div>
                         @endif
                         @if ($show_resend_verification ?? false)

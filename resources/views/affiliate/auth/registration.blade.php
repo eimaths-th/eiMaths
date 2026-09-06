@@ -19,7 +19,7 @@
                             <div class="col-12">
                                 <div class="input-group custom_group_field">
                                     <input type="text" class="form-control ps-0"
-                                        placeholder="กรอกชื่อ - นามสกุล {{ $custom_field['required_company'] ? '*' : '' }}"
+                                        placeholder="กรอกชื่อ - นามสกุล *"
                                         {{ $custom_field['required_name'] ? 'required' : '' }} aria-label="Username"
                                         name="name" value="{{ old('name') }}">
                                 </div>
@@ -28,8 +28,8 @@
                             @cannot('update', Model::class)
                                 <div class="col-12 mt_20">
                                     <div class="input-group custom_group_field">
-                                        <input type="email" class="form-control ps-0" placeholder="กรอกอีเมล"
-                                            aria-label="email" name="email" value="{{ old('email') }}">
+                                        <input type="email" class="form-control ps-0" placeholder="กรอกอีเมล *"
+                                            aria-label="email" name="email" value="{{ old('email') }}" autocomplete="email" required>
                                     </div>
                                     <span class="text-danger" role="alert">{{ $errors->first('email') }}</span>
                                 </div>
@@ -39,24 +39,23 @@
 
                         <div class="col-12 mt_20">
                             <div class="input-group custom_group_field">
-                                <input type="text" class="form-control ps-0"
-                                    placeholder="กรอกหมายเลขโทรศัพท์ {{ $custom_field['required_phone'] ? '*' : '' }}"
-                                    {{ $custom_field['required_phone'] ? 'required' : '' }} aria-label="phone"
-                                    name="phone" value="{{ old('phone') }}">
+                                <input type="tel" class="form-control ps-0"
+                                    placeholder="กรอกหมายเลขโทรศัพท์ *" required aria-label="phone"
+                                    name="phone" value="{{ old('phone') }}" autocomplete="tel" inputmode="numeric">
                             </div>
                             <span class="text-danger" role="alert">{{ $errors->first('phone') }}</span>
                         </div>
                         <div class="col-12 mt_20">
                             <div class="input-group custom_group_field">
-                                <input type="password" class="form-control ps-0" placeholder="กรอกยืนยันรหัสผ่าน"
-                                    aria-label="password" name="password">
+                                <input type="password" class="form-control ps-0" placeholder="กรอกรหัสผ่านอย่างน้อย 8 ตัวอักษร *"
+                                    aria-label="password" name="password" autocomplete="new-password" required>
                             </div>
                             <span class="text-danger" role="alert">{{ $errors->first('password') }}</span>
                         </div>
                         <div class="col-12 mt_20">
                             <div class="input-group custom_group_field">
-                                <input type="password" class="form-control ps-0" placeholder="ยืนยันรหัสผ่าน"
-                                    name="password_confirmation" aria-label="password_confirmation">
+                                <input type="password" class="form-control ps-0" placeholder="ยืนยันรหัสผ่าน *"
+                                    name="password_confirmation" aria-label="password_confirmation" autocomplete="new-password" required>
                             </div>
                             <span class="text-danger" role="alert">{{ $errors->first('password_confirmation') }}</span>
                         </div>
@@ -163,19 +162,35 @@
 
                         <div class="col-12 mt_20">
                             <div class="remember_forgot_passs d-flex align-items-center">
-                                <label class="primary_checkbox d-flex" for="checkbox">
-                                    <input checked="" type="checkbox" id="checkbox" required>
+                                <label class="primary_checkbox d-flex" for="terms_accepted">
+                                    <input type="checkbox" id="terms_accepted" name="terms_accepted" value="1" {{ old('terms_accepted') ? 'checked' : '' }} required>
                                     <span class="checkmark mr_15"></span>
                                     <p>โดยการสมัครสมาชิก คุณตกลงที่จะ
-                                        <a target="_blank" href="{{ url('privacy') }}">
+                                        <a target="_blank" rel="noopener" href="{{ route('affiliate.terms') }}">
                                             Terms of Service
-                                        </a> และ
-                                        <a target="_blank" href="{{ url('privacy') }}">
-                                            นโยบายความเป็นส่วนตัว
                                         </a>
                                     </p>
                                 </label>
-
+                                <span class="text-danger" role="alert">{{ $errors->first('terms_accepted') }}</span>
+                            </div>
+                        </div>
+                        <div class="col-12 mt_20">
+                            <div class="remember_forgot_passs d-flex align-items-center">
+                                <label class="primary_checkbox d-flex" for="privacy_acknowledged">
+                                    <input type="checkbox" id="privacy_acknowledged" name="privacy_acknowledged" value="1" {{ old('privacy_acknowledged') ? 'checked' : '' }} required>
+                                    <span class="checkmark mr_15"></span>
+                                    <p>ฉันรับทราบ <a target="_blank" rel="noopener" href="{{ route('affiliate.privacy') }}">นโยบายความเป็นส่วนตัว</a></p>
+                                </label>
+                                <span class="text-danger" role="alert">{{ $errors->first('privacy_acknowledged') }}</span>
+                            </div>
+                        </div>
+                        <div class="col-12 mt_20">
+                            <div class="remember_forgot_passs d-flex align-items-center">
+                                <label class="primary_checkbox d-flex" for="marketing_consent">
+                                    <input type="checkbox" id="marketing_consent" name="marketing_consent" value="1" {{ old('marketing_consent') ? 'checked' : '' }}>
+                                    <span class="checkmark mr_15"></span>
+                                    <p>ยินยอมรับข่าวสารและข้อมูลส่งเสริมการตลาด (ไม่บังคับ)</p>
+                                </label>
                             </div>
                         </div>
                         <div class="col-12 mt_20">
@@ -226,9 +241,9 @@
     </div>
     <script>
         $(function() {
-            $('#checkbox').click(function() {
+            $('#terms_accepted, #privacy_acknowledged').on('change', function() {
 
-                if ($(this).is(':checked')) {
+                if ($('#terms_accepted').is(':checked') && $('#privacy_acknowledged').is(':checked')) {
                     $('#submitBtn').removeClass('disable_btn');
                     $('#submitBtn').removeAttr('disabled');
 
@@ -238,6 +253,7 @@
 
                 }
             });
+            $('#terms_accepted').trigger('change');
         });
     </script>
 

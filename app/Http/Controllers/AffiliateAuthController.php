@@ -105,10 +105,14 @@ class AffiliateAuthController extends Controller
 
     public function register(RegisterAffiliateRequest $request)
     {
-        $affiliate_user = $this->account_service->Register($request->validated());
+        $validated = $request->validated();
+        $validated['marketing_consent'] = $request->boolean('marketing_consent');
+        $validated['registration_ip'] = $request->ip();
+        $validated['registration_user_agent'] = $request->userAgent();
+        $affiliate_user = $this->account_service->Register($validated);
         $request->session()->put(self::PENDING_USER_ID_SESSION_KEY, $affiliate_user->getKey());
 
-        return redirect()->route('affiliate.waiting')->with('success', 'Registration received. Verify your email before approval.');
+        return redirect()->route('affiliate.waiting')->with('success', 'Registration received. Verify your email, then complete identity verification.');
     }
 
     public function Waiting(Request $request): RedirectResponse|View
@@ -117,6 +121,14 @@ class AffiliateAuthController extends Controller
 
         if ($affiliate_user instanceof User && $this->eligibility->IsEligible($affiliate_user)) {
             return redirect()->route('affiliate.employee-access.show');
+        }
+
+        if (
+            $affiliate_user instanceof User
+            && $this->eligibility->IsAffiliateOnly($affiliate_user)
+            && $affiliate_user->AffiliateProfile?->status === AffiliateProfileStatus::PENDING_IDENTITY
+        ) {
+            return redirect()->route('affiliate.identity.show');
         }
 
         if (
@@ -148,6 +160,8 @@ class AffiliateAuthController extends Controller
                 && !$request->session()->has(self::PENDING_USER_ID_SESSION_KEY),
             'show_verified_waiting_message' => $session_affiliate_user?->email_verified_at !== null
                 && $session_affiliate_user?->AffiliateProfile?->status === AffiliateProfileStatus::PENDING_APPROVAL,
+            'show_identity_login' => $request->user() === null
+                && $session_affiliate_user?->AffiliateProfile?->status === AffiliateProfileStatus::PENDING_IDENTITY,
         ]);
     }
 

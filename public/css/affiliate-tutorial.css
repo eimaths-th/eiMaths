@@ -1,0 +1,50 @@
+.affiliate-tutorial-launch { display:flex; justify-content:flex-end; align-items:center; }
+.affiliate-tutorial-button.btn { background:#f39a22; color:#182f4b; border:1px solid #e68b15; font-weight:700; min-height:44px; border-radius:10px; padding:10px 18px; }
+.affiliate-tutorial-button.btn:hover { background:#ffb044; color:#102941; }
+.affiliate-tutorial-button:focus-visible { outline:3px solid #1266ab; outline-offset:3px; }
+.affiliate-tour { position:fixed; inset:0; width:100%; height:100%; max-width:none; max-height:none; margin:0; padding:0; border:0; background:transparent; overflow:hidden; color:#24364b; font-family:Sarabun,'Source Sans Pro',sans-serif; }
+.affiliate-tour:not([open]), .affiliate-tour [hidden] { display:none !important; }
+.affiliate-tour::backdrop { background:transparent; }
+.affiliate-tour *, .affiliate-tour *::before, .affiliate-tour *::after { box-sizing:border-box; }
+.affiliate-tour__shade { position:absolute; inset:0; pointer-events:none; }
+.affiliate-tour__ring { position:absolute; border:3px solid #ffb044; border-radius:10px; box-shadow:0 0 0 3px #fff8; pointer-events:none; }
+.affiliate-tour__panel { position:absolute; width:min(392px,calc(100% - 24px)); max-height:calc(100% - 24px); overflow:auto; overscroll-behavior:contain; border:1px solid #dbe3ec; border-radius:18px; background:#fff; padding:22px; box-shadow:0 16px 64px #06142666; }
+.affiliate-tour__panel:focus { outline:none; }
+.affiliate-tour__eyebrow { display:flex; align-items:center; justify-content:space-between; gap:8px; color:#66778c; font-size:12px; margin-bottom:12px; }
+.affiliate-tour__eyebrow > span:first-child { font-weight:800; font-size:18px; color:#b86400; }
+.affiliate-tour__track { width:100%; height:4px; border-radius:8px; background:#eaf0f5; margin-bottom:18px; overflow:hidden; }
+.affiliate-tour__track > span { display:block; height:100%; border-radius:8px; background:#f39a22; }
+.affiliate-tour__hero { width:100%; height:145px; object-fit:cover; border-radius:10px; margin-bottom:16px; background:#fff8ee; }
+.affiliate-tour__panel h2 { font-size:22px; line-height:1.4; font-weight:700; color:#163b60; margin:0 0 10px; }
+.affiliate-tour__panel h2:focus { outline:none; }
+.affiliate-tour__panel p { font-size:15px; line-height:1.7; margin:0 0 14px; overflow-wrap:anywhere; }
+.affiliate-tour__panel .affiliate-tour__hint { font-size:12px; line-height:1.6; color:#586b80; border-left:3px solid #cbe3f6; background:#f6f9fc; padding:8px 10px; }
+.affiliate-tour__example { font-size:13px; margin:0 0 14px; }
+.affiliate-tour__example summary { color:#1266ab; cursor:pointer; padding:6px 0; }
+.affiliate-tour__example img { display:block; width:100%; max-height:210px; object-fit:contain; margin-top:8px; border:1px solid #dbe3ec; border-radius:8px; }
+.affiliate-tour__actions { display:flex; justify-content:flex-end; align-items:center; flex-wrap:wrap; gap:8px; padding-top:6px; }
+.affiliate-tour__actions button { font:inherit; font-size:13px; border-radius:8px; min-height:42px; padding:8px 12px; cursor:pointer; border:1px solid transparent; }
+.affiliate-tour__skip { margin-right:auto; background:transparent; color:#53677f; padding-left:0 !important; }
+.affiliate-tour__back { background:#fff; border-color:#c4d1df !important; color:#24364b; }
+.affiliate-tour__next { background:#1266ab; color:#fff; font-weight:700 !important; }
+.affiliate-tour__actions button:hover { filter:brightness(.94); }
+.affiliate-tour__actions button:focus-visible, .affiliate-tour summary:focus-visible { outline:3px solid #f39a22; outline-offset:2px; }
+.affiliate-tour__actions button:disabled { opacity:.6; cursor:wait; }
+.affiliate-tour__panel .affiliate-tour__error { color:#a02727; background:#fff2f2; padding:8px; border-radius:6px; font-size:13px; }
+.affiliate-tour__feedback { position:fixed; z-index:1100; bottom:20px; right:20px; max-width:calc(100% - 40px); background:#163b60; color:#fff; border-radius:10px; padding:14px 20px; box-shadow:0 8px 30px #163b6030; }
+@media (max-width:575px) {
+    .affiliate-tutorial-launch { justify-content:flex-start; margin-top:12px; }
+    .affiliate-tour__panel { padding:18px; }
+    .affiliate-tour__panel h2 { font-size:20px; }
+    .affiliate-tour__hero { height:110px; }
+    .affiliate-tour__actions { gap:6px; }
+    .affiliate-tour__actions button { padding:8px 10px; font-size:12px; }
+}
+@media (max-height:520px) {
+    .affiliate-tour__hero { height:70px; }
+    .affiliate-tour__hint { display:none; }
+    .affiliate-tour__panel { padding:14px; }
+}
+@media (prefers-reduced-motion:no-preference) {
+    .affiliate-tour__track > span { transition:width .18s ease; }
+}

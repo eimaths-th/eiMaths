@@ -32,4 +32,7 @@
             </a>
         @endif
     </nav>
+    @if ((bool) config('affiliate.features.wallet_withdrawals', false))
+        @include('affiliate.partials.tutorial')
+    @endif
 @endif

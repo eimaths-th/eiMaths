@@ -14,7 +14,9 @@ use App\Http\Controllers\Affiliate\AffiliateTrackingController;
 use App\Http\Controllers\Affiliate\AffiliateAnalyticsController;
 use App\Http\Controllers\Affiliate\AffiliateMediaController;
 use App\Http\Controllers\Affiliate\AffiliateGuideController;
+use App\Http\Controllers\Affiliate\AffiliateTutorialController;
 use App\Http\Controllers\Affiliate\AffiliateEmployeeAccessController;
+use App\Http\Controllers\Affiliate\AffiliateIdentityController;
 use App\Http\Controllers\AffiliateContentManageController;
 use App\Http\Controllers\Affiliate\AffiliateWithdrawalPageController;
 use Illuminate\Support\Facades\Route;
@@ -85,6 +87,15 @@ Route::middleware(['auth', 'affiliate.correlation', 'affiliate.feature:administr
     Route::post('/{affiliate_profile}/approve', [AffiliateAccountAdminController::class, 'approve'])
         ->middleware('permission:affiliate-approve')
         ->name('affiliate.admin.approve');
+    Route::get('/{affiliate_profile}/identity', [AffiliateAccountAdminController::class, 'ShowIdentity'])
+        ->middleware(['permission:affiliate-identity-review', 'password.confirm'])
+        ->name('affiliate.admin.identity.show');
+    Route::get('/{affiliate_profile}/identity-document', [AffiliateAccountAdminController::class, 'IdentityDocument'])
+        ->middleware(['permission:affiliate-identity-review', 'password.confirm'])
+        ->name('affiliate.admin.identity.document');
+    Route::post('/{affiliate_profile}/identity/reject', [AffiliateAccountAdminController::class, 'RejectIdentity'])
+        ->middleware(['permission:affiliate-identity-review', 'password.confirm'])
+        ->name('affiliate.admin.identity.reject');
     Route::post('/{affiliate_profile}/suspend', [AffiliateAccountAdminController::class, 'suspend'])
         ->middleware('permission:affiliate-suspend')
         ->name('affiliate.admin.suspend');
@@ -95,6 +106,14 @@ Route::middleware(['auth', 'affiliate.correlation', 'affiliate.feature:administr
         ->middleware('permission:affiliate-suspend')
         ->name('affiliate.admin.deactivate');
 });
+
+Route::middleware(['auth', 'affiliate.locale', 'affiliate.correlation'])
+    ->prefix('affiliate/identity-verification')
+    ->group(function (): void {
+        Route::get('/', [AffiliateIdentityController::class, 'Show'])->name('affiliate.identity.show');
+        Route::post('/', [AffiliateIdentityController::class, 'Store'])->name('affiliate.identity.store');
+        Route::get('/document', [AffiliateIdentityController::class, 'Document'])->name('affiliate.identity.document');
+    });
 
 Route::middleware(['auth', 'affiliate.locale', 'affiliate.correlation', 'affiliate.portal-access', 'affiliate.feature:wallet_withdrawals'])->prefix('affiliate/payout-accounts')->group(function (): void {
     Route::put('/promptpay', [AffiliatePayoutAccountController::class, 'PromptPay'])->name('affiliate.payout-accounts.promptpay');
@@ -109,6 +128,10 @@ Route::middleware(['auth', 'affiliate.locale', 'affiliate.correlation', 'affilia
 Route::get('/affiliate/dashboard', [AffiliateDashboardController::class, 'Index'])
     ->middleware(['auth', 'affiliate.locale', 'affiliate.correlation', 'affiliate.portal-access', 'affiliate.feature:wallet_withdrawals'])
     ->name('affiliate.dashboard');
+
+Route::post('/affiliate/tutorial/progress', [AffiliateTutorialController::class, 'Store'])
+    ->middleware(['auth', 'affiliate.locale', 'affiliate.correlation', 'affiliate.portal-access', 'affiliate.feature:wallet_withdrawals'])
+    ->name('affiliate.tutorial.progress');
 
 Route::get('/affiliate/payout-accounts', [AffiliatePayoutAccountPageController::class, 'Index'])
     ->middleware(['auth', 'affiliate.locale', 'affiliate.correlation', 'affiliate.portal-access', 'affiliate.feature:wallet_withdrawals'])

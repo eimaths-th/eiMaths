@@ -3,8 +3,10 @@
 namespace App\Domain\Affiliate\Services;
 
 use App\Domain\Affiliate\Enums\AffiliateProfileStatus;
+use App\Domain\Affiliate\Enums\AffiliateIdentityStatus;
 use App\Domain\Affiliate\Exceptions\AffiliateDomainException;
 use App\Domain\Affiliate\Models\AffiliateProfile;
+use App\Domain\Affiliate\Models\AffiliateIdentityProfile;
 use App\Notifications\AffiliateApprovedNotification;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
@@ -41,10 +43,27 @@ class AffiliateAccountService
                 'password' => Hash::make($validated['password']),
             ]);
 
-            AffiliateProfile::create([
+            $profile = AffiliateProfile::create([
                 'user_id' => $user->id,
                 'referral_code' => $user->referral,
                 'status' => AffiliateProfileStatus::PENDING_EMAIL,
+            ]);
+
+            AffiliateIdentityProfile::create([
+                'affiliate_profile_id' => $profile->id,
+                'status' => AffiliateIdentityStatus::DRAFT,
+                'terms_version' => (string) config('affiliate.legal.terms_version'),
+                'terms_accepted_at' => now(),
+                'privacy_version' => (string) config('affiliate.legal.privacy_version'),
+                'privacy_acknowledged_at' => now(),
+                'marketing_consent' => (bool) ($validated['marketing_consent'] ?? false),
+                'marketing_consent_at' => ($validated['marketing_consent'] ?? false) ? now() : null,
+                'registration_ip_hash' => filled($validated['registration_ip'] ?? null)
+                    ? AffiliateIdentityProfile::SensitiveHash((string) $validated['registration_ip'])
+                    : null,
+                'registration_user_agent' => filled($validated['registration_user_agent'] ?? null)
+                    ? mb_substr((string) $validated['registration_user_agent'], 0, 500)
+                    : null,
             ]);
 
             if (\Spatie\Permission\Models\Role::where('name', 'Affiliate-user')->where('guard_name', 'web')->exists()) {
@@ -65,8 +84,8 @@ class AffiliateAccountService
         return DB::transaction(function () use ($user): AffiliateProfile {
             $profile = AffiliateProfile::query()->where('user_id', $user->id)->lockForUpdate()->firstOrFail();
             if ($profile->status === AffiliateProfileStatus::PENDING_EMAIL) {
-                $profile->forceFill(['status' => AffiliateProfileStatus::PENDING_APPROVAL])->save();
-                $this->audit_service->Record('affiliate.email-verified', 'affiliate_profile', $profile->id, $user, ['status' => AffiliateProfileStatus::PENDING_EMAIL->value], ['status' => AffiliateProfileStatus::PENDING_APPROVAL->value], null, 'SUCCESS', null, (string) Str::uuid());
+                $profile->forceFill(['status' => AffiliateProfileStatus::PENDING_IDENTITY])->save();
+                $this->audit_service->Record('affiliate.email-verified', 'affiliate_profile', $profile->id, $user, ['status' => AffiliateProfileStatus::PENDING_EMAIL->value], ['status' => AffiliateProfileStatus::PENDING_IDENTITY->value], null, 'SUCCESS', null, (string) Str::uuid());
             }
 
             return $profile->fresh();
@@ -75,7 +94,42 @@ class AffiliateAccountService
 
     public function Approve(AffiliateProfile $profile, User $actor, ?string $reason = null): AffiliateProfile
     {
-        $approved_profile = $this->Transition($profile, $actor, AffiliateProfileStatus::PENDING_APPROVAL, AffiliateProfileStatus::ACTIVE, 'approved_by', 'approved_at', $reason);
+        $approved_profile = DB::transaction(function () use ($profile, $actor, $reason): AffiliateProfile {
+            $identity = AffiliateIdentityProfile::query()
+                ->where('affiliate_profile_id', $profile->id)
+                ->lockForUpdate()
+                ->first();
+            if ($identity instanceof AffiliateIdentityProfile && $identity->status !== AffiliateIdentityStatus::PENDING) {
+                throw AffiliateDomainException::StateConflict('Identity verification must be pending before approval.');
+            }
+            if ($identity instanceof AffiliateIdentityProfile && !$actor->can('affiliate-identity-review')) {
+                throw AffiliateDomainException::OwnershipDenied();
+            }
+
+            $approved = $this->Transition($profile, $actor, AffiliateProfileStatus::PENDING_APPROVAL, AffiliateProfileStatus::ACTIVE, 'approved_by', 'approved_at', $reason);
+            if ($identity instanceof AffiliateIdentityProfile) {
+                $identity->forceFill([
+                    'status' => AffiliateIdentityStatus::VERIFIED,
+                    'reviewed_at' => now(),
+                    'reviewed_by' => $actor->id,
+                    'rejection_reason' => null,
+                ])->save();
+                $this->audit_service->Record(
+                    'affiliate.identity-verified',
+                    'affiliate_identity_profile',
+                    $identity->id,
+                    $actor,
+                    ['status' => AffiliateIdentityStatus::PENDING->value],
+                    ['status' => AffiliateIdentityStatus::VERIFIED->value],
+                    null,
+                    'SUCCESS',
+                    null,
+                    (string) Str::uuid(),
+                );
+            }
+
+            return $approved;
+        });
         $this->NotifyExternalAffiliateApproval($approved_profile);
 
         return $approved_profile;

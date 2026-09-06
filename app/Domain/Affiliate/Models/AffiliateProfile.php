@@ -6,6 +6,7 @@ use App\Domain\Affiliate\Enums\AffiliateProfileStatus;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class AffiliateProfile extends Model
 {
@@ -40,6 +41,11 @@ class AffiliateProfile extends Model
     public function ApprovedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'approved_by');
+    }
+
+    public function IdentityProfile(): HasOne
+    {
+        return $this->hasOne(AffiliateIdentityProfile::class, 'affiliate_profile_id');
     }
 
     public function SuspendedBy(): BelongsTo

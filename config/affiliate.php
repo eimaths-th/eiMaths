@@ -28,6 +28,20 @@ return [
 
     'supported_locales' => ['th', 'en'],
 
+    'legal' => [
+        'terms_version' => '2026-09-06',
+        'privacy_version' => '2026-09-06',
+        'effective_date' => '2026-09-06',
+        'support_phone' => '06-1620-8666',
+    ],
+
+    'legal' => [
+        'terms_version' => '2026-09-06',
+        'privacy_version' => '2026-09-06',
+        'effective_date' => '2026-09-06',
+        'support_phone' => '06-1620-8666',
+    ],
+
     'visitor_hash_key' => env('AFFILIATE_VISITOR_HASH_KEY'),
 
     'allowed_destination_hosts' => array_values(array_filter(array_map(

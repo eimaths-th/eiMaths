@@ -31,6 +31,7 @@
         <link rel="stylesheet" href="{{ asset('css/pending-work-alert.css') }}">
     @endif
     @yield('style')
+    @stack('styles')
 </head>
 
 <body class="hold-transition sidebar-mini layout-fixed layout-footer-fixed">
@@ -481,6 +482,7 @@
     };
 </script>
 @yield('script')
+@stack('scripts')
 
 </html>
 {{-- </x-laravel-ui-adminlte::adminlte-layout> --}}
