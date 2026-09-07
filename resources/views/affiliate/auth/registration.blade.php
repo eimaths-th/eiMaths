@@ -2,6 +2,41 @@
 @section('title', 'Register')
 @section('content')
 
+    <style>
+        .affiliate-password-field {
+            position: relative;
+        }
+
+        .affiliate-password-field .form-control {
+            padding-right: 48px;
+        }
+
+        .affiliate-password-toggle {
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            z-index: 4;
+            width: 36px;
+            height: 36px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transform: translateY(-50%);
+            border: 0;
+            border-radius: 50%;
+            color: #6c757d;
+            background: transparent;
+            cursor: pointer;
+        }
+
+        .affiliate-password-toggle:hover,
+        .affiliate-password-toggle:focus-visible {
+            color: #202e3b;
+            background: rgba(32, 46, 59, .08);
+            outline: none;
+        }
+    </style>
+
     <div class="login_wrapper">
         <div class="login_wrapper_left">
             <div class="logo">
@@ -46,16 +81,22 @@
                             <span class="text-danger" role="alert">{{ $errors->first('phone') }}</span>
                         </div>
                         <div class="col-12 mt_20">
-                            <div class="input-group custom_group_field">
+                            <div class="input-group custom_group_field affiliate-password-field">
                                 <input type="password" class="form-control ps-0" placeholder="กรอกรหัสผ่านอย่างน้อย 8 ตัวอักษร *"
-                                    aria-label="password" name="password" autocomplete="new-password" required>
+                                    id="affiliate-password" aria-label="password" name="password" autocomplete="new-password" required>
+                                <button type="button" class="affiliate-password-toggle" data-password-toggle="affiliate-password" aria-label="แสดงรหัสผ่าน" aria-pressed="false">
+                                    <span class="fas fa-eye" aria-hidden="true"></span>
+                                </button>
                             </div>
                             <span class="text-danger" role="alert">{{ $errors->first('password') }}</span>
                         </div>
                         <div class="col-12 mt_20">
-                            <div class="input-group custom_group_field">
+                            <div class="input-group custom_group_field affiliate-password-field">
                                 <input type="password" class="form-control ps-0" placeholder="ยืนยันรหัสผ่าน *"
-                                    name="password_confirmation" aria-label="password_confirmation" autocomplete="new-password" required>
+                                    id="affiliate-password-confirmation" name="password_confirmation" aria-label="password_confirmation" autocomplete="new-password" required>
+                                <button type="button" class="affiliate-password-toggle" data-password-toggle="affiliate-password-confirmation" aria-label="แสดงรหัสผ่านยืนยัน" aria-pressed="false">
+                                    <span class="fas fa-eye" aria-hidden="true"></span>
+                                </button>
                             </div>
                             <span class="text-danger" role="alert">{{ $errors->first('password_confirmation') }}</span>
                         </div>
@@ -240,6 +281,20 @@
 
     </div>
     <script>
+        document.querySelectorAll('[data-password-toggle]').forEach(function(toggle) {
+            toggle.addEventListener('click', function() {
+                var input = document.getElementById(toggle.getAttribute('data-password-toggle'));
+                var icon = toggle.querySelector('span');
+                var isVisible = input.type === 'text';
+
+                input.type = isVisible ? 'password' : 'text';
+                toggle.setAttribute('aria-pressed', String(!isVisible));
+                toggle.setAttribute('aria-label', isVisible ? 'แสดงรหัสผ่าน' : 'ซ่อนรหัสผ่าน');
+                icon.classList.toggle('fa-eye', isVisible);
+                icon.classList.toggle('fa-eye-slash', !isVisible);
+            });
+        });
+
         $(function() {
             $('#terms_accepted, #privacy_acknowledged').on('change', function() {
 

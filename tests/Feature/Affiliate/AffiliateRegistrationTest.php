@@ -24,6 +24,16 @@ class AffiliateRegistrationTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_registration_form_has_accessible_password_visibility_controls(): void
+    {
+        $this->get(route('affiliate.registration'))
+            ->assertOk()
+            ->assertSee('data-password-toggle="affiliate-password"', false)
+            ->assertSee('data-password-toggle="affiliate-password-confirmation"', false)
+            ->assertSee('fa-eye', false)
+            ->assertSee('aria-label="แสดงรหัสผ่าน"', false);
+    }
+
     public function test_registration_creates_pending_profile_without_logging_user_in(): void
     {
         Notification::fake();
