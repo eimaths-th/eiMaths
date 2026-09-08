@@ -57,3 +57,13 @@
         transition: none;
     }
 }
+
+
+.nav-sidebar .nav-link > p > .sidebar-menu-badge {
+    line-height: 1.15;
+    white-space: nowrap;
+}
+
+.nav-sidebar .nav-link > p > .sidebar-menu-badge--parent {
+    right: 2.2rem;
+}

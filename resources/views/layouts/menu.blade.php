@@ -363,10 +363,12 @@
             <p>
                 Stock &amp; Logistics
                 @if ($book_shipment_alert_role === 'centre')
-                    <span class="badge badge-danger ml-1" data-book-shipment-badge="centre" hidden
+                    <span class="right badge badge-danger sidebar-menu-badge sidebar-menu-badge--parent"
+                        data-book-shipment-badge="centre" hidden
                         aria-label="No incoming shipments waiting"></span>
                 @elseif ($book_shipment_alert_role === 'hq')
-                    <span class="badge badge-danger ml-1" data-book-shipment-badge="hq" hidden
+                    <span class="right badge badge-danger sidebar-menu-badge sidebar-menu-badge--parent"
+                        data-book-shipment-badge="hq" hidden
                         aria-label="No active book shipments"></span>
                 @endif
             </p>
@@ -528,7 +530,8 @@
             <p>
                 Affiliate Management
                 @if ((bool) config('affiliate.features.administration', false) && $menu_can('affiliate-list'))
-                    <span class="badge badge-danger ml-1" data-affiliate-pending-approval-badge hidden
+                    <span class="right badge badge-danger sidebar-menu-badge sidebar-menu-badge--parent"
+                        data-affiliate-pending-approval-badge hidden
                         aria-label="ไม่มี Affiliate รออนุมัติ"></span>
                 @endif
             </p>
@@ -542,7 +545,8 @@
                         <i class="nav-icon fas fa-user-check"></i>
                         <p>
                             Affiliate Accounts
-                            <span class="badge badge-danger ml-1" data-affiliate-pending-approval-badge hidden
+                            <span class="right badge badge-danger sidebar-menu-badge"
+                                data-affiliate-pending-approval-badge hidden
                                 aria-label="ไม่มี Affiliate รออนุมัติ"></span>
                         </p>
                     </a>
