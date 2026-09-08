@@ -620,6 +620,7 @@ class ContactController extends Controller
 
     public function demo_list(Request $request)
     {
+        $this->EnsureDemoStudentsEnabled();
 
         if ($request->ajax()) {
             $query = Contact::where('type', 'demo');
@@ -725,6 +726,8 @@ class ContactController extends Controller
 
     public function demo_store(Request $request)
     {
+        $this->EnsureDemoStudentsEnabled();
+
         $validator = Validator::make($request->all(), [
             'code' => 'required|string|max:255',
             'school' => 'required|string|max:255',
@@ -755,12 +758,19 @@ class ContactController extends Controller
 
     public function demo_code()
     {
+        $this->EnsureDemoStudentsEnabled();
+
         $newDemoCode = \App\Support\Branch\BranchNumber::next(studentRunningNumber::class, (string) Auth::user()->department_id, 'department', 'DEMO-', 4, false, true);
 
         return response()->json([
             'demoCode' => $newDemoCode,
         ]);
     }
+    private function EnsureDemoStudentsEnabled(): void
+    {
+        abort_unless((bool) config('demo-students.enabled', false), 404);
+    }
+
     public function thank_you()
     {
         return view('home.thankq');

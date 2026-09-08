@@ -198,12 +198,14 @@
                     <p>Guest Quiz Reports</p>
                 </a>
             </li>
-            <li class="nav-item">
-                <a href="{{ route('demo.list') }}" class="nav-link {{ $menu_route === 'demo.list' ? 'active' : '' }}">
-                    <i class="nav-icon fas fa-user-clock"></i>
-                    <p>Demo Students</p>
-                </a>
-            </li>
+            @if ((bool) config('demo-students.enabled', false))
+                <li class="nav-item">
+                    <a href="{{ route('demo.list') }}" class="nav-link {{ $menu_route === 'demo.list' ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-user-clock"></i>
+                        <p>Demo Students</p>
+                    </a>
+                </li>
+            @endif
             <li class="nav-item">
                 <a href="{{ route('discontinued') }}" class="nav-link {{ $menu_route === 'discontinued' ? 'active' : '' }}">
                     <i class="nav-icon fas fa-user-slash"></i>
