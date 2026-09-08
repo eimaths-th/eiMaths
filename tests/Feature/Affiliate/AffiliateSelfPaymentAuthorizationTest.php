@@ -29,6 +29,8 @@ class AffiliateSelfPaymentAuthorizationTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        \App\Models\Department::create(['id' => 1, 'name' => 'HQ test', 'code' => 'HQ', 'status' => 1, 'branch_type' => 'hq']);
+        \App\Models\Department::forceCreate(['id' => 5, 'name' => 'Employee branch', 'code' => 'EMP', 'status' => 1]);
         Config::set('affiliate.features.wallet_withdrawals', true);
     }
 
@@ -40,7 +42,7 @@ class AffiliateSelfPaymentAuthorizationTest extends TestCase
     public function test_payment_requires_external_transfer_reference(): void
     {
         [, , $withdrawal] = $this->CreateApprovedWithdrawal();
-        $payer = $this->CreateUser();
+        $payer = $this->CreateFinanceActor();
         $payer->givePermissionTo(Permission::findOrCreate('affiliate-withdrawal-pay', 'web'));
 
         $response = $this->actingAs($payer)->postJson(route('affiliate.withdrawals.admin.pay', $withdrawal), [
@@ -135,7 +137,7 @@ class AffiliateSelfPaymentAuthorizationTest extends TestCase
     public function test_different_actor_can_pay_with_existing_permission_only(): void
     {
         [, , $withdrawal, $approver] = $this->CreateApprovedWithdrawal();
-        $payer = $this->CreateUser();
+        $payer = $this->CreateFinanceActor();
         $payer->givePermissionTo(Permission::findOrCreate('affiliate-withdrawal-pay', 'web'));
 
         $response = $this->actingAs($payer)->postJson(route('affiliate.withdrawals.admin.pay', $withdrawal), [
@@ -259,15 +261,23 @@ class AffiliateSelfPaymentAuthorizationTest extends TestCase
             'self-payment-request-' . $owner->id,
             'corr-self-payment-request-' . $owner->id,
         );
-        $approver = $this->CreateUser();
+        $approver = $this->CreateFinanceActor();
         app(AffiliateWithdrawalService::class)->Approve($withdrawal, $approver, 'self-payment-approval-' . $owner->id, 'corr-self-payment-approval-' . $owner->id);
 
         return [$owner, $profile, $withdrawal->fresh(), $approver];
     }
 
+    private function CreateFinanceActor(): User
+    {
+        $actor = User::factory()->create(['department_id' => 1, 'email_verified_at' => now(), 'password' => Hash::make('secret')]);
+        $actor->assignRole(Role::findOrCreate('AffiliateFinance', 'web'));
+        return $actor;
+    }
+
     private function CreateUser(): User
     {
         return User::factory()->create([
+            'department_id' => 5,
             'email_verified_at' => now(),
             'password' => Hash::make('secret'),
         ]);

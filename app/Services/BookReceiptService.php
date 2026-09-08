@@ -257,7 +257,7 @@ class BookReceiptService
             throw (new ModelNotFoundException())->setModel(BookShipment::class, [$shipment_id]);
         }
 
-        if (!$actor->isHq() && (int) $shipment->destination_centre_id !== (int) $actor->department_id) {
+        if (!\App\Support\Branch\BranchAccess::canCrossBranches($actor) && (int) $shipment->destination_centre_id !== (int) $actor->department_id) {
             throw new AuthorizationException('You are not allowed to access this shipment.');
         }
 
@@ -270,7 +270,7 @@ class BookReceiptService
             throw (new ModelNotFoundException())->setModel(Contact::class, [$student->id]);
         }
 
-        if (!$actor->isHq() && (int) $actor->department_id !== (int) $student->centre) {
+        if (!\App\Support\Branch\BranchAccess::canCrossBranches($actor) && (int) $actor->department_id !== (int) $student->centre) {
             throw new AuthorizationException('You are not allowed to access this student.');
         }
     }

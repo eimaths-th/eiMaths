@@ -139,9 +139,8 @@
                     "sLast": "Last"
                 }
             },
-            aaSorting: [
-                [0, "desc"]
-            ],
+            // Name is the first meaningful sortable field on both user tables.
+            order: [[{{ !empty($showReferralColumn) ? 2 : 1 }}, "asc"]],
             iDisplayLength: 10,
             lengthMenu: [10, 25, 50, 75, 100],
             stateSave: true,
@@ -155,21 +154,23 @@
                     orderable: false,
                     searchable: false
                 },
-                {
-                    data: 'referral',
-                    name: 'referral'
-                },
+                @if (!empty($showReferralColumn))
+                    {
+                        data: 'referral',
+                        name: 'users.referral'
+                    },
+                @endif
                 /*     {
                         data: 'id',
                         name: 'id'
                     }, */
                 {
                     data: 'name',
-                    name: 'name'
+                    name: 'users.name'
                 },
                 {
                     data: 'email',
-                    name: 'email'
+                    name: 'users.email'
                 },
                 {
                     data: 'department',
@@ -189,7 +190,9 @@
                 },
                 {
                     data: 'action',
-                    name: 'action'
+                    name: 'action',
+                    orderable: false,
+                    searchable: false
                 },
             ]
         });

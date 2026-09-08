@@ -41,6 +41,10 @@ class APIController extends Controller
 
         if (Auth::attempt($request->only('email', 'password'))) {
             $user = Auth::user();
+            if ((int) $user->disable === 1 || !\App\Models\Department::where('id', $user->department_id)->where('status', 1)->exists()) {
+                Auth::logout();
+                abort(403, 'Account or branch is inactive.');
+            }
             $token = $user->createToken('auth_token')->plainTextToken;
 
             return response()->json([
@@ -62,16 +66,19 @@ class APIController extends Controller
 
         //dd($response);
 //&& $response['aud'] === env('GOOGLE_CLIENT_ID')
-        if ($response->status() === 200) {
+        if ($response->status() === 200
+            && (string) config('services.google.client_id') !== ''
+            && hash_equals((string) config('services.google.client_id'), (string) $response->json('aud'))
+            && filter_var($response->json('email_verified'), FILTER_VALIDATE_BOOLEAN)) {
             // Google token is valid, find user by email
             $user = User::where('email', $response['email'])->first();
 
-            if ($user) {
+            if ($user && (int) $user->disable !== 1 && \App\Models\Department::where('id', $user->department_id)->where('status', 1)->exists()) {
                 // User exists, authenticate user
                 Auth::login($user);
 
                 // Create token using Laravel Passport
-                $token = $user->createToken('Personal Access Token')->accessToken;
+                $token = $user->createToken('Personal Access Token')->plainTextToken;
 
                 return response()->json([
                     'token' => $token, 'user_id' => $user->id,
@@ -473,6 +480,10 @@ class APIController extends Controller
                         ImageSourceContext::API_STUDENT_HISTORY_IMAGE,
                     );
                     $uploadedFileNames[] = $stored_image->filename;
+                    $temporary = new \App\Models\FileUpload;
+                    $temporary->filename = $stored_image->filename;
+                    $temporary->oldname = $file->getClientOriginalName();
+                    $temporary->save();
                 }
             }
 

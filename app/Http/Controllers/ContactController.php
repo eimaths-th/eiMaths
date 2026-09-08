@@ -697,7 +697,7 @@ class ContactController extends Controller
                     }
                 }) */
         }
-        $centre =  (object) ['id' => 1, 'name' => 'demo'];
+        $centre = Auth::user()->department;
         $term = ['demo'];
         $sterm = ['demo'];
         $bookuse = ['demo'];
@@ -738,15 +738,16 @@ class ContactController extends Controller
             return response()->json(['errors' => $validator->errors()->all()]);
         }
 
-        $demo = Contact::create([
-            'code' => $request->code,
+        $demo = DB::transaction(fn () => Contact::create([
+            'centre' => Auth::user()->department_id,
+            'code' => \App\Support\Branch\BranchNumber::next(studentRunningNumber::class, (string) Auth::user()->department_id, 'department', 'DEMO-', 4, false, false),
             'school' => $request->school,
             'name' => $request->name,
             'nickname' => $request->nickname,
             'start_date' => date('Y-m-d'),
             'password' =>  bcrypt($request->password),
             'type' =>  'demo',
-        ]);
+        ]));
 
         // Return a success response
         return response()->json(['success' => 'Demo user created successfully!']);
@@ -754,16 +755,7 @@ class ContactController extends Controller
 
     public function demo_code()
     {
-        $latestContact = Contact::where('type', 'demo')->latest('id')->first();
-
-        if (is_null($latestContact)) {
-            $latestCodeNumber = 0;
-        } else {
-            $latestCodeNumber = (int) str_replace('DEMO', '', $latestContact->code);
-        }
-
-        // Increment the code and format it as 'DEMOXXXX' (e.g., 'DEMO0002')
-        $newDemoCode = 'DEMO' . str_pad($latestCodeNumber + 1, 4, '0', STR_PAD_LEFT);
+        $newDemoCode = \App\Support\Branch\BranchNumber::next(studentRunningNumber::class, (string) Auth::user()->department_id, 'department', 'DEMO-', 4, false, true);
 
         return response()->json([
             'demoCode' => $newDemoCode,
@@ -1668,7 +1660,7 @@ class ContactController extends Controller
             'discontinued_reason' => $request->get('discontinued_reason'),
         ];
 
-        $contact = Contact::find($id);
+        $contact = Contact::findOrFail($id);
         if (!$contact) {
             return response()->json(['errors' => ['Student not found.']], 404);
         }
@@ -1677,6 +1669,9 @@ class ContactController extends Controller
             $this->financial_source_guard->AssertTuitionReplacementAllowed($order, collect());
         }
         $contact->update($contactd);
+        if (!$order) {
+            return response()->json(['success' => 'Student information updated successfully', 'discontinued' => $contact->discontinued]);
+        }
 
         $order = Order::find($contact->order);
         $input_order['centre'] = $request->get('centre');
@@ -2097,7 +2092,7 @@ class ContactController extends Controller
      */
     public function exportContactsByCentre()
     {
-        return Contact::exportToExcel('contacts_centre_2_3_export.xlsx');
+        return Contact::exportToExcel('contacts_by_branch.xlsx');
     }
 
     /**

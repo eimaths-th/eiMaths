@@ -35,18 +35,11 @@
                                 <div class="form-group">
                                     <strong><i class="fas fa-user-lock"></i> Permission:</strong>
                                     <br />
-                                    <div class="row">
-                                        @foreach ($permission as $value)
-                                            <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
-                                                <div class="custom-control custom-switch">
-                                                    {{ Form::checkbox('epermission[]', $value->id, false, ['id' => 'ecustomCheckbox' . $value->id, 'class' => 'custom-control-input name']) }}
-                                                    <label for="ecustomCheckbox{{ $value->id }}"
-                                                        class="custom-control-label">
-                                                        {{ $value->name }}</label>
-                                                </div>
-                                            </div>
-                                        @endforeach
-                                    </div>
+                                    @include('roles.permission_groups', [
+                                        'panelId' => 'EditPermissionPanel',
+                                        'inputName' => 'epermission[]',
+                                        'inputPrefix' => 'ecustomCheckbox',
+                                    ])
 
                                 </div>
                             </div>

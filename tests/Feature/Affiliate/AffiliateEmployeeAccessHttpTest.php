@@ -19,6 +19,8 @@ class AffiliateEmployeeAccessHttpTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        \App\Models\Department::create(['id' => 1, 'name' => 'HQ test', 'code' => 'HQ', 'status' => 1, 'branch_type' => 'hq']);
+        \App\Models\Department::forceCreate(['id' => 5, 'name' => 'Employee branch', 'code' => 'EMP', 'status' => 1]);
         Config::set('affiliate.features.employee_enrollment', true);
         Config::set('affiliate.abuse.employee_enrollment_attempts_per_minute', 6);
     }
@@ -272,6 +274,7 @@ class AffiliateEmployeeAccessHttpTest extends TestCase
     private function CreateEligibleEmployee(): User
     {
         $user = User::factory()->create([
+            'department_id' => 5,
             'password' => Hash::make('employee-password'),
             'email_verified_at' => null,
         ]);
@@ -283,6 +286,7 @@ class AffiliateEmployeeAccessHttpTest extends TestCase
     private function CreateIneligibleUser(): User
     {
         $user = User::factory()->create([
+            'department_id' => 5,
             'password' => Hash::make('user-password'),
             'email_verified_at' => null,
         ]);

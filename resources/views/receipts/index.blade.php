@@ -135,7 +135,7 @@
                             </div>
                             <div class="row ">
                                 <div class="col-xs-12 col-sm-12 col-md-12" id="Listviewd">
-                                    <form method="post" action="{{ route('orders.destroy_all') }}" name="delete_all"
+                                    <form method="post" action="{{ route('reciept.export') }}" name="delete_all"
                                         id="delete_all">
                                         @csrf
                                         @method('POST')

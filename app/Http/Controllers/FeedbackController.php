@@ -39,7 +39,7 @@ class FeedbackController extends Controller
             'description' => 'required',
             'category' => 'required|in:Bug,Suggestion,Other',
             'priority' => 'required|in:Low,Medium,High',
-            // 'attachment' => 'nullable|file|mimes:jpg,png,pdf|max:2048',
+            'attachment' => 'nullable|file|mimes:jpg,jpeg,png,webp,pdf|max:10240',
         ]);
 
         $attachmentPath = null;

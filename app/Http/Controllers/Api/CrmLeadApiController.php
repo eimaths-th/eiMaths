@@ -18,6 +18,9 @@ class CrmLeadApiController extends Controller
             'phone' => preg_replace('/[^0-9+]/', '', (string) $request->input('phone')),
         ]);
         $data = $request->validate($this->leadValidationRules());
+        if (!empty($data['branch_id'])) {
+            abort_unless(\App\Support\Branch\BranchAccess::moduleEnabled((int) $data['branch_id'], 'crm'), 422, 'This branch is not accepting trial registrations.');
+        }
 
         if (! empty($data['students'])) {
             $leads = $leadService->createManyFromRegistration($data);
@@ -213,6 +216,7 @@ class CrmLeadApiController extends Controller
     private function leadValidationRules(): array
     {
         return [
+            'branch_id' => ['nullable', 'integer', Rule::exists('departments', 'id')->where('status', 1)],
             'parent_name' => ['required', 'string', 'max:255'],
             'lead_id' => ['nullable', 'integer', 'exists:crm_leads,id'],
             'phone' => ['required', 'string', 'regex:/^[0-9+]{8,15}$/'],

@@ -93,8 +93,8 @@ Route::group(['middleware' => ['auth', 'affiliate.redirect']], function () {
     // Route::get('quizzes/create', QuizForm::class)->name('quiz.create');
     // Route::get('quizzes/{quiz}/edit', QuizForm::class)->name('quiz.edit');
 
-    Route::get('admins', AdminList::class)->name('admins');
-    Route::get('admins/create', AdminForm::class)->name('admin.create');
+    Route::redirect('admins', '/users')->name('admins');
+    Route::redirect('admins/create', '/users/create')->name('admin.create');
 
     // Route::get('tests', TestList::class)->name('tests');
     Route::get('tests/{quiz_slug?}', [eLeanController::class, 'tests'])->name('tests');
@@ -165,7 +165,7 @@ Route::group(['middleware' => ['auth', 'affiliate.redirect']], function () {
     Route::post('/line-api/update-status/{id}', [LineApiController::class, 'updateStatus'])->name('line-api.updateStatus');
 
     // telegram setting
-    Route::resource('/telegram-setting', TelegramSettingController::class);
+    Route::resource('/telegram-setting', TelegramSettingController::class)->except(['create', 'show']);
     Route::put('/telegram-setting/{id}/status', [TelegramSettingController::class, 'updateStatus'])->name('telegram-setting.updateStatus');
     Route::post('/telegram-setting/{id}/test', [TelegramSettingController::class, 'testNotification'])->name('telegram-setting.test');
 

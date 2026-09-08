@@ -237,27 +237,27 @@ class CrmLeadService
         if (! empty($data['line_user_id'])) {
             $lineLead = $this->findLatestPendingLineLead($data['line_user_id']);
 
-            if ($lineLead) {
+            if ($lineLead && (int) $lineLead->branch_id === (int) ($data['branch_id'] ?? null)) {
                 return $lineLead;
             }
         }
 
         if (! empty($data['lead_id'])) {
-            return CrmLead::query()
+            return CrmLead::query()->where('branch_id', $data['branch_id'] ?? null)
                 ->whereKey($data['lead_id'])
                 ->lockForUpdate()
                 ->first();
         }
 
         if (empty($data['line_user_id'])) {
-            return CrmLead::query()
+            return CrmLead::query()->where('branch_id', $data['branch_id'] ?? null)
                 ->where('phone', $data['phone'])
                 ->latest()
                 ->lockForUpdate()
                 ->first();
         }
 
-        return CrmLead::query()
+        return CrmLead::query()->where('branch_id', $data['branch_id'] ?? null)
             ->where('phone', $data['phone'])
             ->where(function ($query) {
                 $query->whereIn('lead_status', ['line_login_pending', 'line_chatting'])
@@ -456,6 +456,10 @@ class CrmLeadService
             $data[$field] = $trackingLink->{$field};
         }
 
+        $data['branch_id'] = $data['branch_id'] ?? $trackingLink->branch_id;
+        if (!empty($data['branch_id']) && !\App\Support\Branch\BranchAccess::moduleEnabled((int) $data['branch_id'], 'crm')) {
+            throw \Illuminate\Validation\ValidationException::withMessages(['branch_id' => 'This branch is not accepting trial registrations.']);
+        }
         $data['tracking_link_id'] = $trackingLink->id;
         $data['tracking_link_code'] = $trackingLink->tracking_code;
         $data['tracking_link_name'] = $trackingLink->name;

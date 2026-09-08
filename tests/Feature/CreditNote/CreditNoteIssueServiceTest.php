@@ -20,6 +20,12 @@ class CreditNoteIssueServiceTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->travelTo(\Carbon\Carbon::parse('2026-08-12 12:00:00', 'Asia/Bangkok'));
+    }
+
     #[Test]
     public function IssuesDraftWithNumberImmutableSnapshotsNegativePostingAndIdempotentRetry(): void
     {
@@ -97,7 +103,7 @@ class CreditNoteIssueServiceTest extends TestCase
 
     private function CreateDraft(): array
     {
-        $department_id = DB::table('departments')->insertGetId(['code' => 'BKK', 'name' => 'Bangkok']);
+        $department_id = \App\Models\Department::firstOrCreate(['code' => 'BKK'], ['name' => 'Bangkok', 'status' => 1])->id;
         $contact_id = DB::table('contacts')->insertGetId([
             'centre' => $department_id,
             'name' => 'Student',

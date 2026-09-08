@@ -99,7 +99,7 @@ class OrderController extends Controller
                 "first_detail.quantity as amount"
             )
                 ->join("contacts", "contacts.id", "=", "orders.cid")
-                ->join("departments", "contacts.centre", "=", "departments.id")
+                ->join("departments", "orders.centre", "=", "departments.id")
                 ->leftJoin("order_details as first_detail", function ($join) {
                     $join->on("first_detail.order_id", "=", "orders.id")
                         ->whereRaw("first_detail.id = (SELECT MIN(id) FROM order_details WHERE order_id = orders.id)");
@@ -236,7 +236,7 @@ class OrderController extends Controller
 
         )
             ->join("contacts", "contacts.id", "=", "orders.cid")
-            ->join("departments", "contacts.centre", "=", "departments.id")
+            ->join("departments", "orders.centre", "=", "departments.id")
             ->where("orders.id", $id)
             ->get();
 
@@ -780,104 +780,65 @@ class OrderController extends Controller
 
     public function cancle($id)
     {
-
-        $order = Order::find($id);
-        if (!$order) {
-            return response()->json(['errors' => ['Order not found.']], 404);
-        }
-        $this->financial_source_guard->AssertOrderCancellationAllowed($order);
-        $contact = $order->cid;
-        $order->delete();
-
-        OrderDetail::where('order_id', $id)->delete();
-        OrderDetailList::where('order_id', $id)->delete();
-
-        $filestore = FileStore::where([
-            ['module', 'orders'],
-            ['module_id', $id],
-        ])->get();
-
-        if (!$filestore->isEmpty()) {
-            foreach ($filestore as $file) {
-                $filePath = public_path('file_store/' . $file->filename);
-                if (file_exists($filePath)) {
-                    unlink($filePath);
-                }
-                $file->delete();
-            }
-        }
-
-        $last_order = Order::where('cid', $contact)
-            ->orderBy('id', 'DESC')
-            ->first();
-        $last_order_detail = OrderDetailList::where('order_id', $last_order->id)
-            ->orderBy('id', 'ASC')
-            ->get();
-
-        $rowCount = $last_order_detail->count();
-        if ($rowCount == 2) {
-            $level1 = $last_order_detail[0]->level;
-            $term1 = $last_order_detail[0]->term;
-            $book1 = $last_order_detail[0]->book;
-
-            $level2 = $last_order_detail[1]->level;
-            $term2 = $last_order_detail[1]->term;
-            $book2 = $last_order_detail[1]->book;
-
-            $book1i = bookuse::where('name', $book1)->first();
-            $level1_id = $book1i->level_id;
-            $term1_id = $book1i->term_id;
-            $book1_id = $book1i->id;
-
-            $book2i = bookuse::where('name', $book2)->first();
-            $level2_id = $book2i->level_id;
-            $term2_id = $book2i->term_id;
-            $book2_id = $book2i->id;
-        } else {
-            $level1 = $last_order_detail[0]->level;
-            $term1 = $last_order_detail[0]->term;
-            $book1 = $last_order_detail[0]->book;
-
-            $level2 = $last_order_detail[0]->level;
-            $term2 = $last_order_detail[0]->term;
-            $book2 = $last_order_detail[0]->book;
-
-            $book1i = bookuse::where('name', $book1)->first();
-            $level1_id = $book1i->level_id;
-            $term1_id = $book1i->term_id;
-            $book1_id = $book1i->id;
-
-            $level2_id = $book1i->level_id;
-            $term2_id = $book1i->term_id;
-            $book2_id = $book1i->id;
-        }
-
-        $student = Contact::find($contact);
-
-        $data = [
-            'order' => $last_order->id,
-            'level' => $level1_id,
-            'term' => $term1_id,
-            'bookuse' => $book1_id,
-            'level_name' => $level1,
-            'term_name' => $term1,
-            'bookuse_name' => $book1,
-            'level2' => $level2_id,
-            'term2' => $term2_id,
-            'bookuse2' => $book2_id,
-            'level2_name' => $level2,
-            'term2_name' => $term2,
-            'bookuse2_name' => $book2,
-        ];
-
-        $student->update($data);
-
-        return response()->json(['success' => 'Cancle Order completed']);
+        DB::transaction(fn () => $this->cancelOrder((int) $id));
+        return response()->json(['success' => 'Cancel Order completed']);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
+    public function destroy(Request $request)
+    {
+        $data = $request->validate(['id' => 'required|integer']);
+        return $this->cancle($data['id']);
+    }
+
+    public function destroy_all(Request $request)
+    {
+        $data = $request->validate(['table_records' => 'required|array|min:1|max:500', 'table_records.*' => 'integer|distinct']);
+        DB::transaction(function () use ($data) {
+            foreach ($data['table_records'] as $id) {
+                $this->cancelOrder((int) $id);
+            }
+        });
+        return $request->expectsJson() ? response()->json(['success' => true]) : back()->with('success', 'ยกเลิกใบสั่งเรียนที่เลือกแล้ว');
+    }
+
+    private function cancelOrder(int $id): void
+    {
+        $order = Order::query()->lockForUpdate()->findOrFail($id);
+        $this->financial_source_guard->AssertOrderCancellationAllowed($order);
+        $student = Contact::query()->lockForUpdate()->find($order->cid);
+        // Delete children while their parent is still visible to the branch scope.
+        OrderDetail::where('order_id', $id)->delete();
+        OrderDetailList::where('order_id', $id)->delete();
+        foreach (FileStore::where('module', 'orders')->where('module_id', $id)->get() as $file) {
+            $filename = basename($file->filename);
+            $file->delete();
+            DB::afterCommit(function () use ($filename) {
+                $path = public_path('file_store/'.$filename);
+                if (is_file($path)) { unlink($path); }
+            });
+        }
+        $order->delete();
+        if ($student && (int) $student->order === $id) {
+            $previous = Order::where('cid', $student->id)->where('centre', $student->centre)->latest('id')->first();
+            $student->order = $previous?->id ?? 0;
+            $details = $previous ? OrderDetailList::where('order_id', $previous->id)->orderBy('id')->get() : collect();
+            foreach (['' => $details->first(), '2' => $details->last()] as $suffix => $detail) {
+                $book = $detail ? bookuse::where('name', $detail->book)->first() : null;
+                foreach (['level' => $book?->level_id, 'term' => $book?->term_id, 'bookuse' => $book?->id,
+                    'level_name' => $detail?->level, 'term_name' => $detail?->term, 'bookuse_name' => $detail?->book] as $key => $field) {
+                    $column = str_ends_with($key, '_name') ? substr($key, 0, -5).$suffix.'_name' : $key.$suffix;
+                    $student->setAttribute($column, str_ends_with($key, '_name') ? $field : ($field ?? 0));
+                }
+            }
+            $student->save();
+        }
+    }
+
+    public function deleteImg($id, $id2)
+    {
+        return app(ReceiptController::class)->deleteImg($id, $id2);
+    }
+
     public function confirm(Request $request)
     {
         $id = $request->get('id');

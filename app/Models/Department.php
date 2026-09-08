@@ -12,10 +12,14 @@ class Department extends Model
 
     public const HQ_ID = 1;
 
+    protected $casts = ['enabled_modules' => 'array'];
+
     protected $fillable = [
         'name',
         'code',
         'status',
+        'enabled_modules',
+        'branch_type',
     ];
 
      /**
@@ -36,7 +40,7 @@ class Department extends Model
     }
 
     public function histrories() {
-        return $this->hasMany(Histrories::class, 'student_id');
+        return $this->hasMany(Histrories::class, 'centre');
     }
 
     public function BookShipments(): HasMany

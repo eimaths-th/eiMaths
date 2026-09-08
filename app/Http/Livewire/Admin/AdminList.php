@@ -9,6 +9,11 @@ use Livewire\Component;
 
 class AdminList extends Component
 {
+    public function boot(): void
+    {
+        abort(404, 'Use User Management.');
+    }
+
     public function delete(User $admin)
     {
         abort_if(!auth()->user()->is_admin, Response::HTTP_FORBIDDEN, 403);

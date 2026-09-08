@@ -39,6 +39,13 @@
             <form method="POST" action="{{ route('tracking-links.store') }}">
                 @csrf
                 <div class="card-body">
+                    @if(\App\Support\Branch\BranchAccess::canCrossBranches(auth()->user()))
+                    <div class="form-group"><label for="tracking-branch">สาขาที่รับ Lead จากลิงก์นี้</label>
+                        <select id="tracking-branch" name="branch_id" class="form-control" required>
+                            @foreach($branches as $branch)<option value="{{ $branch->id }}">{{ $branch->name }}</option>@endforeach
+                        </select>
+                    </div>
+                    @endif
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">

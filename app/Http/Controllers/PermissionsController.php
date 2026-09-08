@@ -11,6 +11,15 @@ use Spatie\Permission\Models\Role;
 
 class PermissionsController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+        $this->middleware(function ($request, $next) {
+            abort_unless($request->user()->isSystemAdmin(), 403, 'Only SystemAdmin can manage the permission catalog.');
+            return $next($request);
+        });
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -71,7 +80,7 @@ class PermissionsController extends Controller
     {
         //
         $validator =  Validator::make($request->all(), [
-            'name' => 'required|string|max:255|unique:roles',
+            'name' => 'required|string|max:255|unique:permissions',
             // 'permission' => 'required'
         ]);
 
@@ -124,7 +133,7 @@ class PermissionsController extends Controller
             return response()->json(['errors' => $validator->errors()->all()]);
         }
 
-        $input = $request->all();
+        $input = $request->only('name');
         $permission = Permission::find($id);
         $permission->update($input);
 

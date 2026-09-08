@@ -33,7 +33,23 @@
 
                     {{-- 'route' => 'users.store', --}}
                     {!! Form::open(['method' => 'POST', 'class' => 'form']) !!}
-                    <div class="row">
+                    <div class="form-group">
+            <label for="AddRoleBranch">ขอบเขตของ Role</label>
+            <select id="AddRoleBranch" class="form-control">
+                @if(auth()->user()?->isSystemAdmin()) <option value="">มาตรฐานกลาง</option> @endif
+                @foreach($branches as $branch)
+                    <option value="{{ $branch->id }}">{{ $branch->name }}</option>
+                @endforeach
+            </select>
+            <label for="AddRoleTemplate" class="mt-2">เริ่มจากแม่แบบ</label>
+            <select id="AddRoleTemplate" class="form-control">
+                <option value="">เลือกสิทธิ์เอง</option>
+                @foreach(\App\Support\Branch\BranchAccess::visibleRoles(auth()->user())->whereNull('branch_id')->get() as $template)
+                    <option value="{{ $template->id }}">{{ $template->display_name ?: $template->name }}</option>
+                @endforeach
+            </select>
+        </div>
+<div class="row">
                         <div class="col-xs-12 col-sm-12 col-md-12">
                             <div class="form-group">
                                 <strong><i class="fas fa-user-lock"></i> Role Name:</strong>
@@ -45,18 +61,11 @@
                                 <strong><i class="fas fa-user-lock"></i> Permission:</strong>
                                 <br />
 
-                                <div class="row">
-                                    @foreach ($permission as $value)
-                                        <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3"> <!-- Adjust the column classes based on your needs -->
-                                            <div class="custom-control custom-switch">
-                                                {{ Form::checkbox('permission[]', $value->id, false, ['id' => 'customCheckbox' . $value->id, 'class' => 'custom-control-input name']) }}
-                                                <label for="customCheckbox{{ $value->id }}" class="custom-control-label">
-                                                    {{ $value->name }}
-                                                </label>
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                </div>
+                                @include('roles.permission_groups', [
+                                    'panelId' => 'CreatePermissionPanel',
+                                    'inputName' => 'permission[]',
+                                    'inputPrefix' => 'customCheckbox',
+                                ])
 
                             </div>
                         </div>

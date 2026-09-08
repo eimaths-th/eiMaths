@@ -471,6 +471,18 @@
         "hideMethod": "fadeOut"
     }
 
+    $(document).ajaxError(function (_event, xhr, settings) {
+        if (settings.error || ![401, 403, 404, 419, 422].includes(xhr.status)) { return; }
+        const payload = xhr.responseJSON || {};
+        const messages = payload.errors ? Object.values(payload.errors).flat() : [];
+        const fallback = {
+            401: 'กรุณาเข้าสู่ระบบอีกครั้ง', 403: 'คุณไม่มีสิทธิ์ทำรายการนี้ หรือข้อมูลอยู่นอกสาขาที่ดูแล',
+            404: 'ไม่พบข้อมูลที่คุณเข้าถึงได้', 419: 'เซสชันหมดอายุ กรุณาโหลดหน้าใหม่',
+            422: 'กรุณาตรวจสอบข้อมูลที่กรอก'
+        };
+        toastr.error($('<div>').text(messages[0] || payload.message || fallback[xhr.status]).html());
+    });
+
     window.onload = function() {
         var loadingElement = document.getElementById('loadingi');
         if (loadingElement) {

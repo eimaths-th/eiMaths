@@ -19,6 +19,12 @@ class CreditNoteCancellationServiceTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->travelTo(\Carbon\Carbon::parse('2026-08-12 12:00:00', 'Asia/Bangkok'));
+    }
+
     #[Test]
     public function CancelsDraftWithoutPostingAndClearsActiveDraftGuard(): void
     {
@@ -86,7 +92,7 @@ class CreditNoteCancellationServiceTest extends TestCase
 
     private function CreateDraft(): array
     {
-        $department_id = DB::table('departments')->insertGetId(['code' => 'BKK', 'name' => 'Bangkok']);
+        $department_id = \App\Models\Department::firstOrCreate(['code' => 'BKK'], ['name' => 'Bangkok', 'status' => 1])->id;
         $contact_id = DB::table('contacts')->insertGetId(['centre' => $department_id, 'name' => 'Student', 'address' => 'Address']);
         $order_id = DB::table('orders')->insertGetId(['centre' => $department_id, 'cid' => $contact_id, 'status' => 1, 'total_price' => '107.00', 'orther_fee' => '0.00']);
         $receipt_id = DB::table('receipts')->insertGetId(['centre' => $department_id, 'cid' => $contact_id, 'oid' => $order_id, 'status' => 1, 'payment_date' => '2026-08-12', 'receipt_number' => 'R-1', 'total_fee' => '107.00']);

@@ -37,6 +37,8 @@ return [
         'redirect' => env('GOOGLE_REDIRECT'),
     ],
 
+    'staff_api' => ['key' => env('STAFF_APP_API_KEY')],
+
     'crm_integrations' => [
         'token' => env('CRM_INTEGRATION_TOKEN'),
     ],

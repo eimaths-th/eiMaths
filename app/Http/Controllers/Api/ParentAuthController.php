@@ -72,6 +72,9 @@ class ParentAuthController extends Controller
 
         // dd($students);
         //add department name to students array
+        foreach ($img_histories as $historyImage) {
+            $historyImage->setAttribute('img_url', \Illuminate\Support\Facades\URL::temporarySignedRoute('branch-files.file_upload', now()->addMinutes(10), ['filename' => basename($historyImage->img), 'parent' => $parent->id]));
+        }
         foreach ($students as $student) {
             $student['centre_name'] = $student->department()->first()->name;
         }
@@ -95,7 +98,7 @@ class ParentAuthController extends Controller
     public function getStudent(Request $request)
     {
         //use parent_id to find parent
-        $parent = Parents::find($request->parent_id);
+        $parent = $request->user();
         $std_ids = $parent->students()->pluck('id');
         $std_ids_array = $std_ids->toArray();
         $students = Contact::whereIn('id', $std_ids_array)->orderBy('id', 'desc')->get();
@@ -104,6 +107,9 @@ class ParentAuthController extends Controller
         $img_histories = HistoryStudentImg::where('student_id', $request->student_id)
             ->whereIn('history_id', $histrories->pluck('id'))
             ->orderBy('id', 'desc')->get();
+        foreach ($img_histories as $historyImage) {
+            $historyImage->setAttribute('img_url', \Illuminate\Support\Facades\URL::temporarySignedRoute('branch-files.file_upload', now()->addMinutes(10), ['filename' => basename($historyImage->img), 'parent' => $parent->id]));
+        }
         foreach ($students as $student) {
             $student['centre_name'] = $student->department()->first()->name;
         }
@@ -271,6 +277,7 @@ class ParentAuthController extends Controller
      */
     public function checkstd(Request $request)
     {
+        abort(410, 'Use verified parent registration.');
         try {
             // Validate request
             $validated = $request->validate([
@@ -413,6 +420,7 @@ class ParentAuthController extends Controller
     }
     public function checkUser(Request $request)
     {
+        abort(410, 'Use verified parent registration.');
         try {
             // Validate request
             $students = $request->students;
@@ -508,6 +516,7 @@ class ParentAuthController extends Controller
 
     public function senMailParent(Request $request)
     {
+        abort(410, 'Use verified parent registration.');
         //
 
 

@@ -25,7 +25,7 @@ class DashboardController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth');
+        $this->middleware(['auth', 'permission:dashboard']);
         //$this->middleware('permission:dashboard-view', ['only' => ['index']]);
     }
 
@@ -33,7 +33,7 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
 
-        if (!$user->isHq()) {
+        if (!\App\Support\Branch\BranchAccess::canCrossBranches($user)) {
             return (string) $user->department_id;
         }
 

@@ -103,6 +103,29 @@ class CrmLeadController extends Controller
         return redirect()->route('crm.leads.show', $lead)->with('success', 'Lead updated successfully.');
     }
 
+    public function assignBranch(Request $request, CrmLead $lead)
+    {
+        $actor = $request->user();
+        abort_unless(\App\Support\Branch\BranchAccess::isCentral($actor) && $actor->can('crm-leads-edit'), 403);
+        $data = $request->validate(['branch_id' => 'required|integer', 'reason' => 'required|string|min:5|max:1000']);
+        \App\Support\Branch\BranchAccess::assertBranch($actor, $data['branch_id'], true);
+        abort_unless(\App\Support\Branch\BranchAccess::moduleEnabled((int) $data['branch_id'], 'crm'), 422, 'Enable CRM for this branch first.');
+        \Illuminate\Support\Facades\DB::transaction(function () use ($lead, $data) {
+            $context = app(\App\Support\Branch\BranchContext::class);
+            $previous = $context->allowTransfer;
+            try {
+                $context->allowTransfer = true;
+                $lead->branch_id = $data['branch_id'];
+                $lead->assigned_staff_id = null;
+                $lead->save();
+                $context->audit('lead-branch-assigned', CrmLead::class, $lead->id, $data);
+            } finally {
+                $context->allowTransfer = $previous;
+            }
+        });
+        return back()->with('success', 'ส่งต่อ Lead ให้สาขาแล้ว');
+    }
+
     public function storeNote(Request $request, CrmLead $lead)
     {
         $data = $request->validate([

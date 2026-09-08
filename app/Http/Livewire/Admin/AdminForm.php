@@ -9,6 +9,11 @@ use Livewire\Component;
 
 class AdminForm extends Component
 {
+    public function boot(): void
+    {
+        abort(404, 'Use User Management.');
+    }
+
     public $name;
     public $email;
     public $password;

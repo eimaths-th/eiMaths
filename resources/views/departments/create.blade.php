@@ -66,7 +66,25 @@
 
 
 
-                {!! Form::close() !!}
+
+                <div class="form-group">
+                    <strong>โมดูลที่สาขาเปิดใช้</strong>
+                    <p class="text-muted">เลือกงานที่สาขานี้ใช้ได้ สิทธิ์ของแต่ละคนกำหนดเพิ่มผ่าน Role</p>
+                    <div class="row">
+                        @foreach (config('branch.modules') as $moduleKey => $moduleLabel)
+                            <div class="col-md-6">
+                                <label>
+                                    <input type="checkbox" class="branch-module-Add" value="{{ $moduleKey }}"
+                                        @if (in_array($moduleKey, config('branch.default_modules'))) checked @endif
+                                        @cannot('branch-modules-manage') disabled @endcannot>
+                                    {{ $moduleLabel }}
+                                </label>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+
+{!! Form::close() !!}
             </div>
             <div class="modal-footer {{-- justify-content-between --}}">
                 <button type="button" class="btn btn-success" id="SubmitCreateForm"><i class="fas fa-download"></i> Save</button>

@@ -4,10 +4,14 @@
     </IfModule>
 
     RewriteEngine On
+
     RewriteBase /
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    # Personal documents must pass Laravel authorization even when files exist.
+    RewriteRule ^(?:file_upload|file_store|img/payment_slips|storage/attachments|feedback_images)/.+$ index.php [L]
 
     # Redirect Trailing Slashes If Not A Folder...
     RewriteCond %{REQUEST_FILENAME} !-d

@@ -119,6 +119,7 @@ class HistoryStudentImgController extends Controller
         //
         $filename =  $request->get('name');
         $oldfile = FileUpload::where('oldname', $filename)->get();
+        abort_if($oldfile->isEmpty(), 404);
         $path = public_path() . '/file_upload/' . $oldfile[0]->filename;
         if (file_exists($path)) {
             unlink($path);

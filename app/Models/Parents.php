@@ -80,8 +80,23 @@ class Parents extends Authenticatable
 
     public function students()
     {
-        $studentIds = explode(',', $this->student_id);
-        return Contact::whereIn('id', $studentIds)->get();
+        return $this->studentRecords()->get();
+    }
+
+    public function studentRecords()
+    {
+        return $this->belongsToMany(Contact::class, 'parent_student', 'parent_id', 'student_id')->withTimestamps();
+    }
+
+    protected static function booted(): void
+    {
+        static::saved(function (self $parent): void {
+            if ($parent->wasRecentlyCreated || $parent->wasChanged('student_id')) {
+                $ids = array_values(array_unique(array_filter(explode(',', (string) $parent->student_id), fn ($id) => ctype_digit($id))));
+                $validIds = Contact::whereIn('id', $ids)->pluck('id')->all();
+                $parent->studentRecords()->sync($validIds);
+            }
+        });
     }
 
     public function getFullNameAttribute()

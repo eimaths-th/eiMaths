@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('style')
+    @include('roles.style')
 @endsection
 
 @section('content')

@@ -2,266 +2,186 @@
 
 namespace App\Http\Controllers;
 
-
+use App\Models\Department;
+use App\Support\Branch\BranchAccess;
+use App\Support\Branch\BranchContext;
+use App\Support\Branch\PermissionPresenter;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use Spatie\Permission\Models\Role;
-use Illuminate\Support\Facades\Gate;
-use Spatie\Permission\Models\Permission;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\PermissionRegistrar;
 
 class RoleController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    function __construct()
+    public function __construct()
     {
-        $this->middleware('permission:role-list|role-create|role-edit|role-delete', ['only' => ['index', 'store']]);
+        $this->middleware('auth');
+        $this->middleware('permission:role-list', ['only' => ['index', 'show', 'template']]);
         $this->middleware('permission:role-create', ['only' => ['create', 'store']]);
         $this->middleware('permission:role-edit', ['only' => ['edit', 'update']]);
-        $this->middleware('permission:role-delete', ['only' => ['destroy']]);
+        $this->middleware('permission:role-delete', ['only' => ['destroy', 'destroy_all']]);
     }
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    private function canEdit(Role $role): bool
+    {
+        $actor = request()->user();
+        if ($role->name === 'SystemAdmin') { return false; }
+        return BranchAccess::isOwner($actor)
+            || ($role->branch_id !== null && (BranchAccess::canCrossBranches($actor) || (int) $role->branch_id === (int) $actor->department_id));
+    }
+
+    private function permissions()
+    {
+        $actor = request()->user();
+        return Permission::where('guard_name', 'web')->get()->filter(fn ($p) => BranchAccess::isOwner($actor) || (BranchAccess::permissionAllowed($actor, $p->name) && $actor->checkPermissionTo($p->name)));
+    }
+
     public function index(Request $request)
     {
-        /*  $roles = Role::orderBy('id', 'DESC')->paginate(5);
-        return view('roles.index', compact('roles'))
-            ->with('i', ($request->input('page', 1) - 1) * 5); */
-        if ($request->ajax()) {
-            //sleep(2);
-
-
-
-            $datas = Role::orderBy("id", "desc")->get();
-            return datatables()->of($datas)
-                ->editColumn('checkbox', function ($row) {
-                    return '<input type="checkbox" id="' . $row->id . '" class="flat" name="table_records[]" value="' . $row->id . '" >';
-                })
-                ->editColumn('role', function ($row) {
-                    $rpermission = DB::table('role_has_permissions')->where('role_id', $row->id)
-                        ->join('permissions', 'permissions.id', '=', 'role_has_permissions.permission_id')
-                        ->orderBy("permission_id", "asc")
-                        ->pluck('permissions.name');
-                    $tperm = '';
-                    foreach ($rpermission as $perm) {
-                        $tperm .= ucfirst($perm) . ',';
-                    }
-                    return $tperm;
-                })
-                ->addColumn('action', function ($row) {
-                    if (Gate::allows('role-edit')) {
-                        $html = '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit</button> ';
-                    } else {
-                        $html = '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> Edit</button> ';
-                    }
-                    if (Gate::allows('role-delete')) {
-                        $html .= '<button type="button" data-rowid="' . $row->id . '" class="btn btn-sm btn-danger btn-delete"><i class="fa fa-trash"></i> Delete</button>';
-                    } else {
-                        $html .= '<button type="button" class="btn btn-sm btn-danger disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-trash"></i> Delete</button> ';
-                    }
-                    return $html;
-                })->rawColumns(['checkbox', 'action'])->toJson();
+        if (!$request->ajax()) {
+            $permission = $this->permissions();
+            $permissionGroups = PermissionPresenter::groups($permission);
+            $branches = Department::where('status', 1)->get();
+            return view('roles.index', compact('permission', 'permissionGroups', 'branches'));
         }
-        $permission = Permission::get();
-        return view('roles.index', compact('permission'));
+        return datatables()->of(BranchAccess::visibleRoles($request->user())->with('permissions')->orderByDesc('id'))
+            ->editColumn('name', fn ($role) => ($role->display_name ?: $role->name).($role->branch_id ? ' [สาขา '.$role->branch_id.']' : ' [มาตรฐานกลาง]'))
+            ->editColumn('checkbox', fn ($role) => $this->canEdit($role) ? '<input type="checkbox" name="table_records[]" value="'.(int) $role->id.'">' : '')
+            ->editColumn('role', fn ($role) => $role->permissions->pluck('name')->implode(', '))
+            ->addColumn('action', function ($role) use ($request) {
+                if (!$this->canEdit($role)) { return 'แม่แบบกลาง'; }
+                $html = $request->user()->can('role-edit') ? '<button class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="'.(int) $role->id.'">Edit</button> ' : '';
+                if ($request->user()->can('role-delete') && !in_array($role->name, config('branch.protected_roles'), true)) {
+                    $html .= '<button class="btn btn-sm btn-danger btn-delete" data-rowid="'.(int) $role->id.'">Delete</button>';
+                }
+                return $html;
+            })->rawColumns(['checkbox', 'action'])->toJson();
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    public function template($id)
+    {
+        $role = BranchAccess::visibleRoles(request()->user())->findOrFail($id);
+        $allowed = $this->permissions()->pluck('id')->all();
+        return response()->json(['permission' => $role->permissions->pluck('id')->filter(fn ($id) => in_array($id, $allowed))->values()]);
+    }
+
     public function create()
     {
-        $permission = Permission::get();
-        return view('roles.create', compact('permission'));
+        $permission = $this->permissions();
+        $permissionGroups = PermissionPresenter::groups($permission);
+        $branches = Department::where('status', 1)->get();
+        return view('roles.create', compact('permission', 'permissionGroups', 'branches'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+    private function authorizeTarget($id): Role
+    {
+        $role = BranchAccess::visibleRoles(request()->user())->findOrFail($id);
+        abort_unless($this->canEdit($role), 403, 'Only SystemAdmin can modify shared roles.');
+        return $role;
+    }
+
+    private function validatedPermissions(Request $request, ?int $branchId): array
+    {
+        $request->validate(['permission' => 'nullable|array', 'permission.*' => 'integer|exists:permissions,id']);
+        $ids = array_values(array_unique($request->input('permission', [])));
+        $allowed = $this->permissions()->pluck('id')->all();
+        abort_unless(count(array_diff($ids, $allowed)) === 0, 403, 'Cannot grant permissions beyond your authority.');
+        foreach (Permission::whereIn('id', $ids)->get() as $permission) {
+            abort_unless($permission->guard_name === 'web', 422);
+            if ($branchId && $branchId !== Department::HQ_ID) {
+                $name = $permission->name;
+                abort_if(in_array($name, array_merge(config('branch.central_permissions'), config('branch.owner_permissions')), true)
+                    || (str_starts_with($name, 'affiliate-') && $name !== 'affiliate-user'), 403, 'Central permissions cannot be assigned to branch roles.');
+                $module = BranchAccess::moduleForPermission($name);
+                abort_if($module && !BranchAccess::moduleEnabled($branchId, $module), 422, 'Enable the branch module before granting this permission.');
+            }
+        }
+        return $ids;
+    }
+
     public function store(Request $request)
     {
-        $validator =  Validator::make($request->all(), [
-            'name' => 'required|string|max:255|unique:roles',
-            'permission' => 'nullable|array',
-            'permission.*' => 'integer|exists:permissions,id',
-        ]);
-
-
-
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()->all()]);
+        $data = $request->validate(['name' => 'required|string|max:100', 'branch_id' => 'nullable|integer|exists:departments,id', 'template_id' => 'nullable|integer|exists:roles,id']);
+        $actor = $request->user();
+        $branchId = isset($data['branch_id']) ? (int) $data['branch_id'] : (BranchAccess::isOwner($actor) ? null : (int) $actor->department_id);
+        if ($branchId) { BranchAccess::assertBranch($actor, $branchId, true); }
+        abort_unless($branchId || BranchAccess::isOwner($actor), 403);
+        abort_if(in_array(strtolower($data['name']), array_map('strtolower', config('branch.protected_roles')), true), 422, 'This role name is reserved.');
+        if ($request->filled('template_id') && !$request->has('permission')) {
+            $template = BranchAccess::visibleRoles($actor)->findOrFail($data['template_id']);
+            $request->merge(['permission' => $template->permissions->pluck('id')->all()]);
         }
-
-        DB::transaction(function () use ($request): void {
-            $role = Role::create(['name' => $request->input('name')]);
-            $role->syncPermissions($request->input('permission', []));
+        $permissions = $this->validatedPermissions($request, $branchId);
+        $name = $branchId ? 'branch-'.$branchId.'-'.Str::uuid() : $data['name'];
+        $request->validate(['name' => [Rule::unique('roles', 'display_name')->where('branch_id', $branchId)]]);
+        DB::transaction(function () use ($name, $data, $branchId, $permissions) {
+            $role = Role::create(['name' => $name, 'display_name' => $data['name'], 'branch_id' => $branchId, 'guard_name' => 'web']);
+            $role->syncPermissions($permissions);
+            app(BranchContext::class)->audit('role-created', Role::class, $role->id, ['permissions' => $permissions, 'branch_id' => $branchId]);
         });
-
-        /* return redirect()->route('roles.index')
-            ->with('success', 'Role created successfully'); */
         return response()->json(['success' => 'Add Role Success']);
     }
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+
     public function show($id)
     {
-        $role = Role::find($id);
-        $rolePermissions = Permission::join("role_has_permissions", "role_has_permissions.permission_id", "=", "permissions.id")
-            ->where("role_has_permissions.role_id", $id)
-            ->get();
-
+        $role = BranchAccess::visibleRoles(request()->user())->findOrFail($id);
+        $rolePermissions = $role->permissions;
         return view('roles.show', compact('role', 'rolePermissions'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function edit($id)
     {
-        /*  $role = Role::find($id);
-        $permission = Permission::get();
-        $rolePermissions = DB::table("role_has_permissions")->where("role_has_permissions.role_id", $id)
-            ->pluck('role_has_permissions.permission_id', 'role_has_permissions.permission_id')
-            ->all();
-
-        return view('roles.edit', compact('role', 'permission', 'rolePermissions')); */
-
-        $data = Role::find($id);
-        $permission = Permission::get();
-        $rolePermissions = DB::table("role_has_permissions")->where("role_has_permissions.role_id", $id)
-            ->join('permissions', 'permissions.id', '=', 'role_has_permissions.permission_id')
-            //->pluck('role_has_permissions.permission_id', 'role_has_permissions.permission_id')
-            ->pluck('role_has_permissions.permission_id')
-            ->all();
-
-        //dd($permission);
-        //exit();
-
-
- /*        $rolese = '';
-        foreach ($permission as $value) {
-            if (in_array($value->id, $rolePermissions)) {
-                $sselected = "checked";
-            } else {
-                $sselected = "";
-            }
-
-            $rolese .= '
-            <div class="custom-control custom-switch">
-             <input ' . $sselected . ' id="customCheckbox' . $value->id . '" class="custom-control-input name" name="epermission[]" type="checkbox" value="' . $value->id . '">
-             <label for="customCheckbox' . $value->id . '" class="custom-control-label">' . $value->name . '</label>
-            </div>';
-        }
-
-
-        $html = '<div class="form-group">
-                    <label for="Name">Name:</label>
-                    <input type="text" class="form-control" name="name" id="editName" value="' . $data->name . '">
-                </div>
-                <div class="col-xs-12 col-sm-12 col-md-12">
-                            <div class="form-group">
-                                <strong>Permission:</strong>
-                                <br />
-
-                               ' . $rolese  . '
-
-                            </div>
-                        </div>';
-
-
-
-        return response()->json(['html' => $html]); */
-
-        return response()->json(['name' => $data->name,'permission' => $rolePermissions]);
+        $role = $this->authorizeTarget($id);
+        return response()->json(['name' => $role->display_name ?: $role->name, 'permission' => $role->permissions->pluck('id'), 'branch_id' => $role->branch_id]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, $id)
     {
-        /*
-        $this->validate($request, [
-            'name' => 'required',
-            'permission' => 'required',
-        ]); */
-        $rules = [
-            'name' => 'required|string|max:255|unique:roles,name,' . $id,
-            'permission' => 'required',
-        ];
-
-
-        $validator =  Validator::make($request->all(), $rules);
-
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()->all()]);
-        }
-
-        $role = Role::find($id);
-        $role->name = $request->input('name');
-        $role->save();
-
-        $role->syncPermissions($request->input('permission'));
-
-        /* return redirect()->route('roles.index')
-            ->with('success', 'Role updated successfully'); */
+        $role = $this->authorizeTarget($id);
+        $data = $request->validate(['name' => 'required|string|max:100']);
+        abort_if($role->name === 'SystemAdmin', 422, 'The owner role is protected.');
+        $permissions = $this->validatedPermissions($request, $role->branch_id ? (int) $role->branch_id : null);
+        DB::transaction(function () use ($role, $data, $permissions) {
+            $role->display_name = $data['name'];
+            $role->save();
+            $role->syncPermissions($permissions);
+            app(BranchContext::class)->audit('role-updated', Role::class, $role->id, ['permissions' => $permissions]);
+        });
+        app(PermissionRegistrar::class)->forgetCachedPermissions();
         return response()->json(['success' => 'Save Role Success']);
     }
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+
+    private function deleteRoles(array $ids): void
+    {
+        abort_unless($ids && count($ids) <= 500, 422);
+        DB::transaction(function () use ($ids) {
+            $roles = [];
+            foreach (array_unique($ids) as $id) {
+                $role = $this->authorizeTarget($id);
+                abort_if(in_array($role->name, config('branch.protected_roles'), true), 422, 'Standard roles cannot be deleted.');
+                abort_if(DB::table('model_has_roles')->where('role_id', $role->id)->exists(), 422, 'This role is assigned to users.');
+                $roles[] = $role;
+            }
+            foreach ($roles as $role) {
+                app(BranchContext::class)->audit('role-deleted', Role::class, $role->id);
+                $role->delete();
+            }
+        });
+    }
+
     public function destroy(Request $request)
     {
-        $id = $request->get('id');
-        $ret = DB::table("roles")->where('id', $id)->delete();
-        if ($ret) {
-            return ['success' => true, 'message' => 'Delete Role Success'];
-        } else {
-            return ['error' => true, 'message' => $id];
-        }
-
-        /* return redirect()->route('roles.index')
-            ->with('success', 'Role deleted successfully'); */
+        $this->deleteRoles([(int) $request->id]);
+        return response()->json(['success' => true, 'message' => 'Delete Role Success']);
     }
 
     public function destroy_all(Request $request)
     {
-
-        $arr_del  = $request->get('table_records'); //$arr_ans is Array MacAddress
-
-        for ($xx = 0; $xx < count($arr_del); $xx++) {
-            DB::table("roles")->where('id', $arr_del[$xx])->delete();
-        }
-        //$ids = $request->get('table_records');
-        //User::whereIn('id',explode(",",$ids))->delete();
+        $request->validate(['table_records' => 'required|array', 'table_records.*' => 'integer']);
+        $this->deleteRoles($request->table_records);
         return redirect('/roles')->with('success', 'Delete Role Success');
     }
 }

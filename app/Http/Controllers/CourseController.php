@@ -1137,12 +1137,14 @@ class CourseController extends Controller
             'grade' => 'required|string|max:10',
             'course_name' => 'required|string',
             'type_parent' => 'required|in:father,mother',
-            'department_id' => 'required|string|max:255',
+            'department_id' => ['required', 'integer', \Illuminate\Validation\Rule::exists('departments', 'id')->where('status', 1)],
             'day' => 'required|string|max:255',
             'period' => 'required|string|max:255',
             'price' => 'required|string|max:255',
 
         ]);
+        abort_unless(\App\Support\Branch\BranchAccess::moduleEnabled((int) $validatedData['department_id'], 'crm'), 422, 'Registration is not enabled for this branch.');
+        abort_unless(\App\Models\TeachingPeriod::where('department_id', $validatedData['department_id'])->where('day', $validatedData['day'])->where('period', $validatedData['period'])->exists(), 422, 'Choose a valid teaching period for this branch.');
         $affiliate_context = $request->attributes->get('affiliate_referral_context');
         $validatedData['ref'] = '';
         $validatedData['status'] = '1';
@@ -1230,11 +1232,13 @@ class CourseController extends Controller
             'message' => 'Course stored successfully!',
             'qrCodePayment' => $qrCodePayment,
             'coursePending_id' => $create->id,
+            'application_token' => encrypt(['id' => $create->id, 'expires_at' => now()->addHours(24)->timestamp]),
         ]);
     }
 
     public function uploadSlip(Request $request)
     {
+        $this->authorizeApplication($request);
         $request->validate([
             'payment_slip' => 'required|image|mimes:jpeg,png,jpg|max:2048',
             'coursePending_id' => 'required',
@@ -1277,6 +1281,22 @@ class CourseController extends Controller
             'message' => 'Slip uploaded successfully',
             'coursePending_id' => $coursePending->id,
         ]);
+    }
+
+    private function authorizeApplication(Request $request): void
+    {
+        $actor = $request->user();
+        if ($actor instanceof \App\Models\User && $actor->can('course-pending-edit')) {
+            $pending = CoursePending::findOrFail($request->coursePending_id);
+            \App\Support\Branch\BranchAccess::assertBranch($actor, $pending->department_id, true);
+            return;
+        }
+        try {
+            $token = decrypt((string) $request->input('application_token', $request->header('X-Application-Token')));
+        } catch (\Throwable $exception) {
+            abort(403, 'Application token required.');
+        }
+        abort_unless(is_array($token) && (int) ($token['id'] ?? 0) === (int) $request->coursePending_id && (int) ($token['expires_at'] ?? 0) >= now()->timestamp, 403, 'Invalid or expired application token.');
     }
 
     private function StoreCourseImage(UploadedFile $uploaded_file): string
@@ -1420,6 +1440,7 @@ class CourseController extends Controller
 
     public function senMail(Request $request)
     {
+        $this->authorizeApplication($request);
 
         // dd($request->all());
         $coursePending = CoursePending::find($request->coursePending_id);

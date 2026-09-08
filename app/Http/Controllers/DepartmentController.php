@@ -2,212 +2,140 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use App\Models\Department;
 use App\Models\Position;
-use Spatie\Permission\Models\Role;
-use Illuminate\Support\Facades\Gate;
+use App\Support\Branch\BranchAccess;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
+use Illuminate\Validation\Rule;
 
 class DepartmentController extends Controller
 {
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
     public function __construct()
     {
-        //$this->middleware('auth');
-        $this->middleware('permission:centre-list|centre-create|centre-edit|centre-delete', ['only' => ['index', 'show']]);
+        $this->middleware('auth');
+        $this->middleware('permission:centre-manage|centre-list|centre-create|centre-edit|centre-delete', ['only' => ['index', 'show', 'edit']]);
         $this->middleware('permission:centre-create', ['only' => ['create', 'store']]);
-        $this->middleware('permission:centre-edit', ['only' => ['edit', 'update']]);
-        $this->middleware('permission:centre-delete', ['only' => ['destroy']]);
+        $this->middleware('permission:centre-edit', ['only' => ['update']]);
+        $this->middleware('permission:centre-delete', ['only' => ['destroy', 'destroy_all']]);
     }
 
-    /**
-     * Display a listing of the resource.
-     */
     public function index(Request $request)
     {
-
-        if ($request->ajax()) {
-            //sleep(2);
-
-            $datas = Department::orderBy("id", "desc");
-            //ยกเว้น id = 4,5
-            $datas->whereNotIn('id', [4, 5]);
-            if (!Gate::allows('all-centre')) {
-                $datas->where('id', Auth::user()->department->id);
-            }
-            $datas->get();
-            $state_text = array('Discontinued', 'Active');
-            return datatables()->of($datas)
-                ->editColumn('checkbox', function ($row) {
-                    return '<input type="checkbox" id="' . $row->id . '" class="flat" name="table_records[]" value="' . $row->id . '" >';
-                })
-                ->editColumn('status', function ($row) use ($state_text) {
-                    $state = $state_text[$row->status];
-                    return $state;
-                })
-                ->addColumn('action', function ($row) {
-                    if (Gate::allows('centre-edit')) {
-                        $html = '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit</button> ';
-                    } else {
-                        $html = '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> Edit</button> ';
-                    }
-                    if (Gate::allows('centre-delete')) {
-                        $html .= '<button type="button" data-rowid="' . $row->id . '" class="btn btn-sm btn-danger btn-delete"><i class="fa fa-trash"></i> Delete</button>';
-                    } else {
-                        $html .= '<button type="button" class="btn btn-sm btn-danger disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-trash"></i> Delete</button> ';
-                    }
-                    return $html;
-                })->rawColumns(['checkbox', 'action'])->toJson();
+        if (!$request->ajax()) {
+            return view('departments.index');
         }
-
-        return view('departments.index');
+        return datatables()->of(Department::query()->orderByDesc('id'))
+            ->editColumn('checkbox', fn ($row) => $row->id == Department::HQ_ID ? '' : '<input type="checkbox" name="table_records[]" value="'.(int) $row->id.'">')
+            ->editColumn('status', fn ($row) => $row->status == 1 ? 'Active' : 'Archived')
+            ->addColumn('action', function ($row) use ($request) {
+                $html = $request->user()->can('centre-edit') ? '<button class="btn btn-sm btn-warning" id="getEditData" data-id="'.(int) $row->id.'">Edit</button> ' : '';
+                if ($request->user()->can('centre-delete') && $row->id != Department::HQ_ID && $row->status == 1) {
+                    $html .= '<button class="btn btn-sm btn-danger btn-delete" data-rowid="'.(int) $row->id.'">ปิดสาขา</button>';
+                }
+                return $html;
+            })->rawColumns(['checkbox', 'action'])->toJson();
     }
-
 
     public function find($type, $department)
     {
-        $select_list = "<option value=''>please select</option>";
-        if ($type == 'add') {
-            $data = Position::select(
-                "positions.id as id",
-                "positions.name as name",
-            )
-
-                ->where('department_id', $department)
-                ->where('status', 1)
-                ->orderBy("positions.name", "asc")
-                ->get();
-
-            foreach ($data as $key) {
-                $select_list .= '<option value="' . $key->id . '" >' . $key->name . '</option>';
-            }
-
-            return response()->json([
-                'html' =>  $select_list
-            ]);
+        BranchAccess::assertBranch(request()->user(), $department);
+        $html = '<option value="">ไม่มีแผนก</option>';
+        foreach (Position::where('department_id', $department)->where('status', 1)->orderBy('name')->get() as $position) {
+            $html .= '<option value="'.(int) $position->id.'">'.e($position->name).'</option>';
         }
+        return response()->json(['html' => $html]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        return view('departments.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    private function data(Request $request, ?Department $branch = null): array
+    {
+        abort_unless(BranchAccess::isCentral($request->user()), 403);
+        if ($request->boolean('modules_submitted') && !$request->has('enabled_modules')) {
+            $request->merge(['enabled_modules' => []]);
+        }
+        $request->merge(['code' => strtoupper(trim((string) $request->code))]);
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:255', Rule::unique('departments', 'name')->ignore($branch?->id)],
+            'code' => ['required', 'string', 'max:10', 'regex:/^[A-Z0-9_-]+$/', Rule::unique('departments', 'code')->ignore($branch?->id)],
+            'status' => 'required|boolean',
+            'enabled_modules' => 'sometimes|array',
+            'enabled_modules.*' => ['string', Rule::in(array_keys(config('branch.modules')))],
+        ]);
+        if ($request->has('enabled_modules')) {
+            abort_unless($request->user()->can('branch-modules-manage'), 403, 'Module management permission required.');
+            $data['enabled_modules'] = array_values(array_unique($data['enabled_modules']));
+        } elseif (!$branch) {
+            $data['enabled_modules'] = config('branch.default_modules');
+        }
+        if ($branch?->id === Department::HQ_ID) {
+            abort_unless((int) $data['status'] === 1, 422, 'HQ cannot be archived.');
+        }
+        if ($branch && $branch->code !== $data['code']) {
+            foreach (['contacts', 'orders', 'receipts', 'invoices', 'products'] as $table) {
+                abort_if(DB::table($table)->where('centre', $branch->id)->exists(), 422, 'A branch code used by records cannot be changed.');
+            }
+        }
+        return $data;
+    }
+
     public function store(Request $request)
     {
-        //
-        $validator =  Validator::make($request->all(), [
-            'name' => 'required|string|max:255|unique:departments',
-            'code' => 'required|string|max:10',
-            'status' => 'required',
-            /* 'email' => 'required|string|email|max:255',
-            'address' => 'required|string|max:255',
-            'postcode' => 'required|string|max:10',
-            'telephone' => 'required|string|max:20',*/
-        ], [
-            'name.required' => 'The branch name must not be blank!',
-            'name.unique' => 'This branch name already exists in the database!',
-            'code.required' => 'The branch code must not be blank!',
-            'code.max' => 'The branch code must not exceed 10 characters',
-            'status.required' => 'Please select a status!',
-        ]);
-
-
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()->all()]);
-        }
-
-        $input = $request->all();
-        Department::create($input);
-        return response()->json(['success' => 'The branch has been successfully added.']);
+        $data = $this->data($request);
+        $branch = DB::transaction(fn () => Department::create($data + ['branch_type' => 'branch']));
+        return response()->json(['success' => 'เพิ่มสาขาแล้ว สามารถใช้ Role มาตรฐานกับผู้ใช้สาขานี้ได้', 'data' => $branch]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    public function show($id)
+    {
+        return $this->edit($id);
+    }
+
     public function edit($id)
     {
-
-        $data =  Department::find($id);
+        $branch = Department::findOrFail($id);
+        $data = $branch->toArray();
+        $data['enabled_modules'] = $branch->enabled_modules ?? array_keys(config('branch.modules'));
         return response()->json(['data' => $data]);
     }
 
-
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, $id)
     {
-        $rules = [
-            'name' => 'required|string|max:255|unique:departments,name,' . $id,
-            'code' => 'required|max:10',
-            'status' => 'required|max:10',
-
-        ];
-
-
-        $validator = Validator::make($request->all(), $rules, [
-            'name.required' => 'The branch name must not be blank!',
-            'name.unique' => 'This branch name already exists in the database!',
-            'code.required' => 'The branch code must not be blank!',
-            'code.max' => 'The branch code must not exceed 10 characters!',
-            'status.required' => 'Please select a status!',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()->all()]);
-        }
-
-        $contactd = [
-            'name' => $request->get('name'),
-            'code' => $request->get('code'),
-            'status' => $request->get('status'),
-        ];
-
-        $update = Department::find($id);
-        $update->update($contactd);
-
-        return response()->json(['success' => 'The branch has been successfully edited.']);
+        $branch = Department::findOrFail($id);
+        $data = $this->data($request, $branch);
+        DB::transaction(fn () => $branch->update($data));
+        return response()->json(['success' => 'บันทึกการตั้งค่าสาขาแล้ว']);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+    private function archive(array $ids): void
+    {
+        abort_unless(BranchAccess::isCentral(request()->user()), 403);
+        $ids = array_unique(array_map('intval', $ids));
+        abort_unless($ids && count($ids) <= 500, 422);
+        abort_if(in_array(Department::HQ_ID, $ids, true), 422, 'HQ cannot be archived.');
+        DB::transaction(function () use ($ids) {
+            $branches = Department::whereKey($ids)->lockForUpdate()->get();
+            abort_unless($branches->count() === count($ids), 404);
+            foreach ($branches as $branch) {
+                $branch->update(['status' => 0]);
+            }
+        });
+    }
+
     public function destroy(Request $request)
     {
-        $id = $request->get('id');
-        Department::find($id)->delete();
-        return ['success' => true, 'message' => 'The branch has been successfully deleted.'];
+        $this->archive([(int) $request->id]);
+        return response()->json(['success' => true, 'message' => 'ปิดสาขาแล้ว ข้อมูลและประวัติยังคงอยู่']);
     }
 
     public function destroy_all(Request $request)
     {
-
-        $arr_del  = $request->get('table_records'); //$arr_ans is Array MacAddress
-
-        for ($xx = 0; $xx < count($arr_del); $xx++) {
-            Department::find($arr_del[$xx])->delete();
-        }
-
-        return redirect('/departments')->with('success', 'The branch has been successfully deleted.');
+        $request->validate(['table_records' => 'required|array', 'table_records.*' => 'integer']);
+        $this->archive($request->table_records);
+        return redirect('/departments')->with('success', 'ปิดสาขาที่เลือกแล้ว โดยเก็บประวัติทั้งหมด');
     }
 }

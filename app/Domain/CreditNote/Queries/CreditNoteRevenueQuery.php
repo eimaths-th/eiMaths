@@ -43,6 +43,10 @@ final class CreditNoteRevenueQuery
 
     private function Build(string $from_date, string $to_date, ?int $centre_id, string $group): array
     {
+        $actor = app(\App\Support\Branch\BranchContext::class)->actor;
+        if ($actor && !\App\Support\Branch\BranchAccess::canCrossBranches($actor)) {
+            $centre_id = (int) ($actor->department_id ?: -1);
+        }
         $period_expression = $this->PeriodExpression($group, 'effective_date');
         $posting_query = DB::table('credit_note_postings')
             ->whereBetween('effective_date', [$from_date, $to_date]);

@@ -57,6 +57,8 @@ use App\Domain\Affiliate\Models\AffiliateAttribution;
 class Contact extends Model implements AuthenticatableContract
 {
     use Authenticatable;
+
+    protected $hidden = ['password', 'remember_token'];
     /**
      * The table associated with the model.
      *
@@ -138,7 +140,7 @@ class Contact extends Model implements AuthenticatableContract
      */
     public static function getContactsByCentre()
     {
-        return self::whereIn('centre', [2, 3])
+        return self::query()
             ->orderBy('id', 'desc')
             ->get()
             ->groupBy('centre');
@@ -151,7 +153,7 @@ class Contact extends Model implements AuthenticatableContract
      */
     public static function exportToExcel($filename = 'contacts_export.xlsx')
     {
-        $contacts = self::whereIn('centre', [2, 3])
+        $contacts = self::query()
             ->orderBy('id', 'desc')
             ->get()
             ->groupBy('centre');

@@ -20,6 +20,7 @@ class FileUploadService
 {
     public static function fileStore(Request $request)
     {
+        $request->validate(['file' => 'required|array|max:10', 'file.*' => 'required|file|mimes:pdf,jpg,jpeg,png,webp|max:10240']);
         $filecount = count($request->file('file'));
         $newname = "";
         for ($i = 0; $i <= ($filecount - 1); $i++) {
@@ -29,7 +30,7 @@ class FileUploadService
             $oldfile = FileUpload::where('oldname', $imageName)->get();
             if (!is_array($oldfile)) {
 
-                $newname = Str::random(40) . "_" . $imageName;
+                $newname = Str::random(40) . '.' . $image->extension();
                 $image->move(public_path('file_upload'), $newname);
 
                 $fileType = $image->getClientMimeType();
@@ -49,6 +50,7 @@ class FileUploadService
 
         $filename =  $request->get('name');
         $oldfile = FileUpload::where('oldname', $filename)->get();
+        abort_if($oldfile->isEmpty(), 404);
         if ($oldfile) {
             $path = public_path() . '/file_upload/' . $oldfile[0]->filename;
             if (file_exists($path)) {
@@ -64,6 +66,7 @@ class FileUploadService
 
         $filename =  $request->get('name');
         $oldfile = FileUpload::where('oldname', $filename)->get();
+        abort_if($oldfile->isEmpty(), 404);
         if ($oldfile) {
             $path = public_path() . '/file_upload/' . $oldfile[0]->filename;
             if (file_exists($path)) {

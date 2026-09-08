@@ -84,7 +84,7 @@
                                             <th>Department</th>
                                             <th>Role</th>
                                             <th>Disable</th>
-                                            <th width="120px"></th>
+                                            <th width="120px">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -183,5 +183,5 @@
 @endsection
 
 @section('script')
-    @include('users.script')
+    @include('users.script', ['showReferralColumn' => false])
 @endsection

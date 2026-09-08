@@ -6,6 +6,7 @@
         <div class="row mb-2">
             <div class="col-sm-6">
                 <h1>Lead Detail #{{ $lead->id }}</h1>
+                <p>สาขา: {{ \App\Models\Department::find($lead->branch_id)?->name ?? 'รอส่วนกลางมอบหมาย' }}</p>
             </div>
             <div class="col-sm-6">
                 <a href="{{ route('crm.leads.index') }}" class="btn btn-secondary float-sm-right">Back</a>
@@ -164,6 +165,22 @@
             </div>
 
             <div class="col-lg-4">
+                @if(\App\Support\Branch\BranchAccess::isCentral(auth()->user()) && auth()->user()->can('crm-leads-edit'))
+                <div class="card card-body">
+                    <form method="POST" action="{{ route('crm.leads.branch', $lead) }}">
+                        @csrf
+                        <label for="lead-branch">ส่งต่อให้สาขา</label>
+                        <select id="lead-branch" name="branch_id" class="form-control mb-2">
+                            @foreach(\App\Models\Department::where('status', 1)->get() as $branch)
+                                <option value="{{ $branch->id }}">{{ $branch->name }}</option>
+                            @endforeach
+                        </select>
+                        <label for="lead-reason">เหตุผล</label>
+                        <input id="lead-reason" name="reason" minlength="5" maxlength="1000" required class="form-control mb-2">
+                        <button class="btn btn-primary">ส่งต่อ Lead</button>
+                    </form>
+                </div>
+                @endif
                 <div class="card card-info">
                     <div class="card-header">
                         <h3 class="card-title">Click IDs</h3>

@@ -75,7 +75,7 @@ class ReceiptController extends Controller
 
     public function update_name($name, $id)
     {
-        $receipt = Receipt::find($id);
+        $receipt = Receipt::findOrFail($id);
         $receipt->update(['student_name' => $name]);
     }
 
@@ -111,7 +111,7 @@ class ReceiptController extends Controller
         )
             ->join("contacts", "contacts.id", "=", "receipts.cid")
             ->join("orders", "orders.id", "=", "receipts.oid")
-            ->join("departments", "contacts.centre", "=", "departments.id")
+            ->join("departments", "receipts.centre", "=", "departments.id")
             ->where("receipts.id", $id)
             ->get();
 
@@ -165,7 +165,7 @@ class ReceiptController extends Controller
             //     DB::raw("SUM(order_detail.quantity) as total_amount")
             // )
             //     ->join("contacts", "contacts.id", "=", "receipts.cid")
-            //     ->join("departments", "contacts.centre", "=", "departments.id")
+            //     ->join("departments", "receipts.centre", "=", "departments.id")
             //     ->leftJoin("order_details as order_detail", "order_detail.order_id", "=", "receipts.oid")
             //     ->join("bookuses", "bookuses.id", "=", "order_detail.product_id")
             //     ->join("levels", "levels.id", "=", "bookuses.level_id")
@@ -373,7 +373,7 @@ class ReceiptController extends Controller
             )
 
                 ->join("contacts", "contacts.id", "=", "receipts.cid")
-                ->join("departments", "contacts.centre", "=", "departments.id")
+                ->join("departments", "receipts.centre", "=", "departments.id")
                 ->join("orders", "orders.id", "=", "receipts.oid")
                 ->leftJoin("order_details as first_detail", function ($join) {
                     $join->on("first_detail.order_id", "=", "orders.id")
@@ -473,7 +473,7 @@ class ReceiptController extends Controller
                 ->addSelect(DB::raw("GROUP_CONCAT(levels.name SEPARATOR ' - ') as product_level"))
                 ->addSelect(DB::raw("SUM(order_detail.quantity) as total_amount"))
                 ->join("contacts", "contacts.id", "=", "orders.cid")
-                ->join("departments", "contacts.centre", "=", "departments.id")
+                ->join("departments", "receipts.centre", "=", "departments.id")
                 ->leftJoin("order_details as order_detail", function ($join) {
                     $join->on("order_detail.order_id", "=", "orders.id");
                 })
@@ -694,7 +694,7 @@ class ReceiptController extends Controller
                 $join->on("first_detail.order_id", "=", "orders.id")
                     ->whereRaw("first_detail.id = (SELECT MIN(id) FROM order_details WHERE order_id = orders.id)");
             }) */
-            ->join("departments", "contacts.centre", "=", "departments.id")
+            ->join("departments", "receipts.centre", "=", "departments.id")
             ->where("receipts.id", $id)
             ->get();
 
@@ -834,22 +834,19 @@ class ReceiptController extends Controller
 
     public function deleteImg($id, $id2)
     {
-        $file = FileStore::find($id2);
-
-        if ($file) {
-            // Get the file path
-            $filePath = public_path('file_store/' . $file->filename);
-            if (file_exists($filePath)) {
-                unlink($filePath);
-                $file->delete();
-            }
-        }
-
-        $html = $this->getfileatt($id);
-
-        return response()->json(['imgs' => $html]);
+        $order = Order::findOrFail($id);
+        // A file belongs to the selected order as well as the current branch.
+        $file = FileStore::where('module', 'orders')->where('module_id', $order->id)->findOrFail($id2);
+        DB::transaction(function () use ($file) {
+            $filename = basename($file->filename);
+            $file->delete();
+            DB::afterCommit(function () use ($filename) {
+                $path = public_path('file_store/'.$filename);
+                if (is_file($path)) { unlink($path); }
+            });
+        });
+        return response()->json(['imgs' => $this->getfileatt($id)]);
     }
-
 
     public function getfileattprint($id)
     {
@@ -917,7 +914,7 @@ class ReceiptController extends Controller
             'updated_by' => Auth::id()
         ];
 
-        $receipt = Receipt::find($id);
+        $receipt = Receipt::findOrFail($id);
         if (!$receipt) {
             return response()->json(['errors' => ['Receipt not found.']], 404);
         }
@@ -986,7 +983,7 @@ class ReceiptController extends Controller
     public function generate(Request $request)
     {
         $id = $request->get('id');
-        $receipt = Receipt::find($id);
+        $receipt = Receipt::findOrFail($id);
         if (!$receipt) {
             return response()->json(['errors' => ['Receipt not found.']], 404);
         }

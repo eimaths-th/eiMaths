@@ -37,6 +37,7 @@ class CrmLead extends Model
     ];
 
     protected $fillable = [
+        'branch_id',
         'parent_name',
         'phone',
         'line_id',

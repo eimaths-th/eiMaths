@@ -145,6 +145,10 @@
                 data: {
                     name: $('#AddName').val(),
                     code: $('#AddCode').val(),
+                    @can('branch-modules-manage')
+                    enabled_modules: $('.branch-module-Add:checked').map(function() { return this.value; }).get(),
+                    modules_submitted: 1,
+                    @endcan
                     status: sstatus,
                     _token: token,
                 },
@@ -189,13 +193,16 @@
                 success: function(res) {
                     $('#EditName').val(res.data.name);
                     $('#EditCode').val(res.data.code);
+                    $('.branch-module-Edit').each(function() {
+                        this.checked = (res.data.enabled_modules || []).indexOf(this.value) !== -1;
+                    });
                     if (res.data.status == 1) {
                         $('#ecustomCheckbox1').prop('checked', true);
                     } else {
                         $('#ecustomCheckbox1').prop('checked', false);
                     }
 
-                    $('#EditModalBody').html(res.html);
+                    // The modal fields are populated above; keep their module controls.
                     $('#EditModal').modal('show');
                 }
             });
@@ -224,6 +231,10 @@
                 data: {
                     name: $('#EditName').val(),
                     code: $('#EditCode').val(),
+                    @can('branch-modules-manage')
+                    enabled_modules: $('.branch-module-Edit:checked').map(function() { return this.value; }).get(),
+                    modules_submitted: 1,
+                    @endcan
                     status: esstatus,
                 },
 

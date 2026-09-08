@@ -602,7 +602,8 @@
             id = $(this).data('id');
             $.ajax({
                 url: "orders/cancle/" + id,
-                method: 'GET',
+                method: 'POST',
+                data: { _token: "{{ csrf_token() }}" },
                 success: function(res) {
                     toastr.success(res.success, {
                         timeOut: 5000

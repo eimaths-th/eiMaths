@@ -96,8 +96,8 @@ class PositionController extends Controller
     {
         //
         $validator =  Validator::make($request->all(), [
-            'name' => 'required|string|max:255|unique:positions',
-            'department_id' => 'required',
+            'name' => ['required', 'string', 'max:255', \Illuminate\Validation\Rule::unique('positions', 'name')->where('department_id', $request->department_id)],
+            'department_id' => 'required|integer|exists:departments,id',
             'status' => 'required',
             /* 'email' => 'required|string|email|max:255',
             'address' => 'required|string|max:255',
@@ -139,8 +139,8 @@ class PositionController extends Controller
     public function update(Request $request, $id)
     {
         $rules = [
-            'name' => 'required|string|max:255|unique:positions,name,' . $id,
-            'department' => 'required',
+            'name' => ['required', 'string', 'max:255', \Illuminate\Validation\Rule::unique('positions', 'name')->where('department_id', $request->department)->ignore($id)],
+            'department' => 'required|integer|exists:departments,id',
             'status' => 'required|max:10',
         ];
 
@@ -173,7 +173,9 @@ class PositionController extends Controller
     public function destroy(Request $request)
     {
         $id = $request->get('id');
-        Position::find($id)->delete();
+        $position = Position::findOrFail($id);
+        abort_if(\App\Models\User::where('position_id', $position->id)->exists(), 422, 'This department is assigned to users.');
+        $position->update(['status' => 0]);
         return ['success' => true, 'message' => 'The department has been successfully deleted.'];
     }
 
@@ -183,9 +185,11 @@ class PositionController extends Controller
         $arr_del  = $request->get('table_records'); //$arr_ans is Array MacAddress
 
         for ($xx = 0; $xx < count($arr_del); $xx++) {
-            Position::find($arr_del[$xx])->delete();
+            $position = Position::findOrFail($arr_del[$xx]);
+            abort_if(\App\Models\User::where('position_id', $position->id)->exists(), 422, 'This department is assigned to users.');
+            $position->update(['status' => 0]);
         }
 
-        return redirect('/priorities')->with('success', 'The department has been successfully deleted.');
+        return redirect('/positions')->with('success', 'The department has been successfully deleted.');
     }
 }

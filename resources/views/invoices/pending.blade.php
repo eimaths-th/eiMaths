@@ -110,10 +110,7 @@
                             </div>
                             <div class="row ">
                                 <div class="col-xs-12 col-sm-12 col-md-12" id="Listviewd">
-                                    <form method="post" action="{{ route('orders.destroy_all') }}" name="delete_all"
-                                        id="delete_all">
-                                        @csrf
-                                        @method('POST')
+                                    <div id="invoice-selection">
                                         <table id="Listview"
                                             class="display nowrap table table-bordered table-striped table-hover">
                                             <thead>
@@ -149,7 +146,7 @@
                                                 </tr>
                                             </tfoot>
                                         </table>
-                                    </form>
+                                    </div>
                                 </div>
                             </div>
                         </div>

@@ -21,7 +21,26 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
-    use HasApiTokens, HasFactory, Notifiable, HasRoles;
+    use HasApiTokens, HasFactory, Notifiable;
+    use HasRoles { hasPermissionTo as protected packageHasPermissionTo; }
+
+    public function isSystemAdmin(): bool
+    {
+        return \App\Support\Branch\BranchAccess::isOwner($this);
+    }
+
+    public function hasPermissionTo($permission, $guardName = null): bool
+    {
+        $permission = $this->filterPermission($permission, $guardName);
+        $name = $permission->name;
+        if (!\App\Support\Branch\BranchAccess::permissionAllowed($this, $name)) {
+            return false;
+        }
+        if ($this->isSystemAdmin()) {
+            return true;
+        }
+        return $this->packageHasPermissionTo($permission, $guardName);
+    }
 
 
 

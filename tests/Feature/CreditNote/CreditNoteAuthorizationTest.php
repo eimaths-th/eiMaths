@@ -48,11 +48,13 @@ class CreditNoteAuthorizationTest extends TestCase
     }
 
     #[Test]
-    public function all_centre_permission_sees_every_centre(): void
+    public function hq_admin_with_all_centre_permission_sees_every_centre(): void
     {
         $first_centre = $this->CreateDepartment('AUTH-C');
         $second_centre = $this->CreateDepartment('AUTH-D');
+        $this->assertSame(Department::HQ_ID, $first_centre->id);
         $actor = $this->CreateActor($first_centre->id, ['credit-note-list', 'credit-note-show', 'all-centre']);
+        $actor->assignRole(\Spatie\Permission\Models\Role::findOrCreate('Admin', 'web'));
         $first = $this->CreateNote($first_centre->id);
         $second = $this->CreateNote($second_centre->id);
 

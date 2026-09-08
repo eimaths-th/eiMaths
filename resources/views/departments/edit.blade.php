@@ -59,7 +59,25 @@ id="EditModal">
 
                     </div>
 
-                    {!! Form::close() !!}
+
+                <div class="form-group">
+                    <strong>โมดูลที่สาขาเปิดใช้</strong>
+                    <p class="text-muted">เลือกงานที่สาขานี้ใช้ได้ สิทธิ์ของแต่ละคนกำหนดเพิ่มผ่าน Role</p>
+                    <div class="row">
+                        @foreach (config('branch.modules') as $moduleKey => $moduleLabel)
+                            <div class="col-md-6">
+                                <label>
+                                    <input type="checkbox" class="branch-module-Edit" value="{{ $moduleKey }}"
+                                        @if (in_array($moduleKey, config('branch.default_modules'))) checked @endif
+                                        @cannot('branch-modules-manage') disabled @endcannot>
+                                    {{ $moduleLabel }}
+                                </label>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+
+{!! Form::close() !!}
                 </div>
             </div>
             <!-- Modal footer -->

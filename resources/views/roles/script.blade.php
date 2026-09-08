@@ -25,6 +25,74 @@
             }
         });
 
+        function syncPermissionGroup(group) {
+            const $group = $(group);
+            const $items = $group.find('.permission-item-checkbox');
+            const selected = $items.filter(':checked').length;
+            const total = $items.length;
+            $group.find('.permission-group-toggle')
+                .prop('checked', total > 0 && selected === total)
+                .prop('indeterminate', selected > 0 && selected < total);
+            $group.find('[data-group-selected]').text(selected);
+            $items.each(function() {
+                $(this).closest('.permission-option').toggleClass('is-selected', this.checked);
+            });
+        }
+
+        function syncPermissionPanel(panel) {
+            const $panel = $(panel);
+            $panel.find('[data-permission-group]').each(function() {
+                syncPermissionGroup(this);
+            });
+            $panel.find('[data-total-selected]').text(
+                $panel.find('.permission-item-checkbox:checked').length
+            );
+        }
+
+        $(document).on('change', '.permission-group-toggle', function() {
+            const $group = $(this).closest('[data-permission-group]');
+            $group.find('.permission-item-checkbox').prop('checked', this.checked);
+            syncPermissionPanel($(this).closest('[data-permission-panel]'));
+        });
+
+        $(document).on('change', '.permission-item-checkbox', function() {
+            syncPermissionPanel($(this).closest('[data-permission-panel]'));
+        });
+
+        $(document).on('click', '.permission-select-all', function() {
+            const $panel = $(this).closest('[data-permission-panel]');
+            $panel.find('.permission-item-checkbox').prop('checked', true);
+            syncPermissionPanel($panel);
+        });
+
+        $(document).on('click', '.permission-clear-all', function() {
+            const $panel = $(this).closest('[data-permission-panel]');
+            $panel.find('.permission-item-checkbox').prop('checked', false);
+            syncPermissionPanel($panel);
+        });
+
+        $(document).on('input', '.permission-search', function() {
+            const query = this.value.trim().toLowerCase();
+            const $panel = $(this).closest('[data-permission-panel]');
+            let visibleOptions = 0;
+            $panel.find('[data-permission-group]').each(function() {
+                let visibleInGroup = 0;
+                $(this).find('[data-permission-option]').each(function() {
+                    const match = !query || String($(this).data('permission-search')).toLowerCase().includes(query);
+                    $(this).toggle(match);
+                    if (match) visibleInGroup += 1;
+                });
+                visibleOptions += visibleInGroup;
+                $(this).toggle(visibleInGroup > 0);
+            });
+            $panel.find('.permission-no-results').prop('hidden', visibleOptions > 0);
+        });
+
+        $('.permission-panel').each(function() {
+            syncPermissionPanel(this);
+        });
+
+
 
         var table = $('#Listview').DataTable({
             "language": {
@@ -125,6 +193,9 @@
             $('.alert-danger').hide();
             $('.alert-success').html('');
             $('.alert-success').hide();
+            $('#CreateModal .form').trigger('reset');
+            $('#CreatePermissionPanel .permission-search').val('').trigger('input');
+            syncPermissionPanel('#CreatePermissionPanel');
             $('#CreateModal').modal('show');
         });
 
@@ -148,6 +219,8 @@
                 method: 'post',
                 data: {
                     name: $('#AddName').val(),
+                    branch_id: $('#AddRoleBranch').val(),
+                    template_id: $('#AddRoleTemplate').val(),
                     permission: list,
                     _token: token,
                 },
@@ -181,6 +254,15 @@
             });
         });
 
+        $('#AddRoleTemplate').on('change', function() {
+            if (!this.value) return;
+            $.get("{{ url('/roles/template') }}/" + this.value, function(res) {
+                $('input[name="permission[]"]').each(function() {
+                    this.checked = res.permission.map(String).indexOf(this.value) !== -1;
+                });
+                syncPermissionPanel('#CreatePermissionPanel');
+            });
+        });
         let id;
         $(document).on('click', '#getEditData', function(e) {
             e.preventDefault();
@@ -206,6 +288,8 @@
                         }
 
                     })
+                    $('#EditPermissionPanel .permission-search').val('').trigger('input');
+                    syncPermissionPanel('#EditPermissionPanel');
                     $('#editName').val(res.name);
                     //$('#EditModalBody').html(res.html);
                     $('#EditModal').modal('show');

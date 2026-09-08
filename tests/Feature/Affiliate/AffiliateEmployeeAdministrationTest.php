@@ -20,6 +20,8 @@ class AffiliateEmployeeAdministrationTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        \App\Models\Department::create(['id' => 1, 'name' => 'HQ test', 'code' => 'HQ', 'status' => 1, 'branch_type' => 'hq']);
+        \App\Models\Department::forceCreate(['id' => 5, 'name' => 'Employee branch', 'code' => 'EMP', 'status' => 1]);
         Config::set('affiliate.features.administration', true);
     }
 
@@ -133,9 +135,12 @@ class AffiliateEmployeeAdministrationTest extends TestCase
     private function CreateAdmin(string $permission_name): User
     {
         $admin = User::factory()->create([
+            'department_id' => 1,
             'email_verified_at' => now(),
             'password' => Hash::make('secret'),
         ]);
+        $admin->assignRole(Role::findOrCreate('Admin', 'web'));
+        $admin->givePermissionTo(Permission::findOrCreate('all-centre', 'web'));
         $admin->givePermissionTo(Permission::findOrCreate($permission_name, 'web'));
 
         return $admin->fresh();

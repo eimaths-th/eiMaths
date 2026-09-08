@@ -10,6 +10,7 @@ class TrackingLink extends Model
     use SoftDeletes;
 
     protected $fillable = [
+        'branch_id',
         'tracking_code',
         'short_code',
         'name',

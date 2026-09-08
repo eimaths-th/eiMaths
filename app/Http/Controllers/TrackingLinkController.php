@@ -14,6 +14,7 @@ class TrackingLinkController extends Controller
     public function index()
     {
         return view('tracking-links.index', [
+            'branches' => \App\Models\Department::where('status', 1)->get()->filter(fn ($branch) => \App\Support\Branch\BranchAccess::moduleEnabled($branch->id, 'crm')),
             'baseUrl' => config('tracking.free_trial_base_url'),
             'links' => TrackingLink::query()
                 ->with('creator:id,name')
@@ -27,6 +28,7 @@ class TrackingLinkController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
+            'branch_id' => ['nullable', 'integer'],
             'name' => ['required', 'string', 'max:255'],
             'base_url' => ['required', 'url', 'max:2000'],
             'utm_source' => ['required', 'string', 'max:100'],
@@ -36,6 +38,9 @@ class TrackingLinkController extends Controller
             'utm_term' => ['nullable', 'string', 'max:255'],
         ]);
 
+        $data['branch_id'] = $data['branch_id'] ?? $request->user()->department_id;
+        \App\Support\Branch\BranchAccess::assertBranch($request->user(), $data['branch_id'], true);
+        abort_unless(\App\Support\Branch\BranchAccess::moduleEnabled((int) $data['branch_id'], 'crm'), 422, 'CRM is not enabled for this branch.');
         foreach (['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'] as $field) {
             $data[$field] = $this->normalizeTag($data[$field] ?? null);
         }

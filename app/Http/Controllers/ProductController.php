@@ -357,150 +357,43 @@ class ProductController extends Controller
 
     public function add_stock(Request $request, $id)
     {
-        $rules = [
-            'amount' => 'required|numeric|min:1', // Added numeric rule to ensure 'amount' is a number
-        ];
-
-        $messages = [
-            'amount.required' => 'Amount must not be blank!',
-            'amount.numeric' => 'Amount must be a number!',
-            'amount.min' => 'Amount must be greater than or equal to 1!',
-        ];
-
-        $validator = Validator::make($request->all(), $rules, $messages);
-
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()->all()]);
-        }
-
-
-
-        $update = Product::find($id);
-
-        $newAmount = $update->amount + $request->input('amount');
-
-        $update->update(['amount' => $newAmount]);
-
-        $Stock = Stock::create([
-            'product_id' => $id,
-            'centre' => auth()->user()->department->id,
-            'add_stock' => $request->input('amount'),
-            'in_stock' => $newAmount,
-            'user_id' => auth()->user()->id,
-
-
-        ]);
-
-
-        return response()->json(['success' => 'The Acceseries has been successfully update.']);
+        return $this->adjustStock($request, $id, false);
     }
-
 
     public function rm_stock(Request $request, $id)
     {
-        $rules = [
-            'amount' => 'required|numeric|min:1', // Added numeric rule to ensure 'amount' is a number
-        ];
-
-        $messages = [
-            'amount.required' => 'Amount must not be blank!',
-            'amount.numeric' => 'Amount must be a number!',
-            'amount.min' => 'Amount must be greater than or equal to 1!',
-        ];
-
-        $validator = Validator::make($request->all(), $rules, $messages);
-
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()->all()]);
-        }
-
-
-
-        $update = Product::find($id);
-
-        if ($update->amount <= 0) {
-            return response()->json(['errors' => 'สินค้านี้หมดสต็อกแล้ว.', 'product' => $update]);
-        }
-
-        if ($request->input('amount') > $update->amount) {
-            $rm_amount = $request->input('amount') - $update->amount;
-        } else {
-            $rm_amount = $request->input('amount');
-        }
-
-
-        $newAmount = $update->amount - $rm_amount;
-
-        $update->update(['amount' => $newAmount]);
-
-        $Stock = Stock::create([
-            'product_id' => $id,
-            'type' => $request->input('type'),
-            'student_id' => $request->input('student'),
-            'centre' => $request->input('centre'),
-            'rm_stock' => $request->input('amount'),
-            'in_stock' => $newAmount,
-            'user_id' => auth()->user()->id,
-
-
-        ]);
-
-
-        return response()->json(['success' => 'The Acceseries has been successfully update.', 'product' => $update]);
+        return $this->adjustStock($request, $id, true);
     }
 
+    private function adjustStock(Request $request, $id, bool $remove)
+    {
+        $data = $request->validate(['amount' => 'required|numeric|min:1|max:1000000', 'student' => 'nullable|integer', 'type' => 'nullable|string|max:100']);
+        $product = \Illuminate\Support\Facades\DB::transaction(function () use ($data, $id, $remove, $request) {
+            $product = Product::query()->lockForUpdate()->findOrFail($id);
+            \App\Support\Branch\BranchAccess::assertBranch($request->user(), $product->centre, true);
+            if (!empty($data['student'])) {
+                abort_unless(\App\Models\Contact::where('centre', $product->centre)->whereKey($data['student'])->exists(), 422, 'Student must belong to the product branch.');
+            }
+            abort_if($remove && $data['amount'] > $product->amount, 422, 'จำนวนสินค้าในสต็อกไม่เพียงพอ');
+            $product->amount = $product->amount + ($remove ? -$data['amount'] : $data['amount']);
+            $product->save();
+            Stock::create([
+                'product_id' => $product->id, 'centre' => $product->centre, 'type' => $data['type'] ?? null,
+                'student_id' => $data['student'] ?? null, 'user_id' => $request->user()->id,
+                'add_stock' => $remove ? 0 : $data['amount'], 'rm_stock' => $remove ? $data['amount'] : 0,
+                'in_stock' => $product->amount,
+            ]);
+            return $product;
+        });
+        return response()->json(['success' => 'บันทึกสต็อกแล้ว', 'product' => $product]);
+    }
 
     public function rm_stock_centre(Request $request, $id)
     {
-        $rules = [
-            'amount' => 'required|numeric|min:1', // Added numeric rule to ensure 'amount' is a number
-        ];
-
-        $messages = [
-            'amount.required' => 'Amount must not be blank!',
-            'amount.numeric' => 'Amount must be a number!',
-            'amount.min' => 'Amount must be greater than or equal to 1!',
-        ];
-
-        $validator = Validator::make($request->all(), $rules, $messages);
-
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()->all()]);
-        }
-
-
-
-        $update = Product::find($id);
-
-        if ($update->amount <= 0) {
-            return response()->json(['errors' => 'สินค้านี้หมดสต็อกแล้ว.', 'product' => $update]);
-        }
-
-        if ($request->input('amount') > $update->amount) {
-            $rm_amount = $request->input('amount') - $update->amount;
-        } else {
-            $rm_amount = $request->input('amount');
-        }
-
-        $newAmount = $update->amount - $rm_amount;
-
-        $update->update(['amount' => $newAmount]);
-
-        $Stock = Stock::create([
-            'product_id' => $id,
-            'centre' => $request->input('centre'),
-            'rm_stock' => $request->input('amount'),
-            'in_stock' => $newAmount,
-            'user_id' => auth()->user()->id,
-        ]);
-
-
-        return response()->json(['success' => 'The Acceseries has been successfully update.', 'product' => $update]);
+        return $this->adjustStock($request, $id, true);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+
     public function destroy(Request $request)
     {
         $id = $request->get('id');

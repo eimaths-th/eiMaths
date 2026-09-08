@@ -16,6 +16,8 @@ class ParentAuthTest extends TestCase
     {
         // Create a test parent
         $parent = Parents::create([
+            'student_id' => '',
+            'centre_id' => '',
             'fname' => 'Test',
             'lname' => 'Parent',
             'email' => 'test@example.com',
@@ -67,6 +69,8 @@ class ParentAuthTest extends TestCase
     {
         // Create and authenticate a parent
         $parent = Parents::create([
+            'student_id' => '',
+            'centre_id' => '',
             'fname' => 'Test',
             'lname' => 'Parent',
             'email' => 'test@example.com',

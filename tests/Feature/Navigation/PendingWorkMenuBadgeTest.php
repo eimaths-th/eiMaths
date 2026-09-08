@@ -2,8 +2,8 @@
 
 namespace Tests\Feature\Navigation;
 
-use App\Models\User;
 use App\Models\Department;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Hash;
@@ -15,16 +15,25 @@ class PendingWorkMenuBadgeTest extends TestCase
 {
     use RefreshDatabase;
 
+    private Department $hq;
+
     protected function setUp(): void
     {
         parent::setUp();
+        $this->hq = Department::query()->create([
+            'id' => Department::HQ_ID,
+            'name' => 'Navigation HQ',
+            'code' => 'NAV-HQ',
+            'status' => 1,
+        ]);
         Config::set('affiliate.features.administration', true);
     }
 
     #[Test]
-    public function AffiliateManagementDoesNotShowAffiliateAccountsMenu(): void
+    public function AffiliateManagementOwnsAffiliateAccountsAndPendingBadge(): void
     {
         $admin = User::factory()->create([
+            'department_id' => $this->hq->id,
             'email_verified_at' => now(),
             'password' => Hash::make('secret'),
             'disable' => 0,
@@ -34,21 +43,25 @@ class PendingWorkMenuBadgeTest extends TestCase
             Permission::findOrCreate('course-manage', 'web'),
         ]);
 
-        $response = $this->actingAs($admin)->get(route('affiliate.admin.index'));
-        $menu = $response->getContent();
+        $menu = $this->actingAs($admin)->get(route('affiliate.admin.index'))->getContent();
 
         $this->assertStringContainsString('Affiliate Management', $menu);
-        $this->assertStringNotContainsString('Affiliate Accounts', $menu);
-        $this->assertDoesNotMatchRegularExpression(
+        $this->assertStringContainsString('Affiliate Accounts', $menu);
+        $this->assertMatchesRegularExpression(
             '/<p>\s*Affiliate Management\s*<span[^>]*data-affiliate-pending-approval-badge/s',
+            $menu,
+        );
+        $this->assertMatchesRegularExpression(
+            '/<p>\s*Affiliate Accounts\s*<span[^>]*data-affiliate-pending-approval-badge[^>]*><\/span>\s*<\/p>/s',
             $menu,
         );
     }
 
     #[Test]
-    public function UserManagementParentShowsPendingApprovalBadge(): void
+    public function AffiliateBadgeIsNoLongerAttachedToUserAccess(): void
     {
         $admin = User::factory()->create([
+            'department_id' => $this->hq->id,
             'email_verified_at' => now(),
             'password' => Hash::make('secret'),
             'disable' => 0,
@@ -58,27 +71,22 @@ class PendingWorkMenuBadgeTest extends TestCase
             Permission::findOrCreate('user-list', 'web'),
         ]);
 
-        $response = $this->actingAs($admin)->get(route('affiliate.admin.index'));
-        $menu = $response->getContent();
+        $menu = $this->actingAs($admin)->get(route('affiliate.admin.index'))->getContent();
 
-        $this->assertMatchesRegularExpression(
-            '/<p>\s*User Management\s*<span[^>]*data-affiliate-pending-approval-badge[^>]*><\/span>\s*<\/p>\s*<i/s',
+        $this->assertStringContainsString('User &amp; Access', $menu);
+        $this->assertDoesNotMatchRegularExpression(
+            '/<p>\s*User &amp; Access\s*<span[^>]*data-affiliate-pending-approval-badge/s',
             $menu,
         );
         $this->assertMatchesRegularExpression(
-            '/<p>\s*Users Affiliate\s*<span[^>]*data-affiliate-pending-approval-badge[^>]*><\/span>\s*<\/p>/s',
+            '/<p>\s*Affiliate Management\s*<span[^>]*data-affiliate-pending-approval-badge/s',
             $menu,
         );
     }
 
     #[Test]
-    public function StudentsManagementParentShowsCentreBookShipmentBadge(): void
+    public function StockAndLogisticsParentShowsCentreBookShipmentBadge(): void
     {
-        Department::query()->create([
-            'name' => 'Navigation Hq',
-            'code' => 'NAV-HQ',
-            'status' => 1,
-        ]);
         $department = Department::query()->create([
             'name' => 'Navigation Centre',
             'code' => 'NAV-CENTRE',
@@ -91,20 +99,19 @@ class PendingWorkMenuBadgeTest extends TestCase
             'disable' => 0,
         ]);
         $admin->givePermissionTo([
-            Permission::findOrCreate('affiliate-list', 'web'),
             Permission::findOrCreate('student-list', 'web'),
             Permission::findOrCreate('book-shipment-receive', 'web'),
         ]);
 
-        $response = $this->actingAs($admin)->get(route('affiliate.admin.index'));
-        $menu = $response->getContent();
+        $this->actingAs($admin);
+        $menu = view('layouts.menu', ['book_shipment_alert_role' => 'centre'])->render();
 
         $this->assertMatchesRegularExpression(
-            '/<p>\s*Students Management\s*<span[^>]*data-book-shipment-badge="centre"[^>]*><\/span>\s*<\/p>\s*<i/s',
+            '/<p>\s*Stock &amp; Logistics\s*<span[^>]*data-book-shipment-badge="centre"[^>]*><\/span>\s*<\/p>\s*<i/s',
             $menu,
         );
         $this->assertDoesNotMatchRegularExpression(
-            '/<p>\s*Incoming Book Shipments\s*<span[^>]*data-book-shipment-badge="centre"/s',
+            '/<p>\s*Students Management\s*<span[^>]*data-book-shipment-badge/s',
             $menu,
         );
     }
@@ -113,16 +120,14 @@ class PendingWorkMenuBadgeTest extends TestCase
     public function PendingWorkNotificationIsRenderedInsideTheNavbar(): void
     {
         $admin = User::factory()->create([
+            'department_id' => $this->hq->id,
             'email_verified_at' => now(),
             'password' => Hash::make('secret'),
             'disable' => 0,
         ]);
-        $admin->givePermissionTo([
-            Permission::findOrCreate('affiliate-list', 'web'),
-        ]);
+        $admin->givePermissionTo(Permission::findOrCreate('affiliate-list', 'web'));
 
-        $response = $this->actingAs($admin)->get(route('affiliate.admin.index'));
-        $menu = $response->getContent();
+        $menu = $this->actingAs($admin)->get(route('affiliate.admin.index'))->getContent();
 
         $this->assertMatchesRegularExpression(
             '/<nav[^>]*>.*data-pending-work-alert-toggle.*data-pending-work-alert-panel.*<\/nav>/s',

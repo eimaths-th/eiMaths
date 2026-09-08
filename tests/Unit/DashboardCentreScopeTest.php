@@ -14,6 +14,7 @@ class DashboardCentreScopeTest extends TestCase
     public function test_branch_user_cannot_override_their_centre(): void
     {
         $user = new User(['department_id' => 3]);
+        $user->setRelation('roles', collect());
         Auth::shouldReceive('user')->once()->andReturn($user);
 
         $request = Request::create('/dashboard', 'POST', ['dcentre' => '2']);
@@ -24,6 +25,7 @@ class DashboardCentreScopeTest extends TestCase
     public function test_hq_user_can_select_a_branch(): void
     {
         $user = new User(['department_id' => Department::HQ_ID]);
+        $user->setRelation('roles', collect([new \Spatie\Permission\Models\Role(['name' => 'SystemAdmin', 'guard_name' => 'web'])]));
         Auth::shouldReceive('user')->once()->andReturn($user);
 
         $request = Request::create('/dashboard', 'POST', ['dcentre' => '3']);
@@ -34,6 +36,7 @@ class DashboardCentreScopeTest extends TestCase
     public function test_hq_defaults_to_all_centres(): void
     {
         $user = new User(['department_id' => Department::HQ_ID]);
+        $user->setRelation('roles', collect([new \Spatie\Permission\Models\Role(['name' => 'SystemAdmin', 'guard_name' => 'web'])]));
         Auth::shouldReceive('user')->once()->andReturn($user);
 
         $request = Request::create('/dashboard', 'POST');

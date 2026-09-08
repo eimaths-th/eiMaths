@@ -61,7 +61,7 @@ class InvoiceController extends Controller
             )
 
                 ->join("contacts", "contacts.id", "=", "invoices.cid")
-                ->join("departments", "contacts.centre", "=", "departments.id")
+                ->join("departments", "invoices.centre", "=", "departments.id")
                 ->where('invoices.status', 1);
             if (!Gate::allows('all-centre')) {
                 $query->where('invoices.centre', Auth::user()->department->id);
@@ -161,7 +161,7 @@ class InvoiceController extends Controller
             )
 
                 ->join("contacts", "contacts.id", "=", "invoices.cid")
-                ->join("departments", "contacts.centre", "=", "departments.id")
+                ->join("departments", "invoices.centre", "=", "departments.id")
                 ->join("orders", "orders.id", "=", "invoices.oid")
                 ->leftJoin("order_details as first_detail", function ($join) {
                     $join->on("first_detail.order_id", "=", "orders.id")
@@ -262,7 +262,7 @@ class InvoiceController extends Controller
 
         )
             ->join("contacts", "contacts.id", "=", "invoices.cid")
-            ->join("departments", "contacts.centre", "=", "departments.id")
+            ->join("departments", "invoices.centre", "=", "departments.id")
             ->where("invoices.id", $id)
             ->get();
 
