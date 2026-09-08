@@ -13,9 +13,28 @@ final class AffiliateEmployeeEligibility
             return false;
         }
 
-        return $user->getRoleNames()
+        $has_employee_role = $user->getRoleNames()
             ->intersect($employee_roles)
             ->isNotEmpty();
+        if (!$has_employee_role) {
+            return false;
+        }
+
+        // SystemAdmin is the platform owner and intentionally bypasses role permissions.
+        if ($user->isSystemAdmin()) {
+            return true;
+        }
+
+        // The allowlist identifies staff accounts; affiliate-user is the
+        // role-managed switch that enables their self-service Affiliate access.
+        if (!\Spatie\Permission\Models\Permission::query()
+            ->where('name', 'affiliate-user')
+            ->where('guard_name', 'web')
+            ->exists()) {
+            return false;
+        }
+
+        return $user->can('affiliate-user');
     }
 
     public function IsAffiliateOnly(User $user): bool

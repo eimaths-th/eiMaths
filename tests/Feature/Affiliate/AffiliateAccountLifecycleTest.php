@@ -56,7 +56,9 @@ class AffiliateAccountLifecycleTest extends TestCase
     public function EmployeeLifecycleTransitionsDoNotAssignAffiliateRole(): void
     {
         $employee = User::factory()->create(['password' => Hash::make('secret')]);
-        $employee->assignRole(Role::findOrCreate('Teacher', 'web'));
+        $role = Role::findOrCreate('Teacher', 'web');
+        $role->givePermissionTo(\Spatie\Permission\Models\Permission::findOrCreate('affiliate-user', 'web'));
+        $employee->assignRole($role);
         $actor = User::factory()->create(['password' => Hash::make('secret')]);
         $profile = AffiliateProfile::create([
             'user_id' => $employee->id,

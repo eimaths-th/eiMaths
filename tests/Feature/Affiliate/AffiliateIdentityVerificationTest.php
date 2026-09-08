@@ -146,7 +146,9 @@ class AffiliateIdentityVerificationTest extends TestCase
         $this->assertSame(AffiliateIdentityStatus::VERIFIED, $identity->fresh()->status);
 
         $employee = User::factory()->create(['password' => Hash::make('secret')]);
-        $employee->assignRole(Role::findOrCreate('Teacher', 'web'));
+        $role = Role::findOrCreate('Teacher', 'web');
+        $role->givePermissionTo(\Spatie\Permission\Models\Permission::findOrCreate('affiliate-user', 'web'));
+        $employee->assignRole($role);
         $employee_profile = AffiliateProfile::create([
             'user_id' => $employee->id, 'referral_code' => 'AFF-EMPLOYEE-' . $employee->id,
             'status' => AffiliateProfileStatus::PENDING_APPROVAL,

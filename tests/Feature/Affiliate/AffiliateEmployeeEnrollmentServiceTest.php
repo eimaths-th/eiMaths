@@ -194,7 +194,9 @@ class AffiliateEmployeeEnrollmentServiceTest extends TestCase
             'disable' => 0,
             'referral' => null,
         ], $attributes));
-        $user->assignRole(Role::findOrCreate('Teacher', 'web'));
+        $role = Role::findOrCreate('Teacher', 'web');
+        $role->givePermissionTo(\Spatie\Permission\Models\Permission::findOrCreate('affiliate-user', 'web'));
+        $user->assignRole($role);
 
         return $user->fresh();
     }

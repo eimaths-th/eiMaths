@@ -117,8 +117,13 @@ class AffiliateEmployeeRedirectTest extends TestCase
             'department_id' => $this->employee_department_id,
         ], $attributes));
 
+        $affiliate_permission = \Spatie\Permission\Models\Permission::findOrCreate('affiliate-user', 'web');
         foreach ($roles as $role_name) {
-            $user->assignRole(Role::findOrCreate($role_name, 'web'));
+            $role = Role::findOrCreate($role_name, 'web');
+            if (in_array($role_name, array_merge(config('affiliate.employee_roles', []), ['Affiliate-user']), true)) {
+                $role->givePermissionTo($affiliate_permission);
+            }
+            $user->assignRole($role);
         }
 
         if ($profile_status !== null) {

@@ -257,7 +257,9 @@ class AffiliateFinanceNavigationTest extends TestCase
             'email_verified_at' => $verified ? now() : null,
             'password' => Hash::make('secret'),
         ]);
-        $user->assignRole(Role::findOrCreate('Teacher', 'web'));
+        $role = Role::findOrCreate('Teacher', 'web');
+        $role->givePermissionTo(\Spatie\Permission\Models\Permission::findOrCreate('affiliate-user', 'web'));
+        $user->assignRole($role);
         $profile = AffiliateProfile::create([
             'user_id' => $user->id,
             'referral_code' => $referral_prefix . $user->id,

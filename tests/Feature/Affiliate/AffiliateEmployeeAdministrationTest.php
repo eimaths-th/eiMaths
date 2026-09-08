@@ -122,7 +122,9 @@ class AffiliateEmployeeAdministrationTest extends TestCase
             'disable' => 0,
             'referral' => null,
         ]);
-        $employee->assignRole(Role::findOrCreate('Teacher', 'web'));
+        $role = Role::findOrCreate('Teacher', 'web');
+        $role->givePermissionTo(\Spatie\Permission\Models\Permission::findOrCreate('affiliate-user', 'web'));
+        $employee->assignRole($role);
         $profile = AffiliateProfile::create([
             'user_id' => $employee->id,
             'referral_code' => 'AFF-ADMIN-' . $employee->id,

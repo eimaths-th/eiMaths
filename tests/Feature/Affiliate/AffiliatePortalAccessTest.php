@@ -198,7 +198,11 @@ class AffiliatePortalAccessTest extends TestCase
             'email_verified_at' => $email_verified_at,
             'password' => Hash::make('secret'),
         ]);
-        $user->assignRole(Role::findOrCreate($role_name, 'web'));
+        $role = Role::findOrCreate($role_name, 'web');
+        if (in_array($role_name, array_merge(config('affiliate.employee_roles', []), ['Affiliate-user']), true)) {
+            $role->givePermissionTo(Permission::findOrCreate('affiliate-user', 'web'));
+        }
+        $user->assignRole($role);
         $profile = AffiliateProfile::create([
             'user_id' => $user->id,
             'referral_code' => 'AFF-PORTAL-' . $user->id,

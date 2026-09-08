@@ -61,6 +61,7 @@ class ReceiptController extends Controller
     )
     {
         $this->middleware('permission:receipt-list|receipt-show|receipt-create|receipt-edit|receipt-delete', ['only' => ['index', 'show']]);
+        $this->middleware('permission:receipt-list', ['only' => ['pending', 'pending_term']]);
         $this->middleware('permission:receipt-show', ['only' => ['show']]);
         $this->middleware('permission:receipt-create', ['only' => ['create', 'store']]);
         $this->middleware('permission:receipt-edit', ['only' => ['edit', 'update']]);
@@ -455,7 +456,15 @@ class ReceiptController extends Controller
         $reservationValue = $request->get('date');
 
         if ($request->ajax()) {
-            //sleep(2);
+            // Keep the aggregate portable so an empty result still returns valid
+            // DataTables JSON in every supported database environment.
+            $product_name_aggregate = DB::connection()->getDriverName() === 'sqlite'
+                ? "GROUP_CONCAT(order_detail.pname, ' - ')"
+                : "GROUP_CONCAT(order_detail.pname SEPARATOR ' - ')";
+            $product_level_aggregate = DB::connection()->getDriverName() === 'sqlite'
+                ? "GROUP_CONCAT(levels.name, ' - ')"
+                : "GROUP_CONCAT(levels.name SEPARATOR ' - ')";
+
             $query = Order::select(
                 "orders.id as id",
                 "orders.ref as ref",
@@ -469,11 +478,11 @@ class ReceiptController extends Controller
                 "contacts.start_term as start_term",
                 "departments.name as centre"
             )
-                ->addSelect(DB::raw("GROUP_CONCAT(order_detail.pname SEPARATOR ' - ') as product_name"))
-                ->addSelect(DB::raw("GROUP_CONCAT(levels.name SEPARATOR ' - ') as product_level"))
+                ->addSelect(DB::raw($product_name_aggregate . ' as product_name'))
+                ->addSelect(DB::raw($product_level_aggregate . ' as product_level'))
                 ->addSelect(DB::raw("SUM(order_detail.quantity) as total_amount"))
                 ->join("contacts", "contacts.id", "=", "orders.cid")
-                ->join("departments", "receipts.centre", "=", "departments.id")
+                ->join("departments", "orders.centre", "=", "departments.id")
                 ->leftJoin("order_details as order_detail", function ($join) {
                     $join->on("order_detail.order_id", "=", "orders.id");
                 })

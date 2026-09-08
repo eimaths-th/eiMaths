@@ -156,6 +156,28 @@ class AffiliateEmployeeAccessHttpTest extends TestCase
     }
 
     #[Test]
+    public function EmployeeRoleWithoutAffiliatePermissionCannotSeeOrOpenEmployeeAccess(): void
+    {
+        $user = $this->CreateEligibleEmployee();
+        Role::findByName('Teacher', 'web')->revokePermissionTo('affiliate-user');
+        $user = $user->fresh();
+
+        $this->actingAs($user);
+        $this->assertStringNotContainsString(
+            __('affiliate.employee_access.menu_label'),
+            view('layouts.header')->render(),
+        );
+        $this->getJson(route('affiliate.employee-access.show'))
+            ->assertStatus(403)
+            ->assertJsonPath('error_code', 'AFFILIATE_EMPLOYEE_ENROLLMENT_DENIED');
+
+        $this->CreateProfile($user, AffiliateProfileStatus::ACTIVE);
+        $this->getJson(route('affiliate.dashboard'))
+            ->assertStatus(403)
+            ->assertJsonPath('error_code', 'AFFILIATE_OWNERSHIP_DENIED');
+    }
+
+    #[Test]
     public function IneligibleEmployeeAccessReturnsForbiddenJson(): void
     {
         $user = $this->CreateIneligibleUser();
@@ -278,7 +300,9 @@ class AffiliateEmployeeAccessHttpTest extends TestCase
             'password' => Hash::make('employee-password'),
             'email_verified_at' => null,
         ]);
-        $user->assignRole(Role::findOrCreate('Teacher', 'web'));
+        $role = Role::findOrCreate('Teacher', 'web');
+        $role->givePermissionTo(\Spatie\Permission\Models\Permission::findOrCreate('affiliate-user', 'web'));
+        $user->assignRole($role);
 
         return $user->fresh();
     }

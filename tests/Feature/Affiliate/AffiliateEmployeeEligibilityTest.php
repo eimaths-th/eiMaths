@@ -20,13 +20,30 @@ class AffiliateEmployeeEligibilityTest extends TestCase
     {
         foreach (['Admin', 'SystemAdmin', 'BranchAdmin', 'Teacher', 'blog'] as $role_name) {
             $user = $this->CreateUser();
-            $user->assignRole(Role::findOrCreate($role_name, 'web'));
+            $role = Role::findOrCreate($role_name, 'web');
+            $role->givePermissionTo(\Spatie\Permission\Models\Permission::findOrCreate('affiliate-user', 'web'));
+            $user->assignRole($role);
 
             $this->assertTrue(
                 app(AffiliateEmployeeEligibility::class)->IsEligible($user),
                 "Expected role {$role_name} to be eligible."
             );
         }
+    }
+
+    #[Test]
+    public function ApprovedEmployeeRoleRequiresAffiliateUserPermission(): void
+    {
+        $user = $this->CreateUser();
+        $role = Role::findOrCreate('BranchAdmin', 'web');
+        $permission = \Spatie\Permission\Models\Permission::findOrCreate('affiliate-user', 'web');
+        $user->assignRole($role);
+
+        $this->assertFalse(app(AffiliateEmployeeEligibility::class)->IsEligible($user));
+
+        $role->givePermissionTo($permission);
+
+        $this->assertTrue(app(AffiliateEmployeeEligibility::class)->IsEligible($user->fresh()));
     }
 
     #[Test]
@@ -84,8 +101,10 @@ class AffiliateEmployeeEligibilityTest extends TestCase
     public function EligibleEmployeeWithAffiliateUserRoleIsNotAffiliateOnly(): void
     {
         $user = $this->CreateUser();
+        $teacher = Role::findOrCreate('Teacher', 'web');
+        $teacher->givePermissionTo(\Spatie\Permission\Models\Permission::findOrCreate('affiliate-user', 'web'));
         $user->assignRole([
-            Role::findOrCreate('Teacher', 'web'),
+            $teacher,
             Role::findOrCreate('Affiliate-user', 'web'),
         ]);
 
@@ -99,7 +118,9 @@ class AffiliateEmployeeEligibilityTest extends TestCase
     public function RoleDecisionsUseCurrentConfigurationForEachCall(): void
     {
         $user = $this->CreateUser();
-        $user->assignRole(Role::findOrCreate('Teacher', 'web'));
+        $role = Role::findOrCreate('Teacher', 'web');
+        $role->givePermissionTo(\Spatie\Permission\Models\Permission::findOrCreate('affiliate-user', 'web'));
+        $user->assignRole($role);
         $eligibility = app(AffiliateEmployeeEligibility::class);
 
         Config::set('affiliate.employee_roles', ['Teacher']);
