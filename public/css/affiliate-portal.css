@@ -1210,6 +1210,223 @@ body.affiliate-media-layout .main-footer > strong > strong {
     border-color: #FFFFFF;
 }
 
+.affiliate-portal .affiliate-curriculum-library {
+    overflow: hidden;
+    background: #FFFFFF;
+    border: 1px solid #D7E1EB;
+    border-radius: 0.75rem;
+    box-shadow: 0 0.65rem 1.5rem rgba(22, 59, 96, 0.08);
+}
+
+.affiliate-portal .affiliate-curriculum-library-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.35rem 1.5rem;
+    background: linear-gradient(105deg, #F8FBFE 0%, #EEF6FC 100%);
+    border-bottom: 1px solid #D7E1EB;
+}
+
+.affiliate-portal .affiliate-curriculum-library-icon,
+.affiliate-portal .affiliate-curriculum-group-mark {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    color: #FFFFFF;
+    background: #1266AB;
+}
+
+.affiliate-portal .affiliate-curriculum-library-icon {
+    width: 3.25rem;
+    height: 3.25rem;
+    border-radius: 0.8rem;
+    box-shadow: 0 0.5rem 1rem rgba(18, 102, 171, 0.2);
+    font-size: 1.2rem;
+}
+
+.affiliate-portal .affiliate-curriculum-library-copy {
+    min-width: 0;
+}
+
+.affiliate-portal .affiliate-curriculum-library-copy h2 {
+    margin: 0 0 0.25rem;
+    color: #163B60;
+    font-size: 1.35rem;
+    font-weight: 700;
+}
+
+.affiliate-portal .affiliate-curriculum-library-copy > p:last-child {
+    color: #52677C;
+}
+
+.affiliate-portal .affiliate-curriculum-eyebrow {
+    color: #B76000;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.affiliate-portal .affiliate-curriculum-count {
+    display: inline-flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+    align-items: center;
+    min-width: 5.4rem;
+    margin-left: auto;
+    padding: 0.6rem 0.8rem;
+    color: #1266AB;
+    background: #FFFFFF;
+    border: 1px solid #C9DDEC;
+    border-radius: 0.65rem;
+    line-height: 1.15;
+}
+
+.affiliate-portal .affiliate-curriculum-count strong {
+    font-size: 1.35rem;
+}
+
+.affiliate-portal .affiliate-curriculum-count span {
+    margin-top: 0.15rem;
+    color: #66798D;
+    font-size: 0.72rem;
+}
+
+.affiliate-portal .affiliate-curriculum-groups {
+    padding: 0 1.5rem 1.5rem;
+}
+
+.affiliate-portal .affiliate-curriculum-group {
+    padding-top: 1.35rem;
+}
+
+.affiliate-portal .affiliate-curriculum-group + .affiliate-curriculum-group {
+    margin-top: 1.35rem;
+    border-top: 1px solid #E2E8F0;
+}
+
+.affiliate-portal .affiliate-curriculum-group-heading {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.9rem;
+}
+
+.affiliate-portal .affiliate-curriculum-group-mark {
+    width: 2.35rem;
+    height: 2.35rem;
+    background: #F28C28;
+    border-radius: 50%;
+}
+
+.affiliate-portal .affiliate-curriculum-group-heading h3 {
+    margin: 0;
+    color: #243B53;
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.affiliate-portal .affiliate-curriculum-group-heading p {
+    margin: 0.1rem 0 0;
+    color: #718096;
+    font-size: 0.78rem;
+}
+
+.affiliate-portal .affiliate-curriculum-grid {
+    display: grid;
+    gap: 0.85rem;
+}
+
+.affiliate-portal .affiliate-curriculum-group--kindergarten .affiliate-curriculum-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.affiliate-portal .affiliate-curriculum-group--primary .affiliate-curriculum-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.affiliate-portal .affiliate-curriculum-card {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    padding: 1rem;
+    background: #FFFFFF;
+    border: 1px solid #D9E3EC;
+    border-radius: 0.65rem;
+    box-shadow: 0 0.3rem 0.85rem rgba(36, 59, 83, 0.05);
+    transition: border-color 0.16s ease, box-shadow 0.16s ease, transform 0.16s ease;
+}
+
+.affiliate-portal .affiliate-curriculum-card:hover {
+    border-color: #9CC6E5;
+    box-shadow: 0 0.55rem 1.2rem rgba(18, 102, 171, 0.11);
+    transform: translateY(-2px);
+}
+
+.affiliate-portal .affiliate-curriculum-card-topline {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.85rem;
+}
+
+.affiliate-portal .affiliate-curriculum-level {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.9rem;
+    min-height: 2.15rem;
+    padding: 0.25rem 0.6rem;
+    color: #FFFFFF;
+    background: #1266AB;
+    border-radius: 0.5rem;
+    font-size: 0.95rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+}
+
+.affiliate-portal .affiliate-curriculum-format,
+.affiliate-portal .affiliate-curriculum-pages {
+    color: #66798D;
+    font-size: 0.78rem;
+}
+
+.affiliate-portal .affiliate-curriculum-format i {
+    margin-right: 0.2rem;
+    color: #C2413D;
+}
+
+.affiliate-portal .affiliate-curriculum-card h4 {
+    margin: 0 0 0.35rem;
+    color: #243B53;
+    font-size: 0.98rem;
+    font-weight: 700;
+}
+
+.affiliate-portal .affiliate-curriculum-pages {
+    margin: 0 0 1rem;
+}
+
+.affiliate-portal .affiliate-curriculum-pages i {
+    margin-right: 0.2rem;
+    color: #1266AB;
+}
+
+.affiliate-portal .affiliate-curriculum-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: auto;
+}
+
+.affiliate-portal .affiliate-curriculum-actions .btn {
+    min-height: 2.25rem;
+    border-radius: 0.45rem;
+    font-weight: 600;
+}
+
 .affiliate-portal .affiliate-guide-hero-mark {
     display: flex;
     flex: 0 0 11rem;
@@ -1371,6 +1588,10 @@ body.affiliate-media-layout .main-footer > strong > strong {
         flex-basis: auto;
         justify-content: stretch;
     }
+
+    .affiliate-portal .affiliate-curriculum-group--primary .affiliate-curriculum-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
 }
 
 @media (max-width: 768px) {
@@ -1378,8 +1599,24 @@ body.affiliate-media-layout .main-footer > strong > strong {
     .affiliate-portal .affiliate-media-grid,
     .affiliate-portal .affiliate-form-grid,
     .affiliate-portal .affiliate-guide-process,
-    .affiliate-portal .affiliate-guide-facts {
+    .affiliate-portal .affiliate-guide-facts,
+    .affiliate-portal .affiliate-curriculum-group--kindergarten .affiliate-curriculum-grid,
+    .affiliate-portal .affiliate-curriculum-group--primary .affiliate-curriculum-grid {
         grid-template-columns: 1fr;
+    }
+
+    .affiliate-portal .affiliate-curriculum-library-header {
+        align-items: flex-start;
+        flex-wrap: wrap;
+        padding: 1.15rem;
+    }
+
+    .affiliate-portal .affiliate-curriculum-count {
+        margin-left: 0;
+    }
+
+    .affiliate-portal .affiliate-curriculum-groups {
+        padding: 0 1.15rem 1.15rem;
     }
 
     .affiliate-portal .affiliate-guide-hero {
@@ -1412,12 +1649,34 @@ body.affiliate-media-layout .main-footer > strong > strong {
     }
 
     .affiliate-portal .affiliate-navigation {
-        align-items: stretch;
-        flex-direction: column;
+        align-items: center;
+        flex-direction: row;
+        flex-wrap: nowrap !important;
+        overflow-x: auto;
+        overscroll-behavior-inline: contain;
+        scroll-snap-type: x proximity;
+        scrollbar-width: thin;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .affiliate-portal .affiliate-navigation::-webkit-scrollbar {
+        height: 4px;
+    }
+
+    .affiliate-portal .affiliate-navigation::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .affiliate-portal .affiliate-navigation::-webkit-scrollbar-thumb {
+        background: #B8C6D3;
+        border-radius: 999px;
     }
 
     .affiliate-portal .affiliate-navigation .nav-link {
-        width: 100%;
+        flex: 0 0 auto;
+        width: auto;
+        scroll-snap-align: start;
+        white-space: nowrap;
     }
 
     .affiliate-media-page .affiliate-media-heading__content {
@@ -1478,6 +1737,34 @@ body.affiliate-media-layout .main-footer > strong > strong {
 
     .affiliate-portal .affiliate-media-share-tools {
         grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .affiliate-portal .affiliate-page-intro > .d-flex {
+        align-items: stretch !important;
+        flex-direction: column;
+    }
+
+    .affiliate-portal .affiliate-page-intro code,
+    .affiliate-portal .affiliate-page-intro .affiliate-referral-link {
+        display: block;
+        width: 100%;
+        margin: 0.35rem 0 0 !important;
+        overflow-wrap: anywhere;
+    }
+
+    .affiliate-portal .affiliate-page-intro .btn {
+        align-self: flex-start;
+        margin: 0.65rem 0 0 !important;
+    }
+
+    .affiliate-portal .affiliate-guide-hero {
+        padding: 1.25rem;
+    }
+
+    .affiliate-portal .affiliate-guide-hero-mark {
+        display: none;
     }
 }
 

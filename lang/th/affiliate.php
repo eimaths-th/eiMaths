@@ -110,6 +110,27 @@ return [
         'document_description' => 'เปิดอ่านเอกสารสรุปข้อมูลบริษัทและแนวทางการให้ข้อมูลแก่ผู้สนใจ',
         'contact' => 'สอบถามข้อมูลเพิ่มเติม: 093-258-5855',
         'document_unavailable' => 'ยังไม่พบเอกสาร กรุณาติดต่อผู้ดูแลระบบ',
+        'curriculum' => [
+            'eyebrow' => 'คลังเอกสารประกอบหลักสูตร',
+            'title' => 'เอกสารหลักสูตร K1–P6',
+            'description' => 'เลือกเอกสารตามระดับชั้นเพื่อเปิดอ่านในแท็บใหม่ หรือดาวน์โหลด PDF ไว้ใช้งาน',
+            'document_count' => 'ระดับชั้น',
+            'groups' => [
+                'kindergarten' => [
+                    'title' => 'ระดับอนุบาล',
+                    'range' => 'Kindergarten 1–2',
+                ],
+                'primary' => [
+                    'title' => 'ระดับประถมศึกษา',
+                    'range' => 'Primary 1–6',
+                ],
+            ],
+            'level_title' => 'เอกสารหลักสูตร :level',
+            'file_type' => 'PDF',
+            'page_count' => ':count หน้า',
+            'open' => 'เปิดอ่าน',
+            'download' => 'ดาวน์โหลด',
+        ],
     ],
     'analytics' => [
         'title' => 'การวิเคราะห์ Affiliate',

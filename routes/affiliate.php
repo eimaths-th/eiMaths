@@ -64,6 +64,7 @@ Route::middleware(['auth', 'affiliate.locale', 'affiliate.correlation', 'affilia
     ->group(function (): void {
         Route::get('/', [AffiliateGuideController::class, 'Index'])->name('affiliate.guide.index');
         Route::get('/document', [AffiliateGuideController::class, 'Document'])->name('affiliate.guide.document');
+        Route::get('/curriculum/{level}', [AffiliateGuideController::class, 'Curriculum'])->name('affiliate.guide.curriculum');
     });
 
 Route::middleware(['auth', 'affiliate.locale', 'affiliate.correlation', 'affiliate.feature:administration', 'permission:affiliate-content-manage'])

@@ -291,7 +291,7 @@
 @endsection
 
 @section('style')
-<link rel="stylesheet" href="{{ asset('css/affiliate-portal.css') }}">
+<link rel="stylesheet" href="{{ asset('css/affiliate-portal.css') }}?v={{ filemtime(public_path('css/affiliate-portal.css')) }}">
 @endsection
 
 @section('script')

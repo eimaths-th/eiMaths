@@ -5,13 +5,8 @@
     <section class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">
-                <div class="col-sm-8">
+                <div class="col-12">
                     <h1 id="affiliate-dashboard-title" class="mb-0">{{ __('affiliate.dashboard.title') }}</h1>
-                </div>
-                <div class="col-sm-4 affiliate-tutorial-launch">
-                    <button type="button" class="btn affiliate-tutorial-button" data-affiliate-tutorial-start aria-haspopup="dialog" aria-controls="affiliate-tutorial" aria-busy="true" disabled>
-                        <i class="fas fa-play-circle mr-1" aria-hidden="true"></i>{{ __('affiliate_tutorial.button') }}
-                    </button>
                 </div>
             </div>
         </div>
@@ -45,9 +40,9 @@
                     <p class="affiliate-guide-eyebrow mb-1">{{ __('affiliate.guide.eyebrow') }}</p>
                     <h2 id="affiliate-guide-callout-title">{{ __('affiliate.guide.intro_title') }}</h2>
                     <p class="mb-3">{{ __('affiliate.guide.intro') }}</p>
-                    <a class="btn btn-primary" href="{{ route('affiliate.guide.index') }}">
-                        {{ __('affiliate.dashboard.open_guide') }}
-                    </a>
+                    <button type="button" class="btn affiliate-tutorial-button" data-affiliate-tutorial-start aria-haspopup="dialog" aria-controls="affiliate-tutorial" aria-busy="true" disabled>
+                        <i class="fas fa-play-circle mr-1" aria-hidden="true"></i>{{ __('affiliate_tutorial.button') }}
+                    </button>
                 </div>
             </section>
 
@@ -142,7 +137,7 @@
 @endsection
 
 @section('style')
-<link rel="stylesheet" href="{{ asset('css/affiliate-portal.css') }}">
+<link rel="stylesheet" href="{{ asset('css/affiliate-portal.css') }}?v={{ filemtime(public_path('css/affiliate-portal.css')) }}">
 @endsection
 
 @section('script')

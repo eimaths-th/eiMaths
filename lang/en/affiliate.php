@@ -110,6 +110,27 @@ return [
         'document_description' => 'Open the short document about the company and how Affiliates should share information.',
         'contact' => 'For more information: 093-258-5855',
         'document_unavailable' => 'The document is not available. Please contact the administrator.',
+        'curriculum' => [
+            'eyebrow' => 'Curriculum document library',
+            'title' => 'K1–P6 curriculum documents',
+            'description' => 'Choose a level to open its document in a new tab or download the PDF for later use.',
+            'document_count' => 'levels',
+            'groups' => [
+                'kindergarten' => [
+                    'title' => 'Kindergarten',
+                    'range' => 'Kindergarten 1–2',
+                ],
+                'primary' => [
+                    'title' => 'Primary',
+                    'range' => 'Primary 1–6',
+                ],
+            ],
+            'level_title' => ':level curriculum document',
+            'file_type' => 'PDF',
+            'page_count' => ':count page|:count pages',
+            'open' => 'Open',
+            'download' => 'Download',
+        ],
     ],
     'analytics' => [
         'title' => 'Affiliate analytics',

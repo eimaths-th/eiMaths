@@ -1,100 +1,95 @@
 @php
     $show_employee_affiliate_entry = false;
-    if (auth()->check() && (bool) config('affiliate.features.employee_enrollment', false)) {
+    $header_user = auth()->user();
+
+    if ($header_user && (bool) config('affiliate.features.employee_enrollment', false)) {
         $employee_affiliate_eligibility = app(\App\Domain\Affiliate\Services\AffiliateEmployeeEligibility::class);
-        $show_employee_affiliate_entry = $employee_affiliate_eligibility->IsEligible(auth()->user());
+        $show_employee_affiliate_entry = $employee_affiliate_eligibility->IsEligible($header_user);
     }
+
+    $centre_name = $header_user && $header_user->department && $header_user->department->name
+        ? $header_user->department->name
+        : '—';
+    $department_name = $header_user && $header_user->position && $header_user->position->name
+        ? $header_user->position->name
+        : '—';
+    $user_name = $header_user && $header_user->name ? $header_user->name : 'User';
+    $user_initial = mb_strtoupper(mb_substr(trim($user_name), 0, 1, 'UTF-8'), 'UTF-8');
+    $member_since = $header_user && $header_user->created_at
+        ? $header_user->created_at->format('M. Y')
+        : '—';
 @endphp
 
-<nav class="main-header navbar navbar-expand navbar-white navbar-light">
-    <!-- Left navbar links -->
-    <ul class="navbar-nav">
+<nav class="main-header navbar navbar-expand navbar-white navbar-light app-topbar" aria-label="Main navigation">
+    <ul class="navbar-nav app-topbar__left">
         <li class="nav-item">
-            <a class="nav-link sidebar-toggle-btn" data-widget="pushmenu" href="#" role="button"><i
-                    class="fas fa-bars"></i></a>
-        </li>
-        {{-- <li><a href="#" class="nav-link">
-                <h5></h5>
-            </a></li> --}}
-        <li class="nav-item d-none d-md-inline-block text-nowrap">
-            <a href="#" class="nav-link">[ <i class="fas fa-lg fa-building nav-icon"></i> <b
-                    class="text-primary">Centre : @if (Auth::check() && Auth::user()->department && Auth::user()->department->name)
-                        {{ Auth::user()->department->name }}
-                    @endif
-                </b> ]</a>
-        </li>
-        <li class="nav-item d-none d-md-inline-block text-nowrap">
-            <a href="#" class="nav-link">[ <i class="fas fa-users fa-lg nav-icon"></i> <b class="text-primary">Department :
-                    @if (Auth::check() && Auth::user()->position && Auth::user()->position->name)
-                        {{ Auth::user()->position->name }}
-                    @endif
-                </b> ]</a>
-        </li>
-      {{--   <li class="nav-item d-none d-sm-inline-block">
-            <a href="#" class="nav-link">
-                <span id="real-time-clock"></span>
-
+            <a class="nav-link sidebar-toggle-btn app-topbar__icon-button" data-widget="pushmenu" href="#" role="button" aria-label="Toggle main menu" title="Toggle main menu">
+                <i class="fas fa-bars" aria-hidden="true"></i>
             </a>
-        </li> --}}
-        {{-- <li class="nav-item d-none d-sm-inline-block">
-            <a href="#" class="nav-link">
-                <span class="digital-clock"> <i class="fas fa-clock"></i>  เวลา: &nbsp;
-                    <div id="hours" class="digit">00</div>
-                    <span>:</span>
-                    <div id="minutes" class="digit">00</div>
-                    <span>:</span>
-                    <div id="seconds" class="digit">00</div>
+        </li>
+        <li class="nav-item app-context-strip d-none d-md-flex" aria-label="Current work context">
+            <span class="app-context-chip">
+                <span class="app-context-chip__icon" aria-hidden="true"><i class="fas fa-building"></i></span>
+                <span class="app-context-chip__copy">
+                    <span class="app-context-chip__label">Centre</span>
+                    <strong class="app-context-chip__value" title="{{ $centre_name }}">{{ $centre_name }}</strong>
                 </span>
-            </a>
-        </li> --}}
-       {{--  <li class="nav-item d-none d-sm-inline-block">
-            <a href="#" class="nav-link">
-                <span id="weather" style="display: block;  margin-top:-5px; margin-left:-15px"></span>
-            </a>
-        </li> --}}
-
+            </span>
+            <span class="app-context-chip">
+                <span class="app-context-chip__icon" aria-hidden="true"><i class="fas fa-users"></i></span>
+                <span class="app-context-chip__copy">
+                    <span class="app-context-chip__label">Department</span>
+                    <strong class="app-context-chip__value" title="{{ $department_name }}">{{ $department_name }}</strong>
+                </span>
+            </span>
+        </li>
     </ul>
 
-    <ul class="navbar-nav ml-auto">
+    <ul class="navbar-nav ml-auto app-topbar__right">
         @if (isset($pending_work_alert_enabled) && $pending_work_alert_enabled)
             @include('partials.pending-work-alert', [
                 'authenticated_user' => $authenticated_user,
             ])
         @endif
-        <li class="nav-item d-none d-md-inline-block text-nowrap">
-            <a class="nav-link" data-widget="fullscreen" href="#" role="button">
-                <i class="fas fa-xl fa-expand-arrows-alt"></i> <b class="text-primary">Zoom in/out screen</b>
+        <li class="nav-item d-none d-md-flex">
+            <a class="nav-link app-topbar__action" data-widget="fullscreen" href="#" role="button" aria-label="Toggle full screen" title="Toggle full screen">
+                <i class="fas fa-expand" aria-hidden="true"></i>
+                <span class="d-none d-xl-inline">Full screen</span>
             </a>
         </li>
-        <li class="nav-item dropdown user-menu">
-            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/2048px-User_icon_2.svg.png"
-                    height="150" class="user-image img-circle elevation-1" alt="User Image">
-                <span class="d-none d-md-inline text-primary">{{ Auth::user()->name }}</span>
+        <li class="nav-item dropdown user-menu app-user-menu">
+            <a href="#" class="nav-link dropdown-toggle app-user-trigger" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="User menu: {{ $user_name }}">
+                <span class="app-user-avatar" aria-hidden="true">{{ $user_initial }}</span>
+                <span class="app-user-trigger__copy d-none d-lg-flex">
+                    <strong>{{ $user_name }}</strong>
+                    <small>{{ $department_name }}</small>
+                </span>
+                <i class="fas fa-chevron-down app-user-trigger__chevron" aria-hidden="true"></i>
             </a>
-            <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-                <!-- User image -->
-                <li class="user-header bg-primary">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/2048px-User_icon_2.svg.png"
-                        height="150" class="img-circle elevation-1" alt="User Image">
-                    <p>
-                        {{ Auth::user()->name }}
-                        <small>Member since {{ Auth::user()->created_at->format('M. Y') }}</small>
-                    </p>
+            <ul class="dropdown-menu dropdown-menu-right app-user-dropdown">
+                <li class="app-user-dropdown__summary">
+                    <span class="app-user-avatar app-user-avatar--large" aria-hidden="true">{{ $user_initial }}</span>
+                    <span class="app-user-dropdown__identity">
+                        <strong>{{ $user_name }}</strong>
+                        <small>{{ $department_name }}</small>
+                        <span>Member since {{ $member_since }}</span>
+                    </span>
                 </li>
                 @if ($show_employee_affiliate_entry)
                     <li>
-                        <a class="dropdown-item" href="{{ route('affiliate.employee-access.show') }}">
+                        <a class="dropdown-item app-user-dropdown__link" href="{{ route('affiliate.employee-access.show') }}">
+                            <i class="fas fa-handshake" aria-hidden="true"></i>
                             {{ __('affiliate.employee_access.menu_label') }}
                         </a>
                     </li>
                 @endif
-                <!-- Menu Footer-->
-                <li class="user-footer">
-                    <a href="#" class="btn btn-default btn-flat">Profile</a>
-                    <a href="#" class="btn btn-default btn-flat float-right"
-                        onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                        Sign out
+                <li class="dropdown-divider"></li>
+                <li class="app-user-dropdown__actions">
+                    <a href="#" class="btn btn-light btn-sm">
+                        <i class="far fa-user mr-1" aria-hidden="true"></i>Profile
+                    </a>
+                    <a href="#" class="btn btn-outline-danger btn-sm" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                        <i class="fas fa-sign-out-alt mr-1" aria-hidden="true"></i>Sign out
                     </a>
                     <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                         @csrf

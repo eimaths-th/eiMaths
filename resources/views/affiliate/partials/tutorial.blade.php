@@ -28,7 +28,7 @@
     </dialog>
     <p class="affiliate-tour__feedback" data-tour-feedback role="status" hidden></p>
     @push('styles')
-        <link rel="stylesheet" href="{{ asset('css/affiliate-tutorial.css') }}">
+        <link rel="stylesheet" href="{{ asset('css/affiliate-tutorial.css') }}?v={{ filemtime(public_path('css/affiliate-tutorial.css')) }}">
     @endpush
     @push('scripts')
         <script type="module" src="{{ asset('js/affiliate-tutorial.js') }}"></script>

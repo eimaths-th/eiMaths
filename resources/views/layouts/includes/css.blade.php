@@ -84,6 +84,7 @@
     <link rel="stylesheet" href="{{ asset('plugins/icheck-bootstrap/icheck-bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ asset('dist/css/adminlte.css?v=3.2.0') }}">
     <link rel="stylesheet" href="{{ asset('dist/css/fontawesome/css/all.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/app-topbar.css') }}?v={{ filemtime(public_path('css/app-topbar.css')) }}">
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
 
 
@@ -174,4 +175,3 @@
             /* Disable horizontal scrollbar */
         }
     </style>
-

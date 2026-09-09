@@ -31,6 +31,66 @@
                 </div>
             </section>
 
+            <section class="affiliate-curriculum-library mb-4" aria-labelledby="affiliate-curriculum-title">
+                <div class="affiliate-curriculum-library-header">
+                    <div class="affiliate-curriculum-library-icon" aria-hidden="true">
+                        <i class="fas fa-folder-open"></i>
+                    </div>
+                    <div class="affiliate-curriculum-library-copy">
+                        <p class="affiliate-curriculum-eyebrow mb-1">{{ __('affiliate.guide.curriculum.eyebrow') }}</p>
+                        <h2 id="affiliate-curriculum-title">{{ __('affiliate.guide.curriculum.title') }}</h2>
+                        <p class="mb-0">{{ __('affiliate.guide.curriculum.description') }}</p>
+                    </div>
+                    <span class="affiliate-curriculum-count">
+                        <strong>{{ $curriculum_count }}</strong>
+                        <span>{{ __('affiliate.guide.curriculum.document_count') }}</span>
+                    </span>
+                </div>
+
+                <div class="affiliate-curriculum-groups">
+                    @foreach ($curriculum_groups as $group_key => $curricula)
+                        <section class="affiliate-curriculum-group affiliate-curriculum-group--{{ $group_key }}" aria-labelledby="affiliate-curriculum-group-{{ $group_key }}">
+                            <div class="affiliate-curriculum-group-heading">
+                                <span class="affiliate-curriculum-group-mark" aria-hidden="true">
+                                    <i class="fas {{ $group_key === 'kindergarten' ? 'fa-shapes' : 'fa-book-open' }}"></i>
+                                </span>
+                                <div>
+                                    <h3 id="affiliate-curriculum-group-{{ $group_key }}">{{ __('affiliate.guide.curriculum.groups.' . $group_key . '.title') }}</h3>
+                                    <p>{{ __('affiliate.guide.curriculum.groups.' . $group_key . '.range') }}</p>
+                                </div>
+                            </div>
+
+                            <div class="affiliate-curriculum-grid">
+                                @foreach ($curricula as $curriculum)
+                                    <article class="affiliate-curriculum-card">
+                                        <div class="affiliate-curriculum-card-topline">
+                                            <span class="affiliate-curriculum-level">{{ $curriculum['code'] }}</span>
+                                            <span class="affiliate-curriculum-format">
+                                                <i class="far fa-file-pdf" aria-hidden="true"></i>
+                                                {{ __('affiliate.guide.curriculum.file_type') }}
+                                            </span>
+                                        </div>
+                                        <h4>{{ __('affiliate.guide.curriculum.level_title', ['level' => $curriculum['code']]) }}</h4>
+                                        <p class="affiliate-curriculum-pages">
+                                            <i class="far fa-copy" aria-hidden="true"></i>
+                                            {{ trans_choice('affiliate.guide.curriculum.page_count', $curriculum['pages'], ['count' => $curriculum['pages']]) }}
+                                        </p>
+                                        <div class="affiliate-curriculum-actions">
+                                            <a class="btn btn-primary btn-sm" href="{{ route('affiliate.guide.curriculum', ['level' => $curriculum['slug']]) }}" target="_blank" rel="noopener">
+                                                <i class="fas fa-external-link-alt mr-1" aria-hidden="true"></i>{{ __('affiliate.guide.curriculum.open') }}
+                                            </a>
+                                            <a class="btn btn-outline-primary btn-sm" href="{{ route('affiliate.guide.curriculum', ['level' => $curriculum['slug']]) }}" download="{{ $curriculum['code'] }}.pdf">
+                                                <i class="fas fa-download mr-1" aria-hidden="true"></i>{{ __('affiliate.guide.curriculum.download') }}
+                                            </a>
+                                        </div>
+                                    </article>
+                                @endforeach
+                            </div>
+                        </section>
+                    @endforeach
+                </div>
+            </section>
+
             <div class="row">
                 <div class="col-lg-7 mb-4">
                     <section class="card card-primary affiliate-card h-100" aria-labelledby="affiliate-guide-about-title">
@@ -120,5 +180,5 @@
 @endsection
 
 @section('style')
-<link rel="stylesheet" href="{{ asset('css/affiliate-portal.css') }}">
+<link rel="stylesheet" href="{{ asset('css/affiliate-portal.css') }}?v={{ filemtime(public_path('css/affiliate-portal.css')) }}">
 @endsection

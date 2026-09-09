@@ -33,12 +33,47 @@ class AffiliateGuideTest extends TestCase
             ->assertViewIs('affiliate.guide.index')
             ->assertSee(trans('affiliate.guide.title', [], app()->getLocale()))
             ->assertSee('href="' . route('affiliate.guide.document') . '"', false)
-            ->assertSee('iframe', false);
+            ->assertSee('iframe', false)
+            ->assertSee('class="main-header navbar navbar-expand navbar-white navbar-light app-topbar"', false)
+            ->assertSee('class="app-user-avatar"', false)
+            ->assertDontSee('upload.wikimedia.org', false);
 
         $document_response = $this->actingAs($user)->get('/affiliate/guide/document');
 
         $document_response->assertOk()
             ->assertHeader('content-type', 'application/pdf');
+    }
+
+    #[Test]
+    public function active_affiliate_can_browse_every_curriculum_pdf(): void
+    {
+        $user = $this->CreateAffiliate(AffiliateProfileStatus::ACTIVE);
+        $levels = ['k1', 'k2', 'p1', 'p2', 'p3', 'p4', 'p5', 'p6'];
+
+        $page_response = $this->actingAs($user)->get('/affiliate/guide');
+
+        $page_response->assertOk()
+            ->assertViewHas('curriculum_count', 8)
+            ->assertSee(trans('affiliate.guide.curriculum.title', [], app()->getLocale()));
+
+        foreach ($levels as $level) {
+            $page_response->assertSee('href="' . route('affiliate.guide.curriculum', ['level' => $level]) . '"', false);
+
+            $this->actingAs($user)
+                ->get(route('affiliate.guide.curriculum', ['level' => $level]))
+                ->assertOk()
+                ->assertHeader('content-type', 'application/pdf');
+        }
+    }
+
+    #[Test]
+    public function unknown_curriculum_level_returns_not_found(): void
+    {
+        $user = $this->CreateAffiliate(AffiliateProfileStatus::ACTIVE);
+
+        $this->actingAs($user)
+            ->get(route('affiliate.guide.curriculum', ['level' => 'p7']))
+            ->assertNotFound();
     }
 
     #[Test]
@@ -52,6 +87,10 @@ class AffiliateGuideTest extends TestCase
 
         $this->actingAs($user)
             ->get('/affiliate/guide/document')
+            ->assertRedirect(route('affiliate.waiting'));
+
+        $this->actingAs($user)
+            ->get(route('affiliate.guide.curriculum', ['level' => 'k1']))
             ->assertRedirect(route('affiliate.waiting'));
     }
 
@@ -69,7 +108,9 @@ class AffiliateGuideTest extends TestCase
 
         $dashboard_response->assertOk()
             ->assertSee('href="' . route('affiliate.guide.index') . '"', false)
-            ->assertSee(trans('affiliate.dashboard.open_guide', [], app()->getLocale()));
+            ->assertSee('data-affiliate-tutorial-start', false)
+            ->assertSee(trans('affiliate_tutorial.button', [], app()->getLocale()))
+            ->assertDontSee(trans('affiliate.dashboard.open_guide', [], app()->getLocale()));
     }
 
     #[Test]
