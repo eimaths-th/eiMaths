@@ -27,6 +27,12 @@ return [
         'approved_body' => 'Your Affiliate account has been approved. Your referral code is :referral_code.',
         'approved_action' => 'Open Affiliate login',
         'approved_footer' => 'You can now sign in to use your Affiliate account.',
+        'identity_correction_subject' => 'Please correct your Affiliate identity information',
+        'identity_correction_greeting' => 'Hello :name,',
+        'identity_correction_intro' => 'Our team reviewed your identity information and needs you to make corrections before submitting it again.',
+        'identity_correction_reason_label' => 'Reason and requested correction:',
+        'identity_correction_action' => 'Log in to correct your information',
+        'identity_correction_footer' => 'After you log in, you will be taken to the identity verification form where you can update and resubmit your information.',
     ],
     'dashboard' => [
         'title' => 'Affiliate dashboard',

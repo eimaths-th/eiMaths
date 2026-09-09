@@ -8,8 +8,10 @@ use App\Domain\Affiliate\Exceptions\AffiliateDomainException;
 use App\Domain\Affiliate\Models\AffiliateIdentityProfile;
 use App\Domain\Affiliate\Models\AffiliateProfile;
 use App\Models\User;
+use App\Notifications\AffiliateIdentityCorrectionRequestedNotification;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Throwable;
@@ -114,7 +116,7 @@ class AffiliateIdentityService
     {
         $this->configuration_service->AssertAffiliateWritesAvailable();
 
-        return DB::transaction(function () use ($profile, $actor, $reason, $correlation_id): AffiliateIdentityProfile {
+        $identity = DB::transaction(function () use ($profile, $actor, $reason, $correlation_id): AffiliateIdentityProfile {
             $locked_profile = AffiliateProfile::query()->whereKey($profile->id)->lockForUpdate()->firstOrFail();
             $identity = AffiliateIdentityProfile::query()->where('affiliate_profile_id', $locked_profile->id)->lockForUpdate()->firstOrFail();
             if ($locked_profile->status !== AffiliateProfileStatus::PENDING_APPROVAL || $identity->status !== AffiliateIdentityStatus::PENDING) {
@@ -146,5 +148,33 @@ class AffiliateIdentityService
 
             return $identity->fresh();
         });
+
+        $this->NotifyCorrectionRequested($profile, $reason);
+
+        return $identity;
+    }
+
+    private function NotifyCorrectionRequested(AffiliateProfile $profile, string $reason): void
+    {
+        $user = $profile->User()->first();
+        if (!$user instanceof User || trim((string) $user->email) === '') {
+            Log::warning('affiliate.identity-correction-notification.skipped', [
+                'affiliate_profile_id' => $profile->id,
+                'user_id' => $profile->user_id,
+                'reason' => 'missing_recipient',
+            ]);
+
+            return;
+        }
+
+        try {
+            $user->notify(new AffiliateIdentityCorrectionRequestedNotification($reason));
+        } catch (Throwable $exception) {
+            Log::error('affiliate.identity-correction-notification.failed', [
+                'affiliate_profile_id' => $profile->id,
+                'user_id' => $profile->user_id,
+                'exception' => $exception,
+            ]);
+        }
     }
 }

@@ -27,6 +27,12 @@ return [
         'approved_body' => 'บัญชี Affiliate ของคุณได้รับการอนุมัติแล้ว รหัสแนะนำของคุณคือ :referral_code',
         'approved_action' => 'เข้าสู่ระบบ Affiliate',
         'approved_footer' => 'คุณสามารถเข้าสู่ระบบเพื่อเริ่มใช้งานบัญชี Affiliate ได้แล้ว',
+        'identity_correction_subject' => 'กรุณาแก้ไขข้อมูลยืนยันตัวตน Affiliate',
+        'identity_correction_greeting' => 'สวัสดีคุณ :name',
+        'identity_correction_intro' => 'ทีมงานตรวจสอบข้อมูลยืนยันตัวตนของคุณแล้ว และขอให้แก้ไขข้อมูลก่อนส่งตรวจอีกครั้ง',
+        'identity_correction_reason_label' => 'เหตุผลและรายการที่ต้องแก้ไข:',
+        'identity_correction_action' => 'เข้าสู่ระบบเพื่อแก้ไขข้อมูล',
+        'identity_correction_footer' => 'หลังเข้าสู่ระบบ ระบบจะพาคุณไปยังหน้ากรอกข้อมูลยืนยันตัวตนเพื่อแก้ไขและส่งตรวจอีกครั้ง',
     ],
     'dashboard' => [
         'title' => 'แดชบอร์ด Affiliate',

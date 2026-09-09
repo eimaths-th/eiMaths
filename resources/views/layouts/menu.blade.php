@@ -388,18 +388,20 @@
             @if ($book_shipment_alert_role === 'hq')
                 <li class="nav-item">
                     <a href="{{ route('book-shipments.index') }}"
-                        class="nav-link {{ request()->routeIs('book-shipments.*') ? 'active' : '' }}">
+                        class="nav-link {{ request()->routeIs('book-shipments.*') ? 'active' : '' }}"
+                        title="Outgoing Book Shipments">
                         <i class="nav-icon fas fa-truck"></i>
-                        <p>Outgoing Book Shipments</p>
+                        <p class="nav-menu-label--truncate">Outgoing Book Shipments</p>
                     </a>
                 </li>
             @endif
             @if ($book_shipment_alert_role === 'centre')
                 <li class="nav-item">
                     <a href="{{ route('incoming-book-shipments.index') }}"
-                        class="nav-link {{ request()->routeIs('incoming-book-shipments.*') ? 'active' : '' }}">
+                        class="nav-link {{ request()->routeIs('incoming-book-shipments.*') ? 'active' : '' }}"
+                        title="Incoming Book Shipments">
                         <i class="nav-icon fas fa-inbox"></i>
-                        <p>Incoming Book Shipments</p>
+                        <p class="nav-menu-label--truncate">Incoming Book Shipments</p>
                     </a>
                 </li>
             @endif

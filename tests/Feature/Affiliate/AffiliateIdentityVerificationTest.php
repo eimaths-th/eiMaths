@@ -7,6 +7,7 @@ use App\Domain\Affiliate\Enums\AffiliateProfileStatus;
 use App\Domain\Affiliate\Models\AffiliateIdentityProfile;
 use App\Domain\Affiliate\Models\AffiliateProfile;
 use App\Models\User;
+use App\Notifications\AffiliateIdentityCorrectionRequestedNotification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Config;
@@ -105,6 +106,34 @@ class AffiliateIdentityVerificationTest extends TestCase
 
         $this->actingAs($user)->post(route('affiliate.identity.store'), $payload)
             ->assertSessionHasErrors(['national_id', 'id_document']);
+        $this->assertSame(AffiliateProfileStatus::PENDING_IDENTITY, $profile->fresh()->status);
+    }
+
+    #[Test]
+    public function ReturningIdentityForCorrectionEmailsTheReasonAndAffiliateLoginAction(): void
+    {
+        Notification::fake();
+        [$affiliate, $profile, $identity] = $this->CreatePendingIdentityAffiliate();
+        $profile->forceFill(['status' => AffiliateProfileStatus::PENDING_APPROVAL])->save();
+        $identity->forceFill(['status' => AffiliateIdentityStatus::PENDING])->save();
+        $admin = User::factory()->create(['password' => Hash::make('secret'), 'disable' => 0]);
+        $reason = 'Please upload a clearer image showing all four corners of the ID card.';
+
+        app(\App\Domain\Affiliate\Services\AffiliateIdentityService::class)->Reject(
+            $profile,
+            $admin,
+            $reason,
+            'identity-correction-email-test',
+        );
+
+        Notification::assertSentTo($affiliate, AffiliateIdentityCorrectionRequestedNotification::class);
+        $notification = Notification::sent($affiliate, AffiliateIdentityCorrectionRequestedNotification::class)->first();
+        $email_body = (string) $notification->toMail($affiliate)->render();
+
+        $this->assertStringContainsString($reason, $email_body);
+        $this->assertStringContainsString('เหตุผลและรายการที่ต้องแก้ไข', $email_body);
+        $this->assertStringContainsString('เข้าสู่ระบบเพื่อแก้ไขข้อมูล', $email_body);
+        $this->assertStringContainsString(route('affiliate.login'), $email_body);
         $this->assertSame(AffiliateProfileStatus::PENDING_IDENTITY, $profile->fresh()->status);
     }
 

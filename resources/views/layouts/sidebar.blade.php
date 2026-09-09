@@ -4,6 +4,15 @@
     body.sidebar-collapse:not(.sidebar-open) .main-sidebar:not(:hover):not(.sidebar-focused) .brand-text {
         display: none !important;
     }
+
+    .nav-sidebar .nav-link > .nav-menu-label--truncate {
+        display: inline-block;
+        width: calc(100% - 2.25rem);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        vertical-align: middle;
+    }
 </style>
 <aside class="main-sidebar sidebar-light-primary elevation-4">
     <div class="center-content text-center py-2">
