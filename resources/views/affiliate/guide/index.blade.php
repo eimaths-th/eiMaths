@@ -148,7 +148,7 @@
                 </div>
             </section>
 
-            <section class="card card-primary affiliate-card mb-4" aria-labelledby="affiliate-guide-process-title">
+            <section class="card card-primary affiliate-card mb-4" aria-labelledby="affiliate-guide-process-title" data-tutorial-process>
                 <div class="card-header"><h2 id="affiliate-guide-process-title" class="card-title">{{ __('affiliate.guide.process_title') }}</h2></div>
                 <div class="card-body">
                     <ol class="affiliate-guide-process mb-0">
@@ -172,7 +172,7 @@
                         <iframe src="{{ route('affiliate.guide.document') }}" title="{{ __('affiliate.guide.document_title') }}" loading="lazy"></iframe>
                     </div>
                 </div>
-                <div class="card-footer"><p class="mb-0">{{ __('affiliate.guide.contact') }}</p></div>
+                <div class="card-footer" data-tutorial-support><p class="mb-0">{{ __('affiliate.guide.contact', ['phone' => config('affiliate.legal.support_phone')]) }}</p></div>
             </section>
         </div>
     </section>

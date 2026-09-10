@@ -54,7 +54,7 @@
                     @if ($payout_accounts->isEmpty())
                         <p class="mb-0">{{ __('affiliate.withdrawals.save_account_first') }}</p>
                     @else
-                        <form method="POST" action="{{ route('affiliate.withdrawals.store') }}">
+                        <form method="POST" action="{{ route('affiliate.withdrawals.store') }}" data-tutorial-withdraw-form>
                             @csrf
                             <input type="hidden" name="request_key" value="{{ (string) str()->uuid() }}">
                             <div class="form-row align-items-end">
@@ -79,7 +79,7 @@
                 </div>
             </section>
 
-            <section class="card card-primary affiliate-card" aria-labelledby="withdrawal-history-title">
+            <section class="card card-primary affiliate-card" aria-labelledby="withdrawal-history-title" data-tutorial-withdraw-history>
                 <div class="card-header"><h2 id="withdrawal-history-title" class="card-title">{{ __('affiliate.withdrawals.history') }}</h2></div>
                 <div class="card-body p-0">
                     <div class="affiliate-table-scroll">
@@ -89,7 +89,7 @@
                             @forelse ($withdrawals as $withdrawal)
                                 <tr>
                                     <td>{{ $withdrawal->id }}</td>
-                                    <td>{{ $withdrawal->status->value }}</td>
+                                    <td>@include('affiliate.partials.status', ['kind' => 'withdrawal', 'status' => $withdrawal->status->value])</td>
                                     <td>{{ number_format($withdrawal->amount_minor / 100, 2) }}</td>
                                     <td>{{ optional($withdrawal->requested_at)->toDateTimeString() }}</td>
                                     <td>

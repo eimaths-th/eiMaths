@@ -36,7 +36,7 @@
                 </div>
                 <div class="row">
                     <div class="col-lg-6 mb-4">
-                        <form method="POST" action="{{ route('affiliate.payout-accounts.promptpay') }}" class="card card-primary affiliate-card h-100">
+                        <form method="POST" action="{{ route('affiliate.payout-accounts.promptpay') }}" data-tutorial-promptpay class="card card-primary affiliate-card h-100">
                             @csrf
                             @method('PUT')
                             <div class="card-header"><h3 class="card-title">{{ __('affiliate.payout_accounts.promptpay') }}</h3></div>
@@ -54,7 +54,7 @@
                         </form>
                     </div>
                     <div class="col-lg-6 mb-4">
-                        <form method="POST" action="{{ route('affiliate.payout-accounts.bank') }}" class="card card-primary affiliate-card h-100">
+                        <form method="POST" action="{{ route('affiliate.payout-accounts.bank') }}" data-tutorial-bank class="card card-primary affiliate-card h-100">
                             @csrf
                             @method('PUT')
                             <div class="card-header"><h3 class="card-title">{{ __('affiliate.payout_accounts.bank_account') }}</h3></div>
@@ -82,7 +82,7 @@
                 </div>
             </section>
 
-            <section class="card card-primary affiliate-card" aria-labelledby="saved-payout-accounts-title">
+            <section class="card card-primary affiliate-card" aria-labelledby="saved-payout-accounts-title" data-tutorial-accounts>
                 <div class="card-header"><h2 id="saved-payout-accounts-title" class="card-title">{{ __('affiliate.payout_accounts.saved_accounts') }}</h2></div>
                 <div class="card-body">
                     @if ($payout_accounts->isEmpty())

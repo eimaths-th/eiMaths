@@ -9,70 +9,103 @@ use Illuminate\Validation\Rule;
 
 class AffiliateTutorialService
 {
-    public const VERSION = 1;
+    public const VERSION = 2;
 
     public function ForUser(User $user): array
     {
         $profile = $user->AffiliateProfile()->firstOrFail();
         $progress = DB::table('affiliate_tutorial_progress')->where('affiliate_profile_id', $profile->id)->first();
+        $steps = $this->Steps();
+        // Preserve old accounts' completion and resume at the equivalent lesson.
+        $key = match ($progress?->step_key) {
+            'code' => 'link',
+            'password' => 'bank',
+            default => $progress?->step_key,
+        };
+        if (!in_array($key, array_column($steps, 'key'), true)) {
+            $key = 'welcome';
+        }
 
         return [
             'version' => self::VERSION,
             'progressUrl' => route('affiliate.tutorial.progress'),
+            'storageKey' => 'affiliate-tutorial:' . $profile->id,
             'dashboardUrl' => route('affiliate.dashboard'),
             'autoStart' => $progress === null && request()->routeIs('affiliate.dashboard'),
-            'progress' => $progress === null ? null : [
-                'status' => $progress->status,
-                'step' => $progress->step_key,
-            ],
+            'progress' => $progress === null ? null : ['status' => $progress->status, 'step' => $key],
             'labels' => __('affiliate_tutorial.labels'),
-            'steps' => $this->Steps(),
+            'chapters' => __('affiliate_tutorial.chapters'),
+            'steps' => $steps,
+        ];
+    }
+
+    public function Terms(): array
+    {
+        $settings = app(AffiliateConfigurationService::class);
+
+        return [
+            'rate' => rtrim(rtrim(number_format($settings->CommissionRateBasisPoints() / 100, 2, '.', ''), '0'), '.'),
+            'holding_days' => $settings->CommissionHoldingDays(),
+            'attribution_days' => $settings->AttributionDurationDays(),
+            'minimum' => number_format($settings->MinimumWithdrawalMinor() / 100, 2),
+            'support_phone' => (string) config('affiliate.legal.support_phone'),
         ];
     }
 
     public function Steps(): array
     {
         $steps = [];
-        $add = function (string $key, string $route, ?string $target, ?string $fallback = null, ?string $image = null) use (&$steps): void {
+        $terms = $this->Terms();
+        $add = function (string $key, string $chapter, string $route, ?string $target, ?string $fallback = null, ?string $example = null) use (&$steps, $terms): void {
             $steps[] = [
                 'key' => $key,
+                'chapter' => $chapter,
                 'url' => route($route),
                 'target' => $target,
+                'mobileTarget' => match ($key) {
+                    'guide' => '[data-tutorial-process] .affiliate-guide-process',
+                    'analytics' => '[data-tutorial-kpis] .affiliate-kpi:has([data-affiliate-kpi="net_commission_income"])',
+                    'promptpay' => '[data-tutorial-promptpay] .card-body',
+                    'bank' => '[data-tutorial-bank] .card-body',
+                    default => null,
+                },
                 'fallback' => $fallback,
                 'title' => __('affiliate_tutorial.steps.' . $key . '.title'),
-                'body' => __('affiliate_tutorial.steps.' . $key . '.body'),
+                'body' => __('affiliate_tutorial.steps.' . $key . '.body', $terms),
                 'emptyBody' => trans()->has('affiliate_tutorial.steps.' . $key . '.empty')
-                    ? __('affiliate_tutorial.steps.' . $key . '.empty') : null,
-                'image' => $image === null ? null : asset('images/affiliate/tutorial/' . $image),
+                    ? __('affiliate_tutorial.steps.' . $key . '.empty', $terms) : null,
+                'example' => $example,
+                'image' => in_array($key, ['welcome', 'done'], true) ? asset('images/affiliate/tutorial/journey-v2.png') . '?v=' . filemtime(public_path('images/affiliate/tutorial/journey-v2.png')) : null,
             ];
         };
 
-        $add('welcome', 'affiliate.dashboard', null, image: 'welcome.png');
-        $add('code', 'affiliate.dashboard', '[data-affiliate-copy-referral-code]');
-        $add('link', 'affiliate.dashboard', '[data-affiliate-referral-url]');
-        $add('copy', 'affiliate.dashboard', '.affiliate-page-intro [data-affiliate-copy-referral-link]');
-        $add('guide', 'affiliate.guide.index', '#affiliate-guide-process-title');
+        $add('welcome', 'share', 'affiliate.dashboard', null);
+        $add('link', 'share', 'affiliate.dashboard', '[data-tutorial-referral]');
+        $add('copy', 'share', 'affiliate.dashboard', '.affiliate-page-intro [data-affiliate-copy-referral-link]', example: 'link');
+        $add('guide', 'share', 'affiliate.guide.index', '[data-tutorial-process]');
+        $add('curriculum', 'share', 'affiliate.guide.index', '.affiliate-curriculum-card');
 
         if ((bool) config('affiliate.features.media_library', false)) {
-            $add('media', 'affiliate.media.index', '.affiliate-media-folder', image: 'media-folders.png');
-            $add('search', 'affiliate.media.index', '#affiliate-media-search');
-            $add('download', 'affiliate.media.index', '[data-media-card] .affiliate-media-card__footer a', '.affiliate-media-empty');
-            $add('share', 'affiliate.media.index', '[data-media-card] .affiliate-media-card__footer [data-media-share-panel]', '.affiliate-media-empty');
+            $add('media', 'media', 'affiliate.media.index', '[data-tutorial-folders]');
+            $add('search', 'media', 'affiliate.media.index', '[data-tutorial-search]');
+            $add('download', 'media', 'affiliate.media.index', '[data-media-card] .affiliate-media-card__footer a', '.affiliate-media-empty');
+            $add('share', 'media', 'affiliate.media.index', '[data-media-card] .affiliate-media-card__footer [data-media-share-panel]', '.affiliate-media-empty');
+            $add('share_options', 'media', 'affiliate.media.index', '.affiliate-media-share-destinations', '.affiliate-media-empty', 'share');
         }
 
         if ((bool) config('affiliate.features.analytics', false)) {
-            $add('dates', 'affiliate.analytics.index', '[data-affiliate-analytics-range]');
-            $add('analytics', 'affiliate.analytics.index', '#affiliate-analytics-kpis-title');
+            $add('dates', 'income', 'affiliate.analytics.index', '[data-affiliate-analytics-range]');
+            $add('analytics', 'income', 'affiliate.analytics.index', '[data-tutorial-kpis]');
         }
-
-        $add('wallet', 'affiliate.dashboard', '[data-tutorial-wallet]');
-        $add('commission', 'affiliate.dashboard', '#commission-history-title');
-        $add('promptpay', 'affiliate.payout-accounts.index', '#promptpay_identifier', image: 'payout-form.png');
-        $add('bank', 'affiliate.payout-accounts.index', '#account_number');
-        $add('password', 'affiliate.payout-accounts.index', '#bank_current_password');
-        $add('withdraw', 'affiliate.withdrawals.index', '#withdrawal_amount', '#withdrawal-request-title');
-        $add('history', 'affiliate.withdrawals.index', '#withdrawal-history-title');
-        $add('done', 'affiliate.dashboard', null, image: 'welcome.png');
+        $add('wallet', 'income', 'affiliate.dashboard', '[data-tutorial-wallet]', example: 'wallet');
+        $add('commission', 'income', 'affiliate.dashboard', '[data-tutorial-commissions]', example: 'commission');
+        $add('promptpay', 'payout', 'affiliate.payout-accounts.index', '[data-tutorial-promptpay]', example: 'promptpay');
+        $add('bank', 'payout', 'affiliate.payout-accounts.index', '[data-tutorial-bank]', example: 'bank');
+        $add('accounts', 'payout', 'affiliate.payout-accounts.index', '[data-tutorial-accounts]', example: 'accounts');
+        $add('withdraw', 'withdraw', 'affiliate.withdrawals.index', '[data-tutorial-withdraw-form]', '#withdrawal-request-title', 'withdraw');
+        $add('history', 'withdraw', 'affiliate.withdrawals.index', '[data-tutorial-withdraw-history]', example: 'history');
+        $add('help', 'withdraw', 'affiliate.guide.index', '[data-tutorial-support]');
+        $add('done', 'withdraw', 'affiliate.dashboard', null);
 
         return $steps;
     }
@@ -82,20 +115,19 @@ class AffiliateTutorialService
         $steps = $this->Steps();
         $validated = Validator::make($input, [
             'version' => ['required', 'integer', Rule::in([self::VERSION])],
-            'action' => ['required', Rule::in(['start', 'advance', 'skip', 'finish'])],
+            'action' => ['required', Rule::in(['start', 'advance', 'pause', 'skip', 'finish'])],
             'step' => ['required', Rule::in(array_column($steps, 'key'))],
         ])->validate();
 
-        // The owner comes from the session, never from client-supplied identifiers.
-        return DB::transaction(function () use ($user, $validated, $steps): array {
+        return DB::transaction(function () use ($user, $validated): array {
             $profile = $user->AffiliateProfile()->lockForUpdate()->firstOrFail();
             $prior = DB::table('affiliate_tutorial_progress')->where('affiliate_profile_id', $profile->id)->first();
             $action = $validated['action'];
-            $step = $action === 'start' ? $steps[0]['key'] : $validated['step'];
+            $step = $validated['step'];
             abort_if($action === 'finish' && $step !== 'done', 422);
             abort_if($action === 'advance' && ($prior === null || $prior->status !== 'in_progress'), 409);
-
             $status = match ($action) {
+                'pause' => 'paused',
                 'skip' => 'skipped',
                 'finish' => 'completed',
                 default => 'in_progress',
@@ -108,7 +140,7 @@ class AffiliateTutorialService
                     'status' => $status,
                     'step_key' => $step,
                     'started_at' => $action === 'start' ? $now : ($prior?->started_at ?? $now),
-                    'finished_at' => $status === 'in_progress' ? null : $now,
+                    'finished_at' => in_array($status, ['in_progress', 'paused'], true) ? null : $now,
                     'created_at' => $prior?->created_at ?? $now,
                     'updated_at' => $now,
                 ],

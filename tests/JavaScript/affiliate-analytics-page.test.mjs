@@ -131,6 +131,18 @@ function CreateAnalyticsRoot(payload = CreatePayload()) {
     return root;
 }
 
+test('Sale status stays translated when live data refreshes', () => {
+    const payload = CreatePayload();
+    payload.recent_sales[0].status = 'PENDING';
+    const root = CreateAnalyticsRoot(payload);
+    root.querySelector('[data-affiliate-analytics-translations]').textContent = JSON.stringify({ commission_statuses: { PENDING: 'รอปลดล็อก', AVAILABLE: 'ปลดล็อกแล้ว' } });
+    const page = InitializeAffiliateAnalyticsPage({ Root: root, Start: false });
+    assert.equal(root.querySelector('[data-affiliate-sales-body]').children[0].children[2].textContent, 'รอปลดล็อก');
+    payload.recent_sales[0].status = 'AVAILABLE';
+    page.Render(payload);
+    assert.equal(root.querySelector('[data-affiliate-sales-body]').children[0].children[2].textContent, 'ปลดล็อกแล้ว');
+});
+
 test('RejectsMalformedAnalyticsPayloadsAndFormatsMoneyDeterministically', () => {
     assert.throws(() => ParseAffiliateAnalyticsPayload({}), /Invalid Affiliate analytics payload/);
     assert.equal(FormatAffiliateMoney('1234.5', 'en-US'), '1,234.50');

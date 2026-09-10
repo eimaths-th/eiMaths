@@ -31,6 +31,11 @@
                 <i class="fas fa-photo-video mr-1" aria-hidden="true"></i>{{ __('affiliate.navigation.media') }}
             </a>
         @endif
+        @if ((bool) config('affiliate.features.wallet_withdrawals', false))
+            <button type="button" class="btn affiliate-tutorial-button ml-md-auto" data-affiliate-tutorial-start aria-haspopup="dialog" aria-controls="affiliate-tutorial" disabled>
+                <i class="fas fa-play-circle mr-1" aria-hidden="true"></i>{{ __('affiliate_tutorial.button') }}
+            </button>
+        @endif
     </nav>
     @if ((bool) config('affiliate.features.wallet_withdrawals', false))
         @include('affiliate.partials.tutorial')

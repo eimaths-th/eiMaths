@@ -24,7 +24,7 @@
                         {{ __('affiliate.dashboard.copy_referral_code') }}
                     </button>
                 </div>
-                <div class="d-flex flex-wrap align-items-center">
+                <div class="d-flex flex-wrap align-items-center" data-tutorial-referral>
                     <strong class="mr-2">{{ __('affiliate.dashboard.referral_link') }}:</strong>
                     <a class="affiliate-referral-link text-break mr-3" href="{{ $referral_url }}" data-affiliate-referral-url>{{ $referral_url }}</a>
                     <button class="btn btn-primary btn-sm" type="button" data-affiliate-copy-referral-link data-affiliate-copy-value="{{ $referral_url }}" data-affiliate-copy-success="{{ __('affiliate.dashboard.referral_link_copied') }}" data-affiliate-copy-unavailable="{{ __('affiliate.dashboard.copy_unavailable') }}">
@@ -37,12 +37,13 @@
             <section class="affiliate-guide-callout mb-4" aria-labelledby="affiliate-guide-callout-title">
                 <div class="affiliate-guide-callout-mark" aria-hidden="true"><i class="fas fa-book-open"></i></div>
                 <div class="affiliate-guide-callout-content">
-                    <p class="affiliate-guide-eyebrow mb-1">{{ __('affiliate.guide.eyebrow') }}</p>
-                    <h2 id="affiliate-guide-callout-title">{{ __('affiliate.guide.intro_title') }}</h2>
-                    <p class="mb-3">{{ __('affiliate.guide.intro') }}</p>
+                    <p class="affiliate-guide-eyebrow mb-1">{{ __('affiliate_tutorial.banner.eyebrow') }}</p>
+                    <h2 id="affiliate-guide-callout-title">{{ __('affiliate_tutorial.banner.title') }}</h2>
+                    <p class="mb-3">{{ __('affiliate_tutorial.banner.body') }}</p>
                     <button type="button" class="btn affiliate-tutorial-button" data-affiliate-tutorial-start aria-haspopup="dialog" aria-controls="affiliate-tutorial" aria-busy="true" disabled>
                         <i class="fas fa-play-circle mr-1" aria-hidden="true"></i>{{ __('affiliate_tutorial.button') }}
                     </button>
+                    <a class="btn btn-light ml-2" href="{{ route('affiliate.guide.index') }}">{{ __('affiliate_tutorial.banner.guide') }}</a>
                 </div>
             </section>
 
@@ -79,7 +80,7 @@
                 </div>
             </section>
 
-            <section class="card card-primary affiliate-card mb-4" aria-labelledby="commission-history-title">
+            <section class="card card-primary affiliate-card mb-4" aria-labelledby="commission-history-title" data-tutorial-commissions>
                 <div class="card-header d-flex align-items-center justify-content-between">
                     <h2 id="commission-history-title" class="card-title">{{ __('affiliate.dashboard.commission_history') }}</h2>
                 </div>
@@ -89,7 +90,7 @@
                             <thead><tr><th scope="col">{{ __('affiliate.dashboard.id') }}</th><th scope="col">{{ __('affiliate.dashboard.status') }}</th><th scope="col">{{ __('affiliate.dashboard.amount') }}</th><th scope="col">{{ __('affiliate.dashboard.release_at') }}</th></tr></thead>
                             <tbody>
                             @forelse ($commissions as $commission)
-                                <tr><td>{{ $commission->id }}</td><td>{{ $commission->status->value }}</td><td>{{ number_format($commission->commission_minor / 100, 2) }}</td><td>{{ optional($commission->release_at)->toDateTimeString() }}</td></tr>
+                                <tr><td>{{ $commission->id }}</td><td>@include('affiliate.partials.status', ['kind' => 'commission', 'status' => $commission->status->value])</td><td>{{ number_format($commission->commission_minor / 100, 2) }}</td><td>{{ optional($commission->release_at)->toDateTimeString() }}</td></tr>
                             @empty
                                 <tr><td colspan="4">{{ __('affiliate.dashboard.no_commissions') }}</td></tr>
                             @endforelse
@@ -115,7 +116,7 @@
                             @forelse ($withdrawals as $withdrawal)
                                 <tr>
                                     <td>{{ $withdrawal->id }}</td>
-                                    <td>{{ $withdrawal->status->value }}</td>
+                                    <td>@include('affiliate.partials.status', ['kind' => 'withdrawal', 'status' => $withdrawal->status->value])</td>
                                     <td>{{ number_format($withdrawal->amount_minor / 100, 2) }}</td>
                                     <td>{{ optional($withdrawal->requested_at)->toDateTimeString() }}</td>
                                     <td><a href="{{ route('affiliate.withdrawals.index') }}">{{ __('affiliate.dashboard.view_withdrawals') }}</a></td>
@@ -142,7 +143,7 @@
 
 @section('script')
 <script type="module">
-    import { InitializeAffiliateAnalyticsSummary, InitializeAffiliateReferralCopyActions } from '{{ asset('js/affiliate-analytics-page.js') }}';
+    import { InitializeAffiliateAnalyticsSummary, InitializeAffiliateReferralCopyActions } from '{{ asset('js/affiliate-analytics-page.js') }}?v={{ filemtime(public_path('js/affiliate-analytics-page.js')) }}';
     const analytics_summary = InitializeAffiliateAnalyticsSummary();
     if (!analytics_summary) InitializeAffiliateReferralCopyActions();
 </script>

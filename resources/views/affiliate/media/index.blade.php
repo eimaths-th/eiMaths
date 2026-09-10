@@ -51,7 +51,7 @@
                         <p>{{ __('affiliate.media.folders_help') }}</p>
                     </div>
                 </div>
-                <div class="affiliate-media-folder-grid">
+                <div class="affiliate-media-folder-grid" data-tutorial-folders>
                     @foreach ($folder_types as $folder_type => $folder)
                         @php
                             $folder_params = $folder_query;
@@ -74,7 +74,7 @@
                 </div>
             </section>
 
-            <section class="affiliate-media-toolbar" aria-labelledby="affiliate-media-filter-title">
+            <section class="affiliate-media-toolbar" data-tutorial-search aria-labelledby="affiliate-media-filter-title">
                 <div class="affiliate-media-toolbar__heading">
                     <h2 id="affiliate-media-filter-title">{{ __('affiliate.media.search_library') }}</h2>
                     <p>{{ __('affiliate.media.search_help') }}</p>

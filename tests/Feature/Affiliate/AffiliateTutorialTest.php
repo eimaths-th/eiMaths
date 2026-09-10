@@ -20,6 +20,7 @@ class AffiliateTutorialTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        \App\Models\Department::firstOrCreate(['id' => 1], ['name' => 'Tutorial test branch', 'code' => 'TOUR', 'status' => 1]);
         Config::set('affiliate.features.wallet_withdrawals', true);
         Config::set('affiliate.features.media_library', false);
         Config::set('affiliate.features.analytics', false);
@@ -62,7 +63,7 @@ class AffiliateTutorialTest extends TestCase
         $owner = $this->Affiliate();
         $other = $this->Affiliate();
         $this->actingAs($owner)->postJson('/affiliate/tutorial/progress', [
-            'version' => 1, 'action' => 'skip', 'step' => 'welcome',
+            'version' => AffiliateTutorialService::VERSION, 'action' => 'skip', 'step' => 'welcome',
             'affiliate_profile_id' => $other->AffiliateProfile->id, 'user_id' => $other->id,
         ])->assertOk();
         $this->assertDatabaseHas('affiliate_tutorial_progress', ['affiliate_profile_id' => $owner->AffiliateProfile->id, 'status' => 'skipped']);
@@ -111,14 +112,89 @@ class AffiliateTutorialTest extends TestCase
         }
     }
 
+    #[Test]
+    public function paused_progress_does_not_auto_open_and_can_resume_or_jump_to_a_chapter(): void
+    {
+        $this->actingAs($this->Affiliate());
+        $this->Save('pause', 'promptpay')->assertOk()->assertJsonPath('status', 'paused');
+        $this->get('/affiliate/dashboard')->assertOk()->assertSee('"autoStart":false', false)
+            ->assertSee('"status":"paused","step":"promptpay"', false);
+        $this->Save('advance', 'bank')->assertStatus(409);
+        $this->Save('start', 'promptpay')->assertOk()->assertJsonPath('step', 'promptpay');
+        $this->Save('start', 'withdraw')->assertOk()->assertJsonPath('step', 'withdraw');
+        $this->assertDatabaseCount('affiliate_tutorial_progress', 1);
+    }
+
+    #[Test]
+    public function version_one_completion_is_preserved_and_removed_steps_have_a_resume_destination(): void
+    {
+        $user = $this->Affiliate();
+        $this->actingAs($user);
+        $record = ['affiliate_profile_id' => $user->AffiliateProfile->id, 'version' => 1,
+            'status' => 'completed', 'step_key' => 'done', 'started_at' => now(), 'finished_at' => now(),
+            'created_at' => now(), 'updated_at' => now()];
+        \Illuminate\Support\Facades\DB::table('affiliate_tutorial_progress')->insert($record);
+        $this->get('/affiliate/dashboard')->assertOk()->assertSee('"autoStart":false', false)
+            ->assertSee('"status":"completed","step":"done"', false);
+        \Illuminate\Support\Facades\DB::table('affiliate_tutorial_progress')->update(['status' => 'in_progress', 'step_key' => 'code']);
+        $this->assertSame('link', app(AffiliateTutorialService::class)->ForUser($user)['progress']['step']);
+        \Illuminate\Support\Facades\DB::table('affiliate_tutorial_progress')->update(['step_key' => 'password']);
+        $this->assertSame('bank', app(AffiliateTutorialService::class)->ForUser($user)['progress']['step']);
+    }
+
+    #[Test]
+    public function lessons_use_current_business_settings_and_examples_are_available_in_both_languages(): void
+    {
+        foreach (['commission_rate_basis_points' => '1250', 'commission_holding_days' => '9',
+            'attribution_duration_days' => '45', 'minimum_withdrawal_minor' => '123450'] as $key => $value) {
+            \Illuminate\Support\Facades\DB::table('affiliate_configurations')->where('key', $key)->update(['value' => $value]);
+        }
+        Config::set('affiliate.legal.support_phone', '02-000-1234');
+        Config::set('affiliate.features.media_library', true);
+        Config::set('affiliate.features.analytics', true);
+        $this->actingAs($this->Affiliate());
+        app()->setLocale('th');
+        $service = app(AffiliateTutorialService::class);
+        $steps = collect($service->Steps())->keyBy('key');
+        $this->assertCount(21, $steps);
+        $this->assertCount(5, $steps->pluck('chapter')->unique());
+        $this->assertStringContainsString('12.5%', $steps['commission']['body']);
+        $this->assertStringContainsString('9', $steps['commission']['body']);
+        $this->assertStringContainsString('45', $steps['link']['body']);
+        $this->assertStringContainsString('1,234.50', $steps['withdraw']['body']);
+        $this->assertStringContainsString('02-000-1234', $steps['help']['body']);
+        $this->get('/affiliate/dashboard')->assertOk()->assertSee('affiliate-example-share', false)
+            ->assertSee('affiliate-example-withdraw', false)->assertSee('journey-v2.png', false)
+            ->assertSee('ตัวอย่าง — ข้อมูลสมมติ');
+        $view = file_get_contents(resource_path('views/affiliate/partials/tutorial-examples.blade.php'));
+        preg_match_all("/__\('([^']+)'\)/", $view, $keys);
+        foreach (['th', 'en'] as $locale) {
+            foreach ($keys[1] as $key) $this->assertTrue(trans()->hasForLocale($key, $locale), $locale . ': ' . $key);
+        }
+        $this->assertDatabaseCount('affiliate_payout_accounts', 0);
+        $this->assertDatabaseCount('affiliate_withdrawal_requests', 0);
+    }
+
+    #[Test]
+    public function every_tutorial_destination_renders_with_all_features_enabled(): void
+    {
+        Config::set('affiliate.features.media_library', true);
+        Config::set('affiliate.features.analytics', true);
+        $this->actingAs($this->Affiliate());
+        foreach (array_unique(array_column(app(AffiliateTutorialService::class)->Steps(), 'url')) as $url) {
+            $this->get($url)->assertOk()->assertSee('affiliate-tutorial-config', false)
+                ->assertSee('data-affiliate-tutorial-start', false);
+        }
+    }
+
     private function Save(string $action, string $step)
     {
-        return $this->postJson('/affiliate/tutorial/progress', ['version' => 1, 'action' => $action, 'step' => $step]);
+        return $this->postJson('/affiliate/tutorial/progress', ['version' => AffiliateTutorialService::VERSION, 'action' => $action, 'step' => $step]);
     }
 
     private function Affiliate(AffiliateProfileStatus $status = AffiliateProfileStatus::ACTIVE): User
     {
-        $user = User::factory()->create(['email_verified_at' => now(), 'language_code' => 'th', 'password' => Hash::make('tutorial-test')]);
+        $user = User::factory()->create(['department_id' => 1, 'disable' => 0, 'email_verified_at' => now(), 'language_code' => 'th', 'password' => Hash::make('tutorial-test')]);
         $user->assignRole(Role::findOrCreate('Affiliate-user', 'web'));
         AffiliateProfile::create(['user_id' => $user->id, 'referral_code' => 'AFF-TUTORIAL-' . $user->id, 'status' => $status]);
 

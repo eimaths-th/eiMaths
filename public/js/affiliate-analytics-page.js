@@ -42,7 +42,7 @@ export function InitializeAffiliateAnalyticsPage(options = {}) {
         current_payload = ParseAffiliateAnalyticsPayload(payload);
         RenderKpis(root, current_payload, locale);
         RenderDailyTable(root, current_payload, locale);
-        RenderSalesTable(root, current_payload, locale);
+        RenderSalesTable(root, current_payload, locale, translations.commission_statuses ?? {});
         RenderMediaTable(root, current_payload, locale);
         RenderPagination(root, current_payload);
         RenderGeneratedAt(root, current_payload);
@@ -202,13 +202,13 @@ function RenderDailyTable(root, payload, locale) {
     });
 }
 
-function RenderSalesTable(root, payload, locale) {
+function RenderSalesTable(root, payload, locale, statuses) {
     const body = root.querySelector('[data-affiliate-sales-body]');
     if (!body) return;
     body.replaceChildren();
     payload.recent_sales.forEach((sale) => {
         const row = body.ownerDocument.createElement('tr');
-        [sale.commission_id, sale.confirmed_at, sale.status, sale.reversal_status, FormatAffiliateMoney(sale.net_commission, locale)].forEach((value) => {
+        [sale.commission_id, sale.confirmed_at, statuses[sale.status] ?? sale.status, sale.reversal_status, FormatAffiliateMoney(sale.net_commission, locale)].forEach((value) => {
             const cell = body.ownerDocument.createElement('td');
             cell.textContent = String(value ?? '');
             row.append(cell);

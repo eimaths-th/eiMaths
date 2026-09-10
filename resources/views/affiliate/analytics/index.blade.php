@@ -18,7 +18,7 @@
 
             <section class="card card-primary affiliate-card mb-4" aria-labelledby="affiliate-analytics-range-title">
                 <div class="card-header">
-                    <h2 id="affiliate-analytics-range-title" class="card-title">{{ __('affiliate.analytics.key_evidence') }}</h2>
+                    <h2 id="affiliate-analytics-range-title" class="card-title">{{ __('affiliate.analytics.date_range') }}</h2>
                 </div>
                 <div class="card-body">
                     <p class="text-muted">{{ __('affiliate.analytics.evidence_window', ['from' => $analytics['range']['from'], 'to' => $analytics['range']['to'], 'timezone' => $analytics['range']['timezone']]) }}</p>
@@ -46,7 +46,7 @@
                     <h2 id="affiliate-analytics-kpis-title" class="card-title">{{ __('affiliate.analytics.key_evidence') }}</h2>
                 </div>
                 <div class="card-body">
-                    <dl class="affiliate-analytics-kpis mb-3">
+                    <dl class="affiliate-analytics-kpis mb-3" data-tutorial-kpis>
                         <div class="affiliate-kpi"><dt>{{ __('affiliate.analytics.clicks') }} <small class="affiliate-evidence-label">{{ __('affiliate.analytics.click_evidence_label') }}</small></dt><dd data-affiliate-kpi="total_clicks">{{ $analytics['kpis']['total_clicks'] }}</dd></div>
                         <div class="affiliate-kpi"><dt>{{ __('affiliate.analytics.unique_clicks') }} <small class="affiliate-evidence-label">{{ __('affiliate.analytics.click_evidence_label') }}</small></dt><dd data-affiliate-kpi="unique_clicks">{{ $analytics['kpis']['unique_clicks'] }}</dd></div>
                         <div class="affiliate-kpi"><dt>{{ __('affiliate.analytics.confirmed_sales') }} <small class="affiliate-evidence-label">{{ __('affiliate.analytics.sales_evidence_label') }}</small></dt><dd data-affiliate-kpi="confirmed_sales">{{ $analytics['kpis']['confirmed_sales'] }}</dd></div>
@@ -88,7 +88,7 @@
                             <caption class="sr-only">{{ __('affiliate.analytics.sales_table_caption') }}</caption>
                             <thead><tr><th scope="col">{{ __('affiliate.analytics.id') }}</th><th scope="col">{{ __('affiliate.analytics.confirmed') }}</th><th scope="col">{{ __('affiliate.analytics.status') }}</th><th scope="col">{{ __('affiliate.analytics.reversal') }}</th><th scope="col">{{ __('affiliate.analytics.net_commission') }}</th></tr></thead>
                             <tbody data-affiliate-sales-body>
-                                @foreach ($analytics['recent_sales'] as $sale)<tr><td>{{ $sale['commission_id'] }}</td><td>{{ $sale['confirmed_at'] }}</td><td>{{ $sale['status'] }}</td><td>{{ $sale['reversal_status'] }}</td><td>{{ $sale['net_commission'] }}</td></tr>@endforeach
+                                @foreach ($analytics['recent_sales'] as $sale)<tr><td>{{ $sale['commission_id'] }}</td><td>{{ $sale['confirmed_at'] }}</td><td>@include('affiliate.partials.status', ['kind' => 'commission', 'status' => $sale['status']])</td><td>{{ $sale['reversal_status'] }}</td><td>{{ $sale['net_commission'] }}</td></tr>@endforeach
                             </tbody>
                         </table>
                     </div>
@@ -122,10 +122,14 @@
     </section>
 
     <script id="affiliate-analytics-json" type="application/json" data-affiliate-analytics-json>@json($analytics)</script>
-    <script id="affiliate-analytics-translations" type="application/json" data-affiliate-analytics-translations>@json([
-        'refresh_warning' => __('affiliate.analytics.refresh_warning'),
-        'clicks_label' => __('affiliate.analytics.clicks'),
-    ])</script>
+    @php
+        $analytics_translations = [
+            'refresh_warning' => __('affiliate.analytics.refresh_warning'),
+            'clicks_label' => __('affiliate.analytics.clicks'),
+            'commission_statuses' => __('affiliate.statuses.commission'),
+        ];
+    @endphp
+    <script id="affiliate-analytics-translations" type="application/json" data-affiliate-analytics-translations>@json($analytics_translations)</script>
 </main>
 @endsection
 
@@ -135,6 +139,6 @@
 
 @section('script')
 <script src="{{ asset('plugins/chart.js/Chart.min.js') }}"></script>
-<script type="module" src="{{ asset('js/affiliate-analytics-page.js') }}"></script>
-<script type="module">import { InitializeAffiliateAnalyticsPage } from '{{ asset('js/affiliate-analytics-page.js') }}'; InitializeAffiliateAnalyticsPage();</script>
+<script type="module" src="{{ asset('js/affiliate-analytics-page.js') }}?v={{ filemtime(public_path('js/affiliate-analytics-page.js')) }}"></script>
+<script type="module">import { InitializeAffiliateAnalyticsPage } from '{{ asset('js/affiliate-analytics-page.js') }}?v={{ filemtime(public_path('js/affiliate-analytics-page.js')) }}'; InitializeAffiliateAnalyticsPage();</script>
 @endsection

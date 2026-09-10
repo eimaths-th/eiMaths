@@ -1,48 +1,78 @@
-.affiliate-tutorial-button.btn { background:#f39a22; color:#182f4b; border:1px solid #e68b15; font-weight:700; min-height:44px; border-radius:10px; padding:10px 18px; }
-.affiliate-tutorial-button.btn:hover { background:#ffb044; color:#102941; }
-.affiliate-tutorial-button:focus-visible { outline:3px solid #1266ab; outline-offset:3px; }
-.affiliate-tour { position:fixed; inset:0; width:100%; height:100%; max-width:none; max-height:none; margin:0; padding:0; border:0; background:transparent; overflow:hidden; color:#24364b; font-family:Sarabun,'Source Sans Pro',sans-serif; }
-.affiliate-tour:not([open]), .affiliate-tour [hidden] { display:none !important; }
-.affiliate-tour::backdrop { background:transparent; }
-.affiliate-tour *, .affiliate-tour *::before, .affiliate-tour *::after { box-sizing:border-box; }
-.affiliate-tour__shade { position:absolute; inset:0; pointer-events:none; }
-.affiliate-tour__ring { position:absolute; border:3px solid #ffb044; border-radius:10px; box-shadow:0 0 0 3px #fff8; pointer-events:none; }
-.affiliate-tour__panel { position:absolute; width:min(392px,calc(100% - 24px)); max-height:calc(100% - 24px); overflow:auto; overscroll-behavior:contain; border:1px solid #dbe3ec; border-radius:18px; background:#fff; padding:22px; box-shadow:0 16px 64px #06142666; }
-.affiliate-tour__panel:focus { outline:none; }
-.affiliate-tour__eyebrow { display:flex; align-items:center; justify-content:space-between; gap:8px; color:#66778c; font-size:12px; margin-bottom:12px; }
-.affiliate-tour__eyebrow > span:first-child { font-weight:800; font-size:18px; color:#b86400; }
-.affiliate-tour__track { width:100%; height:4px; border-radius:8px; background:#eaf0f5; margin-bottom:18px; overflow:hidden; }
-.affiliate-tour__track > span { display:block; height:100%; border-radius:8px; background:#f39a22; }
-.affiliate-tour__hero { width:100%; height:145px; object-fit:cover; border-radius:10px; margin-bottom:16px; background:#fff8ee; }
-.affiliate-tour__panel h2 { font-size:22px; line-height:1.4; font-weight:700; color:#163b60; margin:0 0 10px; }
-.affiliate-tour__panel h2:focus { outline:none; }
-.affiliate-tour__panel p { font-size:15px; line-height:1.7; margin:0 0 14px; overflow-wrap:anywhere; }
-.affiliate-tour__panel .affiliate-tour__hint { font-size:12px; line-height:1.6; color:#586b80; border-left:3px solid #cbe3f6; background:#f6f9fc; padding:8px 10px; }
-.affiliate-tour__example { font-size:13px; margin:0 0 14px; }
-.affiliate-tour__example summary { color:#1266ab; cursor:pointer; padding:6px 0; }
-.affiliate-tour__example img { display:block; width:100%; max-height:210px; object-fit:contain; margin-top:8px; border:1px solid #dbe3ec; border-radius:8px; }
-.affiliate-tour__actions { display:flex; justify-content:flex-end; align-items:center; flex-wrap:wrap; gap:8px; padding-top:6px; }
-.affiliate-tour__actions button { font:inherit; font-size:13px; border-radius:8px; min-height:42px; padding:8px 12px; cursor:pointer; border:1px solid transparent; }
-.affiliate-tour__skip { margin-right:auto; background:transparent; color:#53677f; padding-left:0 !important; }
-.affiliate-tour__back { background:#fff; border-color:#c4d1df !important; color:#24364b; }
-.affiliate-tour__next { background:#1266ab; color:#fff; font-weight:700 !important; }
-.affiliate-tour__actions button:hover { filter:brightness(.94); }
-.affiliate-tour__actions button:focus-visible, .affiliate-tour summary:focus-visible { outline:3px solid #f39a22; outline-offset:2px; }
-.affiliate-tour__actions button:disabled { opacity:.6; cursor:wait; }
-.affiliate-tour__panel .affiliate-tour__error { color:#a02727; background:#fff2f2; padding:8px; border-radius:6px; font-size:13px; }
-.affiliate-tour__feedback { position:fixed; z-index:1100; bottom:20px; right:20px; max-width:calc(100% - 40px); background:#163b60; color:#fff; border-radius:10px; padding:14px 20px; box-shadow:0 8px 30px #163b6030; }
-@media (max-width:575px) {
-    .affiliate-tour__panel { padding:18px; }
-    .affiliate-tour__panel h2 { font-size:20px; }
-    .affiliate-tour__hero { height:110px; }
-    .affiliate-tour__actions { gap:6px; }
-    .affiliate-tour__actions button { padding:8px 10px; font-size:12px; }
-}
-@media (max-height:520px) {
-    .affiliate-tour__hero { height:70px; }
-    .affiliate-tour__hint { display:none; }
-    .affiliate-tour__panel { padding:14px; }
-}
-@media (prefers-reduced-motion:no-preference) {
-    .affiliate-tour__track > span { transition:width .18s ease; }
-}
+.affiliate-tutorial-button.btn{background:#f39a22;color:#182f4b;border:1px solid #e68b15;font-weight:700;min-height:44px;border-radius:10px;padding:10px 18px}
+.affiliate-tutorial-button.btn:hover{background:#ffb044;color:#102941}
+.affiliate-tutorial-button:focus-visible{outline:3px solid #1266ab;outline-offset:3px}
+.affiliate-tour{position:fixed;inset:0;width:100%;height:100%;max-width:none;max-height:none;margin:0;padding:0;border:0;background:transparent;overflow:hidden;color:#24364b;font-family:Sarabun,'Source Sans Pro',sans-serif}
+.affiliate-tour:not([open]),.affiliate-tour [hidden],.affiliate-tour__feedback[hidden]{display:none!important}
+.affiliate-tour::backdrop{background:transparent}
+/* Allow a control near the page footer to scroll above the guide on a small screen. */
+body:has(#affiliate-tutorial[open])::after{content:"";display:block;height:100vh;pointer-events:none}
+.affiliate-tour *,.affiliate-tour *::before,.affiliate-tour *::after{box-sizing:border-box}
+.affiliate-tour__shade{position:absolute;inset:0;pointer-events:none}
+.affiliate-tour__ring{position:absolute;border:3px solid #ffb044;border-radius:10px;box-shadow:0 0 0 3px #fff8;pointer-events:none}
+.affiliate-tour__panel{position:absolute;width:min(420px,calc(100% - 24px));max-height:calc(100% - 24px);overflow:auto;overscroll-behavior:contain;border:1px solid #dbe3ec;border-radius:18px;background:#fff;padding:20px;box-shadow:0 16px 64px #06142666}
+.affiliate-tour__eyebrow{display:flex;align-items:center;gap:10px;color:#66778c;font-size:12px;margin-bottom:8px}
+.affiliate-tour__eyebrow strong{font-size:18px;color:#b86400;margin-right:auto}
+.affiliate-tour__close{border:0;background:#eef3f8;color:#294765;width:36px;height:36px;border-radius:50%;font-size:24px;line-height:1;cursor:pointer}
+.affiliate-tour__chapters{width:100%;font:inherit;font-size:13px;padding:8px;border:1px solid #c4d1df;border-radius:8px;background:#f8fafc;color:#24364b;margin-bottom:12px}
+.affiliate-tour__track{width:100%;height:4px;border-radius:8px;background:#eaf0f5;margin-bottom:16px;overflow:hidden}
+.affiliate-tour__track>span{display:block;height:100%;border-radius:8px;background:#f39a22}
+.affiliate-tour__hero{display:block;width:100%;height:auto;object-fit:contain;border-radius:10px;margin-bottom:14px;background:#fff}
+.affiliate-tour__panel h2{font-size:21px;line-height:1.4;font-weight:700;color:#163b60;margin:0 0 10px}
+.affiliate-tour__panel h2:focus{outline:none}
+.affiliate-tour__panel p{font-size:15px;line-height:1.7;margin:0 0 12px;overflow-wrap:anywhere}
+.affiliate-tour__panel .affiliate-tour__hint{font-size:12px;line-height:1.6;color:#586b80;border-left:3px solid #cbe3f6;background:#f6f9fc;padding:8px 10px}
+.affiliate-tour__example{font-size:13px;margin:0 0 12px}
+.affiliate-tour__example summary{color:#1266ab;cursor:pointer;padding:8px 0;font-weight:600}
+.affiliate-tour__enlarge{background:#fff;border:1px solid #c4d1df;color:#1266ab;border-radius:7px;padding:8px 12px;margin-top:10px;font:inherit;cursor:pointer}
+.affiliate-tour__actions{display:flex;justify-content:flex-end;align-items:center;flex-wrap:wrap;gap:8px;padding-top:12px;position:sticky;bottom:-20px;background:#fff;border-top:1px solid #edf1f5;padding-bottom:4px}
+.affiliate-tour__actions button{font:inherit;font-size:13px;border-radius:8px;min-height:42px;padding:8px 12px;cursor:pointer;border:1px solid transparent}
+.affiliate-tour__saving{width:100%;font-size:12px;color:#526980}
+.affiliate-tour__skip{margin-right:auto;background:transparent;color:#53677f;padding-left:0!important}
+.affiliate-tour__back{background:#fff;border-color:#c4d1df!important;color:#24364b}
+.affiliate-tour__next{background:#1266ab;color:#fff;font-weight:700!important}
+.affiliate-tour button:focus-visible,.affiliate-tour summary:focus-visible,.affiliate-tour select:focus-visible,.affiliate-tour-zoom button:focus-visible{outline:3px solid #f39a22;outline-offset:2px}
+.affiliate-tour__actions button:disabled{opacity:.6;cursor:wait}
+.affiliate-tour__panel .affiliate-tour__error{color:#a02727;background:#fff2f2;padding:10px;border-radius:6px;font-size:13px}
+.affiliate-tour__feedback{position:fixed;z-index:1100;bottom:20px;right:20px;max-width:calc(100% - 40px);background:#163b60;color:#fff;border-radius:10px;padding:14px 20px;box-shadow:0 8px 30px #163b6030}
+.affiliate-tour-zoom{width:min(800px,calc(100% - 24px));max-height:calc(100% - 24px);border:0;border-radius:16px;padding:24px;color:#24364b;font-family:Sarabun,'Source Sans Pro',sans-serif;overflow:auto}
+.affiliate-tour-zoom::backdrop{background:#111e30c9}
+.affiliate-tour-zoom__header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
+.affiliate-tour-zoom__header h2{font-size:18px;margin:0}
+.affiliate-tour-zoom__header button{width:42px;height:42px;border:0;border-radius:50%;font-size:24px;cursor:pointer;flex-shrink:0}
+.affiliate-example{margin:0;border:1px solid #d5e1ee;border-radius:10px;overflow:hidden;background:#f8fafc;font-size:14px;line-height:1.6;color:#24364b}
+.affiliate-example figcaption{padding:12px;display:grid;gap:6px;background:#fff4dd}
+.affiliate-example__badge{font-size:11px;color:#825003;text-transform:uppercase}
+.affiliate-example__screen{padding:16px}
+.affiliate-example__bar{padding:10px 12px;background:#1266ab;color:#fff;font-weight:700;border-radius:6px;margin-bottom:12px}
+.affiliate-example__note{display:flex;align-items:center;gap:8px;margin:10px 0}
+.affiliate-example__number,.affiliate-example__note b{display:inline-flex;width:25px;height:25px;border-radius:50%;background:#f39a22;color:#163b60;align-items:center;justify-content:center;flex-shrink:0}
+.affiliate-example__message{padding:14px;background:#e9f6ea;border-radius:10px;border:2px solid #ec9d2b}
+.affiliate-example__link{color:#1266ab;text-decoration:underline;overflow-wrap:anywhere}
+.affiliate-example__success{background:#edf8ee;color:#246339;border-left:3px solid #43a45c;padding:10px;margin-top:12px}
+.affiliate-example__channels{display:flex;flex-wrap:wrap;gap:8px}
+.affiliate-example__channels span{border:2px solid #efa126;background:#fff;padding:12px 8px;border-radius:8px;flex:1;text-align:center}
+.affiliate-example__channels i{display:block;font-size:25px;margin-bottom:6px;color:#1266ab}
+.affiliate-example__action{background:#1266ab;color:#fff;border-radius:7px;padding:10px;text-align:center;margin-top:14px}
+.affiliate-example__balance{border:2px solid #efa126;border-radius:8px;background:#fff;padding:14px;margin-bottom:12px;display:grid;gap:4px}
+.affiliate-example__balance strong{font-size:26px;color:#1266ab}
+.affiliate-example__balance.is-reserved{border-color:#adc3dc}
+.affiliate-example__record{display:flex;align-items:flex-start;flex-wrap:wrap;gap:10px;padding:12px 0;border-bottom:1px solid #dce5ef}
+.affiliate-example__record:last-child{border-bottom:0}
+.affiliate-example__field{margin-bottom:12px}
+.affiliate-example__field label{display:inline;font-weight:600;margin-left:4px}
+.affiliate-example__field>div{background:#fff;border:1px solid #bdcddd;border-radius:6px;padding:10px;margin-top:5px;overflow-wrap:anywhere}
+.affiliate-example__caption,.affiliate-tour__panel p.affiliate-example__caption{font-size:12px;line-height:1.6;color:#61758c;margin:12px 0 0}
+.affiliate-status{display:inline-block;border-radius:6px;padding:4px 8px;background:#eef2f6;color:#354d65;font-size:13px;font-weight:600}
+.affiliate-status--pending,.affiliate-status--requested{background:#fff3d6;color:#765000}
+.affiliate-status--available,.affiliate-status--paid{background:#e7f5e9;color:#236230}
+.affiliate-status--held,.affiliate-status--approved{background:#e7f0ff;color:#225490}
+.affiliate-status--reversed,.affiliate-status--rejected,.affiliate-status--cancelled{background:#fbecec;color:#923c3c}
+@media(max-width:575px){.affiliate-tour__hint{display:none}.affiliate-tour__panel{padding:16px;max-height:calc(100% - 24px)}.affiliate-tour__panel h2{font-size:19px}.affiliate-tour__hero{height:auto}.affiliate-tour__actions{bottom:-16px;gap:6px}.affiliate-tour__actions button{padding:8px 10px;font-size:12px}.affiliate-tour-zoom{padding:16px}.affiliate-example__screen{padding:12px}}
+@media(max-height:520px){.affiliate-tour__hero,.affiliate-tour__hint{display:none}.affiliate-tour__panel{padding:14px}}
+@media(prefers-reduced-motion:no-preference){.affiliate-tour__track>span{transition:width .18s ease}}
+
+/* Keep the preview target stable while the tour measures the real share drawer. */
+.affiliate-portal .affiliate-media-share-drawer[data-tour-preview]{animation:none!important}
+
+/* The modal already makes the top bar inert; keep its fixed layer off the highlighted fields. */
+body:has(#affiliate-tutorial[open]) .main-header{visibility:hidden}
