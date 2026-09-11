@@ -96,6 +96,38 @@ class BranchWorkflowsTest extends TestCase
         $this->assertSame(1, DB::table('stocks')->count());
     }
 
+    public function test_hq_can_issue_stock_to_another_centre(): void
+    {
+        $actor = $this->actor('Admin', $this->hq, ['product-list', 'product-edit', 'all-centre']);
+        $product = Product::create([
+            'centre' => $this->hq->id,
+            'name' => 'HQ accessories',
+            'amount' => 20,
+        ]);
+
+        $this->actingAs($actor)->putJson('/products/rm_stock/'.$product->id, [
+            'amount' => 3,
+            'centre' => $this->hq->id,
+            'student' => $this->b->id,
+            'type' => 2,
+        ])->assertOk();
+
+        $this->assertEquals(17, $product->fresh()->amount);
+        $this->assertDatabaseHas('stocks', [
+            'product_id' => $product->id,
+            'centre' => $this->hq->id,
+            'type' => 2,
+            'student_id' => $this->b->id,
+            'rm_stock' => 3,
+            'in_stock' => 17,
+        ]);
+
+        $this->getJson('/products/stock?id='.$product->id)
+            ->assertOk()
+            ->assertJsonPath('data.0.student_or_centre_type', 'Centre')
+            ->assertJsonPath('data.0.student_or_centre_name', $this->b->name);
+    }
+
     public function test_receipt_attachment_cannot_be_deleted_using_another_orders_id(): void
     {
         $actor = $this->actor(permissions: ['receipt-delete']);

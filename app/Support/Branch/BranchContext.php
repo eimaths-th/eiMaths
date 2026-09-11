@@ -185,7 +185,7 @@ final class BranchContext
             'users' => ['position_id' => ['positions', 'department_id']],
             'histrories' => ['student_id' => ['contacts', 'centre'], 'teacher_id' => ['users', 'department_id']],
             'orders', 'receipts', 'invoices' => ['cid' => ['contacts', 'centre']],
-            'stocks' => ['product_id' => ['products', 'centre'], 'student_id' => ['contacts', 'centre']],
+            'stocks' => ['product_id' => ['products', 'centre']],
             'crm_leads' => ['assigned_staff_id' => ['users', 'department_id']],
             default => [],
         };
@@ -196,6 +196,28 @@ final class BranchContext
             }
             $related = $relatedTable === 'users' ? User::query() : DB::table($relatedTable);
             abort_unless($related->where('id', $id)->where($column, $branch)->exists(), 422, 'Related record must belong to the same branch.');
+        }
+        if ($table === 'stocks' && (!$model->exists || $model->isDirty(['type', 'student_id']))) {
+            $destinationId = $model->getAttribute('student_id');
+            if ($destinationId !== null && $destinationId !== '' && (int) $destinationId !== 0) {
+                $type = (int) $model->getAttribute('type');
+                if ($type === 1) {
+                    abort_unless(
+                        DB::table('contacts')->where('id', $destinationId)->where('centre', $branch)->exists(),
+                        422,
+                        'Student must belong to the product branch.'
+                    );
+                } elseif ($type === 2) {
+                    abort_unless(
+                        (int) $destinationId !== $branch
+                            && DB::table('departments')->where('id', $destinationId)->where('status', 1)->exists(),
+                        422,
+                        'Destination centre is invalid.'
+                    );
+                } else {
+                    abort(422, 'A valid destination type is required.');
+                }
+            }
         }
         if ($table === 'parents' && (!$model->exists || $model->isDirty('student_id'))) {
             $ids = array_values(array_unique(array_filter(explode(',', (string) $model->student_id))));

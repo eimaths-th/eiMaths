@@ -173,7 +173,7 @@ class ProductController extends Controller
 
         $product = Stock::select(
             'stocks.*',
-            DB::raw("DATE_FORMAT(stocks.created_at, '%Y-%m-%d %H:%i:%s') AS created_date"),
+            'stocks.created_at as created_date',
             'users.name as user_name',
             "stock_departments.name as centre_name",
             "products.name as product_name",
@@ -189,15 +189,15 @@ class ProductController extends Controller
                 ->where("stocks.type", "=", 1)
                 ->whereNotNull("stocks.student_id");
         });
-        $product->leftJoin("departments", function ($join) {
-            $join->on("stocks.centre", "=", "departments.id")
+        $product->leftJoin("departments as destination_departments", function ($join) {
+            $join->on("stocks.student_id", "=", "destination_departments.id")
                 ->where("stocks.type", "=", 2)
                 ->whereNotNull("stocks.student_id");
         });
 
         // Select appropriate column based on stocks.type
-        $product->addSelect(DB::raw("IF(stocks.type = 1 AND stocks.student_id IS NOT NULL, contacts.name, departments.name) as student_or_centre_name"));
-        $product->addSelect(DB::raw("IF(stocks.type = 1 AND stocks.student_id IS NOT NULL, 'Student', 'Centre') as student_or_centre_type"));
+        $product->addSelect(DB::raw("CASE WHEN stocks.type = 1 AND stocks.student_id IS NOT NULL THEN contacts.name WHEN stocks.type = 2 AND stocks.student_id IS NOT NULL THEN destination_departments.name ELSE NULL END as student_or_centre_name"));
+        $product->addSelect(DB::raw("CASE WHEN stocks.type = 1 AND stocks.student_id IS NOT NULL THEN 'Student' WHEN stocks.type = 2 AND stocks.student_id IS NOT NULL THEN 'Centre' ELSE NULL END as student_or_centre_type"));
 
 
         $product = $product->orderBy("stocks.id", "desc")->get();
@@ -367,12 +367,29 @@ class ProductController extends Controller
 
     private function adjustStock(Request $request, $id, bool $remove)
     {
-        $data = $request->validate(['amount' => 'required|numeric|min:1|max:1000000', 'student' => 'nullable|integer', 'type' => 'nullable|string|max:100']);
+        $data = $request->validate([
+            'amount' => 'required|numeric|min:1|max:1000000',
+            'student' => 'nullable|integer|min:1|required_with:type',
+            'type' => 'nullable|integer|in:1,2|required_with:student',
+        ]);
         $product = \Illuminate\Support\Facades\DB::transaction(function () use ($data, $id, $remove, $request) {
             $product = Product::query()->lockForUpdate()->findOrFail($id);
             \App\Support\Branch\BranchAccess::assertBranch($request->user(), $product->centre, true);
             if (!empty($data['student'])) {
-                abort_unless(\App\Models\Contact::where('centre', $product->centre)->whereKey($data['student'])->exists(), 422, 'Student must belong to the product branch.');
+                if ((int) $data['type'] === 1) {
+                    abort_unless(
+                        Contact::where('centre', $product->centre)->whereKey($data['student'])->exists(),
+                        422,
+                        'Student must belong to the product branch.'
+                    );
+                } else {
+                    abort_if((int) $data['student'] === (int) $product->centre, 422, 'Destination centre must be different from the product branch.');
+                    abort_unless(
+                        Department::whereKey($data['student'])->where('status', 1)->exists(),
+                        422,
+                        'Destination centre is invalid.'
+                    );
+                }
             }
             abort_if($remove && $data['amount'] > $product->amount, 422, 'จำนวนสินค้าในสต็อกไม่เพียงพอ');
             $product->amount = $product->amount + ($remove ? -$data['amount'] : $data['amount']);

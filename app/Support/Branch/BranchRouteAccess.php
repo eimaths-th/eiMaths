@@ -134,6 +134,9 @@ final class BranchRouteAccess
         }
         foreach (['student' => \App\Models\Contact::class, 'cid' => \App\Models\Contact::class, 'student_id' => \App\Models\Contact::class, 'std_id' => \App\Models\Contact::class, 'teacher_id' => \App\Models\User::class] as $key => $class) {
             if ($request->filled($key) && is_scalar($request->input($key)) && ctype_digit((string) $request->input($key))) {
+                if ($controller === 'ProductController' && $key === 'student' && (int) $request->input('type') === 2) {
+                    $class = \App\Models\Department::class;
+                }
                 abort_unless($class::query()->whereKey($request->input($key))->exists(), 403, 'Related record access denied.');
             }
         }
