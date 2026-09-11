@@ -17,6 +17,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
@@ -104,6 +105,7 @@ class BranchWorkflowsTest extends TestCase
             'name' => 'HQ accessories',
             'amount' => 20,
         ]);
+        Log::spy();
 
         $this->actingAs($actor)->putJson('/products/rm_stock/'.$product->id, [
             'amount' => 3,
@@ -126,6 +128,37 @@ class BranchWorkflowsTest extends TestCase
             ->assertOk()
             ->assertJsonPath('data.0.student_or_centre_type', 'Centre')
             ->assertJsonPath('data.0.student_or_centre_name', $this->b->name);
+        Log::shouldNotHaveReceived('warning');
+        Log::shouldNotHaveReceived('error');
+    }
+
+    public function test_stock_adjustment_error_is_written_to_the_application_log_without_mutation(): void
+    {
+        $actor = $this->actor(permissions: ['product-edit']);
+        $product = Product::create([
+            'centre' => $this->a->id,
+            'name' => 'Limited accessories',
+            'amount' => 2,
+        ]);
+        Log::spy();
+
+        $this->actingAs($actor)->putJson('/products/rm_stock/'.$product->id, [
+            'amount' => 3,
+        ])->assertUnprocessable();
+
+        $this->assertEquals(2, $product->fresh()->amount);
+        $this->assertDatabaseMissing('stocks', ['product_id' => $product->id]);
+        Log::shouldHaveReceived('warning')
+            ->once()
+            ->withArgs(function (string $message, array $context) use ($actor, $product): bool {
+                return $message === 'product.stock_adjustment_failed'
+                    && ($context['operation'] ?? null) === 'remove_stock'
+                    && (int) ($context['actor_id'] ?? 0) === $actor->id
+                    && (int) ($context['product_id'] ?? 0) === $product->id
+                    && (int) ($context['amount'] ?? 0) === 3
+                    && ($context['http_status'] ?? null) === 422
+                    && str_contains((string) ($context['error'] ?? ''), 'จำนวนสินค้าในสต็อกไม่เพียงพอ');
+            });
     }
 
     public function test_receipt_attachment_cannot_be_deleted_using_another_orders_id(): void
