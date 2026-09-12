@@ -291,6 +291,70 @@ class AffiliateRegistrationTest extends TestCase
     }
 
     #[Test]
+    public function ExpiredAffiliateVerificationLinkShowsResendRecoveryPage(): void
+    {
+        Notification::fake();
+        $affiliate_user = User::factory()->create([
+            'password' => Hash::make('secret'),
+            'email_verified_at' => null,
+            'language_code' => 'th',
+        ]);
+        AffiliateProfile::create([
+            'user_id' => $affiliate_user->id,
+            'referral_code' => 'AFF-EXPIRED-VERIFY',
+            'status' => AffiliateProfileStatus::PENDING_EMAIL,
+        ]);
+        $verification_url = URL::temporarySignedRoute(
+            'verification.verify',
+            now()->subMinute(),
+            [
+                'id' => $affiliate_user->getKey(),
+                'hash' => sha1($affiliate_user->getEmailForVerification()),
+            ],
+        );
+
+        $this->get($verification_url)
+            ->assertForbidden()
+            ->assertViewIs('auth.verification-expired')
+            ->assertSee(trans('affiliate.registration.verification_expired_title', [], 'th'))
+            ->assertSee('id="resend-verification-form"', false)
+            ->assertSee('/affiliate/resend-verification', false)
+            ->assertSessionHas('affiliate_pending_user_id', $affiliate_user->id);
+
+        $this->post(route('affiliate.verification.resend'))
+            ->assertRedirect(route('affiliate.waiting'))
+            ->assertSessionHas('affiliate_verification_sent', true);
+        Notification::assertSentTo($affiliate_user, AffiliateEmailVerificationNotification::class);
+    }
+
+    #[Test]
+    public function AlteredExpiredVerificationLinkKeepsGenericForbiddenResponse(): void
+    {
+        $affiliate_user = User::factory()->create([
+            'password' => Hash::make('secret'),
+            'email_verified_at' => null,
+        ]);
+        AffiliateProfile::create([
+            'user_id' => $affiliate_user->id,
+            'referral_code' => 'AFF-TAMPERED-VERIFY',
+            'status' => AffiliateProfileStatus::PENDING_EMAIL,
+        ]);
+        $verification_url = URL::temporarySignedRoute(
+            'verification.verify',
+            now()->subMinute(),
+            [
+                'id' => $affiliate_user->getKey(),
+                'hash' => sha1($affiliate_user->getEmailForVerification()),
+            ],
+        );
+
+        $this->get($verification_url.'&changed=1')
+            ->assertForbidden()
+            ->assertDontSee(trans('affiliate.registration.verification_expired_title', [], 'th'))
+            ->assertSessionMissing('affiliate_pending_user_id');
+    }
+
+    #[Test]
     public function GuestCannotVerifyNonAffiliateEmailWithoutLogin(): void
     {
         $user = User::factory()->create([
