@@ -5,7 +5,7 @@
 $crud = fn (string $prefix) => array_map(fn ($action) => $prefix.'-'.$action, ['list', 'create', 'edit', 'delete']);
 $teacher = ['dashboard', 'student-list', 'parent-list', 'history-list', 'history-create', 'history-edit', 'teaching-list', 'quiz-list', 'quiz-manage'];
 $branch = array_values(array_unique(array_merge(
-    $teacher, ...array_map($crud, ['student', 'parent', 'history', 'teaching', 'user', 'role', 'department', 'product', 'order', 'receipt', 'invoice', 'course-pending'])
+    $teacher, ...array_map($crud, ['student', 'parent', 'history', 'teaching', 'user', 'role', 'department', 'product', 'order', 'receipt', 'invoice', 'affiliate-course-application'])
 )));
 $branch = array_merge($branch, [
     'centre-manage', 'order-show', 'receipt-show', 'invoice-show', 'product-show',

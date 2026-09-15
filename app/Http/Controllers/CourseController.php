@@ -1286,7 +1286,7 @@ class CourseController extends Controller
     private function authorizeApplication(Request $request): void
     {
         $actor = $request->user();
-        if ($actor instanceof \App\Models\User && $actor->can('course-pending-edit')) {
+        if ($actor instanceof \App\Models\User && $actor->can('affiliate-course-application-edit')) {
             $pending = CoursePending::findOrFail($request->coursePending_id);
             \App\Support\Branch\BranchAccess::assertBranch($actor, $pending->department_id, true);
             return;

@@ -58,7 +58,7 @@ final class BranchRouteAccess
                 return; // Public application-token checks are handled by that flow.
             }
             if (str_contains($method, 'pending') || $method === 'fetchslip' || $method === 'getcheckrefstudnet') {
-                $prefixes[$controller] = 'course-pending';
+                $prefixes[$controller] = 'affiliate-course-application';
             } else {
                 abort_unless(BranchAccess::isCentral($actor) && $actor->can('course-manage'), 403);
                 return;
@@ -87,8 +87,8 @@ final class BranchRouteAccess
             $operation = 'show';
         }
         $permission = $prefix.'-'.$operation;
-        if (in_array($prefix, ['crm-leads', 'course-pending'], true) && $operation === 'list') {
-            $permission = $prefix === 'crm-leads' ? 'crm-leads-menu-view' : 'course-pending-list';
+        if ($prefix === 'crm-leads' && $operation === 'list') {
+            $permission = 'crm-leads-menu-view';
         }
         abort_unless($actor->can($permission), 403, 'You do not have permission for this action.');
         $this->validateTargets($request, $controller);

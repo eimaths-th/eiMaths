@@ -51,6 +51,20 @@ final class BranchAccess
         return is_array($modules) && in_array($module, $modules, true);
     }
 
+    public static function isCentralAffiliatePermission(string $permission): bool
+    {
+        $permission = strtolower($permission);
+        if (!str_starts_with($permission, 'affiliate-') || $permission === 'affiliate-user') {
+            return false;
+        }
+        foreach (config('branch.branch_scoped_affiliate_permission_prefixes', []) as $prefix) {
+            if (str_starts_with($permission, strtolower($prefix))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public static function permissionAllowed(User $actor, string $permission): bool
     {
         if ((int) $actor->disable === 1) {
@@ -63,7 +77,7 @@ final class BranchAccess
         if (in_array($permission, config('branch.owner_permissions'), true)) {
             return false;
         }
-        if (str_starts_with($permission, 'affiliate-') && $permission !== 'affiliate-user' && !$actor->isHq()) {
+        if (self::isCentralAffiliatePermission($permission) && !$actor->isHq()) {
             return false;
         }
         $central = in_array($permission, config('branch.central_permissions'), true);
@@ -108,7 +122,7 @@ final class BranchAccess
             foreach ($role->permissions as $permission) {
                 $name = $permission->name;
                 $central = in_array($name, array_merge(config('branch.central_permissions'), config('branch.owner_permissions')), true)
-                    || (str_starts_with($name, 'affiliate-') && $name !== 'affiliate-user');
+                    || self::isCentralAffiliatePermission($name);
                 abort_if(in_array(strtolower($name), config('branch.owner_permissions'), true), 403, 'Only SystemAdmin can grant owner permissions.');
                 abort_unless((!$central || self::isCentral($actor)) && $actor->getAllPermissions()->contains('name', $name), 403, 'Cannot grant permissions beyond your authority.');
             }

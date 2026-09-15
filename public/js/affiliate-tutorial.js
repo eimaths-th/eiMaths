@@ -5,8 +5,13 @@ export function TutorialIndex(steps, key) {
 export function TutorialUrl(url, origin, continueTour = true) {
     const target = new URL(url, origin);
     if (target.origin !== new URL(origin).origin) throw new Error('Invalid tutorial destination');
-    if (continueTour) target.searchParams.set('affiliate_tutorial', '1');
+    if (continueTour) target.searchParams.set('affiliate_tutorial', continueTour === true ? '1' : continueTour);
     return target.href;
+}
+
+export function TutorialSteps(config, mode = 'full') {
+    if (mode === 'starter' && Array.isArray(config.starterSteps) && config.starterSteps.length) return config.starterSteps;
+    return Array.isArray(config.steps) ? config.steps : [];
 }
 
 export function PlaceTutorial(rect, panel, viewport) {
@@ -58,7 +63,12 @@ export function InitializeAffiliateTutorial(root = document) {
     const dialog = root.getElementById('affiliate-tutorial');
     if (!configNode || !dialog || dialog.dataset.initialized) return null;
     dialog.dataset.initialized = 'true';
-    const config = JSON.parse(configNode.textContent), steps = config.steps, labels = config.labels;
+    const config = JSON.parse(configNode.textContent), labels = config.labels;
+    const continuationValue = new URL(location.href).searchParams.get('affiliate_tutorial');
+    const continuationMode = continuationValue === 'starter' ? 'starter' : continuationValue ? 'full' : null;
+    let mode = continuationMode ?? (config.autoStart ? 'starter' : 'full');
+    let steps = TutorialSteps(config, mode);
+    if (mode === 'starter' && steps === config.steps) mode = 'full';
     if (!steps.length || typeof dialog.showModal !== 'function') return null;
     const get = selector => dialog.querySelector(selector);
     const panel = get('[data-tour-panel]'), title = get('#affiliate-tutorial-title'), body = get('#affiliate-tutorial-body');
@@ -83,6 +93,19 @@ export function InitializeAffiliateTutorial(root = document) {
 
     const visible = node => node && node.getClientRects().length > 0 && getComputedStyle(node).visibility !== 'hidden';
     const pageMatches = step => new URL(step.url, location.href).pathname === location.pathname;
+    function selectMode(requestedMode, stepKey = null) {
+        const useStarter = requestedMode === 'starter' && Array.isArray(config.starterSteps) && config.starterSteps.length;
+        mode = useStarter ? 'starter' : 'full';
+        steps = TutorialSteps(config, mode);
+        index = TutorialIndex(steps, stepKey);
+        chapters.replaceChildren();
+        [...new Set(steps.map(step => step.chapter))].forEach((key, position) => {
+            const option = root.createElement('option');
+            option.value = key;
+            option.textContent = `${position + 1}. ${config.chapters[key]}`;
+            chapters.append(option);
+        });
+    }
     function setBusy(value) {
         busy = value;
         panel.setAttribute('aria-busy', String(value));
@@ -165,7 +188,7 @@ export function InitializeAffiliateTutorial(root = document) {
         if (missing) target = step.fallback ? root.querySelector(step.fallback) : null;
         body.textContent = resume ? labels.resumeBody : missing ? (step.emptyBody ?? `${step.body} ${labels.missing}`) : step.body;
         hint.hidden = resume || ['welcome', 'done'].includes(step.key);
-        next.textContent = resume ? labels.resume : step.key === 'done' ? labels.finish : step.key === 'welcome' ? labels.start : labels.next;
+        next.textContent = resume ? labels.resume : index === steps.length - 1 ? labels.finish : step.key === 'welcome' ? labels.start : labels.next;
         back.hidden = !resume && index === 0; back.textContent = resume ? labels.restart : labels.back;
         chapters.value = step.chapter;
         get('[data-tour-progress]').textContent = labels.progress.replace(':current', index + 1).replace(':total', steps.length);
@@ -216,14 +239,18 @@ export function InitializeAffiliateTutorial(root = document) {
         }, 12000);
         try {
             const effectiveAction = action === 'advance' && progress?.status !== 'in_progress' ? 'start' : action;
-            const result = await request(effectiveAction, steps[to].key, operation.signal);
+            const requestedStep = action === 'finish' ? (config.completionStep ?? steps[to].key) : steps[to].key;
+            const result = await request(effectiveAction, requestedStep, operation.signal);
             if (!operations.current(operation) || !dialog.open) return;
-            progress = result; index = TutorialIndex(steps, result.step); choosing = false; remember(null);
+            progress = result; choosing = false; remember(null);
             if (action === 'finish') {
-                cleanupPreview(); dialog.close(); feedback(labels.completed);
+                cleanupPreview(); dialog.close(); feedback(mode === 'starter' && labels.starterCompleted ? labels.starterCompleted : labels.completed);
                 (launcher ?? root.querySelector('[data-affiliate-tutorial-start]'))?.focus({ preventScroll: true });
-            } else if (pageMatches(steps[index])) show();
-            else location.assign(TutorialUrl(steps[index].url, location.origin));
+            } else {
+                index = TutorialIndex(steps, result.step);
+                if (pageMatches(steps[index])) show();
+                else location.assign(TutorialUrl(steps[index].url, location.origin, mode === 'starter' ? 'starter' : true));
+            }
         } catch {
             if (operations.current(operation) && dialog.open) {
                 error.textContent = labels.error; error.hidden = false; schedulePaint();
@@ -234,18 +261,16 @@ export function InitializeAffiliateTutorial(root = document) {
         }
     }
 
-    const chapterKeys = [...new Set(steps.map(step => step.chapter))];
-    chapterKeys.forEach((key, position) => {
-        const option = root.createElement('option'); option.value = key; option.textContent = `${position + 1}. ${config.chapters[key]}`; chapters.append(option);
-    });
+    selectMode(mode, progress?.step);
     chapters.addEventListener('change', () => void transition('start', steps.findIndex(step => step.chapter === chapters.value)));
     root.querySelectorAll('[data-affiliate-tutorial-start]').forEach(button => {
         button.disabled = false; button.removeAttribute('aria-busy');
         button.addEventListener('click', () => {
             operations.cancel(); setBusy(false); launcher = button;
             const remembered = dismissal ?? progress;
+            selectMode(button.dataset.affiliateTutorialMode ?? 'full', remembered?.step);
             if (remembered && ['in_progress', 'paused'].includes(remembered.status)) {
-                index = TutorialIndex(steps, remembered.step); show(true);
+                show(true);
             } else { index = 0; show(); }
         });
     });
@@ -282,12 +307,11 @@ export function InitializeAffiliateTutorial(root = document) {
     hero.addEventListener('error', () => { hero.hidden = true; schedulePaint(); });
     example.addEventListener('toggle', schedulePaint);
     window.addEventListener('pageshow', event => { if (event.persisted) location.reload(); });
-    const continuation = new URL(location.href).searchParams.get('affiliate_tutorial') === '1';
-    if (continuation) {
+    if (continuationValue) {
         const url = new URL(location.href); url.searchParams.delete('affiliate_tutorial'); history.replaceState(history.state, '', url);
     }
-    if (!dismissal && progress?.status === 'in_progress') show(!(continuation && pageMatches(steps[index])));
-    else if (!dismissal && config.autoStart) { index = 0; show(); }
+    if (!dismissal && progress?.status === 'in_progress') show(!(continuationMode && pageMatches(steps[index])));
+    else if (!dismissal && config.autoStart) { selectMode('starter'); show(); }
     return { dialog, dismiss };
 }
 

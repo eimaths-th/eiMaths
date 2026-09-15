@@ -32,8 +32,11 @@ class AffiliateTutorialTest extends TestCase
         $this->actingAs($this->Affiliate());
         $this->get('/affiliate/dashboard')->assertOk()
             ->assertSee('data-affiliate-tutorial-start', false)
+            ->assertSee('data-affiliate-tutorial-mode="starter"', false)
+            ->assertSee('"starterSteps":[', false)
             ->assertSee('"autoStart":true', false);
         $this->get('/affiliate/payout-accounts')->assertOk()->assertSee('"autoStart":false', false);
+        $this->get('/affiliate/guide')->assertOk()->assertSee('data-affiliate-tutorial-mode="full"', false);
         $this->assertDatabaseCount('affiliate_tutorial_progress', 0);
     }
 
@@ -106,7 +109,11 @@ class AffiliateTutorialTest extends TestCase
         $thai = require base_path('lang/th/affiliate_tutorial.php');
         $english = require base_path('lang/en/affiliate_tutorial.php');
         $this->assertSame(array_keys($thai['labels']), array_keys($english['labels']));
+        $this->assertSame(array_keys($thai['starter_steps']), array_keys($english['starter_steps']));
         $this->assertSame(array_keys($thai['steps']), array_keys($english['steps']));
+        foreach ($thai['starter_steps'] as $key => $step) {
+            $this->assertSame(array_keys($step), array_keys($english['starter_steps'][$key]));
+        }
         foreach ($thai['steps'] as $key => $step) {
             $this->assertSame(array_keys($step), array_keys($english['steps'][$key]));
         }
@@ -156,13 +163,19 @@ class AffiliateTutorialTest extends TestCase
         app()->setLocale('th');
         $service = app(AffiliateTutorialService::class);
         $steps = collect($service->Steps())->keyBy('key');
+        $starterSteps = collect($service->StarterSteps($steps->values()->all()))->keyBy('key');
         $this->assertCount(21, $steps);
+        $this->assertCount(4, $starterSteps);
+        $this->assertSame(['copy', 'commission', 'promptpay', 'withdraw'], $starterSteps->keys()->all());
         $this->assertCount(5, $steps->pluck('chapter')->unique());
         $this->assertStringContainsString('12.5%', $steps['commission']['body']);
         $this->assertStringContainsString('9', $steps['commission']['body']);
         $this->assertStringContainsString('45', $steps['link']['body']);
         $this->assertStringContainsString('1,234.50', $steps['withdraw']['body']);
         $this->assertStringContainsString('02-000-1234', $steps['help']['body']);
+        $this->assertStringContainsString('9', $starterSteps['commission']['body']);
+        $this->assertStringContainsString('1,234.50', $starterSteps['withdraw']['body']);
+        $this->assertStringContainsString('21', $starterSteps['withdraw']['body']);
         $this->get('/affiliate/dashboard')->assertOk()->assertSee('affiliate-example-share', false)
             ->assertSee('affiliate-example-withdraw', false)->assertSee('journey-v2.png', false)
             ->assertSee('ตัวอย่าง — ข้อมูลสมมติ');
@@ -182,8 +195,10 @@ class AffiliateTutorialTest extends TestCase
         Config::set('affiliate.features.analytics', true);
         $this->actingAs($this->Affiliate());
         foreach (array_unique(array_column(app(AffiliateTutorialService::class)->Steps(), 'url')) as $url) {
+            $mode = parse_url($url, PHP_URL_PATH) === '/affiliate/guide' ? 'full' : 'starter';
             $this->get($url)->assertOk()->assertSee('affiliate-tutorial-config', false)
-                ->assertSee('data-affiliate-tutorial-start', false);
+                ->assertSee('data-affiliate-tutorial-start', false)
+                ->assertSee('data-affiliate-tutorial-mode="' . $mode . '"', false);
         }
     }
 

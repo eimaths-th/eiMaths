@@ -31,10 +31,12 @@ class AffiliateTutorialService
             'progressUrl' => route('affiliate.tutorial.progress'),
             'storageKey' => 'affiliate-tutorial:' . $profile->id,
             'dashboardUrl' => route('affiliate.dashboard'),
+            'completionStep' => 'done',
             'autoStart' => $progress === null && request()->routeIs('affiliate.dashboard'),
             'progress' => $progress === null ? null : ['status' => $progress->status, 'step' => $key],
             'labels' => __('affiliate_tutorial.labels'),
             'chapters' => __('affiliate_tutorial.chapters'),
+            'starterSteps' => $this->StarterSteps($steps),
             'steps' => $steps,
         ];
     }
@@ -108,6 +110,33 @@ class AffiliateTutorialService
         $add('done', 'withdraw', 'affiliate.dashboard', null);
 
         return $steps;
+    }
+
+    public function StarterSteps(?array $steps = null): array
+    {
+        $steps ??= $this->Steps();
+        $stepsByKey = array_column($steps, null, 'key');
+        $terms = [...$this->Terms(), 'total' => count($steps)];
+        $starterSteps = [];
+
+        foreach (['copy', 'commission', 'promptpay', 'withdraw'] as $key) {
+            $step = $stepsByKey[$key];
+            $translationKey = 'affiliate_tutorial.starter_steps.' . $key;
+            $step['title'] = __($translationKey . '.title');
+            $step['body'] = __($translationKey . '.body', $terms);
+            $step['emptyBody'] = trans()->has($translationKey . '.empty')
+                ? __($translationKey . '.empty', $terms) : null;
+
+            if ($key === 'promptpay') {
+                $step['target'] = '#payout-account-forms-title';
+                $step['mobileTarget'] = null;
+                $step['fallback'] = null;
+            }
+
+            $starterSteps[] = $step;
+        }
+
+        return $starterSteps;
     }
 
     public function Save(User $user, array $input): array

@@ -14,7 +14,8 @@ return [
         'dashboard' => 'dashboard', 'student-' => 'students', 'parent-' => 'students',
         'history-' => 'teaching', 'teaching-' => 'teaching', 'view-log' => 'teaching',
         'order-' => 'finance', 'receipt-' => 'finance', 'invoice-' => 'finance', 'credit-note-' => 'finance',
-        'product-' => 'stock', 'book-' => 'stock', 'crm-' => 'crm', 'course-pending-' => 'crm',
+        'product-' => 'stock', 'book-' => 'stock', 'crm-' => 'crm',
+        'affiliate-course-application-' => 'crm',
         'quiz-' => 'quiz', 'user-' => 'users', 'role-' => 'users', 'department-' => 'departments',
         'blog-' => 'content', 'faq-' => 'content',
     ],
@@ -24,6 +25,9 @@ return [
         'integration-settings-manage', 'support-manage', 'course-manage',
     ],
     'owner_permissions' => ['add-permission', 'edit-permission', 'delete-permission', 'permission-manage'],
+    // Affiliate administration is HQ-only except for course applications, which
+    // branch staff manage within the existing branch/CRM data scope.
+    'branch_scoped_affiliate_permission_prefixes' => ['affiliate-course-application-'],
     'protected_roles' => ['SystemAdmin', 'Admin', 'BranchAdmin', 'Teacher', 'User', 'Affiliate-user'],
     // Explicit relationships used for reads, writes and mixed-record bulk requests.
     'models' => [

@@ -56,7 +56,7 @@ class MenuOrganizationTest extends TestCase
 
         foreach ([
             'Students Management' => 'Students List',
-            'Course Management' => 'Course Applications',
+            'Course Management' => 'Course Categories',
             'Finance &amp; Documents' => 'Payment Receipts',
             'Stock &amp; Logistics' => 'Products',
             'Quiz Management' => 'Question Bank',
@@ -68,6 +68,13 @@ class MenuOrganizationTest extends TestCase
             $this->assertNotFalse($child_position, "Missing child menu {$child}");
             $this->assertGreaterThan($group_position, $child_position, "{$child} must follow {$group}");
         }
+
+        $affiliate_position = strpos($menu, 'Affiliate Management');
+        $application_position = strpos($menu, 'Affiliate Course...');
+        $this->assertNotFalse($affiliate_position);
+        $this->assertNotFalse($application_position);
+        $this->assertGreaterThan($affiliate_position, $application_position);
+        $this->assertSame(1, substr_count($menu, route('courses.pending.index')));
     }
 
     #[Test]

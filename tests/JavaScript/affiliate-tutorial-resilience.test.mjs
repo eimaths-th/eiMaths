@@ -51,11 +51,19 @@ class Node {
 
 function mount(t) {
     const root = new Node(), dialog = new Node(), launcher = new Node(), zoom = new Node();
-    const labels = { progress: ':current / :total', error: 'Save failed', paused: 'Paused', unsaved: 'Closed; not saved' };
-    const config = { version: 2, storageKey: 'tour:1', progressUrl: '/affiliate/tutorial/progress', autoStart: true,
-        progress: null, labels, chapters: { share: 'Share' },
+    const labels = { progress: ':current / :total', error: 'Save failed', paused: 'Paused', unsaved: 'Closed; not saved',
+        completed: 'Completed', starterCompleted: 'Starter completed', next: 'Next', finish: 'Finish' };
+    const config = { version: 2, storageKey: 'tour:1', progressUrl: '/affiliate/tutorial/progress', completionStep: 'done', autoStart: true,
+        progress: null, labels, chapters: { share: 'Share', income: 'Income', payout: 'Payout', withdraw: 'Withdraw' },
         steps: [{ key: 'welcome', chapter: 'share', url: '/affiliate/dashboard', title: 'Welcome', body: 'Welcome' },
-            { key: 'copy', chapter: 'share', url: '/affiliate/media', title: 'Copy', body: 'Copy' }] };
+            { key: 'copy', chapter: 'share', url: '/affiliate/dashboard', title: 'Copy', body: 'Copy' },
+            { key: 'done', chapter: 'withdraw', url: '/affiliate/dashboard', title: 'Done', body: 'Done' }],
+        starterSteps: [
+            { key: 'copy', chapter: 'share', url: '/affiliate/dashboard', title: 'Copy', body: 'Copy' },
+            { key: 'commission', chapter: 'income', url: '/affiliate/dashboard', title: 'Commission', body: 'Commission' },
+            { key: 'promptpay', chapter: 'payout', url: '/affiliate/dashboard', title: 'Payout', body: 'Payout' },
+            { key: 'withdraw', chapter: 'withdraw', url: '/affiliate/dashboard', title: 'Withdraw', body: 'Withdraw' },
+        ] };
     root.getElementById = id => ({ 'affiliate-tutorial': dialog, 'affiliate-tutorial-example': zoom,
         'affiliate-tutorial-config': { textContent: JSON.stringify(config) } }[id] ?? null);
     root.querySelectorAll = () => [launcher]; root.createElement = () => new Node();
@@ -87,8 +95,8 @@ test('Pause closes immediately during a save and a late success cannot change th
     view.get('close').click();
     assert.equal(view.dialog.open, false);
     assert.equal(view.requests[0].signal.aborted, true);
-    view.requests[0].resolve(response('in_progress', 'copy'));
-    view.requests[1].resolve(response('paused', 'welcome'));
+    view.requests[0].resolve(response('in_progress', 'commission'));
+    view.requests[1].resolve(response('paused', 'copy'));
     await flush();
     assert.deepEqual(view.navigations, []);
     assert.equal(JSON.parse(view.storage.get('tour:1')).status, 'paused');
@@ -107,5 +115,35 @@ test('A failed save permits retry and Escape still closes; failed pause retains 
     await flush();
     view.launcher.click();
     assert.equal(view.dialog.open, true);
-    assert.equal(JSON.parse(view.storage.get('tour:1')).step, 'welcome');
+    assert.equal(JSON.parse(view.storage.get('tour:1')).step, 'copy');
+});
+
+test('the four-step onboarding completes through the canonical done step', async t => {
+    const view = mount(t);
+    assert.equal(view.get('progress').textContent, '1 / 4');
+
+    for (const step of ['commission', 'promptpay', 'withdraw']) {
+        view.get('next').click();
+        const request = view.requests.at(-1);
+        assert.equal(JSON.parse(request.body).step, step);
+        request.resolve(response('in_progress', step));
+        await flush();
+    }
+
+    assert.equal(view.get('progress').textContent, '4 / 4');
+    view.get('next').click();
+    const request = view.requests.at(-1);
+    assert.deepEqual(JSON.parse(request.body), { version: 2, action: 'finish', step: 'done' });
+    request.resolve(response('completed', 'done'));
+    await flush();
+    assert.equal(view.dialog.open, false);
+});
+
+test('pressing Tutorial manually selects the full walkthrough', t => {
+    const view = mount(t);
+    assert.equal(view.get('progress').textContent, '1 / 4');
+    view.dialog.close();
+    view.launcher.click();
+    assert.equal(view.dialog.open, true);
+    assert.equal(view.get('progress').textContent, '1 / 3');
 });

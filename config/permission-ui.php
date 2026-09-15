@@ -30,9 +30,9 @@ return [
         ],
         'teaching' => [
             'label' => 'การเรียนการสอนและแบบทดสอบ',
-            'description' => 'ประวัติเรียน ตารางสอน ใบสมัคร และ Quiz',
+            'description' => 'ประวัติเรียน ตารางสอน และ Quiz',
             'icon' => 'fas fa-chalkboard-teacher',
-            'prefixes' => ['history-', 'teaching-', 'course-pending-', 'quiz-'],
+            'prefixes' => ['history-', 'teaching-', 'quiz-'],
         ],
         'finance' => [
             'label' => 'การเงินและเอกสาร',
@@ -54,7 +54,7 @@ return [
         ],
         'affiliate' => [
             'label' => 'Affiliate',
-            'description' => 'สมาชิก ค่าคอมมิชชัน การถอนเงิน และเนื้อหา Affiliate',
+            'description' => 'สมาชิก ใบสมัครคอร์ส ค่าคอมมิชชัน การถอนเงิน และเนื้อหา Affiliate',
             'icon' => 'fas fa-handshake',
             'prefixes' => ['affiliate-'],
         ],
@@ -119,7 +119,7 @@ return [
         'quiz' => 'Quiz',
         'history' => 'ประวัติการเรียน',
         'teaching' => 'ตารางสอน',
-        'course-pending' => 'ใบสมัครเรียน',
+        'affiliate-course-application' => 'ใบสมัครคอร์สผ่าน Affiliate',
         'crm-leads' => 'CRM Leads',
         'affiliate' => 'Affiliate',
         'affiliate-admin' => 'ผู้ดูแล Affiliate',

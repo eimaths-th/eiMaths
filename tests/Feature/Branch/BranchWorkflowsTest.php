@@ -292,6 +292,8 @@ class BranchWorkflowsTest extends TestCase
         $role = Role::findByName('BranchAdmin')->fresh();
         $this->assertTrue($role->hasPermissionTo('user-create'));
         $this->assertTrue($role->hasPermissionTo('role-create'));
+        $this->assertTrue($role->hasPermissionTo('affiliate-course-application-list'));
+        $this->assertFalse($role->permissions->contains('name', 'course-pending-list'));
         $this->assertFalse($role->permissions->contains('name', 'all-centre'));
         $this->assertNull($role->branch_id);
     }

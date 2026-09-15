@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Affiliate;
 
+use App\Models\Department;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use PHPUnit\Framework\Attributes\Test;
@@ -51,7 +52,15 @@ class AffiliateRolePermissionTest extends TestCase
     #[Test]
     public function affiliate_user_without_cms_permissions_does_not_see_cms_menu_entries(): void
     {
-        $user = \App\Models\User::factory()->create(['password' => Hash::make('password')]);
+        $department = Department::query()->create([
+            'name' => 'Affiliate Role Test Branch',
+            'code' => 'ARTB',
+            'status' => 1,
+        ]);
+        $user = \App\Models\User::factory()->create([
+            'department_id' => $department->id,
+            'password' => Hash::make('password'),
+        ]);
         $affiliate_role = Role::findOrCreate('Affiliate-user', 'web');
         $affiliate_role->syncPermissions([
             Permission::findOrCreate('affiliate-user', 'web'),

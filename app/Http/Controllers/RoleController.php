@@ -94,7 +94,7 @@ class RoleController extends Controller
             if ($branchId && $branchId !== Department::HQ_ID) {
                 $name = $permission->name;
                 abort_if(in_array($name, array_merge(config('branch.central_permissions'), config('branch.owner_permissions')), true)
-                    || (str_starts_with($name, 'affiliate-') && $name !== 'affiliate-user'), 403, 'Central permissions cannot be assigned to branch roles.');
+                    || BranchAccess::isCentralAffiliatePermission($name), 403, 'Central permissions cannot be assigned to branch roles.');
                 $module = BranchAccess::moduleForPermission($name);
                 abort_if($module && !BranchAccess::moduleEnabled($branchId, $module), 422, 'Enable the branch module before granting this permission.');
             }

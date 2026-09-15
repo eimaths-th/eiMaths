@@ -47,7 +47,7 @@ class PrivateBranchFileController extends Controller
                     || ($actor->can('receipt-show') && (\App\Models\Receipt::where('receipt_number', pathinfo($filename, PATHINFO_FILENAME))->exists()
                         || FileStore::where('filename', $filename)->whereIn('module_id', \App\Models\Receipt::select('oid'))->exists()))
                     || ($actor->can('invoice-show') && \App\Models\Invoice::where('invoice_number', pathinfo($filename, PATHINFO_FILENAME))->exists()),
-                'payment_slips' => $actor->can('course-pending-list') && CoursePending::whereIn('slip', ['img/payment_slips/'.$filename, '/img/payment_slips/'.$filename])->exists(),
+                'payment_slips' => $actor->can('affiliate-course-application-list') && CoursePending::whereIn('slip', ['img/payment_slips/'.$filename, '/img/payment_slips/'.$filename])->exists(),
                 'attachments' => Feedback::where('attachment_path', 'attachments/'.$filename)->exists(),
                 'feedback_images' => Feedback::whereIn('image_feedback', [$filename, 'feedback_images/'.$filename, '/feedback_images/'.$filename])->exists(),
                 default => false,

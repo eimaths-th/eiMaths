@@ -2,7 +2,7 @@
 
 return [
     'button' => 'Start tutorial',
-    'banner' => ['eyebrow' => 'Getting started for affiliates', 'title' => 'Start using your Affiliate account', 'body' => 'Learn to share referral links, choose promotional media, check commissions and request a withdrawal, one step at a time.', 'guide' => 'Read the eiMaths guide'],
+    'banner' => ['eyebrow' => 'Getting started for affiliates', 'title' => 'Start using your Affiliate account', 'body' => 'Learn four essentials: share your link, check commissions, set up a payout account and request a withdrawal.', 'guide' => 'Read the eiMaths guide'],
     'chapters' => ['share' => 'Share your link', 'media' => 'Use promotional media', 'income' => 'Check your income', 'payout' => 'Set up payments', 'withdraw' => 'Withdraw and get help'],
     'labels' => [
         'name' => 'Affiliate walkthrough', 'back' => 'Back', 'next' => 'Next', 'start' => 'Start learning',
@@ -13,9 +13,29 @@ return [
         'resume' => 'Continue', 'restart' => 'Restart', 'chapter' => 'Choose a topic',
         'illustration' => 'View example', 'enlarge' => 'Enlarge example', 'closeExample' => 'Close example',
         'example' => 'Example — fictional data', 'preview' => 'This is a guided preview. Look at the highlighted area and press Next; no real submissions are needed.',
-        'completed' => 'Tutorial complete. Start sharing your link, or reopen Tutorial from the Affiliate menu.',
+        'completed' => 'Tutorial complete. Start sharing your link, or open Affiliate guide and press Tutorial to review it.',
+        'starterCompleted' => 'You have completed the four essentials. For every topic, open Affiliate guide and press Tutorial.',
         'skipped' => 'Tutorial skipped. You can reopen it at any time.', 'paused' => 'Tutorial paused. Open Tutorial to continue.',
         'unsaved' => 'Tutorial closed, but the step could not be saved. This tab will temporarily remember where you paused.',
+    ],
+    'starter_steps' => [
+        'copy' => [
+            'title' => 'Copy and share your referral link',
+            'body' => 'Press “Copy full referral link” and send it to parents through LINE, Facebook or a private message without editing it. A commission is created only after an eligible parent enrolls and completes payment.',
+        ],
+        'commission' => [
+            'title' => 'Check your commissions',
+            'body' => 'Review each commission and its status here. Funds normally unlock :holding_days days after payment confirmation. Only released funds are included in your available withdrawal balance.',
+        ],
+        'promptpay' => [
+            'title' => 'Set up a payout account',
+            'body' => 'Choose either PromptPay or a bank account. Complete the matching form, enter your Affiliate login password, and check the details before saving.',
+        ],
+        'withdraw' => [
+            'title' => 'Request a withdrawal and learn more',
+            'body' => 'Once your available balance reaches :minimum THB, enter the amount, choose a payout account and submit the request. Follow its status in withdrawal history. For every topic, open Affiliate guide and press Tutorial to view all :total steps.',
+            'empty' => 'Save a PromptPay or bank account first. Once your available balance reaches :minimum THB, you can enter an amount, choose the account and submit a request. For every topic, open Affiliate guide and press Tutorial to view all :total steps.',
+        ],
     ],
     'steps' => [
         'welcome' => ['title' => 'Share links, track income, receive payments', 'body' => 'Explore each topic using the real pages and controls. Press Next to follow the full walkthrough, or choose a topic above. You can pause and return later.'],
@@ -37,8 +57,8 @@ return [
         'accounts' => ['title' => 'Check your saved account', 'body' => 'Check the account type and final digits below. You will select this account when withdrawing. Changing existing details pauses withdrawals through that account for 24 hours and sends an email. Check the displayed time before requesting a withdrawal.'],
         'withdraw' => ['title' => 'Request a withdrawal', 'body' => 'The current minimum is :minimum THB. Enter an amount within your available balance, select a payout account and press Request withdrawal. Funds are reserved while the request awaits approval. Wait for any account-change cooldown to end first.', 'empty' => 'You have no saved payout account, so the real form is not shown yet. View the example, then add an account in Payout accounts after the tutorial. The current minimum is :minimum THB and cannot exceed your available balance.'],
         'history' => ['title' => 'Follow your withdrawal', 'body' => 'Requests move from Awaiting approval to Approved, awaiting transfer and then Paid as staff process them. You can cancel while awaiting approval or transfer. Rejection or cancellation returns reserved funds to your available balance.'],
-        'help' => ['title' => 'Need a hand?', 'body' => 'Contact :support_phone with the page name and relevant record number. Find curriculum documents under Affiliate guide and reopen Tutorial from any Affiliate page.'],
-        'done' => ['title' => 'Start sharing your link', 'body' => 'Press Finish, then copy your link above and share it with parents. When you earn commission, return to check its status and set up payments. Open Tutorial and choose a topic whenever you need a reminder.'],
+        'help' => ['title' => 'Need a hand?', 'body' => 'Contact :support_phone with the page name and relevant record number. Find curriculum documents under Affiliate guide, then press Tutorial on the guide page to review every topic.'],
+        'done' => ['title' => 'Start sharing your link', 'body' => 'Press Finish, then copy your link above and share it with parents. When you earn commission, return to check its status and set up payments. To review a topic, open Affiliate guide and press Tutorial.'],
     ],
     'examples' => [
         'link' => 'A message with a referral link', 'share' => 'The sharing panel', 'wallet' => 'Two wallet balances',

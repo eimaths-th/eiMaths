@@ -380,7 +380,7 @@
 
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1>Courses List</h1>
+                    <h1>Affiliate Course Applications</h1>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
@@ -402,7 +402,7 @@
                 <div class="col-lg-12">
                     <div class="card card-primary">
                         <div class="card-header">
-                            <h3 class="card-title"><i class="fa fa-user"></i>Courses Pennding</h3>
+                            <h3 class="card-title"><i class="fa fa-user"></i> Affiliate Course Applications</h3>
                             <div class="card-tools">
                                 <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
                                     <i class="fas fa-minus"></i>

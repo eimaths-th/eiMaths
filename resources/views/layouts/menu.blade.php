@@ -15,7 +15,7 @@
         && !$affiliate_portal_can_access;
 
     $show_course_menu = $menu_can('course-manage')
-        || (!$menu_is_central && ($menu_can('course-pending-list') || $menu_can('teaching-list')));
+        || (!$menu_is_central && $menu_can('teaching-list'));
     $show_finance_menu = $menu_can('receipt-list')
         || ((bool) config('financial-documents.credit_note.enabled') && $menu_can('credit-note-list'))
         || $menu_can('financial-settings-manage');
@@ -28,6 +28,7 @@
         && ($menu_can('affiliate-list') || $menu_can('affiliate-content-manage'))
     ) || $menu_can('affiliate-config-edit')
         || $menu_can('affiliate-withdrawal-list')
+        || $menu_can('affiliate-course-application-list')
         || $menu_can('course-manage');
     $show_quiz_menu = $menu_can('quiz-manage') || $menu_is_owner;
     $show_user_menu = $menu_can('user-list') || $menu_can('role-list') || $menu_is_owner;
@@ -42,7 +43,7 @@
         'contacts', 'guest.report', 'demo.list', 'discontinued', 'contacts.graduated',
         'histories.index', 'parent.index', 'ei_form.backEndIndex',
     ], true);
-    $course_menu_active = request()->routeIs('courses.pending.*', 'categories.*', 'course.*', 'TeachingPeriod.*');
+    $course_menu_active = request()->routeIs('categories.*', 'course.*', 'TeachingPeriod.*');
     $finance_menu_active = request()->routeIs('receipts*', 'credit-notes.*', 'qrcode_payment.*', 'termfee*');
     $stock_menu_active = request()->routeIs('products*', 'book-shipments.*', 'incoming-book-shipments.*');
     $quiz_menu_active = request()->routeIs(
@@ -51,7 +52,7 @@
     $content_menu_active = request()->routeIs('blogs.*', 'faqs.*', 'promotion-img.*', 'footer-setting.*');
     $affiliate_admin_active = request()->routeIs(
         'affiliate.admin.*', 'affiliate.finance.configuration.*', 'affiliate.withdrawals.admin.*',
-        'affiliate-content-manage.*'
+        'affiliate-content-manage.*', 'courses.pending.*'
     );
     $user_menu_active = request()->routeIs('users.*', 'roles.*', 'permission.*', 'generate.*', 'student.login');
     $centre_menu_active = request()->routeIs('departments*', 'positions*', 'branch-transfers.*');
@@ -252,15 +253,6 @@
             <i class="fas fa-angle-left right"></i>
         </a>
         <ul class="nav nav-treeview">
-            @if ($menu_can('course-manage') || $menu_can('course-pending-list'))
-                <li class="nav-item">
-                    <a href="{{ route('courses.pending.index') }}"
-                        class="nav-link {{ request()->routeIs('courses.pending.*') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-clipboard-list"></i>
-                        <p>Course Applications</p>
-                    </a>
-                </li>
-            @endif
             @can('course-manage')
                 <li class="nav-item">
                     <a href="{{ route('categories.index') }}"
@@ -542,6 +534,15 @@
             <i class="fas fa-angle-left right"></i>
         </a>
         <ul class="nav nav-treeview">
+            @can('affiliate-course-application-list')
+                <li class="nav-item">
+                    <a href="{{ route('courses.pending.index') }}"
+                        class="nav-link {{ request()->routeIs('courses.pending.*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-clipboard-list"></i>
+                        <p title="Affiliate Course Applications">Affiliate Course...</p>
+                    </a>
+                </li>
+            @endcan
             @if ((bool) config('affiliate.features.administration', false) && $menu_can('affiliate-list'))
                 <li class="nav-item">
                     <a href="{{ route('affiliate.admin.index') }}"
@@ -640,7 +641,7 @@
                     <a href="{{ route('generate.student') }}"
                         class="nav-link {{ $menu_route === 'generate.student' ? 'active' : '' }}">
                         <i class="nav-icon fas fa-user-lock"></i>
-                        <p>Generate Student Password</p>
+                        <p title="Generate Student Password">Generate Student...</p>
                     </a>
                 </li>
                 <li class="nav-item">
