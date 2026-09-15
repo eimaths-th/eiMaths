@@ -126,7 +126,7 @@
                                     <h2 class="modal-title" id="affiliate-content-edit-title-{{ $content->id }}">{{ __('affiliate.content_admin.edit_title') }}</h2>
                                     <button type="button" class="close" data-bs-dismiss="modal" aria-label="{{ __('affiliate.content_admin.cancel') }}"><span aria-hidden="true">&times;</span></button>
                                 </div>
-                                <form method="POST" action="{{ route('affiliate-content-manage.update', $content) }}">
+                                <form method="POST" action="{{ route('affiliate-content-manage.update', $content) }}" enctype="multipart/form-data">
                                     @csrf
                                     @method('PUT')
                                     <div class="modal-body">
@@ -142,6 +142,11 @@
                                             <div class="form-group affiliate-form-field-full">
                                                 <label for="affiliate-content-description-{{ $content->id }}">{{ __('affiliate.content_admin.description') }}</label>
                                                 <textarea class="form-control" id="affiliate-content-description-{{ $content->id }}" name="description" maxlength="1000">{{ $content->description }}</textarea>
+                                            </div>
+                                            <div class="form-group affiliate-form-field-full">
+                                                <label for="affiliate-content-file-{{ $content->id }}">{{ __('affiliate.content_admin.replace_' . $content->type) }}</label>
+                                                <input class="form-control-file" id="affiliate-content-file-{{ $content->id }}" type="file" name="file" accept="{{ $content->type === 'video' ? 'video/mp4,video/quicktime,video/x-msvideo,video/x-ms-wmv' : 'image/jpeg,image/png,image/gif,image/webp' }}" aria-describedby="affiliate-content-file-help-{{ $content->id }}">
+                                                <small id="affiliate-content-file-help-{{ $content->id }}" class="form-text text-muted">{{ __('affiliate.content_admin.replacement_file_help', ['type' => __('affiliate.content_admin.' . $content->type)]) }}</small>
                                             </div>
                                             <div class="form-group">
                                                 <label for="affiliate-content-start-{{ $content->id }}">{{ __('affiliate.content_admin.publication_start') }}</label>

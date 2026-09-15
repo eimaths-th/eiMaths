@@ -91,4 +91,34 @@ class AffiliateMediaStorageService
             @unlink($media->absolute_path);
         }
     }
+
+    public function DeleteStoredPath(string $relative_path, string $type): void
+    {
+        $type = strtolower(trim($type));
+        $prefix = match ($type) {
+            'image' => 'uploads/affiliate/image/',
+            'video' => 'uploads/affiliate/video/',
+            default => null,
+        };
+        if ($prefix === null) {
+            return;
+        }
+
+        $normalized_path = ltrim(str_replace('\\', '/', trim($relative_path)), '/');
+        $filename = substr($normalized_path, strlen($prefix));
+        if (! str_starts_with($normalized_path, $prefix)
+            || $filename === ''
+            || $filename !== basename($filename)) {
+            return;
+        }
+
+        $absolute_path = public_path(str_replace('/', DIRECTORY_SEPARATOR, $normalized_path));
+        if ($type === 'image') {
+            $this->image_upload_storage_service->DeleteStoredImage($absolute_path);
+            return;
+        }
+        if (is_file($absolute_path)) {
+            @unlink($absolute_path);
+        }
+    }
 }

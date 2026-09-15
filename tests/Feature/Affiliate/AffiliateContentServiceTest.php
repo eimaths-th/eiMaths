@@ -3,6 +3,7 @@
 namespace Tests\Feature\Affiliate;
 
 use App\Domain\Affiliate\Services\AffiliateContentService;
+use App\Domain\Affiliate\Services\AffiliateAuditService;
 use App\Domain\Affiliate\Services\AffiliateMediaStorageService;
 use App\Domain\Affiliate\ValueObjects\StoredAffiliateMedia;
 use App\Domain\Affiliate\Models\AffiliateAuditLog;
@@ -14,6 +15,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use LogicException;
 use PHPUnit\Framework\Attributes\Test;
+use RuntimeException;
 use Tests\TestCase;
 
 class AffiliateContentServiceTest extends TestCase
@@ -93,6 +95,139 @@ class AffiliateContentServiceTest extends TestCase
 
         $this->expectException(LogicException::class);
         $service->Update($content, ['campaign_code' => 'changed-campaign'], $actor, 'correlation-reject');
+    }
+
+    #[Test]
+    public function ReplacesMediaAfterTheDatabaseUpdateAndRecordsTheChange(): void
+    {
+        $actor = User::factory()->create(['password' => Hash::make('content-service-password')]);
+        $content = AffiliateContent::create([
+            'title' => 'Original content',
+            'file_path' => 'uploads/affiliate/image/original.webp',
+            'type' => 'image',
+            'status' => 'enabled',
+        ]);
+        $content->forceFill([
+            'destination_target' => '/',
+            'campaign_code' => 'replacement-service-campaign',
+        ])->save();
+        $replacement = new StoredAffiliateMedia(
+            type: 'image',
+            relative_path: 'uploads/affiliate/image/replacement.webp',
+            absolute_path: public_path('uploads/affiliate/image/replacement.webp'),
+            mime_type: 'image/webp',
+            extension: 'webp',
+        );
+        $storage = $this->mock(AffiliateMediaStorageService::class);
+        $storage->shouldReceive('Store')->once()->andReturn($replacement);
+        $storage->shouldReceive('DeleteStoredPath')
+            ->once()
+            ->with('uploads/affiliate/image/original.webp', 'image');
+
+        $updated = app(AffiliateContentService::class)->Update(
+            $content,
+            ['title' => 'Replacement content'],
+            $actor,
+            'correlation-replacement',
+            UploadedFile::fake()->image('replacement.png'),
+        );
+
+        $this->assertSame($replacement->relative_path, $updated->file_path);
+        $this->assertSame('replacement-service-campaign', $updated->campaign_code);
+        $audit = AffiliateAuditLog::query()
+            ->where('correlation_id', 'correlation-replacement')
+            ->firstOrFail();
+        $this->assertFalse($audit->prior_state['media_replaced']);
+        $this->assertTrue($audit->resulting_state['media_replaced']);
+        $this->assertArrayNotHasKey('file_path', $audit->resulting_state);
+    }
+
+    #[Test]
+    public function FailedMediaReplacementDeletesTheNewFileAndKeepsTheOriginalReference(): void
+    {
+        $actor = User::factory()->create(['password' => Hash::make('content-service-password')]);
+        $content = AffiliateContent::create([
+            'title' => 'Original content',
+            'file_path' => 'uploads/affiliate/image/original-on-failure.webp',
+            'type' => 'image',
+            'status' => 'enabled',
+        ]);
+        $content->forceFill([
+            'destination_target' => '/',
+            'campaign_code' => 'failed-replacement-campaign',
+        ])->save();
+        $replacement = new StoredAffiliateMedia(
+            type: 'image',
+            relative_path: 'uploads/affiliate/image/failed-replacement.webp',
+            absolute_path: public_path('uploads/affiliate/image/failed-replacement.webp'),
+            mime_type: 'image/webp',
+            extension: 'webp',
+        );
+        $storage = $this->mock(AffiliateMediaStorageService::class);
+        $storage->shouldReceive('Store')->once()->andReturn($replacement);
+        $storage->shouldReceive('Delete')->once()->with($replacement);
+        $storage->shouldNotReceive('DeleteStoredPath');
+        $this->mock(AffiliateAuditService::class)
+            ->shouldReceive('Record')
+            ->once()
+            ->andThrow(new RuntimeException('Simulated audit failure'));
+
+        try {
+            app(AffiliateContentService::class)->Update(
+                $content,
+                ['title' => 'Must roll back'],
+                $actor,
+                'correlation-failed-replacement',
+                UploadedFile::fake()->image('replacement.png'),
+            );
+            $this->fail('The replacement should have failed.');
+        } catch (RuntimeException $exception) {
+            $this->assertSame('Simulated audit failure', $exception->getMessage());
+        }
+
+        $content->refresh();
+        $this->assertSame('Original content', $content->title);
+        $this->assertSame('uploads/affiliate/image/original-on-failure.webp', $content->file_path);
+    }
+
+    #[Test]
+    public function ReplacingMediaKeepsAnOriginalFileThatIsStillReferencedByAnotherContentRecord(): void
+    {
+        $actor = User::factory()->create(['password' => Hash::make('content-service-password')]);
+        $shared_path = 'uploads/affiliate/image/shared-original.webp';
+        $content = AffiliateContent::create([
+            'title' => 'Content being updated',
+            'file_path' => $shared_path,
+            'type' => 'image',
+            'status' => 'enabled',
+        ]);
+        $other_content = AffiliateContent::create([
+            'title' => 'Content retaining shared media',
+            'file_path' => $shared_path,
+            'type' => 'image',
+            'status' => 'enabled',
+        ]);
+        $replacement = new StoredAffiliateMedia(
+            type: 'image',
+            relative_path: 'uploads/affiliate/image/shared-replacement.webp',
+            absolute_path: public_path('uploads/affiliate/image/shared-replacement.webp'),
+            mime_type: 'image/webp',
+            extension: 'webp',
+        );
+        $storage = $this->mock(AffiliateMediaStorageService::class);
+        $storage->shouldReceive('Store')->once()->andReturn($replacement);
+        $storage->shouldNotReceive('DeleteStoredPath');
+
+        $updated = app(AffiliateContentService::class)->Update(
+            $content,
+            ['title' => 'Updated shared content'],
+            $actor,
+            'correlation-shared-replacement',
+            UploadedFile::fake()->image('replacement.png'),
+        );
+
+        $this->assertSame($replacement->relative_path, $updated->file_path);
+        $this->assertSame($shared_path, $other_content->fresh()->file_path);
     }
 
     #[Test]

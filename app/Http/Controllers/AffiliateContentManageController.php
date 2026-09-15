@@ -74,11 +74,14 @@ class AffiliateContentManageController extends Controller
     {
         $actor = $request->user();
         abort_unless($actor !== null, 403);
+        $validated = $request->validated();
+        unset($validated['file']);
         $this->affiliate_content_service->Update(
             $affiliate_content,
-            $request->validated(),
+            $validated,
             $actor,
             (string) $request->attributes->get('affiliate_correlation_id', request()->header('X-Correlation-ID', 'content')),
+            $request->file('file'),
         );
 
         return back()->with('success', __('affiliate.content_admin.updated'));

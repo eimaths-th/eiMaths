@@ -6,6 +6,7 @@ use App\Domain\Affiliate\Enums\AffiliateProfileStatus;
 use App\Domain\Affiliate\Services\AffiliateMediaStorageService;
 use App\Domain\Affiliate\ValueObjects\StoredAffiliateMedia;
 use App\Models\AffiliateContent;
+use App\Models\Department;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
@@ -20,17 +21,23 @@ class AffiliateContentManagementTest extends TestCase
 {
     use RefreshDatabase;
 
+    private Department $hq;
+
     protected function setUp(): void
     {
         parent::setUp();
         Config::set('affiliate.features.administration', true);
+        $this->hq = Department::query()->updateOrCreate(
+            ['id' => Department::HQ_ID],
+            ['name' => 'HQ Affiliate Content', 'code' => 'HQ-AC', 'status' => 1, 'branch_type' => 'hq'],
+        );
         Permission::findOrCreate('affiliate-content-manage', 'web');
         Role::findOrCreate('Admin', 'web')->givePermissionTo('affiliate-content-manage');
     }
 
     public function test_content_management_requires_the_dedicated_permission_and_preserves_files_on_archive(): void
     {
-        $admin = User::factory()->create(['password' => Hash::make('secret')]);
+        $admin = $this->CreateUser();
         $admin->assignRole('Admin');
         $content = AffiliateContent::create([
             'title' => 'Managed content',
@@ -50,14 +57,14 @@ class AffiliateContentManagementTest extends TestCase
 
     public function test_ordinary_authenticated_users_are_denied(): void
     {
-        $user = User::factory()->create(['password' => Hash::make('secret')]);
+        $user = $this->CreateUser();
         $this->actingAs($user)->get(route('affiliate-content-manage.index'))->assertForbidden();
     }
 
     #[Test]
     public function PermittedAdminSeesHistoricalCampaignMetadataAndStandardActionForms(): void
     {
-        $admin = User::factory()->create(['password' => Hash::make('secret')]);
+        $admin = $this->CreateUser();
         $admin->assignRole('Admin');
         $content = AffiliateContent::create([
             'title' => 'Managed content',
@@ -90,6 +97,10 @@ class AffiliateContentManagementTest extends TestCase
             ->assertSee('data-affiliate-content-media-type', false)
             ->assertSee('data-affiliate-content-media-file', false)
             ->assertSee('data-affiliate-content-media-help', false)
+            ->assertSee('id="affiliate-content-file-' . $content->id . '"', false)
+            ->assertSee('name="file"', false)
+            ->assertSee('enctype="multipart/form-data"', false)
+            ->assertSee('เปลี่ยนรูปภาพ')
             ->assertSee('affiliate-content-media-type.js', false)
             ->assertSee('affiliate-publication-window.js', false)
             ->assertSee('data-affiliate-publication-unlimited-toggle', false)
@@ -109,9 +120,83 @@ class AffiliateContentManagementTest extends TestCase
     }
 
     #[Test]
+    public function PermittedAdminCanReplaceAnImageWithoutChangingCampaignMetadata(): void
+    {
+        $admin = $this->CreateUser();
+        $admin->assignRole('Admin');
+        $content = AffiliateContent::create([
+            'title' => 'Original image',
+            'file_path' => 'uploads/affiliate/image/original.webp',
+            'type' => 'image',
+            'description' => 'Original caption',
+            'status' => 'enabled',
+            'created_by' => $admin->id,
+        ]);
+        $content->forceFill([
+            'campaign_code' => 'replace-image-campaign',
+            'destination_target' => '/courses',
+        ])->save();
+        $replacement = new StoredAffiliateMedia(
+            type: 'image',
+            relative_path: 'uploads/affiliate/image/replacement.webp',
+            absolute_path: public_path('uploads/affiliate/image/replacement.webp'),
+            mime_type: 'image/webp',
+            extension: 'webp',
+        );
+        $storage = $this->mock(AffiliateMediaStorageService::class);
+        $storage->shouldReceive('Store')->once()->withArgs(
+            fn (UploadedFile $file, string $type): bool => $file->getClientOriginalName() === 'replacement.png'
+                && $type === 'image'
+        )->andReturn($replacement);
+        $storage->shouldReceive('DeleteStoredPath')
+            ->once()
+            ->with('uploads/affiliate/image/original.webp', 'image');
+
+        $this->actingAs($admin)->post(route('affiliate-content-manage.update', $content), [
+            '_method' => 'PUT',
+            'title' => 'Replacement image',
+            'destination_target' => '/courses',
+            'file' => UploadedFile::fake()->image('replacement.png'),
+        ])->assertRedirect()->assertSessionHasNoErrors();
+
+        $content->refresh();
+        $this->assertSame('uploads/affiliate/image/replacement.webp', $content->file_path);
+        $this->assertSame('image', $content->type);
+        $this->assertSame('replace-image-campaign', $content->campaign_code);
+        $this->assertSame('Replacement image', $content->title);
+        $this->assertSame($admin->id, $content->updated_by);
+    }
+
+    #[Test]
+    public function ImageContentRejectsAVideoReplacement(): void
+    {
+        $admin = $this->CreateUser();
+        $admin->assignRole('Admin');
+        $content = AffiliateContent::create([
+            'title' => 'Image only',
+            'file_path' => 'uploads/affiliate/image/image-only.webp',
+            'type' => 'image',
+            'status' => 'enabled',
+            'created_by' => $admin->id,
+        ]);
+        $content->forceFill([
+            'campaign_code' => 'image-only-campaign',
+            'destination_target' => '/',
+        ])->save();
+        $this->mock(AffiliateMediaStorageService::class)->shouldNotReceive('Store');
+
+        $this->actingAs($admin)->post(route('affiliate-content-manage.update', $content), [
+            '_method' => 'PUT',
+            'file' => UploadedFile::fake()->create('replacement.mp4', 10, 'video/mp4'),
+        ])->assertRedirect()->assertSessionHasErrors('file');
+
+        $this->assertSame('uploads/affiliate/image/image-only.webp', $content->fresh()->file_path);
+    }
+
+    #[Test]
     public function CreateFormRetainsTheSelectedVideoTypeAfterValidationRedirect(): void
     {
-        $admin = User::factory()->create(['password' => Hash::make('secret')]);
+        $admin = $this->CreateUser();
         $admin->assignRole('Admin');
 
         $response = $this->withSession(['_old_input' => ['type' => 'video']])
@@ -125,7 +210,7 @@ class AffiliateContentManagementTest extends TestCase
     #[Test]
     public function CreateFormStartsWithAnEnabledPublicationEndField(): void
     {
-        $admin = User::factory()->create(['password' => Hash::make('secret')]);
+        $admin = $this->CreateUser();
         $admin->assignRole('Admin');
 
         $response = $this->actingAs($admin)
@@ -158,7 +243,7 @@ class AffiliateContentManagementTest extends TestCase
     #[Test]
     public function CreateRequestTreatsCheckedUnlimitedPublicationAsHavingNoEndTime(): void
     {
-        $admin = User::factory()->create(['password' => Hash::make('secret')]);
+        $admin = $this->CreateUser();
         $admin->assignRole('Admin');
         $this->mock(AffiliateMediaStorageService::class)
             ->shouldReceive('Store')
@@ -191,7 +276,7 @@ class AffiliateContentManagementTest extends TestCase
     #[Test]
     public function UpdateRequestTreatsCheckedUnlimitedPublicationAsHavingNoEndTime(): void
     {
-        $admin = User::factory()->create(['password' => Hash::make('secret')]);
+        $admin = $this->CreateUser();
         $admin->assignRole('Admin');
         $content = AffiliateContent::create([
             'title' => 'Scheduled campaign',
@@ -223,7 +308,7 @@ class AffiliateContentManagementTest extends TestCase
     #[Test]
     public function PermittedAdminSeesUnlimitedPublicationStatusInTheContentList(): void
     {
-        $admin = User::factory()->create(['password' => Hash::make('secret')]);
+        $admin = $this->CreateUser();
         $admin->assignRole('Admin');
         $content = AffiliateContent::create([
             'title' => 'Always available content',
@@ -247,7 +332,7 @@ class AffiliateContentManagementTest extends TestCase
     #[Test]
     public function PermittedAdminCanGenerateAnUnusedCampaignCode(): void
     {
-        $admin = User::factory()->create(['password' => Hash::make('secret')]);
+        $admin = $this->CreateUser();
         $admin->assignRole('Admin');
         $content = AffiliateContent::create([
             'title' => 'Existing campaign',
@@ -275,7 +360,7 @@ class AffiliateContentManagementTest extends TestCase
     #[Test]
     public function OrdinaryAuthenticatedUsersCannotGenerateCampaignCodes(): void
     {
-        $user = User::factory()->create(['password' => Hash::make('secret')]);
+        $user = $this->CreateUser();
 
         $this->actingAs($user)
             ->get('/affiliate-content-manage/generate-campaign-code')
@@ -285,7 +370,7 @@ class AffiliateContentManagementTest extends TestCase
     #[Test]
     public function PaginatedContentManagementKeepsRowsOnSeparatePages(): void
     {
-        $admin = User::factory()->create(['password' => Hash::make('secret')]);
+        $admin = $this->CreateUser();
         $admin->assignRole('Admin');
 
         for ($content_number = 1; $content_number <= 11; $content_number++) {
@@ -318,7 +403,7 @@ class AffiliateContentManagementTest extends TestCase
     #[Test]
     public function PermittedAdminCanToggleStatusThroughTheProtectedForm(): void
     {
-        $admin = User::factory()->create(['password' => Hash::make('secret')]);
+        $admin = $this->CreateUser();
         $admin->assignRole('Admin');
         $content = AffiliateContent::create([
             'title' => 'Toggle content',
@@ -338,7 +423,7 @@ class AffiliateContentManagementTest extends TestCase
     #[Test]
     public function PermittedAdminUsesTheAdminLteContentShell(): void
     {
-        $admin = User::factory()->create(['password' => Hash::make('secret')]);
+        $admin = $this->CreateUser();
         $admin->assignRole('Admin');
 
         $response = $this->actingAs($admin)->get(route('affiliate-content-manage.index'));
@@ -348,5 +433,14 @@ class AffiliateContentManagementTest extends TestCase
             ->assertSee('content', false)
             ->assertSee('container-fluid', false)
             ->assertSee('card card-primary', false);
+    }
+
+    private function CreateUser(): User
+    {
+        return User::factory()->create([
+            'department_id' => $this->hq->id,
+            'disable' => 0,
+            'password' => Hash::make('secret'),
+        ]);
     }
 }

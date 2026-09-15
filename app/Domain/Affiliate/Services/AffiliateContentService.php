@@ -83,30 +83,90 @@ class AffiliateContentService
         }
     }
 
-    public function Update(AffiliateContent $content, array $validated, User $actor, string $correlation_id): AffiliateContent
+    public function Update(
+        AffiliateContent $content,
+        array $validated,
+        User $actor,
+        string $correlation_id,
+        ?UploadedFile $replacement_file = null,
+    ): AffiliateContent
     {
         if (array_key_exists('campaign_code', $validated) || array_key_exists('file', $validated)) {
-            throw new LogicException('Affiliate campaign codes and files are immutable after creation.');
+            throw new LogicException('Affiliate campaign codes are immutable and replacement files must use the dedicated argument.');
         }
 
-        return DB::transaction(function () use ($content, $validated, $actor, $correlation_id): AffiliateContent {
-            $locked = $this->LockWritableContent($content);
-            $prior_state = ['campaign_code' => $locked->campaign_code, 'status' => $locked->status];
-            $attributes = [];
-            foreach (['title', 'description', 'status', 'publish_starts_at', 'publish_ends_at'] as $field) {
-                if (array_key_exists($field, $validated)) {
-                    $attributes[$field] = $validated[$field];
-                }
-            }
-            if (array_key_exists('destination_target', $validated)) {
-                $attributes['destination_target'] = $this->destination_validator->Normalize((string) $validated['destination_target']);
-            }
-            $attributes['updated_by'] = $actor->id;
-            $locked->forceFill($attributes)->save();
-            $this->audit_service->Record('content.updated', 'affiliate_content', $locked->id, $actor, $prior_state, ['campaign_code' => $locked->campaign_code, 'status' => $locked->status], null, 'SUCCESS', null, $correlation_id);
+        $stored_replacement = $replacement_file === null
+            ? null
+            : $this->media_storage_service->Store($replacement_file, (string) $content->type);
 
-            return $locked->fresh();
-        });
+        try {
+            $result = DB::transaction(function () use ($content, $validated, $actor, $correlation_id, $stored_replacement): array {
+                $locked = $this->LockWritableContent($content);
+                if ($stored_replacement !== null && $stored_replacement->type !== $locked->type) {
+                    throw new LogicException('The replacement file must match the existing Affiliate media type.');
+                }
+
+                $prior_state = [
+                    'campaign_code' => $locked->campaign_code,
+                    'status' => $locked->status,
+                    'media_replaced' => false,
+                ];
+                $previous_file_path = (string) $locked->file_path;
+                $previous_type = (string) $locked->type;
+                $attributes = [];
+                foreach (['title', 'description', 'status', 'publish_starts_at', 'publish_ends_at'] as $field) {
+                    if (array_key_exists($field, $validated)) {
+                        $attributes[$field] = $validated[$field];
+                    }
+                }
+                if (array_key_exists('destination_target', $validated)) {
+                    $attributes['destination_target'] = $this->destination_validator->Normalize((string) $validated['destination_target']);
+                }
+                if ($stored_replacement !== null) {
+                    $attributes['file_path'] = $stored_replacement->relative_path;
+                }
+                $attributes['updated_by'] = $actor->id;
+                $locked->forceFill($attributes)->save();
+                $this->audit_service->Record(
+                    'content.updated',
+                    'affiliate_content',
+                    $locked->id,
+                    $actor,
+                    $prior_state,
+                    [
+                        'campaign_code' => $locked->campaign_code,
+                        'status' => $locked->status,
+                        'media_replaced' => $stored_replacement !== null,
+                    ],
+                    null,
+                    'SUCCESS',
+                    null,
+                    $correlation_id,
+                );
+
+                return [
+                    'content' => $locked->fresh(),
+                    'previous_file_path' => $previous_file_path,
+                    'previous_type' => $previous_type,
+                ];
+            });
+        } catch (\Throwable $exception) {
+            if ($stored_replacement !== null) {
+                $this->media_storage_service->Delete($stored_replacement);
+            }
+            throw $exception;
+        }
+
+        if ($stored_replacement !== null
+            && $result['previous_file_path'] !== $stored_replacement->relative_path
+            && ! AffiliateContent::withTrashed()->where('file_path', $result['previous_file_path'])->exists()) {
+            $this->media_storage_service->DeleteStoredPath(
+                $result['previous_file_path'],
+                $result['previous_type'],
+            );
+        }
+
+        return $result['content'];
     }
 
     public function ToggleStatus(AffiliateContent $content, User $actor, string $correlation_id): AffiliateContent

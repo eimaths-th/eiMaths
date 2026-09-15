@@ -5,8 +5,10 @@ namespace Tests\Feature\Affiliate;
 use App\Http\Requests\Affiliate\StoreAffiliateContentRequest;
 use App\Http\Requests\Affiliate\ToggleAffiliateContentStatusRequest;
 use App\Http\Requests\Affiliate\UpdateAffiliateContentRequest;
+use App\Models\AffiliateContent;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Routing\Route;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Validator;
 use PHPUnit\Framework\Attributes\Test;
@@ -42,18 +44,29 @@ class AffiliateContentRequestTest extends TestCase
     }
 
     #[Test]
-    public function UpdateRequestProhibitsCampaignAndFileReplacement(): void
+    public function UpdateRequestProhibitsCampaignButAcceptsAMatchingFileReplacement(): void
     {
+        $content = AffiliateContent::create([
+            'title' => 'Existing image',
+            'file_path' => 'uploads/affiliate/image/existing.webp',
+            'type' => 'image',
+            'status' => 'enabled',
+        ]);
         $request = UpdateAffiliateContentRequest::create('/affiliate/media/1', 'PUT', [
             'campaign_code' => 'replacement-campaign',
-            'file' => 'replacement.png',
         ]);
+        $request->files->set('file', UploadedFile::fake()->image('replacement.png'));
+        $route = new Route('PUT', '/affiliate/media/{affiliate_content}', []);
+        $route->bind($request);
+        $route->setParameter('affiliate_content', $content);
+        $request->setRouteResolver(fn (): Route => $route);
+
         $validator = Validator::make($request->all(), $request->rules());
         $request->withValidator($validator);
 
         $this->assertFalse($validator->passes());
         $this->assertTrue($validator->errors()->has('campaign_code'));
-        $this->assertTrue($validator->errors()->has('file'));
+        $this->assertFalse($validator->errors()->has('file'));
     }
 
     #[Test]
