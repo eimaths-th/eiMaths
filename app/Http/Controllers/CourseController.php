@@ -1143,7 +1143,11 @@ class CourseController extends Controller
             'price' => 'required|string|max:255',
 
         ]);
-        abort_unless(\App\Support\Branch\BranchAccess::moduleEnabled((int) $validatedData['department_id'], 'crm'), 422, 'Registration is not enabled for this branch.');
+        $department = Department::query()
+            ->select(['id', 'name', 'code'])
+            ->findOrFail((int) $validatedData['department_id']);
+
+        abort_unless(\App\Support\Branch\BranchAccess::moduleEnabled((int) $department->id, 'crm'), 422, 'Registration is not enabled for this branch.');
         abort_unless(\App\Models\TeachingPeriod::where('department_id', $validatedData['department_id'])->where('day', $validatedData['day'])->where('period', $validatedData['period'])->exists(), 422, 'Choose a valid teaching period for this branch.');
         $affiliate_context = $request->attributes->get('affiliate_referral_context');
         $validatedData['ref'] = '';
@@ -1219,10 +1223,10 @@ class CourseController extends Controller
 
         // ส่ง Telegram notification แจ้ง admin
         try {
-            $department = Department::find($validatedData['department_id']);
-            $validatedData['department_id'] = $department->name;
+            $notificationData = $validatedData;
+            $notificationData['department_id'] = $department->name;
             $telegramService = new TelegramService();
-            $telegramService->sendCoursePendingNotification($validatedData);
+            $telegramService->sendCoursePendingNotification($notificationData);
         } catch (\Exception $e) {
             Log::error('Failed to send Telegram notification: ' . $e->getMessage());
         }
@@ -1233,6 +1237,11 @@ class CourseController extends Controller
             'qrCodePayment' => $qrCodePayment,
             'coursePending_id' => $create->id,
             'application_token' => encrypt(['id' => $create->id, 'expires_at' => now()->addHours(24)->timestamp]),
+            'branch' => [
+                'id' => (int) $department->id,
+                'code' => (string) $department->code,
+                'name' => (string) $department->name,
+            ],
         ]);
     }
 

@@ -1,326 +1,626 @@
+@php
+    $affiliate_branch_contacts = [
+        'RP' => [
+            'aliases' => 'ratchaphruek|ratchapruek|ราชพฤกษ์',
+            'name' => 'The Crystal SB Ratchapruek',
+            'label' => 'สาขาราชพฤกษ์',
+            'address' => 'ชั้น 3 โซน Education เลขที่ 555/9 ตำบลบางขนุน อำเภอบางกรวย จังหวัดนนทบุรี 11130',
+            'line_label' => '@eiMaths',
+            'line_url' => 'https://lin.ee/K244eaZ',
+            'phone_label' => '061 620 8666',
+            'phone_url' => 'tel:0616208666',
+            'facebook_label' => 'eiMaths - TH',
+            'facebook_url' => 'https://www.facebook.com/search/top?q=eiMaths%20-%20TH',
+        ],
+        'BK' => [
+            'aliases' => 'bangkae|bang kae|บางแค',
+            'name' => 'eiMaths Seacon Bangkae',
+            'label' => 'สาขาซีคอนบางแค',
+            'address' => 'ชั้น 4 โซน HarborLand ศูนย์การค้าซีคอนบางแค 607 ถนนเพชรเกษม แขวงบางหว้า เขตภาษีเจริญ กรุงเทพมหานคร 10160',
+            'line_label' => '@eiMathsBangkae',
+            'line_url' => 'https://lin.ee/SFpwGwU',
+            'phone_label' => '093 258 5897',
+            'phone_url' => 'tel:0932585897',
+            'facebook_label' => 'eiMaths - Bangkae',
+            'facebook_url' => 'https://www.facebook.com/search/top?q=eiMaths%20-%20Bangkae',
+        ],
+    ];
+@endphp
+
 <style>
-    .premium-modal .modal-dialog {
-        max-width: 600px;
-        margin: 1.75rem auto;
+    .course-success-modal .modal-dialog {
+        max-width: 560px;
+        margin: 1.5rem auto;
+        padding: 0 1rem;
     }
-    .premium-modal .modal-content {
-        border: none;
-        border-radius: 20px;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
-        background: linear-gradient(135deg, #FFA62E 0%, #FF7B00 100%);
+
+    .course-success-modal .modal-content {
         overflow: hidden;
-        animation: modalSlideIn 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        border: 1px solid #e5e7eb;
+        border-radius: 22px;
+        background: #ffffff;
+        box-shadow: 0 24px 70px rgba(15, 23, 42, 0.2);
     }
-    .premium-modal .modal-header {
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(20px);
-        border: none;
-        padding: 2rem 2rem 1rem;
-        text-align: center;
-        position: relative;
+
+    .course-success-modal .modal-header {
+        align-items: flex-start;
+        gap: 1rem;
+        padding: 1.5rem 1.5rem 0;
+        border: 0;
     }
-    .premium-modal .modal-title {
-        color: white;
-        font-weight: 700;
-        font-size: 1.5rem;
-        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-        margin: 0;
-    }
-    .premium-modal .btn-close-custom {
-        position: absolute;
-        top: 1rem;
-        right: 1rem;
-        background: rgba(255, 255, 255, 0.2);
-        border: none;
-        border-radius: 50%;
-        width: 40px;
-        height: 40px;
+
+    .course-success-modal__heading {
         display: flex;
+        min-width: 0;
+        align-items: center;
+        gap: 0.875rem;
+    }
+
+    .course-success-modal__status-icon {
+        display: inline-flex;
+        width: 44px;
+        height: 44px;
+        flex: 0 0 44px;
         align-items: center;
         justify-content: center;
-        color: white;
-        font-size: 1.2rem;
-        transition: all 0.3s ease;
-        backdrop-filter: blur(10px);
+        border-radius: 50%;
+        background: #ecfdf3;
+        color: #15803d;
     }
-    .premium-modal .btn-close-custom:hover {
-        background: rgba(255, 255, 255, 0.3);
-        transform: scale(1.1);
+
+    .course-success-modal__status-icon svg {
+        width: 23px;
+        height: 23px;
+        stroke-width: 2.4;
     }
-    .premium-modal .modal-body {
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(20px);
-        padding: 2rem;
-        margin: 0;
-    }
-    .premium-modal .welcome-section {
-        text-align: center;
-        margin-bottom: 2rem;
-        padding: 1.5rem;
-        background: linear-gradient(135deg, rgba(255, 166, 46, 0.12), rgba(255, 123, 0, 0.12));
-        border-radius: 15px;
-        border: 1px solid rgba(255, 166, 46, 0.35);
-    }
-    .premium-modal .welcome-icon {
-        font-size: 3rem;
-        margin-bottom: 1rem;
-        animation: bounce 2s infinite;
-    }
-    .premium-modal .branch-card {
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7));
-        backdrop-filter: blur(15px);
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        border-radius: 20px;
-        padding: 1.5rem;
-        margin-bottom: 1rem;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-        transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        position: relative;
-        overflow: hidden;
-    }
-    .premium-modal .branch-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 4px;
-        background: linear-gradient(90deg, #FFA62E, #FF7B00);
-    }
-    .premium-modal .branch-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 15px 45px rgba(0, 0, 0, 0.15);
-    }
-    .premium-modal .branch-icon {
-        font-size: 2.5rem;
-        background: linear-gradient(135deg, #FFA62E, #FF7B00);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        margin-right: 1rem;
-        flex-shrink: 0;
-    }
-    .premium-modal .branch-title {
-        color: #2d3748;
+
+    .course-success-modal__eyebrow {
+        margin: 0 0 0.2rem;
+        color: #c2410c;
+        font-size: 0.76rem;
         font-weight: 700;
-        font-size: 1.25rem;
-        margin-bottom: 0.5rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
     }
-    .premium-modal .branch-address {
-        color: #718096;
-        font-size: 0.9rem;
-        line-height: 1.4;
-        margin-bottom: 1rem;
+
+    .course-success-modal .modal-title {
+        margin: 0;
+        color: #172033;
+        font-size: 1.35rem;
+        font-weight: 700;
+        line-height: 1.35;
     }
-    .premium-modal .contact-info {
-        background: rgba(255, 166, 46, 0.06);
-        border-radius: 10px;
-        padding: 1rem;
-        margin-bottom: 1rem;
+
+    .course-success-modal__subtitle {
+        margin: 0.2rem 0 0;
+        color: #667085;
+        font-size: 0.86rem;
     }
-    .premium-modal .contact-info li {
-        padding: 0.25rem 0;
-        color: #4a5568;
-    }
-    .premium-modal .contact-buttons {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.75rem;
-    }
-    .premium-modal .btn-contact {
-        border-radius: 25px;
-        padding: 0.5rem 1.25rem;
-        font-weight: 600;
-        font-size: 0.9rem;
-        transition: all 0.3s ease;
-        text-decoration: none;
+
+    .course-success-modal__close {
         display: inline-flex;
+        width: 36px;
+        height: 36px;
+        flex: 0 0 36px;
         align-items: center;
-        gap: 0.5rem;
-        border: 2px solid transparent;
+        justify-content: center;
+        margin-left: auto;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        background: #ffffff;
+        color: #667085;
+        transition: background-color 0.18s ease, color 0.18s ease;
     }
-    .premium-modal .btn-line {
-        background: linear-gradient(135deg, #00c851, #00b347);
-        color: white;
-        box-shadow: 0 4px 15px rgba(0, 200, 81, 0.3);
+
+    .course-success-modal__close:hover,
+    .course-success-modal__close:focus-visible {
+        background: #f8fafc;
+        color: #172033;
     }
-    .premium-modal .btn-line:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(0, 200, 81, 0.4);
-        color: white;
+
+    .course-success-modal__close svg {
+        width: 19px;
+        height: 19px;
     }
-    .premium-modal .btn-call {
-        background: linear-gradient(135deg, #FF8C00, #FF6A00);
-        color: white;
-        box-shadow: 0 4px 15px rgba(255, 140, 0, 0.35);
+
+    .course-success-modal .modal-body {
+        padding: 1.25rem 1.5rem 1.5rem;
     }
-    .premium-modal .btn-call:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(255, 140, 0, 0.5);
-        color: white;
+
+    .course-success-modal__notice {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+        margin-bottom: 1.25rem;
+        padding: 0.9rem 1rem;
+        border: 1px solid #fed7aa;
+        border-radius: 14px;
+        background: #fffaf5;
+        color: #7c2d12;
     }
-    .premium-modal .btn-facebook {
-        background: linear-gradient(135deg, #1877f2, #166fe5);
-        color: white;
-        box-shadow: 0 4px 15px rgba(24, 119, 242, 0.3);
+
+    .course-success-modal__notice svg {
+        width: 20px;
+        height: 20px;
+        flex: 0 0 20px;
+        margin-top: 0.1rem;
+        color: #ea580c;
     }
-    .premium-modal .btn-facebook:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(24, 119, 242, 0.4);
-        color: white;
+
+    .course-success-modal__notice strong,
+    .course-success-modal__notice span {
+        display: block;
     }
-    .premium-modal .modal-footer {
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(20px);
-        border: none;
-        padding: 1.5rem 2rem;
-        text-align: center;
+
+    .course-success-modal__notice strong {
+        margin-bottom: 0.15rem;
+        color: #172033;
+        font-size: 0.93rem;
     }
-    .premium-modal .btn-close-modal {
-        background: rgba(255, 255, 255, 0.2);
-        border: 2px solid rgba(255, 255, 255, 0.3);
-        color: white;
-        border-radius: 25px;
-        padding: 0.75rem 2rem;
+
+    .course-success-modal__notice span {
+        color: #667085;
+        font-size: 0.84rem;
+        line-height: 1.55;
+    }
+
+    .course-success-modal__selection {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 0.75rem;
+        margin-bottom: 0.65rem;
+    }
+
+    .course-success-modal__selection span {
+        color: #667085;
+        font-size: 0.82rem;
+        font-weight: 500;
+    }
+
+    .course-success-modal__selection strong {
+        color: #172033;
+        font-size: 0.9rem;
+        text-align: right;
+    }
+
+    .course-success-branch {
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        background: #ffffff;
+        padding: 1.1rem;
+    }
+
+    .course-success-branch__header {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+        padding-bottom: 0.95rem;
+        border-bottom: 1px solid #eef2f6;
+    }
+
+    .course-success-branch__pin {
+        display: inline-flex;
+        width: 38px;
+        height: 38px;
+        flex: 0 0 38px;
+        align-items: center;
+        justify-content: center;
+        border-radius: 11px;
+        background: #fff7ed;
+        color: #ea580c;
+    }
+
+    .course-success-branch__pin svg {
+        width: 20px;
+        height: 20px;
+    }
+
+    .course-success-branch__title {
+        margin: 0;
+        color: #172033;
+        font-size: 1.03rem;
+        font-weight: 700;
+        line-height: 1.4;
+    }
+
+    .course-success-branch__label {
+        display: block;
+        margin-top: 0.1rem;
+        color: #667085;
+        font-size: 0.8rem;
+    }
+
+    .course-success-branch__address {
+        display: flex;
+        gap: 0.65rem;
+        margin: 0;
+        padding: 0.95rem 0;
+        color: #475467;
+        font-size: 0.84rem;
+        line-height: 1.65;
+    }
+
+    .course-success-branch__address svg {
+        width: 18px;
+        height: 18px;
+        flex: 0 0 18px;
+        margin-top: 0.16rem;
+        color: #98a2b3;
+    }
+
+    .course-success-branch__contacts {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0.55rem;
+        margin: 0 0 1rem;
+    }
+
+    .course-success-branch__contact {
+        min-width: 0;
+        padding: 0.7rem;
+        border-radius: 11px;
+        background: #f8fafc;
+    }
+
+    .course-success-branch__contact span,
+    .course-success-branch__contact strong {
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .course-success-branch__contact span {
+        margin-bottom: 0.15rem;
+        color: #98a2b3;
+        font-size: 0.7rem;
         font-weight: 600;
-        transition: all 0.3s ease;
-        backdrop-filter: blur(10px);
+        text-transform: uppercase;
     }
-    .premium-modal .btn-close-modal:hover {
-        background: rgba(255, 255, 255, 0.3);
-        border-color: rgba(255, 255, 255, 0.5);
-        transform: translateY(-2px);
-        color: white;
+
+    .course-success-branch__contact strong {
+        color: #344054;
+        font-size: 0.78rem;
+        font-weight: 600;
     }
-    @keyframes modalSlideIn {
-        from {
-            opacity: 0;
-            transform: translateY(-50px) scale(0.9);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-        }
+
+    .course-success-branch__actions {
+        display: grid;
+        grid-template-columns: 1.2fr 1fr 1fr;
+        gap: 0.55rem;
     }
-    @keyframes bounce {
-        0%, 20%, 50%, 80%, 100% {
-            transform: translateY(0);
-        }
-        40% {
-            transform: translateY(-10px);
-        }
-        60% {
-            transform: translateY(-5px);
-        }
+
+    .course-success-branch__action {
+        display: inline-flex;
+        min-height: 42px;
+        align-items: center;
+        justify-content: center;
+        gap: 0.45rem;
+        padding: 0.6rem 0.7rem;
+        border: 1px solid #d0d5dd;
+        border-radius: 10px;
+        background: #ffffff;
+        color: #344054;
+        font-size: 0.79rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: border-color 0.18s ease, background-color 0.18s ease, color 0.18s ease;
     }
-    @media (max-width: 576px) {
-        .premium-modal .modal-dialog {
-            margin: 0.5rem;
+
+    .course-success-branch__action:hover,
+    .course-success-branch__action:focus-visible {
+        border-color: #f97316;
+        background: #fff7ed;
+        color: #c2410c;
+        text-decoration: none;
+    }
+
+    .course-success-branch__action--primary {
+        border-color: #ea580c;
+        background: #ea580c;
+        color: #ffffff;
+    }
+
+    .course-success-branch__action--primary:hover,
+    .course-success-branch__action--primary:focus-visible {
+        border-color: #c2410c;
+        background: #c2410c;
+        color: #ffffff;
+    }
+
+    .course-success-branch__action svg {
+        width: 17px;
+        height: 17px;
+        flex: 0 0 17px;
+    }
+
+    .course-success-modal__empty {
+        padding: 1rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        background: #f8fafc;
+        color: #475467;
+        font-size: 0.86rem;
+        line-height: 1.6;
+    }
+
+    .course-success-modal .modal-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 1rem 1.5rem;
+        border-top: 1px solid #eef2f6;
+        background: #f8fafc;
+    }
+
+    .course-success-modal__follow-up {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.45rem;
+        max-width: 315px;
+        margin: 0;
+        color: #667085;
+        font-size: 0.76rem;
+        line-height: 1.5;
+        text-align: left;
+    }
+
+    .course-success-modal__follow-up svg {
+        width: 16px;
+        height: 16px;
+        flex: 0 0 16px;
+        margin-top: 0.12rem;
+    }
+
+    .course-success-modal__done {
+        display: inline-flex;
+        min-height: 40px;
+        flex: 0 0 auto;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+        padding: 0.55rem 1rem;
+        border: 1px solid #172033;
+        border-radius: 10px;
+        background: #172033;
+        color: #ffffff;
+        font-size: 0.82rem;
+        font-weight: 600;
+    }
+
+    .course-success-modal__done:hover,
+    .course-success-modal__done:focus-visible {
+        background: #293548;
+        color: #ffffff;
+    }
+
+    .course-success-modal__done svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    @media (max-width: 575.98px) {
+        .course-success-modal .modal-dialog {
+            margin: 0.75rem auto;
+            padding: 0 0.5rem;
         }
-        .premium-modal .modal-header,
-        .premium-modal .modal-body,
-        .premium-modal .modal-footer {
-            padding: 1.5rem 1rem;
+
+        .course-success-modal .modal-header {
+            padding: 1.2rem 1.1rem 0;
         }
-        .premium-modal .contact-buttons {
+
+        .course-success-modal .modal-body {
+            padding: 1rem 1.1rem 1.15rem;
+        }
+
+        .course-success-modal .modal-title {
+            font-size: 1.15rem;
+        }
+
+        .course-success-modal__status-icon {
+            width: 40px;
+            height: 40px;
+            flex-basis: 40px;
+        }
+
+        .course-success-modal__selection {
+            display: block;
+        }
+
+        .course-success-modal__selection strong {
+            display: block;
+            margin-top: 0.15rem;
+            text-align: left;
+        }
+
+        .course-success-branch__contacts,
+        .course-success-branch__actions {
+            grid-template-columns: 1fr;
+        }
+
+        .course-success-modal .modal-footer {
+            align-items: stretch;
             flex-direction: column;
+            padding: 0.9rem 1.1rem 1.1rem;
         }
-        .premium-modal .btn-contact {
-            justify-content: center;
+
+        .course-success-modal__follow-up {
+            max-width: none;
+        }
+
+        .course-success-modal__done {
+            width: 100%;
         }
     }
 </style>
 
-<div class="modal fade premium-modal" id="modalLineContact">
+<div class="modal fade course-success-modal" id="modalLineContact" tabindex="-1" aria-labelledby="courseSuccessModalTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="modal-title">🎉 Order Received | ได้รับคำสั่งซื้อแล้ว</h3>
-                <button type="button" class="btn-close-custom" data-bs-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+                <div class="course-success-modal__heading">
+                    <span class="course-success-modal__status-icon" aria-hidden="true">
+                        <i data-lucide="check"></i>
+                    </span>
+                    <div>
+                        <p class="course-success-modal__eyebrow">Booking received</p>
+                        <h3 class="modal-title" id="courseSuccessModalTitle">ส่งคำขอจองคอร์สเรียบร้อย</h3>
+                        <p class="course-success-modal__subtitle">เราได้รับข้อมูลของคุณแล้ว</p>
+                    </div>
+                </div>
+                <button type="button" class="course-success-modal__close" data-bs-dismiss="modal" aria-label="ปิดหน้าต่าง">
+                    <i data-lucide="x" aria-hidden="true"></i>
                 </button>
             </div>
+
             <div class="modal-body">
-                <div class="welcome-section">
-                    <div class="welcome-icon">✅</div>
-                    <h4 class="mb-2" style="color: #2d3748; font-weight: 700;">We have received your order!</h4>
-                    <p class="mb-3" style="color: #718096;">Please contact the admin via the branches below.</p>
-                    <h5 class="mb-2" style="color: #2d3748; font-weight: 700;">เราได้รับคำสั่งซื้อของคุณแล้ว!</h5>
-                    <p class="mb-0" style="color: #718096;">กรุณาติดต่อผู้ดูแลระบบตามสาขาด้านล่าง</p>
+                <div class="course-success-modal__notice">
+                    <i data-lucide="calendar-check" aria-hidden="true"></i>
+                    <div>
+                        <strong>ขั้นตอนต่อไป</strong>
+                        <span>ติดต่อสาขาที่เลือกเพื่อยืนยันวัน เวลาเรียน และรายละเอียดการชำระเงิน</span>
+                    </div>
                 </div>
 
-                <div class="row g-3">
-                    <!-- Branch 1: Crystal SB Ratchapruek -->
-                    <div class="col-12">
-                        <div class="branch-card">
-                            <div class="d-flex align-items-start">
-                                <div class="branch-icon">🏢</div>
-                                <div class="flex-grow-1">
-                                    <h5 class="branch-title">Crystal SB Ratchapruek</h5>
-                                    <p class="branch-address">3rd floor, Zone Education, 555/9 Bang Khanun, Bang Krui, Nonthaburi 11130</p>
-                                    <div class="contact-info">
-                                        <ul class="list-unstyled mb-0">
-                                            <li><strong>📘 Facebook:</strong> eiMaths - TH</li>
-                                            <li><strong>💬 Line:</strong> @eiMaths</li>
-                                            <li><strong>📱 Mobile:</strong> 061 620 8666</li>
-                                        </ul>
-                                    </div>
-                                    <div class="contact-buttons">
-                                        <a class="btn-contact btn-line" href="https://lin.ee/K244eaZ" target="_blank" rel="noopener">
-                                            💬 Add Line
-                                        </a>
-                                        <a class="btn-contact btn-call" href="tel:0616208666">
-                                            📞 Call Now
-                                        </a>
-                                        <a class="btn-contact btn-facebook" href="https://www.facebook.com/search/top?q=eiMaths%20-%20TH" target="_blank" rel="noopener">
-                                            📘 Facebook
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <div class="course-success-modal__selection">
+                    <span>สาขาที่เลือกนัดหมาย</span>
+                    <strong data-course-success-branch-name>กำลังตรวจสอบข้อมูลสาขา</strong>
+                </div>
 
-                    <!-- Branch 2: Seacon Bangkae -->
-                    <div class="col-12">
-                        <div class="branch-card">
-                            <div class="d-flex align-items-start">
-                                <div class="branch-icon">🏬</div>
-                                <div class="flex-grow-1">
-                                    <h5 class="branch-title">eiMaths Seacon Bangkae Branch</h5>
-                                    <p class="branch-address">Seacon Bangkae, 4th floor, Zone HarborLand, 607 Phetkasem Road, Bang Wa, Phasi Charoen, Bangkok 10160</p>
-                                    <div class="contact-info">
-                                        <ul class="list-unstyled mb-0">
-                                            <li><strong>📘 Facebook:</strong> eiMaths - Bangkae</li>
-                                            <li><strong>💬 Line:</strong> @eiMathsBangkae</li>
-                                            <li><strong>📱 Mobile:</strong> 093-258-5897</li>
-                                        </ul>
-                                    </div>
-                                    <div class="contact-buttons">
-                                        <a class="btn-contact btn-line" href="https://lin.ee/SFpwGwU" target="_blank" rel="noopener">
-                                            💬 Add Line
-                                        </a>
-                                        <a class="btn-contact btn-call" href="tel:0932585897">
-                                            📞 Call Now
-                                        </a>
-                                        <a class="btn-contact btn-facebook" href="https://www.facebook.com/search/top?q=eiMaths%20-%20Bangkae" target="_blank" rel="noopener">
-                                            📘 Facebook
-                                        </a>
-                                    </div>
-                                </div>
+                @foreach ($affiliate_branch_contacts as $branch_code => $contact)
+                    <article
+                        class="course-success-branch"
+                        data-course-success-branch
+                        data-branch-code="{{ $branch_code }}"
+                        data-branch-aliases="{{ $contact['aliases'] }}"
+                        data-branch-display-name="{{ $contact['name'] }}"
+                        hidden
+                    >
+                        <div class="course-success-branch__header">
+                            <span class="course-success-branch__pin" aria-hidden="true">
+                                <i data-lucide="building-2"></i>
+                            </span>
+                            <div>
+                                <h4 class="course-success-branch__title">{{ $contact['name'] }}</h4>
+                                <span class="course-success-branch__label">{{ $contact['label'] }}</span>
                             </div>
                         </div>
-                    </div>
+
+                        <p class="course-success-branch__address">
+                            <i data-lucide="map-pin" aria-hidden="true"></i>
+                            <span>{{ $contact['address'] }}</span>
+                        </p>
+
+                        <div class="course-success-branch__contacts" aria-label="ข้อมูลติดต่อสาขา">
+                            <div class="course-success-branch__contact">
+                                <span>LINE</span>
+                                <strong>{{ $contact['line_label'] }}</strong>
+                            </div>
+                            <div class="course-success-branch__contact">
+                                <span>โทรศัพท์</span>
+                                <strong>{{ $contact['phone_label'] }}</strong>
+                            </div>
+                            <div class="course-success-branch__contact">
+                                <span>Facebook</span>
+                                <strong>{{ $contact['facebook_label'] }}</strong>
+                            </div>
+                        </div>
+
+                        <div class="course-success-branch__actions">
+                            <a class="course-success-branch__action course-success-branch__action--primary" href="{{ $contact['line_url'] }}" target="_blank" rel="noopener">
+                                <i data-lucide="message-circle" aria-hidden="true"></i>
+                                <span>แชตผ่าน LINE</span>
+                            </a>
+                            <a class="course-success-branch__action" href="{{ $contact['phone_url'] }}">
+                                <i data-lucide="phone" aria-hidden="true"></i>
+                                <span>โทรหาสาขา</span>
+                            </a>
+                            <a class="course-success-branch__action" href="{{ $contact['facebook_url'] }}" target="_blank" rel="noopener">
+                                <i data-lucide="external-link" aria-hidden="true"></i>
+                                <span>Facebook</span>
+                            </a>
+                        </div>
+                    </article>
+                @endforeach
+
+                <div class="course-success-modal__empty" data-course-success-branch-empty hidden>
+                    เจ้าหน้าที่จากสาขาที่คุณเลือกจะติดต่อกลับเพื่อยืนยันรายละเอียด หากต้องการความช่วยเหลือเพิ่มเติม กรุณารอการติดต่อจากสาขา
                 </div>
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn-close-modal" data-bs-dismiss="modal">✨ Close</button>
+                <p class="course-success-modal__follow-up">
+                    <i data-lucide="clock" aria-hidden="true"></i>
+                    <span>เจ้าหน้าที่จะตรวจสอบคำขอและติดต่อกลับตามข้อมูลที่ลงทะเบียน</span>
+                </p>
+                <button type="button" class="course-success-modal__done" data-bs-dismiss="modal">
+                    <i data-lucide="x" aria-hidden="true"></i>
+                    <span>ปิดหน้าต่าง</span>
+                </button>
             </div>
         </div>
     </div>
 </div>
 
-<script>
+@once
+    <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js" defer></script>
+@endonce
 
+<script>
+    (() => {
+        const modal = document.getElementById('modalLineContact');
+        if (!modal) return;
+
+        const branchCards = Array.from(modal.querySelectorAll('[data-course-success-branch]'));
+        const branchName = modal.querySelector('[data-course-success-branch-name]');
+        const emptyState = modal.querySelector('[data-course-success-branch-empty]');
+        const normalize = (value) => String(value || '')
+            .toLocaleLowerCase('th')
+            .replace(/[^a-z0-9ก-๙]/g, '');
+
+        const renderLucideIcons = () => {
+            if (window.lucide) {
+                window.lucide.createIcons({
+                    attrs: {
+                        'aria-hidden': 'true',
+                        'stroke-width': 1.9,
+                    },
+                });
+            }
+        };
+
+        window.setCourseSuccessBranch = (branch = {}) => {
+            const selectedCode = normalize(branch.code);
+            const selectedName = normalize(branch.name);
+
+            const selectedCard = branchCards.find((card) => {
+                if (selectedCode && normalize(card.dataset.branchCode) === selectedCode) return true;
+
+                const aliases = String(card.dataset.branchAliases || '')
+                    .split('|')
+                    .map(normalize)
+                    .filter(Boolean);
+
+                return selectedName && aliases.some((alias) => selectedName.includes(alias));
+            });
+
+            branchCards.forEach((card) => {
+                card.hidden = card !== selectedCard;
+            });
+
+            emptyState.hidden = Boolean(selectedCard);
+            branchName.textContent = branch.name || selectedCard?.dataset.branchDisplayName || 'สาขาที่เลือก';
+            renderLucideIcons();
+        };
+
+        modal.addEventListener('shown.bs.modal', renderLucideIcons);
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', renderLucideIcons, { once: true });
+        } else {
+            renderLucideIcons();
+        }
+    })();
 </script>

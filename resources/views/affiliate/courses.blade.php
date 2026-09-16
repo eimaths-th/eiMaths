@@ -1387,6 +1387,13 @@
             document.getElementById('submitForm').innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> กำลังบันทึก...';
 
             const formData = new FormData(this);
+            const departmentSelect = this.querySelector('[name="department_id"]');
+            const selectedDepartmentOption = departmentSelect?.options[departmentSelect.selectedIndex];
+            const submittedBranch = {
+                id: formData.get('department_id'),
+                code: selectedDepartmentOption?.dataset.branchCode || '',
+                name: selectedDepartmentOption?.dataset.branchName || selectedDepartmentOption?.textContent?.trim() || '',
+            };
             fetch('{{ route('courses.pending.store') }}', {
                     method: 'POST',
                     body: formData,
@@ -1402,31 +1409,32 @@
                     document.getElementById('submitForm').innerHTML = '<i class="fas fa-check-circle me-1"></i> ยืนยันการจองคอร์สเรียน';
 
                     if (data.success) {
-                        $('.form').trigger('reset');
+                        const selectedBranch = data.branch || submittedBranch;
+                        if (typeof window.setCourseSuccessBranch === 'function') {
+                            window.setCourseSuccessBranch(selectedBranch);
+                        }
+
+                        this.reset();
+
+                        const showSuccessModal = () => {
+                            const lineEl = document.getElementById('modalLineContact');
+                            if (lineEl && window.bootstrap && bootstrap.Modal) {
+                                bootstrap.Modal.getOrCreateInstance(lineEl).show();
+                            } else if (window.jQuery) {
+                                $('#modalLineContact').modal('show');
+                            }
+                        };
 
                         // Hide receipt modal
                         const receiptEl = document.getElementById('receiptModal');
                         if (receiptEl && window.bootstrap && bootstrap.Modal) {
+                            receiptEl.addEventListener('hidden.bs.modal', showSuccessModal, { once: true });
                             bootstrap.Modal.getOrCreateInstance(receiptEl).hide();
                         } else if (window.jQuery) {
-                            $('#receiptModal').modal('hide');
+                            $('#receiptModal').one('hidden.bs.modal', showSuccessModal).modal('hide');
+                        } else {
+                            showSuccessModal();
                         }
-
-                        // Show Line Contact Modal
-                        const lineEl = document.getElementById('modalLineContact');
-                        if (lineEl && window.bootstrap && bootstrap.Modal) {
-                            bootstrap.Modal.getOrCreateInstance(lineEl).show();
-                        } else if (window.jQuery) {
-                            $('#modalLineContact').modal('show');
-                        }
-
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'บันทึกการจองสำเร็จ!',
-                            text: 'กรุณาติดต่อเจ้าหน้าที่ผ่านทาง LINE OA เพื่อยืนยันตารางเรียนและรับรายละเอียดการชำระเงิน',
-                            confirmButtonText: 'ตกลง',
-                            confirmButtonColor: '#FF7B00'
-                        });
                     } else {
                         Swal.fire({
                             icon: 'error',
