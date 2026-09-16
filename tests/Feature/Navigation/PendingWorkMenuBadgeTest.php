@@ -30,7 +30,7 @@ class PendingWorkMenuBadgeTest extends TestCase
     }
 
     #[Test]
-    public function AffiliateManagementOwnsAffiliateAccountsAndPendingBadge(): void
+    public function AffiliateManagementOwnsAffiliateAccountsCourseApplicationsAndPendingBadges(): void
     {
         $admin = User::factory()->create([
             'department_id' => $this->hq->id,
@@ -40,6 +40,7 @@ class PendingWorkMenuBadgeTest extends TestCase
         ]);
         $admin->givePermissionTo([
             Permission::findOrCreate('affiliate-list', 'web'),
+            Permission::findOrCreate('affiliate-course-application-list', 'web'),
             Permission::findOrCreate('course-manage', 'web'),
         ]);
 
@@ -48,11 +49,15 @@ class PendingWorkMenuBadgeTest extends TestCase
         $this->assertStringContainsString('Affiliate Management', $menu);
         $this->assertStringContainsString('Affiliate Accounts', $menu);
         $this->assertMatchesRegularExpression(
-            '/<p>\s*Affiliate Management\s*<span[^>]*data-affiliate-pending-approval-badge/s',
+            '/<p>\s*Affiliate Management\s*<span[^>]*data-affiliate-management-pending-badge/s',
             $menu,
         );
         $this->assertMatchesRegularExpression(
             '/<p>\s*Affiliate Accounts\s*<span[^>]*data-affiliate-pending-approval-badge[^>]*><\/span>\s*<\/p>/s',
+            $menu,
+        );
+        $this->assertMatchesRegularExpression(
+            '/<p[^>]*title="Affiliate Course Applications"[^>]*>.*data-affiliate-course-application-badge/s',
             $menu,
         );
     }
@@ -79,7 +84,7 @@ class PendingWorkMenuBadgeTest extends TestCase
             $menu,
         );
         $this->assertMatchesRegularExpression(
-            '/<p>\s*Affiliate Management\s*<span[^>]*data-affiliate-pending-approval-badge/s',
+            '/<p>\s*Affiliate Management\s*<span[^>]*data-affiliate-management-pending-badge/s',
             $menu,
         );
     }

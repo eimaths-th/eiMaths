@@ -54,8 +54,15 @@
             && (bool) config('affiliate.features.administration', false)
             && (int) $authenticated_user->disable === 0
             && $authenticated_user->can('affiliate-list');
+        $affiliate_course_application_alert_enabled = $authenticated_user
+            && (int) $authenticated_user->disable === 0
+            && $authenticated_user->can('affiliate-course-application-list');
         $pending_work_alert_enabled = $authenticated_user
-            && ($book_shipment_alert_role !== null || $affiliate_pending_approval_alert_enabled);
+            && (
+                $book_shipment_alert_role !== null
+                || $affiliate_pending_approval_alert_enabled
+                || $affiliate_course_application_alert_enabled
+            );
     @endphp
     <div id="loadingi"></div>
     <div class="wrapper">
@@ -85,6 +92,11 @@
             'authenticated_user' => $authenticated_user,
         ])
     @endif
+    @if ($affiliate_course_application_alert_enabled)
+        @include('affiliate.partials.course-application-alert', [
+            'authenticated_user' => $authenticated_user,
+        ])
+    @endif
 </body>
 
 @include('layouts.includes.js')
@@ -99,6 +111,9 @@
 @endif
 @if ($affiliate_pending_approval_alert_enabled)
     <script type="module" src="{{ asset('js/affiliate-pending-approval-alert.js') }}"></script>
+@endif
+@if ($affiliate_course_application_alert_enabled)
+    <script type="module" src="{{ asset('js/affiliate-course-application-alert.js') }}"></script>
 @endif
 
 

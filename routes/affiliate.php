@@ -1,24 +1,25 @@
 <?php
 
 use App\Http\Controllers\Affiliate\AffiliateAccountAdminController;
-use App\Http\Controllers\Affiliate\AffiliatePayoutAccountController;
-use App\Http\Controllers\Affiliate\AffiliateWithdrawalController;
-use App\Http\Controllers\Affiliate\AffiliateWithdrawalAdminController;
-use App\Http\Controllers\Affiliate\AffiliateDashboardController;
-use App\Http\Controllers\Affiliate\AffiliateCommissionAdminController;
-use App\Http\Controllers\Affiliate\AffiliateFinanceAdminController;
-use App\Http\Controllers\Affiliate\AffiliateConfigurationPageController;
-use App\Http\Controllers\Affiliate\AffiliateReconciliationController;
-use App\Http\Controllers\Affiliate\AffiliatePayoutAccountPageController;
-use App\Http\Controllers\Affiliate\AffiliateTrackingController;
 use App\Http\Controllers\Affiliate\AffiliateAnalyticsController;
-use App\Http\Controllers\Affiliate\AffiliateMediaController;
-use App\Http\Controllers\Affiliate\AffiliateGuideController;
-use App\Http\Controllers\Affiliate\AffiliateTutorialController;
+use App\Http\Controllers\Affiliate\AffiliateCommissionAdminController;
+use App\Http\Controllers\Affiliate\AffiliateConfigurationPageController;
+use App\Http\Controllers\Affiliate\AffiliateCourseApplicationAdminController;
+use App\Http\Controllers\Affiliate\AffiliateDashboardController;
 use App\Http\Controllers\Affiliate\AffiliateEmployeeAccessController;
+use App\Http\Controllers\Affiliate\AffiliateFinanceAdminController;
+use App\Http\Controllers\Affiliate\AffiliateGuideController;
 use App\Http\Controllers\Affiliate\AffiliateIdentityController;
-use App\Http\Controllers\AffiliateContentManageController;
+use App\Http\Controllers\Affiliate\AffiliateMediaController;
+use App\Http\Controllers\Affiliate\AffiliatePayoutAccountController;
+use App\Http\Controllers\Affiliate\AffiliatePayoutAccountPageController;
+use App\Http\Controllers\Affiliate\AffiliateReconciliationController;
+use App\Http\Controllers\Affiliate\AffiliateTrackingController;
+use App\Http\Controllers\Affiliate\AffiliateTutorialController;
+use App\Http\Controllers\Affiliate\AffiliateWithdrawalAdminController;
+use App\Http\Controllers\Affiliate\AffiliateWithdrawalController;
 use App\Http\Controllers\Affiliate\AffiliateWithdrawalPageController;
+use App\Http\Controllers\AffiliateContentManageController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/r/{referral_code}/{campaign_code}', [AffiliateTrackingController::class, 'Media'])
@@ -107,6 +108,14 @@ Route::middleware(['auth', 'affiliate.correlation', 'affiliate.feature:administr
         ->middleware('permission:affiliate-suspend')
         ->name('affiliate.admin.deactivate');
 });
+
+Route::middleware(['auth', 'affiliate.correlation'])
+    ->prefix('admin/affiliate-course-applications')
+    ->group(function (): void {
+        Route::get('/pending-summary', [AffiliateCourseApplicationAdminController::class, 'PendingSummary'])
+            ->middleware('permission:affiliate-course-application-list')
+            ->name('affiliate.course-applications.pending-summary');
+    });
 
 Route::middleware(['auth', 'affiliate.locale', 'affiliate.correlation'])
     ->prefix('affiliate/identity-verification')

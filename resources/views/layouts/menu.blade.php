@@ -525,10 +525,13 @@
             <i class="nav-icon fas fa-handshake"></i>
             <p>
                 Affiliate Management
-                @if ((bool) config('affiliate.features.administration', false) && $menu_can('affiliate-list'))
+                @if (
+                    ((bool) config('affiliate.features.administration', false) && $menu_can('affiliate-list'))
+                    || $menu_can('affiliate-course-application-list')
+                )
                     <span class="right badge badge-danger sidebar-menu-badge sidebar-menu-badge--parent"
-                        data-affiliate-pending-approval-badge hidden
-                        aria-label="ไม่มี Affiliate รออนุมัติ"></span>
+                        data-affiliate-management-pending-badge hidden
+                        aria-label="ไม่มีงาน Affiliate ค้าง"></span>
                 @endif
             </p>
             <i class="fas fa-angle-left right"></i>
@@ -539,7 +542,12 @@
                     <a href="{{ route('courses.pending.index') }}"
                         class="nav-link {{ request()->routeIs('courses.pending.*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-clipboard-list"></i>
-                        <p title="Affiliate Course Applications">Affiliate Course...</p>
+                        <p title="Affiliate Course Applications">
+                            Affiliate Course...
+                            <span class="right badge badge-danger sidebar-menu-badge"
+                                data-affiliate-course-application-badge hidden
+                                aria-label="ไม่มีใบสมัครคอร์สรอดำเนินการ"></span>
+                        </p>
                     </a>
                 </li>
             @endcan

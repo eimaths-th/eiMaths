@@ -1,4 +1,5 @@
-const WORK_SOURCE_IDS = ['affiliate', 'book'];
+const WORK_SOURCE_IDS = ['affiliate', 'course_application', 'book'];
+const AFFILIATE_MANAGEMENT_SOURCE_IDS = ['affiliate', 'course_application'];
 const SUMMARY_EVENT_TYPE = 'pending_summary';
 const MAX_BADGE_COUNT = 99;
 
@@ -65,6 +66,18 @@ export function CreatePendingWorkAlertManager(dependencies) {
         return Math.min(Number.MAX_SAFE_INTEGER, total_count + work_item.pending_count);
     }, 0);
 
+    const GetAffiliateManagementPendingCount = () => AFFILIATE_MANAGEMENT_SOURCE_IDS.reduce(
+        (total_count, source_id) => {
+            const work_item = work_items.get(source_id);
+            if (!work_item || work_item.pending_count <= 0) {
+                return total_count;
+            }
+
+            return Math.min(Number.MAX_SAFE_INTEGER, total_count + work_item.pending_count);
+        },
+        0,
+    );
+
     const HasPendingWork = () => GetPendingWorkCount() > 0;
 
     const RenderWorkItem = (work_item) => {
@@ -124,6 +137,22 @@ export function CreatePendingWorkAlertManager(dependencies) {
                 ? `มีงานที่ต้องจัดการ ${pending_work_count} รายการ`
                 : 'ไม่มีงานที่ต้องจัดการ',
         );
+
+        const affiliate_management_count = GetAffiliateManagementPendingCount();
+        const affiliate_management_badge_text = affiliate_management_count > MAX_BADGE_COUNT
+            ? `${MAX_BADGE_COUNT}+`
+            : String(affiliate_management_count);
+        document_object?.querySelectorAll?.('[data-affiliate-management-pending-badge]')
+            .forEach((affiliate_badge_element) => {
+                affiliate_badge_element.textContent = affiliate_management_badge_text;
+                affiliate_badge_element.hidden = affiliate_management_count === 0;
+                affiliate_badge_element.setAttribute(
+                    'aria-label',
+                    affiliate_management_count > 0
+                        ? `มีงาน Affiliate ค้าง ${affiliate_management_count} รายการ`
+                        : 'ไม่มีงาน Affiliate ค้าง',
+                );
+            });
 
         if (total_element) {
             total_element.textContent = has_pending_work

@@ -3,6 +3,9 @@ import assert from 'node:assert/strict';
 import {
     CreateAffiliatePendingApprovalSummaryHandler,
 } from '../../public/js/affiliate-pending-approval-alert.js';
+import {
+    CreateAffiliateCourseApplicationSummaryHandler,
+} from '../../public/js/affiliate-course-application-alert.js';
 import { CreateCentreSummaryHandler } from '../../public/js/centre-incoming-shipment-alert.js';
 import {
     CreateHqCentreReceiptAlert,
@@ -42,6 +45,44 @@ test('SendsOutstandingAffiliateWorkToThePendingWorkManager', async () => {
         new_message: 'New Affiliate สมัคร Affiliate และกำลังรออนุมัติ (1 รายการ)',
         action_url: '/admin/affiliates',
         action_label: 'ดูรายการ Affiliate ที่รออนุมัติ',
+    }]);
+});
+
+test('SendsOutstandingCourseApplicationWorkToThePendingWorkManager', async () => {
+    const handled_items = [];
+    const handler = CreateAffiliateCourseApplicationSummaryHandler({
+        ReadCursor: () => '2026-09-16T04:00:00+00:00|2',
+        WriteCursor: () => {},
+        UpdateBadgeCount: () => {},
+        IndexUrl: '/courses/pending/index',
+        ToastManager: {
+            HandleWorkItem: (work_item) => handled_items.push(work_item),
+        },
+        ShowAlert: () => assert.fail('The source alert should be delegated to the shared manager'),
+    });
+
+    await handler({ data: {
+        pending_count: 1,
+        latest_event_cursor: '2026-09-16T04:00:00+00:00|2',
+        latest_event_status: '1',
+        latest_pending_application: {
+            id: 2,
+            applicant_name: 'New Parent',
+            course_name: 'Math Starter',
+            branch_name: 'Ratchapruek',
+            submitted_at: '2026-09-16T04:00:00+00:00',
+        },
+    } });
+
+    assert.deepEqual(handled_items, [{
+        source_id: 'course_application',
+        pending_count: 1,
+        event_type: null,
+        title: 'Affiliate Course Applications',
+        reminder_message: 'มีใบสมัครคอร์สรอดำเนินการ 1 รายการ',
+        new_message: 'New Parent สมัครคอร์ส Math Starter ที่สาขา Ratchapruek และกำลังรอดำเนินการ (1 รายการ)',
+        action_url: '/courses/pending/index',
+        action_label: 'ดูใบสมัครคอร์ส',
     }]);
 });
 

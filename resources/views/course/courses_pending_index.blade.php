@@ -1165,6 +1165,10 @@
         //             }
         //         });
         //     });
+        function refreshAffiliateCourseApplicationAlerts() {
+            window.dispatchEvent(new Event('affiliate-course-applications:changed'));
+        }
+
         $(document).on('click', '.confirm-btn', function() {
             var id = $(this).data('id');
             // Send AJAX request to handle confirmation (you may need to define a route for confirmation)
@@ -1180,6 +1184,7 @@
                         alert(response.message); // Show confirmation message
                         // Optionally, refresh the table or update the UI
                         $('#Listview').DataTable().ajax.reload();
+                        refreshAffiliateCourseApplicationAlerts();
 
                     }
                 },
@@ -1204,6 +1209,7 @@
                         alert(response.message); // Show cancel message
                         // Optionally, refresh the table or update the UI
                         $('#Listview').DataTable().ajax.reload();
+                        refreshAffiliateCourseApplicationAlerts();
 
                     }
                 },
@@ -1228,6 +1234,7 @@
                         alert(response.message); // Show cancel message
                         // Optionally, refresh the table or update the UI
                         $('#Listview').DataTable().ajax.reload();
+                        refreshAffiliateCourseApplicationAlerts();
 
                     }
                 },

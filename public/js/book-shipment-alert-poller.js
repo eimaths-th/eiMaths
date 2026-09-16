@@ -27,6 +27,7 @@ export function CreateBookShipmentPoller(dependencies) {
     let is_request_in_flight = false;
     let is_stopped = false;
     let is_started = false;
+    let refresh_requested = false;
     let retry_interval_ms = POLL_INTERVAL_MS;
 
     const ClearTimer = () => {
@@ -54,6 +55,7 @@ export function CreateBookShipmentPoller(dependencies) {
         }
 
         is_stopped = true;
+        refresh_requested = false;
         ClearTimer();
         if (is_started) {
             dependencies.RemoveVisibilityListener(HandleVisibilityChange);
@@ -81,7 +83,26 @@ export function CreateBookShipmentPoller(dependencies) {
             }
         } finally {
             is_request_in_flight = false;
+            if (refresh_requested && !is_stopped && dependencies.IsVisible()) {
+                refresh_requested = false;
+                ClearTimer();
+                void Poll();
+            }
         }
+    };
+
+    const RequestRefresh = () => {
+        if (is_stopped || !dependencies.IsVisible()) {
+            return;
+        }
+
+        ClearTimer();
+        if (is_request_in_flight) {
+            refresh_requested = true;
+            return;
+        }
+
+        void Poll();
     };
 
     const HandleVisibilityChange = async () => {
@@ -106,6 +127,7 @@ export function CreateBookShipmentPoller(dependencies) {
         Start,
         Stop,
         Poll,
+        RequestRefresh,
         HandleVisibilityChange,
         IsStopped: () => is_stopped,
     };
