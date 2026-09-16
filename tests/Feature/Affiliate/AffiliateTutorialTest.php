@@ -27,16 +27,19 @@ class AffiliateTutorialTest extends TestCase
     }
 
     #[Test]
-    public function first_dashboard_offers_auto_start_but_other_pages_do_not(): void
+    public function tutorial_launcher_is_only_available_on_the_guide_page(): void
     {
         $this->actingAs($this->Affiliate());
         $this->get('/affiliate/dashboard')->assertOk()
-            ->assertSee('data-affiliate-tutorial-start', false)
-            ->assertSee('data-affiliate-tutorial-mode="starter"', false)
             ->assertSee('"starterSteps":[', false)
-            ->assertSee('"autoStart":true', false);
-        $this->get('/affiliate/payout-accounts')->assertOk()->assertSee('"autoStart":false', false);
-        $this->get('/affiliate/guide')->assertOk()->assertSee('data-affiliate-tutorial-mode="full"', false);
+            ->assertSee('"autoStart":true', false)
+            ->assertDontSee('data-affiliate-tutorial-start', false);
+        $this->get('/affiliate/payout-accounts')->assertOk()
+            ->assertSee('"autoStart":false', false)
+            ->assertDontSee('data-affiliate-tutorial-start', false);
+        $this->get('/affiliate/guide')->assertOk()
+            ->assertSee('data-affiliate-tutorial-start', false)
+            ->assertSee('data-affiliate-tutorial-mode="full"', false);
         $this->assertDatabaseCount('affiliate_tutorial_progress', 0);
     }
 
@@ -189,16 +192,19 @@ class AffiliateTutorialTest extends TestCase
     }
 
     #[Test]
-    public function every_tutorial_destination_renders_with_all_features_enabled(): void
+    public function every_tutorial_destination_renders_but_only_the_guide_has_a_launcher(): void
     {
         Config::set('affiliate.features.media_library', true);
         Config::set('affiliate.features.analytics', true);
         $this->actingAs($this->Affiliate());
         foreach (array_unique(array_column(app(AffiliateTutorialService::class)->Steps(), 'url')) as $url) {
-            $mode = parse_url($url, PHP_URL_PATH) === '/affiliate/guide' ? 'full' : 'starter';
-            $this->get($url)->assertOk()->assertSee('affiliate-tutorial-config', false)
-                ->assertSee('data-affiliate-tutorial-start', false)
-                ->assertSee('data-affiliate-tutorial-mode="' . $mode . '"', false);
+            $response = $this->get($url)->assertOk()->assertSee('affiliate-tutorial-config', false);
+            if (parse_url($url, PHP_URL_PATH) === '/affiliate/guide') {
+                $response->assertSee('data-affiliate-tutorial-start', false)
+                    ->assertSee('data-affiliate-tutorial-mode="full"', false);
+            } else {
+                $response->assertDontSee('data-affiliate-tutorial-start', false);
+            }
         }
     }
 

@@ -196,10 +196,6 @@
                                 @if ($content->description)
                                     <p class="affiliate-media-card__description">{{ $content->description }}</p>
                                 @endif
-                                <p class="affiliate-media-card__campaign">
-                                    <span>{{ __('affiliate.media.campaign') }}</span>
-                                    <code>{{ $content->campaign_code }}</code>
-                                </p>
                             </div>
 
                             <div class="affiliate-media-card__footer">

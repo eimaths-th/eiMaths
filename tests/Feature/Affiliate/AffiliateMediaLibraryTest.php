@@ -5,6 +5,7 @@ namespace Tests\Feature\Affiliate;
 use App\Domain\Affiliate\Enums\AffiliateProfileStatus;
 use App\Domain\Affiliate\Models\AffiliateProfile;
 use App\Models\AffiliateContent;
+use App\Models\Department;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Config;
@@ -16,15 +17,21 @@ class AffiliateMediaLibraryTest extends TestCase
 {
     use RefreshDatabase;
 
+    private Department $hq;
+
     protected function setUp(): void
     {
         parent::setUp();
         Config::set('affiliate.features.media_library', true);
+        $this->hq = Department::query()->updateOrCreate(
+            ['id' => Department::HQ_ID],
+            ['name' => 'HQ Affiliate Media', 'code' => 'HQ-AM', 'status' => 1, 'branch_type' => 'hq'],
+        );
     }
 
     public function test_active_affiliate_receives_only_current_enabled_media_without_exposing_tracking_link(): void
     {
-        $user = User::factory()->create(['password' => Hash::make('secret')]);
+        $user = $this->CreateUser();
         AffiliateProfile::create([
             'user_id' => $user->id,
             'referral_code' => 'AFF-MEDIA-LIBRARY',
@@ -45,6 +52,7 @@ class AffiliateMediaLibraryTest extends TestCase
             ->assertDontSee('data-media-copy-link', false)
             ->assertSee('data-media-share', false)
             ->assertSee('data-media-url="' . route('affiliate.tracking.media', ['AFF-MEDIA-LIBRARY', $current->campaign_code]) . '"', false)
+            ->assertDontSee('affiliate-media-card__campaign', false)
             ->assertDontSee('affiliate-media-tracking-url-' . $current->id, false)
             ->assertDontSee('ลิงก์ติดตาม', false)
             ->assertDontSee('disabled-library')
@@ -53,7 +61,7 @@ class AffiliateMediaLibraryTest extends TestCase
 
     public function test_search_and_type_filters_are_bounded_and_feature_gate_is_enforced(): void
     {
-        $user = User::factory()->create(['password' => Hash::make('secret')]);
+        $user = $this->CreateUser();
         AffiliateProfile::create([
             'user_id' => $user->id,
             'referral_code' => 'AFF-MEDIA-FILTER',
@@ -74,7 +82,7 @@ class AffiliateMediaLibraryTest extends TestCase
 
     public function test_media_preview_exposes_an_accessible_dialog_viewer(): void
     {
-        $user = User::factory()->create(['password' => Hash::make('secret')]);
+        $user = $this->CreateUser();
         AffiliateProfile::create([
             'user_id' => $user->id,
             'referral_code' => 'AFF-MEDIA-DIALOG',
@@ -112,5 +120,14 @@ class AffiliateMediaLibraryTest extends TestCase
         ])->save();
 
         return $content;
+    }
+
+    private function CreateUser(): User
+    {
+        return User::factory()->create([
+            'department_id' => $this->hq->id,
+            'disable' => 0,
+            'password' => Hash::make('secret'),
+        ]);
     }
 }

@@ -40,10 +40,7 @@
                     <p class="affiliate-guide-eyebrow mb-1">{{ __('affiliate_tutorial.banner.eyebrow') }}</p>
                     <h2 id="affiliate-guide-callout-title">{{ __('affiliate_tutorial.banner.title') }}</h2>
                     <p class="mb-3">{{ __('affiliate_tutorial.banner.body') }}</p>
-                    <button type="button" class="btn affiliate-tutorial-button" data-affiliate-tutorial-start data-affiliate-tutorial-mode="starter" aria-haspopup="dialog" aria-controls="affiliate-tutorial" aria-busy="true" disabled>
-                        <i class="fas fa-play-circle mr-1" aria-hidden="true"></i>{{ __('affiliate_tutorial.button') }}
-                    </button>
-                    <a class="btn btn-light ml-2" href="{{ route('affiliate.guide.index') }}">{{ __('affiliate_tutorial.banner.guide') }}</a>
+                    <a class="btn btn-light" href="{{ route('affiliate.guide.index') }}">{{ __('affiliate_tutorial.banner.guide') }}</a>
                 </div>
             </section>
 

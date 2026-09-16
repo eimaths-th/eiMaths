@@ -108,8 +108,7 @@ class AffiliateGuideTest extends TestCase
 
         $dashboard_response->assertOk()
             ->assertSee('href="' . route('affiliate.guide.index') . '"', false)
-            ->assertSee('data-affiliate-tutorial-start', false)
-            ->assertSee(trans('affiliate_tutorial.button', [], app()->getLocale()))
+            ->assertDontSee('data-affiliate-tutorial-start', false)
             ->assertDontSee(trans('affiliate.dashboard.open_guide', [], app()->getLocale()));
     }
 
