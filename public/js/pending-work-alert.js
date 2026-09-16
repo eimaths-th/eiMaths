@@ -1,5 +1,5 @@
-const WORK_SOURCE_IDS = ['affiliate', 'course_application', 'book'];
-const AFFILIATE_MANAGEMENT_SOURCE_IDS = ['affiliate', 'course_application'];
+const WORK_SOURCE_IDS = ['affiliate', 'course_application', 'withdrawal', 'book'];
+const AFFILIATE_MANAGEMENT_SOURCE_IDS = ['affiliate', 'course_application', 'withdrawal'];
 const SUMMARY_EVENT_TYPE = 'pending_summary';
 const MAX_BADGE_COUNT = 99;
 

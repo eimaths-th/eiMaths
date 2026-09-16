@@ -49,6 +49,12 @@ class FakeRoot extends FakeNode {
             '[data-pending-work-item-message]': new FakeNode(),
             '[data-pending-work-item-action]': new FakeNode(),
         });
+        const withdrawal_item = new FakeNode({
+            '[data-pending-work-item-title]': new FakeNode(),
+            '[data-pending-work-item-count]': new FakeNode(),
+            '[data-pending-work-item-message]': new FakeNode(),
+            '[data-pending-work-item-action]': new FakeNode(),
+        });
         const book_item = new FakeNode({
             '[data-pending-work-item-title]': new FakeNode(),
             '[data-pending-work-item-count]': new FakeNode(),
@@ -66,6 +72,7 @@ class FakeRoot extends FakeNode {
             '[data-pending-work-alert-empty]': empty_state,
             '[data-pending-work-item="affiliate"]': affiliate_item,
             '[data-pending-work-item="course_application"]': course_application_item,
+            '[data-pending-work-item="withdrawal"]': withdrawal_item,
             '[data-pending-work-item="book"]': book_item,
         });
         this.attributes = { 'data-storage-key': 'pending-work-alert:1' };
@@ -77,6 +84,7 @@ class FakeRoot extends FakeNode {
         this.empty_state = empty_state;
         this.affiliate_item = affiliate_item;
         this.course_application_item = course_application_item;
+        this.withdrawal_item = withdrawal_item;
         this.book_item = book_item;
     }
 
@@ -86,7 +94,7 @@ class FakeRoot extends FakeNode {
 
     querySelectorAll(selector) {
         return selector === '[data-pending-work-item]'
-            ? [this.affiliate_item, this.course_application_item, this.book_item]
+            ? [this.affiliate_item, this.course_application_item, this.withdrawal_item, this.book_item]
             : [];
     }
 }
@@ -104,6 +112,7 @@ function CreateStorage() {
 function CreateWorkItem(source_id, pending_count, event_type = null) {
     const is_affiliate = source_id === 'affiliate';
     const is_course_application = source_id === 'course_application';
+    const is_withdrawal = source_id === 'withdrawal';
 
     return {
         source_id,
@@ -113,26 +122,36 @@ function CreateWorkItem(source_id, pending_count, event_type = null) {
             ? 'Affiliate account'
             : is_course_application
                 ? 'Affiliate Course Applications'
+                : is_withdrawal
+                    ? 'Affiliate withdrawal management'
                 : 'รายการหนังสือ',
         reminder_message: is_affiliate
             ? `มี Affiliate รออนุมัติ ${pending_count} รายการ`
             : is_course_application
                 ? `มีใบสมัครคอร์สรอดำเนินการ ${pending_count} รายการ`
+                : is_withdrawal
+                    ? `มีคำขอถอนเงินที่ต้องจัดการ ${pending_count} รายการ`
                 : `มีรายการหนังสือที่กำลังดำเนินการ ${pending_count} รายการ`,
         new_message: is_affiliate
             ? 'New Affiliate สมัคร Affiliate และกำลังรออนุมัติ (1 รายการ)'
             : is_course_application
                 ? 'New Parent สมัครคอร์ส Math Starter ที่สาขา Ratchapruek และกำลังรอดำเนินการ (1 รายการ)'
+                : is_withdrawal
+                    ? 'New Affiliate ส่งคำขอถอนเงิน 5,000.00 บาท และกำลังรออนุมัติ'
                 : 'Shipment-001 มีหนังสือ 4 เล่มรอตรวจรับ',
         action_url: is_affiliate
             ? '/admin/affiliates'
             : is_course_application
                 ? '/courses/pending/index'
+                : is_withdrawal
+                    ? '/admin/affiliate-withdrawals'
                 : '/incoming-book-shipments',
         action_label: is_affiliate
             ? 'ดูรายการ Affiliate ที่รออนุมัติ'
             : is_course_application
                 ? 'ดูใบสมัครคอร์ส'
+                : is_withdrawal
+                    ? 'จัดการคำขอถอนเงิน'
                 : 'ดูรายการหนังสือที่กำลังจัดส่งเข้า',
     };
 }
@@ -206,7 +225,7 @@ test('ShowsEmptyStateAndClearsBadgeWhenAllPendingWorkIsResolved', () => {
     assert.equal(root.book_item.hidden, true);
 });
 
-test('CombinesAffiliateAccountsAndCourseApplicationsInTheAffiliateManagementBadge', () => {
+test('CombinesAffiliateAccountsCourseApplicationsAndWithdrawalsInTheAffiliateManagementBadge', () => {
     const root = new FakeRoot();
     const affiliate_management_badge = new FakeNode();
     const document_object = {
@@ -222,12 +241,14 @@ test('CombinesAffiliateAccountsAndCourseApplicationsInTheAffiliateManagementBadg
 
     alert_manager.HandleWorkItem(CreateWorkItem('affiliate', 2));
     alert_manager.HandleWorkItem(CreateWorkItem('course_application', 3, 'new_application'));
+    alert_manager.HandleWorkItem(CreateWorkItem('withdrawal', 2, 'new_withdrawal'));
     alert_manager.HandleWorkItem(CreateWorkItem('book', 4));
 
-    assert.equal(root.notification_badge.textContent, '9');
-    assert.equal(affiliate_management_badge.textContent, '5');
+    assert.equal(root.notification_badge.textContent, '11');
+    assert.equal(affiliate_management_badge.textContent, '7');
     assert.equal(affiliate_management_badge.hidden, false);
     assert.equal(root.course_application_item.hidden, false);
+    assert.equal(root.withdrawal_item.hidden, false);
     assert.equal(
         root.course_application_item.querySelector('[data-pending-work-item-message]').textContent,
         'New Parent สมัครคอร์ส Math Starter ที่สาขา Ratchapruek และกำลังรอดำเนินการ (1 รายการ)',

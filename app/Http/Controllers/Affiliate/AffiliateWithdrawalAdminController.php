@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Affiliate;
 
 use App\Domain\Affiliate\Models\AffiliateWithdrawalRequest;
+use App\Domain\Affiliate\Queries\AffiliateWithdrawalAdminQuery;
 use App\Domain\Affiliate\Services\AffiliateWithdrawalService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Affiliate\BulkApproveWithdrawalRequest;
@@ -17,6 +18,7 @@ class AffiliateWithdrawalAdminController extends Controller
     public function __construct(
         private readonly AffiliateWithdrawalService $withdrawal_service,
         private readonly \App\Domain\Affiliate\Services\AffiliatePayoutDetailsRevealService $payout_details_reveal_service,
+        private readonly AffiliateWithdrawalAdminQuery $withdrawal_query,
     )
     {
     }
@@ -38,6 +40,13 @@ class AffiliateWithdrawalAdminController extends Controller
         });
 
         return response()->json($withdrawals);
+    }
+
+    public function PendingSummary(Request $request): JsonResponse
+    {
+        return response()->json([
+            'data' => $this->withdrawal_query->PendingSummary($request->user()),
+        ]);
     }
 
     public function RevealPayoutDetails(AffiliateWithdrawalRequest $withdrawal, Request $request): JsonResponse

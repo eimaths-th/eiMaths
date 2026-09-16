@@ -57,11 +57,16 @@
         $affiliate_course_application_alert_enabled = $authenticated_user
             && (int) $authenticated_user->disable === 0
             && $authenticated_user->can('affiliate-course-application-list');
+        $affiliate_withdrawal_alert_enabled = $authenticated_user
+            && (bool) config('affiliate.features.wallet_withdrawals', false)
+            && (int) $authenticated_user->disable === 0
+            && $authenticated_user->can('affiliate-withdrawal-list');
         $pending_work_alert_enabled = $authenticated_user
             && (
                 $book_shipment_alert_role !== null
                 || $affiliate_pending_approval_alert_enabled
                 || $affiliate_course_application_alert_enabled
+                || $affiliate_withdrawal_alert_enabled
             );
     @endphp
     <div id="loadingi"></div>
@@ -97,6 +102,11 @@
             'authenticated_user' => $authenticated_user,
         ])
     @endif
+    @if ($affiliate_withdrawal_alert_enabled)
+        @include('affiliate.partials.withdrawal-alert', [
+            'authenticated_user' => $authenticated_user,
+        ])
+    @endif
 </body>
 
 @include('layouts.includes.js')
@@ -114,6 +124,9 @@
 @endif
 @if ($affiliate_course_application_alert_enabled)
     <script type="module" src="{{ asset('js/affiliate-course-application-alert.js') }}"></script>
+@endif
+@if ($affiliate_withdrawal_alert_enabled)
+    <script type="module" src="{{ asset('js/affiliate-withdrawal-alert.js') }}"></script>
 @endif
 
 

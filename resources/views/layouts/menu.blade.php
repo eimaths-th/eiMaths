@@ -528,6 +528,7 @@
                 @if (
                     ((bool) config('affiliate.features.administration', false) && $menu_can('affiliate-list'))
                     || $menu_can('affiliate-course-application-list')
+                    || $menu_can('affiliate-withdrawal-list')
                 )
                     <span class="right badge badge-danger sidebar-menu-badge sidebar-menu-badge--parent"
                         data-affiliate-management-pending-badge hidden
@@ -579,7 +580,12 @@
                     <a href="{{ route('affiliate.withdrawals.admin.index') }}"
                         class="nav-link {{ request()->routeIs('affiliate.withdrawals.admin.*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-money-bill-wave"></i>
-                        <p>Affiliate Withdrawals</p>
+                        <p>
+                            Affiliate Withdrawals
+                            <span class="right badge badge-danger sidebar-menu-badge"
+                                data-affiliate-withdrawal-badge hidden
+                                aria-label="ไม่มีคำขอถอนเงินที่ต้องจัดการ"></span>
+                        </p>
                     </a>
                 </li>
             @endcan

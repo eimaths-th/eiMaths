@@ -159,6 +159,9 @@ Route::middleware(['auth', 'affiliate.correlation', 'affiliate.feature:wallet_wi
     Route::get('/', [AffiliateWithdrawalAdminController::class, 'Index'])
         ->middleware('permission:affiliate-withdrawal-list')
         ->name('affiliate.withdrawals.admin.index');
+    Route::get('/pending-summary', [AffiliateWithdrawalAdminController::class, 'PendingSummary'])
+        ->middleware('permission:affiliate-withdrawal-list')
+        ->name('affiliate.withdrawals.admin.pending-summary');
     Route::post('/bulk-approve', [AffiliateWithdrawalAdminController::class, 'BulkApprove'])
         ->middleware('permission:affiliate-withdrawal-approve')
         ->name('affiliate.withdrawals.admin.bulk-approve');

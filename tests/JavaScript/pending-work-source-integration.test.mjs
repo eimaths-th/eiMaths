@@ -6,6 +6,9 @@ import {
 import {
     CreateAffiliateCourseApplicationSummaryHandler,
 } from '../../public/js/affiliate-course-application-alert.js';
+import {
+    CreateAffiliateWithdrawalSummaryHandler,
+} from '../../public/js/affiliate-withdrawal-alert.js';
 import { CreateCentreSummaryHandler } from '../../public/js/centre-incoming-shipment-alert.js';
 import {
     CreateHqCentreReceiptAlert,
@@ -83,6 +86,45 @@ test('SendsOutstandingCourseApplicationWorkToThePendingWorkManager', async () =>
         new_message: 'New Parent สมัครคอร์ส Math Starter ที่สาขา Ratchapruek และกำลังรอดำเนินการ (1 รายการ)',
         action_url: '/courses/pending/index',
         action_label: 'ดูใบสมัครคอร์ส',
+    }]);
+});
+
+test('SendsOutstandingAffiliateWithdrawalWorkToThePendingWorkManager', async () => {
+    const handled_items = [];
+    const handler = CreateAffiliateWithdrawalSummaryHandler({
+        ReadCursor: () => '2026-09-16T09:45:00+00:00|8',
+        WriteCursor: () => {},
+        UpdateBadgeCount: () => {},
+        IndexUrl: '/admin/affiliate-withdrawals',
+        ToastManager: {
+            HandleWorkItem: (work_item) => handled_items.push(work_item),
+        },
+    });
+
+    await handler({ data: {
+        actionable_count: 2,
+        requested_count: 1,
+        approved_count: 1,
+        latest_event_cursor: '2026-09-16T09:45:00+00:00|8',
+        latest_event_status: 'REQUESTED',
+        latest_actionable_withdrawal: {
+            id: 8,
+            affiliate_name: 'New Affiliate',
+            amount_minor: 500000,
+            status: 'REQUESTED',
+            requested_at: '2026-09-16T09:45:00+00:00',
+        },
+    } });
+
+    assert.deepEqual(handled_items, [{
+        source_id: 'withdrawal',
+        pending_count: 2,
+        event_type: null,
+        title: 'Affiliate withdrawal management',
+        reminder_message: 'มีคำขอถอนเงินที่ต้องจัดการ 2 รายการ (รออนุมัติ 1, รอโอนเงิน 1)',
+        new_message: 'New Affiliate ส่งคำขอถอนเงิน 5,000.00 บาท และกำลังรออนุมัติ (2 รายการที่ต้องจัดการ)',
+        action_url: '/admin/affiliate-withdrawals',
+        action_label: 'จัดการคำขอถอนเงิน',
     }]);
 });
 

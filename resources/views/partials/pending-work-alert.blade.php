@@ -83,6 +83,21 @@
                     </a>
                 </div>
             </li>
+            <li class="pending-work-notification__item" data-pending-work-item="withdrawal" hidden>
+                <span class="pending-work-notification__item-icon" aria-hidden="true">
+                    <i class="fas fa-money-bill-wave"></i>
+                </span>
+                <div class="pending-work-notification__item-content">
+                    <div class="pending-work-notification__item-heading">
+                        <strong data-pending-work-item-title>Affiliate withdrawal management</strong>
+                        <span class="pending-work-notification__count" data-pending-work-item-count></span>
+                    </div>
+                    <p data-pending-work-item-message></p>
+                    <a class="btn btn-sm btn-primary pending-work-notification__item-action" data-pending-work-item-action href="#" hidden>
+                        จัดการคำขอถอนเงิน
+                    </a>
+                </div>
+            </li>
             <li class="pending-work-notification__item" data-pending-work-item="book" hidden>
                 <span class="pending-work-notification__item-icon" aria-hidden="true">
                     <i class="fas fa-book"></i>
