@@ -234,6 +234,8 @@
 
     @include('contacts.course')
 
+    @include('contacts.fast-history')
+
     @include('contacts.create')
 
     @include('contacts.create_demo')

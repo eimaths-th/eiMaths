@@ -173,6 +173,20 @@
             autoclose: true
         });
 
+        $(".fast-history-date").datepicker({
+            dateFormat: 'yy-mm-dd',
+            changeMonth: true,
+            changeYear: true,
+            yearRange: '1980:2050',
+            autoclose: true
+        });
+
+        $(".fast-history-time").timepicker({
+            timeFormat: 'HH:mm:ss',
+            showButtonPanel: true,
+            controlType: 'select'
+        });
+
 
 
         //$.noConflict();
@@ -1067,21 +1081,196 @@
 
         })
 
-        $(document).on('click', '.btn-fastHistory', function() {
-            const studentId = $(this).data('id');
+        const fast_history_preview_url = @json(route('contacts.fastHistory.preview', ['id' => '__student_id__']));
+        const fast_history_store_url = @json(route('contacts.fastHistory', ['id' => '__student_id__']));
 
-            $.get(`/contacts/${studentId}/fast-history`, function(res) {
-                console.log(res.data);
-                toastr.success('บันทึกประวัติการเรียนเรียบร้อยแล้ว');
-                if ($.fn.DataTable.isDataTable('#Listview')) {
-                    $('#Listview').DataTable().ajax.reload(null, false);
+        function BuildFastHistoryUrl(url_template, student_id) {
+            return url_template.replace('__student_id__', encodeURIComponent(student_id));
+        }
+
+        function ShowFastHistoryError(ajax_response, fallback_message) {
+            const message_text = ajax_response.responseJSON && ajax_response.responseJSON.message
+                ? ajax_response.responseJSON.message
+                : fallback_message;
+            toastr.error(message_text);
+        }
+
+        function GetFastHistoryPreviewData() {
+            return $('#fast-history-modal').data('preview-data') || {};
+        }
+
+        function GetSelectedFastHistoryCourse() {
+            const preview_data = GetFastHistoryPreviewData();
+            const level_id = String($('#fast-history-level').val() || '');
+            const term = String($('#fast-history-term').val() || '');
+
+            return (preview_data.registered_courses || []).find(function(course) {
+                return String(course.level_id) === level_id && String(course.term) === term;
+            }) || null;
+        }
+
+        function UpdateFastHistoryRemaining() {
+            const selected_course = GetSelectedFastHistoryCourse();
+            if (!selected_course) {
+                $('#fast-history-remaining').text('-');
+                return;
+            }
+
+            const bookuse_id = String($('#fast-history-book').val() || '');
+            const selected_book = (selected_course.bookuses || []).find(function(book) {
+                return String(book.id) === bookuse_id;
+            });
+            const course_quantity = Number(selected_book ? selected_book.quantity : selected_course.course_quantity);
+            const attended_count = Number(selected_course.attended_count || 0);
+            const remaining_after = Math.max(course_quantity - attended_count - 1, 0);
+
+            $('#fast-history-remaining').text(remaining_after + ' / ' + course_quantity);
+        }
+
+        function PopulateFastHistoryBooks() {
+            const selected_course = GetSelectedFastHistoryCourse();
+            const book_select = $('#fast-history-book').empty();
+            if (!selected_course) {
+                $('#fast-history-remaining').text('-');
+                return;
+            }
+
+            (selected_course.bookuses || []).forEach(function(book) {
+                $('<option>', {
+                    value: book.id
+                }).text(book.name + ' (' + book.quantity + ')').appendTo(book_select);
+            });
+
+            const default_bookuse_id = selected_course.bookuse_id;
+            if (default_bookuse_id !== undefined) {
+                book_select.val(String(default_bookuse_id));
+            }
+            UpdateFastHistoryRemaining();
+        }
+
+        function PopulateFastHistoryTerms(selected_term) {
+            const preview_data = GetFastHistoryPreviewData();
+            const level_id = String($('#fast-history-level').val() || '');
+            const term_select = $('#fast-history-term').empty();
+            const matching_courses = (preview_data.registered_courses || []).filter(function(course) {
+                return String(course.level_id) === level_id;
+            });
+
+            matching_courses.forEach(function(course) {
+                $('<option>', {
+                    value: course.term
+                }).text('Term ' + course.term).appendTo(term_select);
+            });
+
+            if (selected_term !== undefined && matching_courses.some(function(course) {
+                return String(course.term) === String(selected_term);
+            })) {
+                term_select.val(String(selected_term));
+            } else if (matching_courses.length > 0) {
+                term_select.val(String(matching_courses[0].term));
+            }
+
+            PopulateFastHistoryBooks();
+        }
+
+        function PopulateFastHistoryForm(preview_data) {
+            const level_select = $('#fast-history-level').empty();
+            const teacher_select = $('#fast-history-teacher').empty();
+            const level_ids = [];
+
+            (preview_data.registered_courses || []).forEach(function(course) {
+                if (!level_ids.includes(String(course.level_id))) {
+                    level_ids.push(String(course.level_id));
+                    $('<option>', {
+                        value: course.level_id
+                    }).text(course.level_name).appendTo(level_select);
                 }
-                // TODO: render modal/table
-            }).fail(function(xhr) {
-                if (xhr.responseJSON && xhr.responseJSON.message) {
-                    toastr.error(xhr.responseJSON.message);
-                } else {
-                    toastr.error('Loading fast history failed');
+            });
+
+            level_select.val(String(preview_data.level_id));
+            $('#fast-history-modal').data('preview-data', preview_data);
+            PopulateFastHistoryTerms(preview_data.term);
+
+            $('<option>', {
+                value: 0
+            }).text('No teacher recorded').appendTo(teacher_select);
+            (preview_data.teacher_options || []).forEach(function(teacher) {
+                $('<option>', {
+                    value: teacher.id
+                }).text(teacher.name).appendTo(teacher_select);
+            });
+            teacher_select.val(String(preview_data.teacher_id || 0));
+            if (teacher_select.val() === null) {
+                teacher_select.val('0');
+            }
+
+            $('#fast-history-date').val(preview_data.date);
+            $('#fast-history-stime').val(preview_data.stime);
+            $('#fast-history-etime').val(preview_data.etime);
+            UpdateFastHistoryRemaining();
+        }
+
+        $(document).on('change', '#fast-history-level', function() {
+            PopulateFastHistoryTerms();
+        });
+
+        $(document).on('change', '#fast-history-term', function() {
+            PopulateFastHistoryBooks();
+        });
+
+        $(document).on('change', '#fast-history-book', function() {
+            UpdateFastHistoryRemaining();
+        });
+
+        $(document).on('click', '.btn-fast-history', function() {
+            const student_id = $(this).data('id');
+            const preview_url = BuildFastHistoryUrl(fast_history_preview_url, student_id);
+
+            $('#fast-history-modal').removeData('preview-data');
+            $('#confirm-fast-history').data('student-id', student_id).prop('disabled', true);
+            $.get(preview_url, function(response_data) {
+                const preview_data = response_data.data;
+                $('#fast-history-student').text(`${preview_data.student_code || ''} ${preview_data.student_name || ''}`.trim());
+                PopulateFastHistoryForm(preview_data);
+                $('#confirm-fast-history').prop('disabled', false);
+                $('#fast-history-modal').modal('show');
+            }).fail(function(ajax_response) {
+                $('#confirm-fast-history').prop('disabled', false);
+                ShowFastHistoryError(ajax_response, 'Loading check-in details failed.');
+            });
+        });
+
+        $(document).on('click', '#confirm-fast-history', function() {
+            const confirm_button = $(this);
+            const student_id = confirm_button.data('student-id');
+            if (!student_id) {
+                return;
+            }
+
+            confirm_button.prop('disabled', true);
+            $.ajax({
+                url: BuildFastHistoryUrl(fast_history_store_url, student_id),
+                method: 'POST',
+                data: {
+                    _token: $('meta[name="csrf-token"]').attr('content'),
+                    level_id: $('#fast-history-level').val(),
+                    term: $('#fast-history-term').val(),
+                    bookuse: $('#fast-history-book').val(),
+                    teacher_id: $('#fast-history-teacher').val(),
+                    date: $('#fast-history-date').val(),
+                    stime: $('#fast-history-stime').val(),
+                    etime: $('#fast-history-etime').val()
+                },
+                success: function(response_data) {
+                    $('#fast-history-modal').modal('hide');
+                    toastr.success(response_data.message || 'Learning history recorded successfully.');
+                    if ($.fn.DataTable.isDataTable('#Listview')) {
+                        $('#Listview').DataTable().ajax.reload(null, false);
+                    }
+                },
+                error: function(ajax_response) {
+                    confirm_button.prop('disabled', false);
+                    ShowFastHistoryError(ajax_response, 'Saving check-in failed.');
                 }
             });
         });

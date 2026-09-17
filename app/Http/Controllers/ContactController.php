@@ -18,6 +18,8 @@ use App\Models\OrderDetail;
 use App\Models\OrderDetailList;
 use App\Models\OrderRunningNumber;
 use App\Services\BookReceiptService;
+use App\Services\FastHistoryException;
+use App\Services\FastHistoryService;
 use Illuminate\Support\Facades\Gate;
 
 use Maatwebsite\Excel\Facades\Excel;
@@ -50,12 +52,15 @@ class ContactController extends Controller
         private readonly BookReceiptService $book_receipt_service,
         private readonly AffiliateAttributionService $affiliate_attribution_service,
         private readonly FinancialSourceGuard $financial_source_guard,
+        private readonly FastHistoryService $fast_history_service,
     )
     {
         //$this->middleware('auth');
         $this->middleware('permission:student-list|student-create|student-edit|student-delete', ['only' => ['index', 'show']]);
         $this->middleware('permission:student-create', ['only' => ['create', 'store']]);
         $this->middleware('permission:student-edit', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:student-list', ['only' => ['fastHistoryPreview']]);
+        $this->middleware('permission:student-edit', ['only' => ['fastHistory']]);
         $this->middleware('permission:student-delete', ['only' => ['destroy']]);
     }
 
@@ -414,11 +419,11 @@ class ContactController extends Controller
                 ->addColumn('action', function ($row) {
                     $html = '';
 
-                    // if (Gate::allows('student-edit')) {
-                    //     $html .= '<button type="button" class="btn btn-sm btn-primary btn-fastHistory" id="fastHistory" data-id="' . $row->id . '"><i class="fa fa-history"></i> Fast History</button> ';
-                    // } else {
-                    //     $html .= '<button type="button" class="btn btn-sm btn-primary disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-history"></i> Fast History</button> ';
-                    // }
+                    if (Gate::allows('student-edit')) {
+                        $html .= '<button type="button" class="btn btn-sm btn-primary btn-fast-history" data-id="' . $row->id . '"><i class="fa fa-user-check"></i> Check in</button> ';
+                    } else {
+                        $html .= '<button type="button" class="btn btn-sm btn-primary disabled" disabled data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-user-check"></i> Check in</button> ';
+                    }
 
                     if (Gate::allows('student-edit')) {
                         $html .= '<button type="button" class="btn btn-sm btn-info btn-show" id="getCourseData" data-id="' . $row->id . '"><i class="fa fa-search"></i>View Course</button> ';
@@ -1763,55 +1768,54 @@ class ContactController extends Controller
     }
 
 
-    public function fastHistory($id)
+    public function fastHistoryPreview(int $id)
     {
-        $student = Contact::find($id);
+        $student = Contact::query()->find($id);
         if (!$student) {
-            return response()->json(['message' => 'Student not found'], 404);
+            return response()->json(['message' => 'Student not found.'], 404);
         }
 
-        $maxHistory = $this->maxHistory($student->id);
-        if ($maxHistory < 1) {
-            return response()->json(['message' => 'นักเรียนคนนี้เข้าเรียนครบแล้ว'], 404);
+        try {
+            return response()->json([
+                'data' => $this->fast_history_service->BuildPreview($student, Auth::user()),
+            ]);
+        } catch (FastHistoryException $exception) {
+            return response()->json([
+                'success' => false,
+                'message' => $exception->getMessage(),
+            ], $exception->status_code);
         }
+    }
 
-        $history = Histrories::where('student_id', $student->id)
-            ->where('term', $student->term)
-            ->where('level_id', $student->level)
-            ->orderByDesc('date')
-            ->first();
+    public function fastHistory(Request $request, int $id)
+    {
+        try {
+            $history = $this->fast_history_service->CreateHistory(
+                $id,
+                Auth::user(),
+                null,
+                $request->only([
+                    'level_id',
+                    'term',
+                    'bookuse',
+                    'teacher_id',
+                    'date',
+                    'stime',
+                    'etime',
+                ])
+            );
 
-        $now = Carbon::now();
-        $startDate = Carbon::parse($history->start_date ?? $now->format('Y-m-d'));
-        $endDate = $startDate->copy()->addMonths(4);
-
-        $payload = [
-            'centre' => $history->centre ?? $student->centre,
-            'teacher_id' => $history->teacher_id ?? null,
-            'student_id' => $student->id,
-            'level_id' => $history->level_id ?? $student->level,
-            'level_name' => $history->level_name ?? $student->level_name,
-            'term' => $history->term ?? $student->term,
-            'bookuse' => $history->bookuse ?? $student->bookuse,
-            'date' => $now->toDateString(),
-            'stime' => $now->format('H:i:s'),
-            'etime' => $now->addHours(2)->format('H:i:s'),
-            'start_date' => $startDate->toDateString(),
-            'end_date' => $endDate->toDateString(),
-            'comment' => null,
-            'signature' => null,
-        ];
-
-        if ($history) {
-            $remaining = max(($history->course_remaining ?? 0) - 1, 0);
-            $payload['course_remaining'] = $remaining;
-        } else {
-            $payload['course_remaining'] = 9;
+            return response()->json([
+                'success' => true,
+                'message' => 'Learning history recorded successfully.',
+                'data' => $history,
+            ]);
+        } catch (FastHistoryException $exception) {
+            return response()->json([
+                'success' => false,
+                'message' => $exception->getMessage(),
+            ], $exception->status_code);
         }
-
-        $newHistory = Histrories::create($payload);
-
-        return response()->json(['data' => $newHistory]);
     }
 
     /**

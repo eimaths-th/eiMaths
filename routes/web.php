@@ -100,7 +100,8 @@ Route::group(['middleware' => ['auth']], function () {
         ->name('incoming-book-shipments.show');
     Route::post('/incoming-book-shipments/{book_shipment}/receive', [IncomingBookShipmentController::class, 'Receive'])
         ->name('incoming-book-shipments.receive');
-    Route::get('contacts/{id}/fast-history', [ContactController::class, 'fastHistory'])->name('contacts.fastHistory');
+    Route::get('contacts/{id}/fast-history', [ContactController::class, 'fastHistoryPreview'])->name('contacts.fastHistory.preview');
+    Route::post('contacts/{id}/fast-history', [ContactController::class, 'fastHistory'])->name('contacts.fastHistory');
     Route::get('/contacts/export-by-centre', [App\Http\Controllers\ContactController::class, 'exportContactsByCentre'])->name('contacts.exportByCentre');
     Route::get('/contacts/get-by-centre', [App\Http\Controllers\ContactController::class, 'getContactsByCentre'])->name('contacts.getByCentre');
 
