@@ -368,17 +368,6 @@ class APIController extends Controller
             //$course_remaining =  9 - $history->count();
             $start_date = $firstHistory->start_date;
             $end_date = $firstHistory->end_date;
-
-            if ($contact->level2 == $level_id && $contact->term2 == $term && $course_remaining == 0) {
-                //auto discontinue
-                $contactd = [
-                    'discontinued' => 1,
-                    'discontinued_date' => date("Y-m-d"),
-                    'discontinued_reason' => 'End of course',
-                ];
-
-                $contact->update($contactd);
-            }
         } else {
             return response()->json(['message' => 'Study time is full  for this term'], 400);
         }

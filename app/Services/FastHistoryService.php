@@ -50,6 +50,50 @@ class FastHistoryService
         ];
     }
 
+    public function BuildRenewalStatus(Contact $student, ?Carbon $now = null): array
+    {
+        $now = ($now ?? Carbon::now())->copy();
+
+        try {
+            $courses = $this->BuildCourseStates($student);
+        } catch (FastHistoryException) {
+            return [
+                'status' => 'unknown',
+                'reason' => 'course_data_unavailable',
+                'paid_total' => 0,
+                'free_course' => max((int) $student->free_course, 0),
+                'total' => 0,
+                'attended_count' => 0,
+                'remaining' => null,
+                'expires_on' => null,
+            ];
+        }
+
+        $paid_total = array_sum(array_column($courses, 'course_quantity'));
+        $attended_count = array_sum(array_column($courses, 'attended_count'));
+        $free_course = max((int) $student->free_course, 0);
+        $total = $paid_total + $free_course;
+        $remaining = max($total - $attended_count, 0);
+        $current_course = $this->ResolveRenewalCourse($courses);
+        $expires_on = $this->ResolveCourseExpiry($current_course);
+        $is_expired = $expires_on !== null
+            && $now->copy()->startOfDay()->greaterThan(Carbon::parse($expires_on)->startOfDay());
+        $reason = $remaining === 0
+            ? 'course_exhausted'
+            : ($is_expired ? 'course_expired' : null);
+
+        return [
+            'status' => $reason === null ? 'active' : 'pending',
+            'reason' => $reason,
+            'paid_total' => $paid_total,
+            'free_course' => $free_course,
+            'total' => $total,
+            'attended_count' => $attended_count,
+            'remaining' => $remaining,
+            'expires_on' => $expires_on,
+        ];
+    }
+
     public function CreateHistory(
         int $student_id,
         ?User $actor = null,
@@ -116,6 +160,46 @@ class FastHistoryService
         }
 
         throw new FastHistoryException('This student has completed every registered course.');
+    }
+
+    private function ResolveRenewalCourse(array $courses): ?array
+    {
+        $latest_attempted_course = null;
+        foreach ($courses as $course) {
+            if ($course['attended_count'] > 0 && $course['attended_count'] < $course['course_quantity']) {
+                $latest_attempted_course = $course;
+            }
+        }
+        if ($latest_attempted_course !== null) {
+            return $latest_attempted_course;
+        }
+
+        foreach ($courses as $course) {
+            if ($course['attended_count'] < $course['course_quantity']) {
+                return $course;
+            }
+        }
+
+        return null;
+    }
+
+    private function ResolveCourseExpiry(?array $course): ?string
+    {
+        if ($course === null) {
+            return null;
+        }
+
+        $first_history = $course['histories']->first() ?? null;
+        $end_date = $first_history?->end_date;
+        if (! $end_date) {
+            return null;
+        }
+
+        try {
+            return Carbon::parse($end_date)->toDateString();
+        } catch (\Throwable) {
+            return null;
+        }
     }
 
     private function ResolveSelection(Contact $student, array $preview, array $overrides): array

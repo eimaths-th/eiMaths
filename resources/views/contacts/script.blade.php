@@ -575,6 +575,7 @@
                     d.date_range = dashboard_date_range;
                     d.years = dashboard_years;
                     d.shipment_id = dashboard_shipment_id;
+                    d.renewal_status = $('#renewal-status-filter').val();
 
                     if (reservationChanged && $('#reservation').val()) {
                         d.sdate = $('#reservation').val();
@@ -723,6 +724,10 @@
         var table = $('#Listview').DataTable(table_option);
         // var table = $('#Listview1').DataTable(table_option);
 
+        $('#renewal-status-filter').on('change', function() {
+            table.ajax.reload(null, false);
+        });
+
         $('#SearchButtons').on('click', function() {
             var searchType = $('#search_type').val();
             var keyword = $('#keyword').val();
@@ -764,6 +769,7 @@
             // Set field values to empty
             $('#search_type').val('');
             $('#keyword').val('');
+            $('#renewal-status-filter').val('');
 
             $('#Listview').html('');
 

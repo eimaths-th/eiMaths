@@ -180,6 +180,24 @@ class ContactController extends Controller
         return $text;
     }
 
+    private function FormatRenewalRemaining(array $renewal_status): string
+    {
+        $text = ' เรียนไปแล้ว : ' . $renewal_status['attended_count']
+            . ' ฟรี ' . $renewal_status['free_course']
+            . ' เหลือ ' . $renewal_status['remaining'] . ' / ' . $renewal_status['total'];
+
+        if ($renewal_status['status'] !== 'pending') {
+            return $text;
+        }
+
+        $reason_label = $renewal_status['reason'] === 'course_expired'
+            ? 'Course expired'
+            : 'Course exhausted';
+
+        return $text . '<br><span class="badge badge-warning">Pending renewal: '
+            . $reason_label . '</span>';
+    }
+
     public function maxHistory($id)
     {
         // $id = 103;
@@ -360,6 +378,17 @@ class ContactController extends Controller
             //$sqlQuery = $query->toSql();
             //dd($sqlQuery);
             $datas = $query->get();
+            $renewal_statuses = [];
+            foreach ($datas as $row) {
+                $renewal_statuses[$row->id] = $this->fast_history_service->BuildRenewalStatus($row);
+            }
+
+            $renewal_status_filter = $request->input('renewal_status');
+            if (in_array($renewal_status_filter, ['pending', 'active'], true)) {
+                $datas = $datas->filter(function ($row) use ($renewal_statuses, $renewal_status_filter): bool {
+                    return ($renewal_statuses[$row->id]['status'] ?? 'unknown') === $renewal_status_filter;
+                })->values();
+            }
 
             //dd($datas);
             return datatables()->of($datas)
@@ -394,8 +423,22 @@ class ContactController extends Controller
                 ->addColumn('end_date', function ($row) {
                     return $this->checkEndDate($row->id);
                 })
-                ->addColumn('remaining', function ($row) {
-                    return $this->checkRemaining($row->id);
+                ->addColumn('remaining', function ($row) use ($renewal_statuses) {
+                    $renewal_status = $renewal_statuses[$row->id] ?? null;
+                    if (! $renewal_status || $renewal_status['status'] === 'unknown') {
+                        return $this->checkRemaining($row->id);
+                    }
+
+                    return $this->FormatRenewalRemaining($renewal_status);
+                })
+                ->addColumn('renewal_status', function ($row) use ($renewal_statuses) {
+                    return $renewal_statuses[$row->id]['status'] ?? 'unknown';
+                })
+                ->addColumn('renewal_reason', function ($row) use ($renewal_statuses) {
+                    return $renewal_statuses[$row->id]['reason'] ?? null;
+                })
+                ->addColumn('renewal_remaining', function ($row) use ($renewal_statuses) {
+                    return $renewal_statuses[$row->id]['remaining'] ?? null;
                 })
                 ->editColumn('bookuse_name', function ($row) {
                     if (!empty($row->bookuse2_name)) {
@@ -443,7 +486,7 @@ class ContactController extends Controller
                         $html .= '<button type="button" class="btn btn-sm btn-danger disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-trash"></i> Delete</button> ';
                     }
                     return $html;
-                })->rawColumns(['checkbox', 'action', 'book_receipt', 'more'])->toJson();
+                })->rawColumns(['checkbox', 'action', 'remaining', 'book_receipt', 'more'])->toJson();
             /* ->filter(function ($instance) use ($request) {
                     if ($request->get('approved') == '0' || $request->get('approved') == '1') {
                         $instance->where('contacts.code', $request->get('approved'));
