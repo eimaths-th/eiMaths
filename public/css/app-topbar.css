@@ -18,6 +18,7 @@
 
 .app-topbar__left {
     min-width: 0;
+    column-gap: 1rem;
 }
 
 .app-topbar__right {
@@ -67,7 +68,6 @@
     align-items: center;
     gap: 0.55rem;
     min-width: 0;
-    margin-left: 0.75rem;
 }
 
 .app-context-chip {
