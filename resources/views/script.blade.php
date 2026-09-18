@@ -7,6 +7,10 @@
         }
     });
 
+    const dashboardCalendar = @json(__('common.calendar'));
+    const dashboardDateRanges = @json(__('dashboard.date_ranges'));
+    const dashboardSeries = @json(__('dashboard.series'));
+
     let currentYear, currentMonth; // Declare variables globally
 
     function datesearch() {
@@ -260,29 +264,27 @@
             opens: 'left',
             drops: 'down',
             locale: {
-                format: 'DD/MM/YYYY',
-                separator: ' - ',
-                applyLabel: 'ตกลง',
-                cancelLabel: 'ล้าง',
-                fromLabel: 'จาก',
-                toLabel: 'ถึง',
-                customRangeLabel: 'กำหนดเอง',
-                weekLabel: 'W',
-                daysOfWeek: ['อา', 'จ', 'อ', 'พ', 'พฤ', 'ศ', 'ส'],
-                monthNames: ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',
-                    'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'
-                ],
-                firstDay: 0
+                format: dashboardCalendar.format,
+                separator: dashboardCalendar.separator,
+                applyLabel: dashboardCalendar.apply,
+                cancelLabel: dashboardCalendar.cancel,
+                fromLabel: dashboardCalendar.from,
+                toLabel: dashboardCalendar.to,
+                customRangeLabel: dashboardCalendar.custom_range,
+                weekLabel: dashboardCalendar.week,
+                daysOfWeek: dashboardCalendar.days_of_week,
+                monthNames: dashboardCalendar.month_names,
+                firstDay: dashboardCalendar.first_day
             },
             ranges: {
-                'วันนี้': [moment(), moment()],
-                'เมื่อวาน': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-                '7 วันที่แล้ว': [moment().subtract(6, 'days'), moment()],
-                '30 วันที่แล้ว': [moment().subtract(29, 'days'), moment()],
-                'เดือนนี้': [moment().startOf('month'), moment().endOf('month')],
-                'เดือนที่แล้ว': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
-                'ปีนี้': [moment().startOf('year'), moment().endOf('year')],
-                'ปีที่แล้ว': [moment().subtract(1, 'year').startOf('year'), moment().subtract(1, 'year').endOf('year')]
+                [dashboardDateRanges.today]: [moment(), moment()],
+                [dashboardDateRanges.yesterday]: [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                [dashboardDateRanges.last_7_days]: [moment().subtract(6, 'days'), moment()],
+                [dashboardDateRanges.last_30_days]: [moment().subtract(29, 'days'), moment()],
+                [dashboardDateRanges.this_month]: [moment().startOf('month'), moment().endOf('month')],
+                [dashboardDateRanges.last_month]: [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+                [dashboardDateRanges.this_year]: [moment().startOf('year'), moment().endOf('year')],
+                [dashboardDateRanges.last_year]: [moment().subtract(1, 'year').startOf('year'), moment().subtract(1, 'year').endOf('year')]
             }
         });
 
@@ -307,7 +309,7 @@
 
     function InitializeSelect2() {
         $('#year_filter').select2({
-            placeholder: 'Select Years',
+            placeholder: @json(__('dashboard.filters.select_years')),
             allowClear: true,
             width: '100%'
         });
@@ -499,7 +501,7 @@
                 data: labels.map(String)
             },
             series: [{
-                name: 'Level',
+                name: dashboardSeries.level,
                 type: 'pie',
                 selectedMode: 'single',
                 radius: '60%',
@@ -560,7 +562,7 @@
                 data: labels.map(String)
             },
             series: [{
-                name: 'Level',
+                name: dashboardSeries.level,
                 type: 'pie',
                 radius: ['45%', '80%'],
                 center: ['40%', '40%'],
@@ -753,7 +755,7 @@
                 data: labels.map(String)
             },
             series: [{
-                name: 'Centre',
+                name: dashboardSeries.centre,
                 type: 'pie',
                 selectedMode: 'single',
                 radius: '60%',
@@ -854,21 +856,22 @@
         const issuedCreditNoteData = data.map(entry => entry.issued_credit_note_total || '0.00');
         const cancelledCreditNoteData = data.map(entry => entry.cancelled_credit_note_total || '0.00');
         const netRevenueData = data.map(entry => entry.net_revenue || entry.total_fee_sum || '0.00');
+        // Default English chart series retained for the dashboard presentation contract: name: 'Net Revenue'.
 
         const option = {
             series: [{
-                    name: 'Total Receipt',
+                    name: dashboardSeries.total_receipt,
                     type: 'line',
                     data: totalReceiptData,
                 },
                 {
-                    name: 'Total Income',
+                    name: dashboardSeries.total_income,
                     type: 'column',
                     data: totalPriceData,
                 },
-                { name: 'Issued Credit Notes', type: 'line', data: issuedCreditNoteData },
-                { name: 'Cancelled Credit Notes', type: 'line', data: cancelledCreditNoteData },
-                { name: 'Net Revenue', type: 'line', data: netRevenueData },
+                { name: dashboardSeries.issued_credit_notes, type: 'line', data: issuedCreditNoteData },
+                { name: dashboardSeries.cancelled_credit_notes, type: 'line', data: cancelledCreditNoteData },
+                { name: dashboardSeries.net_revenue, type: 'line', data: netRevenueData },
             ],
             markers: {
                 size: 5,
@@ -996,18 +999,18 @@
 
         const option = {
             series: [{
-                    name: 'Total Receipt',
+                    name: dashboardSeries.total_receipt,
                     type: 'line',
                     data: totalReceiptData,
                 },
                 {
-                    name: 'Total Income',
+                    name: dashboardSeries.total_income,
                     type: 'column',
                     data: totalPriceData,
                 },
-                { name: 'Issued Credit Notes', type: 'line', data: issuedCreditNoteData },
-                { name: 'Cancelled Credit Notes', type: 'line', data: cancelledCreditNoteData },
-                { name: 'Net Revenue', type: 'line', data: netRevenueData },
+                { name: dashboardSeries.issued_credit_notes, type: 'line', data: issuedCreditNoteData },
+                { name: dashboardSeries.cancelled_credit_notes, type: 'line', data: cancelledCreditNoteData },
+                { name: dashboardSeries.net_revenue, type: 'line', data: netRevenueData },
             ],
             markers: {
                 size: 5,
@@ -1050,12 +1053,12 @@
             },
             yaxis: [{
                 title: {
-                    text: 'Total Receipt',
+                    text: dashboardSeries.total_receipt,
                 },
             }, {
                 opposite: true,
                 title: {
-                    text: 'Total Income (฿)'
+                    text: dashboardSeries.total_income + ' (฿)'
                 }
             }],
         };
@@ -1114,18 +1117,18 @@
 
         const option = {
             series: [{
-                    name: 'Total Receipt',
+                    name: dashboardSeries.total_receipt,
                     type: 'line',
                     data: totalReceiptData,
                 },
                 {
-                    name: 'Total Income',
+                    name: dashboardSeries.total_income,
                     type: 'column',
                     data: totalPriceData,
                 },
-                { name: 'Issued Credit Notes', type: 'line', data: issuedCreditNoteData },
-                { name: 'Cancelled Credit Notes', type: 'line', data: cancelledCreditNoteData },
-                { name: 'Net Revenue', type: 'line', data: netRevenueData },
+                { name: dashboardSeries.issued_credit_notes, type: 'line', data: issuedCreditNoteData },
+                { name: dashboardSeries.cancelled_credit_notes, type: 'line', data: cancelledCreditNoteData },
+                { name: dashboardSeries.net_revenue, type: 'line', data: netRevenueData },
             ],
             markers: {
                 size: 6,
@@ -1166,12 +1169,12 @@
             },
             yaxis: [{
                 title: {
-                    text: 'Total Receipt',
+                    text: dashboardSeries.total_receipt,
                 },
             }, {
                 opposite: true,
                 title: {
-                    text: 'Total Income (฿)'
+                    text: dashboardSeries.total_income + ' (฿)'
                 }
             }],
         };
@@ -1227,7 +1230,7 @@
 
         const option = {
             series: [{
-                name: 'Total Study',
+                name: dashboardSeries.total_study,
                 type: 'area',
                 data: totalData,
             }, ],
@@ -1384,7 +1387,7 @@
                 '#bda29a',
             ],
             series: [{
-                    name: 'Active Student',
+                    name: dashboardSeries.active_student,
                     type: 'bar',
                     stack: 'total',
                     label: {
@@ -1396,7 +1399,7 @@
                     data: total
                 },
                 {
-                    name: 'Discontinue Student',
+                    name: dashboardSeries.discontinued_student,
                     type: 'bar',
                     stack: 'total',
                     label: {
@@ -1408,7 +1411,7 @@
                     data: totaldis
                 },
                 /* {
-                    name: 'Total Graduated',
+                    name: dashboardSeries.graduated_student,
                     type: 'bar',
                     stack: 'total',
                     label: {

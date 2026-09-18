@@ -90,7 +90,9 @@ class UserController extends Controller
             ->filterColumn('position', fn ($q, $keyword) => $q->whereHas('position', fn ($d) => $d->where('name', 'like', "%{$keyword}%")))
             ->filterColumn('role', fn ($q, $keyword) => $q->whereHas('roles', fn ($d) => $d->where(fn ($role) => $role->where('name', 'like', "%{$keyword}%")->orWhere('display_name', 'like', "%{$keyword}%"))))
             ->editColumn('role', fn (User $row) => $row->roles->map(fn ($role) => $role->display_name ?: $role->name)->implode(', '))
-            ->editColumn('disable', fn ($row) => $row->disable == 1 ? 'Yes' : 'No')
+            ->editColumn('disable', fn ($row) => $row->disable == 1
+                ? __('user-access.users.modal.enabled_status')
+                : __('user-access.users.modal.disabled_status'))
             ->editColumn('department', fn ($row) => $row->department?->name ?? '-')
             ->editColumn('position', fn ($row) => $row->position?->name ?? '-')
             ->editColumn('checkbox', fn ($row) => '<input type="checkbox" name="table_records[]" value="'.(int) $row->id.'">')
@@ -98,9 +100,11 @@ class UserController extends Controller
                 if (!BranchAccess::isOwner($request->user()) && $row->hasRole('Admin')) {
                     return '';
                 }
-                $html = $request->user()->can('user-edit') ? '<button class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="'.(int) $row->id.'">Edit</button> ' : '';
+                $html = $request->user()->can('user-edit')
+                    ? '<button class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="'.(int) $row->id.'">'.e(__('user-access.users.actions.edit')).'</button> '
+                    : '';
                 if ($request->user()->can('user-delete')) {
-                    $html .= '<button class="btn btn-sm btn-danger '.($affiliate ? 'btn-delete-affiliate-user' : 'btn-delete').'" data-rowid="'.(int) $row->id.'">Delete</button>';
+                    $html .= '<button class="btn btn-sm btn-danger '.($affiliate ? 'btn-delete-affiliate-user' : 'btn-delete').'" data-rowid="'.(int) $row->id.'">'.e(__('user-access.users.actions.delete')).'</button>';
                 }
                 return $html;
             })->rawColumns(['checkbox', 'action'])->toJson();
@@ -118,6 +122,16 @@ class UserController extends Controller
             'name' => 'required|string|max:255', 'email' => 'required|email|max:255|unique:users,email',
             'password' => 'required|string|min:8|confirmed', 'department_id' => 'required|integer',
             'position_id' => 'nullable|integer', 'role' => 'required|string', 'disable' => 'sometimes|boolean',
+        ], [
+            'name.required' => __('user-access.validation.name_required'),
+            'email.required' => __('user-access.validation.email_required'),
+            'email.email' => __('user-access.validation.email_invalid'),
+            'email.unique' => __('user-access.validation.email_unique'),
+            'password.required' => __('user-access.validation.password_required'),
+            'password.min' => __('user-access.validation.password_min', ['min' => 8]),
+            'password.confirmed' => __('user-access.validation.password_confirmed'),
+            'department_id.required' => __('user-access.validation.centre_required'),
+            'role.required' => __('user-access.validation.role_required'),
         ]);
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()->all()], 422);
@@ -134,13 +148,13 @@ class UserController extends Controller
             $user->assignRole($role);
             app(BranchContext::class)->audit('role-assigned', User::class, $user->id, ['role_id' => $role->id]);
         });
-        return response()->json(['success' => 'Add User Success']);
+        return response()->json(['success' => __('user-access.messages.user_created')]);
     }
 
     public function find($type, $position)
     {
         $users = User::where('position_id', $position)->orderBy('name')->get();
-        $html = "<option value=''>Please select</option>";
+        $html = "<option value=''>".e(__('user-access.users.modal.select'))."</option>";
         foreach ($users as $user) {
             $html .= '<option value="'.(int) $user->id.'">'.e($user->name).'</option>';
         }
@@ -162,7 +176,9 @@ class UserController extends Controller
             $html .= '<option value="'.e($role->name).'" '.($data->hasRole($role) ? 'selected' : '').'>'.e($role->display_name ?: $role->name).'</option>';
         }
         $position = $data->position;
-        $positionHtml = $position ? '<option value="'.(int) $position->id.'">'.e($position->name).'</option>' : '<option value="">ไม่มีแผนก</option>';
+        $positionHtml = $position
+            ? '<option value="'.(int) $position->id.'">'.e($position->name).'</option>'
+            : '<option value="">'.e(__('user-access.messages.no_department')).'</option>';
         return response()->json(['data' => $data, 'html' => $html, 'select_list_position' => $positionHtml]);
     }
 
@@ -174,13 +190,22 @@ class UserController extends Controller
             'name' => 'required|string|max:255', 'email' => ['required', 'email', Rule::unique('users', 'email')->ignore($target->id)],
             'department' => 'required|integer', 'position' => 'nullable|integer', 'role' => 'required|string',
             'password' => 'nullable|string|min:8|confirmed', 'disable' => 'required|boolean',
+        ], [
+            'name.required' => __('user-access.validation.name_required'),
+            'email.required' => __('user-access.validation.email_required'),
+            'email.email' => __('user-access.validation.email_invalid'),
+            'email.unique' => __('user-access.validation.email_unique'),
+            'department.required' => __('user-access.validation.centre_required'),
+            'role.required' => __('user-access.validation.role_required'),
+            'password.min' => __('user-access.validation.password_min', ['min' => 8]),
+            'password.confirmed' => __('user-access.validation.password_confirmed'),
         ]);
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()->all()], 422);
         }
         $data = $validator->validated();
         BranchAccess::assertBranch($request->user(), $data['department']);
-        abort_unless((int) $target->department_id === (int) $data['department'], 422, 'Use the branch transfer workflow.');
+        abort_unless((int) $target->department_id === (int) $data['department'], 422, __('user-access.messages.branch_transfer_required'));
         $role = Role::where('name', $data['role'])->where('guard_name', 'web')->firstOrFail();
         BranchAccess::assertAssignableRole($request->user(), $role, (int) $data['department']);
         DB::transaction(function () use ($target, $data, $role) {
@@ -197,7 +222,7 @@ class UserController extends Controller
             $target->syncRoles([$role]);
             app(BranchContext::class)->audit('role-assigned', User::class, $target->id, ['role_id' => $role->id]);
         });
-        return response()->json(['success' => 'Save User Success']);
+        return response()->json(['success' => __('user-access.messages.user_updated')]);
     }
 
     private function deleteUsers(Request $request, array $ids): void
@@ -222,7 +247,7 @@ class UserController extends Controller
     public function destroy(Request $request)
     {
         $this->deleteUsers($request, [(int) $request->id]);
-        return response()->json(['success' => true, 'message' => 'Delete User Success']);
+        return response()->json(['success' => true, 'message' => __('user-access.messages.user_deleted')]);
     }
 
     public function destroyAffiliateUser(Request $request)
@@ -234,7 +259,7 @@ class UserController extends Controller
     {
         $request->validate(['table_records' => 'required|array', 'table_records.*' => 'required|integer']);
         $this->deleteUsers($request, $request->table_records);
-        return redirect('/users')->with('success', 'Delete User Success');
+        return redirect('/users')->with('success', __('user-access.messages.user_deleted'));
     }
 
     public function perform()

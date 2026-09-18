@@ -5,11 +5,11 @@
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1>Tracking Link Generator</h1>
+                <h1>{{ __('crm.tracking_links.title') }}</h1>
             </div>
             <div class="col-sm-6">
                 <a href="{{ route('tracking-links.report') }}" class="btn btn-info float-sm-right">
-                    <i class="fas fa-chart-bar mr-1"></i> View Report
+                    <i class="fas fa-chart-bar mr-1"></i> {{ __('crm.tracking_links.view_report') }}
                 </a>
             </div>
         </div>
@@ -22,7 +22,7 @@
             <div class="alert alert-success">{{ Session::get('success') }}</div>
             @if (Session::has('short_url'))
                 <div class="alert alert-info">
-                    <strong>Short link:</strong>
+                    <strong>{{ __('crm.tracking_links.alerts.short_link') }}</strong>
                     <a href="{{ Session::get('short_url') }}" target="_blank" rel="noopener">{{ Session::get('short_url') }}</a>
                 </div>
             @endif
@@ -34,13 +34,13 @@
 
         <div class="card card-primary">
             <div class="card-header">
-                <h3 class="card-title"><i class="fas fa-link"></i> Create UTM Link</h3>
+                <h3 class="card-title"><i class="fas fa-link"></i> {{ __('crm.tracking_links.form.title') }}</h3>
             </div>
             <form method="POST" action="{{ route('tracking-links.store') }}">
                 @csrf
                 <div class="card-body">
                     @if(\App\Support\Branch\BranchAccess::canCrossBranches(auth()->user()))
-                    <div class="form-group"><label for="tracking-branch">สาขาที่รับ Lead จากลิงก์นี้</label>
+                    <div class="form-group"><label for="tracking-branch">{{ __('crm.tracking_links.form.branch') }}</label>
                         <select id="tracking-branch" name="branch_id" class="form-control" required>
                             @foreach($branches as $branch)<option value="{{ $branch->id }}">{{ $branch->name }}</option>@endforeach
                         </select>
@@ -49,13 +49,13 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="name">Link name *</label>
-                                <input type="text" id="name" name="name" value="{{ old('name') }}" class="form-control" placeholder="Example: Facebook June Video 01" required>
+                                <label for="name">{{ __('crm.tracking_links.form.link_name') }}</label>
+                                <input type="text" id="name" name="name" value="{{ old('name') }}" class="form-control" placeholder="{{ __('crm.tracking_links.form.link_name_placeholder') }}" required>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="base_url">Landing page URL *</label>
+                                <label for="base_url">{{ __('crm.tracking_links.form.landing_url') }}</label>
                                 <input type="url" id="base_url" name="base_url" value="{{ old('base_url', $baseUrl) }}" class="form-control tracking-field" required>
                             </div>
                         </div>
@@ -65,55 +65,39 @@
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label for="utm_source">
-                                    Source *
+                                    {{ __('crm.tracking_links.form.source') }}
                                     <i class="fas fa-circle-info text-muted ml-1" data-toggle="tooltip"
-                                        title="แพลตฟอร์มหรือแหล่งที่ลูกค้าเข้ามา เช่น Facebook, Google, TikTok หรือ LINE"></i>
+                                        title="{{ __('crm.tracking_links.form.source_tooltip') }}"></i>
                                 </label>
                                 <select id="utm_source" name="utm_source" class="form-control tracking-field" required>
-                                    <option value="">Select source</option>
-                                    @foreach([
-                                        'facebook' => 'Facebook - โฆษณาหรือโพสต์บน Facebook',
-                                        'google' => 'Google - โฆษณาหรือผลค้นหาจาก Google',
-                                        'tiktok' => 'TikTok - โฆษณาหรือคอนเทนต์บน TikTok',
-                                        'youtube' => 'YouTube - โฆษณาวิดีโอ, Shorts หรือ link จากช่อง YouTube',
-                                        'line' => 'LINE - LINE Ads, LINE OA หรือข้อความ LINE',
-                                        'email' => 'Email - ลิงก์ที่ส่งผ่านอีเมล',
-                                        'referral' => 'Referral - เว็บไซต์หรือพันธมิตรแนะนำมา',
-                                        'organic' => 'Organic - การเข้าถึงโดยไม่เสียค่าโฆษณา',
-                                    ] as $source => $sourceLabel)
-                                        <option value="{{ $source }}" @selected(old('utm_source') === $source)>{{ $sourceLabel }}</option>
+                                    <option value="">{{ __('crm.tracking_links.form.select_source') }}</option>
+                                    @foreach(['facebook', 'google', 'tiktok', 'youtube', 'line', 'email', 'referral', 'organic'] as $source)
+                                        <option value="{{ $source }}" @selected(old('utm_source') === $source)>{{ __('crm.tracking_links.sources.' . $source) }}</option>
                                     @endforeach
                                 </select>
-                                <small class="form-text text-muted">Source บอกว่าลูกค้ามาจากแพลตฟอร์มใด</small>
+                                <small class="form-text text-muted">{{ __('crm.tracking_links.form.source_help') }}</small>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label for="utm_medium">
-                                    Medium *
+                                    {{ __('crm.tracking_links.form.medium') }}
                                     <i class="fas fa-circle-info text-muted ml-1" data-toggle="tooltip"
-                                        title="วิธีที่ลูกค้าเดินทางมาจาก Source เช่น โฆษณาแบบจ่ายเงิน โพสต์ปกติ อีเมล หรือเว็บไซต์แนะนำ"></i>
+                                        title="{{ __('crm.tracking_links.form.medium_tooltip') }}"></i>
                                 </label>
                                 <select id="utm_medium" name="utm_medium" class="form-control tracking-field" required>
-                                    <option value="">Select medium</option>
-                                    @foreach([
-                                        'cpc' => 'cpc - โฆษณาแบบจ่ายต่อคลิก เช่น Google Search Ads',
-                                        'paid_social' => 'paid_social - โฆษณาแบบเสียเงินบน Social Media',
-                                        'organic_social' => 'organic_social - โพสต์ Social ปกติ ไม่เสียค่าโฆษณา',
-                                        'email' => 'email - ลิงก์ที่ส่งผ่าน Email Marketing',
-                                        'referral' => 'referral - ลิงก์จากเว็บไซต์หรือพันธมิตร',
-                                        'display' => 'display - โฆษณาแบนเนอร์หรือ Display Network',
-                                    ] as $medium => $mediumLabel)
-                                        <option value="{{ $medium }}" @selected(old('utm_medium') === $medium)>{{ $mediumLabel }}</option>
+                                    <option value="">{{ __('crm.tracking_links.form.select_medium') }}</option>
+                                    @foreach(['cpc', 'paid_social', 'organic_social', 'email', 'referral', 'display'] as $medium)
+                                        <option value="{{ $medium }}" @selected(old('utm_medium') === $medium)>{{ __('crm.tracking_links.mediums.' . $medium) }}</option>
                                     @endforeach
                                 </select>
-                                <small class="form-text text-muted">Medium บอกว่าลูกค้าเข้ามาด้วยวิธีใด</small>
+                                <small class="form-text text-muted">{{ __('crm.tracking_links.form.medium_help') }}</small>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label for="utm_campaign">Campaign *</label>
-                                <input type="text" id="utm_campaign" name="utm_campaign" value="{{ old('utm_campaign') }}" class="form-control tracking-field" placeholder="free_trial_2026" required>
+                                <label for="utm_campaign">{{ __('crm.tracking_links.form.campaign') }}</label>
+                                <input type="text" id="utm_campaign" name="utm_campaign" value="{{ old('utm_campaign') }}" class="form-control tracking-field" placeholder="{{ __('crm.tracking_links.form.campaign_placeholder') }}" required>
                             </div>
                         </div>
                     </div>
@@ -121,25 +105,25 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="utm_content">Content</label>
-                                <input type="text" id="utm_content" name="utm_content" value="{{ old('utm_content') }}" class="form-control tracking-field" placeholder="video_01">
+                                <label for="utm_content">{{ __('crm.tracking_links.form.content') }}</label>
+                                <input type="text" id="utm_content" name="utm_content" value="{{ old('utm_content') }}" class="form-control tracking-field" placeholder="{{ __('crm.tracking_links.form.content_placeholder') }}">
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="utm_term">Term / Keyword</label>
-                                <input type="text" id="utm_term" name="utm_term" value="{{ old('utm_term') }}" class="form-control tracking-field" placeholder="math_class_for_kids">
+                                <label for="utm_term">{{ __('crm.tracking_links.form.term') }}</label>
+                                <input type="text" id="utm_term" name="utm_term" value="{{ old('utm_term') }}" class="form-control tracking-field" placeholder="{{ __('crm.tracking_links.form.term_placeholder') }}">
                             </div>
                         </div>
                     </div>
 
                     <div class="form-group mb-0">
-                        <label for="generated-preview">Generated link preview</label>
+                        <label for="generated-preview">{{ __('crm.tracking_links.form.preview') }}</label>
                         <div class="input-group">
                             <textarea id="generated-preview" class="form-control" rows="2" readonly></textarea>
                             <div class="input-group-append">
-                                <button type="button" class="btn btn-outline-secondary copy-link-btn" data-copy-target="generated-preview" title="Copy link">
-                                    <i class="fas fa-copy"></i> Copy
+                                <button type="button" class="btn btn-outline-secondary copy-link-btn" data-copy-target="generated-preview" title="{{ __('crm.tracking_links.form.copy_link') }}">
+                                    <i class="fas fa-copy"></i> {{ __('crm.tracking_links.form.copy') }}
                                 </button>
                             </div>
                         </div>
@@ -147,7 +131,7 @@
                 </div>
                 <div class="card-footer">
                     <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-magic"></i> Generate & Save
+                        <i class="fas fa-magic"></i> {{ __('crm.tracking_links.form.generate_save') }}
                     </button>
                 </div>
             </form>
@@ -155,24 +139,24 @@
 
         <div class="card card-secondary">
             <div class="card-header">
-                <h3 class="card-title"><i class="fas fa-history"></i> Link History</h3>
+                <h3 class="card-title"><i class="fas fa-history"></i> {{ __('crm.tracking_links.history.title') }}</h3>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
                     <table class="table table-bordered table-striped">
                         <thead>
                             <tr>
-                                <th>Name</th>
-                                <th>Source</th>
-                                <th>Medium</th>
-                                <th>Campaign</th>
-                                <th>Content</th>
-                                <th>Created by</th>
-                                <th>Created at</th>
-                                <th>Leads</th>
-                                <th>Short link</th>
-                                <th>Link</th>
-                                <th>Action</th>
+                                <th>{{ __('crm.tracking_links.history.name') }}</th>
+                                <th>{{ __('crm.tracking_links.history.source') }}</th>
+                                <th>{{ __('crm.tracking_links.history.medium') }}</th>
+                                <th>{{ __('crm.tracking_links.history.campaign') }}</th>
+                                <th>{{ __('crm.tracking_links.history.content') }}</th>
+                                <th>{{ __('crm.tracking_links.history.created_by') }}</th>
+                                <th>{{ __('crm.tracking_links.history.created_at') }}</th>
+                                <th>{{ __('crm.tracking_links.history.leads') }}</th>
+                                <th>{{ __('crm.tracking_links.history.short_link') }}</th>
+                                <th>{{ __('crm.tracking_links.history.link') }}</th>
+                                <th>{{ __('crm.tracking_links.history.action') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -183,7 +167,7 @@
                                     <td>{{ $link->utm_medium }}</td>
                                     <td>{{ $link->utm_campaign }}</td>
                                     <td>{{ $link->utm_content ?: '-' }}</td>
-                                    <td>{{ $link->creator->name ?? 'System' }}</td>
+                                    <td>{{ $link->creator->name ?? __('crm.tracking_links.history.system') }}</td>
                                     <td>{{ optional($link->created_at)->format('Y-m-d H:i') }}</td>
                                     <td class="text-center">
                                         <a href="{{ route('crm.leads.index', ['tracking_link_id' => $link->id]) }}" class="badge badge-info">
@@ -194,7 +178,7 @@
                                         <div class="input-group input-group-sm">
                                             <input type="text" id="short-tracking-link-{{ $link->id }}" value="{{ $link->short_url }}" class="form-control" readonly>
                                             <div class="input-group-append">
-                                                <button type="button" class="btn btn-outline-success copy-link-btn" data-copy-target="short-tracking-link-{{ $link->id }}" title="Copy short link">
+                                                <button type="button" class="btn btn-outline-success copy-link-btn" data-copy-target="short-tracking-link-{{ $link->id }}" title="{{ __('crm.tracking_links.history.copy_short_link') }}">
                                                     <i class="fas fa-copy"></i>
                                                 </button>
                                             </div>
@@ -204,17 +188,17 @@
                                         <div class="input-group input-group-sm">
                                             <input type="text" id="tracking-link-{{ $link->id }}" value="{{ $link->generated_url }}" class="form-control" readonly>
                                             <div class="input-group-append">
-                                                <button type="button" class="btn btn-outline-primary copy-link-btn" data-copy-target="tracking-link-{{ $link->id }}" title="Copy link">
+                                                <button type="button" class="btn btn-outline-primary copy-link-btn" data-copy-target="tracking-link-{{ $link->id }}" title="{{ __('crm.tracking_links.history.copy_link') }}">
                                                     <i class="fas fa-copy"></i>
                                                 </button>
                                             </div>
                                         </div>
                                     </td>
                                     <td>
-                                        <form method="POST" action="{{ route('tracking-links.destroy', $link) }}" onsubmit="return confirm('Delete this tracking link?');">
+                                        <form method="POST" action="{{ route('tracking-links.destroy', $link) }}" onsubmit="return confirm(@json(__('crm.tracking_links.history.delete_confirmation')));">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-danger" title="Delete">
+                                            <button type="submit" class="btn btn-sm btn-danger" title="{{ __('crm.tracking_links.history.delete') }}">
                                                 <i class="fas fa-trash"></i>
                                             </button>
                                         </form>
@@ -222,7 +206,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="11" class="text-center">No tracking links created yet.</td>
+                                    <td colspan="11" class="text-center">{{ __('crm.tracking_links.history.empty') }}</td>
                                 </tr>
                             @endforelse
                         </tbody>
@@ -245,6 +229,8 @@
 
         const preview = document.getElementById('generated-preview');
         const trackedFields = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'];
+        const invalidUrlMessage = @json(__('crm.tracking_links.javascript.invalid_url'));
+        const copiedLabel = @json(__('crm.tracking_links.javascript.copied'));
 
         function normalizeTag(value) {
             return value.trim().toLowerCase().replace(/[^a-z0-9ก-๙._-]+/gu, '_');
@@ -269,7 +255,7 @@
                 });
                 preview.value = url.toString();
             } catch (error) {
-                preview.value = 'Please enter a valid landing page URL.';
+                preview.value = invalidUrlMessage;
             }
         }
 
@@ -281,7 +267,7 @@
         document.querySelectorAll('.copy-link-btn').forEach(function (button) {
             button.addEventListener('click', async function () {
                 const target = document.getElementById(button.dataset.copyTarget);
-                if (!target || !target.value || target.value.startsWith('Please enter')) {
+                if (!target || !target.value || target.value.startsWith(invalidUrlMessage)) {
                     return;
                 }
 
@@ -293,7 +279,7 @@
                 }
 
                 const originalHtml = button.innerHTML;
-                button.innerHTML = '<i class="fas fa-check"></i> Copied';
+                button.innerHTML = '<i class="fas fa-check"></i> ' + copiedLabel;
                 setTimeout(function () {
                     button.innerHTML = originalHtml;
                 }, 1500);

@@ -9,12 +9,12 @@
                 <img src="{{ asset('images/logo.png') }}" alt="eiMaths Logo" style="height: 55px; width: auto; margin-right: 18px; filter: brightness(1.2) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));">
                 <div>
                     <h2 style="margin: 0; font-size: 32px; font-weight: 800; color: white; text-shadow: 0 3px 6px rgba(0, 0, 0, 0.4); letter-spacing: -0.5px;">eiMaths</h2>
-                    <p style="margin: 0; font-size: 15px; color: rgba(255, 255, 255, 0.95); letter-spacing: 2px; font-weight: 500; text-transform: uppercase;">Learning Center</p>
+                    <p style="margin: 0; font-size: 15px; color: rgba(255, 255, 255, 0.95); letter-spacing: 2px; font-weight: 500; text-transform: uppercase;">{{ __('quiz-management.layout.footer_learning_center') }}</p>
                 </div>
             </div>
             <div style="max-width: 700px; margin: 0 auto; padding: 20px; background: rgba(255, 255, 255, 0.08); border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.15); backdrop-filter: blur(5px);">
-                <p style="font-size: 18px; color: rgba(255, 255, 255, 0.9); margin: 0; line-height: 1.7; font-weight: 500;">ศูนย์การเรียนรู้คณิตศาสตร์ที่มุ่งเน้นการพัฒนาทักษะและความเข้าใจอย่างลึกซึ้ง</p>
-                <p style="font-size: 16px; color: rgba(255, 255, 255, 0.8); margin: 8px 0 0 0; line-height: 1.6;">เพื่อสร้างรากฐานที่แข็งแกร่งและความมั่นใจในการเรียนคณิตศาสตร์</p>
+                <p style="font-size: 18px; color: rgba(255, 255, 255, 0.9); margin: 0; line-height: 1.7; font-weight: 500;">{{ __('quiz-management.layout.footer_mission') }}</p>
+                <p style="font-size: 16px; color: rgba(255, 255, 255, 0.8); margin: 8px 0 0 0; line-height: 1.6;">{{ __('quiz-management.layout.footer_mission_detail') }}</p>
             </div>
         </div>
 
@@ -53,8 +53,8 @@
                     <div style="width: 60px; height: 60px; background: linear-gradient(45deg, #f97316, #fb923c); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; box-shadow: 0 4px 20px rgba(249, 115, 22, 0.4);">
                         <i class="fas fa-graduation-cap" style="font-size: 24px; color: white;"></i>
                     </div>
-                    <h3 style="margin: 0 0 15px 0; font-size: 18px; font-weight: bold; color: #f1f5f9;">Our Mission</h3>
-                    <p style="color: #cbd5e1; line-height: 1.6; margin: 0; font-size: 14px;">พัฒนาความสามารถทางคณิตศาสตร์ของนักเรียนด้วยวิธีการสอนที่ทันสมัยและมีประสิทธิภาพ</p>
+                    <h3 style="margin: 0 0 15px 0; font-size: 18px; font-weight: bold; color: #f1f5f9;">{{ __('quiz-management.layout.footer_mission_title') }}</h3>
+                    <p style="color: #cbd5e1; line-height: 1.6; margin: 0; font-size: 14px;">{{ __('quiz-management.layout.footer_mission') }}</p>
                 </div>
                 <div style="display: flex; justify-content: center; gap: 15px; margin-top: 20px;">
                     {{-- <div style="text-align: center;">
@@ -130,7 +130,7 @@
                     {{ date('Y') }} eiMaths Learning Center
                 </p>
                 <p style="color: rgba(255, 255, 255, 0.7); font-size: 13px; margin: 4px 0 0 0; text-align: center;">
-                    สงวนลิขสิทธิ์ทุกประการ | All Rights Reserved
+                    {{ __('quiz-management.layout.footer_rights') }}
                 </p>
             </div>
         </div>

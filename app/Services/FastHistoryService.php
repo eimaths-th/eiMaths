@@ -105,7 +105,7 @@ class FastHistoryService
         return DB::transaction(function () use ($student_id, $actor, $overrides, $now): Histrories {
             $student = Contact::query()->lockForUpdate()->find($student_id);
             if (! $student) {
-                throw new FastHistoryException('Student not found.', 404);
+                throw new FastHistoryException(__('students.check_in.student_not_found'), 404);
             }
 
             $preview = $this->BuildPreview($student, $actor, $now);
@@ -118,7 +118,7 @@ class FastHistoryService
                 ->exists();
 
             if ($already_checked_in) {
-                throw new FastHistoryException('This student has already checked in for this course today.');
+                throw new FastHistoryException(__('students.check_in.duplicate'));
             }
 
             return Histrories::create([
@@ -159,7 +159,7 @@ class FastHistoryService
             }
         }
 
-        throw new FastHistoryException('This student has completed every registered course.');
+        throw new FastHistoryException(__('students.check_in.completed_all_courses'));
     }
 
     private function ResolveRenewalCourse(array $courses): ?array
@@ -206,14 +206,14 @@ class FastHistoryService
     {
         $level_id = $this->ParsePositiveInteger(
             $this->ResolveOverride($overrides, 'level_id', $preview['level_id']),
-            'Please select a valid level.'
+            __('students.check_in.valid_level')
         );
         $term = $this->ParseTerm(
             $this->ResolveOverride($overrides, 'term', $preview['term'])
         );
         $bookuse_id = $this->ParsePositiveInteger(
             $this->ResolveOverride($overrides, 'bookuse', $preview['bookuse_id']),
-            'Please select a valid book.'
+            __('students.check_in.valid_book')
         );
 
         $selected_course = collect($preview['registered_courses'])->first(
@@ -221,25 +221,25 @@ class FastHistoryService
                 && (string) $course['term'] === (string) $term
         );
         if (! $selected_course) {
-            throw new FastHistoryException('Selected course is not registered for this student.');
+            throw new FastHistoryException(__('students.check_in.invalid_course'));
         }
 
         $selected_book = collect($selected_course['bookuses'])->first(
             fn (array $book): bool => (int) $book['id'] === $bookuse_id
         );
         if (! $selected_book) {
-            throw new FastHistoryException('Selected book does not belong to the selected course.');
+            throw new FastHistoryException(__('students.check_in.invalid_book'));
         }
 
         $course_quantity = (int) $selected_book['quantity'];
         $attended_count = (int) $selected_course['attended_count'];
         if ($course_quantity < 1 || $attended_count >= $course_quantity) {
-            throw new FastHistoryException('Selected course has no remaining lessons.');
+            throw new FastHistoryException(__('students.check_in.no_remaining'));
         }
 
         $teacher_id = $this->ParseNonNegativeInteger(
             $this->ResolveOverride($overrides, 'teacher_id', $preview['teacher_id']),
-            'Please select a valid teacher.'
+            __('students.check_in.valid_teacher')
         );
         $this->ValidateTeacher($teacher_id, $student);
 
@@ -248,14 +248,14 @@ class FastHistoryService
         );
         $stime = $this->ParseTime(
             $this->ResolveOverride($overrides, 'stime', $preview['stime']),
-            'Please provide a valid start time.'
+            __('students.check_in.valid_start_time')
         );
         $etime = $this->ParseTime(
             $this->ResolveOverride($overrides, 'etime', $preview['etime']),
-            'Please provide a valid end time.'
+            __('students.check_in.valid_end_time')
         );
         if ($this->TimeToSeconds($etime) <= $this->TimeToSeconds($stime)) {
-            throw new FastHistoryException('End time must be after start time.');
+            throw new FastHistoryException(__('students.check_in.end_before_start'));
         }
 
         $start_date = $selected_course['start_date'] ?: $date->toDateString();
@@ -284,7 +284,7 @@ class FastHistoryService
         }
 
         if (! is_scalar($overrides[$key]) || trim((string) $overrides[$key]) === '') {
-            throw new FastHistoryException('Please provide all check-in details.');
+            throw new FastHistoryException(__('students.check_in.missing_details'));
         }
 
         return trim((string) $overrides[$key]);
@@ -310,9 +310,9 @@ class FastHistoryService
 
     private function ParseTerm(string $value): int
     {
-        $term = $this->ParsePositiveInteger($value, 'Please select a valid term.');
+        $term = $this->ParsePositiveInteger($value, __('students.check_in.valid_term'));
         if ($term > 4) {
-            throw new FastHistoryException('Please select a valid term.');
+            throw new FastHistoryException(__('students.check_in.valid_term'));
         }
 
         return $term;
@@ -327,7 +327,7 @@ class FastHistoryService
         }
 
         if (! $date || $date->format('Y-m-d') !== $value) {
-            throw new FastHistoryException('Please provide a valid date.');
+            throw new FastHistoryException(__('students.check_in.invalid_date'));
         }
 
         return $date;
@@ -366,7 +366,7 @@ class FastHistoryService
             ->where('department_id', $student->centre)
             ->exists();
         if (! $teacher_exists) {
-            throw new FastHistoryException('Selected teacher does not belong to the student branch.');
+            throw new FastHistoryException(__('students.check_in.invalid_teacher'));
         }
     }
 
@@ -429,7 +429,7 @@ class FastHistoryService
         $start_level_id = (int) $student->level;
         $end_level_id = (int) ($student->level2 ?: $student->level);
         if ($start_level_id < 1 || $end_level_id < $start_level_id) {
-            throw new FastHistoryException('This student has no valid registered course.');
+            throw new FastHistoryException(__('students.check_in.no_valid_course'));
         }
 
         $start_term_value = $student->term ?: $student->term_name;
@@ -450,7 +450,7 @@ class FastHistoryService
         for ($level_id = $start_level_id; $level_id <= $end_level_id; $level_id++) {
             $level_record = $levels->get($level_id);
             if (! $level_record) {
-                throw new FastHistoryException('This student has an invalid registered level.');
+                throw new FastHistoryException(__('students.check_in.invalid_registered_level'));
             }
 
             $first_term = $level_id === $start_level_id ? $start_term_number : 1;
@@ -467,7 +467,7 @@ class FastHistoryService
                     $order_details
                 );
                 if (! $book || (int) $book->qty < 1) {
-                    throw new FastHistoryException('No valid book or course quantity was found for the next course.');
+                    throw new FastHistoryException(__('students.check_in.no_valid_book'));
                 }
 
                 $term_name = (string) $term_number;
@@ -493,7 +493,7 @@ class FastHistoryService
         }
 
         if ($courses === []) {
-            throw new FastHistoryException('This student has no registered course.');
+            throw new FastHistoryException(__('students.check_in.no_registered_course'));
         }
 
         return $courses;

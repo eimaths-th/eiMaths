@@ -8,13 +8,13 @@
     $(".export_button").click(function() {
         var len = $('input[name="table_records[]"]:checked').length;
         if (len > 0) {
-            if (confirm("Click OK to Export?")) {
+            if (confirm(receipt_list_ui.messages.export_confirm)) {
                 $('form#delete_all').attr('action',
                     '{{ route('reciept.export') }}'); //this fails silently
                 $('form#delete_all').submit();
             }
         } else {
-            alert("Please Select Record For Export");
+            alert(receipt_list_ui.messages.export_select_record);
         }
 
     });
@@ -155,22 +155,22 @@
             serverSide: true,
             processing: true,
             language: {
-                loadingRecords: '&nbsp;',
+                loadingRecords: receipt_list_ui.datatable.loading_records,
                 processing: `<div class="spinner-border text-primary"></div>`,
-                "sProcessing": "Processcing...",
-                "sLengthMenu": "Display_MENU_ Row",
-                "sZeroRecords": "No Data Found",
-                "sInfo": "Display _START_ To _END_ From _TOTAL_ Records",
-                "sInfoEmpty": "Display 0 To 0 From 0 Records",
-                "sInfoFiltered": "(Filters _MAX_ Row)",
-                "sInfoPostFix": "",
-                "sSearch": "Search:",
-                "sUrl": "",
+                "sProcessing": receipt_list_ui.datatable.processing,
+                "sLengthMenu": receipt_list_ui.datatable.length_menu,
+                "sZeroRecords": receipt_list_ui.datatable.zero_records,
+                "sInfo": receipt_list_ui.datatable.info,
+                "sInfoEmpty": receipt_list_ui.datatable.info_empty,
+                "sInfoFiltered": receipt_list_ui.datatable.info_filtered,
+                "sInfoPostFix": receipt_list_ui.datatable.info_postfix,
+                "sSearch": receipt_list_ui.datatable.search,
+                "sUrl": receipt_list_ui.datatable.url,
                 "oPaginate": {
-                    "sFirst": "First",
-                    "sPrevious": "Previous",
-                    "sNext": "Next",
-                    "sLast": "Last"
+                    "sFirst": receipt_list_ui.datatable.first,
+                    "sPrevious": receipt_list_ui.datatable.previous,
+                    "sNext": receipt_list_ui.datatable.next,
+                    "sLast": receipt_list_ui.datatable.last
                 }
             },
             aaSorting: [
@@ -305,7 +305,7 @@
                 }
             } else {
                 // Handle the case where searchType or keyword is empty
-                toastr.error('Please input Search Type and Keyword', {
+                toastr.error(receipt_list_ui.messages.search_required, {
                     timeOut: 5000
                 });
             }
@@ -473,7 +473,7 @@
             $('.alert-success').hide();
             rid = $(this).data('id');
             rid2 = $(this).data('id2');
-            if (confirm("Click OK to Delete?")) {
+            if (confirm(receipt_list_ui.messages.delete_confirm)) {
                 $.ajax({
                     url: "receipts/delete/img/" + rid + "/" + rid2,
                     method: 'PUT',
@@ -489,7 +489,7 @@
                         $('#EditRModal').find('#receipt_id').val(curId);
                         $('#EditRModal').find('#SaveReceipt').data('id', curId);
                         
-                        toastr.success('ลบไฟล์เรียบร้อยแล้ว', {
+                        toastr.success(receipt_list_ui.messages.file_deleted, {
                             timeOut: 5000
                         });
                         $('#imgs').html(res.imgs);
@@ -528,8 +528,8 @@
                 // Invalid input
                 rnmtInput.addClass("is-invalid");
                 rnmtInput.removeClass("is-valid");
-                rnmtInput.siblings(".error-message").text("กรุณาระบุหมายเลขใบเสร็จ");
-                toastr.error('กรุณาระบุหมายเลขใบเสร็จ', {
+                rnmtInput.siblings(".error-message").text(receipt_list_ui.messages.receipt_number_required);
+                toastr.error(receipt_list_ui.messages.receipt_number_required, {
                     timeOut: 5000
                 });
                 isValid = false;
@@ -545,8 +545,8 @@
                 // Invalid input
                 rdInput.addClass("is-invalid");
                 rdInput.removeClass("is-valid");
-                rdInput.siblings(".error-message").text("กรุณาวันที่รับเงิน");
-                toastr.error('กรุณาวันที่รับเงิน', {
+                rdInput.siblings(".error-message").text(receipt_list_ui.messages.payment_date_required);
+                toastr.error(receipt_list_ui.messages.payment_date_required, {
                     timeOut: 5000
                 });
                 isValid = false;
@@ -563,8 +563,8 @@
                     // Invalid input
                     desInput.addClass("is-invalid");
                     desInput.removeClass("is-valid");
-                    desInput.siblings(".error-message").text("กรุณาระบุรายละเอียด");
-                    toastr.error('กรุณาระบุรายละเอียด', {
+                    desInput.siblings(".error-message").text(receipt_list_ui.messages.description_required);
+                    toastr.error(receipt_list_ui.messages.description_required, {
                         timeOut: 5000
                     });
                     isValid = false;
@@ -591,7 +591,7 @@
             });
 
             /*  if (!document.getElementsByName('imgFiles[]').length) {
-                 toastr.error('กรุณาแนบหลักฐานการชำระเงิน', {
+                 toastr.error(receipt_list_ui.messages.attachment_required, {
                      timeOut: 5000
                  });
                  isValid = false;
@@ -790,7 +790,7 @@
                 // เหลือ 1 รายการลบไม่ได้
                 if ($("#myTbl tr").length > 1) {
                     //alert("ต้องมีรายการข้อมูลอย่างน้อย 1 รายการ");
-                    toastr.success('ต้องมีรายการข้อมูลอย่างน้อย 1 รายการ', {
+                    toastr.success(receipt_list_ui.messages.at_least_one_item, {
                         timeOut: 5000
                     });
                 }
@@ -804,7 +804,7 @@
                  // เหลือ 1 รายการลบไม่ได้
                  if ($("#myTbl tr").length > 1) {
                      //alert("ต้องมีรายการข้อมูลอย่างน้อย 1 รายการ");
-                     toastr.success('ต้องมีรายการข้อมูลอย่างน้อย 1 รายการ', {
+                     toastr.success(receipt_list_ui.messages.at_least_one_item, {
                          timeOut: 5000
                      });
                  }

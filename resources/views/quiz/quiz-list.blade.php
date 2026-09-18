@@ -22,9 +22,9 @@
                     <ol class="breadcrumb float-sm-right">
 
                         <button type="button" class="btn btn-success " id="AssignButton">
-                            <i class="fas fa-user"></i> Assign Quiz </button>&nbsp;
+                            <i class="fas fa-user"></i> {{ __('quiz-management.quiz_list.assign') }} </button>&nbsp;
                         <button type="button" class="btn btn-success" id="CreateButton">
-                            <i class="fas fa-user"></i> Create Quiz </button>
+                            <i class="fas fa-user"></i> {{ __('quiz-management.quiz_list.create') }} </button>
 
                     </ol>
 
@@ -39,7 +39,7 @@
                 <div class="col-12">
                     <div class="card card-primary">
                         <div class="card-header">
-                            <h3 class="card-title"><i class="fa fa-user"></i> Quiz List</h3>
+                            <h3 class="card-title"><i class="fa fa-user"></i> {{ __('quiz-management.quiz_list.title') }}</h3>
                             <div class="card-tools">
                                 <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
                                     <i class="fas fa-minus"></i>
@@ -58,18 +58,18 @@
                             <table id="Listview" class="table table-bordered table-striped table-hover">
                                 <thead>
                                     <tr>
-                                        <th> # </th>
-                                        <th> ID </th>
-                                        <th> TITLE </th>
-                                        <th> SLUG </th>
-                                        <th> DESCRIPTION </th>
-                                        <th> QUESTIONS </th>
+                                        <th> {{ __('quiz-management.quiz_list.number') }} </th>
+                                        <th> {{ __('quiz-management.quiz_list.id') }} </th>
+                                        <th> {{ __('quiz-management.builder.course_title') }} </th>
+                                        <th> {{ __('quiz-management.quiz_list.slug') }} </th>
+                                        <th> {{ __('quiz-management.quiz_list.description') }} </th>
+                                        <th> {{ __('quiz-management.quiz_list.questions') }} </th>
                                         {{-- <th> PUBLISHED </th> --}}
-                                        <th> PUBLIC </th>
-                                        <th> FREE </th>
-                                        <th> Grade</th>
-                                        <th> Term</th>
-                                        <th> Level</th>
+                                        <th> {{ __('quiz-management.quiz_list.public') }} </th>
+                                        <th> {{ __('quiz-management.quiz_list.free') }} </th>
+                                        <th> {{ __('quiz-management.quiz_list.grade') }}</th>
+                                        <th> {{ __('quiz-management.quiz_list.term') }}</th>
+                                        <th> {{ __('quiz-management.quiz_list.level') }}</th>
 
                                         <th> </th>
                                     </tr>

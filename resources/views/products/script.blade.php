@@ -21,7 +21,7 @@
 
     function showAlert(message) {
         ezBSAlert({
-            headerText: "Alert",
+            headerText: product_ui.messages.alert,
             messageText: message,
             alertType: "danger",
         });
@@ -36,8 +36,8 @@
         $('#RmCodeh').val('');
         $('#RmName').val('');
         $('#RmUnit').val('');
-        $('#istock').html('กรุณาอยู่ในหน้านี้ และทำการสแกน บาร์โค้ด หรือ QRCode');
-        $('#istock2').html('กรุณาอยู่ในหน้านี้ และทำการสแกน บาร์โค้ด หรือ QRCode');
+        $('#istock').html(product_ui.messages.scan_instruction);
+        $('#istock2').html(product_ui.messages.scan_instruction);
     }
 
 
@@ -70,8 +70,8 @@
                 if (keyboardLanguage !== 'English') {
                     //alert("Error: กรุณาเปลี่ยน Keyboard เป็นภาษาไทย");
                     const prom = ezBSAlert({
-                        headerText: "Alert",
-                        messageText: "กรุณาเปลี่ยน Keyboard เป็นภาษาอังกฤษ",
+                        headerText: product_ui.messages.alert,
+                        messageText: product_ui.messages.keyboard_english,
                         alertType: "danger",
                     });
                 } else {
@@ -94,9 +94,9 @@
                                 $('#RmName').val(res.product.name);
                                 $('#RmUnit').val(res.product.unit);
                                 $('#RmDetail').val(res.product.detail);
-                                $('#istock').html('คงเหลือ ' + res.product.amount + ' ' +
+                                $('#istock').html(product_ui.table.remaining + ' ' + res.product.amount + ' ' +
                                     res.product.unit);
-                                $('#istock2').html('คงเหลือ ' + res.product.amount + ' ' +
+                                $('#istock2').html(product_ui.table.remaining + ' ' + res.product.amount + ' ' +
                                     res.product.unit);
 
                                 if (stockt == 1) {
@@ -104,15 +104,15 @@
                                     let student = $('#s_student').val();
                                     if (centre.length == 0 || student.length == 0) {
                                         const prom = ezBSAlert({
-                                            headerText: "Alert",
-                                            messageText: "กรุณาระบุสาขาและปลายทาง",
+                                            headerText: product_ui.messages.alert,
+                                            messageText: product_ui.messages.destination_required,
                                             alertType: "danger",
                                         });
                                     } else {
                                         ezBSAlert({
                                             type: "confirm",
-                                            headerText: "Confirm",
-                                            messageText: "ยืนยันการจ่ายออก?",
+                                             headerText: product_ui.messages.confirm,
+                                             messageText: product_ui.messages.confirm_issue,
                                             alertType: "danger",
                                         }).done(function(r) {
                                             if (r == true) {
@@ -144,7 +144,7 @@
                                                             .errors) {
                                                             const prom =
                                                                 ezBSAlert({
-                                                                    headerText: "Alert",
+                                                                     headerText: product_ui.messages.alert,
                                                                     messageText: result
                                                                         .errors,
                                                                     alertType: "danger",
@@ -162,7 +162,7 @@
                                                                 ();
                                                             $('#istock2')
                                                                 .html(
-                                                                    'คงเหลือ ' +
+                                                                    product_ui.table.remaining + ' ' +
                                                                     parseFloat(
                                                                         result
                                                                         .product
@@ -230,7 +230,7 @@
             maximumSelectionLength: 1,
             allowClear: false,
             //theme: 'bootstrap4'
-            placeholder: 'Please select'
+            placeholder: product_ui.fields.please_select
         });
 
         $(".select2_single").on("select2:unselect", function(e) {
@@ -241,32 +241,32 @@
             maximumSelectionLength: 1,
             allowClear: false,
             //theme: 'bootstrap4'
-            placeholder: 'Please select'
+            placeholder: product_ui.fields.please_select
         });
 
         $(".select2_singlec").select2({
             maximumSelectionLength: 1,
             allowClear: false,
             //theme: 'bootstrap4'
-            placeholder: 'Please select'
+            placeholder: product_ui.fields.please_select
         });
 
         $(".select2_multiple").select2({
             maximumSelectionLength: 2,
             allowClear: false,
             //theme: 'bootstrap4'
-            placeholder: 'Please select'
+            placeholder: product_ui.fields.please_select
         });
 
         $(".delete_all_button").click(function() {
             var len = $('input[name="table_records[]"]:checked').length;
             if (len > 0) {
 
-                if (confirm("Click OK to Delete?")) {
+                if (confirm(product_ui.messages.confirm_delete)) {
                     $('form#delete_all').submit();
                 }
             } else {
-                alert("Please Select Record For Delete");
+                alert(product_ui.messages.select_record_delete);
             }
 
         });
@@ -302,22 +302,22 @@
             serverSide: true,
             processing: true,
             language: {
-                loadingRecords: '&nbsp;',
-                processing: `<div class="spinner-border text-primary"></div>`,
-                "sProcessing": "Processing...",
-                "sLengthMenu": "Display _MENU_ Row",
-                "sZeroRecords": "No Data Found",
-                "sInfo": "Display _START_ To _END_ From _TOTAL_ Records",
-                "sInfoEmpty": "Display 0 To 0 From 0 Records",
-                "sInfoFiltered": "(Filters _MAX_ Row)",
-                "sInfoPostFix": "",
-                "sSearch": "Search:",
-                "sUrl": "",
-                "oPaginate": {
-                    "sFirst": "First",
-                    "sPrevious": "Previous",
-                    "sNext": "Next",
-                    "sLast": "Last"
+                    loadingRecords: common_ui.datatable.loading_records,
+                    processing: `<div class="spinner-border text-primary"></div>`,
+                    "sProcessing": common_ui.datatable.processing,
+                    "sLengthMenu": common_ui.datatable.length_menu,
+                    "sZeroRecords": common_ui.datatable.zero_records,
+                    "sInfo": common_ui.datatable.info,
+                    "sInfoEmpty": common_ui.datatable.info_empty,
+                    "sInfoFiltered": common_ui.datatable.info_filtered,
+                    "sInfoPostFix": common_ui.datatable.info_postfix,
+                    "sSearch": common_ui.datatable.search,
+                    "sUrl": common_ui.datatable.url,
+                    "oPaginate": {
+                        "sFirst": common_ui.datatable.first,
+                        "sPrevious": common_ui.datatable.previous,
+                        "sNext": common_ui.datatable.next,
+                        "sLast": common_ui.datatable.last
                 }
             },
             aaSorting: [
@@ -658,7 +658,7 @@
         })
 
         $('#SubmitEditForm').click(function(e) {
-            if (!confirm("Confirm the action?")) return;
+            if (!confirm(product_ui.messages.confirm_action)) return;
             e.preventDefault();
 
             $('.alert-danger').html('');
@@ -708,7 +708,7 @@
 
 
         $('#PlusButton').click(function(e) {
-            if (!confirm("Confirm the action?")) return;
+            if (!confirm(product_ui.messages.confirm_action)) return;
             e.preventDefault();
 
             $('.alert-danger').html('');
@@ -756,7 +756,7 @@
             // Create a new window with the barcode content
             var printWindow = window.open('', '_blank');
             printWindow.document.open();
-            printWindow.document.write('<html><head><title>Print Barcode</title></head><body>');
+            printWindow.document.write('<html><head><title>' + product_ui.messages.print_barcode + '</title></head><body>');
             printWindow.document.write('<div id="barcodeContainer">' + $('#barcodeContainer').html() +
                 '</div>');
             printWindow.document.write('</body></html>');
@@ -776,7 +776,7 @@
             // Create a new window with the barcode content
             var printWindow = window.open('', '_blank');
             printWindow.document.open();
-            printWindow.document.write('<html><head><title>Print Qrcode</title></head><body>');
+            printWindow.document.write('<html><head><title>' + product_ui.messages.print_qrcode + '</title></head><body>');
             printWindow.document.write('<div id="qbarcodeContainer">' + $('#qbarcodeContainer').html() +
                 '</div>');
             printWindow.document.write('</body></html>');
@@ -810,7 +810,7 @@
 
 
         $(document).on('click', '.btn-delete', function() {
-            if (!confirm("Confirm the action?")) return;
+            if (!confirm(product_ui.messages.confirm_action)) return;
 
             var rowid = $(this).data('rowid')
             var el = $(this)
@@ -844,4 +844,3 @@
 
     });
 </script>
-

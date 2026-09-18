@@ -11,13 +11,7 @@
                 <div class="col-sm-6">
                     {{-- <h4>Users & Roles Management</h4> --}}
                 </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
-                        <li class="breadcrumb-item active">Users Management</li>
-                    </ol>
-
-                </div>
+                <div class="col-sm-6"></div>
             </div>
             <div class="row mb-2">
                 <div class="col-sm-6">
@@ -27,23 +21,23 @@
                     <ol class="breadcrumb float-sm-right">
                         @can('student-create')
                             <button type="button" class="btn btn-success" id="CreateButton">
-                                <i class="fas fa-graduation-cap"></i>Create Parent</button>
+                                <i class="fas fa-graduation-cap"></i>{{ __('students.actions.create_parent') }}</button>
                         @else
                             <span class="d-inline-block" tabindex="0" data-toggle="tooltip" data-placement="bottom"
-                                title="You Not Have Permission">
+                                title="{{ __('common.feedback.permission_denied') }}">
                                 <button type="button" class="btn btn-success disabled">
-                                    <i class="fas fa-graduation-cap"></i>Create History</button>
+                                    <i class="fas fa-graduation-cap"></i>{{ __('students.actions.create_parent') }}</button>
                             </span>
                         @endcan &nbsp;
 
                         @can('student-delete')
-                            <button type="button" class="btn btn-danger delete_all_button"><i class="fa fa-trash"></i> Delete
-                                All</button>
+                            <button type="button" class="btn btn-danger delete_all_button"><i class="fa fa-trash"></i>
+                                {{ __('common.actions.delete_all') }}</button>
                         @else
                             <span class="d-inline-block" tabindex="0" data-toggle="tooltip" data-placement="bottom"
-                                title="You Not Have Permission">
+                                title="{{ __('common.feedback.permission_denied') }}">
                                 <button type="button" class="btn btn-danger disabled"><i class="fa fa-trash"></i>
-                                    Delete All</button>
+                                    {{ __('common.actions.delete_all') }}</button>
                             </span>
                         @endcan
                     </ol>
@@ -62,7 +56,7 @@
                 <div class="col-12">
                     <div class="card card-primary">
                         <div class="card-header">
-                            <h3 class="card-title"><i class="fas fa-graduation-cap"></i> Hitory List</h3>
+                            <h3 class="card-title"><i class="fas fa-graduation-cap"></i> {{ __('students.titles.parents') }}</h3>
                             <div class="card-tools">
                                 <button type="button" class="btn btn-tool" data-card-widget="maximize">
                                     <i class="fas fa-expand"></i>
@@ -93,7 +87,7 @@
                                         <div class="col-xs-12 col-sm-12 col-md-12">
                                             <div class="form-group">
                                                 <strong>
-                                                    Start Date Filter:</strong>
+                                                    {{ __('students.filters.start_date') }}:</strong>
                                                 <div class="input-group">
                                                     <div class="input-group-prepend">
                                                         <span class="input-group-text">
@@ -111,23 +105,23 @@
                                         <div class="col-xs-4 col-sm-4 col-md-4">
                                             <div class="form-group">
                                                 <strong><i class="fa-solid fa-clipboard-question"></i>
-                                                    Search Type:</strong>
+                                                    {{ __('common.fields.search_type') }}:</strong>
                                                 <select style="width: 100%;" class="form-control" id="search_type"
                                                     name="search_type">
-                                                    <option value="">Please Select</option>
-                                                    <option value="1">Student Code</option>
-                                                    <option value="2">Student Name</option>
-                                                    <option value="3">Father Name</option>
-                                                    <option value="4">Mother Name</option>
-                                                    <option value="5">Father Mobile</option>
-                                                    <option value="6">Mother Mobile</option>
+                                                    <option value="">{{ __('students.filters.please_select') }}</option>
+                                                    <option value="1">{{ __('students.filters.student_code') }}</option>
+                                                    <option value="2">{{ __('students.filters.student_name') }}</option>
+                                                    <option value="3">{{ __('students.filters.father_name') }}</option>
+                                                    <option value="4">{{ __('students.filters.mother_name') }}</option>
+                                                    <option value="5">{{ __('students.filters.father_mobile') }}</option>
+                                                    <option value="6">{{ __('students.filters.mother_mobile') }}</option>
                                                 </select>
                                             </div>
                                         </div>
                                         <div class="col-xs-4 col-sm-4 col-md-4">
                                             <div class="form-group">
-                                                <strong><i class="fa-regular fa-keyboard"></i> Keyword:</strong>
-                                                {!! Form::text('keyword', null, ['id' => 'keyword', 'placeholder' => 'keyword', 'class' => 'form-control']) !!}
+                                                <strong><i class="fa-regular fa-keyboard"></i> {{ __('common.fields.keyword') }}:</strong>
+                                                {!! Form::text('keyword', null, ['id' => 'keyword', 'placeholder' => __('common.fields.keyword'), 'class' => 'form-control']) !!}
                                             </div>
                                         </div>
                                         <div class="col-xs-2 col-sm-2 col-md-2">
@@ -163,13 +157,13 @@
                                                     <th width="1%">
                                                         <input type="checkbox" id="check-all" class="flat">
                                                     </th>
-                                                    <th width="1%" class="text-center">Centre</th>
-                                                    <th>Parent Name</th>
-                                                    <th>Parent Telp. / Email</th>
-                                                    <th  width="1%">Relationship</th>
-                                                    <th>Student Name</th>
-                                                    <th  width="1%">Emergency Contact</th>
-                                                    <th>More</th>
+                                                    <th width="1%" class="text-center">{{ __('common.fields.centre') }}</th>
+                                                    <th>{{ __('students.parents.parent_name') }}</th>
+                                                    <th>{{ __('students.table.parent_phone') }}</th>
+                                                    <th  width="1%">{{ __('students.table.relationship') }}</th>
+                                                    <th>{{ __('common.fields.student_name') }}</th>
+                                                    <th  width="1%">{{ __('students.table.emergency_contact') }}</th>
+                                                    <th>{{ __('students.table.more') }}</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -197,4 +191,3 @@
 @section('script')
     @include('parents.script')
 @endsection
-

@@ -177,27 +177,35 @@ class ContactController extends Controller
 
         $remain = $scoin - $historyCount;
 
-        $text = ' เรียนไปแล้ว : ' . $historyCount . ' ฟรี ' . $free_course . ' เหลือ ' . $remain . ' / ' . $scoin;
+        $text = ' ' . __('students.renewal.summary', [
+            'attended' => $historyCount,
+            'free' => $free_course,
+            'remaining' => $remain,
+            'total' => $scoin,
+        ]);
 
         return $text;
     }
 
     private function FormatRenewalRemaining(array $renewal_status): string
     {
-        $text = ' เรียนไปแล้ว : ' . $renewal_status['attended_count']
-            . ' ฟรี ' . $renewal_status['free_course']
-            . ' เหลือ ' . $renewal_status['remaining'] . ' / ' . $renewal_status['total'];
+        $text = ' ' . __('students.renewal.summary', [
+            'attended' => $renewal_status['attended_count'],
+            'free' => $renewal_status['free_course'],
+            'remaining' => $renewal_status['remaining'],
+            'total' => $renewal_status['total'],
+        ]);
 
         if ($renewal_status['status'] !== 'pending') {
             return $text;
         }
 
-        $reason_label = $renewal_status['reason'] === 'course_expired'
-            ? 'Course expired'
-            : 'Course exhausted';
+        $reason_label = e($renewal_status['reason'] === 'course_expired'
+            ? __('students.renewal.course_expired')
+            : __('students.renewal.course_exhausted'));
 
-        return $text . '<br><span class="badge badge-warning">Pending renewal: '
-            . $reason_label . '</span>';
+        return $text . '<br><span class="badge badge-warning">'
+            . e(__('students.renewal.pending')) . ': ' . $reason_label . '</span>';
     }
 
     public function maxHistory($id)
@@ -465,34 +473,34 @@ class ContactController extends Controller
                     $html = '';
 
                     if (Gate::allows('student-edit')) {
-                        $html .= '<button type="button" class="btn btn-sm btn-primary btn-fast-history" data-id="' . $row->id . '"><i class="fa fa-user-check"></i> Check in</button> ';
+                        $html .= '<button type="button" class="btn btn-sm btn-primary btn-fast-history" data-id="' . $row->id . '"><i class="fa fa-user-check"></i> ' . e(__('students.actions.check_in')) . '</button> ';
                     } else {
-                        $html .= '<button type="button" class="btn btn-sm btn-primary disabled" disabled data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-user-check"></i> Check in</button> ';
+                        $html .= '<button type="button" class="btn btn-sm btn-primary disabled" disabled data-toggle="tooltip" data-placement="bottom" title="' . e(__('common.feedback.permission_denied')) . '"><i class="fa fa-user-check"></i> ' . e(__('students.actions.check_in')) . '</button> ';
                     }
 
                     if (Gate::allows('student-edit')) {
                         $student_name = e($row->name . (!empty($row->nickname) ? ' (' . $row->nickname . ')' : ''));
-                        $html .= '<button type="button" class="btn btn-sm btn-danger btn-discontinue-student" data-id="' . $row->id . '" data-student-name="' . $student_name . '"><i class="fa fa-handshake-slash"></i> Not continuing</button> ';
+                        $html .= '<button type="button" class="btn btn-sm btn-danger btn-discontinue-student" data-id="' . $row->id . '" data-student-name="' . $student_name . '"><i class="fa fa-handshake-slash"></i> ' . e(__('students.actions.not_continuing')) . '</button> ';
                     } else {
-                        $html .= '<button type="button" class="btn btn-sm btn-danger disabled" disabled data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-handshake-slash"></i> Not continuing</button> ';
+                        $html .= '<button type="button" class="btn btn-sm btn-danger disabled" disabled data-toggle="tooltip" data-placement="bottom" title="' . e(__('common.feedback.permission_denied')) . '"><i class="fa fa-handshake-slash"></i> ' . e(__('students.actions.not_continuing')) . '</button> ';
                     }
 
                     if (Gate::allows('student-edit')) {
-                        $html .= '<button type="button" class="btn btn-sm btn-info btn-show" id="getCourseData" data-id="' . $row->id . '"><i class="fa fa-search"></i>View Course</button> ';
+                        $html .= '<button type="button" class="btn btn-sm btn-info btn-show" id="getCourseData" data-id="' . $row->id . '"><i class="fa fa-search"></i>' . e(__('students.actions.view_course')) . '</button> ';
                     } else {
-                        $html .= '<button type="button" class="btn btn-sm btn-info disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-search"></i>  View Course</button> ';
+                        $html .= '<button type="button" class="btn btn-sm btn-info disabled" data-toggle="tooltip" data-placement="bottom" title="' . e(__('common.feedback.permission_denied')) . '"><i class="fa fa-search"></i>  ' . e(__('students.actions.view_course')) . '</button> ';
                     }
 
                     if (Gate::allows('student-edit')) {
-                        $html .= '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit</button> ';
+                        $html .= '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> ' . e(__('common.actions.edit')) . '</button> ';
                     } else {
-                        $html .= '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> Edit</button> ';
+                        $html .= '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="' . e(__('common.feedback.permission_denied')) . '"><i class="fa fa-edit"></i> ' . e(__('common.actions.edit')) . '</button> ';
                     }
 
                     if (Gate::allows('student-delete')) {
-                        $html .= '<button type="button" data-rowid="' . $row->id . '" class="btn btn-sm btn-danger btn-delete"><i class="fa fa-trash"></i> Delete</button>';
+                        $html .= '<button type="button" data-rowid="' . $row->id . '" class="btn btn-sm btn-danger btn-delete"><i class="fa fa-trash"></i> ' . e(__('common.actions.delete')) . '</button>';
                     } else {
-                        $html .= '<button type="button" class="btn btn-sm btn-danger disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-trash"></i> Delete</button> ';
+                        $html .= '<button type="button" class="btn btn-sm btn-danger disabled" data-toggle="tooltip" data-placement="bottom" title="' . e(__('common.feedback.permission_denied')) . '"><i class="fa fa-trash"></i> ' . e(__('common.actions.delete')) . '</button> ';
                     }
                     return $html;
                 })->rawColumns(['checkbox', 'action', 'remaining', 'book_receipt', 'more'])->toJson();
@@ -582,13 +590,13 @@ class ContactController extends Controller
                     if (Gate::allows('student-edit')) {
                         $html = '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit</button> ';
                     } else {
-                        $html = '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> Edit</button> ';
+                        $html = '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="' . __('common.feedback.permission_denied') . '"><i class="fa fa-edit"></i> ' . __('common.actions.edit') . '</button> ';
                     }
 
                     if (Gate::allows('student-delete')) {
-                        $html .= '<button type="button" data-rowid="' . $row->id . '" class="btn btn-sm btn-danger btn-delete"><i class="fa fa-trash"></i> Delete</button>';
+                        $html .= '<button type="button" data-rowid="' . $row->id . '" class="btn btn-sm btn-danger btn-delete"><i class="fa fa-trash"></i> ' . __('students.actions.delete') . '</button>';
                     } else {
-                        $html .= '<button type="button" class="btn btn-sm btn-danger disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-trash"></i> Delete</button> ';
+                        $html .= '<button type="button" class="btn btn-sm btn-danger disabled" data-toggle="tooltip" data-placement="bottom" title="' . __('common.feedback.permission_denied') . '"><i class="fa fa-trash"></i> ' . __('students.actions.delete') . '</button> ';
                     }
                     return $html;
                 })->rawColumns(['checkbox', 'action', 'more'])->toJson();
@@ -736,9 +744,9 @@ class ContactController extends Controller
 
 
                     if (Gate::allows('student-delete')) {
-                        $html .= '<button type="button" data-rowid="' . $row->id . '" class="btn btn-sm btn-danger btn-delete"><i class="fa fa-trash"></i> Delete</button>';
+                        $html .= '<button type="button" data-rowid="' . $row->id . '" class="btn btn-sm btn-danger btn-delete"><i class="fa fa-trash"></i> ' . __('students.actions.delete') . '</button>';
                     } else {
-                        $html .= '<button type="button" class="btn btn-sm btn-danger disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-trash"></i> Delete</button> ';
+                        $html .= '<button type="button" class="btn btn-sm btn-danger disabled" data-toggle="tooltip" data-placement="bottom" title="' . __('common.feedback.permission_denied') . '"><i class="fa fa-trash"></i> ' . __('students.actions.delete') . '</button> ';
                     }
                     return $html;
                 })->rawColumns(['checkbox', 'action', 'more'])->toJson();
@@ -810,7 +818,7 @@ class ContactController extends Controller
         ]));
 
         // Return a success response
-        return response()->json(['success' => 'Demo user created successfully!']);
+        return response()->json(['success' => __('students.demo.messages.created')]);
     }
 
     public function demo_code()
@@ -1385,7 +1393,7 @@ class ContactController extends Controller
         // dd($request->all());
         $student_id = $request->student_id;
         if (!$student_id) {
-            return response()->json(['errors' => ['Pls select student']]);
+            return response()->json(['errors' => [__('students.passwords.messages.select_student')]]);
         }
         $pass = $request->password;
         $student = Contact::find($student_id);
@@ -1398,11 +1406,11 @@ class ContactController extends Controller
             # code...
             $ranPass = Str::random(4);
             $password = $student->code . '_' . $ranPass;
-            return response()->json(['success' => 'Random generate student password success !!', 'password' => $password, 'student' => $student]);
+            return response()->json(['success' => __('students.passwords.messages.random_generated'), 'password' => $password, 'student' => $student]);
         } elseif ($action === 'update') {
             # code...
         } else {
-            return response()->json(['error' => ['There is no action.']]);
+            return response()->json(['error' => [__('students.passwords.messages.no_action')]]);
         }
 
         $passwordHash = Hash::make($password);
@@ -1411,18 +1419,18 @@ class ContactController extends Controller
             'password_generated_at' => now(),
         ]);
 
-        return response()->json(['success' => 'Generate student password success !!', 'password' => $password, 'student' => $student, 'created_at' => now()->format('d/m/Y H:i')]);
+        return response()->json(['success' => __('students.passwords.messages.generated'), 'password' => $password, 'student' => $student, 'created_at' => now()->format('d/m/Y H:i')]);
     }
 
     public function resetStudentPassword(Request $request) {
         $student_id = $request->student_id;
         if (!$student_id) {
-            return response()->json(['errors' => ['Pls select student']]);
+            return response()->json(['errors' => [__('students.passwords.messages.select_student')]]);
         }
 
         $student = Contact::find($student_id);
         if (!$student) {
-             return response()->json(['errors' => ['Student not found']]);
+             return response()->json(['errors' => [__('students.passwords.messages.student_not_found')]]);
         }
 
         // Generate new random password
@@ -1438,7 +1446,7 @@ class ContactController extends Controller
 
         // Return just success message as requested to reload page
         return response()->json([
-            'success' => 'Reset password success !! New Password: ' . $password,
+            'success' => __('students.passwords.messages.reset_success', ['password' => $password]),
             // 'password' => $password 
         ]);
     }
@@ -1446,12 +1454,12 @@ class ContactController extends Controller
     public function removeStudentPassword(Request $request) {
         $student_id = $request->student_id;
         if (!$student_id) {
-            return response()->json(['errors' => ['Pls select student']]);
+            return response()->json(['errors' => [__('students.passwords.messages.select_student')]]);
         }
 
         $student = Contact::find($student_id);
         if (!$student) {
-             return response()->json(['errors' => ['Student not found']]);
+             return response()->json(['errors' => [__('students.passwords.messages.student_not_found')]]);
         }
         
         $student->update([
@@ -1460,7 +1468,7 @@ class ContactController extends Controller
         ]);
 
         return response()->json([
-            'success' => 'Student password removed successfully',
+            'success' => __('students.passwords.messages.removed'),
         ]);
     }
     public function studentsLogin()
@@ -1472,6 +1480,9 @@ class ContactController extends Controller
         $request->validate([
             'code' => 'required',
             'password' => 'required',
+        ], [
+            'code.required' => __('students.login.validation.code_required'),
+            'password.required' => __('students.login.validation.password_required'),
         ]);
 
         $student = Contact::where('code', $request->code)->first();
@@ -1487,7 +1498,7 @@ class ContactController extends Controller
                 return redirect()->route('home3');
             }
         } else {
-            return back()->withErrors(['error' => 'Invalid student code or password.']);
+            return back()->withErrors(['error' => __('students.login.invalid_credentials')]);
         }
     }
     public function studentsLogout()
@@ -1824,7 +1835,7 @@ class ContactController extends Controller
     {
         $student = Contact::query()->find($id);
         if (!$student) {
-            return response()->json(['message' => 'Student not found.'], 404);
+            return response()->json(['message' => __('students.check_in.student_not_found')], 404);
         }
 
         try {
@@ -1859,7 +1870,7 @@ class ContactController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Learning history recorded successfully.',
+                'message' => __('students.check_in.recorded'),
                 'data' => $history,
             ]);
         } catch (FastHistoryException $exception) {
@@ -1883,10 +1894,10 @@ class ContactController extends Controller
         $result = DB::transaction(function () use ($id, $discontinued_date, $discontinued_reason): array {
             $contact = Contact::query()->lockForUpdate()->find($id);
             if (!$contact) {
-                abort(404, 'Student not found.');
+                abort(404, __('students.feedback.student_not_found'));
             }
 
-            abort_unless($contact->type === 'student', 422, 'Only students can be marked as not continuing.');
+            abort_unless($contact->type === 'student', 422, __('students.discontinue.only_student'));
             BranchAccess::assertBranch(Auth::user(), $contact->centre);
 
             if ((int) $contact->discontinued !== 1) {
@@ -1895,9 +1906,9 @@ class ContactController extends Controller
                     'discontinued_date' => $discontinued_date,
                     'discontinued_reason' => $discontinued_reason,
                 ])->save();
-                $message = 'Student marked as not continuing.';
+                $message = __('students.discontinue.marked');
             } else {
-                $message = 'Student is already marked as not continuing.';
+                $message = __('students.discontinue.already_marked');
             }
 
             return [

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html dir="" class="" lang="en" itemscope itemtype="{{ url('/') }}">
+<html dir="" class="" lang="{{ app()->getLocale() }}" itemscope itemtype="{{ url('/') }}">
 
 <head>
     @include('affiliate.frontend.head')

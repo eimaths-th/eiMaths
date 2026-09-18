@@ -41,7 +41,7 @@ class ReceiveBookShipmentRequest extends BookShipmentRequest
                 if (!is_string($note) || trim($note) === '') {
                     $receive_validator->errors()->add(
                         "items.{$item_index}.note",
-                        trans('book-shipments.messages.missing_or_damaged_note_validation', [], 'th')
+                        trans('book-shipments.messages.missing_or_damaged_note_validation', [])
                     );
                 }
             }

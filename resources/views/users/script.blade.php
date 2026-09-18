@@ -1,15 +1,16 @@
 <script>
     $(document).ready(function() {
+        const user_access_ui = @json(__('user-access'));
 
         $(".delete_all_button").click(function() {
             var len = $('input[name="table_records[]"]:checked').length;
             if (len > 0) {
 
-                if (confirm("Confirm Delete Data?")) {
+                if (confirm(user_access_ui.messages.confirm_delete)) {
                     $('form#delete_all').submit();
                 }
             } else {
-                alert("please select record");
+                alert(user_access_ui.messages.select_to_delete);
             }
 
         });
@@ -22,7 +23,7 @@
             maximumSelectionLength: 1,
             allowClear: false,
             //theme: 'bootstrap4'
-            placeholder: 'Please Select'
+            placeholder: user_access_ui.users.modal.select
         });
 
         $(".select2_single").on("select2:unselect", function(e) {
@@ -34,7 +35,7 @@
             maximumSelectionLength: 1,
             allowClear: false,
             //theme: 'bootstrap4'
-            placeholder: 'Please Select'
+            placeholder: user_access_ui.users.modal.select
         });
 
 
@@ -43,7 +44,7 @@
             //placeholder: "With Max Selection limit 4",
             allowClear: false,
             //theme: 'bootstrap4'
-            placeholder: 'Please Select'
+            placeholder: user_access_ui.users.modal.select
         });
 
 
@@ -123,20 +124,20 @@
             language: {
                 loadingRecords: '&nbsp;',
                 processing: `<div class="spinner-border text-primary"></div>`,
-                "sProcessing": "Processcing...",
-                "sLengthMenu": "Display_MENU_ Row",
-                "sZeroRecords": "No Data Fount",
-                "sInfo": "Display _START_ To _END_ From _TOTAL_ Records",
-                "sInfoEmpty": "Display 0 To 0 From 0 Records",
-                "sInfoFiltered": "(Filters _MAX_ Row)",
+                "sProcessing": user_access_ui.data_table.processing,
+                "sLengthMenu": user_access_ui.data_table.length_menu,
+                "sZeroRecords": user_access_ui.data_table.zero_records,
+                "sInfo": user_access_ui.data_table.info,
+                "sInfoEmpty": user_access_ui.data_table.info_empty,
+                "sInfoFiltered": user_access_ui.data_table.info_filtered,
                 "sInfoPostFix": "",
-                "sSearch": "Search:",
+                "sSearch": user_access_ui.data_table.search,
                 "sUrl": "",
                 "oPaginate": {
-                    "sFirst": "First",
-                    "sPrevious": "Previous",
-                    "sNext": "Next",
-                    "sLast": "Last"
+                    "sFirst": user_access_ui.data_table.first,
+                    "sPrevious": user_access_ui.data_table.previous,
+                    "sNext": user_access_ui.data_table.next,
+                    "sLast": user_access_ui.data_table.last
                 }
             },
             // Name is the first meaningful sortable field on both user tables.
@@ -320,7 +321,7 @@
         })
 
         $('#SubmitEditForm').click(function(e) {
-            if (!confirm("Confirm Save ?")) return;
+            if (!confirm(user_access_ui.messages.confirm_save)) return;
             e.preventDefault();
 
             $('.alert-danger').html('');
@@ -376,7 +377,7 @@
         });
 
         $(document).on('click', '.btn-delete', function() {
-            if (!confirm("Confirm Delete Data ?")) return;
+            if (!confirm(user_access_ui.messages.confirm_delete)) return;
 
             var rowid = $(this).data('rowid')
             var el = $(this)
@@ -412,7 +413,7 @@
         });
 
         $(document).on('click', '.btn-delete-affiliate-user', function() {
-            if (!confirm("Confirm Delete Data ?")) return;
+            if (!confirm(user_access_ui.messages.confirm_delete)) return;
 
             var rowid = $(this).data('rowid')
             var el = $(this)

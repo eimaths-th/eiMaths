@@ -2,9 +2,9 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header bg-primary">
-                <h4 class="modal-title"> <i class="fas fa-cubes"></i> Add Acceseries
+                <h4 class="modal-title"> <i class="fas fa-cubes"></i> {{ __('products.modals.add') }}
                 </h4>
-                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="{{ __('common.actions.close') }}">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -20,13 +20,13 @@
                     </div>
                 @endif --}}
                 <div class="alert alert-danger alert-dismissible fade show" role="alert" style="display: none;">
-                    <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close">
+                    <button type="button" class="btn-close" data-dismiss="alert" aria-label="{{ __('common.actions.close') }}">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="alert alert-success alert-dismissible fade show" role="alert" style="display: none;">
 
-                    <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close">
+                    <button type="button" class="btn-close" data-dismiss="alert" aria-label="{{ __('common.actions.close') }}">
                         <span aria-hidden="true"></span>
                     </button>
                 </div>
@@ -37,7 +37,7 @@
                 <div class="row">
                     <div class="col-xs-6 col-sm-6 col-md-6">
                         <div class="form-group">
-                            <strong><i class="fas fa-code"></i> Centre Code:</strong>
+                            <strong><i class="fas fa-code"></i> {{ __('products.fields.centre_code') }}:</strong>
                             <select style="width: 100%;" class="productl select2 select2_single form-control"
                                 id="AddCentre" name="centre" multiple="multiple"
                                 @cannot('all-centre') disabled @endcannot>
@@ -56,11 +56,10 @@
                     </div>
                     <div class="col-xs-6 col-sm-6 col-md-6">
                         <div class="form-group">
-                            <strong>Acceseries
-                                Code:</strong>
+                            <strong>{{ __('products.fields.accessory_code') }}:</strong>
                             {!! Form::text('name', null, [
                                 'id' => 'AddCode',
-                                'placeholder' => 'Code',
+                                'placeholder' => __('products.table.code'),
                                 'class' => 'form-control',
                                 'readonly' => true,
                             ]) !!}
@@ -71,17 +70,15 @@
                 <div class="row">
                     <div class="col-xs-6 col-sm-6 col-md-6">
                         <div class="form-group">
-                            <strong>Acceseries
-                                Name:</strong>
-                            {!! Form::text('name', null, ['id' => 'AddName', 'placeholder' => 'Name', 'class' => 'form-control']) !!}
+                                <strong>{{ __('products.fields.accessory_name') }}:</strong>
+                            {!! Form::text('name', null, ['id' => 'AddName', 'placeholder' => __('products.table.name'), 'class' => 'form-control']) !!}
                         </div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-xs-12 col-sm-12 col-md-12">
                         <div class="form-group">
-                            <strong>Acceseries Detail
-                                :</strong>
+                            <strong>{{ __('products.fields.accessory_detail') }}:</strong>
                             {!! Form::textarea('detail', null, [
                                 'rows' => 4,
                                 'id' => 'AddDetail',
@@ -94,20 +91,20 @@
 
                     <div class="col-xs-6 col-sm-6 col-md-6">
                         <div class="form-group">
-                            <strong>Unit:</strong>
+                            <strong>{{ __('products.fields.unit') }}:</strong>
                             {!! Form::text('unit', null, [
                                 'id' => 'AddUnit',
-                                'placeholder' => 'Unit',
+                                'placeholder' => __('products.fields.unit'),
                                 'class' => 'form-control',
                             ]) !!}
                         </div>
                     </div>
                     <div class="col-xs-6 col-sm-6 col-md-6">
                         <div class="form-group">
-                            <strong>Quantity:</strong>
+                            <strong>{{ __('products.fields.quantity') }}:</strong>
                             {!! Form::input('number', 'amount', null, [
                                 'id' => 'AddAmount',
-                                'placeholder' => 'Quantity',
+                                'placeholder' => __('products.fields.quantity'),
                                 'class' => 'form-control auto_decimal',
                                 'step' => '1.0',
                             ]) !!}
@@ -121,9 +118,9 @@
             </div>
             <div class="modal-footer {{-- justify-content-between --}}">
                 <button type="button" class="btn btn-success" id="SubmitCreateForm"><i class="fas fa-download"></i>
-                    Save</button>
+                    {{ __('common.actions.save') }}</button>
                 <button type="button" class="btn btn-danger modelClose" data-bs-dismiss="modal"><i
-                        class="fas fa-door-closed"></i> Close</button>
+                        class="fas fa-door-closed"></i> {{ __('common.actions.close') }}</button>
             </div>
         </div>
     </div>

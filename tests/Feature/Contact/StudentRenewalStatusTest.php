@@ -160,6 +160,25 @@ class StudentRenewalStatusTest extends TestCase
     }
 
     #[Test]
+    public function ThaiStudentListKeepsRenewalCodesAndLocalizesActions(): void
+    {
+        $this->actor->update(['language_code' => 'th']);
+        [$student, $book] = $this->createStudent('ST-TH-RENEWAL', 1, 0);
+        $this->createHistories($student, $book, 1);
+
+        $row = $this->studentListRows()->firstWhere('id', $student->id);
+
+        $this->assertNotNull($row);
+        $this->assertSame('pending', $row['renewal_status']);
+        $this->assertSame('course_exhausted', $row['renewal_reason']);
+        $this->assertSame(0, $row['renewal_remaining']);
+        $this->assertStringContainsString('รอต่อคลาส', $row['remaining']);
+        $this->assertStringContainsString('เช็กชื่อ', $row['action']);
+        $this->assertStringContainsString('ไม่ต่อคลาส', $row['action']);
+        $this->assertSame(0, (int) $student->fresh()->discontinued);
+    }
+
+    #[Test]
     public function StudentListRendersTheNotContinuingConfirmationModal(): void
     {
         $this->createStudent('ST-NOT-CONTINUING-MODAL', 1, 0);
@@ -275,6 +294,8 @@ class StudentRenewalStatusTest extends TestCase
         $this->createHistories($student, $book, 1);
 
         File::shouldReceive('put')->once()->andReturn(true);
+        File::shouldReceive('exists')->andReturnUsing(static fn (string $path): bool => is_file($path));
+        File::shouldReceive('getRequire')->andReturnUsing(static fn (string $path): array => require $path);
         $history_controller = \Mockery::mock(HistoriesController::class)->makePartial();
         $history_controller->shouldReceive('reorder_remain')->once()->andReturnNull();
         $this->app->instance(HistoriesController::class, $history_controller);

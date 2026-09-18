@@ -2,8 +2,8 @@
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header bg-primary">
-                <h4 class="modal-title"><i class="fa-solid fa-file-invoice-dollar"></i> New Receipt</h4>
-                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                <h4 class="modal-title"><i class="fa-solid fa-file-invoice-dollar"></i> {{ __('students.actions.new_receipt') }}</h4>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="{{ __('common.actions.close') }}">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -39,13 +39,12 @@
                             <li class="nav-item">
                                 <a class="nav-link active" id="custom-tabs-one-home-tab-receipt" data-toggle="pill"
                                     href="#custom-tabs-one-home-receipt" role="tab"
-                                    aria-controls="custom-tabs-one-home-receipt" aria-selected="true">Student Detail</a>
+                                    aria-controls="custom-tabs-one-home-receipt" aria-selected="true">{{ __('students.form.student_detail') }}</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" id="custom-tabs-one-course-tab-receipt" data-toggle="pill"
                                     href="#custom-tabs-one-course-receipt" role="tab"
-                                    aria-controls="custom-tabs-one-course-receipt" aria-selected="false">Course &
-                                    Book</a>
+                                    aria-controls="custom-tabs-one-course-receipt" aria-selected="false">{{ __('students.form.course_book') }}</a>
                             </li>
                             {{--  <li class="nav-item">
                                 <a class="nav-link" id="custom-tabs-one-dis-tab" data-toggle="pill"
@@ -63,7 +62,7 @@
                                         <div class="row">
                                             <div class="col-xs-3 col-sm-3 col-md-3">
                                                 <div class="form-group">
-                                                    <strong><i class="fas fa-code"></i> Referent Code:</strong>
+                                                    <strong><i class="fas fa-code"></i> {{ __('students.form.referral') }}:</strong>
                                                     {{-- <select style="width: 100%;"
                                                         class="productl select2 select2_single form-control"
                                                         id="ReceiptCentre" name="rcentre" multiple="multiple"
@@ -93,7 +92,7 @@
 
                                             <div class="col-xs-6 col-sm-6 col-md-6">
                                                 <div class="form-group">
-                                                    <strong><i class="fas fa-code"></i> Centre Code:</strong>
+                                                    <strong><i class="fas fa-code"></i> {{ __('students.form.centre_code') }}:</strong>
                                                     <select style="width: 100%;"
                                                         class="productl select2 select2_single form-control"
                                                         id="ReceiptCentre" name="rcentre" multiple="multiple"
@@ -113,7 +112,7 @@
                                             </div>
                                             <div class="col-xs-6 col-sm-6 col-md-6">
                                                 <div class="form-group">
-                                                    <strong><i class="fas fa-code"></i> Student No.</strong>
+                                                    <strong><i class="fas fa-code"></i> {{ __('students.form.student_no') }}</strong>
                                                     <select name="student"
                                                         id="s_student"class="select2 select2_single form-control s_student"
                                                         multiple="multiple">
@@ -136,7 +135,7 @@
 
                                             <div class="col-xs-6 col-sm-6 col-md-6">
                                                 <div class="form-group">
-                                                    <strong><i class="fas fa-layer-group"></i> Start Level:</strong>
+                                                    <strong><i class="fas fa-layer-group"></i> {{ __('students.form.start_level') }}:</strong>
                                                     <select style="width: 100%;"
                                                         class="select2 select2_single form-control rlevels"
                                                         id="ReceiptLevel" name="rlevel" multiple="multiple">
@@ -167,7 +166,7 @@
                                             </div>
                                             <div class="col-xs-3 col-sm-3 col-md-3">
                                                 <div class="form-group">
-                                                    <strong><i class="fas fa-book-medical"></i> BookUse:</strong>
+                                                    <strong><i class="fas fa-book-medical"></i> {{ __('students.form.book_use') }}:</strong>
                                                     <select style="width: 100%;"
                                                         class="select2 select2_single form-control rbooks"
                                                         id="ReceiptBook" name="rbook" multiple="multiple">
@@ -189,7 +188,7 @@
 
                                             <div class="col-xs-6 col-sm-6 col-md-6">
                                                 <div class="form-group">
-                                                    <strong><i class="fas fa-layer-group"></i> To Level:</strong>
+                                                    <strong><i class="fas fa-layer-group"></i> {{ __('students.form.to_level') }}:</strong>
                                                     <select style="width: 100%;"
                                                         class="select2 select2_single form-control rlevels2"
                                                         id="ReceiptLevel2" name="rlevel2" multiple="multiple">
@@ -220,7 +219,7 @@
                                             </div>
                                             <div class="col-xs-3 col-sm-3 col-md-3">
                                                 <div class="form-group">
-                                                    <strong><i class="fas fa-book-medical"></i> BookUse:</strong>
+                                                    <strong><i class="fas fa-book-medical"></i> {{ __('students.form.book_use') }}:</strong>
                                                     <select style="width: 100%;"
                                                         class="select2 select2_single form-control rbooks2"
                                                         id="ReceiptBook2" name="rbook2" multiple="multiple">
@@ -243,12 +242,12 @@
                                             <div class="col-xs-3 col-sm-3 col-md-3">
                                             </div>
                                             <div class="col-xs-3 col-sm-3 col-md-3">
-                                                <strong><i class="fas fa-book-open"></i> Free Class:</strong>
+                                                <strong><i class="fas fa-book-open"></i> {{ __('students.form.free_class') }}:</strong>
                                                 <input type="number" min="0" class="form-control Rcfree_course" id="AddRcFreeCourse" name="Rcfree_course" value="0">
 
                                             </div>
                                             <div class="col-xs-3 col-sm-3 col-md-3">
-                                                <strong><i class="fas fa-book-open"></i>Reason Free Class:</strong>
+                                                <strong><i class="fas fa-book-open"></i>{{ __('students.form.reason_free_class') }}:</strong>
                                                 <input type="text" class="form-control free_course_reason"
                                                     id="AddFreeCourseReason" name="free_course_reason"
                                                     value="">
@@ -256,7 +255,7 @@
 
                                             <div class="col-xs-3 col-sm-3 col-md-3">
                                                 <div class="form-group">
-                                                    <strong><i class="fas fa-book-open"></i> Total Class:</strong>
+                                                    <strong><i class="fas fa-book-open"></i> {{ __('students.form.total_class') }}:</strong>
 
                                                     <input type="text" disabled class="form-control rscoin"
                                                         value="0">
@@ -277,9 +276,9 @@
             <div class="modal-footer {{-- justify-content-between --}}">
                 <button type="button" class="btn btn-success" id="ReceiptCreateForm"><i
                         class="fas fa-download"></i>
-                    Save </button>
+                    {{ __('common.actions.save') }} </button>
                 <button type="button" class="btn btn-danger modelClose" data-bs-dismiss="modal"><i
-                        class="fas fa-door-closed"></i> Close</button>
+                        class="fas fa-door-closed"></i> {{ __('common.actions.close') }}</button>
             </div>
         </div>
     </div>

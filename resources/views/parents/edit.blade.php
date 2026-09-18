@@ -2,7 +2,7 @@
     <div class="modal-dialog modal-xxl">
         <div class="modal-content">
             <div class="modal-header bg-primary">
-                <h4 class="modal-title"><i class="fas fa-graduation-cap"></i>Edit Parent</h4>
+                <h4 class="modal-title"><i class="fas fa-graduation-cap"></i>{{ __('common.actions.edit') }} {{ __('students.parents.title') }}</h4>
                 <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -36,7 +36,7 @@
                                 <li class="nav-item">
                                     <a class="nav-link active" id="custom-tabs-one-home-tab" data-toggle="pill"
                                         href="#custom-tabs-one-home" role="tab" aria-controls="custom-tabs-one-home"
-                                        aria-selected="true">Parent Detail</a>
+                                        aria-selected="true">{{ __('students.form.parent_detail') }}</a>
                                 </li>
                             </ul>
                         </div>
@@ -56,7 +56,7 @@
                                             <div class="row">
                                                 <div class="col-xs-6 col-sm-6 col-md-6">
                                                     <div class="form-group">
-                                                        <strong><i class="fas fa-code"></i> Centre Code1:</strong>
+                                                        <strong><i class="fas fa-code"></i> {{ __('students.form.centre_code') }}:</strong>
                                                         <select style="width: 100%;"
                                                             class="productl select2 select2_single form-control"
                                                             id="EditCentre" name="centre_id" multiple="multiple">
@@ -74,12 +74,12 @@
                                                 </div>
                                                 <div class="col-xs-6 col-sm-6 col-md-6">
                                                     <div class="form-group">
-                                                        <strong><i class="fas fa-code"></i> Student No.</strong>
+                                                        <strong><i class="fas fa-code"></i> {{ __('students.form.student_no') }}</strong>
 
                                                         <select name="student"
                                                             id="Edits_student"class="select2 select2_multiple form-control s_student"
                                                             multiple="multiple">
-                                                            <option value="">select student</option>
+                                                            <option value="">{{ __('students.form.select_student') }}</option>
 
                                                         </select>
                                                     </div>
@@ -88,20 +88,18 @@
                                             <div class="row">
                                                 <div class="col-xs-6 col-sm-6 col-md-6">
                                                     <div class="form-group">
-                                                        <strong><i class="fas fa-calendar"></i> First Name
-                                                            (ชื่อจริง):</strong>
+                                                        <strong><i class="fas fa-calendar"></i> {{ __('students.form.first_name') }}:</strong>
                                                         <input type="text" name="fname" id="EditFname"
                                                             class="form-control" autocomplete="off"
-                                                            placeholder="Enter Parent Name">
+                                                             placeholder="{{ __('students.parents.parent_name') }}">
                                                     </div>
                                                 </div>
                                                 <div class="col-xs-6 col-sm-6 col-md-6">
                                                     <div class="form-group">
-                                                        <strong><i class="fas fa-calendar"></i>Last Name
-                                                            (นามสกุล):</strong>
+                                                        <strong><i class="fas fa-calendar"></i>{{ __('students.form.last_name') }}:</strong>
                                                         <input type="text" name="lname" id="EditLname"
                                                             class="form-control" autocomplete="off"
-                                                            placeholder="Enter Parent Last Name">
+                                                             placeholder="{{ __('students.form.last_name') }}">
 
                                                     </div>
                                                 </div>
@@ -110,20 +108,18 @@
                                             <div class="row">
                                                 <div class="col-xs-6 col-sm-6 col-md-6">
                                                     <div class="form-group">
-                                                        <strong><i class="fas fa-calendar"></i> Telp.
-                                                            (เบอร์โทรศัพท์):</strong>
+                                                        <strong><i class="fas fa-calendar"></i> {{ __('common.fields.phone') }}:</strong>
                                                         <input type="text" name="telp" id="EditTelp"
                                                             class="form-control" autocomplete="off"
-                                                            placeholder="Enter Parent telphone">
+                                                             placeholder="{{ __('common.fields.phone') }}">
                                                     </div>
                                                 </div>
                                                 <div class="col-xs-6 col-sm-6 col-md-6">
                                                     <div class="form-group">
-                                                        <strong><i class="fas fa-calendar"></i>Email
-                                                            (อีเมลล์):</strong>
+                                                        <strong><i class="fas fa-calendar"></i>{{ __('common.fields.email') }}:</strong>
                                                         <input type="text" name="email" id="EditEmail"
                                                             class="form-control" autocomplete="off"
-                                                            placeholder="Enter Parent Email">
+                                                             placeholder="{{ __('common.fields.email') }}">
                                                     </div>
                                                 </div>
                                             </div>
@@ -131,43 +127,41 @@
                                             <div class="row">
                                                 <div class="col-xs-6 col-sm-6 col-md-6">
                                                     <div class="form-group">
-                                                        <strong><i class="fas fa-calendar"></i> Emergency
-                                                            Contact(เบอร์ติดต่อด่วน)</strong>
+                                                        <strong><i class="fas fa-calendar"></i> {{ __('students.form.emergency_contact') }}</strong>
                                                         <input type="text" name="emergency_contact"
                                                             id="EditEmergency" class="form-control"
-                                                            autocomplete="off" placeholder="Enter Emergency Contact">
+                                                            autocomplete="off" placeholder="{{ __('students.form.emergency_contact') }}">
                                                     </div>
                                                 </div>
                                                 <div class="col-xs-6 col-sm-6 col-md-6">
                                                     <div class="row">
                                                         <div class="col-lg-6">
-                                                            <strong><i class="fas fa-calendar"></i>Relationship
-                                                                (ความสัมพันธ์):</strong>
+                                                            <strong><i class="fas fa-calendar"></i>{{ __('students.form.relationship') }}:</strong>
                                                             <select name="relationship" id="EditRelationship"
                                                                 class="form-control">
-                                                                <option value="">Select Relation</option>
-                                                                <option value="father">Father</option>
-                                                                <option value="mother">Mother</option>
-                                                                <option value="relative">Relative</option>
-                                                                <option value="other">Other</option>
+                                                                 <option value="">{{ __('students.parents.relation_select') }}</option>
+                                                                 <option value="father">{{ __('students.parents.father') }}</option>
+                                                                 <option value="mother">{{ __('students.parents.mother') }}</option>
+                                                                 <option value="relative">{{ __('students.parents.relative') }}</option>
+                                                                 <option value="other">{{ __('students.parents.other') }}</option>
                                                             </select>
                                                         </div>
                                                         <div class="col-lg-6">
                                                             <strong class="mb-5"><i
-                                                                    class="fas fa-calendar"></i>Gender (เพศ):
+                                                                     class="fas fa-calendar"></i>{{ __('students.form.gender') }}:
                                                             </strong>
                                                             <div class="row">
                                                                 <div class="col-lg-6">
                                                                     <label>
                                                                         <input type="radio" name="gender"
-                                                                            id="male" value="male"> Male
+                                                                             id="male" value="male"> {{ __('students.form.male') }}
                                                                     </label>
                                                                 </div>
 
                                                                 <div class="col-lg-6">
                                                                     <label>
                                                                         <input type="radio" name="gender"
-                                                                            id="female" value="female"> Female
+                                                                             id="female" value="female"> {{ __('students.form.female') }}
                                                                     </label>
                                                                 </div>
                                                             </div>
@@ -179,8 +173,8 @@
                                             <div class="row">
                                                 <div class="col-xs-12 col-sm-12 col-md-12">
                                                     <div class="form-group">
-                                                        <strong><i class="fas fa-calendar"></i> Address:</strong>
-                                                        <textarea name="address" id="EditAddress" rows="5" class="form-control" placeholder="Enter Address"></textarea>
+                                                         <strong><i class="fas fa-calendar"></i> {{ __('common.fields.address') }}:</strong>
+                                                         <textarea name="address" id="EditAddress" rows="5" class="form-control" placeholder="{{ __('common.fields.address') }}"></textarea>
 
                                                     </div>
                                                 </div>
@@ -188,9 +182,8 @@
                                             <div class="row">
                                                 <div class="col-xs-12 col-sm-12 col-md-12">
                                                     <div class="form-group">
-                                                        <strong><i class="fas fa-calendar"></i>Orther Details
-                                                            :</strong>
-                                                        <textarea name="notes" id="EditNotes" rows="5" class="form-control" placeholder="Enter Detail"></textarea>
+                                                         <strong><i class="fas fa-calendar"></i>{{ __('students.form.details') }}:</strong>
+                                                         <textarea name="notes" id="EditNotes" rows="5" class="form-control" placeholder="{{ __('students.form.details') }}"></textarea>
 
                                                     </div>
                                                 </div>
@@ -201,21 +194,19 @@
                                                 @enderror
                                                 <div class="col-xs-6 col-sm-6 col-md-6">
                                                     <div class="form-group">
-                                                        <strong><i class="fas fa-calendar"></i>Password.
-                                                            (รหัสผ่าน):</strong>
+                                                        <strong><i class="fas fa-calendar"></i>{{ __('students.form.password') }}:</strong>
                                                         <input type="password" name="password" id="EditPassword"
                                                             class="form-control" autocomplete="off"
-                                                            placeholder="Enter Password">
+                                                             placeholder="{{ __('students.form.password') }}">
 
                                                     </div>
                                                 </div>
                                                 <div class="col-xs-6 col-sm-6 col-md-6">
                                                     <div class="form-group">
-                                                        <strong><i class="fas fa-calendar"></i>Conf Password. (ยืนยัน
-                                                            รหัสผ่าน):</strong>
+                                                        <strong><i class="fas fa-calendar"></i>{{ __('students.form.confirm_password') }}:</strong>
                                                         <input type="password" name="password_confirmation"
                                                             id="password_confirmation1" class="form-control"
-                                                            autocomplete="off" placeholder="Enter Confirm Password">
+                                                             autocomplete="off" placeholder="{{ __('students.form.confirm_password') }}">
                                                     </div>
                                                 </div>
                                             </div>
@@ -232,9 +223,9 @@
 
             <div class="modal-footer {{-- justify-content-between --}}">
                 <button type="button" class="btn btn-success" id="SubmitEditForm"><i class="fas fa-download"></i>
-                    Save </button>
+                    {{ __('common.actions.save') }}</button>
                 <button type="button" class="btn btn-danger modelClose" data-bs-dismiss="modal"><i
-                        class="fas fa-door-closed"></i> Close</button>
+                        class="fas fa-door-closed"></i> {{ __('common.actions.close') }}</button>
             </div>
         </div>
     </div>

@@ -2,8 +2,8 @@
     <div class="modal-dialog modal-xxl">
         <div class="modal-content">
             <div class="modal-header bg-primary">
-                <h4 class="modal-title"><i class="fas fa-graduation-cap"></i> New Student</h4>
-                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                <h4 class="modal-title"><i class="fas fa-graduation-cap"></i> {{ __('students.actions.new_student') }}</h4>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="{{ __('common.actions.close') }}">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -40,22 +40,22 @@
                             <li class="nav-item">
                                 <a class="nav-link active" id="custom-tabs-one-home-tab" data-toggle="pill"
                                     href="#custom-tabs-one-home" role="tab" aria-controls="custom-tabs-one-home"
-                                    aria-selected="true">Student Detail</a>
+                                    aria-selected="true">{{ __('students.form.student_detail') }}</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" id="custom-tabs-one-address-tab" data-toggle="pill"
                                     href="#custom-tabs-one-address" role="tab"
-                                    aria-controls="custom-tabs-one-address" aria-selected="true">Address Detail</a>
+                                    aria-controls="custom-tabs-one-address" aria-selected="true">{{ __('students.form.address_detail') }}</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" id="custom-tabs-one-profile-tab" data-toggle="pill"
                                     href="#custom-tabs-one-profile" role="tab"
-                                    aria-controls="custom-tabs-one-profile" aria-selected="false">Parent Detail</a>
+                                    aria-controls="custom-tabs-one-profile" aria-selected="false">{{ __('students.form.parent_detail') }}</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" id="custom-tabs-one-course-tab" data-toggle="pill"
                                     href="#custom-tabs-one-course" role="tab" aria-controls="custom-tabs-one-course"
-                                    aria-selected="false">Course & Book</a>
+                                    aria-selected="false">{{ __('students.form.course_book') }}</a>
                             </li>
                             {{--  <li class="nav-item">
                                 <a class="nav-link" id="custom-tabs-one-dis-tab" data-toggle="pill"
@@ -73,7 +73,7 @@
                                         <div class="row">
                                             <div class="col-xs-6 col-sm-6 col-md-6">
                                                 <div class="form-group">
-                                                    <strong><i class="fas fa-code"></i> Centre Code:</strong>
+                                                    <strong><i class="fas fa-code"></i> {{ __('students.form.centre_code') }}:</strong>
                                                     <select style="width: 100%;"
                                                         class="productl select2 select2_single form-control"
                                                         id="AddCentre" name="centre" multiple="multiple"
@@ -95,10 +95,10 @@
                                             </div>
                                             <div class="col-xs-6 col-sm-6 col-md-6">
                                                 <div class="form-group">
-                                                    <strong><i class="fas fa-code"></i> Student No.</strong>
+                                                    <strong><i class="fas fa-code"></i> {{ __('students.form.student_no') }}</strong>
                                                     {!! Form::text('code', null, [
                                                         'id' => 'AddCode',
-                                                        'placeholder' => 'Code',
+                                                        'placeholder' => __('students.form.code'),
                                                         'class' => 'form-control',
                                                         'readonly' => true,
                                                     ]) !!}
@@ -108,7 +108,7 @@
                                         <div class="row">
                                             <div class="col-xs-6 col-sm-6 col-md-6">
                                                 <div class="form-group">
-                                                    <strong><i class="fas fa-calendar"></i> Start Date:</strong>
+                                                    <strong><i class="fas fa-calendar"></i> {{ __('students.form.start_date') }}:</strong>
                                                     {!! Form::text('start_date', null, [
                                                         'id' => 'AddDate',
                                                         'placeholder' => '',
@@ -119,7 +119,7 @@
                                             </div>
                                             <div class="col-xs-6 col-sm-6 col-md-6">
                                                 <div class="form-group">
-                                                    <strong><i class="fas fa-calendar"></i> Birth Date:</strong>
+                                                    <strong><i class="fas fa-calendar"></i> {{ __('students.form.birth_date') }}:</strong>
                                                     {!! Form::text('birth_date', null, [
                                                         'id' => 'AddBirthDate',
                                                         'placeholder' => '',
@@ -147,16 +147,16 @@
                                         <div class="row">
                                             <div class="col-xs-6 col-sm-6 col-md-6">
                                                 <div class="form-group">
-                                                    <strong><i class="fas fa-graduation-cap"></i> Name:</strong>
-                                                    {!! Form::text('name', null, ['id' => 'AddName', 'placeholder' => 'Name', 'class' => 'form-control']) !!}
+                                                    <strong><i class="fas fa-graduation-cap"></i> {{ __('students.form.name') }}:</strong>
+                                                    {!! Form::text('name', null, ['id' => 'AddName', 'placeholder' => __('students.form.name'), 'class' => 'form-control']) !!}
                                                 </div>
                                             </div>
                                             <div class="col-xs-6 col-sm-6 col-md-6">
                                                 <div class="form-group">
-                                                    <strong><i class="fas fa-graduation-cap"></i> Nick Name:</strong>
+                                                    <strong><i class="fas fa-graduation-cap"></i> {{ __('students.form.nickname') }}:</strong>
                                                     {!! Form::text('nickname', null, [
                                                         'id' => 'AddNickname',
-                                                        'placeholder' => 'Nick Name',
+                                                        'placeholder' => __('students.form.nickname'),
                                                         'class' => 'form-control',
                                                     ]) !!}
                                                 </div>
@@ -165,16 +165,16 @@
                                         <div class="row">
                                             <div class="col-xs-6 col-sm-6 col-md-6">
                                                 <div class="form-group">
-                                                    <strong><i class="fas fa-school"></i> School:</strong>
-                                                    {!! Form::text('school', null, ['id' => 'AddSchool', 'placeholder' => 'School', 'class' => 'form-control']) !!}
+                                                    <strong><i class="fas fa-school"></i> {{ __('students.form.school') }}:</strong>
+                                                    {!! Form::text('school', null, ['id' => 'AddSchool', 'placeholder' => __('students.form.school'), 'class' => 'form-control']) !!}
                                                 </div>
                                             </div>
                                             <div class="col-xs-6 col-sm-6 col-md-6">
                                                 <div class="form-group">
-                                                    <strong><i class="fas fa-school"></i> Referent:</strong>
+                                                    <strong><i class="fas fa-school"></i> {{ __('students.form.referral') }}:</strong>
                                                     {!! Form::text('referral', null, [
                                                         'id' => 'AddReferral',
-                                                        'placeholder' => 'Referral',
+                                                        'placeholder' => __('common.fields.referral'),
                                                         'class' => 'form-control',
                                                     ]) !!}
                                                 </div>
@@ -184,18 +184,18 @@
 
                                             <div class="col-xs-6 col-sm-6 col-md-6">
                                                 <div class="form-group">
-                                                    <strong><i class="fa-solid fa-venus-mars"></i> Gender:</strong>
+                                                    <strong><i class="fa-solid fa-venus-mars"></i> {{ __('students.form.gender') }}:</strong>
                                                     <div class="form-group clearfix">
                                                         <div class="icheck-success d-inline">
                                                             <input type="radio" name="gender" value="1"
                                                                 checked id="radioSuccess1">
-                                                            <label for="radioSuccess1">Male
+                                                            <label for="radioSuccess1">{{ __('students.form.male') }}
                                                             </label>
                                                         </div>
                                                         <div class="icheck-success d-inline">
                                                             <input type="radio" name="gender" value="2"
                                                                 id="radioSuccess2">
-                                                            <label for="radioSuccess2">Female
+                                                            <label for="radioSuccess2">{{ __('students.form.female') }}
                                                             </label>
                                                         </div>
                                                     </div>
@@ -213,7 +213,7 @@
 
                                             <div class="col-xs-12 col-sm-12 col-md-12">
                                                 <div class="form-group">
-                                                    <strong><i class="fas fa-address-card"></i> Address:</strong>
+                                                    <strong><i class="fas fa-address-card"></i> {{ __('students.form.address') }}:</strong>
                                                     {!! Form::textarea('address', null, [
                                                         'rows' => 4,
                                                         'id' => 'AddAddress',
@@ -225,20 +225,20 @@
                                         <div class="row">
                                             <div class="col-xs-6 col-sm-6 col-md-6">
                                                 <div class="form-group">
-                                                    <strong><i class="fas fa-code"></i> Postcode:</strong>
+                                                    <strong><i class="fas fa-code"></i> {{ __('students.form.postcode') }}:</strong>
                                                     {!! Form::text('postcode', null, [
                                                         'id' => 'AddPostcode',
-                                                        'placeholder' => 'Postcode',
+                                                        'placeholder' => __('students.form.postcode'),
                                                         'class' => 'form-control',
                                                     ]) !!}
                                                 </div>
                                             </div>
                                             <div class="col-xs-6 col-sm-6 col-md-6">
                                                 <div class="form-group">
-                                                    <strong><i class="fas fa-phone"></i> Telephone:</strong>
+                                                    <strong><i class="fas fa-phone"></i> {{ __('students.form.telephone') }}:</strong>
                                                     {!! Form::text('telephone', null, [
                                                         'id' => 'AddTelephone',
-                                                        'placeholder' => 'Telephone',
+                                                        'placeholder' => __('students.form.telephone'),
                                                         'class' => 'form-control',
                                                     ]) !!}
                                                 </div>
@@ -255,17 +255,16 @@
                                         <div class="row">
                                             <div class="col-xs-6 col-sm-6 col-md-6">
                                                 <div class="form-group">
-                                                    <strong><i class="fa-solid fa-user-tie"></i> Father
-                                                        Name:</strong>
-                                                    {!! Form::text('fname', null, ['id' => 'AddfName', 'placeholder' => 'Father Name', 'class' => 'form-control']) !!}
+                                                    <strong><i class="fa-solid fa-user-tie"></i> {{ __('students.form.father_name') }}:</strong>
+                                                    {!! Form::text('fname', null, ['id' => 'AddfName', 'placeholder' => __('students.form.father_name'), 'class' => 'form-control']) !!}
                                                 </div>
                                             </div>
                                             <div class="col-xs-6 col-sm-6 col-md-6">
                                                 <div class="form-group">
-                                                    <strong><i class="fas fa-at"></i> Email:</strong>
+                                                    <strong><i class="fas fa-at"></i> {{ __('common.fields.email') }}:</strong>
                                                     {!! Form::email('femail', null, [
                                                         'id' => 'AddfEmail',
-                                                        'placeholder' => 'Father Email',
+                                                        'placeholder' => __('students.form.father_email'),
                                                         'class' => 'form-control',
                                                     ]) !!}
                                                 </div>
@@ -275,10 +274,10 @@
                                         <div class="row">
                                             <div class="col-xs-6 col-sm-6 col-md-6">
                                                 <div class="form-group">
-                                                    <strong><i class="fas fa-phone"></i> Mobile:</strong>
+                                                    <strong><i class="fas fa-phone"></i> {{ __('students.form.father_mobile') }}:</strong>
                                                     {!! Form::text('ftelephone', null, [
                                                         'id' => 'AddfTelephone',
-                                                        'placeholder' => 'Father Telephone',
+                                                        'placeholder' => __('students.form.father_mobile'),
                                                         'class' => 'form-control',
                                                     ]) !!}
                                                 </div>
@@ -291,17 +290,16 @@
                                         <div class="row">
                                             <div class="col-xs-6 col-sm-6 col-md-6">
                                                 <div class="form-group">
-                                                    <strong><i class="fa-solid fa-user-tie"></i> Mother
-                                                        Name:</strong>
-                                                    {!! Form::text('mname', null, ['id' => 'AddmName', 'placeholder' => 'Mother Name', 'class' => 'form-control']) !!}
+                                                    <strong><i class="fa-solid fa-user-tie"></i> {{ __('students.form.mother_name') }}:</strong>
+                                                    {!! Form::text('mname', null, ['id' => 'AddmName', 'placeholder' => __('students.form.mother_name'), 'class' => 'form-control']) !!}
                                                 </div>
                                             </div>
                                             <div class="col-xs-6 col-sm-6 col-md-6">
                                                 <div class="form-group">
-                                                    <strong><i class="fas fa-at"></i> Email:</strong>
+                                                    <strong><i class="fas fa-at"></i> {{ __('common.fields.email') }}:</strong>
                                                     {!! Form::email('memail', null, [
                                                         'id' => 'AddmEmail',
-                                                        'placeholder' => 'Mother Email',
+                                                        'placeholder' => __('students.form.mother_email'),
                                                         'class' => 'form-control',
                                                     ]) !!}
                                                 </div>
@@ -311,10 +309,10 @@
                                         <div class="row">
                                             <div class="col-xs-6 col-sm-6 col-md-6">
                                                 <div class="form-group">
-                                                    <strong><i class="fas fa-phone"></i> Mobile:</strong>
+                                                    <strong><i class="fas fa-phone"></i> {{ __('students.form.mother_mobile') }}:</strong>
                                                     {!! Form::text('mtelephone', null, [
                                                         'id' => 'AddmTelephone',
-                                                        'placeholder' => 'Mother Telephone',
+                                                        'placeholder' => __('students.form.mother_mobile'),
                                                         'class' => 'form-control',
                                                     ]) !!}
                                                 </div>
@@ -375,7 +373,7 @@
 
                                             <div class="col-xs-6 col-sm-6 col-md-6">
                                                 <div class="form-group">
-                                                    <strong><i class="fas fa-layer-group"></i> Start Level:</strong>
+                                                    <strong><i class="fas fa-layer-group"></i> {{ __('students.form.start_level') }}:</strong>
                                                     <select style="width: 100%;"
                                                         class="select2 select2_single form-control levels"
                                                         id="AddLevel" name="level" multiple="multiple">
@@ -390,7 +388,7 @@
                                             </div>
                                             <div class="col-xs-3 col-sm-3 col-md-3">
                                                 <div class="form-group">
-                                                    <strong><i class="fas fa-book-open"></i> Term:</strong>
+                                                    <strong><i class="fas fa-book-open"></i> {{ __('common.fields.term') }}:</strong>
                                                     <select style="width: 100%;"
                                                         class="select2 select2_single form-control terms"
                                                         id="AddTerm" name="term" multiple="multiple" readonly>
@@ -405,7 +403,7 @@
                                             </div>
                                             <div class="col-xs-3 col-sm-3 col-md-3">
                                                 <div class="form-group">
-                                                    <strong><i class="fas fa-book-medical"></i> BookUse:</strong>
+                                                    <strong><i class="fas fa-book-medical"></i> {{ __('students.form.book_use') }}:</strong>
                                                     <select style="width: 100%;"
                                                         class="select2 select2_single form-control books"
                                                         id="AddBook" name="book" multiple="multiple">
@@ -427,7 +425,7 @@
 
                                             <div class="col-xs-6 col-sm-6 col-md-6">
                                                 <div class="form-group">
-                                                    <strong><i class="fas fa-layer-group"></i> To Level:</strong>
+                                                    <strong><i class="fas fa-layer-group"></i> {{ __('students.form.to_level') }}:</strong>
                                                     <select style="width: 100%;"
                                                         class="select2 select2_single form-control levels2"
                                                         id="AddLevel2" name="level2" multiple="multiple">
@@ -442,7 +440,7 @@
                                             </div>
                                             <div class="col-xs-3 col-sm-3 col-md-3">
                                                 <div class="form-group">
-                                                    <strong><i class="fas fa-book-open"></i> Term:</strong>
+                                                    <strong><i class="fas fa-book-open"></i> {{ __('common.fields.term') }}:</strong>
                                                     <select style="width: 100%;"
                                                         class="select2 select2_single form-control terms2"
                                                         id="AddTerm2" name="term2" multiple="multiple" readonly>
@@ -457,7 +455,7 @@
                                             </div>
                                             <div class="col-xs-3 col-sm-3 col-md-3">
                                                 <div class="form-group">
-                                                    <strong><i class="fas fa-book-medical"></i> BookUse:</strong>
+                                                    <strong><i class="fas fa-book-medical"></i> {{ __('students.form.book_use') }}:</strong>
                                                     <select style="width: 100%;"
                                                         class="select2 select2_single form-control books2"
                                                         id="AddBook2" name="book2" multiple="multiple">
@@ -480,12 +478,12 @@
                                                 
                                             </div>
                                             <div class="col-xs-3 col-sm-3 col-md-3">
-                                                <strong><i class="fas fa-book-open"></i>Free Class:</strong>
+                                                <strong><i class="fas fa-book-open"></i>{{ __('students.form.free_class') }}:</strong>
                                                 <input type="number" min="0" class="form-control free_course"
                                                     id="AddFreeCourse" name="free_course" value="0">
                                             </div>
                                             <div class="col-xs-3 col-sm-3 col-md-3">
-                                                <strong><i class="fas fa-book-open"></i>Reason Free Class:</strong>
+                                                <strong><i class="fas fa-book-open"></i>{{ __('students.form.reason_free_class') }}:</strong>
                                                 <input type="text" class="form-control free_course_reason"
                                                     id="AddFreeCourseReason" name="free_course_reason"
                                                     value="">
@@ -493,7 +491,7 @@
 
                                             <div class="col-xs-3 col-sm-3 col-md-3">
                                                 <div class="form-group">
-                                                    <strong><i class="fas fa-book-open"></i> Total Class:</strong>
+                                                    <strong><i class="fas fa-book-open"></i> {{ __('students.form.total_class') }}:</strong>
 
                                                     <input type="text" disabled class="form-control scoin"
                                                         value="0">
@@ -513,9 +511,9 @@
             </div>
             <div class="modal-footer {{-- justify-content-between --}}">
                 <button type="button" class="btn btn-success" id="SubmitCreateForm"><i class="fas fa-download"></i>
-                    Save </button>
+                    {{ __('common.actions.save') }} </button>
                 <button type="button" class="btn btn-danger modelClose" data-bs-dismiss="modal"><i
-                        class="fas fa-door-closed"></i> Close</button>
+                        class="fas fa-door-closed"></i> {{ __('common.actions.close') }}</button>
             </div>
         </div>
     </div>

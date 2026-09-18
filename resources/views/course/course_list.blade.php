@@ -423,12 +423,12 @@
 
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1>Courses List</h1>
+                    <h1>{{ __('course.courses.title') }}</h1>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <a class="btn btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addCourseModal">
-                            <i class="fa fa-plus"></i> Add Course
+                            <i class="fa fa-plus"></i> {{ __('course.courses.add_course') }}
                         </a>
                     </ol>
 
@@ -448,7 +448,7 @@
                             <div class="card-title">
                                 <h3 class="card-title">
                                     {{ $title ?? '' }}
-                                    Course List
+                                    {{ __('course.courses.list_title') }}
                                 </h3>
                             </div>
                             <style>
@@ -470,19 +470,19 @@
                                             <table id="Listview" class="table classList">
                                                 <thead>
                                                     <tr>
-                                                        <th scope="col"> SL</th>
-                                                        <th scope="col"> Type</th>
+                                                        <th scope="col">{{ __('course.courses.table.serial') }}</th>
+                                                        <th scope="col">{{ __('course.courses.table.type') }}</th>
                                                         {{-- <th scope="col"> Required Type</th> --}}
-                                                        <th scope="col">CourseTitle</th>
-                                                        <th scope="col">Delivery</th>
-                                                        <th scope="col">Category</th>
-                                                        <th scope="col">Instructor</th>
+                                                        <th scope="col">{{ __('course.courses.table.course_title') }}</th>
+                                                        <th scope="col">{{ __('course.courses.table.delivery') }}</th>
+                                                        <th scope="col">{{ __('course.courses.table.category') }}</th>
+                                                        <th scope="col">{{ __('course.courses.table.instructor') }}</th>
                                                         {{-- <th scope="col">Lesson</th> --}}
                                                         {{-- <th scope="col">Enrolled</th> --}}
-                                                        <th scope="col">Price</th>
-                                                        <th scope="col">View Scope</th>
-                                                        <th scope="col">Status</th>
-                                                        <th scope="col">Action</th>
+                                                        <th scope="col">{{ __('course.courses.table.price') }}</th>
+                                                        <th scope="col">{{ __('course.courses.table.view_scope') }}</th>
+                                                        <th scope="col">{{ __('course.courses.table.status') }}</th>
+                                                        <th scope="col">{{ __('course.courses.table.action') }}</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -502,7 +502,7 @@
                     <div class="modal-dialog modal_1000px modal-dialog-centered">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h4 class="modal-title">{{ __('common.Edit') }} {{ __('quiz.Topic') }} </h4>
+                                <h4 class="modal-title">{{ __('course.courses.form.edit_title') }}</h4>
                                 <button type="button" class="close " data-bs-dismiss="modal">
                                     <i class="ti-close "></i>
                                 </button>
@@ -517,17 +517,17 @@
                                                 <div class="row">
                                                     <div class="col-md-12">
                                                         <label class="primary_input_label" for="    ">
-                                                            {{ __('courses.Type') }}</label>
+                                                            {{ __('course.courses.form.type') }}</label>
                                                     </div>
                                                     <div class="col-md-6">
                                                         <input type="radio" class="common-radio type1" id="type_edit_1"
                                                             name="type" value="1">
-                                                        <label for="type_edit_1">{{ __('courses.Course') }}</label>
+                                                        <label for="type_edit_1">{{ __('course.courses.form.course') }}</label>
                                                     </div>
                                                     <div class="col-md-6">
                                                         <input type="radio" class="common-radio type2" id="type_edit_2"
                                                             name="type" value="2">
-                                                        <label for="type_edit_2">{{ __('quiz.Quiz') }}</label>
+                                                        <label for="type_edit_2">{{ __('course.courses.form.quiz') }}</label>
                                                     </div>
                                                 </div>
                                             </div>
@@ -539,7 +539,7 @@
                                                 <div class="row">
                                                     <div class="col-md-12">
                                                         <label class="primary_input_label" for="    ">
-                                                            {{ __('common.Drip Content') }}</label>
+                                                            {{ __('course.courses.form.drip_content') }}</label>
                                                     </div>
 
                                                     <div class="col-md-6">
@@ -547,21 +547,20 @@
                                                         <input type="radio" class="common-radio drip0" id="drip_edit_0"
                                                             name="drip" value="0"
                                                             {{ @$course->drip == 0 ? 'checked' : '' }}>
-                                                        <label for="drip_edit_0">{{ __('common.No') }}</label>
+                                                        <label for="drip_edit_0">{{ __('course.courses.form.no') }}</label>
                                                     </div>
                                                     <div class="col-md-6">
                                                         <input type="radio" class="common-radio drip1" id="drip_edit_1"
                                                             name="drip" value="1"
                                                             {{ @$course->drip == 1 ? 'checked' : '' }}>
-                                                        <label for="drip_edit_1">{{ __('common.Yes') }}</label>
+                                                        <label for="drip_edit_1">{{ __('course.courses.form.yes') }}</label>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="col-xl-12">
                                             <div class="primary_input mb-25">
-                                                <label class="primary_input_label" for="title">{{ __('quiz.Topic') }}
-                                                    {{ __('common.Title') }}
+                                                <label class="primary_input_label" for="title">{{ __('course.courses.form.title') }}
                                                     *</label>
                                                 <input class="primary_input_field" name="title" id="title"
                                                     placeholder="-" type="text"
@@ -576,8 +575,7 @@
                                         <div class="col-xl-12">
                                             <div class="primary_input mb-35">
                                                 <label class="primary_input_label"
-                                                    for="about">{{ __('courses.Course') }}
-                                                    {{ __('courses.Requirements') }} </label>
+                                                    for="about">{{ __('course.courses.form.requirements') }} </label>
                                                 <textarea class="lms_summernote" name="requirements" id="requirementsEdit" cols="30" rows="10"> </textarea>
                                             </div>
                                         </div>
@@ -587,8 +585,7 @@
                                         <div class="col-xl-12">
                                             <div class="primary_input mb-35">
                                                 <label class="primary_input_label"
-                                                    for="about">{{ __('courses.Course') }}
-                                                    {{ __('courses.Description') }}</label>
+                                                    for="about">{{ __('course.courses.form.description') }}</label>
                                                 <textarea class="lms_summernote" name="about" id="aboutEdit" cols="30" rows="10"></textarea>
                                             </div>
                                         </div>
@@ -598,8 +595,7 @@
                                         <div class="col-xl-12">
                                             <div class="primary_input mb-35">
                                                 <label class="primary_input_label"
-                                                    for="about">{{ __('courses.Course') }}
-                                                    {{ __('courses.Outcomes') }} </label>
+                                                    for="about">{{ __('course.courses.form.outcomes') }} </label>
                                                 <textarea class="lms_summernote" name="outcomes" id="outcomesEdit" cols="30" rows="10"> </textarea>
                                             </div>
                                         </div>
@@ -611,8 +607,8 @@
                                             <select class="primary_select edit_category_id" name="category"
                                                 {{ $errors->has('category') ? 'autofocus' : '' }}>
                                                 <option
-                                                    data-display="{{ __('common.Select') }} {{ __('quiz.Category') }}"
-                                                    value="">{{ __('common.Select') }} {{ __('quiz.Category') }}
+                                                    data-display="{{ __('course.courses.form.select') }} {{ __('course.courses.form.category') }}"
+                                                    value="">{{ __('course.courses.form.select') }} {{ __('course.courses.form.category') }}
                                                     *
                                                 </option>
                                                 @foreach ($categories as $category)
@@ -626,9 +622,9 @@
                                             <select class="primary_select " name="sub_category" id="edit_subcategory_id"
                                                 {{ $errors->has('sub_category') ? 'autofocus' : '' }}>
                                                 <option
-                                                    data-display="{{ __('common.Select') }} {{ __('courses.Sub Category') }}"
-                                                    value="">{{ __('common.Select') }}
-                                                    {{ __('courses.Sub Category') }}
+                                                    data-display="{{ __('course.courses.form.select') }} {{ __('course.courses.form.sub_category') }}"
+                                                    value="">{{ __('course.courses.form.select') }}
+                                                    {{ __('course.courses.form.sub_category') }}
 
                                                 </option>
 
@@ -638,8 +634,8 @@
                                         <div class="col-xl-6 mt-30 quizBox" style="display: none">
                                             <select class="primary_select" name="quiz" id="quiz_edit_id"
                                                 {{ $errors->has('quiz') ? 'autofocus' : '' }}>
-                                                <option data-display="{{ __('common.Select') }} {{ __('quiz.Quiz') }}"
-                                                    value="">{{ __('common.Select') }} {{ __('quiz.Quiz') }}
+                                                <option data-display="{{ __('course.courses.form.select') }} {{ __('course.courses.form.quiz') }}"
+                                                    value="">{{ __('course.courses.form.select') }} {{ __('course.courses.form.quiz') }}
                                                     *
                                                 </option>
                                                 {{-- @foreach ($quizzes as $quiz)
@@ -652,8 +648,8 @@
                                             <select class="primary_select" id="levelEdit" name="level"
                                                 {{ $errors->has('level') ? 'autofocus' : '' }}>
                                                 <option
-                                                    data-display="{{ __('common.Select') }} {{ __('courses.Level') }}"
-                                                    value="">{{ __('common.Select') }} {{ __('courses.Level') }}
+                                                    data-display="{{ __('course.courses.form.select') }} {{ __('course.courses.form.level') }}"
+                                                    value="">{{ __('course.courses.form.select') }} {{ __('course.courses.form.level') }}
                                                     *
                                                 </option>
                                                 @foreach ($levels as $level)
@@ -668,9 +664,9 @@
                                             <select class="primary_select mb_30" name="language" id="languageEdit"
                                                 {{ $errors->has('language') ? 'autofocus' : '' }}>
                                                 <option
-                                                    data-display="{{ __('common.Select') }} {{ __('courses.Language') }}"
-                                                    value="">{{ __('common.Select') }}
-                                                    {{ __('courses.Language') }}
+                                                    data-display="{{ __('course.courses.form.select') }} {{ __('course.courses.form.language') }}"
+                                                    value="">{{ __('course.courses.form.select') }}
+                                                    {{ __('course.courses.form.language') }}
                                                     *
                                                 </option>
 
@@ -683,8 +679,8 @@
                                         <div class="col-xl-4 makeResize">
                                             <div class="primary_input mb-25">
                                                 <label class="primary_input_label"
-                                                    for="">{{ __('common.Duration') }}
-                                                    ({{ __('common.In Minute') }})
+                                                    for="">{{ __('course.courses.form.duration') }}
+                                                    ({{ __('course.courses.form.in_minute') }})
                                                     *</label>
                                                 <input class="primary_input_field" id="durationEdit" name="duration"
                                                     placeholder="-" min="0" step="any" type="number"
@@ -701,7 +697,7 @@
                                                     <input type="checkbox" id="edit_course_1">
                                                     <i class="slider round"></i>
                                                 </label>
-                                                <label>{{ __('courses.This course is a top course') }}</label>
+                                                <label>{{ __('course.courses.form.top_course') }}</label>
                                             </div>
                                         </div>
                                     </div>
@@ -713,13 +709,13 @@
                                                         value="1" id="editCourseFree">
                                                     <i class="slider round"></i>
                                                 </label>
-                                                <label>{{ __('courses.This course is a free course') }}</label>
+                                                <label>{{ __('course.courses.form.free_course') }}</label>
                                             </div>
                                         </div>
                                         <div class="col-xl-4" id="edit_price_div">
                                             <div class="primary_input mb-25">
                                                 <label class="primary_input_label"
-                                                    for="">{{ __('courses.Price') }}</label>
+                                                    for="">{{ __('course.courses.form.price') }}</label>
                                                 <input class="primary_input_field" name="price" id="priceEdit"
                                                     placeholder="-" value="" type="text">
                                             </div>
@@ -733,15 +729,15 @@
                                                         value="1" id="editCourseDiscount">
                                                     <i class="slider round"></i>
                                                 </label>
-                                                <label>{{ __('courses.This course has discounted price') }}</label>
+                                                <label>{{ __('course.courses.form.discounted_course') }}</label>
                                             </div>
                                         </div>
 
                                         <div class="col-xl-4" id="edit_discount_price_div">
                                             <div class="primary_input mb-25">
                                                 <label class="primary_input_label"
-                                                    for="">{{ __('courses.Discount') }}
-                                                    {{ __('courses.Price') }}</label>
+                                                    for="">{{ __('course.courses.form.discount') }}
+                                                    {{ __('course.courses.form.price') }}</label>
                                                 <input class="primary_input_field editDiscount" name="discount_price"
                                                     id="editDiscountPrice" placeholder="-" type="text">
                                             </div>
@@ -753,24 +749,24 @@
                                         <div class="col-xl-4 mt-25">
                                             <select class="primary_select category_id " name="host"
                                                 id="editCourseHost">
-                                                <option data-display="{{ __('courses.Course overview host') }} *"
-                                                    value="">{{ __('courses.Course overview host') }}
+                                                <option data-display="{{ __('course.courses.form.course_overview_host') }} *"
+                                                    value="">{{ __('course.courses.form.course_overview_host') }}
                                                 </option>
 
                                                 <option value="Youtube">
-                                                    {{ __('courses.Youtube') }}
+                                                    {{ __('course.courses.form.youtube') }}
                                                 </option>
                                                 <option value="Vimeo">
-                                                    {{ __('courses.Vimeo') }}
+                                                    {{ __('course.courses.form.vimeo') }}
                                                 </option>
                                                 @if (isModuleActive('AmazonS3'))
                                                     <option value="AmazonS3">
-                                                        {{ __('courses.Amazon S3') }}
+                                                        {{ __('course.courses.form.amazon_s3') }}
                                                     </option>
                                                 @endif
 
                                                 <option value="Self">
-                                                    {{ __('courses.Self Host') }}
+                                                    {{ __('course.courses.form.self_host') }}
                                                 </option>
 
 
@@ -779,12 +775,12 @@
                                         <div class="col-xl-8 ">
                                             <div class="input-effect videoUrl"
                                                 style="display:@if ((isset($course) && @$course->host != 'Youtube') || !isset($course)) none @endif">
-                                                <label>{{ __('courses.Video URL') }}
+                                                <label>{{ __('course.courses.form.video_url') }}
                                                     <span class="required_mark">*</span></label>
                                                 <input id="couseEditViewUrl"
                                                     class="primary_input_field youtubeVideo name{{ $errors->has('trailer_link') ? ' is-invalid' : '' }}"
                                                     type="text" name="trailer_link"
-                                                    placeholder="{{ __('courses.Video URL') }}" autocomplete="off"
+                                                    placeholder="{{ __('course.courses.form.video_url') }}" autocomplete="off"
                                                     value=" " {{ $errors->has('trailer_link') ? 'autofocus' : '' }}>
                                                 <span class="focus-border"></span>
                                                 @if ($errors->has('trailer_link'))
@@ -798,13 +794,13 @@
                                                 style="display: @if ((isset($course) && @$course->host != 'Vimeo') || !isset($course)) none @endif">
                                                 <div class="col-lg-12" id="">
                                                     <label class="primary_input_label"
-                                                        for="">{{ __('courses.Vimeo Video') }}</label>
+                                                        for="">{{ __('course.courses.form.vimeo_video') }}</label>
                                                     <select class="primary_select vimeoVideo" name="vimeo"
                                                         id="viemoEditCourse">
                                                         <option
-                                                            data-display="{{ __('common.Select') }} {{ __('courses.Video') }}"
-                                                            value="">{{ __('common.Select') }}
-                                                            {{ __('courses.Video') }}
+                                                        data-display="{{ __('course.courses.form.select') }} {{ __('course.courses.form.video') }}"
+                                                        value="">{{ __('course.courses.form.select') }}
+                                                            {{ __('course.courses.form.video') }}
                                                         </option>
                                                         @if (isset($video_list))
                                                             @foreach ($video_list as $video)
@@ -827,18 +823,18 @@
                                                 <div class="col-xl-12">
                                                     <div class="primary_input">
                                                         <label class="primary_input_label"
-                                                            for="">{{ __('courses.Video File') }}</label>
+                                                            for="">{{ __('course.courses.form.video_file') }}</label>
                                                         <div class="primary_file_uploader">
                                                             {{-- <input
                                                              class="primary-input filePlaceholder"
                                                              type="text"
 
-                                                             placeholder="{{__('courses.Browse Video file')}}"
+                                                             placeholder="{{ __('course.courses.form.browse_video_file') }}"
                                                              readonly="">
                                                          <button class="" type="button">
                                                              <label
                                                                  class="primary-btn small fix-gr-bg"
-                                                                 for="document_file_edit">{{__('common.Browse') }}</label>
+                                                                 for="document_file_edit">{{ __('course.courses.form.browse') }}</label>
                                                              <input type="file"
                                                                     class="d-none fileUpload"
                                                                     name="file"
@@ -866,17 +862,17 @@
                                         <div class="col-xl-6">
                                             <div class="primary_input mb-35">
                                                 <label class="primary_input_label"
-                                                    for="">{{ __('courses.Course Thumbnail') }}
-                                                    ({{ __('common.Max Image Size 1MB') }})
+                                                    for="">{{ __('course.courses.form.course_thumbnail') }}
+                                                    ({{ __('course.courses.form.max_image_size') }})
                                                     *</label>
                                                 <div class="primary_file_uploader">
                                                     <input class="primary-input filePlaceholder" type="text"
                                                         id=""
-                                                        placeholder="{{ __('courses.Browse Image file') }}"
+                                                        placeholder="{{ __('course.courses.form.browse_image_file') }}"
                                                         readonly="" {{ $errors->has('image') ? 'autofocus' : '' }}>
                                                     <button class="" type="button">
                                                         <label class="primary-btn small fix-gr-bg"
-                                                            for="document_file_1_edit_">{{ __('common.Browse') }}</label>
+                                                            for="document_file_1_edit_">{{ __('course.courses.form.browse') }}</label>
                                                         <input type="file" class="d-none fileUpload" name="image"
                                                             id="document_file_1_edit_">
                                                     </button>
@@ -886,15 +882,15 @@
                                         @if (\Illuminate\Support\Facades\Auth::user()->subscription_api_status == 1)
                                             <div class="col-xl-6">
                                                 <label class="primary_input_label"
-                                                    for="">{{ __('newsletter.Subscription List') }}
+                                                    for="">{{ __('course.courses.form.subscription_list') }}
                                                 </label>
                                                 <select class="primary_select" id="subscriptionEdit"
                                                     name="subscription_list"
                                                     {{ $errors->has('subscription_list') ? 'autofocus' : '' }}>
                                                     <option
-                                                        data-display="{{ __('common.Select') }} {{ __('newsletter.Subscription List') }}"
-                                                        value="">{{ __('common.Select') }}
-                                                        {{ __('newsletter.Subscription List') }}
+                                                        data-display="{{ __('course.courses.form.select') }} {{ __('course.courses.form.subscription_list') }}"
+                                                        value="">{{ __('course.courses.form.select') }}
+                                                        {{ __('course.courses.form.subscription_list') }}
 
                                                     </option>
                                                     @foreach ($sub_lists as $list)
@@ -913,7 +909,7 @@
                                         <div class="col-xl-12">
                                             <div class="primary_input mb-25">
                                                 <label class="primary_input_label"
-                                                    for="">{{ __('courses.Meta keywords') }}</label>
+                                                    for="">{{ __('course.courses.form.meta_keywords') }}</label>
                                                 <input class="primary_input_field" name="meta_keywords" id="editMetaKey"
                                                     placeholder="-" type="text">
                                             </div>
@@ -923,7 +919,7 @@
                                         <div class="col-xl-12">
                                             <div class="primary_input mb-25">
                                                 <label class="primary_input_label"
-                                                    for="">{{ __('courses.Meta description') }}</label>
+                                                    for="">{{ __('course.courses.form.meta_description') }}</label>
                                                 <textarea id="editMetaDetails" class="primary_input_field" name="meta_description" style="height: 200px"
                                                     rows="3"></textarea>
                                             </div>
@@ -932,8 +928,7 @@
                                     <div class="col-lg-12 text-center pt_15">
                                         <div class="d-flex justify-content-center">
                                             <button class="primary-btn semi_large2  fix-gr-bg" id="save_button_parent"
-                                                type="submit"><i class="ti-check"></i> {{ __('common.Update') }}
-                                                {{ __('courses.Course') }}
+                                                type="submit"><i class="ti-check"></i> {{ __('course.courses.form.update_course') }}
                                             </button>
                                         </div>
                                     </div>
@@ -959,6 +954,13 @@
 
     {{-- @include('affiliate.backend.my_affiliate-script') --}}
 
+    <script>
+        const course_ui = {
+            datatable: @json(__('common.datatable')),
+            messages: @json(__('course.courses.messages')),
+        };
+    </script>
+
     <script src="{{ asset('/Modules/CourseSetting/Resources/assets/js/course.js') }}"></script>
 
 
@@ -969,22 +971,22 @@
                 serverSide: true,
                 processing: true,
                 language: {
-                    loadingRecords: '&nbsp;',
+                    loadingRecords: course_ui.datatable.loading_records,
                     processing: `<div class="spinner-border text-primary"></div>`,
-                    "sProcessing": "Processcing...",
-                    "sLengthMenu": "Display _MENU_ Row",
-                    "sZeroRecords": "No Data Fount",
-                    "sInfo": "Display _START_ To _END_ From _TOTAL_ Records",
-                    "sInfoEmpty": "Display 0 To 0 From 0 Records",
-                    "sInfoFiltered": "(Filters _MAX_ Row)",
-                    "sInfoPostFix": "",
-                    "sSearch": "Search:",
-                    "sUrl": "",
+                    "sProcessing": course_ui.datatable.processing,
+                    "sLengthMenu": course_ui.datatable.length_menu,
+                    "sZeroRecords": course_ui.datatable.zero_records,
+                    "sInfo": course_ui.datatable.info,
+                    "sInfoEmpty": course_ui.datatable.info_empty,
+                    "sInfoFiltered": course_ui.datatable.info_filtered,
+                    "sInfoPostFix": course_ui.datatable.info_postfix,
+                    "sSearch": course_ui.datatable.search,
+                    "sUrl": course_ui.datatable.url,
                     "oPaginate": {
-                        "sFirst": "First",
-                        "sPrevious": "Previous",
-                        "sNext": "Next",
-                        "sLast": "Last"
+                        "sFirst": course_ui.datatable.first,
+                        "sPrevious": course_ui.datatable.previous,
+                        "sNext": course_ui.datatable.next,
+                        "sLast": course_ui.datatable.last
                     }
                 },
                 aaSorting: [
@@ -1085,14 +1087,14 @@
                 },
                 success: function(response) {
                     if (response.success) {
-                        toastr.success('Status updated successfully.');
+                        toastr.success(course_ui.messages.status_updated);
                     } else {
-                        toastr.error('Failed to update status.');
+                        toastr.error(course_ui.messages.status_update_failed);
                     }
                 },
                 error: function(xhr) {
                     console.error(xhr.responseText);
-                    toastr.error('An error occurred while updating the status.');
+                    toastr.error(course_ui.messages.status_update_error);
                 },
             });
         });
@@ -1109,7 +1111,9 @@
 
             if (!response.ok) {
                 const validationMessages = data.errors ? Object.values(data.errors).flat().join(' ') : '';
-                throw new Error(validationMessages || data.message || `เกิดข้อผิดพลาด (${response.status})`);
+                throw new Error(
+                    validationMessages || data.message || course_ui.messages.http_error.replace(':status', response.status)
+                );
             }
 
             return data;
@@ -1123,7 +1127,7 @@
             const allowedName = /\.(?:jpe?g|png)$/i.test(file.name);
             if ((!allowedTypes.includes(file.type) && !allowedName) || file.size > 2 * 1024 * 1024) {
                 input.value = '';
-                toastr.error('รองรับเฉพาะ JPG หรือ PNG ขนาดไม่เกิน 2 MB');
+                toastr.error(course_ui.messages.image_type_error);
                 return;
             }
 
@@ -1275,7 +1279,7 @@
                 const destroyUrl = "{{ route('course.destroy', ['id' => ':id']) }}".replace(':id', courseId);
 
 
-                if (confirm('Are you sure you want to delete this course?')) {
+                if (confirm(course_ui.messages.confirm_delete)) {
                     fetch(destroyUrl, {
                             method: 'DELETE',
                             headers: {
@@ -1292,7 +1296,7 @@
                                 // alert('Course deleted successfully!');
                                 // location.reload(); // Refresh the page or update the UI dynamically
                             } else {
-                                toastr.error('Error deleting the course.', {
+                                toastr.error(course_ui.messages.delete_error, {
                                     timeOut: 5000
                                 });
                             }
@@ -1390,9 +1394,9 @@
                         .then(response => response.json())
                         .then(data => {
                             if (data.message === 'success') {
-                                toastr.success('Status updated successfully!');
+                                toastr.success(course_ui.messages.status_updated);
                             } else {
-                                toastr.error('Failed to update status. Please try again.');
+                                toastr.error(course_ui.messages.status_update_failed);
                             }
                         })
                         .catch(error => console.error('Error:', error));
@@ -1402,7 +1406,7 @@
     </script>
     <script>
         function confirm_modal(deleteUrl) {
-            if (confirm("Are you sure you want to delete this category?")) {
+            if (confirm(course_ui.messages.confirm_delete)) {
                 fetch(deleteUrl, {
                         method: 'DELETE',
                         headers: {

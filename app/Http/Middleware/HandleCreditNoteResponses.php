@@ -23,11 +23,11 @@ final class HandleCreditNoteResponses
         } catch (CreditNoteDomainException $exception) {
             return $this->Error($request, $exception->ErrorCode(), __($exception->SafeTranslationKey()), $exception->StatusCode(), $exception);
         } catch (ValidationException $exception) {
-            return $this->Error($request, 'CREDIT_NOTE_VALIDATION_FAILED', 'The Credit Note request is invalid.', 422, $exception, $exception->errors());
+            return $this->Error($request, 'CREDIT_NOTE_VALIDATION_FAILED', __('credit-note.validation.invalid_request'), 422, $exception, $exception->errors());
         } catch (AuthorizationException $exception) {
-            return $this->Error($request, 'CREDIT_NOTE_FORBIDDEN', 'You are not authorised to perform this Credit Note action.', 403, $exception);
+            return $this->Error($request, 'CREDIT_NOTE_FORBIDDEN', __('credit-note.errors.forbidden'), 403, $exception);
         } catch (ModelNotFoundException $exception) {
-            return $this->Error($request, 'CREDIT_NOTE_NOT_FOUND', 'The requested Credit Note was not found.', 404, $exception);
+            return $this->Error($request, 'CREDIT_NOTE_NOT_FOUND', __('credit-note.errors.not_found'), 404, $exception);
         } catch (HttpResponseException $exception) {
             throw $exception;
         } catch (Throwable $exception) {
@@ -37,7 +37,7 @@ final class HandleCreditNoteResponses
                 'resource_id' => $request->route('credit_note')?->id ?? $request->route('credit_note'),
                 'exception_class_code' => get_class($exception),
             ]);
-            return $this->Error($request, 'CREDIT_NOTE_INTERNAL_ERROR', 'The Credit Note operation could not be completed.', 500, $exception);
+            return $this->Error($request, 'CREDIT_NOTE_INTERNAL_ERROR', __('credit-note.errors.internal'), 500, $exception);
         }
     }
 

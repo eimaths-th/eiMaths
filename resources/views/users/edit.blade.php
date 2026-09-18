@@ -4,21 +4,21 @@
          <form id="editdata" class="form" action="" method="POST">
              <div class="modal-content">
                  <div class="modal-header bg-primary">
-                     <h4 class="modal-title" id="exampleModalLongTitle"><i class="fas fa-user"></i> Edit User</h4>
-                     <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                     <h4 class="modal-title" id="exampleModalLongTitle"><i class="fas fa-user"></i> {{ __('user-access.users.modal.edit_title') }}</h4>
+                     <button type="button" class="close" data-bs-dismiss="modal" aria-label="{{ __('user-access.users.actions.close') }}">
                          <span aria-hidden="true">&times;</span>
                      </button>
                  </div>
                  <!-- Modal body -->
                  <div class="modal-body">
                      <div class="alert alert-danger alert-dismissible fade show" role="alert" style="display: none;">
-                         <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close">
+                         <button type="button" class="btn-close" data-dismiss="alert" aria-label="{{ __('user-access.users.actions.close') }}">
                              <span aria-hidden="true">&times;</span>
                          </button>
                      </div>
                      <div class="alert alert-success alert-dismissible fade show" role="alert" style="display: none;">
-                         <strong>Success!</strong> Users was edit successfully.
-                         <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close">
+                         <strong>{{ __('user-access.users.modal.edit_title') }}</strong>
+                         <button type="button" class="btn-close" data-dismiss="alert" aria-label="{{ __('user-access.users.actions.close') }}">
                              <span aria-hidden="true"></span>
                          </button>
                      </div>
@@ -26,21 +26,21 @@
                          <div class="row">
                              <div class="col-xs-12 col-sm-12 col-md-12">
                                  <div class="form-group">
-                                     <label for="Name"><i class="fas fa-user"></i> User Name:</label>
+                                     <label for="Name"><i class="fas fa-user"></i> {{ __('user-access.users.modal.name') }}:</label>
                                      <input type="text" class="form-control" name="name" id="editName"
                                          value="">
                                  </div>
                              </div>
                              <div class="col-xs-12 col-sm-12 col-md-12">
                                  <div class="form-group">
-                                     <label for="Name"><i class="fas fa-at"></i> Email:</label>
+                                     <label for="Name"><i class="fas fa-at"></i> {{ __('user-access.users.modal.email') }}:</label>
                                      <input type="text" class="form-control" name="email" id="editEmail"
                                          value="">
                                  </div>
                              </div>
                              <div class="col-xs-6 col-sm-6 col-md-6">
                                  <div class="form-group">
-                                     <strong><i class="fas fa-list-ol"></i> Centre:</strong>
+                                     <strong><i class="fas fa-list-ol"></i> {{ __('user-access.users.modal.centre') }}:</strong>
                                      <select style="width: 100%;"
                                          class="departmente select2 select2_single form-control" id="EditDepartment"
                                          name="edepartment" multiple="multiple">
@@ -66,7 +66,7 @@
                              </div>
                              <div class="col-xs-6 col-sm-6 col-md-6">
                                  <div class="form-group">
-                                     <strong><i class="fas fa-list-ol"></i> Department:</strong>
+                                     <strong><i class="fas fa-list-ol"></i> {{ __('user-access.users.modal.department') }}:</strong>
                                      <select style="width: 100%;" class="positions select2 select2_single form-control"
                                          id="EditPosition" name="eposition" multiple="multiple">
                                          {{--  @foreach ($position as $key)
@@ -80,14 +80,14 @@
                              </div>
                              <div class="col-xs-12 col-sm-12 col-md-12">
                                  <div class="form-group">
-                                     <label for="Name"><i class="fas fa-key"></i> Password:</label>
+                                     <label for="Name"><i class="fas fa-key"></i> {{ __('user-access.users.modal.password') }}:</label>
                                      <input type="password" class="form-control" name="epassword" required
                                          autocomplete="new-password" id="EditPassword">
                                  </div>
                              </div>
                              <div class="col-xs-12 col-sm-12 col-md-12">
                                  <div class="form-group">
-                                     <label for="Name"><i class="fas fa-key"></i> Confirm Password:</label>
+                                     <label for="Name"><i class="fas fa-key"></i> {{ __('user-access.users.modal.confirm_password') }}:</label>
                                      <input type="password" class="form-control" name="epassword_confirmation"
                                          id="EditPasswordC" required autocomplete="new-password">
                                  </div>
@@ -95,7 +95,7 @@
 
                              <div class="col-xs-12 col-sm-12 col-md-12">
                                  <div class="form-group">
-                                     <label for="Name"><i class="fas fa-user-lock"></i> Role:</label>
+                                     <label for="Name"><i class="fas fa-user-lock"></i> {{ __('user-access.users.modal.role') }}:</label>
                                      <select class="form-control" id="editRole" name="role">
                                      </select>
                                  </div>
@@ -103,12 +103,12 @@
 
                              <div class="col-xs-6 col-sm-6 col-md-6">
                                  <div class="form-group">
-                                     <strong><i class="fas fa-eye"></i> Disable:</strong>
+                                     <strong><i class="fas fa-eye"></i> {{ __('user-access.users.modal.disable') }}:</strong>
                                      <br />
                                      <div class="custom-control custom-switch">
                                          {{ Form::checkbox('status', '1', false, ['id' => 'ecustomCheckbox1', 'class' => 'custom-control-input name']) }}
                                          <label for="ecustomCheckbox1" class="custom-control-label">
-                                             Yes</label>
+                                             {{ __('user-access.users.modal.disabled') }}</label>
                                      </div>
 
                                  </div>
@@ -123,9 +123,9 @@
                  <!-- Modal footer -->
                  <div class="modal-footer">
                      <button type="button" class="btn btn-success" id="SubmitEditForm"><i
-                             class="fas fa-download"></i> Save</button>
+                             class="fas fa-download"></i> {{ __('user-access.users.actions.save') }}</button>
                      <button type="button" class="btn btn-danger modelClose" data-bs-dismiss="modal"><i
-                             class="fas fa-door-closed"></i> Close</button>
+                             class="fas fa-door-closed"></i> {{ __('user-access.users.actions.close') }}</button>
                  </div>
              </div>
          </form>

@@ -44,26 +44,26 @@
 
                         @can('product-edit')
                             <button type="button" class="btn btn-success" id="AddStock">
-                                <i class="fa-solid fa-plus"></i> รับเข้า Stock
+                                <i class="fa-solid fa-plus"></i> {{ __('products.actions.receive_stock') }}
                             </button>
                         @else
                             <span class="d-inline-block" tabindex="0" data-toggle="tooltip" data-placement="bottom"
-                                title="คุณไม่มีสิทธิ์ในส่วนนี้">
+                                title="{{ __('common.feedback.permission_denied') }}">
                                 <button type="button" class="btn btn-success disabled">
-                                    <i class="fa-solid fa-plus"></i> รับเข้า Stock
+                                    <i class="fa-solid fa-plus"></i> {{ __('products.actions.receive_stock') }}
                                 </button>
                             </span>
                         @endcan &nbsp;
 
                         @can('product-edit')
                             <button type="button" class="btn btn-danger" id="RmStock">
-                                <i class="fa-solid fa-minus"></i> จ่ายออก
+                                <i class="fa-solid fa-minus"></i> {{ __('products.actions.issue_stock') }}
                             </button>
                         @else
                             <span class="d-inline-block" tabindex="0" data-toggle="tooltip" data-placement="bottom"
-                                title="คุณไม่มีสิทธิ์ในส่วนนี้">
+                                title="{{ __('common.feedback.permission_denied') }}">
                                 <button type="button" class="btn btn-danger disabled">
-                                    <i class="fa-solid fa-minus"></i> จ่ายออก
+                                    <i class="fa-solid fa-minus"></i> {{ __('products.actions.issue_stock') }}
                                 </button>
                             </span>
                         @endcan
@@ -76,7 +76,7 @@
 
                         {{-- btn print product --}}
                         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#printOptionsModal">
-                            <i class="fas fa-print"></i> Print Product
+                            <i class="fas fa-print"></i> {{ __('products.actions.print_products') }}
                         </button>
 
                         <!-- Print Options Modal -->
@@ -85,19 +85,19 @@
                             <div class="modal-dialog" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header bg-primary text-white">
-                                        <h5 class="modal-title" id="printOptionsModalLabel">Print Options</h5>
+                                        <h5 class="modal-title" id="printOptionsModalLabel">{{ __('products.filters.print_options') }}</h5>
                                         <button type="button" class="close text-white" data-dismiss="modal"
-                                            aria-label="Close">
+                                            aria-label="{{ __('common.actions.close') }}">
                                             <span aria-hidden="true">&times;</span>
                                         </button>
                                     </div>
                                     <form id="printOptionsForm" action="{{ route('products.print') }}" method="GET">
                                         <div class="modal-body">
                                             <div class="form-group">
-                                                <label for="centre">Select Centre</label>
+                                                <label for="centre">{{ __('products.filters.select_centre') }}</label>
                                                 <select class="form-control" id="centre" name="centre" required>
                                                     @can('all-centre')
-                                                        <option value="all">All Centres</option>
+                                                        <option value="all">{{ __('products.filters.all_centres') }}</option>
                                                         @foreach ($centre as $dept)
                                                             <option value="{{ $dept->id }}">{{ $dept->name }}</option>
                                                         @endforeach
@@ -108,19 +108,19 @@
                                                 </select>
                                             </div>
                                             <div class="form-group">
-                                                <label>Select Code Type</label>
+                                                <label>{{ __('products.filters.select_code_type') }}</label>
                                                 <div class="form-check">
                                                     <input class="form-check-input" type="radio" name="code_type"
                                                         id="barcode" value="barcode" checked>
                                                     <label class="form-check-label" for="barcode">
-                                                        Barcode
+                                                        {{ __('products.actions.barcode') }}
                                                     </label>
                                                 </div>
                                                 <div class="form-check">
                                                     <input class="form-check-input" type="radio" name="code_type"
                                                         id="qrcode" value="qrcode">
                                                     <label class="form-check-label" for="qrcode">
-                                                        QR Code
+                                                        {{ __('products.actions.qrcode') }}
                                                     </label>
                                                 </div>
                                             </div>
@@ -128,8 +128,8 @@
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-secondary"
-                                                data-dismiss="modal">Cancel</button>
-                                            <button type="submit" class="btn btn-primary">Print</button>
+                                                data-dismiss="modal">{{ __('common.actions.cancel') }}</button>
+                                            <button type="submit" class="btn btn-primary">{{ __('products.actions.print') }}</button>
                                         </div>
                                     </form>
                                 </div>
@@ -138,24 +138,23 @@
                         &nbsp;
                         @can('product-create')
                             <button type="button" class="btn btn-success" id="CreateButton">
-                                <i class="fas fa-cubes"></i> Add Acceseries </button>
+                                <i class="fas fa-cubes"></i> {{ __('products.actions.add_accessory') }} </button>
                         @else
                             <span class="d-inline-block" tabindex="0" data-toggle="tooltip" data-placement="bottom"
-                                title="คุณไม่มีสิทธิ์ในส่วนนี้">
+                                title="{{ __('common.feedback.permission_denied') }}">
                                 <button type="button" class="btn btn-success disabled">
-                                    <i class="fas fa-cubes"></i> Add Acceseries</button>
+                                    <i class="fas fa-cubes"></i> {{ __('products.actions.add_accessory') }}</button>
                             </span>
                         @endcan &nbsp;
 
                         @can('product-delete')
                             <button type="button" class="btn btn-danger delete_all_button"><i class="fa fa-trash"></i>
-                                Delete
-                                All</button>
+                                {{ __('products.actions.delete_all') }}</button>
                         @else
                             <span class="d-inline-block" tabindex="0" data-toggle="tooltip" data-placement="bottom"
-                                title="คุณไม่มีสิทธิ์ในส่วนนี้">
-                                <button type="button" class="btn btn-danger disabled"><i class="fa fa-trash"></i> Delete
-                                    All</button>
+                                title="{{ __('common.feedback.permission_denied') }}">
+                                <button type="button" class="btn btn-danger disabled"><i class="fa fa-trash"></i>
+                                    {{ __('products.actions.delete_all') }}</button>
                             </span>
                         @endcan
                     </ol>
@@ -172,10 +171,10 @@
                 <div class="col-12">
                     <div class="card card-primary">
                         <div class="card-header">
-                            <h3 class="card-title"><i class="fas fa-cubes"></i> Education Acceseries</h3>
+                            <h3 class="card-title"><i class="fas fa-cubes"></i> {{ __('products.title') }}</h3>
                             <div class="card-tools">
                                 <button type="button" class="btn btn-tool" data-card-widget="collapse"
-                                    title="Collapse">
+                                    title="{{ __('common.actions.collapse') }}">
                                     <i class="fas fa-minus"></i>
                                 </button>
                                 {{-- <button type="button" class="btn btn-tool" data-card-widget="remove" title="Remove">
@@ -204,11 +203,11 @@
                                     <thead>
                                         <tr>
                                             <th><input type="checkbox" id="check-all" class="flat"></th>
-                                            <th>Code</th>
-                                            <th>Branch</th>
-                                            <th>Name</th>
-                                            <th>In Stock</th>
-                                            <th>Unit</th>
+                                            <th>{{ __('products.table.code') }}</th>
+                                            <th>{{ __('products.table.branch') }}</th>
+                                            <th>{{ __('products.table.name') }}</th>
+                                            <th>{{ __('products.table.in_stock') }}</th>
+                                            <th>{{ __('products.table.unit') }}</th>
                                             <th width="320px"></th>
                                         </tr>
                                     </thead>
@@ -236,8 +235,8 @@
         <div class="modal-dialog modal-xxl" role="document">
             <div class="modal-content">
                 <div class="modal-header bg-primary">
-                    <h5 class="modal-title" id="userModalLabel"> <i class="fas fa-cubes"></i> Stock History</h5>
-                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <h5 class="modal-title" id="userModalLabel"> <i class="fas fa-cubes"></i> {{ __('products.table.stock_history') }}</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="{{ __('common.actions.close') }}">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
@@ -245,15 +244,15 @@
                     <table id="users-table" class="table">
                         <thead>
                             <tr>
-                                <th>วันที่ทำรายการ</th>
-                                <th>สาขาต้นทาง</th>
-                                <th>ปลายทาง</th>
-                                <th>ชื่อ</th>
-                                <th>Accessories</th>
-                                <th>รับเข้า</th>
-                                <th>จ่ายออก</th>
-                                <th>คงเหลือ</th>
-                                <th>ผู้ทำรายการ</th>
+                                <th>{{ __('products.table.transaction_date') }}</th>
+                                <th>{{ __('products.table.source_centre') }}</th>
+                                <th>{{ __('products.table.destination') }}</th>
+                                <th>{{ __('products.table.name') }}</th>
+                                <th>{{ __('products.table.accessory') }}</th>
+                                <th>{{ __('products.table.received') }}</th>
+                                <th>{{ __('products.table.issued') }}</th>
+                                <th>{{ __('products.table.remaining') }}</th>
+                                <th>{{ __('products.table.operator') }}</th>
                             </tr>
                         </thead>
                     </table>
@@ -278,5 +277,9 @@
 @endsection
 
 @section('script')
+    <script>
+        const product_ui = @json(__('products'));
+        const common_ui = @json(__('common'));
+    </script>
     @include('products.script')
 @endsection

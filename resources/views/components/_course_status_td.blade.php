@@ -13,5 +13,5 @@
         <i class="slider round"></i>
     </label>
 @else
-    {{ $query->status == 1 ? 'Approved' : 'Pending' }}
+    {{ $query->status == 1 ? __('course.courses.modal.active') : __('course.courses.modal.inactive') }}
 @endif

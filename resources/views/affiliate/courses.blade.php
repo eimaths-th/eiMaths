@@ -826,8 +826,8 @@
     <div id="loading" style="display: none;">
         <div class="loading-content">
             <div class="spinner"></div>
-            <p class="text-white mb-0 mt-2" style="font-size: 1.1rem; font-weight: 600;">กำลังบันทึกข้อมูลการจอง</p>
-            <p class="text-white mb-0" style="font-size: 0.88rem; opacity: 0.9;">กรุณารอสักครู่...</p>
+            <p class="text-white mb-0 mt-2" style="font-size: 1.1rem; font-weight: 600;">{{ __('course-website.loading.title') }}</p>
+            <p class="text-white mb-0" style="font-size: 0.88rem; opacity: 0.9;">{{ __('course-website.loading.message') }}</p>
         </div>
     </div>
 
@@ -840,9 +840,9 @@
         <div class="affiliate-welcome-bar">
             <div class="container">
                 <i class="fas fa-gift text-warning me-2"></i>
-                <span>คุณได้รับสิทธิพิเศษผ่านคำแนะนำจากพาร์ทเนอร์</span>
+                <span>{{ __('course-website.ribbon.partner_benefit') }}</span>
                 <span class="ref-badge">Ref: {{ $ref }}</span>
-                <span>— รับคำปรึกษาและสิทธิ์ประเมินทักษะคณิตศาสตร์ฟรี!</span>
+                <span>{{ __('course-website.ribbon.free_consultation') }}</span>
             </div>
         </div>
     @endif
@@ -854,64 +854,64 @@
                 <div class="hero-copy">
                     <div class="hero-badge-tag">
                         <i class="fas fa-award"></i>
-                        <span>สถาบันคณิตศาสตร์คิดวิเคราะห์ eiMaths มาตรฐานสิงคโปร์</span>
+                        <span>{{ __('course-website.hero.badge') }}</span>
                     </div>
                     <h1 class="hero-title">
-                        คอร์สเรียนคณิตศาสตร์ <span class="text-gradient">พัฒนาทักษะสู่ความเป็นเลิศ</span>
+                        {{ __('course-website.hero.title') }} <span class="text-gradient">{{ __('course-website.hero.title_highlight') }}</span>
                     </h1>
                     <p class="hero-subtitle">
-                        เรียนรู้คณิตศาสตร์ด้วยกระบวนการ CPA Approach ที่เน้นความเข้าใจจากรูปธรรมสู่ภาพและสัญลักษณ์ ปูพื้นฐานแน่น คิดวิเคราะห์เป็น และพร้อมรับมือทุกโจทย์แข่งขัน
+                        {{ __('course-website.hero.subtitle') }}
                     </p>
 
                     <div class="hero-features">
                         <div class="hero-feature-item">
                             <i class="fas fa-shapes"></i>
-                            <span>สื่อการสอนรูปธรรม CPA</span>
+                            <span>{{ __('course-website.hero.features.cpa') }}</span>
                         </div>
                         <div class="hero-feature-item">
                             <i class="fas fa-brain"></i>
-                            <span>พัฒนาตรรกะและการคิดวิเคราะห์</span>
+                            <span>{{ __('course-website.hero.features.analysis') }}</span>
                         </div>
                         <div class="hero-feature-item">
                             <i class="fas fa-chalkboard-teacher"></i>
-                            <span>ครูผู้สอนผ่านการรับรองมาตรฐาน</span>
+                            <span>{{ __('course-website.hero.features.teachers') }}</span>
                         </div>
                         <div class="hero-feature-item">
                             <i class="fas fa-chart-line"></i>
-                            <span>ประเมินพัฒนาการรายบุคคล</span>
+                            <span>{{ __('course-website.hero.features.assessment') }}</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="hero-slider-wrap" data-hero-slider aria-label="บรรยากาศการเรียน eiMaths">
-                    <div class="hero-photo-label"><i class="fas fa-camera"></i> บรรยากาศการเรียนจริง</div>
+                <div class="hero-slider-wrap" data-hero-slider aria-label="{{ __('course-website.hero.slider_label') }}">
+                    <div class="hero-photo-label"><i class="fas fa-camera"></i> {{ __('course-website.hero.photo_label') }}</div>
                     <div class="hero-slider">
                         <figure class="hero-slide is-active" aria-hidden="false">
                             <img src="{{ asset('uploads/affiliate/hero/eimaths-teacher-high-five.webp') }}"
-                                alt="ครูและนักเรียน eiMaths ทำกิจกรรมร่วมกัน" width="1600" height="1067"
+                                alt="{{ __('course-website.hero.image_1_alt') }}" width="1600" height="1067"
                                 loading="eager" fetchpriority="high" decoding="async">
                         </figure>
                         <figure class="hero-slide" aria-hidden="true">
                             <img src="{{ asset('uploads/affiliate/hero/eimaths-class-thumbs-up.webp') }}"
-                                alt="ครูและนักเรียนในคลาส eiMaths" width="1600" height="1067"
+                                alt="{{ __('course-website.hero.image_2_alt') }}" width="1600" height="1067"
                                 loading="lazy" decoding="async">
                         </figure>
                         <figure class="hero-slide" aria-hidden="true">
                             <img src="{{ asset('uploads/affiliate/hero/eimaths-cpa-shapes.webp') }}"
-                                alt="นักเรียนอนุบาลเรียนรู้รูปทรงด้วยสื่อ CPA" width="1600" height="1067"
+                                alt="{{ __('course-website.hero.image_3_alt') }}" width="1600" height="1067"
                                 loading="lazy" decoding="async">
                         </figure>
                         <figure class="hero-slide" aria-hidden="true">
                             <img src="{{ asset('uploads/affiliate/hero/eimaths-student-group.webp') }}"
-                                alt="กลุ่มนักเรียน eiMaths เรียนคณิตศาสตร์ร่วมกัน" width="1600" height="1067"
+                                alt="{{ __('course-website.hero.image_4_alt') }}" width="1600" height="1067"
                                 loading="lazy" decoding="async">
                         </figure>
                     </div>
-                    <div class="hero-slider-dots" role="group" aria-label="เลือกภาพบรรยากาศการเรียน">
-                        <button type="button" class="hero-slider-dot is-active" data-slide-index="0" aria-label="ดูภาพที่ 1" aria-current="true"></button>
-                        <button type="button" class="hero-slider-dot" data-slide-index="1" aria-label="ดูภาพที่ 2"></button>
-                        <button type="button" class="hero-slider-dot" data-slide-index="2" aria-label="ดูภาพที่ 3"></button>
-                        <button type="button" class="hero-slider-dot" data-slide-index="3" aria-label="ดูภาพที่ 4"></button>
+                    <div class="hero-slider-dots" role="group" aria-label="{{ __('course-website.hero.dots_label') }}">
+                        <button type="button" class="hero-slider-dot is-active" data-slide-index="0" aria-label="{{ __('course-website.hero.dot_label', ['number' => 1]) }}" aria-current="true"></button>
+                        <button type="button" class="hero-slider-dot" data-slide-index="1" aria-label="{{ __('course-website.hero.dot_label', ['number' => 2]) }}"></button>
+                        <button type="button" class="hero-slider-dot" data-slide-index="2" aria-label="{{ __('course-website.hero.dot_label', ['number' => 3]) }}"></button>
+                        <button type="button" class="hero-slider-dot" data-slide-index="3" aria-label="{{ __('course-website.hero.dot_label', ['number' => 4]) }}"></button>
                     </div>
                 </div>
             </div>
@@ -924,26 +924,26 @@
         <div class="filter-section">
             <div class="row g-3 align-items-center">
                 <div class="col-lg-8">
-                    <div class="category-tabs" id="categoryTabs" role="group" aria-label="กรองคอร์สตามระดับชั้น">
+                    <div class="category-tabs" id="categoryTabs" role="group" aria-label="{{ __('course-website.filters.aria_label') }}">
                         <button type="button" class="category-tab-btn active" data-category="all" aria-pressed="true">
-                            <i class="fas fa-th-large"></i> ทั้งหมด
+                            <i class="fas fa-th-large"></i> {{ __('course-website.filters.all') }}
                         </button>
                         <button type="button" class="category-tab-btn" data-category="kindergarten" aria-pressed="false">
-                            <i class="fas fa-shapes"></i> อนุบาล (K1 - K2)
+                            <i class="fas fa-shapes"></i> {{ __('course-website.filters.kindergarten') }}
                         </button>
                         <button type="button" class="category-tab-btn" data-category="primary_lower" aria-pressed="false">
-                            <i class="fas fa-pencil-alt"></i> ประถมต้น (P1 - P3)
+                            <i class="fas fa-pencil-alt"></i> {{ __('course-website.filters.primary_lower') }}
                         </button>
                         <button type="button" class="category-tab-btn" data-category="primary_upper" aria-pressed="false">
-                            <i class="fas fa-calculator"></i> ประถมปลาย (P4 - P6)
+                            <i class="fas fa-calculator"></i> {{ __('course-website.filters.primary_upper') }}
                         </button>
                     </div>
                 </div>
                 <div class="col-lg-4">
                     <div class="search-box-wrap">
                         <i class="fas fa-search"></i>
-                        <label for="courseSearchInput" class="visually-hidden">ค้นหาชื่อคอร์สหรือระดับชั้น</label>
-                        <input type="search" id="courseSearchInput" placeholder="ค้นหาชื่อคอร์ส หรือระดับชั้น..." autocomplete="off">
+                        <label for="courseSearchInput" class="visually-hidden">{{ __('course-website.filters.search_label') }}</label>
+                        <input type="search" id="courseSearchInput" placeholder="{{ __('course-website.filters.search_placeholder') }}" autocomplete="off">
                     </div>
                 </div>
             </div>
@@ -953,11 +953,11 @@
         <div class="courses-main-container">
             <div class="courses-section-header">
                 <div>
-                    <h2 class="fw-bold mb-1" style="color: #0F172A; font-size: 1.5rem;">คอร์สเรียนทั้งหมด</h2>
-                    <p class="text-muted mb-0" style="font-size: 0.9rem;">เลือกคอร์สที่ตรงกับระดับชั้นและเป้าหมายของน้อง</p>
+                    <h2 class="fw-bold mb-1" style="color: #0F172A; font-size: 1.5rem;">{{ __('course-website.courses.title') }}</h2>
+                    <p class="text-muted mb-0" style="font-size: 0.9rem;">{{ __('course-website.courses.subtitle') }}</p>
                 </div>
                 <div class="courses-result-count">
-                    พร้อมให้เรียน <span id="activeCoursesCount">{{ method_exists($courses, 'total') ? $courses->total() : (is_countable($courses) ? count($courses) : 0) }}</span> คอร์ส
+                    {{ __('course-website.courses.available_prefix') }} <span id="activeCoursesCount">{{ method_exists($courses, 'total') ? $courses->total() : (is_countable($courses) ? count($courses) : 0) }}</span> {{ __('course-website.courses.available_suffix') }}
                 </div>
             </div>
 
@@ -976,29 +976,29 @@
                             // Detect Level Category for Filtering (from DB category_id & Title keywords)
                             $catId = $course->category_id ?? null;
                             $catClass = 'cat-general';
-                            $levelLabel = 'หลักสูตร eiMaths';
+                            $levelLabel = __('course-website.courses.level_general');
 
                             if ($catId == 4 || preg_match('/K[1-4]|KINDER|อนุบาล/i', $course->title)) {
                                 $catClass = 'cat-kindergarten';
-                                $levelLabel = 'อนุบาล K1 - K2';
+                                $levelLabel = __('course-website.courses.level_kindergarten');
                             } elseif ($catId == 1 || preg_match('/P[1-3]|PRIMARY\s*[1-3]|ประถม\s*[1-3]|ประถมต้น/i', $course->title)) {
                                 $catClass = 'cat-primary_lower';
-                                $levelLabel = 'ประถมต้น (P1 - P3)';
+                                $levelLabel = __('course-website.courses.level_primary_lower');
                             } elseif ($catId == 2 || preg_match('/P[4-6]|PRIMARY\s*[4-6]|ประถม\s*[4-6]|ประถมปลาย/i', $course->title)) {
                                 $catClass = 'cat-primary_upper';
-                                $levelLabel = 'ประถมปลาย (P4 - P6)';
+                                $levelLabel = __('course-website.courses.level_primary_upper');
                             }
 
                             $aboutText = trim(preg_replace('/\s+/u', ' ', strip_tags((string) ($course->about ?? ''))));
                             $outcomesText = trim(preg_replace('/\s+/u', ' ', strip_tags((string) ($course->affiliate_outcomes ?? ''))));
                             $requirementsText = trim(preg_replace('/\s+/u', ' ', strip_tags((string) ($course->affiliate_requirements ?? ''))));
-                            $aboutText = $aboutText ?: 'หลักสูตรคิดวิเคราะห์ ปูพื้นฐาน และฝึกแก้โจทย์ปัญหา';
-                            $outcomesText = $outcomesText ?: 'พัฒนาตรรกะด้วยสื่อรูปธรรม CPA มาตรฐานสิงคโปร์';
-                            $requirementsText = $requirementsText ?: 'คลาสกลุ่มเล็ก ดูแลใกล้ชิด และมีชุดสื่อการเรียน';
+                            $aboutText = $aboutText ?: __('course-website.courses.fallback_about');
+                            $outcomesText = $outcomesText ?: __('course-website.courses.fallback_outcomes');
+                            $requirementsText = $requirementsText ?: __('course-website.courses.fallback_requirements');
                             $deliveryLabel = match ((int) $course->mode_of_delivery) {
-                                1 => 'เรียนออนไลน์',
-                                2 => 'เรียนทางไกล',
-                                default => 'เรียนที่สาขา',
+                                1 => __('course-website.courses.delivery_online'),
+                                2 => __('course-website.courses.delivery_distance'),
+                                default => __('course-website.courses.delivery_branch'),
                             };
                             $searchText = mb_strtolower(implode(' ', [
                                 $displayTitle,
@@ -1016,7 +1016,7 @@
                                     <span class="course-level-badge">
                                         <i class="fas fa-graduation-cap"></i> {{ $levelLabel }}
                                     </span>
-                                    <img src="{{ $imgSrc }}" alt="ภาพหน้าปกคอร์ส {{ $displayTitle }}" loading="lazy" onerror="this.src='{{ asset('uploads/ei-defult.jpg') }}';">
+                                    <img src="{{ $imgSrc }}" alt="{{ __('course-website.courses.cover_alt', ['title' => $displayTitle]) }}" loading="lazy" onerror="this.src='{{ asset('uploads/ei-defult.jpg') }}';">
                                     <div class="course-price-badge-top">
                                         {{ number_format($course->price) }} ฿
                                     </div>
@@ -1052,7 +1052,7 @@
                                                 data-price="{{ $course->price }}"
                                                 data-price-formatted="{{ number_format($course->price) }} ฿">
                                             <i class="fas fa-calendar-check"></i>
-                                            <span>สมัคร / จองคอร์สนี้</span>
+                                            <span>{{ __('course-website.courses.book_register') }}</span>
                                         </button>
                                     </div>
                                 </div>
@@ -1064,8 +1064,8 @@
                         <div class="no-courses-icon-wrap">
                             <i class="fas fa-search"></i>
                         </div>
-                        <h4 class="fw-bold text-dark mb-2">ไม่พบคอร์สเรียนที่เปิดรับสมัคร</h4>
-                        <p class="text-muted mb-0">กรุณากลับมาตรวจสอบอีกครั้ง หรือติดต่อแอดมินเพื่อสอบถามข้อมูลเพิ่มเติม</p>
+                        <h4 class="fw-bold text-dark mb-2">{{ __('course-website.courses.empty_title') }}</h4>
+                        <p class="text-muted mb-0">{{ __('course-website.courses.empty_message') }}</p>
                     </div>
                 @endif
             </div>
@@ -1075,10 +1075,10 @@
                 <div class="no-courses-icon-wrap">
                     <i class="fas fa-search-minus"></i>
                 </div>
-                <h4 class="fw-bold text-dark mb-2">ไม่พบคอร์สที่ตรงกับเงื่อนไขการค้นหา</h4>
-                <p class="text-muted mb-3">ลองเปลี่ยนคำค้นหา หรือเลือกระดับชั้นอื่นๆ ด้านบน</p>
+                <h4 class="fw-bold text-dark mb-2">{{ __('course-website.courses.filter_empty_title') }}</h4>
+                <p class="text-muted mb-3">{{ __('course-website.courses.filter_empty_message') }}</p>
                 <button type="button" class="btn btn-outline-warning rounded-pill px-4" id="btnResetFilter">
-                    <i class="fas fa-redo me-1"></i> ดูคอร์สทั้งหมด
+                    <i class="fas fa-redo me-1"></i> {{ __('course-website.courses.reset') }}
                 </button>
             </div>
 
@@ -1098,28 +1098,28 @@
                 <div class="row g-4">
                     <!-- Column 1: Logo & About -->
                     <div class="col-lg-4 text-center text-lg-start">
-                        <img src="{{ asset('images/logo.png') }}" alt="eiMaths-TH Logo" class="mb-3" style="max-width: 170px; height: auto;">
-                        <p class="footer-text">{{ $footer->description ?? 'สถาบันคณิตศาสตร์คิดวิเคราะห์ eiMaths มุ่งเน้นการสอนเพื่อพัฒนาความเข้าใจและทักษะการแก้โจทย์ปัญหาเชิงลึก' }}</p>
+                        <img src="{{ asset('images/logo.png') }}" alt="{{ __('course-website.footer.logo_alt') }}" class="mb-3" style="max-width: 170px; height: auto;">
+                        <p class="footer-text">{{ $footer->description ?? __('course-website.footer.about_fallback') }}</p>
                     </div>
 
                     <!-- Column 2: Info -->
                     <div class="col-lg-4 text-center text-lg-start">
-                        <h5 class="footer-title">{{ $footer->title ?? 'ติดต่อเรา' }}</h5>
-                        <div class="footer-text">{{ $footer->description2 ?? 'ยินดีให้คำปรึกษาและทดสอบวัดระดับความรู้ทางคณิตศาสตร์ฟรีสำหรับนักเรียนทุกระดับชั้น' }}</div>
+                        <h5 class="footer-title">{{ $footer->title ?? __('course-website.footer.contact_title') }}</h5>
+                        <div class="footer-text">{{ $footer->description2 ?? __('course-website.footer.contact_fallback') }}</div>
                     </div>
 
                     <!-- Column 3: Social Media -->
                     <div class="col-lg-4 text-center text-lg-start">
-                        <h5 class="footer-title">ช่องทางติดตามข่าวสาร</h5>
-                        <p class="footer-text mb-3">ติดตามเทคนิคคณิตศาสตร์และกิจกรรมพิเศษจาก eiMaths</p>
+                        <h5 class="footer-title">{{ __('course-website.footer.social_title') }}</h5>
+                        <p class="footer-text mb-3">{{ __('course-website.footer.social_description') }}</p>
                         <div class="social-links justify-content-center justify-content-lg-start">
-                            <a href="https://www.facebook.com/eimaths.th/?locale=th_TH" target="_blank" rel="noopener noreferrer" class="social-link" title="Facebook" aria-label="ติดตาม eiMaths บน Facebook">
+                            <a href="https://www.facebook.com/eimaths.th/?locale=th_TH" target="_blank" rel="noopener noreferrer" class="social-link" title="Facebook" aria-label="{{ __('course-website.footer.facebook_aria') }}">
                                 <i class="fab fa-facebook-f"></i>
                             </a>
-                            <a href="https://www.youtube.com/channel/UCiD8a78ZN6SNQViVmG1St0A" target="_blank" rel="noopener noreferrer" class="social-link" title="YouTube" aria-label="ติดตาม eiMaths บน YouTube">
+                            <a href="https://www.youtube.com/channel/UCiD8a78ZN6SNQViVmG1St0A" target="_blank" rel="noopener noreferrer" class="social-link" title="YouTube" aria-label="{{ __('course-website.footer.youtube_aria') }}">
                                 <i class="fab fa-youtube"></i>
                             </a>
-                            <a href="https://www.tiktok.com/@eimaths.th" target="_blank" rel="noopener noreferrer" class="social-link" title="TikTok" aria-label="ติดตาม eiMaths บน TikTok">
+                            <a href="https://www.tiktok.com/@eimaths.th" target="_blank" rel="noopener noreferrer" class="social-link" title="TikTok" aria-label="{{ __('course-website.footer.tiktok_aria') }}">
                                 <i class="fab fa-tiktok"></i>
                             </a>
                         </div>
@@ -1129,7 +1129,7 @@
                 <hr class="footer-divider">
 
                 <div class="copyright">
-                    <p class="mb-0">© {{ date('Y') }} eiMaths Thailand. สงวนลิขสิทธิ์ทุกประการ | ระบบการเรียนการสอนคณิตศาสตร์</p>
+                    <p class="mb-0">© {{ date('Y') }} eiMaths Thailand. {{ __('course-website.footer.copyright') }}</p>
                 </div>
             </div>
         </div>
@@ -1141,6 +1141,21 @@
 @endsection
 
 @section('script')
+    @php
+        $course_website_ui = [
+            'registered_title_prefix' => __('course-website.messages.registered_title_prefix'),
+            'period_placeholder' => __('course-website.messages.period_placeholder'),
+            'saving' => __('course-website.messages.saving'),
+            'submit' => __('course-website.booking.submit'),
+            'cannot_process' => __('course-website.messages.cannot_process'),
+            'check_input' => __('course-website.messages.check_input'),
+            'unexpected_error' => __('course-website.messages.unexpected_error'),
+            'server_error' => __('course-website.messages.server_error'),
+        ];
+    @endphp
+    <script>
+        const course_website_ui = {!! json_encode($course_website_ui, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) !!};
+    </script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const slider = document.querySelector('[data-hero-slider]');
@@ -1261,7 +1276,7 @@
                     // Update UI Display Elements in modal
                     $('#modalCourseTitleDisplay').text(title);
                     $('#modalCoursePriceDisplay').text(priceFormatted);
-                    $('#purchaseModalLabel').text('ลงทะเบียน: ' + title);
+                    $('#purchaseModalLabel').text(course_website_ui.registered_title_prefix + title);
 
                     // Hide open modals
                     document.querySelectorAll('.modal.show').forEach(el => {
@@ -1370,7 +1385,7 @@
                         }
                     });
                 } else {
-                    $('#teaching_period').html('<option value="">-- เลือกช่วงเวลา --</option>');
+                    $('#teaching_period').html('<option value="">' + course_website_ui.period_placeholder + '</option>');
                 }
             });
         });
@@ -1384,7 +1399,7 @@
             // Show loading overlay
             document.getElementById('loading').style.display = 'flex';
             document.getElementById('submitForm').disabled = true;
-            document.getElementById('submitForm').innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> กำลังบันทึก...';
+            document.getElementById('submitForm').innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> ' + course_website_ui.saving;
 
             const formData = new FormData(this);
             const departmentSelect = this.querySelector('[name="department_id"]');
@@ -1406,7 +1421,7 @@
                 .then(data => {
                     document.getElementById('loading').style.display = 'none';
                     document.getElementById('submitForm').disabled = false;
-                    document.getElementById('submitForm').innerHTML = '<i class="fas fa-check-circle me-1"></i> ยืนยันการจองคอร์สเรียน';
+                    document.getElementById('submitForm').innerHTML = '<i class="fas fa-check-circle me-1"></i> ' + course_website_ui.submit;
 
                     if (data.success) {
                         const selectedBranch = data.branch || submittedBranch;
@@ -1438,8 +1453,8 @@
                     } else {
                         Swal.fire({
                             icon: 'error',
-                            title: 'ไม่สามารถทำรายการได้',
-                            text: data.message || 'กรุณาตรวจสอบข้อมูลที่กรอกอีกครั้ง',
+                            title: course_website_ui.cannot_process,
+                            text: data.message || course_website_ui.check_input,
                             confirmButtonColor: '#FF7B00'
                         });
                     }
@@ -1448,12 +1463,12 @@
                     console.error('Error:', error);
                     document.getElementById('loading').style.display = 'none';
                     document.getElementById('submitForm').disabled = false;
-                    document.getElementById('submitForm').innerHTML = '<i class="fas fa-check-circle me-1"></i> ยืนยันการจองคอร์สเรียน';
+                    document.getElementById('submitForm').innerHTML = '<i class="fas fa-check-circle me-1"></i> ' + course_website_ui.submit;
 
                     Swal.fire({
                         icon: 'error',
-                        title: 'เกิดข้อผิดพลาด',
-                        text: 'ไม่สามารถติดต่อเซิร์ฟเวอร์ได้ กรุณาลองใหม่อีกครั้ง',
+                        title: course_website_ui.unexpected_error,
+                        text: course_website_ui.server_error,
                         confirmButtonColor: '#FF7B00'
                     });
                 });

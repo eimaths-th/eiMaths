@@ -16,7 +16,7 @@
                     <ol class="breadcrumb float-sm-right">
 
                         <button type="button" class="btn btn-success " id="AssignButton">
-                            <i class="fas fa-user"></i> Assign Quiz </button>&nbsp;
+                            <i class="fas fa-user"></i> {{ __('quiz-management.quiz_list.assign') }} </button>&nbsp;
                         {{-- <button type="button" class="btn btn-success" id="CreateButton">
                             <i class="fas fa-user"></i> Create Quiz </button> --}}
 
@@ -33,7 +33,7 @@
                 <div class="col-12">
                     <div class="card card-primary">
                         <div class="card-header">
-                            <h3 class="card-title"><i class="fa fa-user"></i> Assigned List</h3>
+                            <h3 class="card-title"><i class="fa fa-user"></i> {{ __('quiz-management.assign.assigned_list') }}</h3>
                             <div class="card-tools">
                                 <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
                                     <i class="fas fa-minus"></i>
@@ -51,12 +51,12 @@
                             <table id="Listview2" class="table table-bordered table-striped table-hover">
                                 <thead>
                                     <tr>
-                                        <th> # </th>
-                                        <th> Student </th>
-                                        <th> Quiz </th>
+                                        <th> {{ __('quiz-management.quiz_list.number') }} </th>
+                                        <th> {{ __('quiz-management.assign.student') }} </th>
+                                        <th> {{ __('quiz-management.assign.quiz') }} </th>
                                         <!-- <th> Status </th> -->
-                                        <th> Assign AT </th>
-                                        <th> Action </th>
+                                        <th> {{ __('quiz-management.assign.assign_at') }} </th>
+                                        <th> {{ __('quiz-management.assign.action') }} </th>
                                     </tr>
                                 </thead>
 
@@ -72,13 +72,13 @@
                                                 @if ($student)
                                                     {{ $student->code }} ( {{ $student->nickname }} ) {{ $student->name }}
                                                 @else
-                                                    N/A (Student Deleted)
+                                                    {{ __('quiz-management.assign.student_deleted') }}
                                                 @endif
                                             </td>
                                             <td>
                                                 <ul class="pl-3 mb-0 list-unstyled">
                                                     @foreach ($studentAssignments as $assignment)
-                                                        <li>{{ $assignment->quiz->title ?? 'N/A (Quiz Deleted)' }}</li>
+                                                        <li>{{ $assignment->quiz->title ?? __('quiz-management.assign.quiz_deleted') }}</li>
                                                     @endforeach
                                                 </ul>
                                             </td>

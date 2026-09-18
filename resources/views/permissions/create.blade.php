@@ -2,8 +2,8 @@
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header bg-primary">
-                    <h4 class="modal-title"><i class="fas fa-user-lock"></i> Add Permission</h4>
-                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <h4 class="modal-title"><i class="fas fa-user-lock"></i> {{ __('user-access.permissions.modal.create_title') }}</h4>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="{{ __('user-access.permissions.actions.close') }}">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
@@ -19,13 +19,13 @@
                         </div>
                     @endif --}}
                     <div class="alert alert-danger alert-dismissible fade show" role="alert" style="display: none;">
-                        <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close">
+                        <button type="button" class="btn-close" data-dismiss="alert" aria-label="{{ __('user-access.permissions.actions.close') }}">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="alert alert-success alert-dismissible fade show" role="alert" style="display: none;">
 
-                        <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close">
+                        <button type="button" class="btn-close" data-dismiss="alert" aria-label="{{ __('user-access.permissions.actions.close') }}">
                             <span aria-hidden="true"></span>
                         </button>
                     </div>
@@ -36,8 +36,8 @@
                     <div class="row">
                         <div class="col-xs-12 col-sm-12 col-md-12">
                             <div class="form-group">
-                                <strong><i class="fas fa-user-lock"></i> Permission Name:</strong>
-                                {!! Form::text('name', null, ['id' => 'AddName', 'placeholder' => 'Name', 'class' => 'form-control']) !!}
+                                <strong><i class="fas fa-user-lock"></i> {{ __('user-access.permissions.modal.name') }}:</strong>
+                                {!! Form::text('name', null, ['id' => 'AddName', 'placeholder' => __('user-access.permissions.modal.name_placeholder'), 'class' => 'form-control']) !!}
                             </div>
                         </div>
 
@@ -47,8 +47,8 @@
 
                 </div>
                 <div class="modal-footer {{-- justify-content-between --}}">
-                    <button type="button" class="btn btn-success" id="SubmitCreateForm"><i class="fas fa-download"></i> Save</button>
-                    <button type="button" class="btn btn-danger modelClose" data-bs-dismiss="modal"><i class="fas fa-door-closed"></i> Close</button>
+                    <button type="button" class="btn btn-success" id="SubmitCreateForm"><i class="fas fa-download"></i> {{ __('user-access.permissions.actions.save') }}</button>
+                    <button type="button" class="btn btn-danger modelClose" data-bs-dismiss="modal"><i class="fas fa-door-closed"></i> {{ __('user-access.permissions.actions.close') }}</button>
                 </div>
             </div>
         </div>

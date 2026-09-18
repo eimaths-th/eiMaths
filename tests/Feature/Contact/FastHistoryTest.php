@@ -126,6 +126,25 @@ class FastHistoryTest extends TestCase
     }
 
     #[Test]
+    public function ThaiCheckInRecordsOneHistoryAndTranslatesItsDuplicateError(): void
+    {
+        $this->actor->update(['language_code' => 'th']);
+        [$student] = $this->createStudentWithTwoCourses();
+
+        $this->postJson(route('contacts.fastHistory', $student->id))
+            ->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('message', 'บันทึกประวัติการเรียนเรียบร้อยแล้ว');
+
+        $this->postJson(route('contacts.fastHistory', $student->id))
+            ->assertStatus(422)
+            ->assertJsonPath('success', false)
+            ->assertJsonPath('message', 'นักเรียนเช็กชื่อคอร์สนี้ในวันนี้แล้ว');
+
+        $this->assertDatabaseCount('histrories', 1);
+    }
+
+    #[Test]
     public function PostRejectsAnEndTimeThatIsNotAfterTheStartTime(): void
     {
         [$student, $first_book] = $this->createStudentWithTwoCourses();

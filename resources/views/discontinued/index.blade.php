@@ -18,13 +18,13 @@
 
 
                         @can('student-edit')
-                            <button type="button" class="btn btn-danger delete_all_button"><i class="fa-solid fa-retweet"></i> Restart
-                                All</button>
+                            <button type="button" class="btn btn-danger delete_all_button"><i class="fa-solid fa-retweet"></i>
+                                {{ __('students.actions.restart_all') }}</button>
                         @else
                             <span class="d-inline-block" tabindex="0" data-toggle="tooltip" data-placement="bottom"
-                                title="You Not Have Permission">
+                                title="{{ __('common.feedback.permission_denied') }}">
                                 <button type="button" class="btn btn-danger disabled"><i class="fa-solid fa-retweet"></i>
-                                    Restart All</button>
+                                    {{ __('students.actions.restart_all') }}</button>
                             </span>
                         @endcan
                     </ol>
@@ -40,7 +40,7 @@
                 <div class="col-12">
                     <div class="card card-primary">
                         <div class="card-header">
-                            <h3 class="card-title"><i class="fa-solid fa-handshake-slash"></i> Discontinued Student</h3>
+                            <h3 class="card-title"><i class="fa-solid fa-handshake-slash"></i> {{ __('students.titles.discontinued') }}</h3>
                             <div class="card-tools">
                                 <button type="button" class="btn btn-tool" data-card-widget="maximize">
                                     <i class="fas fa-expand"></i>
@@ -70,8 +70,7 @@
                                     <div class="row float-lg-left">
                                         <div class="col-xs-12 col-sm-12 col-md-12">
                                             <div class="form-group">
-                                                <strong>
-                                                    Start Date Filter:</strong>
+                                                <strong>{{ __('students.filters.start_date') }}:</strong>
                                                 <div class="input-group">
                                                     <div class="input-group-prepend">
                                                         <span class="input-group-text">
@@ -89,19 +88,19 @@
                                         <div class="col-xs-4 col-sm-4 col-md-4">
                                             <div class="form-group">
                                                 <strong><i class="fa-solid fa-clipboard-question"></i>
-                                                    Search Type:</strong>
+                                                    {{ __('common.fields.search_type') }}:</strong>
                                                 <select style="width: 100%;" class="form-control" id="search_type"
                                                     name="search_type">
-                                                    <option value="">Please Select</option>
-                                                    <option value="1">Student Code</option>
-                                                    <option value="2">Student Name</option>
+                                                    <option value="">{{ __('students.filters.please_select') }}</option>
+                                                    <option value="1">{{ __('students.filters.student_code') }}</option>
+                                                    <option value="2">{{ __('students.filters.student_name') }}</option>
                                                 </select>
                                             </div>
                                         </div>
                                         <div class="col-xs-4 col-sm-4 col-md-4">
                                             <div class="form-group">
-                                                <strong><i class="fa-regular fa-keyboard"></i> Keyword:</strong>
-                                                {!! Form::text('keyword', null, ['id' => 'keyword', 'placeholder' => 'keyword', 'class' => 'form-control']) !!}
+                                                <strong><i class="fa-regular fa-keyboard"></i> {{ __('common.fields.keyword') }}:</strong>
+                                                {!! Form::text('keyword', null, ['id' => 'keyword', 'placeholder' => __('common.fields.keyword'), 'class' => 'form-control']) !!}
                                             </div>
                                         </div>
                                         <div class="col-xs-2 col-sm-2 col-md-2">
@@ -137,15 +136,15 @@
                                                     <th width="90px"><input type="checkbox" id="check-all"
                                                             class="flat">
                                                     </th>
-                                                    <th>Centre</th>
-                                                    <th>Code</th>
-                                                    <th>Student Name</th>
-                                                    <th>Student Nick Name</th>
-                                                    <th>Start Date</th>
-                                                    <th>Discontinued Date</th>
-                                                    <th>Discontinued Reason</th>
+                                                    <th>{{ __('common.fields.centre') }}</th>
+                                                    <th>{{ __('common.fields.student_code') }}</th>
+                                                    <th>{{ __('common.fields.student_name') }}</th>
+                                                    <th>{{ __('students.table.student_nickname') }}</th>
+                                                    <th>{{ __('common.fields.start_date') }}</th>
+                                                    <th>{{ __('students.table.discontinued_date') }}</th>
+                                                    <th>{{ __('students.table.discontinued_reason') }}</th>
                                                     <th width="100px"></th>
-                                                    <th>More</th>
+                                                    <th>{{ __('students.table.more') }}</th>
                                                 </tr>
                                             </thead>
                                             <tbody>

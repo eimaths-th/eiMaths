@@ -1,4 +1,43 @@
+@php
+    $quiz_management_ui = [
+        'select_questions' => __('quiz-management.scripts.select_questions'),
+        'select_answer_type' => __('quiz-management.builder.select_answer_type'),
+        'options' => __('quiz-management.builder.options'),
+        'written' => __('quiz-management.builder.written'),
+        'fraction' => __('quiz-management.builder.fraction'),
+        'image' => __('quiz-management.builder.image'),
+        'mixed_fraction' => __('quiz-management.builder.mixed_fraction'),
+        'question_text' => __('quiz-management.builder.question_text'),
+        'question_image' => __('quiz-management.builder.question_image'),
+        'remove_image' => __('quiz-management.builder.remove_image'),
+        'question_written' => __('quiz-management.builder.question_written'),
+        'correct_answer' => __('quiz-management.builder.correct_answer_placeholder'),
+        'question_options' => __('quiz-management.builder.question_options'),
+        'add' => __('quiz-management.builder.add'),
+        'image_options' => __('quiz-management.builder.question_image_options'),
+        'answers_fraction' => __('quiz-management.builder.answers_fraction'),
+        'type_answer' => __('quiz-management.builder.type_answer'),
+        'select_fraction_answer' => __('quiz-management.builder.select_fraction_answer'),
+        'numerator' => __('quiz-management.builder.numerator'),
+        'denominator' => __('quiz-management.builder.denominator'),
+        'type_fraction' => __('quiz-management.builder.type_fraction'),
+        'add_fraction' => __('quiz-management.builder.add_fraction'),
+        'grade' => __('quiz-management.builder.grade'),
+        'select_grade' => __('quiz-management.builder.select_grade'),
+        'term' => __('quiz-management.builder.term'),
+        'select_term' => __('quiz-management.builder.select_term'),
+        'level' => __('quiz-management.builder.level'),
+        'select_level' => __('quiz-management.builder.select_level'),
+        'hint' => __('quiz-management.builder.hint'),
+        'answer_explanation' => __('quiz-management.builder.answer_explanation'),
+        'more_info_link' => __('quiz-management.builder.more_info_link'),
+        'create_question' => __('quiz-management.builder.create_question', ['number' => ':number']),
+        'correct' => __('quiz-management.builder.correct'),
+        'remove' => __('quiz-management.builder.remove'),
+    ];
+@endphp
 <script>
+    const quiz_management_ui = @json($quiz_management_ui);
     // Answer Explanation Image functions
     function showAnswerExplanationImg(input) {
         if (input.files && input.files[0]) {
@@ -111,7 +150,7 @@
         // Initialize auto-save
 
         $('.select2').select2({
-            placeholder: "Select Questions",
+            placeholder: quiz_management_ui.select_questions,
             allowClear: true
         });
         $.ajax({
@@ -347,7 +386,7 @@
                 </div>
                 <div class="col-auto text-nowrap">
                     <input type="hidden" name="options[${optionIndex}][correct]" value="0">
-                    <input type="checkbox" class="text-left" name="options[${optionIndex}][correct]" value="1" ${correct ? 'checked' : ''}> Correct&nbsp
+                    <input type="checkbox" class="text-left" name="options[${optionIndex}][correct]" value="1" ${correct ? 'checked' : ''}> ${quiz_management_ui.correct}&nbsp
                     <button type="button" class="btn btn-danger btn-sm remove-option">&nbsp&nbsp<i class="fa fa-trash"></i>&nbsp&nbsp</button>
                 </div>
             </div>
@@ -359,20 +398,20 @@
             $('#add-fraction-container').append(`
                     <div class="fraction-item mt-2 form-row align-items-center">
                         <div class="col-xs-3 col-sm-3 col-md-3 text-center">
-                            <input type="number" class="form-control" name="answer_numerator[${optionIndex}]" value="${numerator}" placeholder="Numerator" required>
+                            <input type="number" class="form-control" name="answer_numerator[${optionIndex}]" value="${numerator}" placeholder="${quiz_management_ui.numerator}" required>
                         </div>
                         <div class="col-xs-3 col-sm-3 col-md-3 text-center">
-                            <input type="number" class="form-control" name="answer_denominator[${optionIndex}]" value="${denominator}" placeholder="Denominator" required min="1">
+                            <input type="number" class="form-control" name="answer_denominator[${optionIndex}]" value="${denominator}" placeholder="${quiz_management_ui.denominator}" required min="1">
                         </div>
                         <div class="col-xs-3 col-sm-3 col-md-3 text-center">
                             <select name="answer_type[${optionIndex}]" class="form-control">
-                                <option value="frac" ${answerType === 'frac' ? 'selected' : ''}>Fraction</option>
-                                <option value="mixed" ${answerType === 'mixed' ? 'selected' : ''}>Mixed Fraction</option>
+                                <option value="frac" ${answerType === 'frac' ? 'selected' : ''}>${quiz_management_ui.fraction}</option>
+                                <option value="mixed" ${answerType === 'mixed' ? 'selected' : ''}>${quiz_management_ui.mixed_fraction}</option>
                             </select>
                         </div>
                         <div class="col-auto text-nowrap">
                             <input type="hidden" name="options[${optionIndex}][correct]" value="0">
-                            <input type="checkbox" class="text-left" name="options[${optionIndex}][correct]" value="1" ${correct ? 'checked' : ''}> Correct&nbsp
+                            <input type="checkbox" class="text-left" name="options[${optionIndex}][correct]" value="1" ${correct ? 'checked' : ''}> ${quiz_management_ui.correct}&nbsp
                             <button type="button" class="btn btn-danger btn-sm remove-fraction-option"><i class="fa fa-trash"></i></button>
                         </div>
                     </div>
@@ -439,62 +478,62 @@
                 let newForm = `
                 <div class="question-form">
                     <div class="question-form-index">
-                    <h4 class="mb-4">Create Question #${FormIndex}</h4>
+                    <h4 class="mb-4">${quiz_management_ui.create_question.replace(':number', FormIndex)}</h4>
                     <div class="mb-3">
                         <select name="type-${FormIndex}" id="2-type-${FormIndex}" class="form-control">
-                            <option value="">Select type answer</option>
-                            <option value="options">Options</option>
-                            <option value="written">Written</option>
-                            <option value="image">Image</option>
-                            <option value="fraction">Fraction</option>
+                            <option value="">${quiz_management_ui.select_answer_type}</option>
+                            <option value="options">${quiz_management_ui.options}</option>
+                            <option value="written">${quiz_management_ui.written}</option>
+                            <option value="image">${quiz_management_ui.image}</option>
+                            <option value="fraction">${quiz_management_ui.fraction}</option>
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label for="text_${FormIndex}" class="form-label">Question text</label>
+                        <label for="text_${FormIndex}" class="form-label">${quiz_management_ui.question_text}</label>
                         <textarea id="text_${FormIndex}" class="form-control" name="text_${FormIndex}"></textarea>
                         <div class="row mt-2 fraction-button-${FormIndex}" id="fraction-button-${FormIndex}" style="display: none;">
                             <div class="col-lg-2">
                                 <button type="button" class="btn btn-primary" onclick="insertFracIndex(${FormIndex})">
-                                    Fraction
+                                    ${quiz_management_ui.fraction}
                                 </button>
                             </div>
                             <div class="col-lg-2">
                                 <button type="button" class="btn btn-primary" onclick="insertMixedIndex(${FormIndex})">
-                                    MixFrac
+                                    ${quiz_management_ui.mixed_fraction}
                                 </button>
                             </div>
                         </div>
                     </div>
 
                     <div class="mb-3">
-                        <label for="imageQuestion_${FormIndex}" class="form-label">Question Image</label>
+                        <label for="imageQuestion_${FormIndex}" class="form-label">${quiz_management_ui.question_image}</label>
                         <div id="add-image-question-container_${FormIndex}">
                             <input type="file" id="imageQuestion_${FormIndex}" class="form-control" name="imageQuestion_${FormIndex}" accept="image/*" onchange="showQuestionImgDynamic(this, ${FormIndex})">
                         </div>
                         <div id="question_img_preview_${FormIndex}" class="mt-2" style="display: none;">
-                            <img id="question_img_thumbnail_${FormIndex}" src="" alt="Question Image" style="max-width: 200px; max-height: 200px; border: 1px solid #ddd; border-radius: 4px; padding: 5px;">
+                            <img id="question_img_thumbnail_${FormIndex}" src="" alt="${quiz_management_ui.question_image}" style="max-width: 200px; max-height: 200px; border: 1px solid #ddd; border-radius: 4px; padding: 5px;">
                             <br>
-                            <button type="button" class="btn btn-sm btn-danger mt-2" onclick="removeQuestionImgDynamic(${FormIndex})">Remove Image</button>
+                            <button type="button" class="btn btn-sm btn-danger mt-2" onclick="removeQuestionImgDynamic(${FormIndex})">${quiz_management_ui.remove_image}</button>
                         </div>
                     </div>
 
 
                     <div class="mb-3 written_type_${FormIndex}">
-                        <label for="written_${FormIndex}" class="form-label">Question Written</label>
+                        <label for="written_${FormIndex}" class="form-label">${quiz_management_ui.question_written}</label>
                         <input type="text" class="form-control" id="written_${FormIndex}" name="written_${FormIndex}"
-                            placeholder="Enter correct answer">
+                            placeholder="${quiz_management_ui.correct_answer}">
                     </div>
                     <div class="mb-3 options_type_${FormIndex}">
-                        <label for="options_${FormIndex}" class="form-label">Question options</label>
+                        <label for="options_${FormIndex}" class="form-label">${quiz_management_ui.question_options}</label>
                         <br>
-                        <button type="button" class="btn btn-sm btn-primary mt-2" id="add-option-${FormIndex}">Add</button>
+                        <button type="button" class="btn btn-sm btn-primary mt-2" id="add-option-${FormIndex}">${quiz_management_ui.add}</button>
                         <div id="options-container-${FormIndex}">
                             <!-- Options will be added here -->
                         </div>
                     </div>
                     <div class="mb-3 image_type_${FormIndex}">
-                        <label for="image_${FormIndex}" class="form-label">Question Image Options</label> <br>
-                        <button type="button" class="btn btn-sm btn-primary mt-2" id="add-img-option-${FormIndex}">Add</button>
+                        <label for="image_${FormIndex}" class="form-label">${quiz_management_ui.image_options}</label> <br>
+                        <button type="button" class="btn btn-sm btn-primary mt-2" id="add-img-option-${FormIndex}">${quiz_management_ui.add}</button>
                         <div id="image-options-container-${FormIndex}">
 
                         </div>
@@ -502,36 +541,36 @@
 
                     <div class="mb-3 fraction_type_${FormIndex}">
                         <hr>
-                        <h2>answers fraction</h2>
+                        <h2>${quiz_management_ui.answers_fraction}</h2>
                         <div class="mb-3">
-                            <label for="answer_type" class="form-label">Type Answer</label>
+                            <label for="answer_type" class="form-label">${quiz_management_ui.type_answer}</label>
                                 <select name="answer_type_fraction-${FormIndex}" id="answer_type_fraction-${FormIndex}" class="form-control">
-                                    <option value="">select type answer fraction</option>
-                                    <option value="written">written</option>
-                                    <option value="options">options</option>
+                                    <option value="">${quiz_management_ui.select_fraction_answer}</option>
+                                    <option value="written">${quiz_management_ui.written}</option>
+                                    <option value="options">${quiz_management_ui.options}</option>
                                 </select>
                         </div>
                         <div class="written_type_fraction_${FormIndex}" style="display: none;">
                             <div class="mb-3">
-                                <label for="answer_numerator_${FormIndex}" class="form-label">Numerator</label>
-                                <input type="number" class="form-control" name="answer_numerator_${FormIndex}" id="answer_numerator_${FormIndex}" placeholder="numerator" required>
+                                <label for="answer_numerator_${FormIndex}" class="form-label">${quiz_management_ui.numerator}</label>
+                                <input type="number" class="form-control" name="answer_numerator_${FormIndex}" id="answer_numerator_${FormIndex}" placeholder="${quiz_management_ui.numerator}" required>
                             </div>
                             <div class="mb-3">
-                                <label for="answer_denominator_${FormIndex}" class="form-label">Denominator</label>
-                                <input type="number" class="form-control" name="answer_denominator_${FormIndex}" required id="answer_denominator_${FormIndex}" placeholder="denominator" min="1">
+                                <label for="answer_denominator_${FormIndex}" class="form-label">${quiz_management_ui.denominator}</label>
+                                <input type="number" class="form-control" name="answer_denominator_${FormIndex}" required id="answer_denominator_${FormIndex}" placeholder="${quiz_management_ui.denominator}" min="1">
                             </div>
 
                             <div class="mb-3">
-                                <label for="answer_type_${FormIndex}" class="form-label">Type Fraction</label>
+                                <label for="answer_type_${FormIndex}" class="form-label">${quiz_management_ui.type_fraction}</label>
                                 <select name="answer_type-${FormIndex}" id="answer_type-${FormIndex}" class="form-control">
-                                    <option value="frac">Fraction</option>
-                                    <option value="mixed" selected>Mixed Fraction</option>
+                                    <option value="frac">${quiz_management_ui.fraction}</option>
+                                    <option value="mixed" selected>${quiz_management_ui.mixed_fraction}</option>
                                 </select>
                             </div>
                         </div>
 
                         <div class="options_type_fraction_${FormIndex}" style="display: none;">
-                            <button type="button" class="btn btn-sm btn-primary mt-2" id="add-fraction-option-${FormIndex}">Add Fraction</button>
+                            <button type="button" class="btn btn-sm btn-primary mt-2" id="add-fraction-option-${FormIndex}">${quiz_management_ui.add_fraction}</button>
                                 <div id="add-fraction-container_${FormIndex}">
                                     <!-- Options will be added here -->
                                 </div>
@@ -542,9 +581,9 @@
                     <div class="row">
                         <div class="col-lg-4">
                             <div class="mt-4">
-                                <label for="level" class="form-label">Grade</label>
+                                <label for="level" class="form-label">${quiz_management_ui.grade}</label>
                                 <select id="level_${FormIndex}" name="level_${FormIndex}" class="question-grade question-grade form-control">
-                                    <option value="" selected>Select term</option>
+                                    <option value="" selected>${quiz_management_ui.select_grade}</option>
                                     <option value="K1">K1</option>
                                     <option value="K2">K2</option>
                                     <option value="P1">P1</option>
@@ -558,9 +597,9 @@
                         </div>
                         <div class="col-lg-4">
                             <div class="mt-4">
-                                <label for="term" class="form-label">Term</label>
+                                <label for="term" class="form-label">${quiz_management_ui.term}</label>
                                 <select id="term_${FormIndex}" name="term_${FormIndex}" class="question-term form-control">
-                                    <option value="" selected>Select term</option>
+                                    <option value="" selected>${quiz_management_ui.select_term}</option>
                                     <option value="1">1</option>
                                     <option value="2">2</option>
                                     <option value="3">3</option>
@@ -570,9 +609,9 @@
                         </div>
                         <div class="col-lg-4">
                             <div class="mt-4">
-                                <label for="section" class="form-label">Level</label>
+                                <label for="section" class="form-label">${quiz_management_ui.level}</label>
                                 <select id="section_${FormIndex}" name="section_${FormIndex}" class="question-level form-control">
-                                    <option value="" selected>Select Level</option>
+                                    <option value="" selected>${quiz_management_ui.select_level}</option>
                                     ${options}
                                 </select>
                             </div>
@@ -580,27 +619,27 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="code_snippet_${FormIndex}" class="form-label">Hint</label>
+                        <label for="code_snippet_${FormIndex}" class="form-label">${quiz_management_ui.hint}</label>
                         <textarea id="code_snippet_${FormIndex}" class="form-control" name="code_snippet_${FormIndex}"></textarea>
                     </div>
                     <div class="mb-3">
-                        <label for="answer_explanation_${FormIndex}" class="form-label">Answer explanation</label>
+                        <label for="answer_explanation_${FormIndex}" class="form-label">${quiz_management_ui.answer_explanation}</label>
                         <textarea id="answer_explanation_${FormIndex}" class="form-control" name="answer_explanation_${FormIndex}"></textarea>
                     </div>
 
                     <div class="mb-3">
-                        <label for="answer_explanation_image_${FormIndex}" class="form-label">Answer Explanation Image</label>
+                        <label for="answer_explanation_image_${FormIndex}" class="form-label">${quiz_management_ui.answer_explanation} ${quiz_management_ui.image}</label>
                         <input type="file" id="answer_explanation_image_${FormIndex}" class="form-control" name="answer_explanation_image_${FormIndex}" accept="image/*" onchange="showAnswerExplanationImgDynamic(this, ${FormIndex})">
                         
                         <div id="answer_explanation_img_preview_${FormIndex}" class="mt-2" style="display: none;">
-                            <img id="answer_explanation_img_thumbnail_${FormIndex}" src="" alt="Answer Explanation Image" style="max-width: 200px; max-height: 200px; border: 1px solid #ddd; border-radius: 4px; padding: 5px;">
+                            <img id="answer_explanation_img_thumbnail_${FormIndex}" src="" alt="${quiz_management_ui.answer_explanation} ${quiz_management_ui.image}" style="max-width: 200px; max-height: 200px; border: 1px solid #ddd; border-radius: 4px; padding: 5px;">
                             <br>
-                            <button type="button" class="btn btn-sm btn-danger mt-2" onclick="removeAnswerExplanationImgDynamic(${FormIndex})">Remove Image</button>
+                            <button type="button" class="btn btn-sm btn-danger mt-2" onclick="removeAnswerExplanationImgDynamic(${FormIndex})">${quiz_management_ui.remove_image}</button>
                         </div>
                     </div>
 
                     <div class="mb-3">
-                        <label for="more_info_link_${FormIndex}" class="form-label">More info link</label>
+                        <label for="more_info_link_${FormIndex}" class="form-label">${quiz_management_ui.more_info_link}</label>
                         <input type="text" id="more_info_link_${FormIndex}" class="form-control"
                             name="more_info_link_${FormIndex}">
                     </div>
@@ -728,7 +767,7 @@
                     </div>
                 <div class="col-auto text-nowrap">
                         <input type="hidden" name="options[${optionFormIndex}][correct]" value="0">
-                        <input type="checkbox" class="text-left" name="options[${optionFormIndex}][correct]" value="1" ${correct ? 'checked' : ''}> Correct&nbsp
+                        <input type="checkbox" class="text-left" name="options[${optionFormIndex}][correct]" value="1" ${correct ? 'checked' : ''}> ${quiz_management_ui.correct}&nbsp
                         <button type="button" class="btn btn-danger btn-sm remove-option">&nbsp&nbsp<i class="fa fa-trash"></i>&nbsp&nbsp</button>
                     </div>
                 </div>
@@ -743,7 +782,7 @@
                     </div>
                     <div class="col-auto text-nowrap">
                         <input type="hidden" name="image_options[${optionIndex}][correct]" value="0">
-                        <input type="checkbox" class="text-left" name="image_options[${optionIndex}][correct]" value="1" ${correct ? 'checked' : ''}> Correct&nbsp
+                        <input type="checkbox" class="text-left" name="image_options[${optionIndex}][correct]" value="1" ${correct ? 'checked' : ''}> ${quiz_management_ui.correct}&nbsp
                         <button type="button" class="btn btn-danger btn-sm remove-option-img">&nbsp&nbsp<i class="fa fa-trash"></i>&nbsp&nbsp</button>
                     </div>
                 </div>
@@ -773,20 +812,20 @@
             $(`#add-fraction-container_${formIndex}`).append(`
                 <div class="fraction-item mt-2 form-row align-items-center">
                     <div class="col-xs-3 col-sm-3 col-md-3 text-center">
-                        <input type="number" class="form-control" name="answer_numerator[${optionFormIndex}]" value="${numerator}" placeholder="Numerator" required>
+                        <input type="number" class="form-control" name="answer_numerator[${optionFormIndex}]" value="${numerator}" placeholder="${quiz_management_ui.numerator}" required>
                     </div>
                     <div class="col-xs-3 col-sm-3 col-md-3 text-center">
-                        <input type="number" class="form-control" name="answer_denominator[${optionFormIndex}]" value="${denominator}" placeholder="Denominator" required min="1">
+                        <input type="number" class="form-control" name="answer_denominator[${optionFormIndex}]" value="${denominator}" placeholder="${quiz_management_ui.denominator}" required min="1">
                     </div>
                     <div class="col-xs-3 col-sm-3 col-md-3 text-center">
                         <select name="answer_type[${optionFormIndex}]" class="form-control">
-                            <option value="frac" ${answerType === 'frac' ? 'selected' : ''}>Fraction</option>
-                            <option value="mixed" ${answerType === 'mixed' ? 'selected' : ''}>Mixed Fraction</option>
+                            <option value="frac" ${answerType === 'frac' ? 'selected' : ''}>${quiz_management_ui.fraction}</option>
+                            <option value="mixed" ${answerType === 'mixed' ? 'selected' : ''}>${quiz_management_ui.mixed_fraction}</option>
                         </select>
                     </div>
                     <div class="col-auto text-nowrap">
                         <input type="hidden" name="options[${optionFormIndex}][correct]" value="0">
-                        <input type="checkbox" class="text-left" name="options[${optionFormIndex}][correct]" value="1" ${correct ? 'checked' : ''}> Correct&nbsp;
+                        <input type="checkbox" class="text-left" name="options[${optionFormIndex}][correct]" value="1" ${correct ? 'checked' : ''}> ${quiz_management_ui.correct}&nbsp;
                         <button type="button" class="btn btn-danger btn-sm remove-fraction-option"><i class="fa fa-trash"></i></button>
                     </div>
                 </div>
@@ -832,7 +871,7 @@
                     </div>
                     <div class="col-auto text-nowrap">
                         <input type="hidden" name="image_options[${optionIndex}][correct]" value="0">
-                        <input type="checkbox" class="text-left" name="image_options[${optionIndex}][correct]" value="1" ${correct ? 'checked' : ''}> Correct&nbsp
+                        <input type="checkbox" class="text-left" name="image_options[${optionIndex}][correct]" value="1" ${correct ? 'checked' : ''}> ${quiz_management_ui.correct}&nbsp
                         <button type="button" class="btn btn-danger btn-sm remove-option-img">&nbsp&nbsp<i class="fa fa-trash"></i>&nbsp&nbsp</button>
                     </div>
                 </div>
@@ -862,7 +901,7 @@
                 var $form = $(element);
 
                 // Update the question title
-                $form.find('h4').text(`Create Question #${newIndex}`);
+                $form.find('h4').text(quiz_management_ui.create_question.replace(':number', newIndex));
 
                 // Update all form field names and IDs to match the new index
                 updateFormFieldIndices($form, newIndex);

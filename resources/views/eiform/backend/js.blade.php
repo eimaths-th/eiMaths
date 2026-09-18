@@ -1,4 +1,6 @@
 <script>
+    const eiFormUi = @json(['datatable' => __('common.datatable')]);
+
     $(document).ready(function() {
         // Initialize the form
         var table = $('#Listview').DataTable({
@@ -21,20 +23,20 @@
             language: {
                 loadingRecords: '&nbsp;',
                 processing: `<div class="spinner-border text-primary"></div>`,
-                "sProcessing": "Processcing...",
-                "sLengthMenu": "Display_MENU_ Row",
-                "sZeroRecords": "No Data Fount",
-                "sInfo": "Display _START_ To _END_ From _TOTAL_ Records",
-                "sInfoEmpty": "Display 0 To 0 From 0 Records",
-                "sInfoFiltered": "(Filters _MAX_ Row)",
-                "sInfoPostFix": "",
-                "sSearch": "Search:",
-                "sUrl": "",
+                "sProcessing": eiFormUi.datatable.processing,
+                "sLengthMenu": eiFormUi.datatable.length_menu,
+                "sZeroRecords": eiFormUi.datatable.zero_records,
+                "sInfo": eiFormUi.datatable.info,
+                "sInfoEmpty": eiFormUi.datatable.info_empty,
+                "sInfoFiltered": eiFormUi.datatable.info_filtered,
+                "sInfoPostFix": eiFormUi.datatable.info_postfix,
+                "sSearch": eiFormUi.datatable.search,
+                "sUrl": eiFormUi.datatable.url,
                 "oPaginate": {
-                    "sFirst": "First",
-                    "sPrevious": "Previous",
-                    "sNext": "Next",
-                    "sLast": "Last"
+                    "sFirst": eiFormUi.datatable.first,
+                    "sPrevious": eiFormUi.datatable.previous,
+                    "sNext": eiFormUi.datatable.next,
+                    "sLast": eiFormUi.datatable.last
                 }
             },
             aaSorting: [

@@ -42,7 +42,7 @@ class BookReceiptController extends Controller
                 $this->ShipmentId($request)
             );
 
-            return $this->MutationResponse($payload, $order_detail_list->id, 'Book marked as received.');
+            return $this->MutationResponse($payload, $order_detail_list->id, __('students.book_receipts.marked_received'));
         } catch (BookReceiptException $exception) {
             return $this->BookReceiptErrorResponse($exception);
         }
@@ -61,7 +61,7 @@ class BookReceiptController extends Controller
                 'data' => [
                     'summary' => $payload['summary'],
                 ],
-                'message' => 'All books marked as received.',
+                'message' => __('students.book_receipts.marked_all_received'),
             ]);
         } catch (BookReceiptException $exception) {
             return $this->BookReceiptErrorResponse($exception);
@@ -82,7 +82,7 @@ class BookReceiptController extends Controller
                 $this->ShipmentId($request)
             );
 
-            return $this->MutationResponse($payload, $order_detail_list->id, 'Book receipt cancelled.');
+            return $this->MutationResponse($payload, $order_detail_list->id, __('students.book_receipts.cancelled'));
         } catch (BookReceiptException $exception) {
             return $this->BookReceiptErrorResponse($exception);
         }
@@ -139,11 +139,11 @@ class BookReceiptController extends Controller
     private function BookReceiptErrorResponse(BookReceiptException $exception): JsonResponse
     {
         $message = match ($exception->Reason()) {
-            BookReceiptException::ALREADY_RECEIVED => 'This book is already marked as received.',
-            BookReceiptException::NOT_RECEIVED => 'This book is not currently marked as received.',
-            BookReceiptException::INELIGIBLE => 'This row is not an eligible book.',
-            BookReceiptException::SHIPMENT_BLOCKED => 'This book is not yet available for student receipt.',
-            default => 'The book receipt state could not be changed.',
+            BookReceiptException::ALREADY_RECEIVED => __('students.book_receipts.already_received'),
+            BookReceiptException::NOT_RECEIVED => __('students.book_receipts.not_currently_received'),
+            BookReceiptException::INELIGIBLE => __('students.book_receipts.ineligible'),
+            BookReceiptException::SHIPMENT_BLOCKED => __('students.book_receipts.shipment_blocked'),
+            default => __('students.book_receipts.state_error'),
         };
 
         return response()->json([

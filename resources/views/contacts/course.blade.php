@@ -2,8 +2,8 @@
     <div class="modal-dialog modal-xxl">
         <div class="modal-content">
             <div class="modal-header bg-primary">
-                <h4 class="modal-title"><i class="fa-solid fa-graduation-cap"></i> Student Course</h4>
-                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                <h4 class="modal-title"><i class="fa-solid fa-graduation-cap"></i> {{ __('students.course.title') }}</h4>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="{{ __('common.actions.close') }}">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -34,7 +34,7 @@
                     <div class="col-12">
                         <div class="card">
                             <div class="card-header">
-                                <h3 class="card-title">All Course</h3>
+                                <h3 class="card-title">{{ __('students.course.all') }}</h3>
                                 {{-- <div class="card-tools">
                                     <div class="input-group input-group-sm" style="width: 150px;">
                                         <input type="text" name="table_search" class="form-control float-right"
@@ -52,13 +52,13 @@
                                 <table class="table table-striped table-head-fixed text-nowrap">
                                     <thead>
                                         <tr>
-                                            <th>No</th>
-                                            <th>Level</th>
-                                            <th>Term</th>
-                                            <th>Book</th>
-                                            <th>Free Course</th>
-                                            <th>Reason</th>
-                                            <th>Create At</th>
+                                            <th>#</th>
+                                            <th>{{ __('common.fields.level') }}</th>
+                                            <th>{{ __('common.fields.term') }}</th>
+                                            <th>{{ __('common.fields.book') }}</th>
+                                            <th>{{ __('students.course.free_course') }}</th>
+                                            <th>{{ __('common.fields.reason') }}</th>
+                                            <th>{{ __('students.course.created_at') }}</th>
                                         </tr>
                                     </thead>
                                     <tbody id="CourseTable">
@@ -75,7 +75,7 @@
             </div>
             <div class="modal-footer {{-- justify-content-between --}}">
                 <button type="button" class="btn btn-danger modelClose" data-bs-dismiss="modal"><i
-                        class="fas fa-door-closed"></i> Close</button>
+                        class="fas fa-door-closed"></i> {{ __('common.actions.close') }}</button>
             </div>
         </div>
     </div>

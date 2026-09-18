@@ -7,18 +7,18 @@
                     <span id="question-title"></span>
                     {{-- {{ $editing ? 'Edit Question' : 'Create Question' }} --}}
                 </h4>
-                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="{{ __('quiz-management.builder.close') }}">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
                 <div class="alert alert-danger alert-dismissible fade show" role="alert" style="display: none;">
-                    <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close">
+                    <button type="button" class="btn-close" data-dismiss="alert" aria-label="{{ __('quiz-management.builder.close') }}">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="alert alert-success alert-dismissible fade show" role="alert" style="display: none;">
-                    <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close">
+                    <button type="button" class="btn-close" data-dismiss="alert" aria-label="{{ __('quiz-management.builder.close') }}">
                         <span aria-hidden="true"></span>
                     </button>
                 </div>
@@ -27,7 +27,7 @@
                 <form class="form" action="#" method="POST" id="quizForm">
                     @csrf
                     <div>
-                        <label for="title" class="form-label">Title</label>
+                        <label for="title" class="form-label">{{ __('quiz-management.builder.course_title') }}</label>
                         <input id="title" class="form-control" type="text" name="title"
                             value="{{ old('title', $quiz->title ?? '') }}">
                         @error('title')
@@ -36,7 +36,7 @@
                     </div>
 
                     <div class="mt-4">
-                        <label for="slug" class="form-label">Slug</label>
+                        <label for="slug" class="form-label">{{ __('quiz-management.builder.slug') }}</label>
                         <input id="slug" class="form-control" type="text" name="slug"
                             value="{{ old('slug', $quiz->slug ?? '') }}" disabled>
                         @error('slug')
@@ -45,7 +45,7 @@
                     </div>
 
                     <div class="mt-4">
-                        <label for="description" class="form-label">Description</label>
+                        <label for="description" class="form-label">{{ __('quiz-management.builder.description') }}</label>
                         <textarea id="description" class="form-control" name="description">{{ old('description', $quiz->description ?? '') }}</textarea>
                         @error('description')
                             <span class="text-red-600 text-sm mt-2">{{ $message }}</span>
@@ -54,9 +54,9 @@
                     <div class="row">
                         <div class="col-lg-4">
                             <div class="mt-4">
-                                <label for="level" class=" form-label">Grade</label>
+                                <label for="level" class=" form-label">{{ __('quiz-management.builder.grade') }}</label>
                                 <select id="level" name="level" class="form-control">
-                                    <option value="" disabled selected>Select term</option>
+                                    <option value="" disabled selected>{{ __('quiz-management.builder.select_grade') }}</option>
                                     <option value="K1">K1</option>
                                     <option value="K2">K2</option>
                                     <option value="P1">P1</option>
@@ -71,9 +71,9 @@
                         </div>
                         <div class="col-lg-4">
                             <div class="mt-4">
-                                <label for="term" class=" form-label">Term</label>
+                                <label for="term" class=" form-label">{{ __('quiz-management.builder.term') }}</label>
                                 <select id="term" name="term" class="form-control">
-                                    <option value="" disabled selected>Select term</option>
+                                    <option value="" disabled selected>{{ __('quiz-management.builder.select_term') }}</option>
                                     <option value="1">1</option>
                                     <option value="2">2</option>
                                     <option value="3">3</option>
@@ -84,9 +84,9 @@
                         </div>
                         <div class="col-lg-4">
                             <div class="mt-4">
-                                <label for="section" class=" form-label">Level</label>
+                                <label for="section" class=" form-label">{{ __('quiz-management.builder.level') }}</label>
                                 <select id="section" name="section" class="form-control">
-                                    <option value="" disabled selected>Select Level</option>
+                                    <option value="" disabled selected>{{ __('quiz-management.builder.select_level') }}</option>
                                     @for ($i = 1; $i <= 20; $i++)
                                         <option value="{{ $i }}">{{ $i }}</option>
                                     @endfor
@@ -97,7 +97,7 @@
                         </div>
                     </div>
                     <div class="mt-4" style="overflow: auto;">
-                        <label for="questions" class="form-label">Questions</label>
+                        <label for="questions" class="form-label">{{ __('quiz-management.builder.select_questions') }}</label>
                         <select id="questions" name="questions[]" class="select2 form-control"
                              multiple>
                         </select>
@@ -119,7 +119,7 @@
 
                     <div class="mt-4 form-check">
                         <div class="flex items-center">
-                            <label for="public" class="form-label">Public</label>
+                            <label for="public" class="form-label">{{ __('quiz-management.builder.public') }}</label>
                             <input type="checkbox" id="public" class="form-check-input ml-2" name="public"
                                 {{ old('public', $quiz->public ?? false) ? 'checked' : '' }}>
                         </div>
@@ -130,7 +130,7 @@
 
                     <div class="mt-4 form-check">
                         <div class="flex items-center">
-                            <label for="is_free" class="form-label">Free <small class="text-muted">(ข้อสอบฟรีสำหรับบุคคลทั่วไป)</small></label>
+                            <label for="is_free" class="form-label">{{ __('quiz-management.builder.free') }} <small class="text-muted">({{ __('quiz-management.builder.free_hint') }})</small></label>
                             <input type="checkbox" id="is_free" class="form-check-input ml-2" name="is_free"
                                 {{ old('is_free', $quiz->is_free ?? false) ? 'checked' : '' }}>
                         </div>
@@ -155,7 +155,7 @@
                 </span>
 
                 <button type="button" class="btn btn-danger modelClose" data-bs-dismiss="modal">
-                    <i class="fas fa-door-closed"></i> Close
+                    <i class="fas fa-door-closed"></i> {{ __('quiz-management.builder.close') }}
                 </button>
             </div>
         </div>

@@ -102,15 +102,15 @@ class ParentController extends Controller
                     // }
 
                     if (Gate::allows('student-edit')) {
-                        $html .= '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit</button> ';
+                        $html .= '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> ' . e(__('common.actions.edit')) . '</button> ';
                     } else {
-                        $html .= '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> Edit</button> ';
+                        $html .= '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="' . e(__('common.feedback.permission_denied')) . '"><i class="fa fa-edit"></i> ' . e(__('common.actions.edit')) . '</button> ';
                     }
 
                     if (Gate::allows('student-delete')) {
-                        $html .= '<button type="button" data-rowid="' . $row->id . '" class="btn btn-sm btn-danger btn-delete"><i class="fa fa-trash"></i> Delete</button>';
+                        $html .= '<button type="button" data-rowid="' . $row->id . '" class="btn btn-sm btn-danger btn-delete"><i class="fa fa-trash"></i> ' . e(__('common.actions.delete')) . '</button>';
                     } else {
-                        $html .= '<button type="button" class="btn btn-sm btn-danger disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-trash"></i> Delete</button> ';
+                        $html .= '<button type="button" class="btn btn-sm btn-danger disabled" data-toggle="tooltip" data-placement="bottom" title="' . e(__('common.feedback.permission_denied')) . '"><i class="fa fa-trash"></i> ' . e(__('common.actions.delete')) . '</button> ';
                     }
                     return $html;
                 })->rawColumns(['checkbox', 'action', 'more'])->toJson();
@@ -212,7 +212,7 @@ class ParentController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Parent account Created successfully'
+            'message' => __('students.parents.created')
         ]);
     }
 
@@ -318,12 +318,12 @@ class ParentController extends Controller
         } else {
             return response()->json([
                 'errors' => true,
-                'message' => 'parent is does not exist'
+                'message' => __('students.parents.missing')
             ]);
         }
         return response()->json([
             'success' => true,
-            'message' => 'Parent account updated successfully'
+            'message' => __('students.parents.updated')
         ]);
     }
 

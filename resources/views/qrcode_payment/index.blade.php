@@ -9,7 +9,7 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h4>Qrcode Management</h4>
+                    <h4>{{ __('qrcode-payment.navigation.title') }}</h4>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
@@ -29,9 +29,11 @@
                 <div class="col-12">
                     <div class="card card-primary">
                         <div class="card-header">
-                            <h3 class="card-title"><i class="fa fa-user"></i>Qrcode Management</h3>
+                            <h3 class="card-title"><i class="fa fa-qrcode"></i>{{ __('qrcode-payment.navigation.title') }}</h3>
                             <div class="card-tools">
-                                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                                <button type="button" class="btn btn-tool" data-card-widget="collapse"
+                                    title="{{ __('qrcode-payment.accessibility.collapse') }}"
+                                    aria-label="{{ __('qrcode-payment.accessibility.collapse') }}">
                                     <i class="fas fa-minus"></i>
                                 </button>
                                 {{-- <button type="button" class="btn btn-tool" data-card-widget="remove" title="Remove">
@@ -58,7 +60,7 @@
                                 <div class="row">
                                     <div class="col-lg-3">
                                         <div class="form-group">
-                                            <label class="mb-2">account_name <span class="text-danger">*</span></label>
+                                            <label class="mb-2" for="account_name">{{ __('qrcode-payment.fields.account_name') }} <span class="text-danger">*</span></label>
                                             <div class="row">
                                                 <div class="col-lg-12">
                                                     <input class="form-control" type="text" name="account_name"
@@ -70,7 +72,7 @@
 
                                     <div class="col-lg-3">
                                         <div class="form-group">
-                                            <label class="mb-2">bank_name <span class="text-danger">*</span></label>
+                                            <label class="mb-2" for="bank_name">{{ __('qrcode-payment.fields.bank_name') }} <span class="text-danger">*</span></label>
                                             <input class="form-control" type="text" name="bank_name" id="bank_name"
                                                 value="{{ $qr->bank_name }}" required>
                                         </div>
@@ -79,14 +81,14 @@
 
                                     <div class="col-lg-3">
                                         <div class="form-group">
-                                            <label class="mb-2">account_numbers <span class="text-danger">*</span></label>
+                                            <label class="mb-2" for="account_numbers">{{ __('qrcode-payment.fields.account_number') }} <span class="text-danger">*</span></label>
                                             <input class="form-control" type="text" name="account_numbers"
                                                 id="account_numbers" value="{{ $qr->account_numbers }}" required>
                                         </div>
                                     </div>
                                     <div class="col-lg-3">
                                         <div class="form-group">
-                                            <label class="mb-2">promptpay_numbers<span
+                                            <label class="mb-2" for="promptpay_numbers">{{ __('qrcode-payment.fields.promptpay_number') }} <span
                                                     class="text-danger">*</span></label>
                                             <input class="form-control" type="text" name="promptpay_numbers"
                                                 id="promptpay_numbers" value="{{ $qr->promptpay_numbers }}" required>
@@ -105,7 +107,7 @@
 
                                     <div class="col-lg-3">
                                         <button type="submit" class="btn btn-primary " id="update_qr_payment">
-                                            <i class="ti-check"></i> Update
+                                            <i class="ti-check"></i> {{ __('qrcode-payment.actions.update') }}
                                         </button>
                                     </div>
                                 </div>

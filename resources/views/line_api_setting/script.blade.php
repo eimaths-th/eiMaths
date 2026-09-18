@@ -1,15 +1,17 @@
 <script>
+    const line_api_ui = @json(__('system-settings.line_api'));
+
     $(document).ready(function() {
 
         $(".delete_all_button").click(function() {
             var len = $('input[name="table_records[]"]:checked').length;
             if (len > 0) {
 
-                if (confirm("Confirm Delete Data?")) {
+                if (confirm(line_api_ui.actions.confirm_delete)) {
                     $('form#delete_all').submit();
                 }
             } else {
-                alert("please select record");
+                alert(line_api_ui.actions.select_record);
             }
 
         });
@@ -22,7 +24,7 @@
             maximumSelectionLength: 1,
             allowClear: false,
             //theme: 'bootstrap4'
-            placeholder: 'Please Select'
+            placeholder: line_api_ui.actions.select_record
         });
 
         $(".select2_single").on("select2:unselect", function(e) {
@@ -34,7 +36,7 @@
             maximumSelectionLength: 1,
             allowClear: false,
             //theme: 'bootstrap4'
-            placeholder: 'Please Select'
+            placeholder: line_api_ui.actions.select_record
         });
 
 
@@ -43,7 +45,7 @@
             //placeholder: "With Max Selection limit 4",
             allowClear: false,
             //theme: 'bootstrap4'
-            placeholder: 'Please Select'
+            placeholder: line_api_ui.actions.select_record
         });
 
 
@@ -99,18 +101,18 @@
             language: {
                 loadingRecords: '&nbsp;',
                 processing: `<div class="spinner-border text-primary"></div>`,
-                "sProcessing": "Processing...",
-                "sLengthMenu": "Display_MENU_ Row",
-                "sZeroRecords": "No Data Found",
-                "sInfo": "Display _START_ To _END_ From _TOTAL_ Records",
-                "sInfoEmpty": "Display 0 To 0 From 0 Records",
-                "sInfoFiltered": "(Filtered _MAX_ Row)",
-                "sSearch": "Search:",
+                "sProcessing": line_api_ui.data_table.processing,
+                "sLengthMenu": line_api_ui.data_table.length_menu,
+                "sZeroRecords": line_api_ui.data_table.zero_records,
+                "sInfo": line_api_ui.data_table.info,
+                "sInfoEmpty": line_api_ui.data_table.info_empty,
+                "sInfoFiltered": line_api_ui.data_table.info_filtered,
+                "sSearch": line_api_ui.data_table.search,
                 "oPaginate": {
-                    "sFirst": "First",
-                    "sPrevious": "Previous",
-                    "sNext": "Next",
-                    "sLast": "Last"
+                    "sFirst": line_api_ui.data_table.first,
+                    "sPrevious": line_api_ui.data_table.previous,
+                    "sNext": line_api_ui.data_table.next,
+                    "sLast": line_api_ui.data_table.last
                 }
             },
             aaSorting: [
@@ -219,7 +221,7 @@
                         button
                             .data('status', newStatus) // Update data-status attribute
                             .toggleClass('btn-success btn-danger') // Toggle button class
-                            .text(newStatus == 1 ? 'On' : 'Off'); // Update button text
+                            .text(newStatus == 1 ? line_api_ui.statuses.on : line_api_ui.statuses.off); // Update button text
                         // alert(response.message);
                     }
                     toastr.success(response.message, {
@@ -229,7 +231,7 @@
 
                 },
                 error: function() {
-                    alert('Failed to update status.');
+                    alert(line_api_ui.messages.status_failed);
                 }
             });
         });
@@ -324,7 +326,7 @@
         })
 
         $('#SubmitEditForm').click(function(e) {
-            if (!confirm("Confirm Save ?")) return;
+            if (!confirm(line_api_ui.actions.confirm_save)) return;
             e.preventDefault();
 
             $('.alert-danger').html('');
@@ -378,7 +380,7 @@
         });
 
         $(document).on('click', '.btn-delete', function() {
-            if (!confirm("Confirm Delete Data ?")) return;
+            if (!confirm(line_api_ui.actions.confirm_delete)) return;
 
             var id = $(this).data('rowid')
             var el = $(this)

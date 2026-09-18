@@ -48,9 +48,11 @@
                 <div class="col-12">
                     <div class="card card-primary">
                         <div class="card-header">
-                            <h3 class="card-title"><i class="fas fa-list-ol"></i> Term Fee & Book Price</h3>
+                            <h3 class="card-title"><i class="fas fa-list-ol"></i> {{ __('term-fee.navigation.title') }}</h3>
                             <div class="card-tools">
-                                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                                <button type="button" class="btn btn-tool" data-card-widget="collapse"
+                                    title="{{ __('term-fee.actions.collapse') }}"
+                                    aria-label="{{ __('term-fee.actions.collapse') }}">
                                     <i class="fas fa-minus"></i>
                                 </button>
                                 {{-- <button type="button" class="btn btn-tool" data-card-widget="remove" title="Remove">
@@ -78,12 +80,12 @@
                                     <thead>
                                         <tr>
                                             <th width="50"><input type="checkbox" id="check-all" class="flat"></th>
-                                            <th>Level</th>
-                                            <th>Term Fee</th>
-                                            <th>Term Fee ( Half ) </th>
-                                            <th>Book Price</th>
-                                            <th>Book Half Price</th>
-                                            <th width="80px"></th>
+                                            <th>{{ __('term-fee.table.level') }}</th>
+                                            <th>{{ __('term-fee.table.term_fee') }}</th>
+                                            <th>{{ __('term-fee.table.term_fee_half') }}</th>
+                                            <th>{{ __('term-fee.table.book_price') }}</th>
+                                            <th>{{ __('term-fee.table.book_half_price') }}</th>
+                                            <th width="80px">{{ __('term-fee.table.action') }}</th>
                                         </tr>
                                     </thead>
                                     <tbody>

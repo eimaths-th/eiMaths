@@ -1,40 +1,42 @@
 @php
     $user_messages = [
-        'another_action' => trans('book-shipments.hq.another_action', [], 'th'),
-        'action_failed' => trans('book-shipments.hq.action_failed', [], 'th'),
-        'selection_editor_load_error' => trans('book-shipments.hq.selection_editor_load_error', [], 'th'),
-        'selected_books_empty' => trans('book-shipments.hq.selected_books_empty', [], 'th'),
-        'student_fallback' => trans('book-shipments.hq.student_fallback', [], 'th'),
-        'unnamed_student' => trans('book-shipments.hq.unnamed_student', [], 'th'),
-        'unnamed_book' => trans('book-shipments.hq.unnamed_book', [], 'th'),
-        'no_level' => trans('book-shipments.hq.no_level', [], 'th'),
-        'term' => trans('book-shipments.hq.term', [], 'th'),
-        'no_order_number' => trans('book-shipments.hq.no_order_number', [], 'th'),
-        'remove' => trans('book-shipments.hq.remove', [], 'th'),
-        'show_books' => trans('book-shipments.hq.show_books', [], 'th'),
-        'hide_books' => trans('book-shipments.hq.hide_books', [], 'th'),
-        'no_eligible_books' => trans('book-shipments.hq.no_eligible_books', [], 'th'),
-        'select_all_books_for' => trans('book-shipments.hq.select_all_books_for', [], 'th'),
-        'select_book_for' => trans('book-shipments.hq.select_book_for', [], 'th'),
-        'replacement_for' => trans('book-shipments.hq.replacement_for', [], 'th'),
-        'page_summary' => trans('book-shipments.hq.page_summary', [], 'th'),
-        'previous' => trans('book-shipments.hq.previous', [], 'th'),
-        'next' => trans('book-shipments.hq.next', [], 'th'),
-        'choose_centre_begin' => trans('book-shipments.hq.choose_centre_begin', [], 'th'),
-        'loading' => 'กำลังโหลดหนังสือนักเรียนใหม่ที่จัดส่งได้…',
-        'student_count_loaded' => trans('book-shipments.hq.student_count_loaded', [], 'th'),
-        'no_candidates_loaded' => trans('book-shipments.hq.no_candidates_loaded', [], 'th'),
-        'select_at_least_one' => trans('book-shipments.hq.select_at_least_one', [], 'th'),
-        'saving' => trans('book-shipments.hq.saving', [], 'th'),
-        'save_draft_changes' => trans('book-shipments.hq.save_draft_changes', [], 'th'),
-        'save_draft' => trans('book-shipments.hq.save_draft', [], 'th'),
-        'reason_validation' => trans('book-shipments.hq.reason_validation', [], 'th'),
-        'confirm_dispatch' => trans('book-shipments.hq.confirm_dispatch', [], 'th'),
-        'confirm_discard' => trans('book-shipments.hq.confirm_discard', [], 'th'),
-        'confirm_cancel' => trans('book-shipments.hq.confirm_cancel', [], 'th'),
-        'dispatching' => trans('book-shipments.hq.dispatching', [], 'th'),
-        'discarding' => trans('book-shipments.hq.discarding', [], 'th'),
-        'cancelling' => trans('book-shipments.hq.cancelling', [], 'th'),
+        'another_action' => trans('book-shipments.hq.another_action', []),
+        'action_failed' => trans('book-shipments.hq.action_failed', []),
+        'selection_editor_load_error' => trans('book-shipments.hq.selection_editor_load_error', []),
+        'selected_books_empty' => trans('book-shipments.hq.selected_books_empty', []),
+        'student_fallback' => trans('book-shipments.hq.student_fallback', []),
+        'unnamed_student' => trans('book-shipments.hq.unnamed_student', []),
+        'unnamed_book' => trans('book-shipments.hq.unnamed_book', []),
+        'no_level' => trans('book-shipments.hq.no_level', []),
+        'term' => trans('book-shipments.hq.term', []),
+        'no_order_number' => trans('book-shipments.hq.no_order_number', []),
+        'remove' => trans('book-shipments.hq.remove', []),
+        'show_books' => trans('book-shipments.hq.show_books', []),
+        'hide_books' => trans('book-shipments.hq.hide_books', []),
+        'no_eligible_books' => trans('book-shipments.hq.no_eligible_books', []),
+        'select_all_books_for' => trans('book-shipments.hq.select_all_books_for', []),
+        'select_book_for' => trans('book-shipments.hq.select_book_for', []),
+        'replacement_for' => trans('book-shipments.hq.replacement_for', []),
+        'page_summary' => trans('book-shipments.hq.page_summary', []),
+        'previous' => trans('book-shipments.hq.previous', []),
+        'next' => trans('book-shipments.hq.next', []),
+        'choose_centre_begin' => trans('book-shipments.hq.choose_centre_begin', []),
+        'loading' => trans('book-shipments.hq.loading', []),
+        'student_count_loaded' => trans('book-shipments.hq.student_count_loaded', []),
+        'no_candidates_loaded' => trans('book-shipments.hq.no_candidates_loaded', []),
+        'select_at_least_one' => trans('book-shipments.hq.select_at_least_one', []),
+        'saving' => trans('book-shipments.hq.saving', []),
+        'save_draft_changes' => trans('book-shipments.hq.save_draft_changes', []),
+        'save_draft' => trans('book-shipments.hq.save_draft', []),
+        'draft_discard_reason_short' => trans('book-shipments.hq.draft_discard_reason_short', []),
+        'cancellation_reason_short' => trans('book-shipments.hq.cancellation_reason_short', []),
+        'reason_validation' => trans('book-shipments.hq.reason_validation', []),
+        'confirm_dispatch' => trans('book-shipments.hq.confirm_dispatch', []),
+        'confirm_discard' => trans('book-shipments.hq.confirm_discard', []),
+        'confirm_cancel' => trans('book-shipments.hq.confirm_cancel', []),
+        'dispatching' => trans('book-shipments.hq.dispatching', []),
+        'discarding' => trans('book-shipments.hq.discarding', []),
+        'cancelling' => trans('book-shipments.hq.cancelling', []),
     ];
 @endphp
 
@@ -516,7 +518,9 @@
                     const reason = transition_reason?.value.trim() || '';
                     set_text(transition_error, '');
                     if (reason.length < 3 || reason.length > 1000) {
-                        const reason_label = transition === 'discard' ? 'ยกเลิกแบบร่าง' : 'ยกเลิกการจัดส่ง';
+                        const reason_label = transition === 'discard'
+                            ? user_messages.draft_discard_reason_short
+                            : user_messages.cancellation_reason_short;
                         set_text(transition_error, format_message(user_messages.reason_validation, { type: reason_label }));
                         transition_reason?.focus();
                         return;

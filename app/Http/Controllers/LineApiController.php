@@ -64,10 +64,10 @@ class LineApiController extends Controller
                 //     return $row->channel_access_token;
                 // })
                 ->editColumn('create_by', function ($row) {
-                    return $row->creator ? $row->creator->name : 'Unknown';
+                    return $row->creator ? $row->creator->name : __('system-settings.line_api.messages.unknown');
                 })
                 ->editColumn('update_by', function ($row) {
-                    return $row->editor ? $row->editor->name : 'Unknown';
+                    return $row->editor ? $row->editor->name : __('system-settings.line_api.messages.unknown');
                 })
                 ->editColumn('status', function ($row) {
                     $checked = $row->status == 1 ? 'checked' : '';
@@ -82,12 +82,12 @@ class LineApiController extends Controller
                 })
                 ->addColumn('action', function ($row) {
                     if (Gate::allows('user-edit')) {
-                        $html = '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit</button> ';
+                        $html = '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> ' . e(__('system-settings.line_api.actions.edit')) . '</button> ';
                     } else {
-                        $html = '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> Edit</button> ';
+                        $html = '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="' . e(__('system-settings.line_api.messages.permission_denied')) . '"><i class="fa fa-edit"></i> ' . e(__('system-settings.line_api.actions.edit')) . '</button> ';
                     }
 
-                    $html .= '<button type="button" data-rowid="' . $row->id . '" class="btn btn-sm btn-danger btn-delete"><i class="fa fa-trash"></i> Delete</button>';
+                    $html .= '<button type="button" data-rowid="' . $row->id . '" class="btn btn-sm btn-danger btn-delete"><i class="fa fa-trash"></i> ' . e(__('system-settings.line_api.actions.delete')) . '</button>';
 
                     return $html;
                 })->rawColumns(['no', 'status', 'action'])->toJson();
@@ -120,7 +120,7 @@ class LineApiController extends Controller
             'channel_secret' => 'required',
             'channel_access_token' => 'required',
             'name' => 'required',
-        ]);
+        ], $this->ValidationMessages());
 
         // Encrypt the fields
         $encryptedData = [
@@ -134,7 +134,7 @@ class LineApiController extends Controller
         LineApiSetting::create($encryptedData);
 
         // Return success response
-        return response()->json(['success' => 'Data stored successfully']);
+        return response()->json(['success' => __('system-settings.line_api.messages.created')]);
     }
 
     /**
@@ -176,7 +176,7 @@ class LineApiController extends Controller
             'line_user_id' => 'required',
             'channel_secret' => 'required',
             'channel_access_token' => 'required',
-        ]);
+        ], $this->ValidationMessages());
 
         // Encrypt the fields
         $encryptedData = [
@@ -189,11 +189,11 @@ class LineApiController extends Controller
 
         $data = LineApiSetting::find($id);
         if (!$data) {
-            return response()->json(['error' => 'Record not found'], 404);
+            return response()->json(['error' => __('system-settings.line_api.messages.not_found')], 404);
         }
         $data->update($encryptedData);
 
-        return response()->json(['message' => 'Record updated successfully', 'data' => $data]);
+        return response()->json(['message' => __('system-settings.line_api.messages.updated'), 'data' => $data]);
     }
 
     /**
@@ -207,7 +207,7 @@ class LineApiController extends Controller
         // Check if the record exists
         if (!$data) {
             return response()->json([
-                'error' => 'Record not found.'
+                'error' => __('system-settings.line_api.messages.not_found'),
             ], 404);
         }
 
@@ -217,7 +217,7 @@ class LineApiController extends Controller
         // Return a success response
         return response()->json([
             'success' => true,
-            'message' => 'Record deleted successfully.'
+            'message' => __('system-settings.line_api.messages.deleted'),
         ]);
     }
 
@@ -226,7 +226,7 @@ class LineApiController extends Controller
         // Validate the incoming request
         $request->validate([
             'status' => 'required|boolean', // Ensure status is 0 or 1
-        ]);
+        ], $this->ValidationMessages());
 
         // If the new status is "on" (1), set all others to "off" (0)
         if ($request->status == 1) {
@@ -240,7 +240,19 @@ class LineApiController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Status updated successfully.',
+            'message' => __('system-settings.line_api.messages.status_updated'),
         ]);
+    }
+
+    private function ValidationMessages(): array
+    {
+        return [
+            'name.required' => __('system-settings.line_api.validation.name_required'),
+            'line_user_id.required' => __('system-settings.line_api.validation.line_user_id_required'),
+            'channel_secret.required' => __('system-settings.line_api.validation.channel_secret_required'),
+            'channel_access_token.required' => __('system-settings.line_api.validation.channel_access_token_required'),
+            'status.required' => __('system-settings.line_api.validation.status_required'),
+            'status.boolean' => __('system-settings.line_api.validation.status_boolean'),
+        ];
     }
 }

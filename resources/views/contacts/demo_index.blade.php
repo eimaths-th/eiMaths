@@ -30,7 +30,7 @@
                                 New Receipt </button> --}}
                         @else
                             <span class="d-inline-block" tabindex="0" data-toggle="tooltip" data-placement="bottom"
-                                title="You Not Have Permission">
+                                title="{{ __('common.feedback.permission_denied') }}">
                                 {{-- <button type="button" class="btn btn-info" id="export_button"><i
                                         class="fa-solid fa-file-export"></i> Export Excel </button> --}}
                                 {{-- <button type="button" class="btn btn-success disabled">
@@ -47,7 +47,7 @@
                                 All</button> --}}
                         @else
                             {{-- <span class="d-inline-block" tabindex="0" data-toggle="tooltip" data-placement="bottom"
-                                title="You Not Have Permission">
+                                title="{{ __('common.feedback.permission_denied') }}">
                                 <button type="button" class="btn btn-danger disabled"><i class="fa fa-trash"></i>
                                     Delete All</button>
                                  </span> --}}
@@ -71,12 +71,12 @@
                 <div class="col-12">
                     <div class="card card-primary">
                         <div class="card-header">
-                            <h3 class="card-title"><i class="fas fa-graduation-cap"></i> Student List</h3>
+                            <h3 class="card-title"><i class="fas fa-graduation-cap"></i> {{ __('students.titles.demo') }}</h3>
                             <div class="card-tools">
                                 <button type="button" class="btn btn-tool" data-card-widget="maximize">
                                     <i class="fas fa-expand"></i>
                                 </button>
-                                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="{{ __('students.demo.collapse') }}">
                                     <i class="fas fa-minus"></i>
                                 </button>
                                 {{-- <button type="button" class="btn btn-tool" data-card-widget="remove" title="Remove">
@@ -102,7 +102,7 @@
                                         <div class="col-xs-12 col-sm-12 col-md-12">
                                             <div class="form-group">
                                                 <strong>
-                                                    Start Date Filter:</strong>
+                                                    {{ __('students.demo.start_date_filter') }}:</strong>
                                                 <div class="input-group">
                                                     <div class="input-group-prepend">
                                                         <span class="input-group-text">
@@ -120,23 +120,23 @@
                                         <div class="col-xs-4 col-sm-4 col-md-4">
                                             <div class="form-group">
                                                 <strong><i class="fa-solid fa-clipboard-question"></i>
-                                                    Search Type:</strong>
+                                                    {{ __('students.demo.search_type') }}:</strong>
                                                 <select style="width: 100%;" class="form-control" id="search_type"
                                                     name="search_type">
-                                                    <option value="">Please Select</option>
-                                                    <option value="1">Student Code</option>
-                                                    <option value="2">Student Name</option>
-                                                    <option value="3">Father Name</option>
-                                                    <option value="4">Mother Name</option>
-                                                    <option value="5">Father Mobile</option>
-                                                    <option value="6">Mother Mobile</option>
+                                                    <option value="">{{ __('students.demo.please_select') }}</option>
+                                                    <option value="1">{{ __('students.demo.student_code') }}</option>
+                                                    <option value="2">{{ __('students.demo.student_name') }}</option>
+                                                    <option value="3">{{ __('students.demo.father_name') }}</option>
+                                                    <option value="4">{{ __('students.demo.mother_name') }}</option>
+                                                    <option value="5">{{ __('students.demo.father_mobile') }}</option>
+                                                    <option value="6">{{ __('students.demo.mother_mobile') }}</option>
                                                 </select>
                                             </div>
                                         </div>
                                         <div class="col-xs-4 col-sm-4 col-md-4">
                                             <div class="form-group">
-                                                <strong><i class="fa-regular fa-keyboard"></i> Keyword:</strong>
-                                                {!! Form::text('keyword', null, ['id' => 'keyword', 'placeholder' => 'keyword', 'class' => 'form-control']) !!}
+                                                <strong><i class="fa-regular fa-keyboard"></i> {{ __('students.demo.keyword') }}:</strong>
+                                                {!! Form::text('keyword', null, ['id' => 'keyword', 'placeholder' => __('students.demo.keyword_placeholder'), 'class' => 'form-control']) !!}
                                             </div>
                                         </div>
                                         <div class="col-xs-2 col-sm-2 col-md-2">
@@ -172,25 +172,25 @@
                                                     <th width="90px"><input type="checkbox" id="check-all"
                                                             class="flat">
                                                     </th>
-                                                    <th>Centre</th>
-                                                    <th>Code</th>
-                                                    <th>Student Name</th>
-                                                    <th>Student Nick Name</th>
-                                                    <th>Register Date</th>
-                                                    <th>Start Date - End Date</th>
-                                                    <th>Level</th>
-                                                    <th>BookUse </th>
+                                                    <th>{{ __('students.table.centre') }}</th>
+                                                    <th>{{ __('students.table.code') }}</th>
+                                                    <th>{{ __('students.table.student_name') }}</th>
+                                                    <th>{{ __('students.demo.student_nickname') }}</th>
+                                                    <th>{{ __('students.demo.register_date') }}</th>
+                                                    <th>{{ __('students.demo.start_end_date') }}</th>
+                                                    <th>{{ __('students.table.level') }}</th>
+                                                    <th>{{ __('students.demo.book_use') }} </th>
                                                     {{-- <th>Start Term</th> --}}
-                                                    <th>Term</th>
-                                                    <th {{-- class="none" --}}>Telephone</th>
-                                                    <th>Father Mobile</th>
-                                                    <th>Mother Mobile</th>
-                                                    <th class="none">Father Email</th>
-                                                    <th class="none">Mother Email</th>
-                                                    <th class="none">Father Name</th>
-                                                    <th class="none">Mother Name</th>
+                                                    <th>{{ __('students.demo.term') }}</th>
+                                                    <th {{-- class="none" --}}>{{ __('students.table.telephone') }}</th>
+                                                    <th>{{ __('students.table.father_mobile') }}</th>
+                                                    <th>{{ __('students.table.mother_mobile') }}</th>
+                                                    <th class="none">{{ __('students.table.father_email') }}</th>
+                                                    <th class="none">{{ __('students.table.mother_email') }}</th>
+                                                    <th class="none">{{ __('students.table.father_name') }}</th>
+                                                    <th class="none">{{ __('students.table.mother_name') }}</th>
                                                     <th class="none" width="180px"></th>
-                                                    <th>More</th>
+                                                    <th>{{ __('students.table.more') }}</th>
                                                 </tr>
                                             </thead>
                                             <tbody>

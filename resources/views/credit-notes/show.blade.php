@@ -10,13 +10,13 @@
             <div class="container-fluid">
                 <div class="d-flex flex-wrap justify-content-between align-items-start">
                     <div>
-                        <p class="credit-note-eyebrow mb-1">Financial documents / เอกสารการเงิน</p>
+                        <p class="credit-note-eyebrow mb-1">{{ __('credit-note.page.financial_documents') }}</p>
                         <h1 class="mb-1">
                             {{ __('credit-note.navigation.title') }}
-                            <span class="text-muted">{{ $credit_note->number ?? ('Draft #' . $credit_note->id) }}</span>
+                            <span class="text-muted">{{ $credit_note->number ?? __('credit-note.register.draft_number', ['id' => $credit_note->id]) }}</span>
                         </h1>
                         <p class="text-muted mb-0">
-                            Original receipt: {{ $credit_note->original_receipt_number ?? '—' }}
+                            {{ __('credit-note.page.original_receipt') }}: {{ $credit_note->original_receipt_number ?? '—' }}
                             <span class="mx-1">•</span>
                             {{ optional($credit_note->original_receipt_date)->format('Y-m-d') ?? '—' }}
                         </p>
@@ -31,7 +31,7 @@
                             </a>
                         @endcan
                         <a class="btn btn-primary" href="{{ route('credit-notes.index') }}">
-                            <i class="fas fa-list mr-1"></i>Credit Note register
+                            <i class="fas fa-list mr-1"></i>{{ __('credit-note.navigation.register') }}
                         </a>
                     </div>
                 </div>
@@ -53,14 +53,14 @@
                             <div>{{ $errors->first() }}</div>
                             @if (session('credit_note_error_code') === 'CREDIT_NOTE_ISSUER_CONFIGURATION_INVALID')
                                 <div id="credit-note-issuer-config-details" class="credit-note-feedback-details">
-                                    <strong>Required issuer setup:</strong>
+                                    <strong>{{ __('credit-note.page.required_issuer_setup') }}</strong>
                                     <ul class="mb-1 pl-3">
-                                        <li>Legal name: <code>CREDIT_NOTE_ISSUER_LEGAL_NAME</code></li>
-                                        <li>Legal address: <code>CREDIT_NOTE_ISSUER_LEGAL_ADDRESS</code></li>
-                                        <li>Valid 13-digit tax ID: <code>CREDIT_NOTE_ISSUER_TAX_ID</code></li>
-                                        <li>Head office branch: <code>CREDIT_NOTE_ISSUER_BRANCH_TYPE=head_office</code> and <code>CREDIT_NOTE_ISSUER_BRANCH_CODE=00000</code></li>
+                                        <li>{{ __('credit-note.page.legal_name') }} <code>CREDIT_NOTE_ISSUER_LEGAL_NAME</code></li>
+                                        <li>{{ __('credit-note.page.legal_address') }} <code>CREDIT_NOTE_ISSUER_LEGAL_ADDRESS</code></li>
+                                        <li>{{ __('credit-note.page.valid_tax_id') }} <code>CREDIT_NOTE_ISSUER_TAX_ID</code></li>
+                                        <li>{{ __('credit-note.page.head_office_branch') }} <code>CREDIT_NOTE_ISSUER_BRANCH_TYPE=head_office</code> and <code>CREDIT_NOTE_ISSUER_BRANCH_CODE=00000</code></li>
                                     </ul>
-                                    <span>Update the demo <code>.env</code>, clear the configuration cache, then reload this page.</span>
+                                    <span>{{ __('credit-note.page.configuration_guidance') }}</span>
                                 </div>
                             @endif
                         </div>
@@ -71,9 +71,9 @@
                     <div class="card-header credit-note-workspace-header">
                         <div class="credit-note-workspace-copy">
                             <h2 id="credit-note-detail-title" class="card-title mb-1">
-                                <i class="fas fa-file-invoice-dollar mr-2"></i>{{ __('credit-note.navigation.title') }} detail
+                                <i class="fas fa-file-invoice-dollar mr-2"></i>{{ __('credit-note.navigation.title') }} {{ __('credit-note.page.detail') }}
                             </h2>
-                            <p class="small text-muted mb-0">Review source lines, enter the adjustment, then save the draft.</p>
+                            <p class="small text-muted mb-0">{{ __('credit-note.page.review_source') }}</p>
                         </div>
                         <div class="credit-note-header-status">
                             @include('credit-notes.partials.status-badge', ['credit_note' => $credit_note])
@@ -84,25 +84,25 @@
                             <div class="credit-note-draft-banner" role="status">
                                 <span class="credit-note-draft-icon"><i class="fas fa-pen"></i></span>
                                 <div>
-                                    <strong>Draft document</strong>
-                                    <span>Changes are not financially posted until the Credit Note is issued.</span>
+                                    <strong>{{ __('credit-note.page.draft_document') }}</strong>
+                                    <span>{{ __('credit-note.page.draft_not_posted') }}</span>
                                 </div>
                             </div>
-                            <div class="credit-note-watermark" aria-label="Draft watermark">DRAFT</div>
+                            <div class="credit-note-watermark" aria-label="{{ __('credit-note.page.draft_watermark') }}">{{ __('credit-note.document.draft_watermark') }}</div>
                             @include('credit-notes.partials.editor', ['credit_note' => $credit_note, 'source_snapshot' => $source_snapshot])
                         @else
                             @include('credit-notes.partials.totals', ['credit_note' => $credit_note])
                             @if (($credit_note->status?->value ?? null) === 'issued' && config('financial-documents.credit_note.financial_actions_enabled') && auth()->user()?->can('credit-note-cancel'))
                                 <div class="credit-note-action-panel mt-4">
                                     <div>
-                                        <h3 class="h6 mb-1">Cancel issued document</h3>
-                                        <p class="small text-muted mb-0">Cancellation creates a separate reversal record.</p>
+                                        <h3 class="h6 mb-1">{{ __('credit-note.page.cancel_issued_document') }}</h3>
+                                        <p class="small text-muted mb-0">{{ __('credit-note.page.cancellation_reversal') }}</p>
                                     </div>
                                     <form method="POST" action="{{ route('credit-notes.cancel', $credit_note) }}" class="credit-note-inline-form">
                                         @csrf
                                         <input type="hidden" name="idempotency_key" value="{{ (string) \Illuminate\Support\Str::uuid() }}">
-                                        <label class="sr-only" for="issued-cancellation-reason">Cancellation reason</label>
-                                        <input id="issued-cancellation-reason" name="reason" class="form-control" required maxlength="2000" placeholder="Cancellation reason">
+                                        <label class="sr-only" for="issued-cancellation-reason">{{ __('credit-note.editor.cancellation_reason') }}</label>
+                                        <input id="issued-cancellation-reason" name="reason" class="form-control" required maxlength="2000" placeholder="{{ __('credit-note.editor.cancellation_reason') }}">
                                         <button type="submit" class="btn btn-outline-danger">{{ __('credit-note.actions.cancel') }}</button>
                                     </form>
                                 </div>

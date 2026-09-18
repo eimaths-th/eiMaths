@@ -17,22 +17,22 @@
 
                         @can('department-create')
                             <button type="button" class="btn btn-success" id="CreateButton">
-                                <i class="fas fa-list-ol"></i> Add Department </a> </button>
+                                <i class="fas fa-list-ol"></i> {{ __('centre-management.departments.actions.add') }}</button>
                         @else
                             <span class="d-inline-block" tabindex="0" data-toggle="tooltip" data-placement="bottom"
-                                title="You Not Have Permission">
+                                title="{{ __('centre-management.messages.no_permission') }}">
                                 <button type="button" class="btn btn-success disabled">
-                                    <i class="fas fa-list-ol"></i> Add Department </a></button>
+                                    <i class="fas fa-list-ol"></i> {{ __('centre-management.departments.actions.add') }}</button>
                             </span>
                         @endcan &nbsp;
 
                         @can('department-delete')
-                            <button type="button" class="btn btn-danger delete_all_button"><i class="fa fa-trash"></i> Delete All</button>
+                            <button type="button" class="btn btn-danger delete_all_button"><i class="fa fa-trash"></i> {{ __('centre-management.departments.actions.delete_all') }}</button>
                         @else
                             <span class="d-inline-block" tabindex="0" data-toggle="tooltip" data-placement="bottom"
-                                title="You Not Have Permission">
+                                title="{{ __('centre-management.messages.no_permission') }}">
                                 <button type="button" class="btn btn-danger disabled"><i class="fa fa-trash"></i>
-                                    Delete All</button>
+                                    {{ __('centre-management.departments.actions.delete_all') }}</button>
                             </span>
                         @endcan
                     </ol>
@@ -48,9 +48,9 @@
                 <div class="col-12">
                     <div class="card card-primary">
                         <div class="card-header">
-                            <h3 class="card-title"><i class="fas fa-list-ol"></i> Department</h3>
+                            <h3 class="card-title"><i class="fas fa-list-ol"></i> {{ __('centre-management.departments.title') }}</h3>
                             <div class="card-tools">
-                                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="{{ __('centre-management.departments.actions.collapse') }}">
                                     <i class="fas fa-minus"></i>
                                 </button>
                                 {{-- <button type="button" class="btn btn-tool" data-card-widget="remove" title="Remove">
@@ -78,10 +78,10 @@
                                     <thead>
                                         <tr>
                                             <th><input type="checkbox" id="check-all" class="flat"></th>
-                                            <th>Department</th>
-                                            <th>Centre</th>
-                                            <th>Status</th>
-                                            <th width="120px"></th>
+                                            <th>{{ __('centre-management.departments.table.department') }}</th>
+                                            <th>{{ __('centre-management.departments.table.centre') }}</th>
+                                            <th>{{ __('centre-management.departments.table.status') }}</th>
+                                            <th width="120px">{{ __('centre-management.departments.table.action') }}</th>
                                         </tr>
                                     </thead>
                                     <tbody>

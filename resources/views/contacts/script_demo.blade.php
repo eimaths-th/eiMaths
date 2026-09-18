@@ -1,4 +1,30 @@
+@php
+    $demo_ui = [
+        'confirm_delete' => __('students.messages.confirm_delete'),
+        'select_items' => __('students.messages.select_items'),
+        'confirm_export' => __('students.messages.confirm_export'),
+        'select_export' => __('students.messages.select_export'),
+        'select_placeholder' => __('students.filters.please_select'),
+        'search_required' => __('students.messages.search_required'),
+        'select_start_level' => __('students.messages.select_start_level'),
+        'invalid_level_order' => __('students.messages.invalid_level_order'),
+        'confirm_action' => __('students.messages.confirm_action'),
+        'processing' => __('common.datatable.processing'),
+        'length_menu' => __('common.datatable.length_menu'),
+        'no_data' => __('common.datatable.zero_records'),
+        'info' => __('common.datatable.info'),
+        'info_empty' => __('common.datatable.info_empty'),
+        'info_filtered' => __('common.datatable.info_filtered'),
+        'search' => __('common.datatable.search'),
+        'first' => __('common.datatable.first'),
+        'previous' => __('common.datatable.previous'),
+        'next' => __('common.datatable.next'),
+        'last' => __('common.datatable.last'),
+    ];
+@endphp
 <script>
+    const demo_ui = {!! json_encode($demo_ui, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) !!};
+
     $(document).ready(function() {
 
         function showOverlay() {
@@ -16,24 +42,24 @@
         $(".delete_all_button").click(function() {
             var len = $('input[name="table_records[]"]:checked').length;
             if (len > 0) {
-                if (confirm("Confirm data deletion?")) {
+                if (confirm(demo_ui.confirm_delete)) {
                     $('form#delete_all').submit();
                 }
             } else {
-                alert("Please select items to delete.");
+                alert(demo_ui.select_items);
             }
         });
 
         $(".export_button").click(function() {
             var len = $('input[name="table_records[]"]:checked').length;
             if (len > 0) {
-                if (confirm("Click OK to Export?")) {
+                if (confirm(demo_ui.confirm_export)) {
                     $('form#delete_all').attr('action',
                         '{{ route('contact.export') }}'); //this fails silently
                     $('form#delete_all').submit();
                 }
             } else {
-                alert("Please Select Record For Export");
+                alert(demo_ui.select_export);
             }
 
         });
@@ -77,7 +103,7 @@
             maximumSelectionLength: 1,
             allowClear: false,
             //theme: 'bootstrap4'
-            placeholder: 'Please select'
+            placeholder: demo_ui.select_placeholder
         });
 
         $(".select2_single").on("select2:unselect", function(e) {
@@ -88,21 +114,21 @@
             maximumSelectionLength: 1,
             allowClear: false,
             //theme: 'bootstrap4'
-            placeholder: 'Please select'
+            placeholder: demo_ui.select_placeholder
         });
 
         $(".select2_singlec").select2({
             maximumSelectionLength: 1,
             allowClear: false,
             //theme: 'bootstrap4'
-            placeholder: 'Please select'
+            placeholder: demo_ui.select_placeholder
         });
 
         $(".select2_multiple").select2({
             maximumSelectionLength: 2,
             allowClear: false,
             //theme: 'bootstrap4'
-            placeholder: 'Please select'
+            placeholder: demo_ui.select_placeholder
         });
 
         var startDate;
@@ -204,20 +230,20 @@
             language: {
                 loadingRecords: '&nbsp;',
                 processing: `<div class="spinner-border text-primary"></div>`,
-                "sProcessing": "Processing...",
-                "sLengthMenu": "Display _MENU_ Row",
-                "sZeroRecords": "No Data Found",
-                "sInfo": "Display _START_ To _END_ From _TOTAL_ Records",
-                "sInfoEmpty": "Display 0 To 0 From 0 Records",
-                "sInfoFiltered": "(Filters _MAX_ Row)",
+                "sProcessing": demo_ui.processing,
+                "sLengthMenu": demo_ui.length_menu,
+                "sZeroRecords": demo_ui.no_data,
+                "sInfo": demo_ui.info,
+                "sInfoEmpty": demo_ui.info_empty,
+                "sInfoFiltered": demo_ui.info_filtered,
                 "sInfoPostFix": "",
-                "sSearch": "Search:",
+                "sSearch": demo_ui.search,
                 "sUrl": "",
                 "oPaginate": {
-                    "sFirst": "First",
-                    "sPrevious": "Previous",
-                    "sNext": "Next",
-                    "sLast": "Last"
+                    "sFirst": demo_ui.first,
+                    "sPrevious": demo_ui.previous,
+                    "sNext": demo_ui.next,
+                    "sLast": demo_ui.last
                 }
             },
             aaSorting: [
@@ -355,7 +381,7 @@
                 }
             } else {
                 // Handle the case where searchType or keyword is empty
-                toastr.error('Please input Search Type and Keyword', {
+                toastr.error(demo_ui.search_required, {
                     timeOut: 5000
                 });
             }
@@ -575,14 +601,14 @@
             } else {
                 $("#AddLevel").addClass("is-invalid");
                 $("#AddLevel").removeClass("is-valid");
-                toastr.error('Please Select Start Level', {
+                toastr.error(demo_ui.select_start_level, {
                     timeOut: 5000
                 });
                 return false;
             }
 
             if (selectedValue2 < selectedValue1) {
-                toastr.error("Cannot select 'To level' less than 'Start level'", {
+                toastr.error(demo_ui.invalid_level_order, {
                     timeOut: 5000
                 });
                 return false;
@@ -772,7 +798,7 @@
         })
 
         $('#SubmitEditForm').click(function(e) {
-            if (!confirm("Confirm the action?")) return;
+            if (!confirm(demo_ui.confirm_action)) return;
             e.preventDefault();
 
             $('.alert-danger').html('');
@@ -789,14 +815,14 @@
             } else {
                 $("#EditLevel").addClass("is-invalid");
                 $("#EditLevel").removeClass("is-valid");
-                toastr.error('Please Select Start Level', {
+                toastr.error(demo_ui.select_start_level, {
                     timeOut: 5000
                 });
                 return false;
             }
 
             if (selectedValue2 < selectedValue1) {
-                toastr.error("Cannot select 'To level' less than 'Start level'", {
+                toastr.error(demo_ui.invalid_level_order, {
                     timeOut: 5000
                 });
                 return false;
@@ -886,14 +912,14 @@
             } else {
                 $("#ReceiptLevel").addClass("is-invalid");
                 $("#ReceiptLevel").removeClass("is-valid");
-                toastr.error('Please Select Start Level', {
+                toastr.error(demo_ui.select_start_level, {
                     timeOut: 5000
                 });
                 return false;
             }
 
             if (selectedValue2 < selectedValue1) {
-                toastr.error("Cannot select 'To level' less than 'Start level'", {
+                toastr.error(demo_ui.invalid_level_order, {
                     timeOut: 5000
                 });
                 return false;
@@ -949,7 +975,7 @@
         });
 
         $(document).on('click', '.btn-delete', function() {
-            if (!confirm("Confirm the action?")) return;
+            if (!confirm(demo_ui.confirm_action)) return;
 
             var rowid = $(this).data('rowid')
             var el = $(this)

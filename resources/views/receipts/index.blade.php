@@ -17,7 +17,7 @@
                     <ol class="breadcrumb float-sm-right">
                         <button type="button" class="btn btn-info export_button" id="export_button"><i
                                 class="fa-solid fa-file-export"></i>
-                            Export Excel </button>
+                            {{ __('common.actions.export_excel') }} </button>
                         &nbsp;
                     </ol>
                 </div>
@@ -35,21 +35,21 @@
                         <div class="card-header">
                             @switch(request('type'))
                                 @case(0)
-                                    <h3 class="card-title"><i class="fa-solid fa-children"></i> New Student Receipt</h3>
+                                    <h3 class="card-title"><i class="fa-solid fa-children"></i> {{ __('receipts.list.titles.new_student') }}</h3>
                                 @break
 
                                 @case(1)
-                                    <h3 class="card-title"><i class="fa-solid fa-children"></i> Term Student Receipt</h3>
+                                    <h3 class="card-title"><i class="fa-solid fa-children"></i> {{ __('receipts.list.titles.term_student') }}</h3>
                                 @break
 
                                 @default
-                                    <h3 class="card-title"><i class="fa-solid fa-children"></i> Default Title</h3>
+                                    <h3 class="card-title"><i class="fa-solid fa-children"></i> {{ __('receipts.list.titles.default') }}</h3>
                             @endswitch
                             <div class="card-tools">
                                 <button type="button" class="btn btn-tool" data-card-widget="maximize">
                                     <i class="fas fa-expand"></i>
                                 </button>
-                                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="{{ __('common.actions.collapse') }}">
                                     <i class="fas fa-minus"></i>
                                 </button>
                             </div>
@@ -80,7 +80,7 @@
                                         <div class="col-xs-12 col-sm-12 col-md-12">
                                             <div class="form-group">
                                                 <strong>
-                                                    Date Filter:</strong>
+                                                    {{ __('receipts.list.filter.date') }}</strong>
                                                 <div class="input-group">
                                                     <div class="input-group-prepend">
                                                         <span class="input-group-text">
@@ -98,19 +98,19 @@
                                         <div class="col-xs-4 col-sm-4 col-md-4">
                                             <div class="form-group">
                                                 <strong><i class="fa-solid fa-clipboard-question"></i>
-                                                    Search Type:</strong>
+                                                    {{ __('receipts.list.filter.search_type') }}</strong>
                                                 <select style="width: 100%;" class="form-control" id="search_type"
                                                     name="search_type">
-                                                    <option value="">Please Select</option>
-                                                    <option value="1">Student Code</option>
-                                                    <option value="2">Student Name</option>
+                                                    <option value="">{{ __('receipts.list.filter.please_select') }}</option>
+                                                    <option value="1">{{ __('receipts.list.filter.student_code') }}</option>
+                                                    <option value="2">{{ __('receipts.list.filter.student_name') }}</option>
                                                 </select>
                                             </div>
                                         </div>
                                         <div class="col-xs-4 col-sm-4 col-md-4">
                                             <div class="form-group">
-                                                <strong><i class="fa-regular fa-keyboard"></i> Keyword:</strong>
-                                                {!! Form::text('keyword', null, ['id' => 'keyword', 'placeholder' => 'keyword', 'class' => 'form-control']) !!}
+                                                <strong><i class="fa-regular fa-keyboard"></i> {{ __('receipts.list.filter.keyword') }}</strong>
+                                                {!! Form::text('keyword', null, ['id' => 'keyword', 'placeholder' => __('receipts.list.filter.keyword_placeholder'), 'class' => 'form-control']) !!}
                                             </div>
                                         </div>
                                         <div class="col-xs-2 col-sm-2 col-md-2">
@@ -145,18 +145,18 @@
                                                 <tr>
                                                     <th width="5%"><input type="checkbox" id="check-all" class="flat">
                                                     </th>
-                                                    <th>Centre</th>
-                                                    <th>Referent Code</th>
-                                                    <th>Student Code</th>
-                                                    <th>Student Name</th>
-                                                    <th>ReceiptNumber</th>
-                                                    <th>PaymentDate</th>
-                                                    <th>Level</th>
-                                                    <th>BookUse</th>
-                                                    <th>TotalFee</th>
+                                                    <th>{{ __('receipts.list.table.centre') }}</th>
+                                                    <th>{{ __('receipts.list.table.referent_code') }}</th>
+                                                    <th>{{ __('receipts.list.table.student_code') }}</th>
+                                                    <th>{{ __('receipts.list.table.student_name') }}</th>
+                                                    <th>{{ __('receipts.list.table.receipt_number') }}</th>
+                                                    <th>{{ __('receipts.list.table.payment_date') }}</th>
+                                                    <th>{{ __('receipts.list.table.level') }}</th>
+                                                    <th>{{ __('receipts.list.table.book_use') }}</th>
+                                                    <th>{{ __('receipts.list.table.total_fee') }}</th>
                                                     {{--  <th>StartTerm</th> --}}
                                                     <th width="120px"></th>
-                                                    <th>More</th>
+                                                    <th>{{ __('receipts.list.table.more') }}</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -172,7 +172,7 @@
                                                     <th align="right"></th>
                                                     <th align="right"></th>
                                                     <th align="right"></th>
-                                                    <th align="right">Total</th>
+                                                    <th align="right">{{ __('receipts.list.table.total') }}</th>
                                                     <th align="center"></th>
                                                     <th></th>
                                                     <th></th>
@@ -198,6 +198,13 @@
 @endsection
 
 @section('script')
+    <script>
+        const receipt_list_ui = {
+            datatable: @json(__('common.datatable')),
+            messages: @json(__('receipts.list.messages')),
+        };
+        const receipt_upload_ui = @json(__('receipts.upload'));
+    </script>
     @include('receipts.script')
     @include('receipts.dropzone')
 @endsection

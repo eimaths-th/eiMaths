@@ -26,9 +26,9 @@ class GuestReportController extends Controller
                 })
                 ->addColumn('status', function ($row) {
                     if ($row->isExpired()) {
-                        return '<span class="badge bg-danger" style="background-color: #dc3545; color: white;">Expired</span>';
+                        return '<span class="badge bg-danger" style="background-color: #dc3545; color: white;">' . e(__('students.guest_reports.expired')) . '</span>';
                     }
-                    return '<span class="badge bg-success" style="background-color: #198754; color: white;">Active</span>';
+                    return '<span class="badge bg-success" style="background-color: #198754; color: white;">' . e(__('students.guest_reports.active')) . '</span>';
                 })
                 ->editColumn('created_at', function ($row) {
                     return $row->created_at ? $row->created_at->format('d-m-Y H:i') : '-';
@@ -37,7 +37,7 @@ class GuestReportController extends Controller
                     return $row->expires_at ? $row->expires_at->format('d-m-Y H:i') : '-';
                 })
                 ->addColumn('action', function ($row) {
-                    $html = '<button type="button" data-rowid="' . $row->id . '" class="btn btn-sm btn-danger btn-delete"><i class="fa fa-trash"></i> Delete</button>';
+                    $html = '<button type="button" data-rowid="' . $row->id . '" class="btn btn-sm btn-danger btn-delete"><i class="fa fa-trash"></i> ' . e(__('common.actions.delete')) . '</button>';
                     return $html;
                 })
                 ->rawColumns(['checkbox', 'status', 'action'])

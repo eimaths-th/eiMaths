@@ -34,7 +34,7 @@ class AssignQuizToStudentController extends Controller
             }
         }
 
-        return response()->json(['success' => 'Quiz assigned successfully']);
+        return response()->json(['success' => __('quiz-management.messages.quiz_assigned')]);
     }
 
 
@@ -93,6 +93,6 @@ class AssignQuizToStudentController extends Controller
              ]);
         }
         
-        return response()->json(['success' => 'Assignments updated successfully']);
+        return response()->json(['success' => __('quiz-management.messages.assignments_updated')]);
     }
 }

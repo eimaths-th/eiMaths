@@ -52,6 +52,18 @@ class BranchTransferController extends Controller
             'type' => 'required|in:student,user',
             'record_id' => 'required|integer', 'to_branch_id' => 'required|integer',
             'position_id' => 'nullable|integer', 'reason' => 'required|string|min:5|max:1000',
+        ], [
+            'type.required' => __('centre-management.transfers.validation.type_required'),
+            'type.in' => __('centre-management.transfers.validation.type_invalid'),
+            'record_id.required' => __('centre-management.transfers.validation.record_required'),
+            'record_id.integer' => __('centre-management.transfers.validation.record_integer'),
+            'to_branch_id.required' => __('centre-management.transfers.validation.destination_required'),
+            'to_branch_id.integer' => __('centre-management.transfers.validation.destination_integer'),
+            'position_id.integer' => __('centre-management.transfers.validation.position_integer'),
+            'reason.required' => __('centre-management.transfers.validation.reason_required'),
+            'reason.string' => __('centre-management.transfers.validation.reason_string'),
+            'reason.min' => __('centre-management.transfers.validation.reason_min'),
+            'reason.max' => __('centre-management.transfers.validation.reason_max'),
         ]);
         BranchAccess::assertBranch($actor, $data['to_branch_id'], true);
         $result = DB::transaction(function () use ($actor, $data) {
@@ -60,7 +72,7 @@ class BranchTransferController extends Controller
             $column = $data['type'] === 'user' ? 'department_id' : 'centre';
             $source = (int) $record->getAttribute($column);
             BranchAccess::assertBranch($actor, $source);
-            abort_if($source === (int) $data['to_branch_id'], 422, 'Choose a different destination branch.');
+            abort_if($source === (int) $data['to_branch_id'], 422, __('centre-management.transfers.errors.different_destination'));
             if ($record instanceof User) {
                 BranchAccess::assertManageUser($actor, $record);
                 abort_if($record->hasAnyRole(['SystemAdmin', 'Admin']), 422, 'Central administrators must remain in HQ.');
@@ -74,7 +86,7 @@ class BranchTransferController extends Controller
                 // a separate credit/settlement operation with the existing finance guards.
                 $open = DB::table('orders')->where('cid', $record->id)->where('centre', $source)
                     ->where(fn ($q) => $q->whereNull('status')->orWhereIn('status', ['0', '1']))->exists();
-                abort_if($open, 422, 'Please complete or cancel pending orders before transferring this student.');
+                abort_if($open, 422, __('centre-management.transfers.errors.pending_orders'));
                 $record->order = 0; // New enrolments use a new order at the destination.
             }
             $context = app(BranchContext::class);
@@ -96,6 +108,8 @@ class BranchTransferController extends Controller
             }
             return ['id' => $record->id, 'from_branch_id' => $source, 'to_branch_id' => (int) $data['to_branch_id']];
         });
-        return $request->expectsJson() ? response()->json(['success' => true, 'data' => $result]) : back()->with('success', 'ย้ายสาขาแล้ว เอกสารและประวัติเดิมยังอยู่กับสาขาผู้ออก');
+        return $request->expectsJson()
+            ? response()->json(['success' => true, 'data' => $result])
+            : back()->with('success', __('centre-management.transfers.messages.success'));
     }
 }

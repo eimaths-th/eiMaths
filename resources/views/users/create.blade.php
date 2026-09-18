@@ -2,8 +2,8 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header bg-primary">
-                <h4 class="modal-title"><i class="fas fa-user"></i> Add User</h4>
-                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                <h4 class="modal-title"><i class="fas fa-user"></i> {{ __('user-access.users.modal.create_title') }}</h4>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="{{ __('user-access.users.actions.close') }}">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -19,13 +19,13 @@
                     </div>
                 @endif --}}
                 <div class="alert alert-danger alert-dismissible fade show" role="alert" style="display: none;">
-                    <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close">
+                    <button type="button" class="btn-close" data-dismiss="alert" aria-label="{{ __('user-access.users.actions.close') }}">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="alert alert-success alert-dismissible fade show" role="alert" style="display: none;">
 
-                    <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close">
+                    <button type="button" class="btn-close" data-dismiss="alert" aria-label="{{ __('user-access.users.actions.close') }}">
                         <span aria-hidden="true"></span>
                     </button>
                 </div>
@@ -36,19 +36,19 @@
                 <div class="row">
                     <div class="col-xs-12 col-sm-12 col-md-12">
                         <div class="form-group">
-                            <strong><i class="fas fa-user"></i> User Name:</strong>
-                            {!! Form::text('name', null, ['id' => 'AddName', 'placeholder' => 'Name', 'class' => 'form-control']) !!}
+                            <strong><i class="fas fa-user"></i> {{ __('user-access.users.modal.name') }}:</strong>
+                            {!! Form::text('name', null, ['id' => 'AddName', 'placeholder' => __('user-access.users.modal.name_placeholder'), 'class' => 'form-control']) !!}
                         </div>
                     </div>
                     <div class="col-xs-12 col-sm-12 col-md-12">
                         <div class="form-group">
-                            <strong><i class="fas fa-at"></i> Email:</strong>
-                            {!! Form::text('email', null, ['id' => 'AddEmail', 'placeholder' => 'Email', 'class' => 'form-control']) !!}
+                            <strong><i class="fas fa-at"></i> {{ __('user-access.users.modal.email') }}:</strong>
+                            {!! Form::text('email', null, ['id' => 'AddEmail', 'placeholder' => __('user-access.users.modal.email_placeholder'), 'class' => 'form-control']) !!}
                         </div>
                     </div>
                     <div class="col-xs-6 col-sm-6 col-md-6">
                         <div class="form-group">
-                            <strong><i class="fas fa-list-ol"></i> Centre:</strong>
+                            <strong><i class="fas fa-list-ol"></i> {{ __('user-access.users.modal.centre') }}:</strong>
                             <select style="width: 100%;" class="departmentl select2 select2_single form-control"
                                 id="AddDepartment" name="department" multiple="multiple">
                                 @can('all-centre')
@@ -71,7 +71,7 @@
                     </div>
                     <div class="col-xs-6 col-sm-6 col-md-6">
                         <div class="form-group">
-                            <strong><i class="fas fa-list-ol"></i> Department:</strong>
+                            <strong><i class="fas fa-list-ol"></i> {{ __('user-access.users.modal.department') }}:</strong>
                             <select style="width: 100%;" class="positions select2 select2_single form-control"
                                 id="AddPosition" name="position" multiple="multiple">
                                 <!-- <option value="" selected>Select Student</option>
@@ -86,16 +86,16 @@
                     </div>
                     <div class="col-xs-12 col-sm-12 col-md-12">
                         <div class="form-group">
-                            <strong><i class="fas fa-key"></i> Password:</strong>
-                            {!! Form::password('password', ['id' => 'AddPassword', 'placeholder' => 'Password', 'class' => 'form-control']) !!}
+                            <strong><i class="fas fa-key"></i> {{ __('user-access.users.modal.password') }}:</strong>
+                            {!! Form::password('password', ['id' => 'AddPassword', 'placeholder' => __('user-access.users.modal.password'), 'class' => 'form-control']) !!}
                         </div>
                     </div>
                     <div class="col-xs-12 col-sm-12 col-md-12">
                         <div class="form-group">
-                            <strong><i class="fas fa-key"></i> Confirm Password:</strong>
+                            <strong><i class="fas fa-key"></i> {{ __('user-access.users.modal.confirm_password') }}:</strong>
                             {!! Form::password('confirm-password', [
                                 'id' => 'AddPasswordc',
-                                'placeholder' => 'Confirm Password',
+                                'placeholder' => __('user-access.users.modal.confirm_password'),
                                 'class' => 'form-control',
                             ]) !!}
                         </div>
@@ -105,7 +105,7 @@
 
                     <div class="col-xs-12 col-sm-12 col-md-12">
                         <div class="form-group">
-                            <strong><i class="fas fa-user-lock"></i> Role:</strong>
+                            <strong><i class="fas fa-user-lock"></i> {{ __('user-access.users.modal.role') }}:</strong>
                             {!! Form::select('roles', $roles, [], ['id' => 'AddRole', 'class' => 'form-control', 'single']) !!}
                         </div>
                     </div>
@@ -117,9 +117,9 @@
             </div>
             <div class="modal-footer {{-- justify-content-between --}}">
                 <button type="button" class="btn btn-success" id="SubmitCreateForm"><i class="fas fa-download"></i>
-                    Save</button>
+                    {{ __('user-access.users.actions.save') }}</button>
                 <button type="button" class="btn btn-danger modelClose" data-bs-dismiss="modal"><i
-                        class="fas fa-door-closed"></i> Close</button>
+                        class="fas fa-door-closed"></i> {{ __('user-access.users.actions.close') }}</button>
             </div>
         </div>
     </div>

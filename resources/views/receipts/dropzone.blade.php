@@ -24,10 +24,10 @@
         },
         previewsContainer: "#dropzone_preview", // ระบุ element เป้าหลาย
         //previewTemplate: $('#template-preview').html(),
-        dictRemoveFile: "Remove", // ชื่อ ปุ่ม remove
-        dictCancelUpload: "Cancel", // ชื่อ ปุ่ม ยกเลิก
+        dictRemoveFile: receipt_upload_ui.remove_file,
+        dictCancelUpload: receipt_upload_ui.cancel_upload,
         dictDefaultMessage: "<img height='60' src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSNsug8XTE5KVJEMECVvm8p43BZTdvZExoQ9Q&usqp=CAU'><br><font size='3'>Select Receipt File.</font>", // ข้อความบนพื้นที่แสดงรูปจะแสดงหลังจากโหลดเพจเสร็จ
-        dictFileTooBig: "ไม่อนุญาตให้อัพโหลดไฟล์เกิน 2 MB", //ข้อความแสดงเมื่อเลือกไฟล์ขนาดเกินที่กำหนด
+        dictFileTooBig: receipt_upload_ui.file_too_big,
         acceptedFiles: "image/*", // อนุญาตให้เลือกไฟล์ประเภทรูปภาพได้
         // The setting up of the dropzone
         init: function() {
@@ -80,7 +80,7 @@
 
 
             }).on("maxfilesexceeded", function(file) {
-                alert('allow maximum 5 file');
+                alert(receipt_upload_ui.maximum_files);
                 this.removeFile(file);
                 /*  var lastFile = myDropzone.files[myDropzone.files.length - 1];
                  if (lastFile) {
@@ -148,10 +148,10 @@
         },
         previewsContainer: "#dropzone_preview2", // ระบุ element เป้าหลาย
         //previewTemplate: $('#template-preview').html(),
-        dictRemoveFile: "Remove", // ชื่อ ปุ่ม remove
-        dictCancelUpload: "Cancel", // ชื่อ ปุ่ม ยกเลิก
+        dictRemoveFile: receipt_upload_ui.remove_file,
+        dictCancelUpload: receipt_upload_ui.cancel_upload,
         dictDefaultMessage: "<img height='60' src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSNsug8XTE5KVJEMECVvm8p43BZTdvZExoQ9Q&usqp=CAU'><br><font size='3'>Select Receipt File.</font>", // ข้อความบนพื้นที่แสดงรูปจะแสดงหลังจากโหลดเพจเสร็จ
-        dictFileTooBig: "ไม่อนุญาตให้อัพโหลดไฟล์เกิน 2 MB", //ข้อความแสดงเมื่อเลือกไฟล์ขนาดเกินที่กำหนด
+        dictFileTooBig: receipt_upload_ui.file_too_big,
         acceptedFiles: "image/*", // อนุญาตให้เลือกไฟล์ประเภทรูปภาพได้
         // The setting up of the dropzone
         init: function() {
@@ -203,7 +203,7 @@
                 //return (_ref = file.previewElement) != null ? _ref.parentNode.removeChild(file.previewElement) : void 0;
 
             }).on("maxfilesexceeded", function(file) {
-                alert('allow maximum 5 file');
+                alert(receipt_upload_ui.maximum_files);
                 this.removeFile(file);
             }).on('complete', function(file) {
                 let val = file.accepted;
@@ -245,4 +245,8 @@
 
         }
     }
+
+    const receipt_upload_default_message = "<img height='60' src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSNsug8XTE5KVJEMECVvm8p43BZTdvZExoQ9Q&usqp=CAU'><br><font size='3'>" + receipt_upload_ui.select_receipt_file + "</font>";
+    Dropzone.options.myAwesomeDropzone.dictDefaultMessage = receipt_upload_default_message;
+    Dropzone.options.myAwesomeDropzone2.dictDefaultMessage = receipt_upload_default_message;
 </script>

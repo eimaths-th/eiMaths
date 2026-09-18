@@ -5,7 +5,7 @@
 	'appContentClass' => 'p-0'
 ])
 
-@section('title', 'Login Page')
+@section('title', __('students.login.page_title'))
 
 @push('css')
 <style>
@@ -532,16 +532,16 @@ select.custom-input {
             <div class="icon-wrapper">
                 <i data-lucide="graduation-cap" class="text-white" width="44" height="44"></i>
             </div>
-            <h3>Student Login</h3>
-            <p>Access your eiMaths Thailand student account and continue your learning.</p>
+            <h3>{{ __('students.login.student_title') }}</h3>
+            <p>{{ __('students.login.student_description') }}</p>
         </div>
         <!-- Free Trial card — temporarily hidden -->
         <div class="choice-card login-opt-guest" onclick="openGuestForm()">
             <div class="icon-wrapper">
                 <i data-lucide="rocket" class="text-white" width="44" height="44"></i>
             </div>
-            <h3>Free Trial</h3>
-            <p>10-day free trial for guests. Test your math skills with our exclusive quizzes.</p>
+            <h3>{{ __('students.login.free_trial') }}</h3>
+            <p>{{ __('students.login.free_trial_description') }}</p>
         </div>
     </div>
 
@@ -551,8 +551,8 @@ select.custom-input {
             <i data-lucide="x" width="24" height="24"></i>
         </div>
         <div class="form-header">
-            <h2><i data-lucide="graduation-cap" style="color: #f97316;" width="40" height="40"></i> Student Login</h2>
-            <p>Welcome back! Please enter your details.</p>
+            <h2><i data-lucide="graduation-cap" style="color: #f97316;" width="40" height="40"></i> {{ __('students.login.student_title') }}</h2>
+            <p>{{ __('students.login.welcome') }}</p>
         </div>
 
         <form action="{{ route('student.check') }}" method="POST">
@@ -565,24 +565,24 @@ select.custom-input {
             @endif
             
             <div class="custom-form-group">
-                <label for="code">Student Code</label>
-                <input type="text" class="custom-input" placeholder="Enter your student code" id="code" name="code" required/>
+                <label for="code">{{ __('students.login.student_code') }}</label>
+                <input type="text" class="custom-input" placeholder="{{ __('students.login.student_code_placeholder') }}" id="code" name="code" required/>
                 <i data-lucide="user" width="20" height="20" class="input-icon"></i>
             </div>
             
             <div class="custom-form-group">
-                <label for="password">Password</label>
-                <input type="password" class="custom-input" placeholder="Enter your password" id="password" name="password" required/>
+                <label for="password">{{ __('students.login.password') }}</label>
+                <input type="password" class="custom-input" placeholder="{{ __('students.login.password_placeholder') }}" id="password" name="password" required/>
                 <i data-lucide="lock" width="20" height="20" class="input-icon"></i>
             </div>
             
             <div class="custom-form-group" style="display: flex; align-items: center; gap: 10px; margin-top: -10px;">
                 <input type="checkbox" id="rememberMe" name="rememberMe" value="1" style="width: 18px; height: 18px; accent-color: #f97316; cursor: pointer;" />
-                <label for="rememberMe" style="margin-bottom: 0; cursor: pointer; font-weight: 500; font-size: 15px;">Remember Me</label>
+                <label for="rememberMe" style="margin-bottom: 0; cursor: pointer; font-weight: 500; font-size: 15px;">{{ __('students.login.remember_me') }}</label>
             </div>
             
             <button type="submit" class="custom-btn btn-student">
-                Sign In <i data-lucide="arrow-right" width="20" height="20"></i>
+                {{ __('students.login.sign_in') }} <i data-lucide="arrow-right" width="20" height="20"></i>
             </button>
         </form>
         <div class="form-footer" style="margin-top: 50px; color: #94a3b8;">
@@ -597,14 +597,14 @@ select.custom-input {
         </div>
 
         <button type="button" class="back-btn-absolute" id="back-btn" onclick="showGuestLogin()" style="display: none;">
-            <i data-lucide="arrow-left" width="20" height="20"></i> Back to Login
+            <i data-lucide="arrow-left" width="20" height="20"></i> {{ __('students.login.back_to_login') }}
         </button>
 
         <!-- Register Section -->
         <div id="guest-register-section" style="display: none;">
             <div class="form-header">
-                <h2><i data-lucide="rocket" style="color: #3b82f6;" width="40" height="40"></i> Free Trial</h2>
-                <p>Register to get 10 days of free access.</p>
+                <h2><i data-lucide="rocket" style="color: #3b82f6;" width="40" height="40"></i> {{ __('students.login.free_trial') }}</h2>
+                <p>{{ __('students.login.register_description') }}</p>
             </div>
 
             <form action="{{ route('guest.quiz.register.store') }}" method="POST">
@@ -626,15 +626,15 @@ select.custom-input {
                 <div class="form-row">
                     <div class="form-col">
                         <div class="custom-form-group">
-                            <label for="first_name">First Name *</label>
-                            <input type="text" class="custom-input" placeholder="First Name" id="first_name" name="first_name" value="{{ old('first_name') }}" required/>
+                            <label for="first_name">{{ __('students.login.first_name') }}</label>
+                            <input type="text" class="custom-input" placeholder="{{ __('students.login.first_name') }}" id="first_name" name="first_name" value="{{ old('first_name') }}" required/>
                             <i data-lucide="user" width="20" height="20" class="input-icon"></i>
                         </div>
                     </div>
                     <div class="form-col">
                         <div class="custom-form-group">
-                            <label for="last_name">Last Name *</label>
-                            <input type="text" class="custom-input" placeholder="Last Name" id="last_name" name="last_name" value="{{ old('last_name') }}" required/>
+                            <label for="last_name">{{ __('students.login.last_name') }}</label>
+                            <input type="text" class="custom-input" placeholder="{{ __('students.login.last_name') }}" id="last_name" name="last_name" value="{{ old('last_name') }}" required/>
                             <i data-lucide="user" width="20" height="20" class="input-icon"></i>
                         </div>
                     </div>
@@ -643,16 +643,16 @@ select.custom-input {
                 <div class="form-row">
                     <div class="form-col">
                         <div class="custom-form-group">
-                            <label for="nickname">Nickname</label>
-                            <input type="text" class="custom-input" placeholder="Nickname" id="nickname" name="nickname" value="{{ old('nickname') }}"/>
+                            <label for="nickname">{{ __('students.login.nickname') }}</label>
+                            <input type="text" class="custom-input" placeholder="{{ __('students.login.nickname') }}" id="nickname" name="nickname" value="{{ old('nickname') }}"/>
                             <i data-lucide="smile" width="20" height="20" class="input-icon"></i>
                         </div>
                     </div>
                     <div class="form-col">
                         <div class="custom-form-group">
-                            <label for="grade">Grade / Class *</label>
+                            <label for="grade">{{ __('students.login.grade') }}</label>
                             <select class="custom-input" id="grade" name="grade" required>
-                                <option value="">-- Select Grade --</option>
+                                <option value="">{{ __('students.login.select_grade') }}</option>
                                 <option value="K1" {{ old('grade') == 'K1' ? 'selected' : '' }}>K1</option>
                                 <option value="K2" {{ old('grade') == 'K2' ? 'selected' : '' }}>K2</option>
                                 <option value="K3" {{ old('grade') == 'K3' ? 'selected' : '' }}>K3</option>
@@ -673,29 +673,29 @@ select.custom-input {
                 </div>
 
                 <div class="custom-form-group">
-                    <label for="school">School</label>
-                    <input type="text" class="custom-input" placeholder="School Name" id="school" name="school" value="{{ old('school') }}"/>
+                    <label for="school">{{ __('students.login.school') }}</label>
+                    <input type="text" class="custom-input" placeholder="{{ __('students.login.school_placeholder') }}" id="school" name="school" value="{{ old('school') }}"/>
                     <i data-lucide="building" width="20" height="20" class="input-icon"></i>
                 </div>
 
                 <div class="custom-form-group">
-                    <label for="email">Email Address *</label>
-                    <input type="email" class="custom-input" placeholder="Email (used for login)" id="email" name="email" value="{{ old('email') }}" required/>
+                    <label for="email">{{ __('students.login.email') }}</label>
+                    <input type="email" class="custom-input" placeholder="{{ __('students.login.email_placeholder') }}" id="email" name="email" value="{{ old('email') }}" required/>
                     <i data-lucide="mail" width="20" height="20" class="input-icon"></i>
                 </div>
 
                 <div class="custom-form-group">
-                    <label for="phone">Phone Number *</label>
-                    <input type="tel" class="custom-input" placeholder="Phone Number (used as password)" id="phone" name="phone" value="{{ old('phone') }}" required/>
+                    <label for="phone">{{ __('students.login.phone') }}</label>
+                    <input type="tel" class="custom-input" placeholder="{{ __('students.login.phone_placeholder') }}" id="phone" name="phone" value="{{ old('phone') }}" required/>
                     <i data-lucide="phone" width="20" height="20" class="input-icon"></i>
                 </div>
 
                 <div class="alert-info-beautiful">
                     <i data-lucide="info" width="24" height="24" style="flex-shrink: 0;"></i>
-                    <span><strong>Note:</strong> Your phone number will be used as your password.</span>
+                    <span><strong>{{ __('students.login.phone_note_label') }}</strong> {{ __('students.login.phone_note') }}</span>
                 </div>
                 <button type="submit" class="custom-btn btn-guest">
-                    Register & Start Free Trial <i data-lucide="play-circle" width="20" height="20"></i>
+                    {{ __('students.login.register_trial') }} <i data-lucide="play-circle" width="20" height="20"></i>
                 </button>
             </form>
         </div>
@@ -703,8 +703,8 @@ select.custom-input {
         <!-- Login Section -->
         <div id="guest-login-section">
             <div class="form-header">
-                <h2><i data-lucide="log-in" style="color: #3b82f6;" width="40" height="40"></i> Guest Login</h2>
-                <p>Enter your details to start your free access.</p>
+                <h2><i data-lucide="log-in" style="color: #3b82f6;" width="40" height="40"></i> {{ __('students.login.guest_title') }}</h2>
+                <p>{{ __('students.login.guest_description') }}</p>
             </div>
 
             <form action="{{ route('guest.quiz.login') }}" method="POST">
@@ -717,8 +717,8 @@ select.custom-input {
                 @endif
                 
                 <div class="custom-form-group">
-                    <label for="guest_email">Email Address</label>
-                    <input type="email" class="custom-input" placeholder="Enter your email" id="guest_email" name="guest_email" value="{{ old('guest_email') }}" required/>
+                    <label for="guest_email">{{ __('students.login.email_label') }}</label>
+                    <input type="email" class="custom-input" placeholder="{{ __('students.login.email_input_placeholder') }}" id="guest_email" name="guest_email" value="{{ old('guest_email') }}" required/>
                     <i data-lucide="mail" width="20" height="20" class="input-icon"></i>
                     @error('guest_email')
                         <span style="color: #ef4444; font-size: 13px; margin-top: 6px; display: block; font-weight: 500;">{{ $message }}</span>
@@ -726,11 +726,11 @@ select.custom-input {
                 </div>
                 
                 <div class="custom-form-group">
-                    <label for="guest_password">Password</label>
-                    <input type="password" class="custom-input" placeholder="Enter your password" id="guest_password" name="guest_password" required/>
+                    <label for="guest_password">{{ __('students.login.password') }}</label>
+                    <input type="password" class="custom-input" placeholder="{{ __('students.login.password_input_placeholder') }}" id="guest_password" name="guest_password" required/>
                     <i data-lucide="lock" width="20" height="20" class="input-icon"></i>
                     <span style="color: #64748b; font-size: 13px; margin-top: 8px; display: flex; align-items: center; gap: 6px; font-weight: 500;">
-                        <i data-lucide="info" width="16" height="16"></i> Use registered phone number
+                        <i data-lucide="info" width="16" height="16"></i> {{ __('students.login.registered_phone') }}
                     </span>
                     @error('guest_password')
                         <span style="color: #ef4444; font-size: 13px; margin-top: 6px; display: block; font-weight: 500;">{{ $message }}</span>
@@ -738,11 +738,11 @@ select.custom-input {
                 </div>
                 
                 <button type="submit" class="custom-btn btn-guest">
-                    Start Free Trial <i data-lucide="play" width="20" height="20"></i>
+                    {{ __('students.login.start_trial') }} <i data-lucide="play" width="20" height="20"></i>
                 </button>
                 
                 <div class="form-footer">
-                    Don't have an account? <a href="javascript:void(0)" onclick="showGuestRegister()">Register Now</a>
+                    {{ __('students.login.no_account') }} <a href="javascript:void(0)" onclick="showGuestRegister()">{{ __('students.login.register_now') }}</a>
                 </div>
             </form>
         </div>

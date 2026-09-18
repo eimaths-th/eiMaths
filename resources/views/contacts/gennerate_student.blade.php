@@ -45,7 +45,7 @@
                     <ol class="breadcrumb float-sm-right">
                         <button type="button" class="btn btn-success" data-toggle="modal"
                             data-target="#modal-generate"><i class="fas fa-key"></i>
-                            Generate Password</button>
+                            {{ __('students.passwords.generate_title') }}</button>
                 </div>
             </div>
         </div>
@@ -57,9 +57,9 @@
                 <div class="col-12">
                     <div class="card card-primary">
                         <div class="card-header">
-                            <h3 class="card-title"><i class="fa fa-user"></i> Generate - Password Student</h3>
+                            <h3 class="card-title"><i class="fa fa-user"></i> {{ __('students.passwords.title') }}</h3>
                             <div class="card-tools">
-                                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="{{ __('students.passwords.collapse') }}">
                                     <i class="fas fa-minus"></i>
                                 </button>
                             </div>
@@ -69,17 +69,17 @@
                             <form method="GET" action="{{ route('generate.student') }}">
                                 <div class="row mb-3">
                                     <div class="col-md-6 d-flex align-items-center">
-                                        Display 
+                                        {{ __('students.passwords.display') }}
                                         <select name="per_page" id="per_page" class="form-control form-control-sm mx-2" style="width: auto; display: inline-block;" onchange="this.form.submit()">
                                             <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10</option>
                                             <option value="25" {{ request('per_page') == 25 || !request('per_page') ? 'selected' : '' }}>25</option>
                                             <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
                                             <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100</option>
                                         </select> 
-                                        Row
+                                        {{ __('students.passwords.row') }}
                                     </div>
                                     <div class="col-md-6 d-flex justify-content-end align-items-center">
-                                        Search: 
+                                        {{ __('students.passwords.search') }}
                                         <input type="text" name="search" class="form-control form-control-sm ml-2" style="width: 200px; display: inline-block;" value="{{ request('search') }}" placeholder="">
                                         <button type="submit" class="btn btn-sm btn-default ml-1"><i class="fas fa-search"></i></button>
                                     </div>
@@ -88,9 +88,9 @@
                             <table class="table table-bordered table-striped table-hover">
                                 <thead>
                                     <tr>
-                                        <th>Student</th>
-                                        <th>Created Password At</th>
-                                        <th>Actions</th>
+                                        <th>{{ __('students.passwords.student') }}</th>
+                                        <th>{{ __('students.passwords.created_at') }}</th>
+                                        <th>{{ __('students.passwords.actions') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -103,14 +103,14 @@
                                                 <div class="dropdown">
                                                     <button class="btn btn-outline-primary btn-sm dropdown-toggle" type="button"
                                                         data-toggle="dropdown">
-                                                        Select
+                                                        {{ __('students.passwords.select') }}
                                                     </button>
 
                                                     <div class="dropdown-menu">
-                                                        <a class="dropdown-item btn-reset-password" href="#" data-student-id="{{ $student->id }}"><i class="fas fa-edit"></i> Reset
-                                                            Password</a>
+                                                        <a class="dropdown-item btn-reset-password" href="#" data-student-id="{{ $student->id }}"><i class="fas fa-edit"></i>
+                                                            {{ __('students.passwords.reset') }}</a>
                                                         <a class="dropdown-item text-danger btn-delete-password" href="#" data-student-id="{{ $student->id }}"><i class="fas fa-trash"></i>
-                                                            Delete</a>
+                                                            {{ __('students.passwords.remove') }}</a>
                                                     </div>
                                                 </div>
                                             </td>
@@ -135,7 +135,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Generate Password</h5>
+                    <h5 class="modal-title">{{ __('students.passwords.generate_title') }}</h5>
                     <button type="button" class="close" data-dismiss="modal"  data-bs-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -167,9 +167,9 @@
                         <input type="hidden" name="action" id="action" value="generate">
                         <div class="col-xs-8 col-sm-8 col-md-8">
                             <div class="form-group">
-                                <strong><i class="fas fa-user"></i> Students:</strong>
+                                <strong><i class="fas fa-user"></i> {{ __('students.passwords.students') }}:</strong>
                                 <select name="student_id" id="selectStudent" class="form-control" style="width: 100%">
-                                    <option value="">Select Student</option>
+                                    <option value="">{{ __('students.passwords.select_student') }}</option>
                                     @foreach ($students as $student)
                                         <option value="{{ $student->id }}">{{ $student->code }} -
                                             {{ $student->name }}</option>
@@ -181,13 +181,13 @@
                     <div class="row">
                         <div class="col-xs-8 col-sm-8 col-md-8">
                             <div class="form-group">
-                                <strong><i class="fas fa-key"></i> Password:</strong>
-                                {!! Form::text('name', null, ['id' => 'AddPassword', 'placeholder' => 'Password', 'class' => 'form-control']) !!}
+                                <strong><i class="fas fa-key"></i> {{ __('students.passwords.password') }}:</strong>
+                                {!! Form::text('name', null, ['id' => 'AddPassword', 'placeholder' => __('students.passwords.password'), 'class' => 'form-control']) !!}
                             </div>
                         </div>
                         <div class="col-xs-4 col-sm-4 col-md-4 mt-4">
                             <button type="button" class="btn btn-warning" id="ranCreateForm1"><i class="fas fa-dice"></i>
-                                Random</button>
+                                {{ __('students.passwords.random') }}</button>
                         </div>
 
                     </div>
@@ -195,10 +195,9 @@
                     <div class="row mt-2">
                         <div class="col-xs-8 col-sm-8 col-md-8">
                             <div class="form-group">
-                                <strong><i class="fas fa-user"></i> Generated:</strong>
-                                <textarea name="generate" id="generate" cols="30" rows="2" class="form-control" placeholder="generate"></textarea>
-                                <p id="copyMessage" style="color: green; display: none;">Password copied to
-                                    clipboard!</p>
+                                <strong><i class="fas fa-user"></i> {{ __('students.passwords.generated') }}:</strong>
+                                <textarea name="generate" id="generate" cols="30" rows="2" class="form-control" placeholder="{{ __('students.passwords.generate_placeholder') }}"></textarea>
+                                <p id="copyMessage" style="color: green; display: none;">{{ __('students.passwords.copied') }}</p>
                             </div>
 
                         </div>
@@ -208,15 +207,15 @@
                             </div>
 
                             <button onclick="copyToClipboard()" id="copyButton" class="btn btn-info"><i
-                                    class="fas fa-clipboard"></i> Copy</button>
+                                    class="fas fa-clipboard"></i> {{ __('students.passwords.copy') }}</button>
 
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" data-bs-dismiss="modal">{{ __('students.passwords.close') }}</button>
                     <button type="button" class="btn btn-success" id="SubmitCreateForm1"><i class="fas fa-download"></i>
-                        Save</button>
+                        {{ __('students.passwords.save') }}</button>
                 </div>
             </div>
         </div>
@@ -234,18 +233,18 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Confirm Delete Password</h5>
+                    <h5 class="modal-title">{{ __('students.passwords.confirm_delete') }}</h5>
                     <button type="button" class="close" data-dismiss="modal"  data-bs-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    Are you sure you want to delete this student's password?
+                    {{ __('students.passwords.confirm_delete_message') }}
                     <input type="hidden" id="delete_student_id">
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-danger" id="btn-confirm-delete">Delete</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" data-bs-dismiss="modal">{{ __('students.passwords.close') }}</button>
+                    <button type="button" class="btn btn-danger" id="btn-confirm-delete">{{ __('students.passwords.delete') }}</button>
                 </div>
             </div>
         </div>
@@ -253,7 +252,18 @@
 @endsection
 
 @section('script')
+    @php
+        $password_ui = [
+            'select_student' => __('students.passwords.select_student'),
+            'confirm_save' => __('students.passwords.confirm_save'),
+            'unexpected_error' => __('students.passwords.messages.unexpected_error'),
+            'copied' => __('students.passwords.copied_button'),
+            'copy' => __('students.passwords.copy'),
+        ];
+    @endphp
     <script>
+        const password_ui = {!! json_encode($password_ui, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) !!};
+
         var token = ''
         $.ajaxSetup({
             headers: {
@@ -261,7 +271,7 @@
             }
         }); 
             $('#selectStudent').select2({
-                placeholder: "Select Student",
+                placeholder: password_ui.select_student,
                 allowClear: true,
                 dropdownParent: $('#modal-generate')
             });
@@ -316,7 +326,7 @@
             }});
         });
         $('#SubmitCreateForm1').click(function(e) {
-            if (!confirm("Confirm save password for student?")) return;
+            if (!confirm(password_ui.confirm_save)) return;
 
             e.preventDefault();
             $('.alert-danger').html('');
@@ -425,7 +435,7 @@
                     }
                 },
                 error: function(xhr) {
-                    toastr.error('Something went wrong', { timeOut: 5000 });
+                    toastr.error(password_ui.unexpected_error, { timeOut: 5000 });
                     $('#modal-delete').modal('hide');
                 }
             });
@@ -448,9 +458,9 @@
 
             var copyButton = document.getElementById("copyButton");
             // copyButton.innerText = "Copied!";
-            copyButton.innerHTML = '<i class="fas fa-clipboard-check"></i> Copied!';
+            copyButton.innerHTML = '<i class="fas fa-clipboard-check"></i> ' + password_ui.copied;
             setTimeout(function() {
-                copyButton.innerHTML = '<i class="fas fa-clipboard"></i> Copy';
+                copyButton.innerHTML = '<i class="fas fa-clipboard"></i> ' + password_ui.copy;
             }, 5000);
 
             var copyMessage = document.getElementById("copyMessage");

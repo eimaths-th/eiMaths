@@ -1,5 +1,6 @@
 <script>
     $(document).ready(function() {
+        const term_fee_ui = @json(__('term-fee'));
 
         $(document).on('change', '.auto_decimal', function() {
             // Parse the input value to a number
@@ -15,11 +16,11 @@
         $(".delete_all_button").click(function() {
             var len = $('input[name="table_records[]"]:checked').length;
             if (len > 0) {
-                if (confirm("Confirm data deletion?")) {
+                if (confirm(term_fee_ui.messages.confirm_delete)) {
                     $('form#delete_all').submit();
                 }
             } else {
-                alert("Please select items to delete.");
+                alert(term_fee_ui.messages.select_to_delete);
             }
         });
 
@@ -56,20 +57,20 @@
             language: {
                 loadingRecords: '&nbsp;',
                 processing: `<div class="spinner-border text-primary"></div>`,
-                "sProcessing": "Processcing...",
-                "sLengthMenu": "Display_MENU_ Row",
-                "sZeroRecords": "No Data Fount",
-                "sInfo": "Display _START_ To _END_ From _TOTAL_ Records",
-                "sInfoEmpty": "Display 0 To 0 From 0 Records",
-                "sInfoFiltered": "(Filters _MAX_ Row)",
+                "sProcessing": term_fee_ui.data_table.processing,
+                "sLengthMenu": term_fee_ui.data_table.length_menu,
+                "sZeroRecords": term_fee_ui.data_table.zero_records,
+                "sInfo": term_fee_ui.data_table.info,
+                "sInfoEmpty": term_fee_ui.data_table.info_empty,
+                "sInfoFiltered": term_fee_ui.data_table.info_filtered,
                 "sInfoPostFix": "",
-                "sSearch": "Search:",
+                "sSearch": term_fee_ui.data_table.search,
                 "sUrl": "",
                 "oPaginate": {
-                    "sFirst": "First",
-                    "sPrevious": "Previous",
-                    "sNext": "Next",
-                    "sLast": "Last"
+                    "sFirst": term_fee_ui.data_table.first,
+                    "sPrevious": term_fee_ui.data_table.previous,
+                    "sNext": term_fee_ui.data_table.next,
+                    "sLast": term_fee_ui.data_table.last
                 }
             },
             aaSorting: [
@@ -209,7 +210,7 @@
         })
 
         $('#SubmitEditForm').click(function(e) {
-            if (!confirm("Confirm the action?")) return;
+            if (!confirm(term_fee_ui.messages.confirm_update)) return;
             e.preventDefault();
 
             $('.alert-danger').html('');
@@ -266,7 +267,7 @@
         });
 
         $(document).on('click', '.btn-delete', function() {
-            if (!confirm("Confirm the action?")) return;
+            if (!confirm(term_fee_ui.messages.confirm_delete)) return;
 
             var rowid = $(this).data('rowid')
             var el = $(this)

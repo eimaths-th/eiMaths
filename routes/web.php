@@ -35,6 +35,9 @@ use Illuminate\Http\Request;
 
 
 Route::group(['middleware' => ['auth']], function () {
+    Route::post('/settings/locale', [\App\Http\Controllers\UiLocaleController::class, 'Update'])
+        ->name('locale.update');
+
     //Route::get('/roles', [RoleController::class, 'index'])->name('roles.index');
     //Route::get('/roles/store', [RoleController::class, 'store'])->name('roles.store');
     Route::get('/roles/edit/{id}', [RoleController::class, 'edit'])->name('roles.edit2');

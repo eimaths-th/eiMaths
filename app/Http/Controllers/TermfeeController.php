@@ -33,7 +33,7 @@ class TermfeeController extends Controller
             //sleep(2);
 
             $datas = level::orderBy("id", "asc")->get();
-            $state_text = array('Enable', 'Disable');
+            $state_text = [__('term-fee.modal.enable'), __('term-fee.modal.disable')];
             return datatables()->of($datas)
                 ->editColumn('checkbox', function ($row) {
                     return '<input type="checkbox" id="' . $row->id . '" class="flat" name="table_records[]" value="' . $row->id . '" >';
@@ -44,9 +44,9 @@ class TermfeeController extends Controller
                 })
                 ->addColumn('action', function ($row) {
                     if (Gate::allows('centre-edit')) {
-                        $html = '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit</button> ';
+                        $html = '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> ' . e(__('term-fee.actions.edit')) . '</button> ';
                     } else {
-                        $html = '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> Edit</button> ';
+                        $html = '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="' . e(__('term-fee.messages.no_permission')) . '"><i class="fa fa-edit"></i> ' . e(__('term-fee.actions.edit')) . '</button> ';
                     }
                    /*  if (Gate::allows('centre-delete')) {
                         $html .= '<button type="button" data-rowid="' . $row->id . '" class="btn btn-sm btn-danger btn-delete"><i class="fa fa-trash"></i> Delete</button>';
@@ -87,10 +87,10 @@ class TermfeeController extends Controller
         ];
 
         $validator = Validator::make($request->all(), $rules, [
-            'price.required' => 'Term Fee must not be blank!',
-            'half_price.required' => 'Term Fee ( half ) must not be blank!',
-            'book_price.required' => 'Book Price must not be blank!',
-            'book_half_price.required' => 'Book Half Price must not be blank!',
+            'price.required' => __('term-fee.validation.price_required'),
+            'half_price.required' => __('term-fee.validation.half_price_required'),
+            'book_price.required' => __('term-fee.validation.book_price_required'),
+            'book_half_price.required' => __('term-fee.validation.book_half_price_required'),
         ]);
 
         if ($validator->fails()) {
@@ -107,7 +107,7 @@ class TermfeeController extends Controller
         $update = level::find($id);
         $update->update($data);
 
-        return response()->json(['success' => 'Data has been successfully edited.']);
+        return response()->json(['success' => __('term-fee.messages.updated')]);
     }
 
 }

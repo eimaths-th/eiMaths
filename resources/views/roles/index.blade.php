@@ -18,22 +18,22 @@
 
                         @can('role-create')
                             <button type="button" class="btn btn-success" id="CreateButton">
-                                <i class="fas fa-user-lock"></i> Add Role </button>
+                                <i class="fas fa-user-lock"></i> {{ __('user-access.roles.actions.add') }}</button>
                         @else
                             <span class="d-inline-block" tabindex="0" data-toggle="tooltip" data-placement="bottom"
-                                title="You Not Have Permission">
+                                title="{{ __('user-access.messages.no_permission') }}">
                                 <button type="button" class="btn btn-success disabled">
-                                    <i class="fas fa-user-lock"></i> Add Role  </button>
+                                    <i class="fas fa-user-lock"></i> {{ __('user-access.roles.actions.add') }}</button>
                             </span>
                         @endcan &nbsp;
 
                         @can('role-delete')
-                            <button type="button" class="btn btn-danger delete_all_button"><i class="fa fa-trash"></i> Delete All</button>
+                            <button type="button" class="btn btn-danger delete_all_button"><i class="fa fa-trash"></i> {{ __('user-access.roles.actions.delete_all') }}</button>
                         @else
                             <span class="d-inline-block" tabindex="0" data-toggle="tooltip" data-placement="bottom"
-                                title="You Not Have Permission">
+                                title="{{ __('user-access.messages.no_permission') }}">
                                 <button type="button" class="btn btn-danger disabled"><i class="fa fa-trash"></i>
-                                    Delete All</button>
+                                    {{ __('user-access.roles.actions.delete_all') }}</button>
                             </span>
                         @endcan
                     </ol>
@@ -49,9 +49,9 @@
                 <div class="col-12">
                     <div class="card card-primary">
                         <div class="card-header">
-                            <h3 class="card-title"><i class="fa fa-user-lock"></i> Role Management</h3>
+                            <h3 class="card-title"><i class="fa fa-user-lock"></i> {{ __('user-access.roles.title') }}</h3>
                             <div class="card-tools">
-                                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="{{ __('user-access.roles.actions.collapse') }}">
                                     <i class="fas fa-minus"></i>
                                 </button>
                                 {{-- <button type="button" class="btn btn-tool" data-card-widget="remove" title="Remove">
@@ -81,9 +81,9 @@
                                     <thead>
                                         <tr>
                                             <th width="5%"><input type="checkbox" id="check-all" class="flat"></th>
-                                            <th width="20%">Role Name</th>
-                                            <th>Permission</th>
-                                            <th width="120px"></th>
+                                            <th width="20%">{{ __('user-access.roles.table.name') }}</th>
+                                            <th>{{ __('user-access.roles.table.permission') }}</th>
+                                            <th width="120px">{{ __('user-access.roles.table.action') }}</th>
                                         </tr>
                                     </thead>
                                     <tbody>

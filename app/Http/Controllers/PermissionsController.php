@@ -15,7 +15,7 @@ class PermissionsController extends Controller
     {
         $this->middleware('auth');
         $this->middleware(function ($request, $next) {
-            abort_unless($request->user()->isSystemAdmin(), 403, 'Only SystemAdmin can manage the permission catalog.');
+            abort_unless($request->user()->isSystemAdmin(), 403, __('user-access.messages.permission_catalog_protected'));
             return $next($request);
         });
     }
@@ -49,9 +49,9 @@ class PermissionsController extends Controller
                 })
                 ->addColumn('action', function ($row) {
                     if (Gate::allows('role-edit')) {
-                        $html = '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit</button> ';
+                        $html = '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> ' . e(__('user-access.permissions.actions.edit')) . '</button> ';
                     } else {
-                        $html = '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> Edit</button> ';
+                        $html = '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="' . e(__('user-access.messages.no_permission')) . '"><i class="fa fa-edit"></i> ' . e(__('user-access.permissions.actions.edit')) . '</button> ';
                     }
                     if (Gate::allows('role-delete')) {
                         // $html .= '<button type="button" data-rowid="' . $row->id . '" class="btn btn-sm btn-danger btn-delete"><i class="fa fa-trash"></i> Delete</button>';
@@ -82,6 +82,9 @@ class PermissionsController extends Controller
         $validator =  Validator::make($request->all(), [
             'name' => 'required|string|max:255|unique:permissions',
             // 'permission' => 'required'
+        ], [
+            'name.required' => __('user-access.validation.name_required'),
+            'name.unique' => __('user-access.validation.name_unique'),
         ]);
 
         if ($validator->fails()) {
@@ -93,7 +96,7 @@ class PermissionsController extends Controller
 
         /* return redirect()->route('roles.index')
             ->with('success', 'Role created successfully'); */
-        return response()->json(['success' => 'Add Permission Success']);
+        return response()->json(['success' => __('user-access.messages.permission_created')]);
     }
 
     /**
@@ -127,7 +130,10 @@ class PermissionsController extends Controller
         ];
 
 
-        $validator =  Validator::make($request->all(), $rules);
+        $validator =  Validator::make($request->all(), $rules, [
+            'name.required' => __('user-access.validation.name_required'),
+            'name.unique' => __('user-access.validation.name_unique'),
+        ]);
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()->all()]);
@@ -139,7 +145,7 @@ class PermissionsController extends Controller
 
         /* return redirect()->route('roles.index')
             ->with('success', 'Role updated successfully'); */
-        return response()->json(['success' => 'Save Role Success']);
+        return response()->json(['success' => __('user-access.messages.permission_updated')]);
     }
 
     /**

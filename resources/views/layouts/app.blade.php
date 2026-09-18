@@ -295,8 +295,7 @@
         const datetimeElement = document.getElementById('real-time-clock');
         const now = new Date();
 
-        // Thai language and desired formatting options
-        const thaiOptions = {
+        const clockOptions = {
             year: 'numeric',
             month: '2-digit',
             day: '2-digit',
@@ -308,11 +307,20 @@
         };
 
         // Format the date and time
-        const thaiDateTimeString = now.toLocaleString('th-TH', thaiOptions);
+        const thaiDateTimeString = now.toLocaleString(
+            @json(app()->getLocale() === 'th' ? 'th-TH' : 'en-GB'),
+            clockOptions
+        );
+        const clockLabels = @json([
+            'date' => __('common.fields.date'),
+            'time' => __('common.fields.time'),
+        ]);
 
         // Create the complete text  <i class="fas fa-clock"></i> เวลา: ${thaiDateTimeString.slice(11)}
-        const text = `<i class="fas fa-calendar"></i> Date: ${thaiDateTimeString.slice(0, 10)}
-        &nbsp;&nbsp;<i class="fas fa-clock"></i> Time: ${thaiDateTimeString.slice(11)}`;
+        const text = '<i class="fas fa-calendar"></i> ' + clockLabels.date + ': ' +
+            thaiDateTimeString.slice(0, 10) + '\n' +
+            '&nbsp;&nbsp;<i class="fas fa-clock"></i> ' + clockLabels.time + ': ' +
+            thaiDateTimeString.slice(11);
 
         datetimeElement.innerHTML = text;
 
@@ -346,12 +354,12 @@
         var defaults = {
             type: "alert", //alert, prompt,confirm
             modalSize: 'modal-sm', //modal-sm, modal-lg
-            okButtonText: 'OK',
-            cancelButtonText: 'Cancel',
-            yesButtonText: 'Yes',
-            noButtonText: 'No',
-            headerText: 'Attention',
-            messageText: 'Message',
+            okButtonText: @json(__('common.actions.confirm')),
+            cancelButtonText: @json(__('common.actions.cancel')),
+            yesButtonText: @json(__('common.actions.confirm')),
+            noButtonText: @json(__('common.actions.cancel')),
+            headerText: @json(__('common.feedback.error')),
+            messageText: @json(__('common.feedback.error')),
             alertType: 'default', //default, primary, success, info, warning, danger
             inputFieldType: 'text', //could ask for number,email,etc
         }

@@ -9,7 +9,7 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h4>eiForm</h4>
+                    <h4>{{ __('students.titles.eiform') }}</h4>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
@@ -29,7 +29,7 @@
                 <div class="col-12">
                     <div class="card card-primary">
                         <div class="card-header">
-                            <h3 class="card-title"><i class="fa fa-user"></i>eiForm</h3>
+                        <h3 class="card-title"><i class="fa fa-user"></i>{{ __('students.titles.eiform') }}</h3>
                             <div class="card-tools">
                                 <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
                                     <i class="fas fa-minus"></i>
@@ -58,11 +58,11 @@
                                 <table id="Listview" class="table table-bordered table-striped table-hover">
                                     <thead>
                                         <tr>
-                                            <th>Name Parent</th>
-                                            <th>Contact</th>
-                                            <th>Student Name</th>
-                                            <th>Category</th>
-                                            <th>Address</th>
+                                            <th>{{ __('students.eiform.parent_name') }}</th>
+                                            <th>{{ __('students.eiform.contact') }}</th>
+                                            <th>{{ __('students.eiform.student_name') }}</th>
+                                            <th>{{ __('students.eiform.category') }}</th>
+                                            <th>{{ __('students.eiform.address') }}</th>
                                             <th width="120px"></th>
                                         </tr>
                                     </thead>

@@ -1,5 +1,6 @@
 <script>
     $(document).ready(function() {
+        const bookReceiptUi = @json(__('students.book_receipts'));
         const book_receipt_base_url = @json(rtrim(request()->getBaseUrl(), '/') . '/contacts');
         const book_receipt_shipment_id = new URLSearchParams(window.location.search).get('shipment_id');
         const csrf_token = $('meta[name="csrf-token"]').attr('content');
@@ -48,21 +49,23 @@
             const summary = payload.summary || {};
             const received_count = Number(summary.received_count || 0);
             const total_count = Number(summary.total_count || 0);
-            const summary_text = 'Received ' + received_count + '/' + total_count + ' books';
+            const summary_text = bookReceiptUi.summary_received
+                .replace(':received', received_count)
+                .replace(':total', total_count);
             const can_edit = $('#BookReceiptModal').data('can-edit') === 1 ||
                 $('#BookReceiptModal').data('can-edit') === '1';
             const summary_container = $('#BookReceiptSummary').empty();
 
             summary_container
-                .append($('<strong>').text(current_student_name || 'Student'))
+                .append($('<strong>').text(current_student_name || @json(__('students.messages.student_placeholder'))))
                 .append($('<span>').addClass('ml-2').text(summary_text));
 
             if (can_edit && received_count < total_count) {
                 $('<button>', {
                     type: 'button',
                     class: 'btn btn-sm btn-primary ml-2 btn-mark-all-book-received',
-                    'aria-label': 'Mark all books received for ' + (current_student_name || 'this student')
-                }).text('Mark all received').appendTo(summary_container);
+                    'aria-label': bookReceiptUi.mark_all_aria.replace(':name', current_student_name || @json(__('students.messages.student_placeholder')))
+                }).text(bookReceiptUi.mark_all_received).appendTo(summary_container);
             }
         }
 
@@ -81,13 +84,13 @@
             const orders = payload.orders || [];
 
             if (orders.length === 0) {
-                orders_container.append($('<p>').addClass('text-muted').text('No books found.'));
+                orders_container.append($('<p>').addClass('text-muted').text(bookReceiptUi.no_books_found));
                 return;
             }
 
             orders.forEach(function(order) {
                 const order_container = $('<div>').addClass('border rounded p-3 mb-3');
-                $('<h6>').text(order.order_number || 'Order').appendTo(order_container);
+                $('<h6>').text(order.order_number || bookReceiptUi.order).appendTo(order_container);
 
                 (order.books || []).forEach(function(book) {
                     const book_row = $('<div>').addClass(
@@ -95,23 +98,23 @@
                     );
                     const book_label = $('<div>').addClass('mr-2');
                     const status_label = $('<span>').addClass('badge ml-2').text(
-                        book.is_received ? 'Received' : 'Not received'
+                        book.is_received ? bookReceiptUi.received : bookReceiptUi.not_received
                     );
                     status_label.addClass(book.is_received ? 'badge-success' : 'badge-secondary');
-                    $('<span>').text(book.book_name || 'Book').appendTo(book_label);
+                    $('<span>').text(book.book_name || bookReceiptUi.book).appendTo(book_label);
                     status_label.appendTo(book_label);
 
                     const actions = $('<div>').addClass('mt-2 mt-md-0');
                     if (can_edit && !book.is_received) {
-                        CreateBookActionButton('Mark received', 'btn-primary btn-mark-book-received', book.id)
+                        CreateBookActionButton(bookReceiptUi.mark_received, 'btn-primary btn-mark-book-received', book.id)
                             .appendTo(actions);
                     }
                     if (can_edit && book.is_received) {
-                        CreateBookActionButton('Cancel receipt', 'btn-outline-danger btn-cancel-book-receipt', book.id)
+                        CreateBookActionButton(bookReceiptUi.cancel_receipt, 'btn-outline-danger btn-cancel-book-receipt', book.id)
                             .appendTo(actions);
                     }
-                    CreateBookActionButton('History', 'btn-outline-secondary btn-book-receipt-history', book.id)
-                        .attr('data-book-name', book.book_name || 'Book')
+                    CreateBookActionButton(bookReceiptUi.history, 'btn-outline-secondary btn-book-receipt-history', book.id)
+                        .attr('data-book-name', book.book_name || bookReceiptUi.book)
                         .appendTo(actions);
 
                     book_row.append(book_label).append(actions);
@@ -124,19 +127,19 @@
 
         function RenderBookReceiptHistory(logs, book_name) {
             const history_container = $('#BookReceiptHistoryList').empty();
-            $('#BookReceiptHistoryLabel').text((book_name || 'Book') + ' - Receipt History');
+            $('#BookReceiptHistoryLabel').text((book_name || bookReceiptUi.book) + ' - ' + bookReceiptUi.receipt_history);
 
             if (!logs || logs.length === 0) {
-                history_container.append($('<p>').addClass('text-muted').text('No receipt history.'));
+                history_container.append($('<p>').addClass('text-muted').text(bookReceiptUi.no_receipt_history));
                 return;
             }
 
             logs.forEach(function(log) {
-                const action_text = log.action === 'RECEIVED' ? 'Marked as received' : 'Receipt cancelled';
+                const action_text = log.action === 'RECEIVED' ? bookReceiptUi.marked_as_received : bookReceiptUi.receipt_cancelled;
                 const history_row = $('<div>').addClass('border rounded p-2 mb-2');
                 $('<div>').text(action_text).appendTo(history_row);
                 $('<small>').addClass('text-muted').text(
-                    (log.actor_name || 'Unknown user') + ' - ' + FormatBookReceiptDate(log.created_at)
+                    (log.actor_name || bookReceiptUi.unknown_user) + ' - ' + FormatBookReceiptDate(log.created_at)
                 ).appendTo(history_row);
                 history_container.append(history_row);
             });
@@ -144,7 +147,7 @@
 
         function MarkAllBookReceiptsReceived(trigger_button) {
             if (!current_student_id || !window.confirm(
-                'Mark all books for ' + (current_student_name || 'this student') + ' as received?'
+                bookReceiptUi.mark_all_confirm.replace(':name', current_student_name || @json(__('students.messages.student_placeholder')))
             )) {
                 return;
             }
@@ -168,7 +171,7 @@
                 }
             }).fail(function(xhr) {
                 const message = xhr.responseJSON && xhr.responseJSON.error && xhr.responseJSON.error.message ?
-                    xhr.responseJSON.error.message : 'Unable to mark all books as received.';
+                    xhr.responseJSON.error.message : bookReceiptUi.unable_mark_all;
                 ShowBookReceiptError(message);
             }).always(function() {
                 SetBookReceiptLoading(false);
@@ -193,7 +196,7 @@
                 RenderBookReceiptSummary(payload);
                 RenderBookReceiptOrders(payload);
             }).fail(function(xhr) {
-                ShowBookReceiptError('Unable to load book receipt data.');
+                ShowBookReceiptError(bookReceiptUi.unable_load);
             }).always(function() {
                 SetBookReceiptLoading(false);
             });
@@ -223,7 +226,7 @@
                 }
             }).fail(function(xhr) {
                 const message = xhr.responseJSON && xhr.responseJSON.error && xhr.responseJSON.error.message ?
-                    xhr.responseJSON.error.message : 'Unable to update book receipt status.';
+                    xhr.responseJSON.error.message : bookReceiptUi.unable_update;
                 if (xhr.status === 409) {
                     RefreshBookReceiptState();
                 }
@@ -247,7 +250,7 @@
             }).done(function(response) {
                 RenderBookReceiptHistory(response.data || [], book_name);
             }).fail(function() {
-                ShowBookReceiptError('Unable to load receipt history.');
+                ShowBookReceiptError(bookReceiptUi.unable_load_history);
             }).always(function() {
                 SetBookReceiptLoading(false);
             });
@@ -264,7 +267,7 @@
         });
 
         $(document).on('click', '.btn-mark-book-received', function() {
-            ChangeBookReceiptState($(this).data('book-id'), 'PUT', 'Mark this book as received?', this);
+            ChangeBookReceiptState($(this).data('book-id'), 'PUT', bookReceiptUi.confirm_mark, this);
         });
 
         $(document).on('click', '.btn-mark-all-book-received', function() {
@@ -272,7 +275,7 @@
         });
 
         $(document).on('click', '.btn-cancel-book-receipt', function() {
-            ChangeBookReceiptState($(this).data('book-id'), 'DELETE', 'Cancel this book receipt?', this);
+            ChangeBookReceiptState($(this).data('book-id'), 'DELETE', bookReceiptUi.confirm_cancel, this);
         });
 
         $(document).on('click', '.btn-book-receipt-history', function() {

@@ -17,22 +17,22 @@
             <div class="col-12">
                 <div class="card card-primary">
                     <div class="card-header">
-                        <h3 class="card-title"><i class="fas fa-users"></i> Guest Quizzers List</h3>
+                        <h3 class="card-title"><i class="fas fa-users"></i> {{ __('students.titles.guest_reports') }}</h3>
                     </div>
                     <div class="card-body">
                         <table id="guestTable" class="table table-bordered table-striped table-hover w-100">
                             <thead>
                                 <tr>
-                                    <th>ID</th>
-                                    <th>Name</th>
-                                    <th>Grade</th>
-                                    <th>School</th>
-                                    <th>Email</th>
-                                    <th>Phone</th>
-                                    <th>Created At</th>
-                                    <th>Expires At</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
+                                    <th>{{ __('common.fields.id') }}</th>
+                                    <th>{{ __('common.fields.student_name') }}</th>
+                                    <th>{{ __('common.fields.grade') }}</th>
+                                    <th>{{ __('common.fields.school') }}</th>
+                                    <th>{{ __('common.fields.email') }}</th>
+                                    <th>{{ __('common.fields.phone') }}</th>
+                                    <th>{{ __('common.fields.created_at') }}</th>
+                                    <th>{{ __('common.fields.expires_at') }}</th>
+                                    <th>{{ __('common.fields.status') }}</th>
+                                    <th>{{ __('common.fields.action') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -48,11 +48,33 @@
 
 @section('script')
 <script>
+    const guestReportUi = {
+        delete_confirm: @json(__('students.guest_reports.delete_confirm')),
+        deleted: @json(__('students.guest_reports.deleted')),
+        delete_error: @json(__('students.guest_reports.delete_error')),
+        datatable: @json(__('common.datatable')),
+    };
+
     $(document).ready(function() {
         var table = $('#guestTable').DataTable({
             processing: true,
             serverSide: true,
             ajax: "{{ route('guest.report') }}",
+            language: {
+                processing: `<div class="spinner-border text-primary"></div>`,
+                lengthMenu: guestReportUi.datatable.length_menu,
+                zeroRecords: guestReportUi.datatable.zero_records,
+                info: guestReportUi.datatable.info,
+                infoEmpty: guestReportUi.datatable.info_empty,
+                infoFiltered: guestReportUi.datatable.info_filtered,
+                search: guestReportUi.datatable.search,
+                paginate: {
+                    first: guestReportUi.datatable.first,
+                    previous: guestReportUi.datatable.previous,
+                    next: guestReportUi.datatable.next,
+                    last: guestReportUi.datatable.last
+                }
+            },
             columns: [
                 { data: 'id', name: 'id' },
                 { data: 'name', name: 'first_name' }, // Search against first_name instead of generic name
@@ -70,7 +92,7 @@
 
         $('body').on('click', '.btn-delete', function () {
             var id = $(this).data("rowid");
-            if(confirm("Are you sure you want to delete this guest quizzer? All their test data will be deleted too.")){
+            if(confirm(guestReportUi.delete_confirm)){
                 $.ajax({
                     type: "POST",
                     url: "{{ route('guest.report.destroy') }}",
@@ -80,11 +102,11 @@
                     },
                     success: function (data) {
                         table.draw();
-                        toastr.success("Guest Quizzer deleted successfully");
+                        toastr.success(guestReportUi.deleted);
                     },
                     error: function (data) {
                         console.log('Error:', data);
-                        toastr.error("Error deleting guest quizzer");
+                        toastr.error(guestReportUi.delete_error);
                     }
                 });
             }

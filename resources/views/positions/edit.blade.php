@@ -4,22 +4,21 @@
         <form id="editdata" class="form" action="" method="POST">
             <div class="modal-content">
                 <div class="modal-header bg-primary">
-                    <h4 class="modal-title" id="exampleModalLongTitle"><i class="fas fa-list-ol"></i> Edit Department
-                    </h4>
-                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <h4 class="modal-title" id="exampleModalLongTitle"><i class="fas fa-list-ol"></i> {{ __('centre-management.departments.modal.edit_title') }}</h4>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="{{ __('centre-management.departments.actions.close') }}">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <!-- Modal body -->
                 <div class="modal-body">
                     <div class="alert alert-danger alert-dismissible fade show" role="alert" style="display: none;">
-                        <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close">
+                        <button type="button" class="btn-close" data-dismiss="alert" aria-label="{{ __('centre-management.departments.actions.close') }}">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="alert alert-success alert-dismissible fade show" role="alert" style="display: none;">
-                        <strong>Success!</strong> Users was edit successfully.
-                        <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close">
+                        <strong>{{ __('centre-management.departments.modal.edit_title') }}</strong>
+                        <button type="button" class="btn-close" data-dismiss="alert" aria-label="{{ __('centre-management.departments.actions.close') }}">
                             <span aria-hidden="true"></span>
                         </button>
                     </div>
@@ -28,15 +27,15 @@
                         <div class="row">
                             <div class="col-xs-6 col-sm-6 col-md-6">
                                 <div class="form-group">
-                                    <strong><i class="fas fa-list-ol"></i> Department Name:</strong>
-                                    {!! Form::text('name', null, ['id' => 'EditName', 'placeholder' => 'Name', 'class' => 'form-control']) !!}
+                                    <strong><i class="fas fa-list-ol"></i> {{ __('centre-management.departments.modal.name') }}:</strong>
+                                    {!! Form::text('name', null, ['id' => 'EditName', 'placeholder' => __('centre-management.departments.modal.name_placeholder'), 'class' => 'form-control']) !!}
                                 </div>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-xs-6 col-sm-6 col-md-6">
                                 <div class="form-group">
-                                    <strong><i class="fas fa-eye"></i> Centre:</strong>
+                                    <strong><i class="fas fa-eye"></i> {{ __('centre-management.departments.modal.centre') }}:</strong>
                                     <select style="width: 100%;" class="select2 select2_single form-control"
                                         id="EditDepartment" name="edepartment" multiple="multiple"
                                         @cannot('all-centre')
@@ -57,12 +56,12 @@
                         <div class="row">
                             <div class="col-xs-6 col-sm-6 col-md-6">
                                 <div class="form-group">
-                                    <strong>Status:</strong>
+                                    <strong>{{ __('centre-management.departments.modal.status') }}:</strong>
                                     <br />
                                     <div class="custom-control custom-switch">
                                         {{ Form::checkbox('status', '1', false, ['id' => 'ecustomCheckbox1', 'class' => 'custom-control-input name']) }}
                                         <label for="ecustomCheckbox1" class="custom-control-label">
-                                            Enable</label>
+                                            {{ __('centre-management.departments.modal.enabled') }}</label>
                                     </div>
 
                                 </div>
@@ -76,9 +75,9 @@
                 <!-- Modal footer -->
                 <div class="modal-footer">
                     <button type="button" class="btn btn-success" id="SubmitEditForm"><i class="fas fa-download"></i>
-                        Save</button>
+                        {{ __('centre-management.departments.actions.save') }}</button>
                     <button type="button" class="btn btn-danger modelClose" data-bs-dismiss="modal"><i
-                            class="fas fa-door-closed"></i> Close</button>
+                            class="fas fa-door-closed"></i> {{ __('centre-management.departments.actions.close') }}</button>
                 </div>
             </div>
         </form>

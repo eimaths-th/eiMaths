@@ -4,7 +4,7 @@
         <form id="editdata" class="form" action="" method="POST">
             <div class="modal-content">
                 <div class="modal-header bg-primary">
-                    <h4 class="modal-title" id="exampleModalLongTitle"><i class="fas fa-list-ol"></i> Edit Parameter</h4>
+                    <h4 class="modal-title" id="exampleModalLongTitle"><i class="fas fa-list-ol"></i> {{ __('parameter-settings.modal.edit_title') }}</h4>
                     <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -17,7 +17,7 @@
                         </button>
                     </div>
                     <div class="alert alert-success alert-dismissible fade show" role="alert" style="display: none;">
-                        <strong>Success!</strong> Users was edit successfully.
+                        <strong>{{ __('common.feedback.saved') }}</strong> {{ __('parameter-settings.messages.updated') }}
                         <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close">
                             <span aria-hidden="true"></span>
                         </button>
@@ -27,10 +27,10 @@
                         <div class="row">
                             <div class="col-xs-6 col-sm-6 col-md-6">
                                 <div class="form-group">
-                                    <strong><i class="fas fa-list-ol"></i> Name:</strong>
+                                    <strong><i class="fas fa-list-ol"></i> {{ __('parameter-settings.modal.name') }}:</strong>
                                     {!! Form::text('name', null, [
                                         'id' => 'EditName',
-                                        'placeholder' => 'Name',
+                                        'placeholder' => __('parameter-settings.modal.name'),
                                         'class' => 'form-control',
                                         'readonly' => true,
                                     ]) !!}
@@ -40,8 +40,8 @@
                         <div class="row">
                             <div class="col-xs-6 col-sm-6 col-md-6">
                                 <div class="form-group">
-                                    <strong><i class="fa-solid fa-comment-dollar"></i> Price:</strong>
-                                    {!! Form::text('fee', null, ['id' => 'EditFee', 'placeholder' => 'Term Fee', 'class' => 'auto_decimal form-control']) !!}
+                                    <strong><i class="fa-solid fa-comment-dollar"></i> {{ __('parameter-settings.modal.price') }}:</strong>
+                                    {!! Form::text('fee', null, ['id' => 'EditFee', 'placeholder' => __('parameter-settings.modal.price'), 'class' => 'auto_decimal form-control']) !!}
                                 </div>
                             </div>
                         </div>
@@ -53,9 +53,9 @@
                 <!-- Modal footer -->
                 <div class="modal-footer">
                     <button type="button" class="btn btn-success" id="SubmitEditForm"><i class="fas fa-download"></i>
-                        Save</button>
+                        {{ __('parameter-settings.actions.save') }}</button>
                     <button type="button" class="btn btn-danger modelClose" data-bs-dismiss="modal"><i
-                            class="fas fa-door-closed"></i> Close</button>
+                            class="fas fa-door-closed"></i> {{ __('parameter-settings.actions.close') }}</button>
                 </div>
             </div>
         </form>

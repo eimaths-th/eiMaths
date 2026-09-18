@@ -84,7 +84,7 @@ class BookShipmentController extends Controller
 
             return $this->MutationResponse(
                 $shipment,
-                trans('book-shipments.messages.draft_created', [], 'th'),
+                trans('book-shipments.messages.draft_created', []),
                 201
             );
         } catch (BookShipmentException $exception) {
@@ -123,7 +123,7 @@ class BookShipmentController extends Controller
                 $request->validated()['source_book_ids']
             );
 
-            return $this->MutationResponse($shipment, trans('book-shipments.messages.draft_updated', [], 'th'));
+            return $this->MutationResponse($shipment, trans('book-shipments.messages.draft_updated', []));
         } catch (BookShipmentException $exception) {
             return $this->ShipmentErrorResponse($exception);
         }
@@ -136,7 +136,7 @@ class BookShipmentController extends Controller
 
             return $this->MutationResponse(
                 $result['shipment'],
-                trans('book-shipments.messages.dispatched', [], 'th'),
+                trans('book-shipments.messages.dispatched', []),
                 200,
                 $result['warnings'] ?? []
             );
@@ -156,7 +156,7 @@ class BookShipmentController extends Controller
                 $request->validated()['reason']
             );
 
-            return $this->MutationResponse($shipment, trans('book-shipments.messages.cancelled', [], 'th'));
+            return $this->MutationResponse($shipment, trans('book-shipments.messages.cancelled', []));
         } catch (BookShipmentException $exception) {
             return $this->ShipmentErrorResponse($exception);
         }
@@ -173,7 +173,7 @@ class BookShipmentController extends Controller
                 $request->validated()['reason']
             );
 
-            return $this->MutationResponse($shipment, trans('book-shipments.messages.draft_discarded', [], 'th'));
+            return $this->MutationResponse($shipment, trans('book-shipments.messages.draft_discarded', []));
         } catch (BookShipmentException $exception) {
             return $this->ShipmentErrorResponse($exception);
         }
@@ -297,15 +297,15 @@ class BookShipmentController extends Controller
     private function ShipmentErrorResponse(BookShipmentException $exception): JsonResponse
     {
         $message = match ($exception->Reason()) {
-            BookShipmentException::DESTINATION_INELIGIBLE => trans('book-shipments.messages.destination_ineligible', [], 'th'),
-            BookShipmentException::SELECTION_INVALID => trans('book-shipments.messages.selection_invalid', [], 'th'),
-            BookShipmentException::SOURCE_INELIGIBLE => trans('book-shipments.messages.source_ineligible', [], 'th'),
-            BookShipmentException::SOURCE_CONFLICT => trans('book-shipments.messages.source_conflict', [], 'th'),
-            BookShipmentException::STATE_CONFLICT => trans('book-shipments.messages.state_conflict', [], 'th'),
-            BookShipmentException::CANCELLATION_REASON_INVALID => trans('book-shipments.messages.cancellation_reason_invalid', [], 'th'),
-            BookShipmentException::ITEM_SET_INVALID => trans('book-shipments.messages.item_set_invalid', [], 'th'),
-            BookShipmentException::ISSUE_NOTE_INVALID => trans('book-shipments.messages.issue_note_invalid', [], 'th'),
-            default => trans('book-shipments.messages.could_not_change', [], 'th'),
+            BookShipmentException::DESTINATION_INELIGIBLE => trans('book-shipments.messages.destination_ineligible', []),
+            BookShipmentException::SELECTION_INVALID => trans('book-shipments.messages.selection_invalid', []),
+            BookShipmentException::SOURCE_INELIGIBLE => trans('book-shipments.messages.source_ineligible', []),
+            BookShipmentException::SOURCE_CONFLICT => trans('book-shipments.messages.source_conflict', []),
+            BookShipmentException::STATE_CONFLICT => trans('book-shipments.messages.state_conflict', []),
+            BookShipmentException::CANCELLATION_REASON_INVALID => trans('book-shipments.messages.cancellation_reason_invalid', []),
+            BookShipmentException::ITEM_SET_INVALID => trans('book-shipments.messages.item_set_invalid', []),
+            BookShipmentException::ISSUE_NOTE_INVALID => trans('book-shipments.messages.issue_note_invalid', []),
+            default => trans('book-shipments.messages.could_not_change', []),
         };
 
         return response()->json([

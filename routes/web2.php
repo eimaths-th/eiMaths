@@ -272,7 +272,9 @@ Route::get('/affiliate/login', [AffiliateAuthController::class, 'login'])->middl
 Route::post('/affiliate/logout', [AffiliateAuthController::class, 'logout'])->name('affiliate.logout');
 
 // In your web.php routes file
-Route::post('/courses/pending', [CourseController::class, 'coursesPendingStore'])->middleware('affiliate.referral')->name('courses.pending.store');
+Route::post('/courses/pending', [CourseController::class, 'coursesPendingStore'])
+    ->middleware(['affiliate.locale', 'affiliate.referral'])
+    ->name('courses.pending.store');
 Route::get('/courses/findPeriodOptions/{department_id}/{day}', [AffiliateController::class, 'findPeriodOptions'])->name('courses.findPeriodOptions');
 Route::post('/payment/upload', [CourseController::class, 'uploadSlip'])->name('payment.upload');
 Route::POST('/senMailconfirm', [CourseController::class, 'senMail'])->name('senMailconfirm');

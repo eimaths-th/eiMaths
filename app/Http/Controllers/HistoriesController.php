@@ -291,23 +291,23 @@ class HistoriesController extends Controller
                     $html = '';
 
                     if (Gate::allows('student-edit')) {
-                        $html .= '<button type="button" class="btn btn-sm btn-primary btn-view" id="getViewData" data-id="' . $row->id . '"><i class="fa fa-eye"></i> View</button> ';
-                        $html .= '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit</button> ';
+                        $html .= '<button type="button" class="btn btn-sm btn-primary btn-view" id="getViewData" data-id="' . $row->id . '"><i class="fa fa-eye"></i> ' . e(__('students.history.view_action')) . '</button> ';
+                        $html .= '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> ' . e(__('common.actions.edit')) . '</button> ';
                     } else {
-                        $html .= '<button type="button" class="btn btn-sm btn-primary disabled" title="No Permission"><i class="fa fa-eye"></i> View</button> ';
-                        $html .= '<button type="button" class="btn btn-sm btn-warning disabled" title="No Permission"><i class="fa fa-edit"></i> Edit</button> ';
+                        $html .= '<button type="button" class="btn btn-sm btn-primary disabled" title="' . e(__('common.feedback.permission_denied')) . '"><i class="fa fa-eye"></i> ' . e(__('students.history.view_action')) . '</button> ';
+                        $html .= '<button type="button" class="btn btn-sm btn-warning disabled" title="' . e(__('common.feedback.permission_denied')) . '"><i class="fa fa-edit"></i> ' . e(__('common.actions.edit')) . '</button> ';
                     }
 
                     if (Gate::allows('view-log')) {
-                        $html .= '<button type="button" class="btn btn-sm btn-info btn-edit" id="getLogData" data-id="' . $row->id . '"><i class="fa fa-clipboard"></i> Log</button> ';
+                        $html .= '<button type="button" class="btn btn-sm btn-info btn-edit" id="getLogData" data-id="' . $row->id . '"><i class="fa fa-clipboard"></i> ' . e(__('students.history.log_action')) . '</button> ';
                     } else {
-                        $html .= '<button type="button" class="btn btn-sm btn-info disabled"><i class="fa fa-clipboard"></i> Log</button> ';
+                        $html .= '<button type="button" class="btn btn-sm btn-info disabled"><i class="fa fa-clipboard"></i> ' . e(__('students.history.log_action')) . '</button> ';
                     }
 
                     if (Gate::allows('student-delete')) {
-                        $html .= '<button type="button" data-rowid="' . $row->id . '" class="btn btn-sm btn-danger btn-delete"><i class="fa fa-trash"></i> Delete</button>';
+                        $html .= '<button type="button" data-rowid="' . $row->id . '" class="btn btn-sm btn-danger btn-delete"><i class="fa fa-trash"></i> ' . e(__('common.actions.delete')) . '</button>';
                     } else {
-                        $html .= '<button type="button" class="btn btn-sm btn-danger disabled" title="No Permission"><i class="fa fa-trash"></i> Delete</button>';
+                        $html .= '<button type="button" class="btn btn-sm btn-danger disabled" title="' . e(__('common.feedback.permission_denied')) . '"><i class="fa fa-trash"></i> ' . e(__('common.actions.delete')) . '</button>';
                     }
 
                     return $html;
@@ -688,16 +688,16 @@ class HistoriesController extends Controller
             'comment' => 'required',
             // 'signature' => 'required',
         ], [
-            'centre.required' => 'Centre must not be empty.',
-            'student_id.required' => 'Student must not be empty.',
-            'teacher_id.required' => 'Teacher must not be empty.',
-            'date.required' => 'Please provide date.',
-            'stime.required' => 'Please provide start tine.',
-            'etime.required' => 'Please provide end time.',
-            'comment.required' => 'Please provide comment.',
-            'level_id.required' => 'Please select a level.',
-            'term.required' => 'Please select a term.',
-            'bookuse.required' => 'Please specify book usage.',
+            'centre.required' => __('students.history.validation.centre'),
+            'student_id.required' => __('students.history.validation.student'),
+            'teacher_id.required' => __('students.history.validation.teacher'),
+            'date.required' => __('students.history.validation.date'),
+            'stime.required' => __('students.history.validation.start_time'),
+            'etime.required' => __('students.history.validation.end_time'),
+            'comment.required' => __('students.history.validation.comment'),
+            'level_id.required' => __('students.history.validation.level'),
+            'term.required' => __('students.history.validation.term'),
+            'bookuse.required' => __('students.history.validation.book'),
         ]);
 
         if ($validator->fails()) {
@@ -767,7 +767,7 @@ class HistoriesController extends Controller
         } */
 
         if ($qty === null) {
-            return response()->json(['success' => false, 'message' => 'นักเรียนไม่ได้ลงเรียน Level หรือ Term นี้ ']);
+            return response()->json(['success' => false, 'message' => __('students.history.validation.course_not_registered')]);
         }
 
         //dd( $history->count(),$std_id,$term,$level_id,$history,$qty);
@@ -783,7 +783,7 @@ class HistoriesController extends Controller
             $start_date = $firstHistory->start_date;
             $end_date = $firstHistory->end_date;
         } else {
-            return response()->json(['success' => false, 'message' => 'เกินกำหนดของเทอมนี้แล้ว']);
+            return response()->json(['success' => false, 'message' => __('students.history.validation.term_exceeded')]);
         }
 
 
@@ -846,7 +846,7 @@ class HistoriesController extends Controller
 
         // dd($request);
 
-        return response()->json(['success' => true, 'message' => 'Record created successfully']);
+        return response()->json(['success' => true, 'message' => __('students.history.recorded')]);
     }
 
 
@@ -1345,7 +1345,7 @@ class HistoriesController extends Controller
         $this->reorder_remain($history->student_id, $request->term, $request->level_id);
         // dd($input,$history,$logHistory);
 
-        return ['success' => 'Updated history successfully'];
+        return ['success' => __('students.history.updated')];
     }
 
 
@@ -1421,7 +1421,7 @@ class HistoriesController extends Controller
             $this->destroy_func($id);
         }
 
-        return redirect()->route('histories.index')->with('success', 'Deleted Histories successfully');
+        return redirect()->route('histories.index')->with('success', __('students.history.deleted_all'));
     }
 
     public function destroy(Request $request)
@@ -1430,9 +1430,9 @@ class HistoriesController extends Controller
         $de = $this->destroy_func($id);
 
         if ($de) {
-            return ['success' => true, 'message' => 'Deleted History successfully'];
+            return ['success' => true, 'message' => __('students.history.deleted')];
         } else {
-            return ['success' => false, 'message' => 'History not found'];
+            return ['success' => false, 'message' => __('students.history.not_found')];
         }
     }
 }

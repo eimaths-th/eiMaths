@@ -82,7 +82,7 @@ class IncomingBookShipmentController extends Controller
                 $request->validated()['items']
             );
 
-            return $this->MutationResponse($shipment, trans('book-shipments.messages.received', [], 'th'));
+            return $this->MutationResponse($shipment, trans('book-shipments.messages.received', []));
         } catch (BookShipmentException $exception) {
             return $this->ShipmentErrorResponse($exception);
         }
@@ -182,11 +182,11 @@ class IncomingBookShipmentController extends Controller
     private function ShipmentErrorResponse(BookShipmentException $exception): JsonResponse
     {
         $message = match ($exception->Reason()) {
-            BookShipmentException::STATE_CONFLICT => trans('book-shipments.messages.state_conflict', [], 'th'),
-            BookShipmentException::ITEM_SET_INVALID => trans('book-shipments.messages.item_set_invalid', [], 'th'),
-            BookShipmentException::ISSUE_NOTE_INVALID => trans('book-shipments.messages.issue_note_invalid', [], 'th'),
-            BookShipmentException::SOURCE_CONFLICT => trans('book-shipments.messages.source_conflict', [], 'th'),
-            default => trans('book-shipments.messages.could_not_receive', [], 'th'),
+            BookShipmentException::STATE_CONFLICT => trans('book-shipments.messages.state_conflict', []),
+            BookShipmentException::ITEM_SET_INVALID => trans('book-shipments.messages.item_set_invalid', []),
+            BookShipmentException::ISSUE_NOTE_INVALID => trans('book-shipments.messages.issue_note_invalid', []),
+            BookShipmentException::SOURCE_CONFLICT => trans('book-shipments.messages.source_conflict', []),
+            default => trans('book-shipments.messages.could_not_receive', []),
         };
 
         return response()->json([

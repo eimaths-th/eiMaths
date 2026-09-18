@@ -1,13 +1,21 @@
 <script>
+    const discontinuedUi = {
+        confirm_restart: @json(__('students.messages.confirm_restart')),
+        select_items: @json(__('students.messages.select_items')),
+        confirm_action: @json(__('students.messages.confirm_action')),
+        search_required: @json(__('students.messages.search_required')),
+        datatable: @json(__('common.datatable')),
+    };
+
     $(document).ready(function() {
         $(".delete_all_button").click(function() {
             var len = $('input[name="table_records[]"]:checked').length;
             if (len > 0) {
-                if (confirm("Confirm data restart?")) {
+                if (confirm(discontinuedUi.confirm_restart)) {
                     $('form#delete_all').submit();
                 }
             } else {
-                alert("Please select items to restart.");
+                alert(discontinuedUi.select_items);
             }
         });
 
@@ -103,20 +111,20 @@
             language: {
                 loadingRecords: '&nbsp;',
                 processing: `<div class="spinner-border text-primary"></div>`,
-                "sProcessing": "Processing...",
-                "sLengthMenu": "Display _MENU_ Row",
-                "sZeroRecords": "No Data Found",
-                "sInfo": "Display _START_ To _END_ From _TOTAL_ Records",
-                "sInfoEmpty": "Display 0 To 0 From 0 Records",
-                "sInfoFiltered": "(Filters _MAX_ Row)",
-                "sInfoPostFix": "",
-                "sSearch": "Search:",
-                "sUrl": "",
+                "sProcessing": discontinuedUi.datatable.processing,
+                "sLengthMenu": discontinuedUi.datatable.length_menu,
+                "sZeroRecords": discontinuedUi.datatable.zero_records,
+                "sInfo": discontinuedUi.datatable.info,
+                "sInfoEmpty": discontinuedUi.datatable.info_empty,
+                "sInfoFiltered": discontinuedUi.datatable.info_filtered,
+                "sInfoPostFix": discontinuedUi.datatable.info_postfix,
+                "sSearch": discontinuedUi.datatable.search,
+                "sUrl": discontinuedUi.datatable.url,
                 "oPaginate": {
-                    "sFirst": "First",
-                    "sPrevious": "Previous",
-                    "sNext": "Next",
-                    "sLast": "Last"
+                    "sFirst": discontinuedUi.datatable.first,
+                    "sPrevious": discontinuedUi.datatable.previous,
+                    "sNext": discontinuedUi.datatable.next,
+                    "sLast": discontinuedUi.datatable.last
                 }
             },
             aaSorting: [
@@ -205,7 +213,7 @@
                 }
             } else {
                 // Handle the case where searchType or keyword is empty
-                toastr.error('Please input Search Type and Keyword', {
+                toastr.error(discontinuedUi.search_required, {
                     timeOut: 5000
                 });
             }
@@ -283,7 +291,7 @@
         })
 
         $(document).on('click', '#getEditData', function() {
-            if (!confirm("Confirm the Restart action?")) return;
+            if (!confirm(discontinuedUi.confirm_action)) return;
 
             var rowid = $(this).data('rowid')
             var el = $(this)

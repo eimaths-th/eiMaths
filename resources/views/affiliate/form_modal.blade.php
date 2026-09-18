@@ -429,11 +429,11 @@
                         <i class="fas fa-graduation-cap text-white"></i>
                     </div>
                     <div>
-                        <h5 class="modal-title" id="purchaseModalLabel">ลงทะเบียนและจองคอร์สเรียน</h5>
-                        <p class="modal-subtitle">กรอกข้อมูลผู้เรียนเพื่อรับคำปรึกษาและนัดหมายเข้าเรียน</p>
+                        <h5 class="modal-title" id="purchaseModalLabel">{{ __('course-website.booking.title') }}</h5>
+                        <p class="modal-subtitle">{{ __('course-website.booking.subtitle') }}</p>
                     </div>
                 </div>
-                <button type="button" class="btn-close-x" data-bs-dismiss="modal" aria-label="ปิดฟอร์มสมัครคอร์ส">
+                <button type="button" class="btn-close-x" data-bs-dismiss="modal" aria-label="{{ __('course-website.booking.close_form') }}">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
@@ -445,7 +445,7 @@
                     @if (!empty($ref))
                         <div class="referral-tag-badge">
                             <i class="fas fa-gift text-success"></i>
-                            <span>สิทธิพิเศษจากผู้แนะนำ (Referral Code): <strong>{{ $ref }}</strong></span>
+                            <span>{{ __('course-website.booking.referral_benefit') }} <strong>{{ $ref }}</strong></span>
                         </div>
                     @endif
 
@@ -456,12 +456,12 @@
                                 <i class="fas fa-book-open"></i>
                             </div>
                             <div>
-                                <h6 class="selected-course-name" id="modalCourseTitleDisplay">เลือกคอร์สเรียน</h6>
-                                <span class="selected-course-tag">หลักสูตรคณิตศาสตร์ eiMaths</span>
+                                <h6 class="selected-course-name" id="modalCourseTitleDisplay">{{ __('course-website.booking.select_course') }}</h6>
+                                <span class="selected-course-tag">{{ __('course-website.booking.course_tag') }}</span>
                             </div>
                         </div>
                         <div class="selected-course-price-wrap">
-                            <span class="selected-course-price-label">ค่าคอร์สเรียน</span>
+                            <span class="selected-course-price-label">{{ __('course-website.booking.course_fee') }}</span>
                             <span class="selected-course-price" id="modalCoursePriceDisplay">0 ฿</span>
                         </div>
                     </div>
@@ -490,40 +490,40 @@
                     <div class="form-section-card">
                         <div class="form-section-header">
                             <i class="fas fa-user-shield"></i>
-                            <h6 class="form-section-title">ข้อมูลผู้ปกครอง (Parent Information)</h6>
+                            <h6 class="form-section-title">{{ __('course-website.booking.parent_section') }}</h6>
                         </div>
 
                         <div class="row g-3">
                             <div class="col-12">
-                                <label class="form-label-required">ความสัมพันธ์กับนักเรียน</label>
+                                <label class="form-label-required">{{ __('course-website.booking.relationship') }}</label>
                                 <div class="parent-type-group">
                                     <div class="parent-type-option">
                                         <input type="radio" name="type_parent" id="type_parent_mother" value="mother" checked required>
                                         <label for="type_parent_mother" class="parent-type-label">
-                                            <i class="fas fa-female"></i> คุณแม่ (Mother)
+                                            <i class="fas fa-female"></i> {{ __('course-website.booking.mother') }}
                                         </label>
                                     </div>
                                     <div class="parent-type-option">
                                         <input type="radio" name="type_parent" id="type_parent_father" value="father" required>
                                         <label for="type_parent_father" class="parent-type-label">
-                                            <i class="fas fa-male"></i> คุณพ่อ (Father)
+                                            <i class="fas fa-male"></i> {{ __('course-website.booking.father') }}
                                         </label>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="col-md-6">
-                                <label for="name" class="form-label-required">ชื่อ - นามสกุลผู้ปกครอง</label>
-                                <input type="text" class="form-control" id="name" name="name" placeholder="เช่น คุณสมศรี ใจดี" required>
+                                <label for="name" class="form-label-required">{{ __('course-website.booking.parent_name') }}</label>
+                                <input type="text" class="form-control" id="name" name="name" placeholder="{{ __('course-website.booking.parent_name_placeholder') }}" required>
                             </div>
 
                             <div class="col-md-6">
-                                <label for="telp" class="form-label-required">เบอร์โทรศัพท์ติดต่อ</label>
+                                <label for="telp" class="form-label-required">{{ __('course-website.booking.phone') }}</label>
                                 <input type="tel" class="form-control" id="telp" name="telp" placeholder="08x-xxx-xxxx" required>
                             </div>
 
                             <div class="col-12">
-                                <label for="email" class="form-label-required">อีเมล (สำหรับรับใบเสร็จและข้อมูลคอร์ส)</label>
+                                <label for="email" class="form-label-required">{{ __('course-website.booking.email') }}</label>
                                 <input type="email" class="form-control" id="email" name="email" placeholder="parent@example.com" required>
                             </div>
                         </div>
@@ -533,31 +533,31 @@
                     <div class="form-section-card">
                         <div class="form-section-header">
                             <i class="fas fa-child"></i>
-                            <h6 class="form-section-title">ข้อมูลนักเรียน (Student Information)</h6>
+                            <h6 class="form-section-title">{{ __('course-website.booking.student_section') }}</h6>
                         </div>
 
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <label for="student_name" class="form-label-required">ชื่อ - นามสกุลนักเรียน</label>
-                                <input type="text" class="form-control" id="student_name" name="student_name" placeholder="เช่น ด.ช. รักเรียน ใจดี" required>
+                                <label for="student_name" class="form-label-required">{{ __('course-website.booking.student_name') }}</label>
+                                <input type="text" class="form-control" id="student_name" name="student_name" placeholder="{{ __('course-website.booking.student_name_placeholder') }}" required>
                             </div>
 
                             <div class="col-md-3">
-                                <label for="student_nickname" class="form-label-required">ชื่อเล่น</label>
-                                <input type="text" class="form-control" id="student_nickname" name="student_nickname" placeholder="น้องกาย" required>
+                                <label for="student_nickname" class="form-label-required">{{ __('course-website.booking.nickname') }}</label>
+                                <input type="text" class="form-control" id="student_nickname" name="student_nickname" placeholder="{{ __('course-website.booking.nickname_placeholder') }}" required>
                             </div>
 
                             <div class="col-md-3">
-                                <label for="grade" class="form-label-required">ระดับชั้น</label>
+                                <label for="grade" class="form-label-required">{{ __('course-website.booking.grade') }}</label>
                                 <select name="grade" id="grade" class="form-control" required>
-                                    <option value="">เลือกระดับชั้น</option>
-                                    <optgroup label="อนุบาล (Kindergarten)">
-                                        <option value="K1">K1 (อนุบาล 1)</option>
-                                        <option value="K2">K2 (อนุบาล 2-3)</option>
+                                    <option value="">{{ __('course-website.booking.select_grade') }}</option>
+                                    <optgroup label="{{ __('course-website.booking.kindergarten_group') }}">
+                                        <option value="K1">{{ __('course-website.booking.kindergarten_1') }}</option>
+                                        <option value="K2">{{ __('course-website.booking.kindergarten_2') }}</option>
                                     </optgroup>
-                                    <optgroup label="ประถมศึกษา (Primary)">
+                                    <optgroup label="{{ __('course-website.booking.primary_group') }}">
                                         @for ($i = 1; $i <= 6; $i++)
-                                            <option value="P{{ $i }}">P{{ $i }} (ประถม {{ $i }})</option>
+                                            <option value="P{{ $i }}">{{ __('course-website.booking.primary_level', ['number' => $i]) }}</option>
                                         @endfor
                                     </optgroup>
                                 </select>
@@ -569,14 +569,14 @@
                     <div class="form-section-card mb-0">
                         <div class="form-section-header">
                             <i class="fas fa-map-marker-alt"></i>
-                            <h6 class="form-section-title">สาขาและเวลานัดหมายเข้าเรียน</h6>
+                            <h6 class="form-section-title">{{ __('course-website.booking.schedule_section') }}</h6>
                         </div>
 
                         <div class="row g-3">
                             <div class="col-12">
-                                <label for="department" class="form-label-required">สาขาที่สะดวกเรียน</label>
+                                <label for="department" class="form-label-required">{{ __('course-website.booking.branch') }}</label>
                                 <select name="department_id" id="department" class="form-control" required>
-                                    <option value="">-- เลือกสาขา eiMaths --</option>
+                                    <option value="">{{ __('course-website.booking.select_branch') }}</option>
                                     @foreach ($departments as $department)
                                         <option
                                             value="{{ $department->id }}"
@@ -588,27 +588,27 @@
                             </div>
 
                             <div class="col-md-6">
-                                <label for="day" class="form-label-required">วันที่สะดวกเรียนประจำสัปดาห์</label>
+                                <label for="day" class="form-label-required">{{ __('course-website.booking.day') }}</label>
                                 <select name="day" id="day" class="form-control" required>
-                                    <option value="">-- เลือกวัน --</option>
+                                    <option value="">{{ __('course-website.booking.select_day') }}</option>
                                     @foreach ($days as $day)
-                                        <option value="{{ $day }}">{{ $day }}</option>
+                                        <option value="{{ $day }}">{{ __('course-website.booking.days.' . strtolower($day)) }}</option>
                                     @endforeach
                                 </select>
                             </div>
 
                             <div class="col-md-6">
-                                <label for="teaching_period" class="form-label-required">ช่วงเวลาเรียน (Period)</label>
+                                <label for="teaching_period" class="form-label-required">{{ __('course-website.booking.period') }}</label>
                                 <select name="period" id="teaching_period" class="form-control" required>
-                                    <option value="">-- เลือกช่วงเวลา --</option>
+                                    <option value="">{{ __('course-website.booking.select_period') }}</option>
                                 </select>
                             </div>
 
                             <div class="col-12">
-                                <label for="appointment_date" class="form-label-required">วันและเวลาที่นัดหมายเริ่มเรียน / ทดสอบทักษะ</label>
+                                <label for="appointment_date" class="form-label-required">{{ __('course-website.booking.appointment') }}</label>
                                 <input type="datetime-local" class="form-control" id="appointment_date" name="appointment_date" required>
                                 <small class="text-muted mt-1 d-block">
-                                    <i class="fas fa-info-circle text-warning me-1"></i> เจ้าหน้าที่จะติดต่อกลับเพื่อยืนยันตารางเรียนล่วงหน้า
+                                    <i class="fas fa-info-circle text-warning me-1"></i> {{ __('course-website.booking.appointment_help') }}
                                 </small>
                             </div>
                         </div>
@@ -618,11 +618,11 @@
 
                 <div class="modal-footer" id="modal-footer">
                     <button type="button" class="btn-ghost" data-bs-dismiss="modal">
-                        ยกเลิก
+                        {{ __('course-website.booking.cancel') }}
                     </button>
                     <button type="submit" id="submitForm" class="btn-primary-orange">
                         <i class="fas fa-check-circle"></i>
-                        <span>ยืนยันการจองคอร์สเรียน</span>
+                        <span>{{ __('course-website.booking.submit') }}</span>
                     </button>
                 </div>
             </form>

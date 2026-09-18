@@ -141,19 +141,19 @@
     @php
         $is_dispatched = $shipment->status === \App\Models\BookShipment::STATUS_DISPATCHED;
         $status_labels = [
-            \App\Models\BookShipmentItem::CENTRE_STATUS_PENDING => trans('book-shipments.centre_status.PENDING', [], 'th'),
-            \App\Models\BookShipmentItem::CENTRE_STATUS_RECEIVED => trans('book-shipments.centre_status.RECEIVED', [], 'th'),
-            \App\Models\BookShipmentItem::CENTRE_STATUS_MISSING => trans('book-shipments.centre_status.MISSING', [], 'th'),
-            \App\Models\BookShipmentItem::CENTRE_STATUS_DAMAGED => trans('book-shipments.centre_status.DAMAGED', [], 'th'),
+            \App\Models\BookShipmentItem::CENTRE_STATUS_PENDING => trans('book-shipments.centre_status.PENDING', []),
+            \App\Models\BookShipmentItem::CENTRE_STATUS_RECEIVED => trans('book-shipments.centre_status.RECEIVED', []),
+            \App\Models\BookShipmentItem::CENTRE_STATUS_MISSING => trans('book-shipments.centre_status.MISSING', []),
+            \App\Models\BookShipmentItem::CENTRE_STATUS_DAMAGED => trans('book-shipments.centre_status.DAMAGED', []),
         ];
     @endphp
 
     <div class="centre-receipt-page">
         <section class="centre-receipt-hero" aria-labelledby="centre-receipt-page-title">
             <div class="container-fluid">
-                <a class="centre-receipt-back" href="{{ route('incoming-book-shipments.index') }}">← {{ trans('book-shipments.centre.back_to_incoming', [], 'th') }}</a>
+                <a class="centre-receipt-back" href="{{ route('incoming-book-shipments.index') }}">← {{ trans('book-shipments.centre.back_to_incoming', []) }}</a>
                 <h1 id="centre-receipt-page-title">{{ $shipment->shipment_number }}</h1>
-                <p>{{ $shipment->destination_centre_name ?: trans('book-shipments.centre.destination_fallback', [], 'th') }} · {{ trans('book-shipments.centre.item_count', ['count' => $shipment->Items->count()], 'th') }}</p>
+                <p>{{ $shipment->destination_centre_name ?: trans('book-shipments.centre.destination_fallback', []) }} · {{ trans('book-shipments.centre.item_count', ['count' => $shipment->Items->count()]) }}</p>
             </div>
         </section>
 
@@ -164,13 +164,13 @@
                 <section class="centre-receipt-card mb-4" aria-labelledby="centre-receipt-action-title">
                     <div class="centre-receipt-card-header d-flex flex-wrap align-items-center justify-content-between">
                         <div>
-                            <h2 id="centre-receipt-action-title">{{ $is_dispatched ? trans('book-shipments.centre.receive_shipment', [], 'th') : trans('book-shipments.centre.shipment_received', [], 'th') }}</h2>
+                            <h2 id="centre-receipt-action-title">{{ $is_dispatched ? trans('book-shipments.centre.receive_shipment', []) : trans('book-shipments.centre.shipment_received', []) }}</h2>
                             <div class="small text-muted mt-1">
-                                {{ $is_dispatched ? trans('book-shipments.centre.record_results', [], 'th') : trans('book-shipments.centre.receipt_locked', [], 'th') }}
+                                {{ $is_dispatched ? trans('book-shipments.centre.record_results', []) : trans('book-shipments.centre.receipt_locked', []) }}
                             </div>
                         </div>
                         @if ($shipment->centre_received_at)
-                            <span class="small text-muted">{{ trans('book-shipments.centre.received_at', [], 'th') }} {{ $shipment->centre_received_at->format('d/m/Y H:i') }}</span>
+                            <span class="small text-muted">{{ trans('book-shipments.centre.received_at', []) }} {{ $shipment->centre_received_at->format('d/m/Y H:i') }}</span>
                         @endif
                     </div>
 
@@ -180,11 +180,11 @@
                             <table class="table centre-receipt-table">
                                 <thead>
                                     <tr>
-                                        <th scope="col">{{ trans('book-shipments.centre.student', [], 'th') }}</th>
-                                        <th scope="col">{{ trans('book-shipments.centre.book', [], 'th') }}</th>
-                                        <th scope="col">{{ trans('book-shipments.centre.order', [], 'th') }}</th>
-                                        <th scope="col">{{ trans('book-shipments.centre.result', [], 'th') }}</th>
-                                        <th scope="col">{{ trans('book-shipments.centre.note', [], 'th') }}</th>
+                                        <th scope="col">{{ trans('book-shipments.centre.student', []) }}</th>
+                                        <th scope="col">{{ trans('book-shipments.centre.book', []) }}</th>
+                                        <th scope="col">{{ trans('book-shipments.centre.order', []) }}</th>
+                                        <th scope="col">{{ trans('book-shipments.centre.result', []) }}</th>
+                                        <th scope="col">{{ trans('book-shipments.centre.note', []) }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -195,19 +195,19 @@
                                         @endphp
                                         <tr data-receipt-item="{{ $item->id }}">
                                             <td>
-                                                <strong>{{ $item->source_student_code ?: trans('book-shipments.centre.student_fallback', [], 'th') }}</strong>
-                                                <div class="small text-muted">{{ $item->source_student_name ?: trans('book-shipments.centre.unnamed_student', [], 'th') }}</div>
+                                                <strong>{{ $item->source_student_code ?: trans('book-shipments.centre.student_fallback', []) }}</strong>
+                                                <div class="small text-muted">{{ $item->source_student_name ?: trans('book-shipments.centre.unnamed_student', []) }}</div>
                                             </td>
                                             <td>
                                                 <strong>{{ $item->book_name }}</strong>
-                                                <div class="small text-muted">{{ $item->level ?: trans('book-shipments.centre.no_level', [], 'th') }} · {{ trans('book-shipments.centre.term', [], 'th') }} {{ $item->term ?: '—' }}</div>
+                                                <div class="small text-muted">{{ $item->level ?: trans('book-shipments.centre.no_level', []) }} · {{ trans('book-shipments.centre.term', []) }} {{ $item->term ?: '—' }}</div>
                                             </td>
                                             <td>{{ $item->source_order_number ?: '—' }}</td>
                                             <td>
                                                 @if ($is_dispatched)
-                                                    <label class="sr-only" for="centre-receipt-result-{{ $item->id }}">{{ trans('book-shipments.centre.result_for', ['book' => $item->book_name], 'th') }}</label>
+                                                    <label class="sr-only" for="centre-receipt-result-{{ $item->id }}">{{ trans('book-shipments.centre.result_for', ['book' => $item->book_name]) }}</label>
                                                     <select id="centre-receipt-result-{{ $item->id }}" class="custom-select" data-receipt-status="{{ $item->id }}">
-                                                        <option value="">{{ trans('book-shipments.centre.choose_result', [], 'th') }}</option>
+                                                        <option value="">{{ trans('book-shipments.centre.choose_result', []) }}</option>
                                                         @foreach ([
                                                             \App\Models\BookShipmentItem::CENTRE_STATUS_RECEIVED,
                                                             \App\Models\BookShipmentItem::CENTRE_STATUS_MISSING,
@@ -224,11 +224,11 @@
                                             </td>
                                             <td>
                                                 @if ($is_dispatched)
-                                                    <label class="sr-only" for="{{ $note_id }}">{{ trans('book-shipments.centre.note_for', ['book' => $item->book_name], 'th') }}</label>
+                                                    <label class="sr-only" for="{{ $note_id }}">{{ trans('book-shipments.centre.note_for', ['book' => $item->book_name]) }}</label>
                                                     <textarea id="{{ $note_id }}" class="form-control" rows="2" maxlength="1000"
-                                                        data-receipt-note="{{ $item->id }}" placeholder="{{ trans('book-shipments.centre.note_required_placeholder', [], 'th') }}"></textarea>
+                                                        data-receipt-note="{{ $item->id }}" placeholder="{{ trans('book-shipments.centre.note_required_placeholder', []) }}"></textarea>
                                                 @else
-                                                    {{ $item->centre_note ?: trans('book-shipments.centre.no_note', [], 'th') }}
+                                                    {{ $item->centre_note ?: trans('book-shipments.centre.no_note', []) }}
                                                 @endif
                                             </td>
                                         </tr>
@@ -239,13 +239,13 @@
 
                         @if ($is_dispatched)
                             <div class="d-flex flex-wrap align-items-center justify-content-between mt-3">
-                                <p class="small text-muted mb-2 mb-md-0">{{ trans('book-shipments.centre.missing_or_damaged_note', [], 'th') }}</p>
-                                <button class="btn centre-receipt-submit" type="submit">{{ trans('book-shipments.centre.confirm_receipt', [], 'th') }}</button>
+                                <p class="small text-muted mb-2 mb-md-0">{{ trans('book-shipments.centre.missing_or_damaged_note', []) }}</p>
+                                <button class="btn centre-receipt-submit" type="submit">{{ trans('book-shipments.centre.confirm_receipt', []) }}</button>
                             </div>
                         @else
-                            <div class="alert alert-success mb-3">{{ trans('book-shipments.centre.receipt_recorded', [], 'th') }}</div>
+                            <div class="alert alert-success mb-3">{{ trans('book-shipments.centre.receipt_recorded', []) }}</div>
                             @if (auth()->user()->can('student-list'))
-                                <a class="btn btn-primary" href="{{ url('/contacts?shipment_id=' . $shipment->id) }}">{{ trans('book-shipments.centre.open_student_list', [], 'th') }}</a>
+                                <a class="btn btn-primary" href="{{ url('/contacts?shipment_id=' . $shipment->id) }}">{{ trans('book-shipments.centre.open_student_list', []) }}</a>
                             @endif
                         @endif
                     </form>

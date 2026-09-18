@@ -104,7 +104,7 @@ class EiFormController extends Controller
                 ->editColumn('category', function ($row) {
                     if ($row->category) {
                         # code...
-                        $text = 'category ' . $row->category;
+                        $text = __('students.eiform.category') . ' ' . $row->category;
                     }else {
                         $text = '';
                     }

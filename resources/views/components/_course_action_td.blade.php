@@ -19,14 +19,14 @@
 </div> --}}
 <div class="dropdown">
     <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-        Actions
+        {{ __('course.courses.actions.actions') }}
     </button>
     <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
         <li>
-            <a href="#" class="dropdown-item edit-btn" data-id="{{ $query->id }}">Edit</a>
+            <a href="#" class="dropdown-item edit-btn" data-id="{{ $query->id }}">{{ __('course.courses.actions.edit') }}</a>
         </li>
         <li>
-            <a href="#" class="dropdown-item delete-btn" data-id="{{ $query->id }}">Delete</a>
+            <a href="#" class="dropdown-item delete-btn" data-id="{{ $query->id }}">{{ __('course.courses.actions.delete') }}</a>
         </li>
     </ul>
 </div>

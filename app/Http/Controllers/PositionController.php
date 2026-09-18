@@ -49,7 +49,10 @@ class PositionController extends Controller
             }
 
             $datas->orderBy("positions.id", "desc")->get();
-            $state_text = array('Disable', 'Enable');
+            $state_text = [
+                __('centre-management.messages.status_disabled'),
+                __('centre-management.messages.status_enabled'),
+            ];
             return datatables()->of($datas)
             ->filterColumn('dname',function($query,$keyword){
                 $query->where('departments.name','like',"%$keyword%");
@@ -63,14 +66,14 @@ class PositionController extends Controller
                 })
                 ->addColumn('action', function ($row) {
                     if (Gate::allows('department-edit')) {
-                        $html = '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit</button> ';
+                        $html = '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> ' . e(__('centre-management.departments.actions.edit')) . '</button> ';
                     } else {
-                        $html = '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> Edit</button> ';
+                        $html = '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="' . e(__('centre-management.messages.no_permission')) . '"><i class="fa fa-edit"></i> ' . e(__('centre-management.departments.actions.edit')) . '</button> ';
                     }
                     if (Gate::allows('department-delete')) {
-                        $html .= '<button type="button" data-rowid="' . $row->id . '" class="btn btn-sm btn-danger btn-delete"><i class="fa fa-trash"></i> Delete</button>';
+                        $html .= '<button type="button" data-rowid="' . $row->id . '" class="btn btn-sm btn-danger btn-delete"><i class="fa fa-trash"></i> ' . e(__('centre-management.departments.actions.delete')) . '</button>';
                     } else {
-                        $html .= '<button type="button" class="btn btn-sm btn-danger disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-trash"></i> Delete</button> ';
+                        $html .= '<button type="button" class="btn btn-sm btn-danger disabled" data-toggle="tooltip" data-placement="bottom" title="' . e(__('centre-management.messages.no_permission')) . '"><i class="fa fa-trash"></i> ' . e(__('centre-management.departments.actions.delete')) . '</button> ';
                     }
                     return $html;
                 })->rawColumns(['checkbox', 'action'])->toJson();
@@ -104,10 +107,10 @@ class PositionController extends Controller
             'postcode' => 'required|string|max:10',
             'telephone' => 'required|string|max:20',*/
         ], [
-            'name.required' => 'The department name must not be blank!',
-            'name.unique' => 'This department name already exists in the database!',
-            'department_id.required' => 'Please select a government department!',
-            'status.required' => 'Please select a status!',
+            'name.required' => __('centre-management.validation.name_required'),
+            'name.unique' => __('centre-management.validation.name_unique'),
+            'department_id.required' => __('centre-management.validation.centre_required'),
+            'status.required' => __('centre-management.validation.status_required'),
         ]);
 
         if ($validator->fails()) {
@@ -116,7 +119,7 @@ class PositionController extends Controller
 
         $input = $request->all();
         Position::create($input);
-        return response()->json(['success' => 'The department has been successfully added.']);
+        return response()->json(['success' => __('centre-management.messages.department_created')]);
     }
 
     /**
@@ -145,10 +148,10 @@ class PositionController extends Controller
         ];
 
         $validator = Validator::make($request->all(), $rules, [
-            'name.required' => 'The department name must not be blank!',
-            'name.unique' => 'This department name already exists in the database!',
-            'department.required' => 'Please select a government department!',
-            'status.required' => 'Please select a status!',
+            'name.required' => __('centre-management.validation.name_required'),
+            'name.unique' => __('centre-management.validation.name_unique'),
+            'department.required' => __('centre-management.validation.centre_required'),
+            'status.required' => __('centre-management.validation.status_required'),
         ]);
 
         if ($validator->fails()) {
@@ -164,7 +167,7 @@ class PositionController extends Controller
         $update = Position::find($id);
         $update->update($contactd);
 
-        return response()->json(['success' => 'The department has been successfully edited.']);
+        return response()->json(['success' => __('centre-management.messages.department_updated')]);
     }
 
     /**
@@ -174,9 +177,9 @@ class PositionController extends Controller
     {
         $id = $request->get('id');
         $position = Position::findOrFail($id);
-        abort_if(\App\Models\User::where('position_id', $position->id)->exists(), 422, 'This department is assigned to users.');
+        abort_if(\App\Models\User::where('position_id', $position->id)->exists(), 422, __('centre-management.messages.department_assigned'));
         $position->update(['status' => 0]);
-        return ['success' => true, 'message' => 'The department has been successfully deleted.'];
+        return ['success' => true, 'message' => __('centre-management.messages.department_deleted')];
     }
 
     public function destroy_all(Request $request)
@@ -186,10 +189,10 @@ class PositionController extends Controller
 
         for ($xx = 0; $xx < count($arr_del); $xx++) {
             $position = Position::findOrFail($arr_del[$xx]);
-            abort_if(\App\Models\User::where('position_id', $position->id)->exists(), 422, 'This department is assigned to users.');
+            abort_if(\App\Models\User::where('position_id', $position->id)->exists(), 422, __('centre-management.messages.department_assigned'));
             $position->update(['status' => 0]);
         }
 
-        return redirect('/positions')->with('success', 'The department has been successfully deleted.');
+        return redirect('/positions')->with('success', __('centre-management.messages.department_deleted'));
     }
 }

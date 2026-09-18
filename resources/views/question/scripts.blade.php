@@ -1,4 +1,31 @@
+@php
+    $question_ui = [
+        'display_rows' => __('quiz-management.common.display_rows'),
+        'no_data' => __('quiz-management.common.no_data'),
+        'display_range' => __('quiz-management.common.display_range'),
+        'display_empty' => __('quiz-management.common.display_empty'),
+        'filtered_rows' => __('quiz-management.common.filtered_rows'),
+        'search' => __('quiz-management.common.search'),
+        'first' => __('quiz-management.common.first'),
+        'previous' => __('quiz-management.common.previous'),
+        'next' => __('quiz-management.common.next'),
+        'last' => __('quiz-management.common.last'),
+        'edit' => __('quiz-management.actions.edit'),
+        'save' => __('quiz-management.actions.save'),
+        'create_question' => __('quiz-management.question_bank.create'),
+        'delete_confirm' => __('quiz-management.actions.confirm_delete_question'),
+        'numerator' => __('quiz-management.builder.numerator'),
+        'denominator' => __('quiz-management.builder.denominator'),
+        'fraction' => __('quiz-management.builder.fraction'),
+        'mixed_fraction' => __('quiz-management.builder.mixed_fraction'),
+        'correct' => __('quiz-management.builder.correct'),
+        'request_failed' => __('quiz-management.messages.request_failed'),
+        'question_image' => __('quiz-management.builder.question_image'),
+        'image_option' => __('quiz-management.builder.image'),
+    ];
+@endphp
 <script>
+    const question_ui = @json($question_ui);
     function insertFrac() {
         let question_text = document.querySelector('#text');
         if (question_text) {
@@ -111,19 +138,19 @@
                 loadingRecords: '&nbsp;',
                 processing: `<div class="spinner-border text-primary"></div>`,
                 "sProcessing": "Processcing...",
-                "sLengthMenu": "Display_MENU_ Row",
-                "sZeroRecords": "No Data Fount",
-                "sInfo": "Display _START_ To _END_ From _TOTAL_ Records",
-                "sInfoEmpty": "Display 0 To 0 From 0 Records",
-                "sInfoFiltered": "(Filters _MAX_ Row)",
+                "sLengthMenu": question_ui.display_rows,
+                "sZeroRecords": question_ui.no_data,
+                "sInfo": question_ui.display_range,
+                "sInfoEmpty": question_ui.display_empty,
+                "sInfoFiltered": question_ui.filtered_rows,
                 "sInfoPostFix": "",
-                "sSearch": "Search:",
+                "sSearch": question_ui.search,
                 "sUrl": "",
                 "oPaginate": {
-                    "sFirst": "First",
-                    "sPrevious": "Previous",
-                    "sNext": "Next",
-                    "sLast": "Last"
+                    "sFirst": question_ui.first,
+                    "sPrevious": question_ui.previous,
+                    "sNext": question_ui.next,
+                    "sLast": question_ui.last
                 }
             },
             aaSorting: [
@@ -211,20 +238,20 @@
             $('#add-fraction-container').append(`
                     <div class="fraction-item mt-2 form-row align-items-center">
                         <div class="col-xs-3 col-sm-3 col-md-3 text-center">
-                            <input type="number" class="form-control" name="answer_numerator[${optionIndex}]" value="${numerator}" placeholder="Numerator" required>
+                            <input type="number" class="form-control" name="answer_numerator[${optionIndex}]" value="${numerator}" placeholder="${question_ui.numerator}" required>
                         </div>
                         <div class="col-xs-3 col-sm-3 col-md-3 text-center">
-                            <input type="number" class="form-control" name="answer_denominator[${optionIndex}]" value="${denominator}" placeholder="Denominator" required min="1">
+                            <input type="number" class="form-control" name="answer_denominator[${optionIndex}]" value="${denominator}" placeholder="${question_ui.denominator}" required min="1">
                         </div>
                         <div class="col-xs-3 col-sm-3 col-md-3 text-center">
                             <select name="answer_type[${optionIndex}]" class="form-control">
-                                <option value="frac" ${answerType === 'frac' ? 'selected' : ''}>Fraction</option>
-                                <option value="mixed" ${answerType === 'mixed' ? 'selected' : ''}>Mixed Fraction</option>
+                                <option value="frac" ${answerType === 'frac' ? 'selected' : ''}>${question_ui.fraction}</option>
+                                <option value="mixed" ${answerType === 'mixed' ? 'selected' : ''}>${question_ui.mixed_fraction}</option>
                             </select>
                         </div>
                         <div class="col-auto text-nowrap">
                             <input type="hidden" name="options[${optionIndex}][correct]" value="0">
-                            <input type="checkbox" class="text-left" name="options[${optionIndex}][correct]" value="1" ${correct ? 'checked' : ''}> Correct&nbsp
+                            <input type="checkbox" class="text-left" name="options[${optionIndex}][correct]" value="1" ${correct ? 'checked' : ''}> ${question_ui.correct}&nbsp
                             <button type="button" class="btn btn-danger btn-sm remove-option"><i class="fa fa-trash"></i></button>
                         </div>
                     </div>
@@ -240,7 +267,7 @@
                 </div>
                 <div class="col-auto text-nowrap">
                     <input type="hidden" name="options[${optionIndex}][correct]" value="0">
-                    <input type="checkbox" class="text-left" name="options[${optionIndex}][correct]" value="1" ${correct ? 'checked' : ''}> Correct&nbsp
+                    <input type="checkbox" class="text-left" name="options[${optionIndex}][correct]" value="1" ${correct ? 'checked' : ''}> ${question_ui.correct}&nbsp
                     <button type="button" class="btn btn-danger btn-sm remove-option">&nbsp&nbsp<i class="fa fa-trash"></i>&nbsp&nbsp</button>
                 </div>
             </div>
@@ -332,7 +359,7 @@
             var url = '{{ route('questions.destroy', ':id') }}';
             url = url.replace(':id', questionId);
 
-            if (confirm('Are you sure you want to delete this question?')) {
+            if (confirm(question_ui.delete_confirm)) {
                 $.ajax({
                     url: url,
                     type: 'DELETE',
@@ -353,7 +380,7 @@
                         }
                     },
                     error: function(err) {
-                        alert('Something went wrong. Please try again.');
+                        alert(question_ui.request_failed);
                     }
                 });
             }
@@ -369,10 +396,10 @@
             $('.form').trigger('reset');
             $('#options-container').html('');
             optionIndex = 0;
-            $('#question-title').text('Create Question');
+            $('#question-title').text(question_ui.create_question);
 
             var btn =
-                '<button type="button" class="btn btn-success" id="SubmitCreateForm"> <i class="fas fa-download"></i> Save  </button>';
+                '<button type="button" class="btn btn-success" id="SubmitCreateForm"> <i class="fas fa-download"></i> ' + question_ui.save + '  </button>';
             $('#btn-submit').html(btn);
             //how to clear image preview
             $('#show-image-question-container').hide();
@@ -563,9 +590,9 @@
             $('.alert-danger, .alert-success').html('').hide();
 
             var btn =
-                '<button type="button" class="btn btn-success" id="SubmitEditForm"> <i class="fas fa-download"></i> Save  </button>';
+                '<button type="button" class="btn btn-success" id="SubmitEditForm"> <i class="fas fa-download"></i> ' + question_ui.save + '  </button>';
             $('#btn-submit').html(btn);
-            $('#question-title').text('Edit Question');
+            $('#question-title').text(question_ui.edit);
             id = $(this).data('id');
             questionId = $(this).data('id');
             var url = '{{ route('questions.edit', ':id') }}';
@@ -644,9 +671,9 @@
             $('.alert-danger, .alert-success').html('').hide();
 
             var btn =
-                '<button type="button" class="btn btn-success" id="SubmitEditQuestionForm"> <i class="fas fa-download"></i> Save  </button>';
+                '<button type="button" class="btn btn-success" id="SubmitEditQuestionForm"> <i class="fas fa-download"></i> ' + question_ui.save + '  </button>';
             $('#btn-submit').html(btn);
-            $('#question-title').text('Edit Question');
+            $('#question-title').text(question_ui.edit);
             id = $(this).data('id');
             questionId = $(this).data('id');
             var url = '{{ route('questions.edit', ':id') }}';
@@ -787,7 +814,7 @@
                     </div>
                     <div class="col-auto text-nowrap">
                         <input type="hidden" name="image_options[${optionIndex}][correct]" value="0">
-                        <input type="checkbox" class="text-left" name="image_options[${optionIndex}][correct]" value="1" ${correct ? 'checked' : ''}> Correct&nbsp
+                        <input type="checkbox" class="text-left" name="image_options[${optionIndex}][correct]" value="1" ${correct ? 'checked' : ''}> ${question_ui.correct}&nbsp
                         <button type="button" class="btn btn-danger btn-sm remove-option-img">&nbsp&nbsp<i class="fa fa-trash"></i>&nbsp&nbsp</button>
                     </div>
                 </div>
@@ -800,7 +827,7 @@
             var index = $('.show-img-option-item').length; // Generate unique index
             var html = '<div class="show-img-option-item mt-2 form-row align-items-center">';
             html += '<div class="col-xs-2 col-sm-2 col-md-2">';
-            html += '<img src="' + imgOption.file_path + '" class="img-thumbnail" alt="Image option" />';
+            html += '<img src="' + imgOption.file_path + '" class="img-thumbnail" alt="' + question_ui.image_option + '" />';
             html += '<input type="hidden" name="image_options[' + index + '][file_id]" value="' + imgOption
                 .file_id + '" />'; // Storing file_id
             html += '<input type="hidden" name="image_options[' + index + '][file_path]" value="' + imgOption
@@ -810,7 +837,7 @@
             html += '<input type="hidden" name="image_options[' + index + '][correct]" value="' + (imgOption
                 .correct ? '1' : '0') + '">';
             html += '<input type="checkbox" class="text-left" name="image_options[' + index +
-                '][correct]" value="1" ' + (imgOption.correct ? 'checked' : '') + '> Correct&nbsp;';
+                '][correct]" value="1" ' + (imgOption.correct ? 'checked' : '') + '> ' + question_ui.correct + '&nbsp;';
             html +=
                 '<button type="button" class="btn btn-danger btn-sm remove-option-img-show">&nbsp;&nbsp;<i class="fa fa-trash"></i>&nbsp;&nbsp;</button>';
             html += '</div>';

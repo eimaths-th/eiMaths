@@ -2,8 +2,8 @@
     <div class="modal-dialog modal-xxl">
         <div class="modal-content">
             <div class="modal-header bg-primary">
-                <h4 class="modal-title"><i class="fas fa-graduation-cap"></i>History Student</h4>
-                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                <h4 class="modal-title"><i class="fas fa-graduation-cap"></i>{{ __('students.history.create') }}</h4>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="{{ __('common.actions.close') }}">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -19,7 +19,7 @@
                             <li class="nav-item">
                                 <a class="nav-link active" id="custom-tabs-one-home-tab" data-toggle="pill"
                                     href="#custom-tabs-one-home" role="tab" aria-controls="custom-tabs-one-home"
-                                    aria-selected="true">Student Detail</a>
+                                    aria-selected="true">{{ __('students.form.student_detail') }}</a>
                             </li>
                         </ul>
                     </div>
@@ -31,10 +31,10 @@
                                 <div class="row">
                                     <div class="col-xs-12 col-sm-12 col-md-12">
                                         <div class="callout callout-info">
-                                            <h5><i class="fa-solid fa-chalkboard-user"></i> ครูผู้สอน: <select
+                                            <h5><i class="fa-solid fa-chalkboard-user"></i> {{ __('students.history.teacher') }}: <select
                                                     name="teacher" id="teacher" class="form-control">
                                                     <option value="">
-                                                        ไม่มีการบันทึกครูผู้สอน
+                                                        {{ __('students.check_in.no_teacher') }}
                                                     </option>
                                                     @foreach ($lteacher as $keyt)
                                                         <option value="{{ $keyt->id }}">
@@ -50,7 +50,7 @@
                                 <div class="row">
                                     <div class="col-xs-6 col-sm-6 col-md-6">
                                         <div class="form-group">
-                                            <strong><i class="fas fa-code"></i> Centre Code:</strong>
+                                            <strong><i class="fas fa-code"></i> {{ __('students.history.centre_code') }}:</strong>
                                             <select style="width: 100%;"
                                                 class="productl select2 select2_single form-control" id="AddCentre"
                                                 name="centre" multiple="multiple"
@@ -71,7 +71,7 @@
                                     {{-- ต่อหน้า create view history --}}
                                     <div class="col-xs-6 col-sm-6 col-md-6">
                                         <div class="form-group">
-                                            <strong><i class="fas fa-code"></i> Student No.</strong>
+                                            <strong><i class="fas fa-code"></i> {{ __('students.history.student_no') }}</strong>
                                             {{-- {!! Form::text('code', null, [
                                                         'id' => 'AddCode',
                                                         'placeholder' => 'Code',
@@ -81,7 +81,7 @@
                                             <select name="student"
                                                 id="s_student"class="select2 select2_single form-control s_student"
                                                 multiple="multiple">
-                                                <option value="">select student</option>
+                                                <option value="">{{ __('students.form.select_student') }}</option>
 
                                             </select>
                                             {{-- <input type="text" placeholder="Code" class="form-control" id="AddCode" name="code" readonly="ture"> --}}
@@ -91,12 +91,12 @@
                                 <div class="row">
                                     <div class="col-xs-6 col-sm-6 col-md-6">
                                         <div class="form-group">
-                                            <strong><i class="fas fa-code"></i> Level</strong>
+                                            <strong><i class="fas fa-code"></i> {{ __('common.fields.level') }}</strong>
                                             {{-- <select style="width: 100%;" class="select2 select2_single form-control" id="AddLevel"  name="level" multiple="multiple"> --}}
                                             <select name="level_id" id="AddLevel"
                                                 class="level_id select2 select2_single form-control"
                                                 multiple="multiple">
-                                                <option value="">Select Level</option>
+                                                <option value="">{{ __('students.history.select_level') }}</option>
 
                                                 <option value="1">1</option>
                                                 <option value="2">2</option>
@@ -108,11 +108,11 @@
                                     {{-- ต่อหน้า create view history --}}
                                     <div class="col-xs-6 col-sm-6 col-md-6">
                                         <div class="form-group">
-                                            <strong><i class="fas fa-code"></i>Term</strong>
+                                            <strong><i class="fas fa-code"></i>{{ __('common.fields.term') }}</strong>
                                             <select name="term"
                                                 id="AddTerm"class="terms select2 select2_single form-control"
                                                 multiple="multiple">
-                                                <option value="">select Term</option>
+                                                <option value="">{{ __('students.history.select_term') }}</option>
                                                 <option value="1">1</option>
                                                 <option value="2">2</option>
                                                 <option value="3">3</option>
@@ -123,7 +123,7 @@
                                 <div class="row">
                                     <div class="col-xs-6 col-sm-6 col-md-6">
                                         <div class="form-group">
-                                            <strong><i class="fas fa-code"></i> Bookuse</strong>
+                                            <strong><i class="fas fa-code"></i> {{ __('common.fields.book') }}</strong>
                                             {{-- <select style="width: 100%;"
                                                         class="books select2 select2_single form-control" id="AddBook"
                                                         name="bookuse" multiple="multiple"
@@ -135,13 +135,13 @@
 
                                                     </select> --}}
                                             <input type="text" class="form-control" id="AddBook" name="bookuse"
-                                                placeholder="pls Enter book for student">
+                                                placeholder="{{ __('students.history.enter_book') }}">
                                         </div>
                                     </div>
                                     {{-- ต่อหน้า create view history --}}
                                     <div class="col-xs-6 col-sm-6 col-md-6">
                                         <div class="form-group">
-                                            <strong><i class="fas fa-code"></i>Course Remaining</strong>
+                                            <strong><i class="fas fa-code"></i>{{ __('students.history.course_remaining') }}</strong>
                                             <input type="text" name="course_remaining" id="AddCourseRemaining"
                                                 disabled class="form-control">
 
@@ -158,7 +158,7 @@
                                 <div class="row">
                                     <div class="col-xs-6 col-sm-6 col-md-6">
                                         <div class="form-group">
-                                            <strong><i class="fas fa-calendar"></i>Study Date:</strong>
+                                            <strong><i class="fas fa-calendar"></i>{{ __('students.history.study_date') }}:</strong>
                                             <input type="text" name="date" id="AddDate"
                                                 class="AddDate form-control" data-target="#reservationdate"
                                                 autocomplete="off">
@@ -174,8 +174,7 @@
                                         <div class="row">
                                             <div class="col-lg-6">
                                                 <div class="form-group">
-                                                    <strong><i class="fas fa-calendar"></i>Study Start
-                                                        Time:</strong>
+                                                    <strong><i class="fas fa-calendar"></i>{{ __('students.history.start_time') }}:</strong>
 
                                                     <div class="row">
                                                         <input type="text" id="AddStartTime"
@@ -189,7 +188,7 @@
                                             <div class="col-lg-6">
 
                                                 <div class="form-group">
-                                                    <strong><i class="fas fa-calendar"></i>Study End Time:</strong>
+                                                    <strong><i class="fas fa-calendar"></i>{{ __('students.history.end_time') }}:</strong>
                                                     <div class="row">
                                                         <input type="text" id="AddEndTime"
                                                             class="form-control col-sm-10 timepicker">
@@ -213,7 +212,7 @@
                                 <div class="row">
                                     <div class="col-xs-12 col-sm-12 col-md-12">
                                         <div class="form-group">
-                                            <strong><i class="fas fa-calendar"></i> Comment:</strong>
+                                            <strong><i class="fas fa-calendar"></i> {{ __('students.history.comment') }}:</strong>
                                             <textarea name="comment" id="AddComment" rows="5" class="form-control"></textarea>
 
                                         </div>
@@ -225,7 +224,7 @@
                                         <a id="datt"></a>
                                         <div class="position-relative form-group">
                                             <label class="form-label form-label-top form-label-auto" for="att"><i
-                                                    class="fas fa-image"></i> รูปนักเรียน<span
+                                                    class="fas fa-image"></i> {{ __('students.history.student_photo') }}<span
                                                     class="form-required">*</span>
                                                 <div style="width: 280px"></div>
                                             </label>
@@ -238,7 +237,7 @@
                                                 </div>
                                             </div>
                                             <label class="form-sub-label" style="min-height:13px"
-                                                aria-hidden="false">Student Photo</label>
+                                                aria-hidden="false">{{ __('students.history.student_photo') }}</label>
                                             <div id="dropzone-att-error" class="form-error-message" role="alert">
                                                 <img src="https://cdn.jotfor.ms/images/exclamation-octagon.png"
                                                     height="10">
@@ -259,7 +258,7 @@
                                 <div class="row">
                                     <div class="col-xs-12 col-sm-12 col-md-12">
                                         <div class="form-group">
-                                            <strong><i class="fas fa-signature"></i> ลายเซ็นต์:</strong>
+                                            <strong><i class="fas fa-signature"></i> {{ __('students.history.signature') }}:</strong>
                                             <div class="signpadi">
                                                 <canvas id="signature-pad" width="550" height="200"></canvas>
                                             </div>
@@ -290,11 +289,11 @@
             </div>
             <div class="modal-footer {{-- justify-content-between --}}">
                 <button type="button" class="btn btn-warning" id="clear-signature"><i class="fas fa-eraser"></i>
-                    ล้างลายเซ็นต์</button>
+                    {{ __('students.history.clear_signature') }}</button>
                 <button type="button" class="btn btn-success" id="SubmitCreateForm"><i class="fas fa-download"></i>
-                    Save </button>
+                    {{ __('common.actions.save') }} </button>
                 <button type="button" class="btn btn-danger modelClose" data-bs-dismiss="modal"><i
-                        class="fas fa-door-closed"></i> Close</button>
+                        class="fas fa-door-closed"></i> {{ __('common.actions.close') }}</button>
             </div>
         </div>
     </div>

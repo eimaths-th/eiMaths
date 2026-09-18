@@ -20,25 +20,29 @@
         : '—';
 @endphp
 
-<nav class="main-header navbar navbar-expand navbar-white navbar-light app-topbar" aria-label="Main navigation">
+<nav class="main-header navbar navbar-expand navbar-white navbar-light app-topbar"
+    aria-label="{{ __('navigation.header.main_navigation') }}">
     <ul class="navbar-nav app-topbar__left">
         <li class="nav-item">
-            <a class="nav-link sidebar-toggle-btn app-topbar__icon-button" data-widget="pushmenu" href="#" role="button" aria-label="Toggle main menu" title="Toggle main menu">
+            <a class="nav-link sidebar-toggle-btn app-topbar__icon-button" data-widget="pushmenu" href="#" role="button"
+                aria-label="{{ __('navigation.header.toggle_main_menu') }}"
+                title="{{ __('navigation.header.toggle_main_menu') }}">
                 <i class="fas fa-bars" aria-hidden="true"></i>
             </a>
         </li>
-        <li class="nav-item app-context-strip d-none d-md-flex" aria-label="Current work context">
+        <li class="nav-item app-context-strip d-none d-md-flex"
+            aria-label="{{ __('navigation.header.current_work_context') }}">
             <span class="app-context-chip">
                 <span class="app-context-chip__icon" aria-hidden="true"><i class="fas fa-building"></i></span>
                 <span class="app-context-chip__copy">
-                    <span class="app-context-chip__label">Centre</span>
+                    <span class="app-context-chip__label">{{ __('common.fields.centre') }}</span>
                     <strong class="app-context-chip__value" title="{{ $centre_name }}">{{ $centre_name }}</strong>
                 </span>
             </span>
             <span class="app-context-chip">
                 <span class="app-context-chip__icon" aria-hidden="true"><i class="fas fa-users"></i></span>
                 <span class="app-context-chip__copy">
-                    <span class="app-context-chip__label">Department</span>
+                    <span class="app-context-chip__label">{{ __('common.fields.department') }}</span>
                     <strong class="app-context-chip__value" title="{{ $department_name }}">{{ $department_name }}</strong>
                 </span>
             </span>
@@ -46,19 +50,24 @@
     </ul>
 
     <ul class="navbar-nav ml-auto app-topbar__right">
+        @include('layouts.partials.language-switcher')
         @if (isset($pending_work_alert_enabled) && $pending_work_alert_enabled)
             @include('partials.pending-work-alert', [
                 'authenticated_user' => $authenticated_user,
             ])
         @endif
         <li class="nav-item d-none d-md-flex">
-            <a class="nav-link app-topbar__action" data-widget="fullscreen" href="#" role="button" aria-label="Toggle full screen" title="Toggle full screen">
+            <a class="nav-link app-topbar__action" data-widget="fullscreen" href="#" role="button"
+                aria-label="{{ __('navigation.header.full_screen') }}"
+                title="{{ __('navigation.header.full_screen') }}">
                 <i class="fas fa-expand" aria-hidden="true"></i>
-                <span class="d-none d-xl-inline">Full screen</span>
+                <span class="d-none d-xl-inline">{{ __('navigation.header.full_screen') }}</span>
             </a>
         </li>
         <li class="nav-item dropdown user-menu app-user-menu">
-            <a href="#" class="nav-link dropdown-toggle app-user-trigger" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="User menu: {{ $user_name }}">
+            <a href="#" class="nav-link dropdown-toggle app-user-trigger" data-toggle="dropdown" aria-haspopup="true"
+                aria-expanded="false"
+                aria-label="{{ __('navigation.header.user_menu', ['name' => $user_name]) }}">
                 <span class="app-user-avatar" aria-hidden="true">{{ $user_initial }}</span>
                 <span class="app-user-trigger__copy d-none d-lg-flex">
                     <strong>{{ $user_name }}</strong>
@@ -72,7 +81,7 @@
                     <span class="app-user-dropdown__identity">
                         <strong>{{ $user_name }}</strong>
                         <small>{{ $department_name }}</small>
-                        <span>Member since {{ $member_since }}</span>
+                        <span>{{ __('navigation.header.member_since', ['date' => $member_since]) }}</span>
                     </span>
                 </li>
                 @if ($show_employee_affiliate_entry)
@@ -86,10 +95,10 @@
                 <li class="dropdown-divider"></li>
                 <li class="app-user-dropdown__actions">
                     <a href="#" class="btn btn-light btn-sm">
-                        <i class="far fa-user mr-1" aria-hidden="true"></i>Profile
+                        <i class="far fa-user mr-1" aria-hidden="true"></i>{{ __('navigation.header.profile') }}
                     </a>
                     <a href="#" class="btn btn-outline-danger btn-sm" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                        <i class="fas fa-sign-out-alt mr-1" aria-hidden="true"></i>Sign out
+                        <i class="fas fa-sign-out-alt mr-1" aria-hidden="true"></i>{{ __('navigation.header.sign_out') }}
                     </a>
                     <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                         @csrf

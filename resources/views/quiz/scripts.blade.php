@@ -1,16 +1,42 @@
+@php
+    $quiz_script_ui = [
+        'select_questions' => __('quiz-management.scripts.select_questions'),
+        'select_student' => __('quiz-management.scripts.select_student'),
+        'select_quiz' => __('quiz-management.scripts.select_quiz'),
+        'confirm_delete' => __('quiz-management.actions.confirm_delete'),
+        'display_rows' => __('quiz-management.common.display_rows'),
+        'no_data' => __('quiz-management.common.no_data'),
+        'display_range' => __('quiz-management.common.display_range'),
+        'display_empty' => __('quiz-management.common.display_empty'),
+        'filtered_rows' => __('quiz-management.common.filtered_rows'),
+        'search' => __('quiz-management.common.search'),
+        'first' => __('quiz-management.common.first'),
+        'previous' => __('quiz-management.common.previous'),
+        'next' => __('quiz-management.common.next'),
+        'last' => __('quiz-management.common.last'),
+        'create_quiz' => __('quiz-management.scripts.create_quiz'),
+        'assign_quiz' => __('quiz-management.scripts.assign_quiz'),
+        'edit_quiz' => __('quiz-management.scripts.edit_quiz'),
+        'edit_assign_quiz' => __('quiz-management.scripts.edit_assign_quiz'),
+        'save' => __('quiz-management.actions.save'),
+        'update' => __('quiz-management.actions.update'),
+        'request_failed' => __('quiz-management.messages.request_failed'),
+    ];
+@endphp
 <script>
+    const quiz_script_ui = @json($quiz_script_ui);
     $(document).ready(function() {
         $('.select2').select2({
-            placeholder: "Select Questions",
+            placeholder: quiz_script_ui.select_questions,
             allowClear: true,
             overflow: 'auto',
         });
         $('.select-std').select2({
-            placeholder: "Select Student",
+            placeholder: quiz_script_ui.select_student,
             allowClear: true
         });
         $('.select-quiz').select2({
-            placeholder: "Select Quiz",
+            placeholder: quiz_script_ui.select_quiz,
             allowClear: true
         });
 
@@ -82,7 +108,7 @@
             var url = '{{ route('quizzes.destroy', ':id') }}';
             url = url.replace(':id', questionId);
 
-            if (confirm('Are you sure you want to delete this Quiz?')) {
+            if (confirm(quiz_script_ui.confirm_delete)) {
                 $.ajax({
                     url: url,
                     type: 'DELETE',
@@ -104,7 +130,7 @@
                     },
                     error: function(err) {
                         console.log(err);
-                        alert('Something went wrong. Please try again.');
+                        alert(quiz_script_ui.request_failed);
                     }
                 });
             }
@@ -118,19 +144,19 @@
                 loadingRecords: '&nbsp;',
                 processing: `<div class="spinner-border text-primary"></div>`,
                 "sProcessing": "Processcing...",
-                "sLengthMenu": "Display_MENU_ Row",
-                "sZeroRecords": "No Data Fount",
-                "sInfo": "Display _START_ To _END_ From _TOTAL_ Records",
-                "sInfoEmpty": "Display 0 To 0 From 0 Records",
-                "sInfoFiltered": "(Filters _MAX_ Row)",
+                "sLengthMenu": quiz_script_ui.display_rows,
+                "sZeroRecords": quiz_script_ui.no_data,
+                "sInfo": quiz_script_ui.display_range,
+                "sInfoEmpty": quiz_script_ui.display_empty,
+                "sInfoFiltered": quiz_script_ui.filtered_rows,
                 "sInfoPostFix": "",
-                "sSearch": "Search:",
+                "sSearch": quiz_script_ui.search,
                 "sUrl": "",
                 "oPaginate": {
-                    "sFirst": "First",
-                    "sPrevious": "Previous",
-                    "sNext": "Next",
-                    "sLast": "Last"
+                    "sFirst": quiz_script_ui.first,
+                    "sPrevious": quiz_script_ui.previous,
+                    "sNext": quiz_script_ui.next,
+                    "sLast": quiz_script_ui.last
                 }
             },
             aaSorting: [
@@ -230,17 +256,17 @@
 
         $('#Listview2').DataTable({
             language: {
-                "sLengthMenu": "Display_MENU_ Row",
-                "sZeroRecords": "No Data Found",
-                "sInfo": "Display _START_ To _END_ From _TOTAL_ Records",
-                "sInfoEmpty": "Display 0 To 0 From 0 Records",
-                "sInfoFiltered": "(Filters _MAX_ Row)",
-                "sSearch": "Search:",
+                "sLengthMenu": quiz_script_ui.display_rows,
+                "sZeroRecords": quiz_script_ui.no_data,
+                "sInfo": quiz_script_ui.display_range,
+                "sInfoEmpty": quiz_script_ui.display_empty,
+                "sInfoFiltered": quiz_script_ui.filtered_rows,
+                "sSearch": quiz_script_ui.search,
                 "oPaginate": {
-                    "sFirst": "First",
-                    "sPrevious": "Previous",
-                    "sNext": "Next",
-                    "sLast": "Last"
+                    "sFirst": quiz_script_ui.first,
+                    "sPrevious": quiz_script_ui.previous,
+                    "sNext": quiz_script_ui.next,
+                    "sLast": quiz_script_ui.last
                 }
             },
             aaSorting: [
@@ -285,10 +311,10 @@ $('#btnClear').on('click', function () {
             $('.alert-success').html('');
             $('.alert-success').hide();
             $('.form').trigger('reset');
-            $('#question-title').text('Create Quiz');
+            $('#question-title').text(quiz_script_ui.create_quiz);
 
             var btn =
-                '<button type="button" class="btn btn-success" id="SubmitCreateForm"> <i class="fas fa-download"></i> Save  </button>';
+                '<button type="button" class="btn btn-success" id="SubmitCreateForm"> <i class="fas fa-download"></i> ' + quiz_script_ui.save + '  </button>';
             $('#btn-submit').html(btn);
 
             $.ajax({
@@ -321,10 +347,10 @@ $('#btnClear').on('click', function () {
             $('.alert-success').html('');
             $('.alert-success').hide();
             $('.form').trigger('reset');
-            $('#assign-title').text('Assign Quiz');
+            $('#assign-title').text(quiz_script_ui.assign_quiz);
 
             var btn =
-                '<button type="button" class="btn btn-success" id="SubmitAssignForm"> <i class="fas fa-download"></i> Save  </button>';
+                '<button type="button" class="btn btn-success" id="SubmitAssignForm"> <i class="fas fa-download"></i> ' + quiz_script_ui.save + '  </button>';
             $('#btn-assign-submit').html(btn);
             $('#AssignModal').modal('show');
         });
@@ -506,9 +532,9 @@ $('#btnClear').on('click', function () {
             $('.alert-success').html('');
             $('.alert-success').hide();
             var btn =
-                '<button type="button" class="btn btn-success" id="SubmitEditForm"> <i class="fas fa-download"></i> Save  </button>';
+                '<button type="button" class="btn btn-success" id="SubmitEditForm"> <i class="fas fa-download"></i> ' + quiz_script_ui.save + '  </button>';
             $('#btn-submit').html(btn);
-            $('#question-title').text('Edit Quiz');
+            $('#question-title').text(quiz_script_ui.edit_quiz);
             quiz_id = $(this).data('id'); // Use the outer quiz_id variable
             var url = '{{ route('quizzes.edit', ':id') }}';
             url = url.replace(':id', quiz_id);
@@ -602,12 +628,12 @@ $('#btnClear').on('click', function () {
             $('.alert-success').html('');
             $('.alert-success').hide();
             $('.form').trigger('reset'); // This might clear selects, need to re-populate
-            $('#assign-title').text('Edit Assign Quiz');
+            $('#assign-title').text(quiz_script_ui.edit_assign_quiz);
 
             var studentId = $(this).data('student-id');
             var btn =
                 '<button type="button" class="btn btn-success" id="SubmitUpdateAssignForm" data-student-id="' +
-                studentId + '"> <i class="fas fa-save"></i> Update </button>';
+                studentId + '"> <i class="fas fa-save"></i> ' + quiz_script_ui.update + ' </button>';
             $('#btn-assign-submit').html(btn);
 
             // Fetch existing assignments

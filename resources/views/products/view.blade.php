@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="{{ app()->getLocale() }}">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>รายการสินค้า - eiMaths</title>
+    <title>{{ __('products.print.title') }}</title>
     <style>
         * {
             margin: 0;
@@ -402,17 +402,17 @@
 </head>
 
 <body>
-    <button class="print-btn no-print" onclick="window.print()" aria-label="พิมพ์">
-        <i class="fas fa-print" aria-hidden="true"></i> <span class="print-text">พิมพ์</span>
+    <button class="print-btn no-print" onclick="window.print()" aria-label="{{ __('products.print.button') }}">
+        <i class="fas fa-print" aria-hidden="true"></i> <span class="print-text">{{ __('products.print.button') }}</span>
     </button>
 
     <div class="container">
         <div class="header">
-            <h1>รายการสินค้าและอุปกรณ์</h1>
-            <div class="subtitle">eiMaths Learning Center</div>
+            <h1>{{ __('products.print.heading') }}</h1>
+            <div class="subtitle">{{ __('products.print.subtitle') }}</div>
             <div class="print-info">
-                วันที่พิมพ์: {{ date('d/m/Y H:i:s') }} |
-                จำนวนรายการทั้งหมด: {{ $products->flatten()->count() }} รายการ
+                {{ __('products.print.printed_at') }} {{ date('d/m/Y H:i:s') }} |
+                {{ __('products.print.total_items') }} {{ $products->flatten()->count() }} {{ __('products.print.items') }}
             </div>
         </div>
 
@@ -434,7 +434,7 @@
                 <div class="centre-header">
                     <i class="fas fa-building"></i> {{ $productGroup->first()->center->name }}
                     <span style="float: right; font-size: 14px;">
-                        ({{ $totalItems }} รายการ)
+                        ({{ $totalItems }} {{ __('products.print.items') }})
                     </span>
                 </div>
 
@@ -453,7 +453,7 @@
                                         @if ($product->amount > 0)
                                             <span
                                                 style="font-size: 12px; background: #f0f7ff; color: #0066cc; padding: 2px 8px; border-radius: 10px; font-weight: 500;">
-                                                มีในสต็อก: {{ number_format($product->amount) }}
+                                                {{ __('products.print.stock_count') }} {{ number_format($product->amount) }}
                                             </span>
                                         @endif
                                     </div>
@@ -465,7 +465,7 @@
                                     <div style="margin: 0 auto 5px; max-width: 100%;">
                                         <div
                                             style="margin-bottom: 8px; font-size: 11px; color: #666; letter-spacing: 0.5px;">
-                                            สแกนบาร์โค้ดด้านล่าง
+                                            {{ __('products.print.scan_barcode') }}
                                         </div>
                                         <div
                                             style="background: white; padding: 10px; border-radius: 6px; display: inline-block; border: 1px solid #f0f0f0; transform: scale(1.5); transform-origin: center; margin: 10px 0;">
@@ -478,7 +478,7 @@
                                 </div>
                                 <div
                                     style="padding: 10px 15px; background: #fafafa; border-top: 1px solid #f0f0f0; font-size: 12px; color: #666;">
-                                    <div style="font-weight: 500; margin-bottom: 3px; color: #555;">รายละเอียด:
+                                    <div style="font-weight: 500; margin-bottom: 3px; color: #555;">{{ __('products.print.detail') }}
                                     </div>
                                     {{ $product->detail ?? '-' }}
                                 </div>
@@ -502,7 +502,7 @@
                                             @if ($product->amount > 0)
                                                 <span
                                                     style="font-size: 12px; background: #f0f7ff; color: #0066cc; padding: 2px 8px; border-radius: 10px; font-weight: 500;">
-                                                    มีในสต็อก: {{ number_format($product->amount) }}
+                                                    {{ __('products.print.stock_count') }} {{ number_format($product->amount) }}
                                                 </span>
                                             @endif
                                         </div>
@@ -514,7 +514,7 @@
                                         <div style="margin: 0 auto 10px; max-width: 100%;">
                                             <div
                                                 style="margin-bottom: 8px; font-size: 11px; color: #666; letter-spacing: 0.5px;">
-                                                สแกนบาร์โค้ดด้านล่าง
+                                                {{ __('products.print.scan_barcode') }}
                                             </div>
                                             <div
                                                 style="background: white; padding: 10px; border-radius: 6px; display: inline-block; border: 1px solid #f0f0f0; transform: scale(1.5); transform-origin: center; margin: 10px 0;">
@@ -527,7 +527,7 @@
                                     </div>
                                     <div
                                         style="padding: 10px 15px; background: #fafafa; border-top: 1px solid #f0f0f0; font-size: 12px; color: #666;">
-                                        <div style="font-weight: 500; margin-bottom: 3px; color: #555;">รายละเอียด:
+                                        <div style="font-weight: 500; margin-bottom: 3px; color: #555;">{{ __('products.print.detail') }}
                                         </div>
                                         {{ $product->detail ?? '-' }}
                                     </div>
@@ -555,7 +555,7 @@
                                         <div class="qrcode-name"
                                             style="font-size: 14px; margin: 8px 0; font-weight: 500;">
                                             {{ $product->name }}</div>
-                                        <div class="product-price" style="font-weight: bold; font-size: 12px; margin-top: 2px;">จำนวน:
+                                        <div class="product-price" style="font-weight: bold; font-size: 12px; margin-top: 2px;">{{ __('products.print.quantity') }}
                                             {{ number_format($product->amount) }} {{ $product->unit }}</div>
                                     </div>
                                 @endforeach
@@ -569,8 +569,8 @@
         @if ($products->isEmpty())
             <div style="text-align: center; padding: 50px; color: #666;">
                 <i class="fas fa-inbox" style="font-size: 48px; margin-bottom: 20px;"></i>
-                <h3>ไม่พบข้อมูลสินค้า</h3>
-                <p>ไม่มีสินค้าในระบบที่จะแสดงผล</p>
+                <h3>{{ __('products.print.empty_title') }}</h3>
+                <p>{{ __('products.print.empty_message') }}</p>
             </div>
         @endif
     </div>

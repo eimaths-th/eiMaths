@@ -7,18 +7,18 @@
                     <span id="question-title"></span>
                     {{-- {{ $editing ? 'Edit Question' : 'Create Question' }} --}}
                 </h4>
-                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="{{ __('quiz-management.builder.close') }}">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
                 <div class="alert alert-danger alert-dismissible fade show" role="alert" style="display: none;">
-                    <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close">
+                    <button type="button" class="btn-close" data-dismiss="alert" aria-label="{{ __('quiz-management.builder.close') }}">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="alert alert-success alert-dismissible fade show" role="alert" style="display: none;">
-                    <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close">
+                    <button type="button" class="btn-close" data-dismiss="alert" aria-label="{{ __('quiz-management.builder.close') }}">
                         <span aria-hidden="true"></span>
                     </button>
                 </div>
@@ -27,16 +27,16 @@
                     <input type="hidden" id="formMethod" name="_method" value="POST">
                     <div class="mb-3">
                         <select name="type" id="type" class="form-control">
-                            <option value="">Select type answer</option>
-                            <option value="options">Options</option>
-                            <option value="written">Written</option>
-                            <option value="image">image</option>
-                            <option value="fraction">fraction</option>
+                            <option value="">{{ __('quiz-management.builder.select_answer_type') }}</option>
+                            <option value="options">{{ __('quiz-management.builder.options') }}</option>
+                            <option value="written">{{ __('quiz-management.builder.written') }}</option>
+                            <option value="image">{{ __('quiz-management.builder.image') }}</option>
+                            <option value="fraction">{{ __('quiz-management.builder.fraction') }}</option>
                         </select>
                     </div>
 
                     <div class="mb-3">
-                        <label for="text" class="form-label">Question text</label>
+                        <label for="text" class="form-label">{{ __('quiz-management.builder.question_text') }}</label>
                         <textarea id="text" class="form-control" name="text">{{ $question->text ?? old('text') }}</textarea>
                         @error('text')
                             <div class="text-danger mt-2">{{ $message }}</div>
@@ -45,13 +45,13 @@
                             <div class="col-lg-2">
                                 <button type="button" class="btn btn-primary" onclick="insertFrac()">
                                     {{-- เศษส่วน --}}
-                                    Fraction
+                                    {{ __('quiz-management.builder.fraction') }}
                                 </button>
                             </div>
                             <div class="col-lg-2">
                                 <button type="button" class="btn btn-primary" onclick="insertMixed()">
                                     {{-- จำนวนคละ --}}
-                                    MixFrac
+                                    {{ __('quiz-management.builder.mixed_fraction') }}
                                 </button>
                             </div>
                         </div>
@@ -61,7 +61,7 @@
 
 
                     <div class="mb-3">
-                        <label for="imageQuestion" class="form-label">Question Image</label>
+                        <label for="imageQuestion" class="form-label">{{ __('quiz-management.builder.question_image') }}</label>
                         <!-- File Upload Input (Initially visible if no image) -->
                         <div id="add-image-question-container">
                             <input type="file" id="imageQuestion" name="imageQuestion" class="form-control mb-2"
@@ -72,7 +72,7 @@
                         <!-- Image Preview -->
                         <div id="show-image-question-container" style="display:none;">
                             <div class="mb-2">
-                                <img id="preview-image-question" src="" alt="Question Image"
+                                <img id="preview-image-question" src="" alt="{{ __('quiz-management.builder.question_image') }}"
                                     style="max-width: 200px;" class="img-thumbnail">
                                 <button type="button" class="btn btn-danger btn-sm"
                                     id="remove-show-image-question-container">
@@ -89,18 +89,18 @@
                     </div>
 
                     <div class="mb-3 written_type">
-                        <label for="written" class="form-label">Question Written</label>
+                        <label for="written" class="form-label">{{ __('quiz-management.builder.question_written') }}</label>
                         <br>
                         <div class="wrtiten-container">
                             <input type="text" class="form-control" id="written" name="written"
-                                placeholder="Enter correct answer">
+                                placeholder="{{ __('quiz-management.builder.correct_answer_placeholder') }}">
                         </div>
                     </div>
 
                     <div class="mb-3 options_type">
-                        <label for="options" class="form-label">Question options</label>
+                        <label for="options" class="form-label">{{ __('quiz-management.builder.question_options') }}</label>
                         <br>
-                        <button type="button" class="btn btn-sm btn-primary mt-2" id="add-option">Add</button>
+                        <button type="button" class="btn btn-sm btn-primary mt-2" id="add-option">{{ __('quiz-management.builder.add') }}</button>
                         <div id="options-container">
                             @if (old('options', $options ?? []))
 
@@ -117,7 +117,7 @@
                                             <input type="checkbox" class="text-left"
                                                 name="options[{{ $index }}][correct]" value="1"
                                                 {{ isset($option['correct']) && $option['correct'] ? 'checked' : '' }}>
-                                            Correct&nbsp
+                                            {{ __('quiz-management.builder.correct') }}&nbsp
                                             <button type="button"
                                                 class="btn btn-danger btn-sm remove-option">&nbsp&nbsp<i
                                                     class="fa fa-trash"></i>&nbsp&nbsp</button>
@@ -135,10 +135,10 @@
                     </div>
 
                     <div class="mb-3 image_type">
-                        <label for="image" class="form-label">Question Image Options</label>
+                        <label for="image" class="form-label">{{ __('quiz-management.builder.question_image_options') }}</label>
                         <br>
                         <button type="button" class="btn btn-sm btn-primary mt-2 addOption2"
-                            id="add-option-img">Add</button>
+                            id="add-option-img">{{ __('quiz-management.builder.add') }}</button>
 
                         <div id="image-options-container">
 
@@ -158,7 +158,7 @@
                                             <input type="checkbox" class="text-left"
                                                 name="image_options[{{ $index }}][correct]" value="1"
                                                 {{ isset($option['correct']) && $option['correct'] ? 'checked' : '' }}>
-                                            Correct&nbsp
+                                            {{ __('quiz-management.builder.correct') }}&nbsp
                                             <button type="button"
                                                 class="btn btn-danger btn-sm remove-option-img">&nbsp&nbsp<i
                                                     class="fa fa-trash"></i>&nbsp&nbsp</button>
@@ -177,40 +177,39 @@
 
                     <div class="mb-3 fraction_type">
                         <hr>
-                        <h2>answers fraction</h2>
+                        <h2>{{ __('quiz-management.builder.answers_fraction') }}</h2>
                         <div class="mb-3">
-                            <label for="answer_type" class="form-label">Type Answer</label>
+                            <label for="answer_type" class="form-label">{{ __('quiz-management.builder.type_answer') }}</label>
                             <select name="answer_type_fraction" id="answer_type_fraction" class="form-control">
-                                <option value="">select type answer fraction</option>
-                                <option value="written">written</option>
-                                <option value="options">options</option>
+                                <option value="">{{ __('quiz-management.builder.select_fraction_answer') }}</option>
+                                <option value="written">{{ __('quiz-management.builder.written') }}</option>
+                                <option value="options">{{ __('quiz-management.builder.options') }}</option>
                             </select>
                         </div>
                         <div class="written_type_fraction">
                             <div class="mb-3">
-                                <label for="answer_numerator" class="form-label">Numerator</label>
+                                <label for="answer_numerator" class="form-label">{{ __('quiz-management.builder.numerator') }}</label>
                                 <input type="number" class="form-control" name="answer_numerator"
-                                    id="answer_numerator" placeholder="numerator" required>
+                                    id="answer_numerator" placeholder="{{ __('quiz-management.builder.numerator') }}" required>
                             </div>
 
                             <div class="mb-3">
-                                <label for="answer_denominator" class="form-label">Denominator</label>
+                                <label for="answer_denominator" class="form-label">{{ __('quiz-management.builder.denominator') }}</label>
                                 <input type="number" class="form-control" name="answer_denominator" required
-                                    id="answer_denominator" placeholder="denominator" min="1">
+                                    id="answer_denominator" placeholder="{{ __('quiz-management.builder.denominator') }}" min="1">
                             </div>
 
                             <div class="mb-3">
-                                <label for="answer_type" class="form-label">Type Fraction</label>
+                                <label for="answer_type" class="form-label">{{ __('quiz-management.builder.type_fraction') }}</label>
                                 <select name="answer_type" id="answer_type" class="form-control">
-                                    <option value="frac">Fraction</option>
-                                    <option value="mixed" selected>Mixed Fraction</option>
+                                    <option value="frac">{{ __('quiz-management.builder.fraction') }}</option>
+                                    <option value="mixed" selected>{{ __('quiz-management.builder.mixed_fraction') }}</option>
                                 </select>
                             </div>
                         </div>
 
                         <div class="options_type_fraction">
-                            <button type="button" class="btn btn-sm btn-primary mt-2" id="add-fraction-option">Add
-                                Fraction</button>
+                            <button type="button" class="btn btn-sm btn-primary mt-2" id="add-fraction-option">{{ __('quiz-management.builder.add_fraction') }}</button>
                             <div id="add-fraction-container">
 
                             </div>
@@ -224,9 +223,9 @@
                     <div class="row">
                         <div class="col-lg-4">
                             <div class="mt-4">
-                                <label for="level" class=" form-label">Grade</label>
+                                <label for="level" class=" form-label">{{ __('quiz-management.builder.grade') }}</label>
                                 <select id="level" name="level" class="form-control" required>
-                                    <option value="" selected>Select Grade</option>
+                                    <option value="" selected>{{ __('quiz-management.builder.select_grade') }}</option>
                                     <option value="K1">K1</option>
                                     <option value="K2">K2</option>
                                     <option value="P1">P1</option>
@@ -240,9 +239,9 @@
                         </div>
                         <div class="col-lg-4">
                             <div class="mt-4">
-                                <label for="term" class=" form-label">Term</label>
+                                <label for="term" class=" form-label">{{ __('quiz-management.builder.term') }}</label>
                                 <select id="term" name="term" class="form-control" required>
-                                    <option value="" selected>Select Term</option>
+                                    <option value="" selected>{{ __('quiz-management.builder.select_term') }}</option>
                                     <option value="1">1</option>
                                     <option value="2">2</option>
                                     <option value="3">3</option>
@@ -252,9 +251,9 @@
                         </div>
                         <div class="col-lg-4">
                             <div class="mt-4">
-                                <label for="section" class=" form-label">Level</label>
+                                <label for="section" class=" form-label">{{ __('quiz-management.builder.level') }}</label>
                                 <select id="section" name="section" class="form-control" required>
-                                    <option value="" selected>Select Level</option>
+                                    <option value="" selected>{{ __('quiz-management.builder.select_level') }}</option>
                                     @for ($i = 1; $i <= 20; $i++)
                                         <option value="{{ $i }}">{{ $i }}</option>
                                     @endfor
@@ -264,7 +263,7 @@
                     </div>
                     <!-- Hint -->
                     <div class="mb-3">
-                        <label for="code_snippet" class="form-label">Hint</label>
+                        <label for="code_snippet" class="form-label">{{ __('quiz-management.builder.hint') }}</label>
                         <textarea id="code_snippet" class="form-control" name="code_snippet">{{ $question->code_snippet ?? old('code_snippet') }}</textarea>
                         @error('code_snippet')
                             <div class="text-danger mt-2">{{ $message }}</div>
@@ -272,7 +271,7 @@
                     </div>
                     <!-- Answer explanation -->
                     <div class="mb-3">
-                        <label for="answer_explanation" class="form-label">Answer explanation</label>
+                        <label for="answer_explanation" class="form-label">{{ __('quiz-management.builder.answer_explanation') }}</label>
                         <textarea id="answer_explanation" class="form-control" name="answer_explanation">{{ $question->answer_explanation ?? old('answer_explanation') }}</textarea>
                         @error('answer_explanation')
                             <div class="text-danger mt-2">{{ $message }}</div>
@@ -281,7 +280,7 @@
 
                     <!-- Answer explanation image -->
                     <div class="mb-3">
-                        <label for="answer_explanation_image" class="form-label">Answer Explanation Image</label>
+                        <label for="answer_explanation_image" class="form-label">{{ __('quiz-management.builder.answer_explanation') }} {{ __('quiz-management.builder.image') }}</label>
 
                         <!-- File Upload Input (Initially visible if no image) -->
                         <div id="add-image-answer-explanation-container">
@@ -294,7 +293,7 @@
                         <div id="show-image-answer-explanation-container" style="display:none;">
                             <div class="mb-2">
                                 <img id="preview-image-answer-explanation" src=""
-                                    alt="Answer Explanation Image" style="max-width: 200px;" class="img-thumbnail">
+                                    alt="{{ __('quiz-management.builder.answer_explanation') }} {{ __('quiz-management.builder.image') }}" style="max-width: 200px;" class="img-thumbnail">
                                 <button type="button" class="btn btn-danger btn-sm"
                                     id="remove-show-image-answer-explanation-container">
                                     <i class="fa fa-trash"></i>
@@ -310,7 +309,7 @@
                     <!-- Google Drive solution video -->
                     <div class="mb-3">
                         <label for="answer_explanation_video_url" class="form-label">
-                            Google Drive Solution Video Link
+                            {{ __('quiz-management.builder.more_info_link') }}
                         </label>
                         <input type="url" id="answer_explanation_video_url"
                             class="form-control" name="answer_explanation_video_url"
@@ -326,7 +325,7 @@
 
                     <!-- More info link -->
                     <div class="mb-3">
-                        <label for="more_info_link" class="form-label">More info link</label>
+                        <label for="more_info_link" class="form-label">{{ __('quiz-management.builder.more_info_link') }}</label>
                         <input type="text" id="more_info_link" class="form-control" name="more_info_link"
                             value="{{ $question->more_info_link ?? old('more_info_link') }}" />
                         @error('more_info_link')
@@ -340,12 +339,12 @@
             <div class="modal-footer">
                 <span id="btn-submit">
                     <button type="button" class="btn btn-success" id="SubmitCreateForm">
-                        <i class="fas fa-download"></i> Save
+                        <i class="fas fa-download"></i> {{ __('quiz-management.actions.save') }}
                     </button>
                 </span>
 
                 <button type="button" class="btn btn-danger modelClose" data-bs-dismiss="modal">
-                    <i class="fas fa-door-closed"></i> Close
+                    <i class="fas fa-door-closed"></i> {{ __('quiz-management.builder.close') }}
                 </button>
             </div>
         </div>

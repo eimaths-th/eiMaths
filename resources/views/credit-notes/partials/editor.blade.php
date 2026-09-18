@@ -19,7 +19,7 @@
     <div class="credit-note-form-section">
         <div class="credit-note-section-heading">
             <div>
-                <span class="credit-note-section-kicker">01 / Buyer profile</span>
+                <span class="credit-note-section-kicker">{{ __('credit-note.editor.buyer_profile') }}</span>
                 <h3>{{ __('credit-note.fields.buyer_name') }}</h3>
             </div>
             <i class="fas fa-user-tie" aria-hidden="true"></i>
@@ -30,10 +30,10 @@
                 <input id="buyer_name" name="buyer_name" class="form-control" value="{{ old('buyer_name', $credit_note->buyer_name) }}" required autocomplete="organization">
             </div>
             <div class="form-group col-md-6">
-                <label for="buyer_is_vat_registered">VAT registered</label>
+                <label for="buyer_is_vat_registered">{{ __('credit-note.editor.vat_registered') }}</label>
                 <select id="buyer_is_vat_registered" name="buyer_is_vat_registered" class="form-control" required aria-controls="buyer-tax-id-field buyer-branch-type-field buyer-branch-code-field" aria-expanded="{{ $buyer_tax_fields_are_visible ? 'true' : 'false' }}">
-                    <option value="1" @selected($buyer_vat_registered === '1')>Yes</option>
-                    <option value="0" @selected($buyer_vat_registered === '0')>No</option>
+                    <option value="1" @selected($buyer_vat_registered === '1')>{{ __('credit-note.editor.yes') }}</option>
+                    <option value="0" @selected($buyer_vat_registered === '0')>{{ __('credit-note.editor.no') }}</option>
                 </select>
             </div>
             <div class="form-group col-md-12">
@@ -45,14 +45,14 @@
                 <input id="buyer_tax_id" name="buyer_tax_id" class="form-control" value="{{ old('buyer_tax_id', $credit_note->buyer_tax_id) }}" inputmode="numeric" data-required-when-vat-registered @required($buyer_tax_fields_are_visible) @disabled(!$buyer_tax_fields_are_visible)>
             </div>
             <div id="buyer-branch-type-field" class="form-group col-md-4" data-buyer-tax-field aria-hidden="{{ $buyer_tax_fields_are_visible ? 'false' : 'true' }}" @if (!$buyer_tax_fields_are_visible) hidden @endif>
-                <label for="buyer_branch_type">Buyer branch <span class="text-danger" aria-hidden="true">*</span></label>
+                <label for="buyer_branch_type">{{ __('credit-note.editor.buyer_branch') }} <span class="text-danger" aria-hidden="true">*</span></label>
                 <select id="buyer_branch_type" name="buyer_branch_type" class="form-control" data-required-when-vat-registered @required($buyer_tax_fields_are_visible) @disabled(!$buyer_tax_fields_are_visible)>
-                    <option value="head_office" @selected($buyer_branch_type === 'head_office')>Head Office</option>
-                    <option value="branch" @selected($buyer_branch_type === 'branch')>Branch</option>
+                    <option value="head_office" @selected($buyer_branch_type === 'head_office')>{{ __('credit-note.editor.head_office') }}</option>
+                    <option value="branch" @selected($buyer_branch_type === 'branch')>{{ __('credit-note.editor.branch') }}</option>
                 </select>
             </div>
             <div id="buyer-branch-code-field" class="form-group col-md-4" data-buyer-tax-field aria-hidden="{{ $buyer_tax_fields_are_visible ? 'false' : 'true' }}" @if (!$buyer_tax_fields_are_visible) hidden @endif>
-                <label for="buyer_branch_code">Branch code <span class="text-danger" aria-hidden="true">*</span></label>
+                <label for="buyer_branch_code">{{ __('credit-note.editor.branch_code') }} <span class="text-danger" aria-hidden="true">*</span></label>
                 <input id="buyer_branch_code" name="buyer_branch_code" class="form-control" value="{{ old('buyer_branch_code', $credit_note->buyer_branch_code) }}" pattern="[0-9]{5}" inputmode="numeric" data-required-when-vat-registered @required($buyer_tax_fields_are_visible) @disabled(!$buyer_tax_fields_are_visible)>
             </div>
         </div>
@@ -61,7 +61,7 @@
     <div class="credit-note-form-section">
         <div class="credit-note-section-heading">
             <div>
-                <span class="credit-note-section-kicker">02 / Adjustment reason</span>
+                <span class="credit-note-section-kicker">{{ __('credit-note.editor.adjustment_reason') }}</span>
                 <h3>{{ __('credit-note.fields.reason') }}</h3>
             </div>
             <i class="fas fa-clipboard-check" aria-hidden="true"></i>
@@ -72,7 +72,7 @@
                 <select id="reason_code" name="reason_code" class="form-control" required>
                     @foreach (\App\Domain\CreditNote\Enums\CreditNoteReasonCode::cases() as $reason)
                         <option value="{{ $reason->value }}" @selected($selected_reason_code === $reason->value)>
-                            {{ str_replace('_', ' ', ucfirst($reason->value)) }}
+                            {{ __('credit-note.reasons.' . $reason->value) }}
                         </option>
                     @endforeach
                 </select>
@@ -89,7 +89,7 @@
                 <textarea id="reason_details" name="reason_details" class="form-control" rows="3" data-reason-details-control @required($custom_reason_is_selected)>{{ $reason_details }}</textarea>
             </div>
             <div class="form-group col-md-6">
-                <label for="late_issue_reason">Late issue reason <span class="text-muted">(if applicable)</span></label>
+                <label for="late_issue_reason">{{ __('credit-note.editor.late_issue_reason') }} <span class="text-muted">{{ __('credit-note.editor.if_applicable') }}</span></label>
                 <textarea id="late_issue_reason" name="late_issue_reason" class="form-control" rows="3">{{ old('late_issue_reason', $credit_note->late_issue_reason) }}</textarea>
             </div>
         </div>
@@ -98,22 +98,22 @@
     <div class="credit-note-form-section credit-note-source-section">
         <div class="credit-note-section-heading">
             <div>
-                <span class="credit-note-section-kicker">03 / Source receipt</span>
-                <h3>Source receipt lines</h3>
+                <span class="credit-note-section-kicker">{{ __('credit-note.editor.source_receipt') }}</span>
+                <h3>{{ __('credit-note.editor.source_receipt_lines') }}</h3>
             </div>
             <i class="fas fa-receipt" aria-hidden="true"></i>
         </div>
-        <p class="credit-note-section-help">Enter a positive credit amount only for lines to include. Leave other lines blank.</p>
+        <p class="credit-note-section-help">{{ __('credit-note.editor.source_help') }}</p>
         <div class="table-responsive">
             <table class="table table-hover credit-note-source-table">
-                <caption class="sr-only">Source receipt lines available for credit</caption>
+                <caption class="sr-only">{{ __('credit-note.editor.source_lines_caption') }}</caption>
                 <thead>
                     <tr>
-                        <th scope="col">Line</th>
-                        <th scope="col" class="text-right">Original</th>
-                        <th scope="col">Tax treatment</th>
-                        <th scope="col" class="credit-note-entry-column">Credit quantity</th>
-                        <th scope="col" class="credit-note-entry-column">Credit amount</th>
+                        <th scope="col">{{ __('credit-note.editor.line') }}</th>
+                        <th scope="col" class="text-right">{{ __('credit-note.fields.original') }}</th>
+                        <th scope="col">{{ __('credit-note.editor.tax_treatment') }}</th>
+                        <th scope="col" class="credit-note-entry-column">{{ __('credit-note.editor.credit_quantity') }}</th>
+                        <th scope="col" class="credit-note-entry-column">{{ __('credit-note.editor.credit_amount') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -137,18 +137,18 @@
                             <td class="text-right text-nowrap">{{ number_format($source_line->original_line_total_minor / 100, 2, '.', ',') }}</td>
                             <td>
                                 @if ($line_is_complete)
-                                    <span class="credit-note-tax-label">{{ $source_line->tax_treatment->value }}</span>
-                                    <small class="d-block text-muted">{{ number_format($source_line->vat_rate_basis_points / 100, 2, '.', '') }}% VAT</small>
+                                    <span class="credit-note-tax-label">{{ __('credit-note.tax_treatment.' . $source_line->tax_treatment->value) }}</span>
+                                    <small class="d-block text-muted">{{ number_format($source_line->vat_rate_basis_points / 100, 2, '.', '') }}% {{ __('credit-note.fields.vat') }}</small>
                                 @else
-                                    <span class="badge badge-warning">Incomplete source metadata</span>
+                                    <span class="badge badge-warning">{{ __('credit-note.editor.incomplete_source_metadata') }}</span>
                                 @endif
                             </td>
                             <td>
-                                <label class="sr-only" for="credit_quantity_{{ $index }}">Credit quantity for line {{ $index + 1 }}</label>
-                                <input id="credit_quantity_{{ $index }}" name="items[{{ $index }}][credit_quantity]" class="form-control form-control-sm" value="{{ $credit_quantity }}" inputmode="decimal" placeholder="Optional" @disabled(!$line_is_complete)>
+                                <label class="sr-only" for="credit_quantity_{{ $index }}">{{ __('credit-note.editor.credit_quantity') }} {{ __('credit-note.editor.line') }} {{ $index + 1 }}</label>
+                                <input id="credit_quantity_{{ $index }}" name="items[{{ $index }}][credit_quantity]" class="form-control form-control-sm" value="{{ $credit_quantity }}" inputmode="decimal" placeholder="{{ __('credit-note.editor.optional') }}" @disabled(!$line_is_complete)>
                             </td>
                             <td>
-                                <label class="sr-only" for="credit_amount_{{ $index }}">Credit amount for line {{ $index + 1 }}</label>
+                                <label class="sr-only" for="credit_amount_{{ $index }}">{{ __('credit-note.editor.credit_amount') }} {{ __('credit-note.editor.line') }} {{ $index + 1 }}</label>
                                 <div class="input-group input-group-sm">
                                     <input id="credit_amount_{{ $index }}" name="items[{{ $index }}][credit_amount]" class="form-control text-right" value="{{ $credit_amount }}" inputmode="decimal" placeholder="0.00" @disabled(!$line_is_complete)>
                                     <div class="input-group-append"><span class="input-group-text">THB</span></div>
@@ -157,7 +157,7 @@
                         </tr>
                     @endforeach
                     @if (($source_snapshot?->lines ?? []) === [])
-                        <tr><td colspan="5" class="text-center text-muted py-4">No source receipt lines are available.</td></tr>
+                        <tr><td colspan="5" class="text-center text-muted py-4">{{ __('credit-note.editor.no_source_lines') }}</td></tr>
                     @endif
                 </tbody>
             </table>
@@ -167,7 +167,7 @@
     @include('credit-notes.partials.totals', ['credit_note' => $credit_note])
 
     <div class="credit-note-form-actions">
-        <p id="credit-note-editor-feedback" class="mb-0 text-muted" aria-live="polite"></p>
+        <p id="credit-note-editor-feedback" class="mb-0 text-muted" aria-live="polite" data-saving-message="{{ __('credit-note.accessibility.saving') }}"></p>
         <button type="submit" class="btn btn-primary">
             <i class="fas fa-save mr-1" aria-hidden="true"></i>{{ __('credit-note.actions.save') }}
         </button>
@@ -187,8 +187,8 @@
         <form method="POST" action="{{ route('credit-notes.cancel', $credit_note) }}" class="credit-note-cancel-form">
             @csrf
             <input type="hidden" name="idempotency_key" value="{{ (string) \Illuminate\Support\Str::uuid() }}">
-            <label for="draft-cancellation-reason" class="sr-only">Cancellation reason</label>
-            <input id="draft-cancellation-reason" name="reason" class="form-control" required maxlength="2000" placeholder="Cancellation reason">
+            <label for="draft-cancellation-reason" class="sr-only">{{ __('credit-note.editor.cancellation_reason') }}</label>
+            <input id="draft-cancellation-reason" name="reason" class="form-control" required maxlength="2000" placeholder="{{ __('credit-note.editor.cancellation_reason') }}">
             <button type="submit" class="btn btn-outline-danger"><i class="fas fa-ban mr-1" aria-hidden="true"></i>{{ __('credit-note.actions.cancel') }}</button>
         </form>
     @endif

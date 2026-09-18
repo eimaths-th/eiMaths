@@ -1,5 +1,6 @@
 <script>
     $(document).ready(function() {
+        const parameter_settings_ui = @json(__('parameter-settings'));
 
         $(document).on('change', '.auto_decimal', function() {
             // Parse the input value to a number
@@ -15,11 +16,11 @@
         $(".delete_all_button").click(function() {
             var len = $('input[name="table_records[]"]:checked').length;
             if (len > 0) {
-                if (confirm("Confirm data deletion?")) {
+                if (confirm(parameter_settings_ui.messages.confirm_delete)) {
                     $('form#delete_all').submit();
                 }
             } else {
-                alert("Please select items to delete.");
+                alert(parameter_settings_ui.messages.select_to_delete);
             }
         });
 
@@ -43,20 +44,20 @@
             language: {
                 loadingRecords: '&nbsp;',
                 processing: `<div class="spinner-border text-primary"></div>`,
-                "sProcessing": "Processcing...",
-                "sLengthMenu": "Display_MENU_ Row",
-                "sZeroRecords": "No Data Fount",
-                "sInfo": "Display _START_ To _END_ From _TOTAL_ Records",
-                "sInfoEmpty": "Display 0 To 0 From 0 Records",
-                "sInfoFiltered": "(Filters _MAX_ Row)",
+                "sProcessing": parameter_settings_ui.data_table.processing,
+                "sLengthMenu": parameter_settings_ui.data_table.length_menu,
+                "sZeroRecords": parameter_settings_ui.data_table.zero_records,
+                "sInfo": parameter_settings_ui.data_table.info,
+                "sInfoEmpty": parameter_settings_ui.data_table.info_empty,
+                "sInfoFiltered": parameter_settings_ui.data_table.info_filtered,
                 "sInfoPostFix": "",
-                "sSearch": "Search:",
+                "sSearch": parameter_settings_ui.data_table.search,
                 "sUrl": "",
                 "oPaginate": {
-                    "sFirst": "First",
-                    "sPrevious": "Previous",
-                    "sNext": "Next",
-                    "sLast": "Last"
+                    "sFirst": parameter_settings_ui.data_table.first,
+                    "sPrevious": parameter_settings_ui.data_table.previous,
+                    "sNext": parameter_settings_ui.data_table.next,
+                    "sLast": parameter_settings_ui.data_table.last
                 }
             },
             aaSorting: [
@@ -176,7 +177,7 @@
         })
 
         $('#SubmitEditForm').click(function(e) {
-            if (!confirm("Confirm the action?")) return;
+            if (!confirm(parameter_settings_ui.messages.confirm_update)) return;
             e.preventDefault();
 
             $('.alert-danger').html('');
@@ -229,7 +230,7 @@
         });
 
         $(document).on('click', '.btn-delete', function() {
-            if (!confirm("Confirm the action?")) return;
+            if (!confirm(parameter_settings_ui.messages.confirm_delete)) return;
 
             var rowid = $(this).data('rowid')
             var el = $(this)

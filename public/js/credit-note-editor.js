@@ -73,5 +73,8 @@ if (typeof document !== 'undefined') {
     InitializeBuyerTaxFields(document);
     InitializeReasonFields(document);
     const form = document.getElementById('credit-note-editor');
-    if (form) form.addEventListener('submit', () => SetFeedback('Saving Credit Note Draft…'));
+    if (form) {
+        const feedback = document.getElementById('credit-note-editor-feedback');
+        form.addEventListener('submit', () => SetFeedback(feedback?.dataset.savingMessage || ''));
+    }
 }

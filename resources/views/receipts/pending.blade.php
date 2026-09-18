@@ -29,13 +29,13 @@
                 <div class="col-12">
                     <div class="card card-primary">
                         <div class="card-header">
-                            <h3 class="card-title"><i class=" fa-solid fa-circle-pause"></i>  Pending Receipt
+                            <h3 class="card-title"><i class=" fa-solid fa-circle-pause"></i>  {{ __('receipts.pending.title') }}
                             </h3>
                             <div class="card-tools">
                                 <button type="button" class="btn btn-tool" data-card-widget="maximize">
                                     <i class="fas fa-expand"></i>
                                 </button>
-                                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="{{ __('common.actions.collapse') }}">
                                     <i class="fas fa-minus"></i>
                                 </button>
                             </div>
@@ -55,7 +55,7 @@
                                         <div class="col-xs-12 col-sm-12 col-md-12">
                                             <div class="form-group">
                                                 <strong>
-                                                    Date Filter:</strong>
+                                                    {{ __('receipts.pending.filter.date') }}</strong>
                                                 <div class="input-group">
                                                     <div class="input-group-prepend">
                                                         <span class="input-group-text">
@@ -73,19 +73,19 @@
                                         <div class="col-xs-4 col-sm-4 col-md-4">
                                             <div class="form-group">
                                                 <strong><i class="fa-solid fa-clipboard-question"></i>
-                                                    Search Type:</strong>
+                                                    {{ __('receipts.pending.filter.search_type') }}</strong>
                                                 <select style="width: 100%;" class="form-control" id="search_type"
                                                     name="search_type">
-                                                    <option value="">Please Select</option>
-                                                    <option value="1">Student Code</option>
-                                                    <option value="2">Student Name</option>
+                                                    <option value="">{{ __('receipts.pending.filter.please_select') }}</option>
+                                                    <option value="1">{{ __('receipts.pending.filter.student_code') }}</option>
+                                                    <option value="2">{{ __('receipts.pending.filter.student_name') }}</option>
                                                 </select>
                                             </div>
                                         </div>
                                         <div class="col-xs-4 col-sm-4 col-md-4">
                                             <div class="form-group">
-                                                <strong><i class="fa-regular fa-keyboard"></i> Keyword:</strong>
-                                                {!! Form::text('keyword', null, ['id' => 'keyword', 'placeholder' => 'keyword', 'class' => 'form-control']) !!}
+                                                <strong><i class="fa-regular fa-keyboard"></i> {{ __('receipts.pending.filter.keyword') }}</strong>
+                                                {!! Form::text('keyword', null, ['id' => 'keyword', 'placeholder' => __('receipts.pending.filter.keyword_placeholder'), 'class' => 'form-control']) !!}
                                             </div>
                                         </div>
                                         <div class="col-xs-2 col-sm-2 col-md-2">
@@ -120,19 +120,19 @@
                                                 <tr>
                                                     <th width="5%"><input type="checkbox" id="check-all" class="flat">
                                                     </th>
-                                                    <th {{-- data-priority="6" --}}>Centre</th>
-                                                    <th {{-- data-priority="2" --}}>Date</th>
-                                                    <th>Referent Code</th>
-                                                    <th {{-- data-priority="4" --}}>Student Code</th>
-                                                    <th {{-- data-priority="5" --}}>Student Name</th>
-                                                    <th>Level</th>
-                                                    <th>Bookuses</th>
+                                                    <th {{-- data-priority="6" --}}>{{ __('receipts.pending.table.centre') }}</th>
+                                                    <th {{-- data-priority="2" --}}>{{ __('receipts.pending.table.date') }}</th>
+                                                    <th>{{ __('receipts.pending.table.referent_code') }}</th>
+                                                    <th {{-- data-priority="4" --}}>{{ __('receipts.pending.table.student_code') }}</th>
+                                                    <th {{-- data-priority="5" --}}>{{ __('receipts.pending.table.student_name') }}</th>
+                                                    <th>{{ __('receipts.pending.table.level') }}</th>
+                                                    <th>{{ __('receipts.pending.table.bookuses') }}</th>
                                                     {{-- <th>Amount</th> --}}
                                                     {{-- <th>ราคาต่อหน่วย</th> --}}
-                                                    <th>Term & Book Fee</th>
+                                                    <th>{{ __('receipts.pending.table.term_book_fee') }}</th>
                                                     {{-- <th>StartTerm</th> --}}
                                                     <th width="120px" {{-- data-priority="3" --}}></th>
-                                                    <th>More</th>
+                                                    <th>{{ __('receipts.pending.table.more') }}</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -150,7 +150,7 @@
                                                     <th align="right"></th>
                                                     <th align="right"></th>
                                                     <th align="right"></th>
-                                                    <th style="text-align: right;">Total</th>
+                                                    <th style="text-align: right;">{{ __('receipts.pending.table.total') }}</th>
                                                     <th align="right"></th>
                                                     <th></th>
                                                     <th></th>
@@ -180,6 +180,13 @@
 @endsection
 
 @section('script')
+    <script>
+        const receipt_pending_ui = {
+            datatable: @json(__('common.datatable')),
+            messages: @json(__('receipts.pending.messages')),
+        };
+        const receipt_upload_ui = @json(__('receipts.upload'));
+    </script>
     @include('receipts.pscript')
     @include('receipts.dropzone')
 @endsection

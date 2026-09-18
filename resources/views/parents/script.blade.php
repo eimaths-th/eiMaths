@@ -1,4 +1,14 @@
 <script>
+    const parentsUi = {
+        confirm_delete: @json(__('students.messages.confirm_delete')),
+        select_items: @json(__('students.messages.select_items')),
+        confirm_action: @json(__('students.messages.confirm_action')),
+        search_required: @json(__('students.messages.search_required')),
+        please_select: @json(__('students.filters.please_select')),
+        select_student: @json(__('students.form.select_student')),
+        datatable: @json(__('common.datatable')),
+    };
+
     $(document).ready(function() {
 
         $("#timepicker").timepicker();
@@ -31,11 +41,11 @@
         $(".delete_all_button").click(function() {
             var len = $('input[name="table_records[]"]:checked').length;
             if (len > 0) {
-                if (confirm("Confirm data deletion?")) {
+                if (confirm(parentsUi.confirm_delete)) {
                     $('form#delete_all').submit();
                 }
             } else {
-                alert("Please select items to delete.");
+                alert(parentsUi.select_items);
             }
         });
 
@@ -78,13 +88,13 @@
             maximumSelectionLength: 1,
             allowClear: false,
             //theme: 'bootstrap4'
-            placeholder: 'Please select'
+            placeholder: parentsUi.please_select
         });
         $(".select3_single").select2({
             maximumSelectionLength: 1,
             allowClear: false,
             //theme: 'bootstrap4'
-            placeholder: 'select student'
+            placeholder: parentsUi.select_student
         });
 
         $(".select2_single").on("select2:unselect", function(e) {
@@ -95,21 +105,21 @@
             maximumSelectionLength: 1,
             allowClear: false,
             //theme: 'bootstrap4'
-            placeholder: 'Please select'
+            placeholder: parentsUi.please_select
         });
 
         $(".select2_singlec").select2({
             maximumSelectionLength: 1,
             allowClear: false,
             //theme: 'bootstrap4'
-            placeholder: 'Please select'
+            placeholder: parentsUi.please_select
         });
 
         $(".select2_multiple").select2({
             // maximumSelectionLength: 2,
             allowClear: false,
             //theme: 'bootstrap4'
-            placeholder: 'Please select'
+            placeholder: parentsUi.please_select
         });
 
         var startDate;
@@ -297,20 +307,20 @@
             language: {
                 loadingRecords: '&nbsp;',
                 processing: `<div class="spinner-border text-primary"></div>`,
-                "sProcessing": "Processing...",
-                "sLengthMenu": "Display _MENU_ Row",
-                "sZeroRecords": "No Data Found",
-                "sInfo": "Display _START_ To _END_ From _TOTAL_ Records",
-                "sInfoEmpty": "Display 0 To 0 From 0 Records",
-                "sInfoFiltered": "(Filters _MAX_ Row)",
-                "sInfoPostFix": "",
-                "sSearch": "Search:",
-                "sUrl": "",
+                "sProcessing": parentsUi.datatable.processing,
+                "sLengthMenu": parentsUi.datatable.length_menu,
+                "sZeroRecords": parentsUi.datatable.zero_records,
+                "sInfo": parentsUi.datatable.info,
+                "sInfoEmpty": parentsUi.datatable.info_empty,
+                "sInfoFiltered": parentsUi.datatable.info_filtered,
+                "sInfoPostFix": parentsUi.datatable.info_postfix,
+                "sSearch": parentsUi.datatable.search,
+                "sUrl": parentsUi.datatable.url,
                 "oPaginate": {
-                    "sFirst": "First",
-                    "sPrevious": "Previous",
-                    "sNext": "Next",
-                    "sLast": "Last"
+                    "sFirst": parentsUi.datatable.first,
+                    "sPrevious": parentsUi.datatable.previous,
+                    "sNext": parentsUi.datatable.next,
+                    "sLast": parentsUi.datatable.last
                 }
             },
             aaSorting: [
@@ -403,7 +413,7 @@
                 }
             } else {
                 // Handle the case where searchType or keyword is empty
-                toastr.error('Please input Search Type and Keyword', {
+                toastr.error(parentsUi.search_required, {
                     timeOut: 5000
                 });
             }
@@ -650,7 +660,7 @@
         })
 
         $('#SubmitEditForm').click(function(e) {
-            if (!confirm("Confirm the action?")) return;
+            if (!confirm(parentsUi.confirm_action)) return;
             e.preventDefault();
 
             $('.alert-danger').html('');
@@ -736,7 +746,7 @@
         });
 
         $(document).on('click', '.btn-delete', function() {
-            if (!confirm("Confirm the action?")) return;
+            if (!confirm(parentsUi.confirm_action)) return;
 
             var rowid = $(this).data('rowid');
             var el = $(this);

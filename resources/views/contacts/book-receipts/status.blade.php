@@ -1,9 +1,9 @@
 @php
     $status_text = $total_count === 0
-        ? 'No books'
+        ? __('students.book_receipts.no_books')
         : ($received_count === $total_count
-            ? "Received all {$received_count}/{$total_count}"
-            : "Received {$received_count}/{$total_count}");
+            ? __('students.book_receipts.received_all', ['received' => $received_count, 'total' => $total_count])
+            : __('students.book_receipts.received_some', ['received' => $received_count, 'total' => $total_count]));
 @endphp
 
 <div class="book-receipt-status" data-student-id="{{ $student_id }}">
@@ -16,9 +16,9 @@
             class="btn btn-sm btn-outline-primary btn-book-receipts"
             data-student-id="{{ $student_id }}"
             data-student-name="{{ $student_name }}"
-            aria-label="Manage book receipts for {{ $student_code }} {{ $student_name }}"
+            aria-label="{{ __('students.book_receipts.manage_for', ['code' => $student_code, 'name' => $student_name]) }}"
         >
-            Manage
+            {{ __('students.book_receipts.manage') }}
         </button>
     @endcan
 </div>

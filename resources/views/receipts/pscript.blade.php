@@ -117,11 +117,11 @@
         $(".delete_all_button").click(function() {
             var len = $('input[name="table_records[]"]:checked').length;
             if (len > 0) {
-                if (confirm("Confirm data deletion?")) {
+                if (confirm(receipt_pending_ui.messages.confirm_delete)) {
                     $('form#delete_all').submit();
                 }
             } else {
-                alert("Please select items to delete.");
+                alert(receipt_pending_ui.messages.select_to_delete);
             }
         });
 
@@ -371,22 +371,22 @@
             serverSide: true,
             processing: true,
             language: {
-                loadingRecords: '&nbsp;',
+                loadingRecords: receipt_pending_ui.datatable.loading_records,
                 processing: `<div class="spinner-border text-primary"></div>`,
-                "sProcessing": "Processcing...",
-                "sLengthMenu": "Display_MENU_ Row",
-                "sZeroRecords": "No Data Found",
-                "sInfo": "Display _START_ To _END_ From _TOTAL_ Records",
-                "sInfoEmpty": "Display 0 To 0 From 0 Records",
-                "sInfoFiltered": "(Filters _MAX_ Row)",
-                "sInfoPostFix": "",
-                "sSearch": "Search:",
-                "sUrl": "",
+                "sProcessing": receipt_pending_ui.datatable.processing,
+                "sLengthMenu": receipt_pending_ui.datatable.length_menu,
+                "sZeroRecords": receipt_pending_ui.datatable.zero_records,
+                "sInfo": receipt_pending_ui.datatable.info,
+                "sInfoEmpty": receipt_pending_ui.datatable.info_empty,
+                "sInfoFiltered": receipt_pending_ui.datatable.info_filtered,
+                "sInfoPostFix": receipt_pending_ui.datatable.info_postfix,
+                "sSearch": receipt_pending_ui.datatable.search,
+                "sUrl": receipt_pending_ui.datatable.url,
                 "oPaginate": {
-                    "sFirst": "First",
-                    "sPrevious": "Previous",
-                    "sNext": "Next",
-                    "sLast": "Last"
+                    "sFirst": receipt_pending_ui.datatable.first,
+                    "sPrevious": receipt_pending_ui.datatable.previous,
+                    "sNext": receipt_pending_ui.datatable.next,
+                    "sLast": receipt_pending_ui.datatable.last
                 }
             },
             aaSorting: [
@@ -514,7 +514,7 @@
                 }
             } else {
                 // Handle the case where searchType or keyword is empty
-                toastr.error('Please input Search Type and Keyword', {
+                toastr.error(receipt_pending_ui.messages.search_required, {
                     timeOut: 5000
                 });
             }
@@ -596,7 +596,7 @@
         $(document).on('click', '.btn-delete', function(e) {
             e.preventDefault();
 
-            if (!confirm("ยืนยันการทำรายการ ?")) return;
+            if (!confirm(receipt_pending_ui.messages.confirm_action)) return;
             e.preventDefault();
 
             id = $(this).data('id');
@@ -821,14 +821,14 @@
 
             // Show SweetAlert2 confirmation dialog
             Swal.fire({
-                title: 'ยืนยันการทำรายการ?',
-                text: status === 1 ? 'คุณต้องการยืนยันรายการนี้หรือไม่?' : 'คุณต้องการบันทึกเป็น Pending หรือไม่?',
+                title: receipt_pending_ui.messages.confirm_action,
+                text: status === 1 ? receipt_pending_ui.messages.confirm_receipt : receipt_pending_ui.messages.save_pending,
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
                 cancelButtonColor: '#d33',
-                confirmButtonText: 'ยืนยัน',
-                cancelButtonText: 'ยกเลิก'
+                confirmButtonText: receipt_pending_ui.messages.confirm,
+                cancelButtonText: receipt_pending_ui.messages.cancel
             }).then((result) => {
                 if (result.isConfirmed) {
                     // User confirmed, proceed with the submission
@@ -866,7 +866,7 @@
                     // Show loading and disable buttons
                     $('#SubmitEditForm, #SubmitEditFormp').prop('disabled', true);
                     Swal.fire({
-                        title: 'กำลังบันทึกข้อมูล...',
+                        title: receipt_pending_ui.messages.saving,
                         allowOutsideClick: false,
                         allowEscapeKey: false,
                         didOpen: () => {
@@ -932,7 +932,7 @@
                             
                             $('.alert-danger').html('');
                             $('.alert-danger').show();
-                            $('.alert-danger').append('<strong><li>เกิดข้อผิดพลาด: ' + error + '</li></strong>');
+                            $('.alert-danger').append('<strong><li>' + receipt_pending_ui.messages.request_error.replace(':error', error) + '</li></strong>');
                         }
                     });
                 }

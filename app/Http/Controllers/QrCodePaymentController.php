@@ -77,7 +77,7 @@ class QrCodePaymentController extends Controller
     {
         $qr = QRCodePayMent::find($id);
         $qr->update($request->all());
-        return response()->json(['success' => 'QR Code Updated Successfully']);
+        return response()->json(['success' => __('qrcode-payment.flash.updated')]);
     }
 
     /**

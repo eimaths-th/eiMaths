@@ -1,6 +1,6 @@
 @extends('layouts.quiz_layout')
 
-@section('title', 'Home Page')
+@section('title', __('quiz-management.home.page_title'))
 
 @push('CSS')
 @endpush
@@ -11,10 +11,10 @@
     <div style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); padding: 48px 0; margin-bottom: 32px;">
         <div style="max-width: 1280px; margin: 0 auto; padding: 0 24px; text-align: center;">
             <h1 style="color: white; font-size: 48px; font-weight: 800; margin-bottom: 16px; text-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                🎯 eiMaths Quiz Platform
+                🎯 {{ __('quiz-management.home.title') }}
             </h1>
             <p style="color: rgba(255,255,255,0.9); font-size: 20px; font-weight: 300; max-width: 600px; margin: 0 auto;">
-                เรียนรู้คณิตศาสตร์อย่างสนุกสนานผ่านแบบทดสอบที่หลากหลาย
+                {{ __('quiz-management.home.subtitle') }}
             </p>
         </div>
     </div>
@@ -28,7 +28,7 @@
                     <div style="text-align: center; margin-bottom: 40px;">
                         <h2 style="color: #1f2937; font-size: 32px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; gap: 12px;">
                             <span style="font-size: 36px;">📚</span>
-                            แบบทดสอบสำหรับนักเรียน
+                            {{ __('quiz-management.home.student_quizzes') }}
                         </h2>
                         <div style="width: 80px; height: 4px; background: linear-gradient(90deg, #f97316, #ea580c); margin: 0 auto; border-radius: 2px;"></div>
                     </div>
@@ -49,8 +49,8 @@
                                                     <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
                                                         <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #f97316, #ea580c); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; color: white; font-weight: 600;">{{ $term }}</div>
                                                         <div>
-                                                            <h3 style="color: #1f2937; font-size: 20px; font-weight: 700; margin: 0; line-height: 1.2;">Term {{ $term }}</h3>
-                                                            <p style="color: #6b7280; font-size: 14px; margin: 4px 0 0 0;">เทอม {{ $term }}</p>
+                                                            <h3 style="color: #1f2937; font-size: 20px; font-weight: 700; margin: 0; line-height: 1.2;">{{ __('quiz-management.home.term', ['term' => $term]) }}</h3>
+                                                            <p style="color: #6b7280; font-size: 14px; margin: 4px 0 0 0;">{{ __('quiz-management.home.term_th', ['term' => $term]) }}</p>
                                                         </div>
                                                     </div>
 
@@ -59,8 +59,8 @@
                                                             <span style="font-size: 16px;">📊</span>
                                                         </div>
                                                         <div>
-                                                            <p style="color: #374151; font-size: 16px; font-weight: 600; margin: 0;">{{ $quiz_term->groupBy('section')->count() }} ระดับ</p>
-                                                            <p style="color: #9ca3af; font-size: 12px; margin: 0;">Levels Available</p>
+                                                            <p style="color: #374151; font-size: 16px; font-weight: 600; margin: 0;">{{ __('quiz-management.home.levels_available', ['count' => $quiz_term->groupBy('section')->count()]) }}</p>
+                                                            <p style="color: #9ca3af; font-size: 12px; margin: 0;">{{ __('quiz-management.home.levels_available', ['count' => $quiz_term->groupBy('section')->count()]) }}</p>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -70,8 +70,8 @@
                                 @empty
                                     <div style="grid-column: 1 / -1; text-align: center; padding: 48px; color: #6b7280;">
                                         <div style="font-size: 48px; margin-bottom: 16px;">📝</div>
-                                        <h3 style="font-size: 20px; font-weight: 600; margin-bottom: 8px;">ไม่พบแบบทดสอบ</h3>
-                                        <p style="font-size: 16px;">ขณะนี้ยังไม่มีแบบทดสอบสาธารณะ</p>
+                                        <h3 style="font-size: 20px; font-weight: 600; margin-bottom: 8px;">{{ __('quiz-management.home.empty_title') }}</h3>
+                                        <p style="font-size: 16px;">{{ __('quiz-management.home.empty_message') }}</p>
                                     </div>
                                 @endforelse
                             @break
@@ -89,8 +89,8 @@
                                                     <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
                                                         <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #0ea5e9, #0284c7); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; color: white; font-weight: 600;">L{{ $section }}</div>
                                                         <div>
-                                                            <h3 style="color: #1f2937; font-size: 20px; font-weight: 700; margin: 0; line-height: 1.2;">Level {{ $section }}</h3>
-                                                            <p style="color: #6b7280; font-size: 14px; margin: 4px 0 0 0;">ระดับ {{ $section }}</p>
+                                                            <h3 style="color: #1f2937; font-size: 20px; font-weight: 700; margin: 0; line-height: 1.2;">{{ __('quiz-management.home.level', ['level' => $section]) }}</h3>
+                                                            <p style="color: #6b7280; font-size: 14px; margin: 4px 0 0 0;">{{ __('quiz-management.home.level_th', ['level' => $section]) }}</p>
                                                         </div>
                                                     </div>
 
@@ -99,8 +99,8 @@
                                                             <span style="font-size: 16px;">🎯</span>
                                                         </div>
                                                         <div>
-                                                            <p style="color: #374151; font-size: 16px; font-weight: 600; margin: 0;">{{ $quiz_section->count() }} แบบทดสอบ</p>
-                                                            <p style="color: #9ca3af; font-size: 12px; margin: 0;">Quizzes Available</p>
+                                                            <p style="color: #374151; font-size: 16px; font-weight: 600; margin: 0;">{{ __('quiz-management.home.quizzes_available', ['count' => $quiz_section->count()]) }}</p>
+                                                            <p style="color: #9ca3af; font-size: 12px; margin: 0;">{{ __('quiz-management.home.quizzes_available', ['count' => $quiz_section->count()]) }}</p>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -110,8 +110,8 @@
                                 @empty
                                     <div style="grid-column: 1 / -1; text-align: center; padding: 48px; color: #6b7280;">
                                         <div style="font-size: 48px; margin-bottom: 16px;">📝</div>
-                                        <h3 style="font-size: 20px; font-weight: 600; margin-bottom: 8px;">ไม่พบแบบทดสอบ</h3>
-                                        <p style="font-size: 16px;">ขณะนี้ยังไม่มีแบบทดสอบสาธารณะ</p>
+                                        <h3 style="font-size: 20px; font-weight: 600; margin-bottom: 8px;">{{ __('quiz-management.home.empty_title') }}</h3>
+                                        <p style="font-size: 16px;">{{ __('quiz-management.home.empty_message') }}</p>
                                     </div>
                                 @endforelse
                             @break
@@ -131,7 +131,7 @@
                                                             <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #22c55e, #16a34a); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
                                                                 <span style="font-size: 16px; color: white;">📋</span>
                                                             </div>
-                                                            <span style="background: rgba(34, 197, 94, 0.1); color: #16a34a; padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: 600;">QUIZ</span>
+                                                            <span style="background: rgba(34, 197, 94, 0.1); color: #16a34a; padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: 600;">{{ __('quiz-management.home.quiz_badge') }}</span>
                                                         </div>
                                                         <h3 style="color: #1f2937; font-size: 18px; font-weight: 700; margin: 0; line-height: 1.3; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">{{ $quiz->title }}</h3>
                                                     </div>
@@ -141,8 +141,8 @@
                                                             <span style="font-size: 16px;">❓</span>
                                                         </div>
                                                         <div>
-                                                            <p style="color: #374151; font-size: 16px; font-weight: 600; margin: 0;">{{ $quiz->questions_count }} คำถาม</p>
-                                                            <p style="color: #9ca3af; font-size: 12px; margin: 0;">Questions</p>
+                                                            <p style="color: #374151; font-size: 16px; font-weight: 600; margin: 0;">{{ __('quiz-management.home.questions', ['count' => $quiz->questions_count]) }}</p>
+                                                            <p style="color: #9ca3af; font-size: 12px; margin: 0;">{{ __('quiz-management.home.questions', ['count' => $quiz->questions_count]) }}</p>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -152,8 +152,8 @@
                                 @empty
                                     <div style="grid-column: 1 / -1; text-align: center; padding: 48px; color: #6b7280;">
                                         <div style="font-size: 48px; margin-bottom: 16px;">📝</div>
-                                        <h3 style="font-size: 20px; font-weight: 600; margin-bottom: 8px;">ไม่พบแบบทดสอบ</h3>
-                                        <p style="font-size: 16px;">ขณะนี้ยังไม่มีแบบทดสอบสาธารณะ</p>
+                                        <h3 style="font-size: 20px; font-weight: 600; margin-bottom: 8px;">{{ __('quiz-management.home.empty_title') }}</h3>
+                                        <p style="font-size: 16px;">{{ __('quiz-management.home.empty_message') }}</p>
                                     </div>
                                 @endforelse
                             @break
@@ -172,7 +172,7 @@
                                                         <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #f59e0b, #d97706); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 16px; color: white; font-weight: 700;">{{ substr($level, 0, 2) }}</div>
                                                         <div>
                                                             <h3 style="color: #1f2937; font-size: 20px; font-weight: 700; margin: 0; line-height: 1.2;">{{ $level }}</h3>
-                                                            <p style="color: #6b7280; font-size: 14px; margin: 4px 0 0 0;">ระดับการศึกษา</p>
+                                                            <p style="color: #6b7280; font-size: 14px; margin: 4px 0 0 0;">{{ __('quiz-management.home.education_level') }}</p>
                                                         </div>
                                                     </div>
 
@@ -181,8 +181,8 @@
                                                             <span style="font-size: 16px;">📚</span>
                                                         </div>
                                                         <div>
-                                                            <p style="color: #374151; font-size: 16px; font-weight: 600; margin: 0;">{{ $quiz_level->groupBy('term')->count() }} เทอม</p>
-                                                            <p style="color: #9ca3af; font-size: 12px; margin: 0;">Terms Available</p>
+                                                            <p style="color: #374151; font-size: 16px; font-weight: 600; margin: 0;">{{ __('quiz-management.home.terms_available', ['count' => $quiz_level->groupBy('term')->count()]) }}</p>
+                                                            <p style="color: #9ca3af; font-size: 12px; margin: 0;">{{ __('quiz-management.home.terms_available', ['count' => $quiz_level->groupBy('term')->count()]) }}</p>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -192,8 +192,8 @@
                                 @empty
                                     <div style="grid-column: 1 / -1; text-align: center; padding: 48px; color: #6b7280;">
                                         <div style="font-size: 48px; margin-bottom: 16px;">📝</div>
-                                        <h3 style="font-size: 20px; font-weight: 600; margin-bottom: 8px;">ไม่พบแบบทดสอบ</h3>
-                                        <p style="font-size: 16px;">ขณะนี้ยังไม่มีแบบทดสอบสาธารณะ</p>
+                                        <h3 style="font-size: 20px; font-weight: 600; margin-bottom: 8px;">{{ __('quiz-management.home.empty_title') }}</h3>
+                                        <p style="font-size: 16px;">{{ __('quiz-management.home.empty_message') }}</p>
                                     </div>
                                 @endforelse
                         @endswitch

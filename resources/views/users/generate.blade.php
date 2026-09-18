@@ -77,7 +77,7 @@
                 <div class="col-12">
                     <div class="card card-primary">
                         <div class="card-header">
-                            <h3 class="card-title"><i class="fa fa-user"></i> Generate - Password</h3>
+                            <h3 class="card-title"><i class="fa fa-user"></i> {{ __('user-access.users.generate.title') }}</h3>
                             <div class="card-tools">
                                 <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
                                     <i class="fas fa-minus"></i>
@@ -97,7 +97,7 @@
                                 </script>
                             @endif
                             <div class="alert alert-danger alert-dismissible fade show" role="alert" style="display: none;">
-                                <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close">
+                                <button type="button" class="btn-close" data-dismiss="alert" aria-label="{{ __('user-access.users.actions.close') }}">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
@@ -111,8 +111,8 @@
                             <div class="row">
                                 <div class="col-xs-6 col-sm-6 col-md-6">
                                     <div class="form-group">
-                                        <strong><i class="fas fa-user"></i> Password:</strong>
-                                        {!! Form::text('name', null, ['id' => 'AddPassword', 'placeholder' => 'Password', 'class' => 'form-control']) !!}
+                                        <strong><i class="fas fa-user"></i> {{ __('user-access.users.generate.password') }}:</strong>
+                                        {!! Form::text('name', null, ['id' => 'AddPassword', 'placeholder' => __('user-access.users.generate.password'), 'class' => 'form-control']) !!}
                                     </div>
                                 </div>
 
@@ -121,9 +121,9 @@
                             <div class="row">
                                 <div class="col-xs-6 col-sm-6 col-md-6">
                                     <div class="form-group">
-                                        <strong><i class="fas fa-user"></i> Generated:</strong>
-                                        <textarea name="generate" id="generate" cols="30" rows="2" class="form-control" placeholder="generate"></textarea>
-                                        <p id="copyMessage" style="color: green; display: none;">Password copied to clipboard!</p>
+                                        <strong><i class="fas fa-user"></i> {{ __('user-access.users.generate.generated') }}:</strong>
+                                        <textarea name="generate" id="generate" cols="30" rows="2" class="form-control" placeholder="{{ __('user-access.users.generate.generated') }}"></textarea>
+                                        <p id="copyMessage" style="color: green; display: none;">{{ __('user-access.users.generate.copied') }}</p>
                                     </div>
 
                                 </div>
@@ -132,7 +132,7 @@
 
                                     </div>
 
-                                    <button onclick="copyToClipboard()" id="copyButton" class="btn btn-info">Copy</button>
+                                    <button onclick="copyToClipboard()" id="copyButton" class="btn btn-info">{{ __('user-access.users.actions.copy') }}</button>
 
                                 </div>
 
@@ -143,7 +143,7 @@
                         <div class="modal-footer {{-- justify-content-between --}}">
                             <button type="button" class="btn btn-success" id="SubmitCreateForm1"><i
                                     class="fas fa-download"></i>
-                                Save</button>
+                                {{ __('user-access.users.actions.save') }}</button>
                         </div>
                     </div>
 
@@ -159,6 +159,7 @@
 
 @section('script')
     <script>
+        const user_access_ui = @json(__('user-access'));
         var token = ''
         $.ajaxSetup({
             headers: {
@@ -219,9 +220,9 @@
             // }, 5000);
 
             var copyButton = document.getElementById("copyButton");
-            copyButton.innerText = "Copied!";
+            copyButton.innerText = user_access_ui.users.generate.copy_done;
             setTimeout(function() {
-                copyButton.innerText = "Copy";
+                copyButton.innerText = user_access_ui.users.actions.copy;
             }, 5000);
             var copyMessage = document.getElementById("copyMessage");
             copyMessage.style.display = "block";

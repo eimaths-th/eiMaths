@@ -23,7 +23,7 @@
                             <div class="">
                                 <a class="logo_img" href="https://www.eimaths-th.com/">
                                     <img class="p-2" src="{{ asset('images/logo.png') }}" width="150"
-                                        alt="eiMaths ecommerce">
+                                        alt="{{ __('course-website.header.logo_alt') }}">
                                 </a>
                             </div>
                             <div class="me-3 translator-switch">
@@ -143,7 +143,7 @@
                                         @if ($frontend_is_affiliate_only)
                                             {{-- <a href="{{ route('studentDashboard') }}">{{ __('dashboard.Dashboard') }}</a> --}}
                                             @if ($frontend_can_access_affiliate && $frontend_wallet_enabled)
-                                                <a href="{{ route('affiliate.dashboard') }}">Dashboard</a>
+                                                <a href="{{ route('affiliate.dashboard') }}">{{ __('course-website.header.dashboard') }}</a>
                                             @endif
                                             {{-- <a href="{{ auth()->user()->username ? route('profileUniqueUrl', auth()->user()->username) : '' }}">{{ __('frontendmanage.My Profile') }}</a> --}}
                                             {{-- <a href="#">My Profile</a> --}}
@@ -158,7 +158,7 @@
                                             @if ($frontend_show_employee_entry)
                                                 <a href="{{ route('affiliate.employee-access.show') }}">{{ __('affiliate.employee_access.menu_label') }}</a>
                                             @elseif ($frontend_can_access_affiliate && $frontend_wallet_enabled)
-                                                <a href="{{ route('affiliate.dashboard') }}">Dashboard</a>
+                                                <a href="{{ route('affiliate.dashboard') }}">{{ __('course-website.header.dashboard') }}</a>
                                             @endif
                                         @else
                                             {{-- <a href="{{ route('dashboard') }}">{{ __('dashboard.Dashboard') }}</a> --}}
@@ -170,8 +170,8 @@
                                             {{-- <a href="{{ route('users.settings') }}">{{ __('frontend.Account Settings') }}</a> --}}
                                         @endif
                                         @if ($frontend_can_access_affiliate && $frontend_wallet_enabled)
-                                            <a href="{{ route('affiliate.payout-accounts.index') }}">Payout Accounts</a>
-                                            <a href="{{ route('affiliate.withdrawals.index') }}">Withdrawals</a>
+                                            <a href="{{ route('affiliate.payout-accounts.index') }}">{{ __('course-website.header.payout_accounts') }}</a>
+                                            <a href="{{ route('affiliate.withdrawals.index') }}">{{ __('course-website.header.withdrawals') }}</a>
                                         @endif
                                         {{-- @if (isModuleActive('UserType'))
                                             @foreach (auth()->user()->userRoles as $role)
@@ -187,8 +187,7 @@
                                         @endif --}}
                                         
                                         <a href="{{ route('affiliate.logout') }}"
-                                            onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Log
-                                            Out</a>
+                                            onclick="event.preventDefault(); document.getElementById('logout-form').submit();">{{ __('course-website.header.logout') }}</a>
 
                                         <form id="logout-form" method="POST" action="{{ route('affiliate.logout') }}"
                                             style="display: none;">
@@ -203,7 +202,7 @@
                                 <div class="contact_wrap d-flex align-items-center">
                                     <div class="contact_btn">
                                         <a href="{{ route('affiliate.login') }}"
-                                            class="theme_btn small_btn2">เข้าสู่ระบบ</a>
+                                            class="theme_btn small_btn2">{{ __('course-website.header.login') }}</a>
                                     </div>
                                 </div>
                             </div>

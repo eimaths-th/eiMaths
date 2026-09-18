@@ -48,7 +48,7 @@ class TestSystemQuestionsController extends Controller
             'answer_type' => $request->answer_type,
         ]);
 
-        return redirect()->back()->with('success', 'Question added successfully!');
+        return redirect()->back()->with('success', __('quiz-management.system_question.save') . '!');
     }
 
     /**
@@ -73,8 +73,8 @@ class TestSystemQuestionsController extends Controller
             // $html .= "<p>Answer2: " . $this->toFraction($question->answer_numerator, $question->answer_denominator) . "</p>";
             //how to input the fraction answer
 
-            $answer_Numerator = "<input type='text' name='fraction_{$count}_numerator' placeholder='Numerator' style='width: 30px;'>";
-            $answer_Denominator = "<input type='text' name='fraction_{$count}_denominator' placeholder='Denominator' style='width: 30px;'>";
+            $answer_Numerator = "<input type='text' name='fraction_{$count}_numerator' placeholder='" . e(__('quiz-management.system_question.numerator')) . "' style='width: 30px;'>";
+            $answer_Denominator = "<input type='text' name='fraction_{$count}_denominator' placeholder='" . e(__('quiz-management.system_question.denominator')) . "' style='width: 30px;'>";
             $textTest = 'text';
             $textTest2 = 'test';
             $inputText =  $this->textFraction($textTest, $textTest2);
@@ -83,18 +83,18 @@ class TestSystemQuestionsController extends Controller
             if ($question->answer_type === 'frac') {
                 # code...
                 $html .= "
-                <p>Enter your answer:</p>
+                <p>" . e(__('quiz-management.system_question.enter_answer')) . "</p>
                 <!-- {$inputText} <br> <br> -->
                 <!--
-                    <input type='text' name='mixed_{$count}_whole' placeholder='Whole Number' class='mixed-whole' />
+                    <input type='text' name='mixed_{$count}_whole' placeholder='" . e(__('quiz-management.system_question.whole_number')) . "' class='mixed-whole' />
                 -->
                 <div class='frac'>
                     <span>
-                        <input type='text' name='fraction_{$count}_numerator' placeholder='Numerator' class='fraction-numerator'>
+                        <input type='text' name='fraction_{$count}_numerator' placeholder='" . e(__('quiz-management.system_question.numerator')) . "' class='fraction-numerator'>
                     </span>
                     <span class='symbol'>/</span>
                     <span class='bottom'>  
-                        <input type='text' name='fraction_{$count}_denominator' placeholder='Denominator' class='fraction-denominator'>
+                        <input type='text' name='fraction_{$count}_denominator' placeholder='" . e(__('quiz-management.system_question.denominator')) . "' class='fraction-denominator'>
                     </span>
                 </div>
                 <br><br>
@@ -102,16 +102,16 @@ class TestSystemQuestionsController extends Controller
             } else {
                 # code...
                 $html .= "
-                <p>Enter your answer:</p>
+                <p>" . e(__('quiz-management.system_question.enter_answer')) . "</p>
                 <!-- {$inputText} <br> <br> -->
-                <input type='text' name='mixed_{$count}_whole' placeholder='Whole Number' class='mixed-whole' />
+                <input type='text' name='mixed_{$count}_whole' placeholder='" . e(__('quiz-management.system_question.whole_number')) . "' class='mixed-whole' />
                 <div class='frac'>
                     <span>
-                        <input type='text' name='fraction_{$count}_numerator' placeholder='Numerator' class='fraction-numerator'>
+                        <input type='text' name='fraction_{$count}_numerator' placeholder='" . e(__('quiz-management.system_question.numerator')) . "' class='fraction-numerator'>
                     </span>
                     <span class='symbol'>/</span>
                     <span class='bottom'>  
-                        <input type='text' name='fraction_{$count}_denominator' placeholder='Denominator' class='fraction-denominator'>
+                        <input type='text' name='fraction_{$count}_denominator' placeholder='" . e(__('quiz-management.system_question.denominator')) . "' class='fraction-denominator'>
                     </span>
                 </div>
                 <br><br>

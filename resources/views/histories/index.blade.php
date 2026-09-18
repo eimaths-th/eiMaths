@@ -14,8 +14,8 @@
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
-                        <li class="breadcrumb-item active">Users Management</li>
+                        <li class="breadcrumb-item"><a href="{{ route('home') }}">{{ __('navigation.menu.dashboard') }}</a></li>
+                        <li class="breadcrumb-item active">{{ __('students.titles.histories') }}</li>
                     </ol>
 
                 </div>
@@ -28,23 +28,22 @@
                     <ol class="breadcrumb float-sm-right">
                         @can('student-create')
                             <button type="button" class="btn btn-success" id="CreateButton">
-                                <i class="fas fa-graduation-cap"></i>Create History</button>
+                                <i class="fas fa-graduation-cap"></i>{{ __('students.actions.create_history') }}</button>
                         @else
                             <span class="d-inline-block" tabindex="0" data-toggle="tooltip" data-placement="bottom"
-                                title="You Not Have Permission">
+                                title="{{ __('common.feedback.permission_denied') }}">
                                 <button type="button" class="btn btn-success disabled">
-                                    <i class="fas fa-graduation-cap"></i>Create History</button>
+                                    <i class="fas fa-graduation-cap"></i>{{ __('students.actions.create_history') }}</button>
                             </span>
                         @endcan &nbsp;
 
                         @can('student-delete')
-                            <button type="button" class="btn btn-danger delete_all_button"><i class="fa fa-trash"></i> Delete
-                                All</button>
+                            <button type="button" class="btn btn-danger delete_all_button"><i class="fa fa-trash"></i> {{ __('common.actions.delete_all') }}</button>
                         @else
                             <span class="d-inline-block" tabindex="0" data-toggle="tooltip" data-placement="bottom"
-                                title="You Not Have Permission">
+                                title="{{ __('common.feedback.permission_denied') }}">
                                 <button type="button" class="btn btn-danger disabled"><i class="fa fa-trash"></i>
-                                    Delete All</button>
+                                    {{ __('common.actions.delete_all') }}</button>
                             </span>
                         @endcan
                     </ol>
@@ -63,12 +62,12 @@
                 <div class="col-12">
                     <div class="card card-primary">
                         <div class="card-header">
-                            <h3 class="card-title"><i class="fas fa-graduation-cap"></i> History List</h3>
+                            <h3 class="card-title"><i class="fas fa-graduation-cap"></i> {{ __('students.titles.histories') }}</h3>
                             <div class="card-tools">
                                 <button type="button" class="btn btn-tool" data-card-widget="maximize">
                                     <i class="fas fa-expand"></i>
                                 </button>
-                                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="{{ __('common.actions.close') }}">
                                     <i class="fas fa-minus"></i>
                                 </button>
                                 {{-- <button type="button" class="btn btn-tool" data-card-widget="remove" title="Remove">
@@ -94,7 +93,7 @@
                                         <div class="col-xs-12 col-sm-12 col-md-12">
                                             <div class="form-group">
                                                 <strong>
-                                                    Start Date Filter:</strong>
+                                                    {{ __('students.filters.start_date') }}:</strong>
                                                 <div class="input-group">
                                                     <div class="input-group-prepend">
                                                         <span class="input-group-text">
@@ -112,20 +111,20 @@
                                         <div class="col-xs-4 col-sm-4 col-md-4">
                                             <div class="form-group">
                                                 <strong><i class="fa-solid fa-clipboard-question"></i>
-                                                    Search Type:</strong>
+                                                    {{ __('students.filters.search_type') }}:</strong>
                                                 <select style="width: 100%;" class="form-control" id="search_type"
                                                     name="search_type">
-                                                    <option value="">Please Select</option>
-                                                    <option value="1">Student Code</option>
-                                                    <option value="2">Student Name</option>
+                                                    <option value="">{{ __('students.filters.please_select') }}</option>
+                                                    <option value="1">{{ __('common.fields.student_code') }}</option>
+                                                    <option value="2">{{ __('common.fields.student_name') }}</option>
 
                                                 </select>
                                             </div>
                                         </div>
                                         <div class="col-xs-4 col-sm-4 col-md-4">
                                             <div class="form-group">
-                                                <strong><i class="fa-regular fa-keyboard"></i> Keyword:</strong>
-                                                {!! Form::text('keyword', null, ['id' => 'keyword', 'placeholder' => 'keyword', 'class' => 'form-control']) !!}
+                                                <strong><i class="fa-regular fa-keyboard"></i> {{ __('common.fields.keyword') }}:</strong>
+                                                {!! Form::text('keyword', null, ['id' => 'keyword', 'placeholder' => __('common.fields.keyword'), 'class' => 'form-control']) !!}
                                             </div>
                                         </div>
                                         <div class="col-xs-2 col-sm-2 col-md-2">
@@ -161,26 +160,26 @@
                                                     <th width="5%">
                                                         <input type="checkbox" id="check-all" class="flat">
                                                     </th>
-                                                    <th>Date </th>
-                                                    <th>Start-End Time </th>
-                                                    <th width="1%" class="text-center">Centre</th>
-                                                    <th width="1%" class="text-center">Code</th>
-                                                    <th>Student Name</th>
-                                                    <th width="1%">Level</th>
-                                                    <th width="1%">Term</th>
-                                                    <th>Book Use </th>
+                                                    <th>{{ __('common.fields.date') }} </th>
+                                                    <th>{{ __('students.history.start_end_time') }} </th>
+                                                    <th width="1%" class="text-center">{{ __('common.fields.centre') }}</th>
+                                                    <th width="1%" class="text-center">{{ __('common.fields.student_code') }}</th>
+                                                    <th>{{ __('common.fields.student_name') }}</th>
+                                                    <th width="1%">{{ __('common.fields.level') }}</th>
+                                                    <th width="1%">{{ __('common.fields.term') }}</th>
+                                                    <th>{{ __('common.fields.book') }} </th>
 
 
 
                                                     {{-- <th width="1%">Remain</th> --}}
-                                                    <th>Course Start-End Date</th>
+                                                    <th>{{ __('students.history.course_start_end_date') }}</th>
                                                     {{-- <th></th> --}}
 
                                                     {{-- <th>Start Term</th> --}}
-                                                    <th>Comment</th>
+                                                    <th>{{ __('students.history.comment') }}</th>
 
                                                     <th class="none" width="180px"></th>
-                                                    <th>More</th>
+                                                    <th>{{ __('students.history.more') }}</th>
                                                 </tr>
                                             </thead>
                                             <tbody>

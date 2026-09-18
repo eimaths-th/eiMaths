@@ -44,13 +44,13 @@ class GuestQuizController extends Controller
             'email' => 'required|email|unique:guest_quizzers,email',
             'phone' => 'required|string|max:20',
         ], [
-            'first_name.required' => 'กรุณากรอกชื่อ',
-            'last_name.required' => 'กรุณากรอกนามสกุล',
-            'grade.required' => 'กรุณาเลือกชั้นเรียน',
-            'email.required' => 'กรุณากรอกอีเมล',
-            'email.email' => 'รูปแบบอีเมลไม่ถูกต้อง',
-            'email.unique' => 'อีเมลนี้ถูกใช้งานแล้ว',
-            'phone.required' => 'กรุณากรอกเบอร์โทรศัพท์',
+            'first_name.required' => __('students.login.validation.first_name_required'),
+            'last_name.required' => __('students.login.validation.last_name_required'),
+            'grade.required' => __('students.login.validation.grade_required'),
+            'email.required' => __('students.login.validation.email_required'),
+            'email.email' => __('students.login.validation.email_invalid'),
+            'email.unique' => __('students.login.validation.email_unique'),
+            'phone.required' => __('students.login.validation.phone_required'),
         ]);
 
         if ($validator->fails()) {
@@ -85,9 +85,9 @@ class GuestQuizController extends Controller
             'guest_email' => 'required|email',
             'guest_password' => 'required|string',
         ], [
-            'guest_email.required' => 'กรุณากรอกอีเมล',
-            'guest_email.email' => 'รูปแบบอีเมลไม่ถูกต้อง',
-            'guest_password.required' => 'กรุณากรอกรหัสผ่าน (เบอร์โทรศัพท์)',
+            'guest_email.required' => __('students.login.validation.email_required'),
+            'guest_email.email' => __('students.login.validation.email_invalid'),
+            'guest_password.required' => __('students.login.validation.guest_password_required'),
         ]);
 
         if ($validator->fails()) {
@@ -97,7 +97,7 @@ class GuestQuizController extends Controller
         $guest = GuestQuizzer::where('email', $request->guest_email)->first();
 
         if (!$guest || !Hash::check($request->guest_password, $guest->password)) {
-            return back()->withErrors(['guest_error' => 'อีเมลหรือรหัสผ่านไม่ถูกต้อง'])->withInput();
+            return back()->withErrors(['guest_error' => __('students.login.validation.guest_invalid_credentials')])->withInput();
         }
 
         // ตรวจหมดอายุ

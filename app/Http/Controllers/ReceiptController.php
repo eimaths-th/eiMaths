@@ -284,19 +284,19 @@ class ReceiptController extends Controller
                 ->addColumn('action', function ($row) {
                     $html = '';
                     if (Gate::allows('receipt-edit')) {
-                        $html = '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit</button> ';
+                        $html = '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> ' . __('receipts.list.actions.edit') . '</button> ';
                     } else {
-                        $html = '<button type="button" class="btn btn-sm btn-warning btn-edit disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> Edit</button> ';
+                        $html = '<button type="button" class="btn btn-sm btn-warning btn-edit disabled" data-toggle="tooltip" data-placement="bottom" title="' . __('common.feedback.permission_denied') . '"><i class="fa fa-edit"></i> ' . __('receipts.list.actions.edit') . '</button> ';
                     }
                     if (Gate::allows('order-show')) {
-                        $html .= '<button type="button" class="btn btn-sm btn-success btn-print" id="getPrintData" data-id="' . $row->id . '"><i class="fa fa-print"></i> Print</button> ';
+                        $html .= '<button type="button" class="btn btn-sm btn-success btn-print" id="getPrintData" data-id="' . $row->id . '"><i class="fa fa-print"></i> ' . __('receipts.list.actions.print') . '</button> ';
                     } else {
-                        $html .= '<button type="button" class="btn btn-sm btn-success btn-print disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-print"></i> Print</button> ';
+                        $html .= '<button type="button" class="btn btn-sm btn-success btn-print disabled" data-toggle="tooltip" data-placement="bottom" title="' . __('common.feedback.permission_denied') . '"><i class="fa fa-print"></i> ' . __('receipts.list.actions.print') . '</button> ';
                     }
                     if (Gate::allows('order-show')) {
-                        $html .= '<button type="button" class="btn btn-sm btn-danger btn-share" id="getShareData" data-id="' . $row->id . '"><i class="fa-solid fa-file-pdf"></i> PDF</button> ';
+                        $html .= '<button type="button" class="btn btn-sm btn-danger btn-share" id="getShareData" data-id="' . $row->id . '"><i class="fa-solid fa-file-pdf"></i> ' . __('receipts.list.actions.pdf') . '</button> ';
                     } else {
-                        $html .= '<button type="button" class="btn btn-sm btn-danger btn-share disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa-solid fa-file-pdf"></i> PDF</button> ';
+                        $html .= '<button type="button" class="btn btn-sm btn-danger btn-share disabled" data-toggle="tooltip" data-placement="bottom" title="' . __('common.feedback.permission_denied') . '"><i class="fa-solid fa-file-pdf"></i> ' . __('receipts.list.actions.pdf') . '</button> ';
                     }
                     if (
                         config('financial-documents.credit_note.enabled', false)
@@ -591,27 +591,27 @@ class ReceiptController extends Controller
 
                     if ($row->order_status == 1) {
                         if (Gate::allows('order-show')) {
-                            $html = '<button type="button" class="btn btn-sm btn-success btn-print" id="getPrintData" data-id="' . $row->id . '"><i class="fa fa-print"></i> Print</button> ';
+                            $html = '<button type="button" class="btn btn-sm btn-success btn-print" id="getPrintData" data-id="' . $row->id . '"><i class="fa fa-print"></i> ' . __('receipts.pending.actions.print') . '</button> ';
                         } else {
-                            $html = '<button type="button" class="btn btn-sm btn-success btn-print disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-print"></i> Print</button> ';
+                            $html = '<button type="button" class="btn btn-sm btn-success btn-print disabled" data-toggle="tooltip" data-placement="bottom" title="' . __('common.feedback.permission_denied') . '"><i class="fa fa-print"></i> ' . __('receipts.pending.actions.print') . '</button> ';
                         }
                         if (Gate::allows('order-show')) {
-                            $html .= '<button type="button" class="btn btn-sm btn-danger btn-share" id="getShareData" data-id="' . $row->id . '"><i class="fa-solid fa-file-pdf"></i> PDF</button> ';
+                            $html .= '<button type="button" class="btn btn-sm btn-danger btn-share" id="getShareData" data-id="' . $row->id . '"><i class="fa-solid fa-file-pdf"></i> ' . __('receipts.pending.actions.pdf') . '</button> ';
                         } else {
-                            $html .= '<button type="button" class="btn btn-sm btn-danger btn-share disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa-solid fa-file-pdf"></i> PDF</button> ';
+                            $html .= '<button type="button" class="btn btn-sm btn-danger btn-share disabled" data-toggle="tooltip" data-placement="bottom" title="' . __('common.feedback.permission_denied') . '"><i class="fa-solid fa-file-pdf"></i> ' . __('receipts.pending.actions.pdf') . '</button> ';
                         }
                     }
                     if (Gate::allows('order-edit')) {
 
-                        $html .= '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Create Receipt</button> ';
+                        $html .= '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> ' . __('receipts.pending.actions.create_receipt') . '</button> ';
                     } else {
-                        $html .= '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i>Create Receipt</button> ';
+                        $html .= '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="' . __('common.feedback.permission_denied') . '"><i class="fa fa-edit"></i> ' . __('receipts.pending.actions.create_receipt') . '</button> ';
                     }
                     if (Gate::allows('order-delete')) {
 
-                        $html .= '<button type="button" class="btn btn-sm btn-danger btn-delete" data-id="' . $row->id . '"><i class="fa-solid fa-ban"></i> Cancle</button> ';
+                        $html .= '<button type="button" class="btn btn-sm btn-danger btn-delete" data-id="' . $row->id . '"><i class="fa-solid fa-ban"></i> ' . __('receipts.pending.actions.cancel') . '</button> ';
                     } else {
-                        $html .= '<button type="button" class="btn btn-sm btn-danger disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa-solid fa-ban"></i> Cancle</button> ';
+                        $html .= '<button type="button" class="btn btn-sm btn-danger disabled" data-toggle="tooltip" data-placement="bottom" title="' . __('common.feedback.permission_denied') . '"><i class="fa-solid fa-ban"></i> ' . __('receipts.pending.actions.cancel') . '</button> ';
                     }
                     return "<div class='col-sm-2 col-md-2 col-xl-2'>" . $html . "</div>";
                 })->rawColumns(['checkbox', 'action', 'total_cost'])->toJson();

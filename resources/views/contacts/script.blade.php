@@ -1,5 +1,13 @@
 <script>
     $(document).ready(async function() {
+        const studentUi = {
+            datatable: @json(__('common.datatable')),
+            check_in: @json(__('students.check_in')),
+            discontinue: @json(__('students.discontinue')),
+            messages: @json(__('students.messages')),
+            filters: @json(__('students.filters')),
+            fields: @json(__('common.fields')),
+        };
 
         function showOverlay() {
             $('#overlay').css({
@@ -16,24 +24,24 @@
         $(".delete_all_button").click(function() {
             var len = $('input[name="table_records[]"]:checked').length;
             if (len > 0) {
-                if (confirm("Confirm data deletion?")) {
+                if (confirm(studentUi.messages.confirm_delete)) {
                     $('form#delete_all').submit();
                 }
             } else {
-                alert("Please select items to delete.");
+                alert(studentUi.messages.select_items);
             }
         });
 
         $(".export_button").click(function() {
             var len = $('input[name="table_records[]"]:checked').length;
             if (len > 0) {
-                if (confirm("Click OK to Export?")) {
+                if (confirm(studentUi.messages.confirm_export)) {
                     $('form#delete_all').attr('action',
                         '{{ route('contact.export') }}'); //this fails silently
                     $('form#delete_all').submit();
                 }
             } else {
-                alert("Please Select Record For Export");
+                alert(studentUi.messages.select_export);
             }
 
         });
@@ -77,7 +85,7 @@
             maximumSelectionLength: 1,
             allowClear: false,
             //theme: 'bootstrap4'
-            placeholder: 'Please select'
+                placeholder: studentUi.filters.please_select
         });
 
         $(".select2_single").on("select2:unselect", function(e) {
@@ -88,21 +96,21 @@
             maximumSelectionLength: 1,
             allowClear: false,
             //theme: 'bootstrap4'
-            placeholder: 'Please select'
+                placeholder: studentUi.filters.please_select
         });
 
         $(".select2_singlec").select2({
             maximumSelectionLength: 1,
             allowClear: false,
             //theme: 'bootstrap4'
-            placeholder: 'Please select'
+                placeholder: studentUi.filters.please_select
         });
 
         $(".select2_multiple").select2({
             maximumSelectionLength: 2,
             allowClear: false,
             //theme: 'bootstrap4'
-            placeholder: 'Please select'
+                placeholder: studentUi.filters.please_select
         });
 
         var startDate;
@@ -586,22 +594,22 @@
             serverSide: true,
             processing: true,
             language: {
-                loadingRecords: '&nbsp;',
+                loadingRecords: studentUi.datatable.loading_records,
                 processing: `<div class="spinner-border text-primary"></div>`,
-                "sProcessing": "Processing...",
-                "sLengthMenu": "Display _MENU_ Row",
-                "sZeroRecords": "No Data Found",
-                "sInfo": "Display _START_ To _END_ From _TOTAL_ Records",
-                "sInfoEmpty": "Display 0 To 0 From 0 Records",
-                "sInfoFiltered": "(Filters _MAX_ Row)",
-                "sInfoPostFix": "",
-                "sSearch": "Search:",
-                "sUrl": "",
+                "sProcessing": studentUi.datatable.processing,
+                "sLengthMenu": studentUi.datatable.length_menu,
+                "sZeroRecords": studentUi.datatable.zero_records,
+                "sInfo": studentUi.datatable.info,
+                "sInfoEmpty": studentUi.datatable.info_empty,
+                "sInfoFiltered": studentUi.datatable.info_filtered,
+                "sInfoPostFix": studentUi.datatable.info_postfix,
+                "sSearch": studentUi.datatable.search,
+                "sUrl": studentUi.datatable.url,
                 "oPaginate": {
-                    "sFirst": "First",
-                    "sPrevious": "Previous",
-                    "sNext": "Next",
-                    "sLast": "Last"
+                    "sFirst": studentUi.datatable.first,
+                    "sPrevious": studentUi.datatable.previous,
+                    "sNext": studentUi.datatable.next,
+                    "sLast": studentUi.datatable.last
                 }
             },
             aaSorting: [
@@ -753,7 +761,7 @@
                 }
             } else {
                 // Handle the case where searchType or keyword is empty
-                toastr.error('Please input Search Type and Keyword', {
+                toastr.error(studentUi.messages.search_required, {
                     timeOut: 5000
                 });
             }
@@ -974,14 +982,14 @@
             } else {
                 $("#AddLevel").addClass("is-invalid");
                 $("#AddLevel").removeClass("is-valid");
-                toastr.error('Please Select Start Level', {
+                toastr.error(studentUi.messages.select_start_level, {
                     timeOut: 5000
                 });
                 return false;
             }
 
             if (selectedValue2 < selectedValue1) {
-                toastr.error("Cannot select 'To level' less than 'Start level'", {
+                toastr.error(studentUi.messages.invalid_level_order, {
                     timeOut: 5000
                 });
                 return false;
@@ -1091,7 +1099,7 @@
         const fast_history_store_url = @json(route('contacts.fastHistory', ['id' => '__student_id__']));
         const discontinue_student_url = @json(route('contacts.discontinue', ['id' => '__student_id__']));
         const default_discontinued_date = @json(now()->format('Y-m-d'));
-        const default_discontinued_reason = 'Not continuing class';
+        const default_discontinued_reason = '';
 
         function BuildFastHistoryUrl(url_template, student_id) {
             return url_template.replace('__student_id__', encodeURIComponent(student_id));
@@ -1168,7 +1176,7 @@
             matching_courses.forEach(function(course) {
                 $('<option>', {
                     value: course.term
-                }).text('Term ' + course.term).appendTo(term_select);
+                }).text(studentUi.fields.term + ' ' + course.term).appendTo(term_select);
             });
 
             if (selected_term !== undefined && matching_courses.some(function(course) {
@@ -1202,7 +1210,7 @@
 
             $('<option>', {
                 value: 0
-            }).text('No teacher recorded').appendTo(teacher_select);
+            }).text(studentUi.check_in.no_teacher).appendTo(teacher_select);
             (preview_data.teacher_options || []).forEach(function(teacher) {
                 $('<option>', {
                     value: teacher.id
@@ -1245,7 +1253,7 @@
                 $('#fast-history-modal').modal('show');
             }).fail(function(ajax_response) {
                 $('#confirm-fast-history').prop('disabled', false);
-                ShowFastHistoryError(ajax_response, 'Loading check-in details failed.');
+                ShowFastHistoryError(ajax_response, studentUi.messages.loading_check_in);
             });
         });
 
@@ -1272,14 +1280,14 @@
                 },
                 success: function(response_data) {
                     $('#fast-history-modal').modal('hide');
-                    toastr.success(response_data.message || 'Learning history recorded successfully.');
+                    toastr.success(response_data.message || studentUi.check_in.recorded);
                     if ($.fn.DataTable.isDataTable('#Listview')) {
                         $('#Listview').DataTable().ajax.reload(null, false);
                     }
                 },
                 error: function(ajax_response) {
                     confirm_button.prop('disabled', false);
-                    ShowFastHistoryError(ajax_response, 'Saving check-in failed.');
+                    ShowFastHistoryError(ajax_response, studentUi.messages.saving_check_in);
                 }
             });
         });
@@ -1292,9 +1300,9 @@
             }
 
             $('#discontinue-student-modal').data('student-id', student_id);
-            $('#discontinue-student-name').text(trigger_button.data('student-name') || 'Student');
+            $('#discontinue-student-name').text(trigger_button.data('student-name') || studentUi.messages.student_placeholder);
             $('#discontinue-student-date').val(default_discontinued_date);
-            $('#discontinue-student-reason').val(default_discontinued_reason);
+            $('#discontinue-student-reason').val('');
             $('#confirm-discontinue-student').prop('disabled', false);
             $('#discontinue-student-modal').modal('show');
         });
@@ -1307,7 +1315,7 @@
             }
 
             const discontinued_reason = String($('#discontinue-student-reason').val() || '').trim() ||
-                default_discontinued_reason;
+                studentUi.discontinue.default_reason;
             confirm_button.prop('disabled', true);
             $.ajax({
                 url: BuildFastHistoryUrl(discontinue_student_url, student_id),
@@ -1319,14 +1327,14 @@
                 },
                 success: function(response_data) {
                     $('#discontinue-student-modal').modal('hide');
-                    toastr.success(response_data.message || 'Student marked as not continuing.');
+                    toastr.success(response_data.message || studentUi.discontinue.marked);
                     if ($.fn.DataTable.isDataTable('#Listview')) {
                         $('#Listview').DataTable().ajax.reload(null, false);
                     }
                 },
                 error: function(ajax_response) {
                     confirm_button.prop('disabled', false);
-                    ShowFastHistoryError(ajax_response, 'Saving discontinuation failed.');
+                    ShowFastHistoryError(ajax_response, studentUi.messages.saving_discontinuation);
                 }
             });
         });
@@ -1420,7 +1428,7 @@
         })
 
         $('#SubmitEditForm').click(function(e) {
-            if (!confirm("Confirm the action?")) return;
+            if (!confirm(studentUi.messages.confirm_action)) return;
             e.preventDefault();
 
             $('.alert-danger').html('');
@@ -1437,14 +1445,14 @@
             } else {
                 $("#EditLevel").addClass("is-invalid");
                 $("#EditLevel").removeClass("is-valid");
-                toastr.error('Please Select Start Level', {
+                toastr.error(studentUi.messages.select_start_level, {
                     timeOut: 5000
                 });
                 return false;
             }
 
             if (selectedValue2 < selectedValue1) {
-                toastr.error("Cannot select 'To level' less than 'Start level'", {
+                toastr.error(studentUi.messages.invalid_level_order, {
                     timeOut: 5000
                 });
                 return false;
@@ -1557,14 +1565,14 @@
             } else {
                 $("#ReceiptLevel").addClass("is-invalid");
                 $("#ReceiptLevel").removeClass("is-valid");
-                toastr.error('Please Select Start Level', {
+                toastr.error(studentUi.messages.select_start_level, {
                     timeOut: 5000
                 });
                 return false;
             }
 
             if (selectedValue2 < selectedValue1) {
-                toastr.error("Cannot select 'To level' less than 'Start level'", {
+                toastr.error(studentUi.messages.invalid_level_order, {
                     timeOut: 5000
                 });
                 return false;
@@ -1622,7 +1630,7 @@
                 error: function(xhr) { // Handle exception errors here
                     // console.error(xhr.responseText); // Debugging
 
-                    let errorMsg = "An unexpected error occurred!";
+                    let errorMsg = studentUi.messages.unexpected_error;
                     if (xhr.responseJSON && xhr.responseJSON.message) {
                         errorMsg = xhr.responseJSON
                             .message; // Use Laravel exception message
@@ -1636,7 +1644,7 @@
         });
 
         $(document).on('click', '.btn-delete', function() {
-            if (!confirm("Confirm the action?")) return;
+            if (!confirm(studentUi.messages.confirm_action)) return;
 
             var rowid = $(this).data('rowid')
             var el = $(this)

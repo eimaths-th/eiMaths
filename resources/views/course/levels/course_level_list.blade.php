@@ -1,4 +1,4 @@
-a{{-- @extends('backend.master') --}}
+{{-- @extends('backend.master') --}}
 @extends('layouts.app')
 @section('style')
     {{-- @include('affiliate.backend.my_affiliate-head') --}}
@@ -569,7 +569,7 @@ a{{-- @extends('backend.master') --}}
 
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1>Category</h1>
+                    <h1>{{ __('course.levels.title') }}</h1>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
@@ -591,16 +591,16 @@ a{{-- @extends('backend.master') --}}
                                 <h3 class="card-title">
 
                                     @if (!isset($edit))
-                                        Add New Level
+                                        {{ __('course.levels.form.add_title') }}
                                     @else
-                                        Update Level
+                                        {{ __('course.levels.form.update_title') }}
                                     @endif
                                 </h3>
 
                             </div>
                             @if (isset($edit))
-                                <a class="" href="{{ route('categories.index') }}"
-                                    title="{{ __('courses.Add New') }}">+</a>
+                                <a class="" href="{{ route('course.level.list') }}"
+                                    title="{{ __('course.levels.form.add_new') }}">+</a>
                             @endif
                         </div>
 
@@ -632,7 +632,7 @@ a{{-- @extends('backend.master') --}}
 
                                 @php
                                     $fields = [
-                                        'title' => __('Name'),
+                                        'title' => __('course.levels.form.name'),
                                     ];
                                 @endphp
 
@@ -671,10 +671,10 @@ a{{-- @extends('backend.master') --}}
                                         <button type="submit" class="btn btn-primary" data-bs-toggle="tooltip"
                                             title="{{ @$tooltip }}" id="save_button_parent">
                                             <i class=" fa fa-check "></i>
-                                            @if (!isset($edit))
-                                                Save
+                                                @if (!isset($edit))
+                                                {{ __('course.levels.form.save') }}
                                             @else
-                                                Update
+                                                {{ __('course.levels.form.update') }}
                                             @endif
                                         </button>
                                     </div>
@@ -691,7 +691,7 @@ a{{-- @extends('backend.master') --}}
                         <div class="card-header">
 
                             <div class="card-title">
-                                <h3 class="card-title"><i class="fa fa-user"></i> Category List</h3>
+                                <h3 class="card-title"><i class="fa fa-layer-group"></i> {{ __('course.levels.list.title') }}</h3>
 
                             </div>
                         </div>
@@ -700,10 +700,10 @@ a{{-- @extends('backend.master') --}}
                                 <table id="lms_table1" class="table table-bordered table-striped table-hover">
                                     <thead>
                                         <tr>
-                                            <th scope="col">SL</th>
-                                            <th scope="col">Title</th>
-                                            <th scope="col">Status</th>
-                                            <th scope="col">Action</th>
+                                            <th scope="col">{{ __('course.levels.list.serial') }}</th>
+                                            <th scope="col">{{ __('course.levels.list.name') }}</th>
+                                            <th scope="col">{{ __('course.levels.list.status') }}</th>
+                                            <th scope="col">{{ __('course.levels.list.action') }}</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -721,16 +721,16 @@ a{{-- @extends('backend.master') --}}
                                                         <button class="btn btn-secondary dropdown-toggle" type="button"
                                                             id="dropdownMenu1{{ @$level->id }}" data-bs-toggle="dropdown"
                                                             aria-haspopup="true" aria-expanded="false">
-                                                            Select
+                                                            {{ __('course.levels.list.select') }}
                                                         </button>
                                                         <div class="dropdown-menu dropdown-menu-right"
                                                             aria-labelledby="dropdownMenu1{{ @$level->id }}">
                                                             <a class="dropdown-item edit_brand"
                                                                 href="{{ route('course.level.edit', @$level->id) }}"
-                                                                {{-- href="#" --}}>Edit</a>
+                                                                {{-- href="#" --}}>{{ __('common.actions.edit') }}</a>
                                                             <a onclick="confirm_modal('{{ route('course.level.destroy', @$level->id) }}');"
                                                                 {{-- onclick="#" --}}
-                                                                class="dropdown-item edit_brand">Delete</a>
+                                                                class="dropdown-item edit_brand">{{ __('common.actions.delete') }}</a>
                                                         </div>
                                                     </div>
                                                 </td>
@@ -749,7 +749,7 @@ a{{-- @extends('backend.master') --}}
 
     <input type="hidden" name="status_route" class="status_route" value="#">
     {{-- <input type="hidden" name="status_route" class="status_route" value="{{ route('course.category.status_update') }}"> --}}
-    @include('backend.partials.delete_modal')
+    {{-- The page uses the localized confirm_modal handler below. --}}
 
     @if (Session::has('message'))
         <script type="text/javascript">
@@ -776,13 +776,44 @@ a{{-- @extends('backend.master') --}}
 
     {{-- @include('affiliate.backend.my_affiliate-script') --}}
     <script>
+        const course_level_ui = {
+            datatable: @json(__('common.datatable')),
+            list: @json(__('course.levels.list')),
+            messages: @json(__('course.levels.messages')),
+        };
+    </script>
+
+    <script>
         $(document).ready(function() {
             $("#lms_table1").DataTable({
                 "pageLength": 10,
                 "responsive": true,
                 "lengthChange": true,
                 "autoWidth": false,
-                "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+                "language": {
+                    "loadingRecords": course_level_ui.datatable.loading_records,
+                    "processing": course_level_ui.datatable.processing,
+                    "lengthMenu": course_level_ui.datatable.length_menu,
+                    "zeroRecords": course_level_ui.datatable.zero_records,
+                    "info": course_level_ui.datatable.info,
+                    "infoEmpty": course_level_ui.datatable.info_empty,
+                    "infoFiltered": course_level_ui.datatable.info_filtered,
+                    "search": course_level_ui.datatable.search,
+                    "paginate": {
+                        "first": course_level_ui.datatable.first,
+                        "previous": course_level_ui.datatable.previous,
+                        "next": course_level_ui.datatable.next,
+                        "last": course_level_ui.datatable.last
+                    }
+                },
+                "buttons": [
+                    { extend: "copy", text: course_level_ui.list.copy },
+                    { extend: "csv", text: course_level_ui.list.csv },
+                    { extend: "excel", text: course_level_ui.list.excel },
+                    { extend: "pdf", text: course_level_ui.list.pdf },
+                    { extend: "print", text: course_level_ui.list.print },
+                    { extend: "colvis", text: course_level_ui.list.columns }
+                ]
             }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
         });
     </script>
@@ -791,6 +822,7 @@ a{{-- @extends('backend.master') --}}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('category-form');
+            if (!form) return;
 
             form.addEventListener('submit', function(e) {
                 e.preventDefault(); // Prevent traditional form submission
@@ -825,17 +857,17 @@ a{{-- @extends('backend.master') --}}
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            toastr.success(data.message, 'Success');
+                            toastr.success(data.message, course_level_ui.messages.success_title);
                             form.reset(); // Reset the form if needed
                             location.reload()
 
                         } else {
-                            toastr.error(data.message || 'An error occurred.', 'Error');
+                            toastr.error(data.message || course_level_ui.messages.unexpected_error, course_level_ui.messages.error_title);
                         }
                     })
                     .catch(error => {
                         console.error('Error:', error);
-                        toastr.error('An unexpected error occurred.', 'Error');
+                        toastr.error(course_level_ui.messages.unexpected_error, course_level_ui.messages.error_title);
                     });
             });
         });
@@ -866,12 +898,15 @@ a{{-- @extends('backend.master') --}}
                         .then(response => response.json())
                         .then(data => {
                             if (data.message === 'success') {
-                                toastr.success('Status updated successfully!');
+                                toastr.success(course_level_ui.messages.status_updated);
                             } else {
-                                toastr.error('Failed to update status. Please try again.');
+                                toastr.error(course_level_ui.messages.status_update_failed);
                             }
                         })
-                        .catch(error => console.error('Error:', error));
+                        .catch(error => {
+                            console.error('Error:', error);
+                            toastr.error(course_level_ui.messages.status_update_error);
+                        });
                 });
             });
         });
@@ -879,7 +914,8 @@ a{{-- @extends('backend.master') --}}
 
     {{-- update data --}}
     <script>
-        document.getElementById('category-update-form').addEventListener('submit', function(e) {
+        const course_level_update_form = document.getElementById('category-update-form');
+        if (course_level_update_form) course_level_update_form.addEventListener('submit', function(e) {
             e.preventDefault();
             const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
@@ -900,12 +936,12 @@ a{{-- @extends('backend.master') --}}
                         setTimeout(() => location.reload(),
                             2000);
                     } else {
-                        toastr.error('Failed to update course level.', 'Error');
+                        toastr.error(course_level_ui.messages.update_failed, course_level_ui.messages.error_title);
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    toastr.error('An error occurred while updating the course level.', 'Error');
+                    toastr.error(course_level_ui.messages.unexpected_error, course_level_ui.messages.error_title);
                 });
         });
     </script>
@@ -913,7 +949,7 @@ a{{-- @extends('backend.master') --}}
     {{-- delete --}}
     <script>
         function confirm_modal(deleteUrl) {
-            if (confirm("Are you sure you want to delete this category?")) {
+            if (confirm(course_level_ui.messages.confirm_delete)) {
                 fetch(deleteUrl, {
                         method: 'DELETE',
                         headers: {

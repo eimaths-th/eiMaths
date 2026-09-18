@@ -147,7 +147,7 @@
                     @endphp
                     <a href="{{ $route }}" class="nav-logo">
                         <img src="{{ asset('images/logo.png') }}" style="height: 65px; width: 130px;"
-                            alt="Application Logo" />
+                            alt="{{ __('quiz-management.layout.logo_alt') }}" />
                     </a>
                 </div>
             </div>
@@ -155,10 +155,10 @@
             <!-- Settings Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ml-6">
                 @if (Auth::guard('student')->check() || Auth::check())
-                    <a href="{{ $route }}" class="nav-link {{ request()->routeIs('home3') ? 'active' : '' }}"> Home </a>
-                    <a href="{{ route('leaderboard') }}" class="nav-link {{ request()->routeIs('leaderboard') ? 'active' : '' }}"> Leaderboard </a>
+                    <a href="{{ $route }}" class="nav-link {{ request()->routeIs('home3') ? 'active' : '' }}">{{ __('quiz-management.layout.home') }}</a>
+                    <a href="{{ route('leaderboard') }}" class="nav-link {{ request()->routeIs('leaderboard') ? 'active' : '' }}">{{ __('quiz-management.layout.leaderboard') }}</a>
                     <a href="{{ route('myresults') }}"
-                        class="nav-link {{ request()->routeIs('myresults') ? 'active' : '' }}">{{ __('My Results') }}</a>
+                        class="nav-link {{ request()->routeIs('myresults') ? 'active' : '' }}">{{ __('quiz-management.layout.my_results') }}</a>
 
                     <!-- User Dropdown -->
                     <div class="relative">
@@ -170,7 +170,7 @@
                                 @elseif(isset($student))
                                     {{ $student->nickname }}
                                 @else
-                                    Guest
+                                    {{ __('quiz-management.layout.guest') }}
                                 @endif
                             </div>
                             <div class="ml-1">
@@ -193,7 +193,7 @@
                                     @csrf
                                     <button type="submit"
                                         class="block w-full text-left px-4 py-2 text-sm text-gray-700"
-                                        onclick="event.preventDefault(); this.closest('form').submit();">{{ __('Log Out') }}</button>
+                                        onclick="event.preventDefault(); this.closest('form').submit();">{{ __('quiz-management.layout.logout') }}</button>
                                 </form>
                             @elseif(isset($student))
                                 {{-- {{ $student->nickname }} --}}
@@ -201,10 +201,10 @@
                                     @csrf
                                     <button type="submit"
                                         class="block w-full text-left px-4 py-2 text-sm text-gray-700"
-                                        onclick="event.preventDefault(); this.closest('form').submit();">{{ __('Log Out') }}</button>
+                                        onclick="event.preventDefault(); this.closest('form').submit();">{{ __('quiz-management.layout.logout') }}</button>
                                 </form>
                             @else
-                                Guest
+                                {{ __('quiz-management.layout.guest') }}
                             @endif
                             {{-- <form method="POST" action="{{ route('student.logout') }}">
                                 @csrf
@@ -214,7 +214,7 @@
                         </div>
                     </div>
                 @else
-                    <a href="{{ route('student.login') }}" class="login-link">Log In</a>
+                    <a href="{{ route('student.login') }}" class="login-link">{{ __('quiz-management.layout.login') }}</a>
                     {{-- <a href="{{ route('register') }}" class="ml-4 text-gray-700 hover:text-gray-800">Register</a> --}}
                 @endauth
         </div>
@@ -245,17 +245,17 @@
             <div class="mt-3 space-y-1">
                 {{-- <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-gray-700">{{ __('Profile') }}</a> --}}
                 <a href="{{ route('myresults') }}"
-                    class="block px-4 py-2 text-sm text-gray-700 {{ request()->routeIs('myresults') ? 'active' : '' }}">{{ __('My Results') }}</a>
+                    class="block px-4 py-2 text-sm text-gray-700 {{ request()->routeIs('myresults') ? 'active' : '' }}">{{ __('quiz-management.layout.my_results') }}</a>
                 {{--
                         <a href="{{ route('admins') }}" class="block px-4 py-2 text-sm text-gray-700">Admins</a>
-                        <a href="{{ route('questions') }}" class="block px-4 py-2 text-sm text-gray-700">Questions</a>
-                        <a href="{{ route('quizzes') }}" class="block px-4 py-2 text-sm text-gray-700">Quizzes</a>
-                        <a href="{{ route('tests') }}" class="block px-4 py-2 text-sm text-gray-700">Tests</a>
+                        <a href="{{ route('questions') }}" class="block px-4 py-2 text-sm text-gray-700">{{ __('quiz-management.layout.questions') }}</a>
+                        <a href="{{ route('quizzes') }}" class="block px-4 py-2 text-sm text-gray-700">{{ __('quiz-management.layout.quizzes') }}</a>
+                        <a href="{{ route('tests') }}" class="block px-4 py-2 text-sm text-gray-700">{{ __('quiz-management.layout.tests') }}</a>
                     --}}
                 <form method="POST" action="{{ route('student.logout') }}">
                     @csrf
                     <button type="submit"
-                        class="block w-full text-left px-4 py-2 text-sm text-gray-700">Logout</button>
+                        class="block w-full text-left px-4 py-2 text-sm text-gray-700">{{ __('quiz-management.layout.logout') }}</button>
                 </form>
                 {{-- <form method="POST" action="{{ route('student.logout') }}">
                         @csrf
@@ -265,8 +265,8 @@
             </div>
         </div>
     @else
-        <a href="{{ route('login') }}" class="block px-4 py-2 text-sm text-gray-700">Log In</a>
-        <a href="{{ route('register') }}" class="block px-4 py-2 text-sm text-gray-700">Register</a>
+        <a href="{{ route('login') }}" class="block px-4 py-2 text-sm text-gray-700">{{ __('quiz-management.layout.login') }}</a>
+        <a href="{{ route('register') }}" class="block px-4 py-2 text-sm text-gray-700">{{ __('quiz-management.layout.register') }}</a>
     @endauth
 </div>
 </nav>

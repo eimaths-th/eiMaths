@@ -17,22 +17,22 @@
                         <li class="breadcrumb-item active">Users Management</li> --}}
                         @can('user-create')
                             <button type="button" class="btn btn-success" id="CreateButton">
-                                <i class="fas fa-user"></i> Add User </button>
+                                <i class="fas fa-user"></i> {{ __('user-access.users.actions.add') }}</button>
                         @else
                             <span class="d-inline-block" tabindex="0" data-toggle="tooltip" data-placement="bottom"
-                                title="You Not Have Permission">
+                                title="{{ __('user-access.messages.no_permission') }}">
                                 <button type="button" class="btn btn-success disabled">
-                                    <i class="fas fa-user"></i> Add User </button>
+                                    <i class="fas fa-user"></i> {{ __('user-access.users.actions.add') }}</button>
                             </span>
                         @endcan &nbsp;
 
                         @can('user-delete')
-                            <button type="button" class="btn btn-danger delete_all_button"><i class="fa fa-trash"></i> Delete All</button>
+                            <button type="button" class="btn btn-danger delete_all_button"><i class="fa fa-trash"></i> {{ __('user-access.users.actions.delete_all') }}</button>
                         @else
                             <span class="d-inline-block" tabindex="0" data-toggle="tooltip" data-placement="bottom"
-                                title="You Not Have Permission">
+                                title="{{ __('user-access.messages.no_permission') }}">
                                 <button type="button" class="btn btn-danger disabled"><i
-                                        class="fa fa-trash"></i> Delete All</button>
+                                        class="fa fa-trash"></i> {{ __('user-access.users.actions.delete_all') }}</button>
                             </span>
                         @endcan
                     </ol>
@@ -48,9 +48,9 @@
                 <div class="col-12">
                     <div class="card card-primary">
                         <div class="card-header">
-                            <h3 class="card-title"><i class="fa fa-user"></i> User Management</h3>
+                            <h3 class="card-title"><i class="fa fa-user"></i> {{ __('user-access.users.management_title') }}</h3>
                             <div class="card-tools">
-                                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="{{ __('user-access.users.actions.collapse') }}">
                                     <i class="fas fa-minus"></i>
                                 </button>
                                 {{-- <button type="button" class="btn btn-tool" data-card-widget="remove" title="Remove">
@@ -78,14 +78,14 @@
                                     <thead>
                                         <tr>
                                             <th><input type="checkbox" id="check-all" class="flat"></th>
-                                            <th>Ref. Code</th>
-                                            <th>User Name</th>
-                                            <th>Email</th>
-                                            <th>Centre</th>
-                                            <th>Department</th>
-                                            <th>Role</th>
-                                            <th>Disable</th>
-                                            <th width="120px">Action</th>
+                                            <th>{{ __('user-access.users.table.reference_code') }}</th>
+                                            <th>{{ __('user-access.users.table.name') }}</th>
+                                            <th>{{ __('user-access.users.table.email') }}</th>
+                                            <th>{{ __('user-access.users.table.centre') }}</th>
+                                            <th>{{ __('user-access.users.table.department') }}</th>
+                                            <th>{{ __('user-access.users.table.role') }}</th>
+                                            <th>{{ __('user-access.users.table.disable') }}</th>
+                                            <th width="120px">{{ __('user-access.users.table.action') }}</th>
                                         </tr>
                                     </thead>
                                     <tbody>

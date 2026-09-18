@@ -1,13 +1,15 @@
 <script>
     $(document).ready(function() {
+        const centre_management_ui = @json(__('centre-management'));
+
         $(".delete_all_button").click(function() {
             var len = $('input[name="table_records[]"]:checked').length;
             if (len > 0) {
-                if (confirm("Confirm data deletion?")) {
+                if (confirm(centre_management_ui.messages.confirm_delete)) {
                     $('form#delete_all').submit();
                 }
             } else {
-                alert("Please select items to delete.");
+                alert(centre_management_ui.messages.select_to_delete);
             }
         });
 
@@ -44,20 +46,20 @@
             language: {
                 loadingRecords: '&nbsp;',
                 processing: `<div class="spinner-border text-primary"></div>`,
-                "sProcessing": "Processcing...",
-                "sLengthMenu": "Display_MENU_ Row",
-                "sZeroRecords": "No Data Fount",
-                "sInfo": "Display _START_ To _END_ From _TOTAL_ Records",
-                "sInfoEmpty": "Display 0 To 0 From 0 Records",
-                "sInfoFiltered": "(Filters _MAX_ Row)",
+                "sProcessing": centre_management_ui.data_table.processing,
+                "sLengthMenu": centre_management_ui.data_table.length_menu,
+                "sZeroRecords": centre_management_ui.data_table.zero_records,
+                "sInfo": centre_management_ui.data_table.info,
+                "sInfoEmpty": centre_management_ui.data_table.info_empty,
+                "sInfoFiltered": centre_management_ui.data_table.info_filtered,
                 "sInfoPostFix": "",
-                "sSearch": "Search:",
+                "sSearch": centre_management_ui.data_table.search,
                 "sUrl": "",
                 "oPaginate": {
-                    "sFirst": "First",
-                    "sPrevious": "Previous",
-                    "sNext": "Next",
-                    "sLast": "Last"
+                    "sFirst": centre_management_ui.data_table.first,
+                    "sPrevious": centre_management_ui.data_table.previous,
+                    "sNext": centre_management_ui.data_table.next,
+                    "sLast": centre_management_ui.data_table.last
                 }
             },
             aaSorting: [
@@ -210,7 +212,7 @@
         })
 
         $('#SubmitEditForm').click(function(e) {
-            if (!confirm("Confirm the action?")) return;
+            if (!confirm(centre_management_ui.messages.confirm_update)) return;
             e.preventDefault();
 
             $('.alert-danger').html('');
@@ -268,7 +270,7 @@
         });
 
         $(document).on('click', '.btn-delete', function() {
-            if (!confirm("Confirm the action?")) return;
+            if (!confirm(centre_management_ui.messages.confirm_delete)) return;
 
             var rowid = $(this).data('rowid')
             var el = $(this)

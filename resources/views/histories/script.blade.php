@@ -1,6 +1,13 @@
 {{-- <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script> --}}
 <script>
     $(document).ready(function() {
+        const historyUi = {
+            datatable: @json(__('common.datatable')),
+            filters: @json(__('students.filters')),
+            fields: @json(__('common.fields')),
+            messages: @json(__('students.messages')),
+            history: @json(__('students.history')),
+        };
 
         $("#timepicker").timepicker();
         $(".timepicker").timepicker({
@@ -32,11 +39,11 @@
         $(".delete_all_button").click(function() {
             var len = $('input[name="table_records[]"]:checked').length;
             if (len > 0) {
-                if (confirm("Confirm data deletion?")) {
+                if (confirm(historyUi.messages.confirm_delete)) {
                     $('form#delete_all').submit();
                 }
             } else {
-                alert("Please select items to delete.");
+                alert(historyUi.messages.select_items);
             }
         });
 
@@ -107,13 +114,13 @@
             maximumSelectionLength: 1,
             allowClear: false,
             //theme: 'bootstrap4'
-            placeholder: 'Please select'
+            placeholder: historyUi.filters.please_select
         });
         $(".select3_single").select2({
             maximumSelectionLength: 1,
             allowClear: false,
             //theme: 'bootstrap4'
-            placeholder: 'select student'
+            placeholder: historyUi.fields.student_name
         });
 
         $(".select2_single").on("select2:unselect", function(e) {
@@ -124,21 +131,21 @@
             maximumSelectionLength: 1,
             allowClear: false,
             //theme: 'bootstrap4'
-            placeholder: 'Please select'
+            placeholder: historyUi.filters.please_select
         });
 
         $(".select2_singlec").select2({
             maximumSelectionLength: 1,
             allowClear: false,
             //theme: 'bootstrap4'
-            placeholder: 'Please select'
+            placeholder: historyUi.filters.please_select
         });
 
         $(".select2_multiple").select2({
             maximumSelectionLength: 2,
             allowClear: false,
             //theme: 'bootstrap4'
-            placeholder: 'Please select'
+            placeholder: historyUi.filters.please_select
         });
 
         var startDate;
@@ -450,22 +457,22 @@
                 },
 
                 language: {
-                    loadingRecords: '&nbsp;',
+                    loadingRecords: historyUi.datatable.loading_records,
                     processing: `<div class="spinner-border text-primary"></div>`,
-                    sProcessing: "Processing...",
-                    sLengthMenu: "Display _MENU_ Row",
-                    sZeroRecords: "No Data Found",
-                    sInfo: "Display _START_ To _END_ From _TOTAL_ Records",
-                    sInfoEmpty: "Display 0 To 0 From 0 Records",
-                    sInfoFiltered: "(Filters _MAX_ Row)",
-                    sInfoPostFix: "",
-                    sSearch: "Search:",
-                    sUrl: "",
+                    sProcessing: historyUi.datatable.processing,
+                    sLengthMenu: historyUi.datatable.length_menu,
+                    sZeroRecords: historyUi.datatable.zero_records,
+                    sInfo: historyUi.datatable.info,
+                    sInfoEmpty: historyUi.datatable.info_empty,
+                    sInfoFiltered: historyUi.datatable.info_filtered,
+                    sInfoPostFix: historyUi.datatable.info_postfix,
+                    sSearch: historyUi.datatable.search,
+                    sUrl: historyUi.datatable.url,
                     oPaginate: {
-                        sFirst: "First",
-                        sPrevious: "Previous",
-                        sNext: "Next",
-                        sLast: "Last"
+                        sFirst: historyUi.datatable.first,
+                        sPrevious: historyUi.datatable.previous,
+                        sNext: historyUi.datatable.next,
+                        sLast: historyUi.datatable.last
                     }
                 },
 
@@ -554,7 +561,7 @@
                 }
             } else {
                 // Handle the case where searchType or keyword is empty
-                toastr.error('Please input Search Type and Keyword', {
+                toastr.error(historyUi.messages.search_required, {
                     timeOut: 5000
                 });
             }
@@ -619,7 +626,7 @@
                     }
                 });
             } else {
-                $('#s_student').html('<option value="">select student</option>').val(null).trigger("change");
+                $('#s_student').html('<option value="">' + historyUi.fields.student_name + '</option>').val(null).trigger("change");
             }
         })
 
@@ -923,7 +930,7 @@
 
 
         $('#SubmitEditForm').click(function(e) {
-            if (!confirm("Confirm the action?")) return;
+            if (!confirm(historyUi.messages.confirm_action)) return;
             e.preventDefault();
 
             $('.alert-danger').html('');
@@ -991,7 +998,7 @@
         });
 
         $(document).on('click', '.btn-delete', function() {
-            if (!confirm("Confirm the action?")) return;
+            if (!confirm(historyUi.messages.confirm_action)) return;
 
             var rowid = $(this).data('rowid');
             var el = $(this);

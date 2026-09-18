@@ -43,7 +43,7 @@ final class CreditNoteController extends Controller
         if ($request->expectsJson()) {
             return response()->json(['data' => $this->Serialize($note, $this->CorrelationId($request)), 'correlation_id' => $this->CorrelationId($request)], 201);
         }
-        return redirect()->route('credit-notes.show', $note)->with('success', 'Credit Note Draft created.');
+        return redirect()->route('credit-notes.show', $note)->with('success', __('credit-note.flash.created'));
     }
 
     public function Show(Request $request, int $credit_note): View|JsonResponse
@@ -89,7 +89,7 @@ final class CreditNoteController extends Controller
         if ($request->expectsJson()) {
             return response()->json(['data' => $this->Serialize($updated, $this->CorrelationId($request)), 'correlation_id' => $this->CorrelationId($request)]);
         }
-        return redirect()->route('credit-notes.show', $updated)->with('success', 'Credit Note Draft saved.');
+        return redirect()->route('credit-notes.show', $updated)->with('success', __('credit-note.flash.saved'));
     }
 
     public function Issue(IssueCreditNoteRequest $request, int $credit_note): JsonResponse|\Illuminate\Http\RedirectResponse
@@ -100,7 +100,7 @@ final class CreditNoteController extends Controller
         if ($request->expectsJson()) {
             return response()->json(['data' => $this->Serialize($issued, $this->CorrelationId($request)), 'correlation_id' => $this->CorrelationId($request)]);
         }
-        return redirect()->route('credit-notes.show', $issued)->with('success', 'Credit Note issued.');
+        return redirect()->route('credit-notes.show', $issued)->with('success', __('credit-note.flash.issued'));
     }
 
     public function Cancel(CancelCreditNoteRequest $request, int $credit_note): JsonResponse|\Illuminate\Http\RedirectResponse
@@ -111,7 +111,7 @@ final class CreditNoteController extends Controller
         if ($request->expectsJson()) {
             return response()->json(['data' => $this->Serialize($cancelled, $this->CorrelationId($request)), 'correlation_id' => $this->CorrelationId($request)]);
         }
-        return redirect()->route('credit-notes.show', $cancelled)->with('success', 'Credit Note cancelled.');
+        return redirect()->route('credit-notes.show', $cancelled)->with('success', __('credit-note.flash.cancelled'));
     }
 
     private function Serialize(CreditNote $note, ?string $correlation_id = null): array

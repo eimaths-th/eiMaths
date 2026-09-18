@@ -31,7 +31,7 @@
     $reason_label = $reason_is_custom && filled($credit_note->reason_details)
         ? (string) $credit_note->reason_details
         : ($reason_code ? __('credit-note.reasons.' . $reason_code) : '—');
-    $number = $credit_note->number ?? 'Draft #' . $credit_note->id;
+    $number = $credit_note->number ?? __('credit-note.register.draft_number', ['id' => $credit_note->id]);
     $credit_note_date = $credit_note->issue_date ?? $credit_note->adjustment_event_date;
     $format_money = static fn ($minor): string => number_format(((int) $minor) / 100, 2, '.', ',');
     $format_quantity = static function ($quantity): string {
@@ -45,9 +45,9 @@
 
 <article class="credit-note-paper credit-note-document credit-note-receipt-document" aria-labelledby="credit-note-print-title">
     @if ($status === 'draft')
-        <div class="credit-note-document-watermark" aria-hidden="true">DRAFT</div>
+        <div class="credit-note-document-watermark" aria-hidden="true">{{ __('credit-note.document.draft_watermark') }}</div>
     @elseif ($status === 'cancelled')
-        <div class="credit-note-document-watermark" aria-hidden="true">CANCELLED</div>
+        <div class="credit-note-document-watermark" aria-hidden="true">{{ __('credit-note.document.cancelled_watermark') }}</div>
     @endif
 
     <header class="credit-note-document-header credit-note-receipt-header">

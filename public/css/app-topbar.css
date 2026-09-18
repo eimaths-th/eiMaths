@@ -64,6 +64,24 @@
     outline-offset: 2px;
 }
 
+.ui-language-switcher {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    margin: 0;
+}
+
+.ui-language-switcher .btn {
+    min-height: 42px;
+    min-width: 44px;
+    white-space: nowrap;
+}
+
+.ui-language-switcher .btn:focus-visible {
+    outline: 3px solid #1266ab;
+    outline-offset: 2px;
+}
+
 .app-context-strip {
     align-items: center;
     gap: 0.55rem;

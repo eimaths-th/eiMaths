@@ -4,9 +4,9 @@
         <form id="editdata" class="form" action="" method="POST">
             <div class="modal-content">
                 <div class="modal-header bg-primary">
-                    <h4 class="modal-title" id="exampleModalLongTitle"><i class="fas fa-graduation-cap"></i> Edit
-                        Student</h4>
-                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <h4 class="modal-title" id="exampleModalLongTitle"><i class="fas fa-graduation-cap"></i> {{ __('common.actions.edit') }}
+                        {{ __('students.form.student_detail') }}</h4>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="{{ __('common.actions.close') }}">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
@@ -32,31 +32,27 @@
                                     <li class="nav-item">
                                         <a class="nav-link active" id="custom-tabs-one-homee-tab" data-toggle="pill"
                                             href="#custom-tabs-one-homee" role="tab"
-                                            aria-controls="custom-tabs-one-homee" aria-selected="true">Student
-                                            Detail</a>
+                                            aria-controls="custom-tabs-one-homee" aria-selected="true">{{ __('students.form.student_detail') }}</a>
                                     </li>
                                     <li class="nav-item">
                                         <a class="nav-link" id="custom-tabs-one-addresse-tab" data-toggle="pill"
                                             href="#custom-tabs-one-addresse" role="tab"
-                                            aria-controls="custom-tabs-one-addresse" aria-selected="true">Address
-                                            Detail</a>
+                                            aria-controls="custom-tabs-one-addresse" aria-selected="true">{{ __('students.form.address_detail') }}</a>
                                     </li>
                                     <li class="nav-item">
                                         <a class="nav-link" id="custom-tabs-one-profilee-tab" data-toggle="pill"
                                             href="#custom-tabs-one-profilee" role="tab"
-                                            aria-controls="custom-tabs-one-profilee" aria-selected="false">Parent
-                                            Detail</a>
+                                            aria-controls="custom-tabs-one-profilee" aria-selected="false">{{ __('students.form.parent_detail') }}</a>
                                     </li>
                                     <li class="nav-item">
                                         <a class="nav-link" id="custom-tabs-one-dise-tab" data-toggle="pill"
                                             href="#custom-tabs-one-dise" role="tab"
-                                            aria-controls="custom-tabs-one-dise" aria-selected="false">Discontinued</a>
+                                            aria-controls="custom-tabs-one-dise" aria-selected="false">{{ __('students.form.discontinued') }}</a>
                                     </li>
                                     <li class="nav-item">
                                         <a class="nav-link" id="custom-tabs-one-coursee-tab" data-toggle="pill"
                                             href="#custom-tabs-one-coursee" role="tab"
-                                            aria-controls="custom-tabs-one-coursee" aria-selected="false">Course &
-                                            Book</a>
+                                            aria-controls="custom-tabs-one-coursee" aria-selected="false">{{ __('students.form.course_book') }}</a>
                                     </li>
                                 </ul>
                             </div>
@@ -69,7 +65,7 @@
                                                 <div class="row">
                                                     <div class="col-xs-6 col-sm-6 col-md-6">
                                                         <div class="form-group">
-                                                            <strong><i class="fas fa-code"></i> Centre Code:</strong>
+                                                            <strong><i class="fas fa-code"></i> {{ __('students.form.centre_code') }}:</strong>
                                                             <select style="width: 100%;"
                                                                 class="productl select2 select2_single form-control"
                                                                 id="EditCentre" name="centre" multiple="multiple"
@@ -89,10 +85,10 @@
                                                     </div>
                                                     <div class="col-xs-6 col-sm-6 col-md-6">
                                                         <div class="form-group">
-                                                            <strong><i class="fas fa-code"></i> Student No.</strong>
+                                                            <strong><i class="fas fa-code"></i> {{ __('students.form.student_no') }}</strong>
                                                             {!! Form::text('code', null, [
                                                                 'id' => 'EditCode',
-                                                                'placeholder' => 'Code',
+                                                                'placeholder' => __('students.form.code'),
                                                                 'class' => 'form-control',
                                                                 'readonly' => true,
                                                             ]) !!}
@@ -102,8 +98,7 @@
                                                 <div class="row">
                                                     <div class="col-xs-6 col-sm-6 col-md-6">
                                                         <div class="form-group">
-                                                            <strong><i class="fas fa-calendar"></i> Start
-                                                                Date:</strong>
+                                                            <strong><i class="fas fa-calendar"></i> {{ __('students.form.start_date') }}:</strong>
                                                             {!! Form::text('start_date', null, [
                                                                 'id' => 'EditDate',
                                                                 'placeholder' => '',
@@ -114,8 +109,7 @@
                                                     </div>
                                                     <div class="col-xs-6 col-sm-6 col-md-6">
                                                         <div class="form-group">
-                                                            <strong><i class="fas fa-calendar"></i> Birth
-                                                                Date:</strong>
+                                                            <strong><i class="fas fa-calendar"></i> {{ __('students.form.birth_date') }}:</strong>
                                                             {!! Form::text('ebirth_date', null, [
                                                                 'id' => 'EditBirthDate',
                                                                 'placeholder' => '',
@@ -145,17 +139,16 @@
                                                     <div class="col-xs-6 col-sm-6 col-md-6">
                                                         <div class="form-group">
                                                             <strong><i class="fas fa-graduation-cap"></i>
-                                                                Name:</strong>
-                                                            {!! Form::text('name', null, ['id' => 'EditName', 'placeholder' => 'Name', 'class' => 'form-control']) !!}
+                                                                {{ __('students.form.name') }}:</strong>
+                                                            {!! Form::text('name', null, ['id' => 'EditName', 'placeholder' => __('students.form.name'), 'class' => 'form-control']) !!}
                                                         </div>
                                                     </div>
                                                     <div class="col-xs-6 col-sm-6 col-md-6">
                                                         <div class="form-group">
-                                                            <strong><i class="fas fa-graduation-cap"></i> Nick
-                                                                Name:</strong>
+                                                            <strong><i class="fas fa-graduation-cap"></i> {{ __('students.form.nickname') }}:</strong>
                                                             {!! Form::text('nickname', null, [
                                                                 'id' => 'EditNickname',
-                                                                'placeholder' => 'Nick Name',
+                                                                'placeholder' => __('students.form.nickname'),
                                                                 'class' => 'form-control',
                                                             ]) !!}
                                                         </div>
@@ -165,8 +158,8 @@
                                                 <div class="row">
                                                     <div class="col-xs-6 col-sm-6 col-md-6">
                                                         <div class="form-group">
-                                                            <strong><i class="fas fa-school"></i> School:</strong>
-                                                            {!! Form::text('school', null, ['id' => 'EditSchool', 'placeholder' => 'School', 'class' => 'form-control']) !!}
+                                                            <strong><i class="fas fa-school"></i> {{ __('students.form.school') }}:</strong>
+                                                            {!! Form::text('school', null, ['id' => 'EditSchool', 'placeholder' => __('students.form.school'), 'class' => 'form-control']) !!}
                                                         </div>
                                                     </div>
 
@@ -176,18 +169,18 @@
                                                     <div class="col-xs-6 col-sm-6 col-md-6">
                                                         <div class="form-group">
                                                             <strong><i class="fa-solid fa-venus-mars"></i>
-                                                                Gender:</strong>
+                                                                {{ __('students.form.gender') }}:</strong>
                                                             <div class="form-group clearfix">
                                                                 <div class="icheck-success d-inline">
                                                                     <input type="radio" name="egender"
                                                                         value="1" checked id="eradioSuccess1">
-                                                                    <label for="eradioSuccess1">Male
+                                                                    <label for="eradioSuccess1">{{ __('students.form.male') }}
                                                                     </label>
                                                                 </div>
                                                                 <div class="icheck-success d-inline">
                                                                     <input type="radio" name="egender"
                                                                         value="2" id="eradioSuccess2">
-                                                                    <label for="eradioSuccess2">Female
+                                                                    <label for="eradioSuccess2">{{ __('students.form.female') }}
                                                                     </label>
                                                                 </div>
                                                             </div>
@@ -207,7 +200,7 @@
                                                     <div class="col-xs-12 col-sm-12 col-md-12">
                                                         <div class="form-group">
                                                             <strong><i class="fas fa-address-card"></i>
-                                                                Address:</strong>
+                                                                {{ __('students.form.address') }}:</strong>
                                                             {!! Form::textarea('address', null, [
                                                                 'rows' => 4,
                                                                 'id' => 'EditAddress',
@@ -219,20 +212,20 @@
                                                 <div class="row">
                                                     <div class="col-xs-6 col-sm-6 col-md-6">
                                                         <div class="form-group">
-                                                            <strong><i class="fas fa-code"></i> Postcode:</strong>
+                                                            <strong><i class="fas fa-code"></i> {{ __('students.form.postcode') }}:</strong>
                                                             {!! Form::text('postcode', null, [
                                                                 'id' => 'EditPostcode',
-                                                                'placeholder' => 'Postcode',
+                                                                'placeholder' => __('students.form.postcode'),
                                                                 'class' => 'form-control',
                                                             ]) !!}
                                                         </div>
                                                     </div>
                                                     <div class="col-xs-6 col-sm-6 col-md-6">
                                                         <div class="form-group">
-                                                            <strong><i class="fas fa-phone"></i> Telephone:</strong>
+                                                            <strong><i class="fas fa-phone"></i> {{ __('students.form.telephone') }}:</strong>
                                                             {!! Form::text('telephone', null, [
                                                                 'id' => 'EditTelephone',
-                                                                'placeholder' => 'Telephone',
+                                                                'placeholder' => __('students.form.telephone'),
                                                                 'class' => 'form-control',
                                                             ]) !!}
                                                         </div>
@@ -249,17 +242,16 @@
                                                 <div class="row">
                                                     <div class="col-xs-6 col-sm-6 col-md-6">
                                                         <div class="form-group">
-                                                            <strong><i class="fa-solid fa-user-tie"></i> Father
-                                                                Name:</strong>
-                                                            {!! Form::text('fname', null, ['id' => 'EditfName', 'placeholder' => 'Father Name', 'class' => 'form-control']) !!}
+                                                            <strong><i class="fa-solid fa-user-tie"></i> {{ __('students.form.father_name') }}:</strong>
+                                                            {!! Form::text('fname', null, ['id' => 'EditfName', 'placeholder' => __('students.form.father_name'), 'class' => 'form-control']) !!}
                                                         </div>
                                                     </div>
                                                     <div class="col-xs-6 col-sm-6 col-md-6">
                                                         <div class="form-group">
-                                                            <strong><i class="fas fa-at"></i> Email:</strong>
+                                                            <strong><i class="fas fa-at"></i> {{ __('common.fields.email') }}:</strong>
                                                             {!! Form::email('femail', null, [
                                                                 'id' => 'EditfEmail',
-                                                                'placeholder' => 'Father Email',
+                                                                'placeholder' => __('students.form.father_email'),
                                                                 'class' => 'form-control',
                                                             ]) !!}
                                                         </div>
@@ -269,10 +261,10 @@
                                                 <div class="row">
                                                     <div class="col-xs-6 col-sm-6 col-md-6">
                                                         <div class="form-group">
-                                                            <strong><i class="fas fa-phone"></i> Mobile:</strong>
+                                                            <strong><i class="fas fa-phone"></i> {{ __('students.form.father_mobile') }}:</strong>
                                                             {!! Form::text('ftelephone', null, [
                                                                 'id' => 'EditfTelephone',
-                                                                'placeholder' => 'Father Telephone',
+                                                                'placeholder' => __('students.form.father_mobile'),
                                                                 'class' => 'form-control',
                                                             ]) !!}
                                                         </div>
@@ -285,17 +277,16 @@
                                                 <div class="row">
                                                     <div class="col-xs-6 col-sm-6 col-md-6">
                                                         <div class="form-group">
-                                                            <strong><i class="fa-solid fa-user-tie"></i> Mother
-                                                                Name:</strong>
-                                                            {!! Form::text('mname', null, ['id' => 'EditmName', 'placeholder' => 'Mother Name', 'class' => 'form-control']) !!}
+                                                            <strong><i class="fa-solid fa-user-tie"></i> {{ __('students.form.mother_name') }}:</strong>
+                                                            {!! Form::text('mname', null, ['id' => 'EditmName', 'placeholder' => __('students.form.mother_name'), 'class' => 'form-control']) !!}
                                                         </div>
                                                     </div>
                                                     <div class="col-xs-6 col-sm-6 col-md-6">
                                                         <div class="form-group">
-                                                            <strong><i class="fas fa-at"></i> Email:</strong>
+                                                            <strong><i class="fas fa-at"></i> {{ __('common.fields.email') }}:</strong>
                                                             {!! Form::email('memail', null, [
                                                                 'id' => 'EditmEmail',
-                                                                'placeholder' => 'Mother Email',
+                                                                'placeholder' => __('students.form.mother_email'),
                                                                 'class' => 'form-control',
                                                             ]) !!}
                                                         </div>
@@ -305,10 +296,10 @@
                                                 <div class="row">
                                                     <div class="col-xs-6 col-sm-6 col-md-6">
                                                         <div class="form-group">
-                                                            <strong><i class="fas fa-phone"></i> Mobile:</strong>
+                                                            <strong><i class="fas fa-phone"></i> {{ __('students.form.mother_mobile') }}:</strong>
                                                             {!! Form::text('mtelephone', null, [
                                                                 'id' => 'EditmTelephone',
-                                                                'placeholder' => 'Mother Telephone',
+                                                                'placeholder' => __('students.form.mother_mobile'),
                                                                 'class' => 'form-control',
                                                             ]) !!}
                                                         </div>
@@ -325,18 +316,18 @@
                                                     <div class="col-xs-2 col-sm-2 col-md-2">
                                                         <div class="form-group">
                                                             <strong><i class="fas fa-handshake-slash"></i>
-                                                                Discontinued:</strong>
+                                                                {{ __('students.form.discontinued') }}:</strong>
                                                             <div class="custom-control custom-switch">
                                                                 {{ Form::checkbox('ediscontinued', '1', false, ['id' => 'ecustomCheckbox1', 'class' => 'custom-control-input name']) }}
                                                                 <label for="ecustomCheckbox1"
                                                                     class="custom-control-label">
-                                                                    Discontinued</label>
+                                                                    {{ __('students.form.discontinued') }}</label>
                                                             </div>
                                                         </div>
                                                     </div>
                                                     <div class="col-xs-4 col-sm-4 col-md-4">
                                                         <div class="form-group">
-                                                            <strong><i class="fas fa-calendar"></i> Date</strong>
+                                                            <strong><i class="fas fa-calendar"></i> {{ __('students.form.date') }}</strong>
                                                             {!! Form::text('ddate', null, [
                                                                 'id' => 'EditDDate',
                                                                 'placeholder' => '',
@@ -347,7 +338,7 @@
                                                     </div>
                                                     <div class="col-xs-6 col-sm-6 col-md-6">
                                                         <div class="form-group">
-                                                            <strong><i class="fas fa-list"></i> Reason</strong>
+                                                            <strong><i class="fas fa-list"></i> {{ __('students.form.reason') }}</strong>
                                                             {!! Form::text('reason', null, [
                                                                 'id' => 'EditReason',
                                                                 'placeholder' => '',
@@ -362,7 +353,7 @@
                                                     </div>
                                                     <div class="col-xs-6 col-sm-6 col-md-6 float-right">
                                                         <div class="form-group">
-                                                            <strong><i class="fas fa-list"></i> Select Reason</strong>
+                                                            <strong><i class="fas fa-list"></i> {{ __('students.form.select_reason') }}</strong>
                                                             <select name="ddl_discontinueReason"
                                                                 id="ddl_discontinueReason" class="form-control">
                                                                 <option selected="selected" value="">--Select
@@ -403,8 +394,7 @@
 
                                                     <div class="col-xs-6 col-sm-6 col-md-6">
                                                         <div class="form-group">
-                                                            <strong><i class="fas fa-layer-group"></i> Start
-                                                                Level:</strong>
+                                                            <strong><i class="fas fa-layer-group"></i> {{ __('students.form.start_level') }}:</strong>
                                                             <select style="width: 100%;"
                                                                 class="select2 select2_single form-control elevels"
                                                                 id="EditLevel" name="level" multiple="multiple">
@@ -419,7 +409,7 @@
                                                     </div>
                                                     <div class="col-xs-3 col-sm-3 col-md-3">
                                                         <div class="form-group">
-                                                            <strong><i class="fas fa-book-open"></i> Term:</strong>
+                                                            <strong><i class="fas fa-book-open"></i> {{ __('common.fields.term') }}:</strong>
                                                             <select style="width: 100%;"
                                                                 class="select2 select2_single form-control eterms"
                                                                 id="EditTerm" name="term" multiple="multiple"
@@ -436,7 +426,7 @@
                                                     <div class="col-xs-3 col-sm-3 col-md-3">
                                                         <div class="form-group">
                                                             <strong><i class="fas fa-book-medical"></i>
-                                                                BookUse:</strong>
+                                                                {{ __('students.form.book_use') }}:</strong>
                                                             <select style="width: 100%;"
                                                                 class="select2 select2_single form-control ebooks"
                                                                 id="EditBook" name="book" multiple="multiple">
@@ -458,8 +448,7 @@
 
                                                     <div class="col-xs-6 col-sm-6 col-md-6">
                                                         <div class="form-group">
-                                                            <strong><i class="fas fa-layer-group"></i> To
-                                                                Level:</strong>
+                                                            <strong><i class="fas fa-layer-group"></i> {{ __('students.form.to_level') }}:</strong>
                                                             <select style="width: 100%;"
                                                                 class="select2 select2_single form-control elevels2"
                                                                 id="EditLevel2" name="level2" multiple="multiple">
@@ -474,7 +463,7 @@
                                                     </div>
                                                     <div class="col-xs-3 col-sm-3 col-md-3">
                                                         <div class="form-group">
-                                                            <strong><i class="fas fa-book-open"></i> Term:</strong>
+                                                            <strong><i class="fas fa-book-open"></i> {{ __('common.fields.term') }}:</strong>
                                                             <select style="width: 100%;"
                                                                 class="select2 select2_single form-control eterms2"
                                                                 id="EditTerm2" name="term2" multiple="multiple"
@@ -491,7 +480,7 @@
                                                     <div class="col-xs-3 col-sm-3 col-md-3">
                                                         <div class="form-group">
                                                             <strong><i class="fas fa-book-medical"></i>
-                                                                BookUse:</strong>
+                                                                {{ __('students.form.book_use') }}:</strong>
                                                             <select style="width: 100%;"
                                                                 class="select2 select2_single form-control ebooks2"
                                                                 id="EditBook2" name="book2" multiple="multiple">
@@ -505,7 +494,7 @@
                                                         </div>
                                                     </div>
                                                     <div class="col-xs-3 col-sm-3 col-md-3">
-                                                        <strong><i class="fas fa-book-open"></i>Free Class:</strong>
+                                                        <strong><i class="fas fa-book-open"></i>{{ __('students.form.free_class') }}:</strong>
                                                         <input type="number" min="0" class="form-control EditFreeCourse" id="EditFreeCourse" name="free_course" value="0">
 
                                                     </div>
@@ -522,9 +511,9 @@
                 <!-- Modal footer -->
                 <div class="modal-footer">
                     <button type="button" class="btn btn-success" id="SubmitEditForm"><i
-                            class="fas fa-download"></i> Save</button>
+                            class="fas fa-download"></i> {{ __('common.actions.save') }}</button>
                     <button type="button" class="btn btn-danger modelClose" data-bs-dismiss="modal"><i
-                            class="fas fa-door-closed"></i> Close</button>
+                            class="fas fa-door-closed"></i> {{ __('common.actions.close') }}</button>
                 </div>
             </div>
         </form>

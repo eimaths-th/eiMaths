@@ -48,9 +48,11 @@
                 <div class="col-12">
                     <div class="card card-primary">
                         <div class="card-header">
-                            <h3 class="card-title"><i class="fas fa-list-ol"></i> Parameter Setting</h3>
+                            <h3 class="card-title"><i class="fas fa-list-ol"></i> {{ __('parameter-settings.navigation.title') }}</h3>
                             <div class="card-tools">
-                                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                                <button type="button" class="btn btn-tool" data-card-widget="collapse"
+                                    title="{{ __('parameter-settings.actions.collapse') }}"
+                                    aria-label="{{ __('parameter-settings.actions.collapse') }}">
                                     <i class="fas fa-minus"></i>
                                 </button>
                                 {{-- <button type="button" class="btn btn-tool" data-card-widget="remove" title="Remove">
@@ -78,9 +80,9 @@
                                     <thead>
                                         <tr>
                                             <th width="50"><input type="checkbox" id="check-all" class="flat"></th>
-                                            <th>Name </th>
-                                            <th>Price</th>
-                                            <th width="80px"></th>
+                                            <th>{{ __('parameter-settings.table.name') }}</th>
+                                            <th>{{ __('parameter-settings.table.price') }}</th>
+                                            <th width="80px">{{ __('parameter-settings.table.action') }}</th>
                                         </tr>
                                     </thead>
                                     <tbody>

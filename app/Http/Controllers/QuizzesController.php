@@ -39,12 +39,12 @@ class QuizzesController extends Controller
                 })
                 ->editColumn('public', function ($row) {
                     $class = $row->public ? 'success' : 'danger';
-                    $text = $row->public ? 'Yes' : 'No';
+                    $text = $row->public ? __('quiz-management.common.yes') : __('quiz-management.common.no');
                     return '<span class="badge border border-' . $class . ' text-' . $class . ' px-2 pt-5px pb-5px rounded fs-12px d-inline-flex align-items-center"><i class="fa fa-circle fs-9px fa-fw me-5px"></i>&nbsp' . $text . '</span>';
                 })
                 ->addColumn('is_free', function ($row) {
                     $class = $row->is_free ? 'warning' : 'secondary';
-                    $text = $row->is_free ? 'Free' : '-';
+                    $text = $row->is_free ? __('quiz-management.common.free') : '-';
                     return '<span class="badge border border-' . $class . ' text-' . $class . ' px-2 pt-5px pb-5px rounded fs-12px d-inline-flex align-items-center"><i class="fa fa-circle fs-9px fa-fw me-5px"></i>&nbsp' . $text . '</span>';
                 })
                 ->editColumn('questions_count', function ($row) {
@@ -52,9 +52,9 @@ class QuizzesController extends Controller
                 })
                 ->addColumn('action', function ($row) {
                     $html = '';
-                    $html .= '<a href="' . route('quizzes.show', $row->id) . '" class="btn btn-sm btn-primary" target="_blank"><i class="fa fa-eye"></i> View</a>';
-                    $html .= '<a type="button" class="btn btn-sm btn-warning" id="getEditData" style="margin-left: 5px;" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit</a>';
-                    $html .= '<button type="button" class="btn btn-sm btn-danger delete-button" style="margin-left: 5px;" data-id="' . $row->id . '"><i class="fa fa-trash"></i> Delete</button>';
+                    $html .= '<a href="' . route('quizzes.show', $row->id) . '" class="btn btn-sm btn-primary" target="_blank"><i class="fa fa-eye"></i> ' . e(__('quiz-management.actions.view')) . '</a>';
+                    $html .= '<a type="button" class="btn btn-sm btn-warning" id="getEditData" style="margin-left: 5px;" data-id="' . $row->id . '"><i class="fa fa-edit"></i> ' . e(__('quiz-management.actions.edit')) . '</a>';
+                    $html .= '<button type="button" class="btn btn-sm btn-danger delete-button" style="margin-left: 5px;" data-id="' . $row->id . '"><i class="fa fa-trash"></i> ' . e(__('quiz-management.actions.delete')) . '</button>';
                     return $html;
                 })
                 ->filterColumn('questions_count', function ($query, $keyword) {
@@ -160,7 +160,7 @@ class QuizzesController extends Controller
                 ->update(['position' => $pos++]);
         }
 
-        return response()->json(['success' => 'Quiz created successfully!']);
+        return response()->json(['success' => __('quiz-management.messages.quiz_created')]);
     }
 
     /**
@@ -314,7 +314,7 @@ class QuizzesController extends Controller
             }
         }
 
-        return response()->json(['success' => 'Quiz updated successfully']);
+        return response()->json(['success' => __('quiz-management.messages.quiz_updated')]);
     }
 
 
@@ -332,6 +332,6 @@ class QuizzesController extends Controller
 
         $quiz->delete();
 
-        return response()->json(['success' => true, 'message' => 'Delete Quiz Success']);
+        return response()->json(['success' => true, 'message' => __('quiz-management.messages.quiz_deleted')]);
     }
 }

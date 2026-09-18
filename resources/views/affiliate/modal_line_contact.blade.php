@@ -3,7 +3,7 @@
         'RP' => [
             'aliases' => 'ratchaphruek|ratchapruek|ราชพฤกษ์',
             'name' => 'The Crystal SB Ratchapruek',
-            'label' => 'สาขาราชพฤกษ์',
+            'label' => __('course-website.success.branches.rp_label'),
             'address' => 'ชั้น 3 โซน Education เลขที่ 555/9 ตำบลบางขนุน อำเภอบางกรวย จังหวัดนนทบุรี 11130',
             'line_label' => '@eiMaths',
             'line_url' => 'https://lin.ee/K244eaZ',
@@ -15,7 +15,7 @@
         'BK' => [
             'aliases' => 'bangkae|bang kae|บางแค',
             'name' => 'eiMaths Seacon Bangkae',
-            'label' => 'สาขาซีคอนบางแค',
+            'label' => __('course-website.success.branches.bk_label'),
             'address' => 'ชั้น 4 โซน HarborLand ศูนย์การค้าซีคอนบางแค 607 ถนนเพชรเกษม แขวงบางหว้า เขตภาษีเจริญ กรุงเทพมหานคร 10160',
             'line_label' => '@eiMathsBangkae',
             'line_url' => 'https://lin.ee/SFpwGwU',
@@ -465,12 +465,12 @@
                         <i data-lucide="check"></i>
                     </span>
                     <div>
-                        <p class="course-success-modal__eyebrow">Booking received</p>
-                        <h3 class="modal-title" id="courseSuccessModalTitle">ส่งคำขอจองคอร์สเรียบร้อย</h3>
-                        <p class="course-success-modal__subtitle">เราได้รับข้อมูลของคุณแล้ว</p>
+                        <p class="course-success-modal__eyebrow">{{ __('course-website.success.eyebrow') }}</p>
+                        <h3 class="modal-title" id="courseSuccessModalTitle">{{ __('course-website.success.title') }}</h3>
+                        <p class="course-success-modal__subtitle">{{ __('course-website.success.subtitle') }}</p>
                     </div>
                 </div>
-                <button type="button" class="course-success-modal__close" data-bs-dismiss="modal" aria-label="ปิดหน้าต่าง">
+                <button type="button" class="course-success-modal__close" data-bs-dismiss="modal" aria-label="{{ __('course-website.success.close') }}">
                     <i data-lucide="x" aria-hidden="true"></i>
                 </button>
             </div>
@@ -479,14 +479,14 @@
                 <div class="course-success-modal__notice">
                     <i data-lucide="calendar-check" aria-hidden="true"></i>
                     <div>
-                        <strong>ขั้นตอนต่อไป</strong>
-                        <span>ติดต่อสาขาที่เลือกเพื่อยืนยันวัน เวลาเรียน และรายละเอียดการชำระเงิน</span>
+                        <strong>{{ __('course-website.success.next_step_title') }}</strong>
+                        <span>{{ __('course-website.success.next_step_message') }}</span>
                     </div>
                 </div>
 
                 <div class="course-success-modal__selection">
-                    <span>สาขาที่เลือกนัดหมาย</span>
-                    <strong data-course-success-branch-name>กำลังตรวจสอบข้อมูลสาขา</strong>
+                    <span>{{ __('course-website.success.selected_branch') }}</span>
+                    <strong data-course-success-branch-name>{{ __('course-website.success.checking_branch') }}</strong>
                 </div>
 
                 @foreach ($affiliate_branch_contacts as $branch_code => $contact)
@@ -513,13 +513,13 @@
                             <span>{{ $contact['address'] }}</span>
                         </p>
 
-                        <div class="course-success-branch__contacts" aria-label="ข้อมูลติดต่อสาขา">
+                        <div class="course-success-branch__contacts" aria-label="{{ __('course-website.success.contact_details') }}">
                             <div class="course-success-branch__contact">
                                 <span>LINE</span>
                                 <strong>{{ $contact['line_label'] }}</strong>
                             </div>
                             <div class="course-success-branch__contact">
-                                <span>โทรศัพท์</span>
+                                <span>{{ __('course-website.success.phone') }}</span>
                                 <strong>{{ $contact['phone_label'] }}</strong>
                             </div>
                             <div class="course-success-branch__contact">
@@ -531,11 +531,11 @@
                         <div class="course-success-branch__actions">
                             <a class="course-success-branch__action course-success-branch__action--primary" href="{{ $contact['line_url'] }}" target="_blank" rel="noopener">
                                 <i data-lucide="message-circle" aria-hidden="true"></i>
-                                <span>แชตผ่าน LINE</span>
+                                <span>{{ __('course-website.success.chat_line') }}</span>
                             </a>
                             <a class="course-success-branch__action" href="{{ $contact['phone_url'] }}">
                                 <i data-lucide="phone" aria-hidden="true"></i>
-                                <span>โทรหาสาขา</span>
+                                <span>{{ __('course-website.success.call_branch') }}</span>
                             </a>
                             <a class="course-success-branch__action" href="{{ $contact['facebook_url'] }}" target="_blank" rel="noopener">
                                 <i data-lucide="external-link" aria-hidden="true"></i>
@@ -546,18 +546,18 @@
                 @endforeach
 
                 <div class="course-success-modal__empty" data-course-success-branch-empty hidden>
-                    เจ้าหน้าที่จากสาขาที่คุณเลือกจะติดต่อกลับเพื่อยืนยันรายละเอียด หากต้องการความช่วยเหลือเพิ่มเติม กรุณารอการติดต่อจากสาขา
+                    {{ __('course-website.success.empty_message') }}
                 </div>
             </div>
 
             <div class="modal-footer">
                 <p class="course-success-modal__follow-up">
                     <i data-lucide="clock" aria-hidden="true"></i>
-                    <span>เจ้าหน้าที่จะตรวจสอบคำขอและติดต่อกลับตามข้อมูลที่ลงทะเบียน</span>
+                    <span>{{ __('course-website.success.follow_up') }}</span>
                 </p>
                 <button type="button" class="course-success-modal__done" data-bs-dismiss="modal">
                     <i data-lucide="x" aria-hidden="true"></i>
-                    <span>ปิดหน้าต่าง</span>
+                    <span>{{ __('course-website.success.close') }}</span>
                 </button>
             </div>
         </div>
@@ -611,7 +611,7 @@
             });
 
             emptyState.hidden = Boolean(selectedCard);
-            branchName.textContent = branch.name || selectedCard?.dataset.branchDisplayName || 'สาขาที่เลือก';
+            branchName.textContent = branch.name || selectedCard?.dataset.branchDisplayName || @json(__('course-website.success.selected_branch'));
             renderLucideIcons();
         };
 

@@ -3,12 +3,12 @@
 @section('content')
     <main class="credit-note-print-content" aria-labelledby="credit-note-print-title">
         @include('credit-notes.documents.credit-note', ['credit_note' => $credit_note])
-        <div class="credit-note-print-actions" aria-label="Print actions">
+        <div class="credit-note-print-actions" aria-label="{{ __('credit-note.actions.print') }}">
             <button class="credit-note-print-action credit-note-print-action-primary" type="button" onclick="window.print()">
-                <span aria-hidden="true">&#128438;</span> Print
+                <span aria-hidden="true">&#128438;</span> {{ __('credit-note.actions.print') }}
             </button>
             <a class="credit-note-print-action credit-note-print-action-danger" href="{{ route('credit-notes.index') }}">
-                <span aria-hidden="true">&#10005;</span> Close
+                <span aria-hidden="true">&#10005;</span> {{ __('credit-note.actions.close') }}
             </a>
         </div>
     </main>

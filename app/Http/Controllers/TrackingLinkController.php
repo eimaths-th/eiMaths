@@ -64,7 +64,7 @@ class TrackingLinkController extends Controller
 
         return redirect()
             ->route('tracking-links.index')
-            ->with('success', 'Tracking link created successfully.')
+            ->with('success', __('crm.tracking_links.messages.created'))
             ->with('generated_url', $trackingLink->generated_url)
             ->with('short_url', $trackingLink->short_url);
     }
@@ -115,7 +115,7 @@ class TrackingLinkController extends Controller
 
         return redirect()
             ->route('tracking-links.index')
-            ->with('success', 'Tracking link deleted successfully.');
+            ->with('success', __('crm.tracking_links.messages.deleted'));
     }
 
     public function report(Request $request)

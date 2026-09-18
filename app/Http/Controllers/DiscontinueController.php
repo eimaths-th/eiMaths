@@ -74,14 +74,14 @@ class DiscontinueController extends Controller
                 })
                 ->addColumn('action', function ($row) {
                     if (Gate::allows('student-edit')) {
-                        $html = '<button type="button" class="btn btn-sm btn-info btn-show" id="getCourseData" data-id="' . $row->id . '"><i class="fa fa-search"></i> View Course</button> ';
+                        $html = '<button type="button" class="btn btn-sm btn-info btn-show" id="getCourseData" data-id="' . $row->id . '"><i class="fa fa-search"></i> ' . e(__('students.actions.view_course')) . '</button> ';
                     } else {
-                        $html = '<button type="button" class="btn btn-sm btn-info disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-search"></i>  View Course</button> ';
+                        $html = '<button type="button" class="btn btn-sm btn-info disabled" data-toggle="tooltip" data-placement="bottom" title="' . e(__('common.feedback.permission_denied')) . '"><i class="fa fa-search"></i> ' . e(__('students.actions.view_course')) . '</button> ';
                     }
                     if (Gate::allows('student-edit')) {
-                        $html .= '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-rowid="' . $row->id . '"><i class="fa-solid fa-retweet"></i> Restart</button> ';
+                        $html .= '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-rowid="' . $row->id . '"><i class="fa-solid fa-retweet"></i> ' . e(__('students.actions.restart')) . '</button> ';
                     } else {
-                        $html .= '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa-solid fa-retweet"></i> Restart</button> ';
+                        $html .= '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="' . e(__('common.feedback.permission_denied')) . '"><i class="fa-solid fa-retweet"></i> ' . e(__('students.actions.restart')) . '</button> ';
                     }
                     return $html;
                 })->rawColumns(['checkbox', 'action', 'more'])->toJson();
@@ -105,7 +105,7 @@ class DiscontinueController extends Controller
 
         Contact::find($id)->update($newData);
 
-        return ['success' => true, 'message' => 'Restart student successfully'];
+        return ['success' => true, 'message' => __('students.discontinue.restarted')];
     }
 
     public function restart_all(Request $request)
@@ -124,6 +124,6 @@ class DiscontinueController extends Controller
             Contact::find($arr_del[$xx])->update($newData);
         }
 
-        return redirect('/contacts')->with('success', 'Restart student successfully');
+        return redirect('/contacts')->with('success', __('students.discontinue.restarted'));
     }
 }

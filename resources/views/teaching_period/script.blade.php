@@ -5,11 +5,11 @@
             var len = $('input[name="table_records[]"]:checked').length;
             if (len > 0) {
 
-                if (confirm("Confirm Delete Data?")) {
+                if (confirm(teaching_period_ui.messages.confirm_delete)) {
                     $('form#delete_all').submit();
                 }
             } else {
-                alert("please select record");
+                alert(teaching_period_ui.messages.select_record);
             }
 
         });
@@ -22,7 +22,7 @@
             maximumSelectionLength: 1,
             allowClear: false,
             //theme: 'bootstrap4'
-            placeholder: 'Please Select'
+            placeholder: teaching_period_ui.messages.select_option
         });
 
         $(".select2_single").on("select2:unselect", function(e) {
@@ -34,7 +34,7 @@
             maximumSelectionLength: 1,
             allowClear: false,
             //theme: 'bootstrap4'
-            placeholder: 'Please Select'
+            placeholder: teaching_period_ui.messages.select_option
         });
 
 
@@ -43,7 +43,7 @@
             //placeholder: "With Max Selection limit 4",
             allowClear: false,
             //theme: 'bootstrap4'
-            placeholder: 'Please Select'
+            placeholder: teaching_period_ui.messages.select_option
         });
 
 
@@ -112,20 +112,20 @@
             language: {
                 loadingRecords: '&nbsp;',
                 processing: `<div class="spinner-border text-primary"></div>`,
-                "sProcessing": "Processcing...",
-                "sLengthMenu": "Display_MENU_ Row",
-                "sZeroRecords": "No Data Fount",
-                "sInfo": "Display _START_ To _END_ From _TOTAL_ Records",
-                "sInfoEmpty": "Display 0 To 0 From 0 Records",
-                "sInfoFiltered": "(Filters _MAX_ Row)",
+                "sProcessing": teaching_period_ui.common.processing,
+                "sLengthMenu": teaching_period_ui.common.length_menu,
+                "sZeroRecords": teaching_period_ui.common.zero_records,
+                "sInfo": teaching_period_ui.common.info,
+                "sInfoEmpty": teaching_period_ui.common.info_empty,
+                "sInfoFiltered": teaching_period_ui.common.info_filtered,
                 "sInfoPostFix": "",
-                "sSearch": "Search:",
+                "sSearch": teaching_period_ui.common.search,
                 "sUrl": "",
                 "oPaginate": {
-                    "sFirst": "First",
-                    "sPrevious": "Previous",
-                    "sNext": "Next",
-                    "sLast": "Last"
+                    "sFirst": teaching_period_ui.common.first,
+                    "sPrevious": teaching_period_ui.common.previous,
+                    "sNext": teaching_period_ui.common.next,
+                    "sLast": teaching_period_ui.common.last
                 }
             },
             aaSorting: [
@@ -347,7 +347,7 @@
         });
 
         $(document).on('click', '.btn-delete', function() {
-            if (!confirm("Confirm Delete Data ?")) return;
+            if (!confirm(teaching_period_ui.messages.confirm_delete)) return;
 
             var rowid = $(this).data('rowid')
             var el = $(this)
@@ -382,7 +382,7 @@
             }); //end ajax
         })
         $(document).on('click', '.btn-delete-affiliate-user', function() {
-            if (!confirm("Confirm Delete Data ?")) return;
+            if (!confirm(teaching_period_ui.messages.confirm_delete)) return;
 
             var rowid = $(this).data('rowid')
             var el = $(this)
@@ -437,7 +437,7 @@
 
             // Check if both department and day are selected
             if (!departmentId || !day) {
-                alert('Please select both department and day.');
+                alert(teaching_period_ui.messages.select_department_day);
                 return;
             }
 
@@ -453,7 +453,7 @@
                         const noDataRow = document.createElement('tr');
                         const noDataCell = document.createElement('td');
                         noDataCell.colSpan = 4; // Span across all columns
-                        noDataCell.textContent = 'No teaching periods found for this selection.';
+                        noDataCell.textContent = teaching_period_ui.messages.no_periods;
                         noDataRow.appendChild(noDataCell);
                         teachingPeriodTableBody.appendChild(noDataRow);
                     } else {
@@ -463,7 +463,7 @@
                 })
                 .catch(error => {
                     console.error('Error fetching data:', error);
-                    alert('An error occurred while fetching the data.');
+                    alert(teaching_period_ui.messages.fetch_error);
                 });
         });
     });

@@ -147,7 +147,7 @@ class QuestionController extends Controller
                             }
                         }
 
-                        return 'N/A'; // Handle case where no fraction data exists
+                        return __('quiz-management.common.not_available'); // Handle case where no fraction data exists
                     } else {
 
                         return $row->options()->count();
@@ -162,8 +162,8 @@ class QuestionController extends Controller
                 })
                 ->addColumn('action', function ($row) {
                     // $html = '<a href="' . route('questions.edit', $row->id) . '" class="btn btn-sm btn-warning" id="getEditData" data-id="' . $row->id . '"><<i class="fa fa-edit"></i> Edit</a>';
-                    $html = '<button type="button" class="btn btn-sm btn-warning" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit</a>';
-                    $html .= '<button type="button" class="btn btn-sm btn-danger delete-button" style="margin-left: 5px;" data-id="' . $row->id . '"><i class="fa fa-trash"></i> Delete</button>';
+                    $html = '<button type="button" class="btn btn-sm btn-warning" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> ' . e(__('quiz-management.actions.edit')) . '</button>';
+                    $html .= '<button type="button" class="btn btn-sm btn-danger delete-button" style="margin-left: 5px;" data-id="' . $row->id . '"><i class="fa fa-trash"></i> ' . e(__('quiz-management.actions.delete')) . '</button>';
                     return $html;
                 })
                 ->rawColumns(['action', 'text'])
@@ -201,18 +201,18 @@ class QuestionController extends Controller
             'answer_explanation_video_url' => $this->googleDriveVideoRules(),
             'more_info_link' => 'nullable|url',
         ], [
-            'level.required' => 'Please add Question grade',
-            'term.required' => 'Please add Question term',
-            'section.required' => 'Please add Question level',
-            'type.required' => 'Please select the type of answer',
-            'type.in' => 'The selected type is invalid',
-            'img_name.image' => 'The file must be an image',
-            'img_name.mimes' => 'The image must be a file of type: jpg, png, jpeg',
-            'img_name.max' => 'The image may not be greater than 2MB',
+            'level.required' => __('quiz-management.validation.question_grade_required'),
+            'term.required' => __('quiz-management.validation.question_term_required'),
+            'section.required' => __('quiz-management.validation.question_level_required'),
+            'type.required' => __('quiz-management.validation.type_required'),
+            'type.in' => __('quiz-management.validation.type_invalid'),
+            'img_name.image' => __('quiz-management.validation.image_required'),
+            'img_name.mimes' => __('quiz-management.validation.image_mime'),
+            'img_name.max' => __('quiz-management.validation.image_max_2mb'),
         ])->after(function ($validator) use ($request) {
             if (empty($request->text) && !$request->hasFile('img_name')) {
-                $validator->errors()->add('text', 'Either question text or an image is required.');
-                $validator->errors()->add('img_name', 'Either an image or question text is required.');
+                $validator->errors()->add('text', __('quiz-management.validation.text_or_image_required'));
+                $validator->errors()->add('img_name', __('quiz-management.validation.image_or_text_required'));
             }
         });
 
@@ -225,7 +225,7 @@ class QuestionController extends Controller
                 $request->validate([
                     'written_answer' => 'required',
                 ], [
-                    'written_answer.required' => 'Please provide the written answer',
+                    'written_answer.required' => __('quiz-management.validation.written_answer_required'),
                 ]);
                 break;
 
@@ -235,15 +235,15 @@ class QuestionController extends Controller
                     'options.*.text' => 'required|string',
                     'options.*.correct' => 'required|in:0,1',
                 ], [
-                    'options.required' => 'Please add Options',
-                    'options.*.text.required' => 'Please add Options Text',
-                    'options.*.correct.required' => 'Please specify if the option is correct',
-                    'options.*.correct.in' => 'The selected option correctness is invalid',
+                    'options.required' => __('quiz-management.validation.options_required'),
+                    'options.*.text.required' => __('quiz-management.validation.option_text_required'),
+                    'options.*.correct.required' => __('quiz-management.validation.option_correct_required'),
+                    'options.*.correct.in' => __('quiz-management.validation.option_correct_invalid'),
                 ]);
 
                 $correctCount = collect($request->options)->where('correct', 1)->count();
                 if ($correctCount === 0) {
-                    return response()->json(['errors' => ['options' => ['Please add at least one correct option']]], 422);
+                    return response()->json(['errors' => ['options' => [__('quiz-management.validation.correct_option_required')]]], 422);
                 }
                 break;
 
@@ -253,24 +253,24 @@ class QuestionController extends Controller
                     'imgOptions.*.file' => 'required|file|mimes:jpg,png,jpeg|max:5120',
                     'imgOptions.*.correct' => 'required|in:0,1',
                 ], [
-                    'imgOptions.required' => 'Please add Image Options',
-                    'imgOptions.*.file.required' => 'Please upload an image file',
-                    'imgOptions.*.file.mimes' => 'Only jpg, png, and jpeg files are allowed',
-                    'imgOptions.*.file.max' => 'Each image must not exceed 5 MB in size',
-                    'imgOptions.*.correct.required' => 'Please specify if the image option is correct',
+                    'imgOptions.required' => __('quiz-management.validation.image_options_required'),
+                    'imgOptions.*.file.required' => __('quiz-management.validation.image_file_required'),
+                    'imgOptions.*.file.mimes' => __('quiz-management.validation.image_file_mime'),
+                    'imgOptions.*.file.max' => __('quiz-management.validation.image_file_max_5mb'),
+                    'imgOptions.*.correct.required' => __('quiz-management.validation.image_option_correct_required'),
                 ]);
 
                 $correctCount = collect($request->imgOptions)->where('correct', 1)->count();
                 if ($correctCount === 0) {
-                    return response()->json(['errors' => ['imgOptions' => ['Please add at least one correct image option']]], 422);
+                    return response()->json(['errors' => ['imgOptions' => [__('quiz-management.validation.correct_option_required')]]], 422);
                 }
                 break;
 
             case 'fraction':
                 $rules = ['fraction_type' => 'required|in:written,options'];
                 $messages = [
-                    'fraction_type.required' => 'Please select a fraction type.',
-                    'fraction_type.in' => 'Invalid fraction type.',
+                    'fraction_type.required' => __('quiz-management.validation.fraction_type_required'),
+                    'fraction_type.in' => __('quiz-management.validation.fraction_type_invalid'),
                 ];
 
                 if ($request->fraction_type === 'written') {
@@ -280,13 +280,13 @@ class QuestionController extends Controller
                         'answer_type' => 'required|in:frac,mixed',
                     ];
                     $messages += [
-                        'numerator.required' => 'Numerator is required.',
-                        'numerator.integer' => 'Numerator must be an integer.',
-                        'denominator.required' => 'Denominator is required.',
-                        'denominator.integer' => 'Denominator must be an integer.',
-                        'denominator.min' => 'Denominator must be at least 1.',
-                        'answer_type.required' => 'Answer type is required.',
-                        'answer_type.in' => 'Answer type must be "frac" or "mixed".',
+                        'numerator.required' => __('quiz-management.validation.numerator_required'),
+                        'numerator.integer' => __('quiz-management.validation.numerator_integer'),
+                        'denominator.required' => __('quiz-management.validation.denominator_required'),
+                        'denominator.integer' => __('quiz-management.validation.denominator_integer'),
+                        'denominator.min' => __('quiz-management.validation.denominator_min'),
+                        'answer_type.required' => __('quiz-management.validation.answer_type_required'),
+                        'answer_type.in' => __('quiz-management.validation.answer_type_invalid'),
                     ];
                 } else {
                     $rules += [
@@ -297,12 +297,12 @@ class QuestionController extends Controller
                         'options.*.correct' => 'required|boolean',
                     ];
                     $messages += [
-                        'options.required' => 'Please provide options.',
-                        'options.*.numerator.required' => 'Numerator is required for each option.',
-                        'options.*.denominator.required' => 'Denominator is required for each option.',
-                        'options.*.denominator.min' => 'Denominator must be at least 1.',
-                        'options.*.answer_type.required' => 'Answer type is required for each option.',
-                        'options.*.correct.required' => 'Each option must specify if it is correct.',
+                        'options.required' => __('quiz-management.validation.fraction_options_required'),
+                        'options.*.numerator.required' => __('quiz-management.validation.fraction_option_numerator_required'),
+                        'options.*.denominator.required' => __('quiz-management.validation.fraction_option_denominator_required'),
+                        'options.*.denominator.min' => __('quiz-management.validation.denominator_min'),
+                        'options.*.answer_type.required' => __('quiz-management.validation.fraction_option_answer_type_required'),
+                        'options.*.correct.required' => __('quiz-management.validation.option_correct_required'),
                     ];
                 }
 
@@ -312,7 +312,7 @@ class QuestionController extends Controller
                     $correctCount = collect($request->options)->where('correct', 1)->count();
                     if ($correctCount === 0) {
                         return response()->json([
-                            'errors' => ['options' => ['Please provide at least one correct fraction option.']]
+                            'errors' => ['options' => [__('quiz-management.validation.correct_fraction_option_required')]]
                         ], 422);
                     }
                 }
@@ -409,7 +409,7 @@ class QuestionController extends Controller
             }
         }
 
-        return response()->json(['success' => 'Question created successfully!']);
+        return response()->json(['success' => __('quiz-management.messages.question_added')]);
     }
 
     public function rec()
@@ -474,20 +474,20 @@ class QuestionController extends Controller
             'answer_explanation_video_url' => $this->googleDriveVideoRules(),
             'more_info_link' => 'nullable|url',
         ], [
-            'level.required' => 'Please add Question grade',
-            'term.required' => 'Please add Question term',
-            'section.required' => 'Please add Question level',
-            'type.required' => 'Please select the type of answer',
-            'type.in' => 'The selected type is invalid',
-            'img_name.image' => 'The file must be an image',
-            'img_name.mimes' => 'The image must be a file of type: jpg, png, jpeg',
-            'img_name.max' => 'The image may not be greater than 2MB',
+            'level.required' => __('quiz-management.validation.question_grade_required'),
+            'term.required' => __('quiz-management.validation.question_term_required'),
+            'section.required' => __('quiz-management.validation.question_level_required'),
+            'type.required' => __('quiz-management.validation.type_required'),
+            'type.in' => __('quiz-management.validation.type_invalid'),
+            'img_name.image' => __('quiz-management.validation.image_required'),
+            'img_name.mimes' => __('quiz-management.validation.image_mime'),
+            'img_name.max' => __('quiz-management.validation.image_max_2mb'),
         ])->after(function ($validator) use ($request) {
             $text = $request->input('text');
             $old_img_name = $request->input('old_img_name');
             $img = $request->file('img_name');
             if (empty($text) && empty($img) && empty($old_img_name)) {
-                $validator->errors()->add('text', 'Either text or image is required.');
+                $validator->errors()->add('text', __('quiz-management.validation.text_or_image_update_required'));
                 // $validator->errors()->add('old_img_name', 'Either text or image is required.');
                 // $validator->errors()->add('img_name', 'Either image or text is required.');
             }
@@ -502,10 +502,10 @@ class QuestionController extends Controller
                 'options.*.text' => 'required|string',
                 'options.*.correct' => 'required|in:0,1',
             ], [
-                'options.required' => 'Please add Options',
-                'options.*.text.required' => 'Please add Options Text',
-                'options.*.correct.required' => 'Please specify if the option is correct',
-                'options.*.correct.in' => 'The selected option correctness is invalid',
+                'options.required' => __('quiz-management.validation.options_required'),
+                'options.*.text.required' => __('quiz-management.validation.option_text_required'),
+                'options.*.correct.required' => __('quiz-management.validation.option_correct_required'),
+                'options.*.correct.in' => __('quiz-management.validation.option_correct_invalid'),
             ]);
 
             $validateCorrects = $request->options;
@@ -517,13 +517,13 @@ class QuestionController extends Controller
             }
 
             if ($countCorrect == 0) {
-                return response()->json(['errors' => ['Please add at least one correct option']], 422);
+                return response()->json(['errors' => [__('quiz-management.validation.correct_option_required')]], 422);
             }
         } else if ($validatedData['type'] === 'written') {
             $validatedWritten = $request->validate([
                 'written_answer' => 'required',
             ], [
-                'written_answer.required' => 'Please provide the written answer',
+                'written_answer.required' => __('quiz-management.validation.written_answer_required'),
             ]);
         } elseif ($validatedData['type'] === 'image') {
             if ($request->has('imgOptions')) {
@@ -534,15 +534,15 @@ class QuestionController extends Controller
                     'imgOptions.*.correct' => 'required|in:0,1',
                     'imgOptionsShow.*.correct' => 'required|in:0,1',
                 ], [
-                    'imgOptions.required' => 'Please add Image Options',
-                    'imgOptions.*.file.required' => 'Please upload an image file',
-                    'imgOptions.*.file.mimes' => 'Only jpg, png, and jpeg files are allowed',
-                    'imgOptions.*.file.max' => 'Each image must not exceed 1 MB in size',
-                    'imgOptions.*.correct.required' => 'Please specify if the image option is correct',
-                    'imgOptions.*.correct.in' => 'The selected option correctness is invalid',
+                    'imgOptions.required' => __('quiz-management.validation.image_options_required'),
+                    'imgOptions.*.file.required' => __('quiz-management.validation.image_file_required'),
+                    'imgOptions.*.file.mimes' => __('quiz-management.validation.image_file_mime'),
+                    'imgOptions.*.file.max' => __('quiz-management.validation.image_file_max_1mb'),
+                    'imgOptions.*.correct.required' => __('quiz-management.validation.image_option_correct_required'),
+                    'imgOptions.*.correct.in' => __('quiz-management.validation.option_correct_invalid'),
 
-                    'imgOptionsShow.*.correct.required' => 'Please specify if the image option is correct',
-                    'imgOptionsShow.*.correct.in' => 'The selected option correctness is invalid',
+                    'imgOptionsShow.*.correct.required' => __('quiz-management.validation.image_option_correct_required'),
+                    'imgOptionsShow.*.correct.in' => __('quiz-management.validation.option_correct_invalid'),
                 ]);
             } else {
                 // Validate when 'imgOptions' is not present
@@ -552,8 +552,8 @@ class QuestionController extends Controller
                     'imgOptionsShow.*.correct' => 'required|in:0,1',
                 ], [
 
-                    'imgOptionsShow.*.correct.required' => 'Please specify if the image option is correct',
-                    'imgOptionsShow.*.correct.in' => 'The selected option correctness is invalid',
+                    'imgOptionsShow.*.correct.required' => __('quiz-management.validation.image_option_correct_required'),
+                    'imgOptionsShow.*.correct.in' => __('quiz-management.validation.option_correct_invalid'),
                 ]);
             }
 
@@ -567,7 +567,7 @@ class QuestionController extends Controller
             }
 
             if ($countCorrect == 0) {
-                return response()->json(['errors' => ['Please add at least one correct option']], 422);
+                return response()->json(['errors' => [__('quiz-management.validation.correct_option_required')]], 422);
             }
         } else if ($validatedData['type'] === 'fraction') {
 
@@ -576,8 +576,8 @@ class QuestionController extends Controller
             $validatedFraction = $request->validate([
                 'fraction_type' => 'required|in:written,options',
             ], [
-                'fraction_type.required' => 'Please select the type of fraction',
-                'fraction_type.in' => 'The selected fraction type is invalid',
+                'fraction_type.required' => __('quiz-management.validation.fraction_type_required'),
+                'fraction_type.in' => __('quiz-management.validation.fraction_type_invalid'),
             ]);
 
             if ($validatedFraction['fraction_type'] === 'written') {
@@ -586,10 +586,10 @@ class QuestionController extends Controller
                     'denominator' => 'required',
                     'answer_type' => 'required|in:frac,mixed',
                 ], [
-                    'numerator.required' => 'Numerator is required.',
-                    'denominator.required' => 'Denominator is required.',
-                    'answer_type.required' => 'Answer type is required.',
-                    'answer_type.in' => 'Answer type must be "frac" or "mixed".',
+                    'numerator.required' => __('quiz-management.validation.numerator_required'),
+                    'denominator.required' => __('quiz-management.validation.denominator_required'),
+                    'answer_type.required' => __('quiz-management.validation.answer_type_required'),
+                    'answer_type.in' => __('quiz-management.validation.answer_type_invalid'),
                 ]);
             } else if ($validatedFraction['fraction_type'] === 'options') {
                 $validatedFractionOptions = $request->validate([
@@ -598,10 +598,10 @@ class QuestionController extends Controller
                     'options.*.denominator' => 'required',
                     'options.*.answer_type' => 'required|in:frac,mixed',
                 ], [
-                    'options.required' => 'Please add Fraction Options',
-                    'options.*.numerator.required' => 'Please add Fraction Options Text',
-                    'options.*.denominator.required' => 'Please specify if the fraction option is correct',
-                    'options.*.answer_type.required' => 'The selected option correctness is invalid',
+                    'options.required' => __('quiz-management.validation.fraction_options_required'),
+                    'options.*.numerator.required' => __('quiz-management.validation.fraction_option_numerator_required'),
+                    'options.*.denominator.required' => __('quiz-management.validation.fraction_option_denominator_required'),
+                    'options.*.answer_type.required' => __('quiz-management.validation.fraction_option_answer_type_required'),
                 ]);
             }
         }
@@ -777,7 +777,7 @@ class QuestionController extends Controller
         }
         // return redirect()->route('questions')->with('success', 'Question updated successfully!');
         return response()->json([
-            'success' => 'Question updated successfully!'
+            'success' => __('quiz-management.messages.question_updated')
         ]);
     }
 
@@ -789,7 +789,7 @@ class QuestionController extends Controller
             'max:2048',
             function (string $attribute, mixed $value, \Closure $fail): void {
                 if ($value && Question::extractGoogleDriveFileId((string) $value) === null) {
-                    $fail('Please enter a valid Google Drive video link.');
+                    $fail(__('quiz-management.messages.invalid_video_link'));
                 }
             },
         ];
@@ -820,6 +820,6 @@ class QuestionController extends Controller
         // Delete the question itself
         $question->delete();
 
-        return response()->json(['success' => true, 'message' => 'Delete Question Success']);
+        return response()->json(['success' => true, 'message' => __('quiz-management.messages.question_deleted')]);
     }
 }

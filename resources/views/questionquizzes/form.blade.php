@@ -2,19 +2,19 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header bg-primary">
-                <h4 class="modal-title"><i class="fas fa-user"></i> Create Question</h4>
-                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                <h4 class="modal-title"><i class="fas fa-user"></i> {{ __('quiz-management.builder.create_question', ['number' => 1]) }}</h4>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="{{ __('quiz-management.builder.close') }}">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
                 <div class="alert alert-danger alert-dismissible fade show" role="alert" style="display: none;">
-                    <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close">
+                    <button type="button" class="btn-close" data-dismiss="alert" aria-label="{{ __('quiz-management.builder.close') }}">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="alert alert-success alert-dismissible fade show" role="alert" style="display: none;">
-                    <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close">
+                    <button type="button" class="btn-close" data-dismiss="alert" aria-label="{{ __('quiz-management.builder.close') }}">
                         <span aria-hidden="true"></span>
                     </button>
                 </div>
@@ -24,7 +24,7 @@
 
                     @csrf
                     <div class="mb-3">
-                        <label for="text" class="form-label">Question text</label>
+                        <label for="text" class="form-label">{{ __('quiz-management.builder.question_text') }}</label>
                         <textarea id="text" class="form-control" name="text">{{ old('text') }}</textarea>
                         @error('text')
                             <div class="text-danger mt-2">{{ $message }}</div>
@@ -32,9 +32,9 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="options" class="form-label">Question options</label>
+                        <label for="options" class="form-label">{{ __('quiz-management.builder.question_options') }}</label>
                         <br>
-                        <button type="button" class="btn btn-sm btn-primary mt-2" id="add-option">Add</button>
+                        <button type="button" class="btn btn-sm btn-primary mt-2" id="add-option">{{ __('quiz-management.builder.add') }}</button>
                         <div id="options-container">
                             @if (old('options', $options ?? []))
                                 @foreach (old('options', $options ?? []) as $index => $option)
@@ -74,7 +74,7 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="answer_explanation" class="form-label">Answer explanation</label>
+                        <label for="answer_explanation" class="form-label">{{ __('quiz-management.builder.answer_explanation') }}</label>
                         <textarea id="answer_explanation" class="form-control" name="answer_explanation">{{ old('answer_explanation') }}</textarea>
                         @error('answer_explanation')
                             <div class="text-danger mt-2">{{ $message }}</div>
@@ -82,7 +82,7 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="more_info_link" class="form-label">More info link</label>
+                        <label for="more_info_link" class="form-label">{{ __('quiz-management.builder.more_info_link') }}</label>
                         <input type="text" id="more_info_link" class="form-control" name="more_info_link"
                             value="{{ old('more_info_link') }}" />
                         @error('more_info_link')
@@ -97,7 +97,7 @@
                 <button type="button" class="btn btn-success" id="SubmitCreateForm"><i class="fas fa-download"></i>
                     Save</button>
                 <button type="button" class="btn btn-danger modelClose" data-bs-dismiss="modal"><i
-                        class="fas fa-door-closed"></i> Close</button>
+                        class="fas fa-door-closed"></i> {{ __('quiz-management.builder.close') }}</button>
             </div>
         </div>
     </div>
@@ -108,20 +108,20 @@
             <div class="modal-header bg-primary">
                 <h4 class="modal-title">
                     <i class="fas fa-user"></i>
-                    {{ $editing ? 'Edit Question' : 'Create Question' }}
+                    {{ $editing ? __('quiz-management.actions.edit') : __('quiz-management.builder.create_question', ['number' => 1]) }}
                 </h4>
-                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="{{ __('quiz-management.builder.close') }}">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
                 <div class="alert alert-danger alert-dismissible fade show" role="alert" style="display: none;">
-                    <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close">
+                    <button type="button" class="btn-close" data-dismiss="alert" aria-label="{{ __('quiz-management.builder.close') }}">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="alert alert-success alert-dismissible fade show" role="alert" style="display: none;">
-                    <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close">
+                    <button type="button" class="btn-close" data-dismiss="alert" aria-label="{{ __('quiz-management.builder.close') }}">
                         <span aria-hidden="true"></span>
                     </button>
                 </div>
@@ -133,7 +133,7 @@
                     @endif
 
                     <div class="mb-3">
-                        <label for="text" class="form-label">Question text</label>
+                        <label for="text" class="form-label">{{ __('quiz-management.builder.question_text') }}</label>
                         <textarea id="text" class="form-control" name="text">{{ old('text', $question->text ?? '') }}</textarea>
                         @error('text')
                             <div class="text-danger mt-2">{{ $message }}</div>
@@ -141,9 +141,9 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="options" class="form-label">Question options</label>
+                        <label for="options" class="form-label">{{ __('quiz-management.builder.question_options') }}</label>
                         <br>
-                        <button type="button" class="btn btn-sm btn-primary mt-2" id="add-option">Add</button>
+                        <button type="button" class="btn btn-sm btn-primary mt-2" id="add-option">{{ __('quiz-management.builder.add') }}</button>
                         <div id="options-container">
                             @foreach (old('options', $options) as $index => $option)
                                 <div class="option-item mt-2 form-row align-items-center">
@@ -175,7 +175,7 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="answer_explanation" class="form-label">Answer explanation</label>
+                        <label for="answer_explanation" class="form-label">{{ __('quiz-management.builder.answer_explanation') }}</label>
                         <textarea id="answer_explanation" class="form-control" name="answer_explanation">{{ old('answer_explanation', $question->answer_explanation ?? '') }}</textarea>
                         @error('answer_explanation')
                             <div class="text-danger mt-2">{{ $message }}</div>
@@ -183,7 +183,7 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="more_info_link" class="form-label">More info link</label>
+                        <label for="more_info_link" class="form-label">{{ __('quiz-management.builder.more_info_link') }}</label>
                         <input type="text" id="more_info_link" class="form-control" name="more_info_link" value="{{ old('more_info_link', $question->more_info_link ?? '') }}" />
                         @error('more_info_link')
                             <div class="text-danger mt-2">{{ $message }}</div>
@@ -195,7 +195,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-danger modelClose" data-bs-dismiss="modal">
-                    <i class="fas fa-door-closed"></i> Close
+                    <i class="fas fa-door-closed"></i> {{ __('quiz-management.builder.close') }}
                 </button>
             </div>
         </div>
@@ -210,18 +210,18 @@
                     <span id="question-title"></span>
                     {{-- {{ $editing ? 'Edit Question' : 'Create Question' }} --}}
                 </h4>
-                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="{{ __('quiz-management.builder.close') }}">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
                 <div class="alert alert-danger alert-dismissible fade show" role="alert" style="display: none;">
-                    <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close">
+                    <button type="button" class="btn-close" data-dismiss="alert" aria-label="{{ __('quiz-management.builder.close') }}">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="alert alert-success alert-dismissible fade show" role="alert" style="display: none;">
-                    <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close">
+                    <button type="button" class="btn-close" data-dismiss="alert" aria-label="{{ __('quiz-management.builder.close') }}">
                         <span aria-hidden="true"></span>
                     </button>
                 </div>
@@ -231,7 +231,7 @@
                     <input type="hidden" id="formMethod" name="_method" value="POST">
 
                     <div class="mb-3">
-                        <label for="text" class="form-label">Question text</label>
+                        <label for="text" class="form-label">{{ __('quiz-management.builder.question_text') }}</label>
                         <textarea id="text" class="form-control" name="text">{{ $question->text ?? old('text') }}</textarea>
                         @error('text')
                             <div class="text-danger mt-2">{{ $message }}</div>
@@ -319,7 +319,7 @@
                     <input type="hidden" id="formMethod" name="_method" value="POST">
 
                     <div class="mb-3">
-                        <label for="text" class="form-label">Question text</label>
+                        <label for="text" class="form-label">{{ __('quiz-management.builder.question_text') }}</label>
                         <textarea id="text" class="form-control" name="text">{{ $question->text ?? old('text') }}</textarea>
                         @error('text')
                             <div class="text-danger mt-2">{{ $message }}</div>
@@ -330,25 +330,25 @@
                     @endphp
                     <div class="mb-3">
                         <select name="type" id="type" class="form-control">
-                            <option value="">Select type answer</option>
-                            <option value="options">Options</option>
-                            <option value="written">Written</option>
+                            <option value="">{{ __('quiz-management.builder.select_answer_type') }}</option>
+                            <option value="options">{{ __('quiz-management.builder.options') }}</option>
+                            <option value="written">{{ __('quiz-management.builder.written') }}</option>
                         </select>
                     </div>
 
                     <div class="mb-3 written_type">
-                        <label for="written" class="form-label">Question Written</label>
+                        <label for="written" class="form-label">{{ __('quiz-management.builder.question_written') }}</label>
                         <br>
                         <div class="wrtiten-container">
                             <input type="text" class="form-control" id="written" name="written"
-                                placeholder="Enter correct answer">
+                                placeholder="{{ __('quiz-management.builder.correct_answer_placeholder') }}">
                         </div>
                     </div>
 
                     <div class="mb-3 options_type">
-                        <label for="options" class="form-label">Question options</label>
+                        <label for="options" class="form-label">{{ __('quiz-management.builder.question_options') }}</label>
                         <br>
-                        <button type="button" class="btn btn-sm btn-primary mt-2" id="add-option">Add</button>
+                        <button type="button" class="btn btn-sm btn-primary mt-2" id="add-option">{{ __('quiz-management.builder.add') }}</button>
                         <div id="options-container">
                             @if (old('options', $options ?? []))
                                 @foreach (old('options', $options ?? []) as $index => $option)
@@ -364,7 +364,7 @@
                                             <input type="checkbox" class="text-left"
                                                 name="options[{{ $index }}][correct]" value="1"
                                                 {{ isset($option['correct']) && $option['correct'] ? 'checked' : '' }}>
-                                            Correct&nbsp
+                                            {{ __('quiz-management.builder.correct') }}&nbsp
                                             <button type="button"
                                                 class="btn btn-danger btn-sm remove-option">&nbsp&nbsp<i
                                                     class="fa fa-trash"></i>&nbsp&nbsp</button>
@@ -384,9 +384,9 @@
                     <div class="row">
                         <div class="col-lg-4">
                             <div class="mt-4">
-                                <label for="level" class=" form-label">Grade</label>
+                                <label for="level" class=" form-label">{{ __('quiz-management.builder.grade') }}</label>
                                 <select id="level" name="level" class="form-control">
-                                    <option value="" selected>Select term
+                                    <option value="" selected>{{ __('quiz-management.builder.select_grade') }}
                                     </option>
                                     <option value="K1">K1</option>
                                     <option value="K2">K2</option>
@@ -402,9 +402,9 @@
                         </div>
                         <div class="col-lg-4">
                             <div class="mt-4">
-                                <label for="term" class=" form-label">Term</label>
+                                <label for="term" class=" form-label">{{ __('quiz-management.builder.term') }}</label>
                                 <select id="term" name="term" class="form-control">
-                                    <option value="" selected>Select term
+                                    <option value="" selected>{{ __('quiz-management.builder.select_term') }}
                                     </option>
                                     <option value="1">1</option>
                                     <option value="2">2</option>
@@ -416,9 +416,9 @@
                         </div>
                         <div class="col-lg-4">
                             <div class="mt-4">
-                                <label for="section" class=" form-label">Level</label>
+                                <label for="section" class=" form-label">{{ __('quiz-management.builder.level') }}</label>
                                 <select id="section" name="section" class="form-control">
-                                    <option value="" selected>Select Level
+                                    <option value="" selected>{{ __('quiz-management.builder.select_level') }}
                                     </option>
                                     @for ($i = 1; $i <= 20; $i++)
                                         <option value="{{ $i }}">
@@ -432,7 +432,7 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="code_snippet" class="form-label">Hint</label>
+                        <label for="code_snippet" class="form-label">{{ __('quiz-management.builder.hint') }}</label>
                         <textarea id="code_snippet" class="form-control" name="code_snippet">{{ $question->code_snippet ?? old('code_snippet') }}</textarea>
                         @error('code_snippet')
                             <div class="text-danger mt-2">{{ $message }}</div>
@@ -440,7 +440,7 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="answer_explanation" class="form-label">Answer explanation</label>
+                        <label for="answer_explanation" class="form-label">{{ __('quiz-management.builder.answer_explanation') }}</label>
                         <textarea id="answer_explanation" class="form-control" name="answer_explanation">{{ $question->answer_explanation ?? old('answer_explanation') }}</textarea>
                         @error('answer_explanation')
                             <div class="text-danger mt-2">{{ $message }}</div>
@@ -448,7 +448,7 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="more_info_link" class="form-label">More info link</label>
+                        <label for="more_info_link" class="form-label">{{ __('quiz-management.builder.more_info_link') }}</label>
                         <input type="text" id="more_info_link" class="form-control" name="more_info_link"
                             value="{{ $question->more_info_link ?? old('more_info_link') }}" />
                         @error('more_info_link')
@@ -466,7 +466,7 @@
                 </span>
 
                 <button type="button" class="btn btn-danger modelClose" data-bs-dismiss="modal">
-                    <i class="fas fa-door-closed"></i> Close
+                    <i class="fas fa-door-closed"></i> {{ __('quiz-management.builder.close') }}
                 </button>
             </div>
         </div>

@@ -86,7 +86,7 @@ class eLeanController extends Controller
 
 
         $levelCheck = 0;
-        $header = 'eiMaths Quiz';
+        $header = __('quiz-management.home.page_header');
         // dd($public_quizzes_level);
 
         return view('home.home', compact('public_quizzes', 'registered_only_quizzes', 'header', 'levels', 'public_quizzes_level', 'levelCheck'));
@@ -115,7 +115,7 @@ class eLeanController extends Controller
             ->get()
             ->groupBy('term');
         $levelCheck = 1;
-        $header = 'eiMaths Quiz Grade ' . $level;
+        $header = __('quiz-management.home.level_header', ['level' => $level]);
         // dd($public_quizzes_term);
 
         return view('home.home', compact('public_quizzes', 'registered_only_quizzes', 'header', 'public_quizzes_term', 'levelCheck', 'level'));
@@ -147,7 +147,7 @@ class eLeanController extends Controller
 
         // ->groupBy('term');
         $levelCheck = 2;
-        $header = 'eiMaths Quiz Grade ' . $level . ' Term ' . $term;
+        $header = __('quiz-management.home.term_header', ['level' => $level, 'term' => $term]);
         //  dd($public_quizzes_term);
 
         return view('home.home', compact('public_quizzes', 'registered_only_quizzes', 'header', 'public_quizzes_term', 'levelCheck', 'level', 'term'));
@@ -171,7 +171,11 @@ class eLeanController extends Controller
             ->withCount('questions')
             ->get();
         $levelCheck = 3;
-        $header = 'eiMaths Quiz Grade ' . $level . ' Term ' . $term . ' Level-' . $section;
+        $header = __('quiz-management.home.section_header', [
+            'level' => $level,
+            'term' => $term,
+            'section' => $section,
+        ]);
 
         return view('home.home', compact('public_quizzes', 'registered_only_quizzes', 'header', 'public_quizzes_term', 'levelCheck', 'level', 'term', 'section'));
     }
@@ -253,7 +257,7 @@ class eLeanController extends Controller
     public function tests(Request $request, $quiz_slug = '0')
     {
         $quizzes = Quiz::all();
-        $header = 'Tests';
+        $header = __('quiz-management.preview.title');
         $quizId = 0;
         $perPageOptions = [10, 20, 50, 100];
         $perPage = (int) $request->input('per_page', 20);

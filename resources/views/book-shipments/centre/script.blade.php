@@ -1,9 +1,9 @@
 @php
     $user_messages = [
-        'receive_error' => trans('book-shipments.messages.could_not_receive', [], 'th'),
-        'result_required' => 'กรุณาเลือกผลการตรวจรับให้ครบทุกรายการหนังสือ',
-        'issue_note_required' => trans('book-shipments.centre.missing_or_damaged_note', [], 'th'),
-        'saving' => 'กำลังบันทึกผลการรับหนังสือ…',
+        'receive_error' => trans('book-shipments.messages.could_not_receive', []),
+        'result_required' => trans('book-shipments.centre.result_required', []),
+        'issue_note_required' => trans('book-shipments.centre.missing_or_damaged_note', []),
+        'saving' => trans('book-shipments.centre.saving', []),
     ];
 @endphp
 

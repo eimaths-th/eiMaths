@@ -87,23 +87,21 @@
                         <li class="breadcrumb-item active">Users Management</li> --}}
                         @can('user-create')
                             <button type="button" class="btn btn-success" id="CreateButton">
-                                <i class="fas fa-user"></i> Add Line API </button>
+                                <i class="fas fa-user"></i> {{ __('system-settings.line_api.actions.add') }} </button>
                         @else
                             <span class="d-inline-block" tabindex="0" data-toggle="tooltip" data-placement="bottom"
-                                title="You Not Have Permission">
+                                title="{{ __('system-settings.line_api.messages.permission_denied') }}">
                                 <button type="button" class="btn btn-success disabled">
-                                    <i class="fas fa-user"></i> Add Line API </button>
+                                    <i class="fas fa-user"></i> {{ __('system-settings.line_api.actions.add') }} </button>
                             </span>
                         @endcan &nbsp;
 
                         @can('user-delete')
-                            <button type="button" class="btn btn-danger delete_all_button"><i class="fa fa-trash"></i> Delete
-                                All</button>
+                            <button type="button" class="btn btn-danger delete_all_button"><i class="fa fa-trash"></i> {{ __('system-settings.line_api.actions.delete_all') }}</button>
                         @else
                             <span class="d-inline-block" tabindex="0" data-toggle="tooltip" data-placement="bottom"
-                                title="You Not Have Permission">
-                                <button type="button" class="btn btn-danger disabled"><i class="fa fa-trash"></i> Delete
-                                    All</button>
+                                title="{{ __('system-settings.line_api.messages.permission_denied') }}">
+                                <button type="button" class="btn btn-danger disabled"><i class="fa fa-trash"></i> {{ __('system-settings.line_api.actions.delete_all') }}</button>
                             </span>
                         @endcan
                     </ol>
@@ -119,9 +117,9 @@
                 <div class="col-12">
                     <div class="card card-primary">
                         <div class="card-header">
-                            <h3 class="card-title"><i class="fa fa-user"></i> Line-api Management</h3>
+                            <h3 class="card-title"><i class="fa fa-user"></i> {{ __('system-settings.line_api.title') }}</h3>
                             <div class="card-tools">
-                                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="{{ __('system-settings.line_api.actions.collapse') }}">
                                     <i class="fas fa-minus"></i>
                                 </button>
                                 {{-- <button type="button" class="btn btn-tool" data-card-widget="remove" title="Remove">
@@ -147,17 +145,17 @@
                                 <table id="Listview" class="table table-bordered table-striped table-hover">
                                     <thead>
                                         <tr>
-                                            <th>No</th>
-                                            <th>name</th>
-                                            <th>created_at</th>
-                                            <th>updated_at</th>
-                                            <th>line_user_id</th>
+                                            <th>{{ __('system-settings.line_api.fields.no') }}</th>
+                                            <th>{{ __('system-settings.line_api.fields.name') }}</th>
+                                            <th>{{ __('system-settings.line_api.fields.created_at') }}</th>
+                                            <th>{{ __('system-settings.line_api.fields.updated_at') }}</th>
+                                            <th>{{ __('system-settings.line_api.fields.line_user_id') }}</th>
                                             {{-- <th>channel_secret</th>
                                             <th>channel_access_token</th> --}}
-                                            <th>create_by</th>
-                                            <th>update_by</th>
-                                            <th>status</th>
-                                            <th>actions</th>
+                                            <th>{{ __('system-settings.line_api.fields.created_by') }}</th>
+                                            <th>{{ __('system-settings.line_api.fields.updated_by') }}</th>
+                                            <th>{{ __('system-settings.line_api.fields.status') }}</th>
+                                            <th>{{ __('system-settings.line_api.fields.actions') }}</th>
                                             {{-- <th width="120px"></th> --}}
                                         </tr>
                                     </thead>

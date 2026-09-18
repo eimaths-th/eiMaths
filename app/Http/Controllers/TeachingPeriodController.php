@@ -98,10 +98,11 @@ class TeachingPeriodController extends Controller
 
         $html = '';
         foreach ($teachingPeriods as $teachingPeriod) {
+            $day_label = __('teaching_period.days.' . strtolower($teachingPeriod->day));
             $html .= '
                 <tr>
                     <td>' . $teachingPeriod->department->name . '</td>
-                    <td>' . $teachingPeriod->day . '</td>
+                    <td>' . $day_label . '</td>
                     <td>' . $teachingPeriod->period . '</td>
                     <td>
                         <form action="' . route('TeachingPeriod.destroy', $teachingPeriod->id) . '" method="POST">

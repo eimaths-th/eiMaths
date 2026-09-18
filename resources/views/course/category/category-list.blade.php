@@ -569,7 +569,7 @@
 
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1>Category</h1>
+                    <h1>{{ __('course.categories.title') }}</h1>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
@@ -591,16 +591,16 @@
                                 <h3 class="card-title">
 
                                     @if (!isset($edit))
-                                        Add New Category
+                                        {{ __('course.categories.form.add_title') }}
                                     @else
-                                        Update Category
+                                        {{ __('course.categories.form.update_title') }}
                                     @endif
                                 </h3>
 
                             </div>
                             @if (isset($edit))
                                 <a class="" href="{{ route('categories.index') }}"
-                                    title="{{ __('courses.Add New') }}">+</a>
+                                    title="{{ __('course.categories.form.add_new_link') }}">+</a>
                             @endif
                         </div>
 
@@ -650,8 +650,8 @@
                                     // dd(auth()->user()->language_code);
 
                                     $fields = [
-                                        'name' => __('Name'),
-                                        'description' => __('Description'),
+                                        'name' => __('course.categories.form.name'),
+                                        'description' => __('course.categories.form.description'),
                                     ];
                                 @endphp
 
@@ -690,9 +690,9 @@
 
                                 <div class="col-xl-12 ">
                                     <div class="primary_input mb-3">
-                                        <label class="primary_input_label" for="parent">Parent</label>
+                                        <label class="primary_input_label" for="parent">{{ __('course.categories.form.parent') }}</label>
                                         <select class="primary_select mb-25" name="parent" id="parent">
-                                            <option value="">None</option>
+                                            <option value="">{{ __('course.categories.form.none') }}</option>
                                             @foreach ($categories as $category)
                                                 @if (isset($edit) && $category->id == $edit->id)
                                                     @php
@@ -709,7 +709,7 @@
 
                                 <div class="col-xl-12">
                                     <div class="primary_input mb-3">
-                                        <label class="primary_input_label" for="position_order">Position Order</label>
+                                        <label class="primary_input_label" for="position_order">{{ __('course.categories.form.position_order') }}</label>
                                         <select class="primary_select mb-25" name="position_order" id="position_order">
                                             @for ($i = 1; $i <= $max_id; $i++)
                                                 <option value="{{ $i }}"
@@ -723,15 +723,15 @@
                                 <div class="col-xl-12">
                                     <div class="primary_input mb-3">
                                         <label class="primary_input_label"
-                                            for="status">{{ __('courses.Status') }}</label>
+                                            for="status">{{ __('course.categories.form.status') }}</label>
                                         <select class="primary_select mb-25" name="status" id="status">
                                             <option value="1"
                                                 {{ isset($edit) ? ($edit->status == 1 ? 'selected' : '') : '' }}>
-                                                Active
+                                                {{ __('course.categories.form.active') }}
                                             </option>
                                             <option value="0"
                                                 {{ isset($edit) ? ($edit->status == 0 ? 'selected' : '') : '' }}>
-                                                Inactive
+                                                {{ __('course.categories.form.inactive') }}
                                             </option>
                                         </select>
                                     </div>
@@ -760,7 +760,7 @@
                                     if (permissionCheck('course.category.store')) {
                                         $tooltip = '';
                                     } else {
-                                        $tooltip = trans('courses.You have no permission to add');
+                                        $tooltip = __('course.categories.form.permission_denied');
                                     }
                                 @endphp
                                 <div class="col-lg-12 text-center">
@@ -769,9 +769,9 @@
                                             title="{{ @$tooltip }}" id="save_button_parent">
                                             <i class=" fa fa-check "></i>
                                             @if (!isset($edit))
-                                                Save
+                                                {{ __('course.categories.form.save') }}
                                             @else
-                                                Update
+                                                {{ __('course.categories.form.update') }}
                                             @endif
                                         </button>
 
@@ -789,7 +789,7 @@
                         <div class="card-header">
 
                             <div class="card-title">
-                                <h3 class="card-title"><i class="fa fa-user"></i> Category List</h3>
+                                <h3 class="card-title"><i class="fa fa-user"></i> {{ __('course.categories.list.title') }}</h3>
 
                             </div>
                         </div>
@@ -798,15 +798,15 @@
                                 <table id="lms_table1" class="table table-bordered table-striped table-hover">
                                     <thead>
                                         <tr>
-                                            <th scope="col">SL</th>
-                                            <th scope="col">Name</th>
-                                            <th scope="col">Parent</th>
-                                            <th scope="col">Position ID</th>
-                                            <th scope="col">Description</th>
+                                            <th scope="col">{{ __('course.categories.list.serial') }}</th>
+                                            <th scope="col">{{ __('course.categories.list.name') }}</th>
+                                            <th scope="col">{{ __('course.categories.list.parent') }}</th>
+                                            <th scope="col">{{ __('course.categories.list.position_id') }}</th>
+                                            <th scope="col">{{ __('course.categories.list.description') }}</th>
                                             {{-- <th scope="col">Icon</th>
                                             <th scope="col">Thumbnail Image</th> --}}
-                                            <th scope="col">Status</th>
-                                            <th scope="col">Action</th>
+                                            <th scope="col">{{ __('course.categories.list.status') }}</th>
+                                            <th scope="col">{{ __('course.categories.list.action') }}</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -814,7 +814,7 @@
                                             <tr>
                                                 <td>{{ ++$key }}</td>
                                                 <td>
-                                                    {{ $category->name ?? 'Invalid JSON' }}
+                                                    {{ $category->name ?? __('course.categories.list.invalid_json') }}
                                                 </td>
 
                                                 <td>{{ @$category->parent->name }}</td>
@@ -858,7 +858,7 @@
                                                             type="button" id="dropdownMenu1{{ @$category->id }}"
                                                             data-bs-toggle="dropdown" aria-haspopup="true"
                                                             aria-expanded="false">
-                                                            Select
+                                                            {{ __('course.categories.list.select') }}
                                                         </button>
 
 
@@ -922,6 +922,13 @@
 
     {{-- @include('affiliate.backend.my_affiliate-script') --}}
     <script>
+        const course_category_ui = {
+            datatable: @json(__('common.datatable')),
+            list: @json(__('course.categories.list')),
+            messages: @json(__('course.categories.messages')),
+        };
+    </script>
+    <script>
         $(document).ready(function() {
             // $('#lms_table1').DataTable({
             //     processing: true, // Shows loading indicator
@@ -971,7 +978,30 @@
                 "responsive": true,
                 "lengthChange": true,
                 "autoWidth": false,
-                "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+                "language": {
+                    "loadingRecords": course_category_ui.datatable.loading_records,
+                    "processing": course_category_ui.datatable.processing,
+                    "lengthMenu": course_category_ui.datatable.length_menu,
+                    "zeroRecords": course_category_ui.datatable.zero_records,
+                    "info": course_category_ui.datatable.info,
+                    "infoEmpty": course_category_ui.datatable.info_empty,
+                    "infoFiltered": course_category_ui.datatable.info_filtered,
+                    "search": course_category_ui.datatable.search,
+                    "paginate": {
+                        "first": course_category_ui.datatable.first,
+                        "previous": course_category_ui.datatable.previous,
+                        "next": course_category_ui.datatable.next,
+                        "last": course_category_ui.datatable.last
+                    }
+                },
+                "buttons": [
+                    { "extend": "copy", "text": course_category_ui.list.copy },
+                    { "extend": "csv", "text": course_category_ui.list.csv },
+                    { "extend": "excel", "text": course_category_ui.list.excel },
+                    { "extend": "pdf", "text": course_category_ui.list.pdf },
+                    { "extend": "print", "text": course_category_ui.list.print },
+                    { "extend": "colvis", "text": course_category_ui.list.columns }
+                ]
             }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
 
             // $('#lms_table1').DataTable({
@@ -1010,9 +1040,9 @@
                         .then(response => response.json())
                         .then(data => {
                             if (data.message === 'success') {
-                                toastr.success('Status updated successfully!');
+                                toastr.success(course_category_ui.messages.status_updated);
                             } else {
-                                toastr.error('Failed to update status. Please try again.');
+                                toastr.error(course_category_ui.messages.status_update_failed);
                             }
                         })
                         .catch(error => console.error('Error:', error));
@@ -1022,7 +1052,7 @@
     </script>
     <script>
         function confirm_modal(deleteUrl) {
-            if (confirm("Are you sure you want to delete this category?")) {
+            if (confirm(course_category_ui.messages.confirm_delete)) {
                 fetch(deleteUrl, {
                         method: 'DELETE',
                         headers: {

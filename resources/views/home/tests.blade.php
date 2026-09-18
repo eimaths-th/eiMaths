@@ -1,6 +1,6 @@
 @extends('layouts.quiz_layout')
 
-@section('title', 'Tests')
+@section('title', __('quiz-management.preview.title'))
 
 @push('css')
     <style>
@@ -977,10 +977,10 @@
                 <div class="dashboard-header-container">
                     <h1 class="dashboard-header-title">
                         <span class="dashboard-header-icon">📊</span>
-                        Tests Dashboard
+                        {{ __('quiz-management.preview.title') }}
                     </h1>
                     <p class="dashboard-header-subtitle">
-                        Monitor student performance and quiz results with comprehensive analytics
+                        {{ __('quiz-management.preview.dashboard_subtitle') }}
                     </p>
                 </div>
 
@@ -989,12 +989,12 @@
                     <div class="dashboard-stat-card">
                         <div class="dashboard-stat-icon">📊</div>
                         <div class="dashboard-stat-number">{{ $tests ? $tests->count() : 0 }}</div>
-                        <div class="dashboard-stat-label">Total Tests</div>
+                        <div class="dashboard-stat-label">{{ __('quiz-management.preview.total_tests') }}</div>
                     </div>
                     <div class="dashboard-stat-card">
                         <div class="dashboard-stat-icon">🎯</div>
                         <div class="dashboard-stat-number">{{ $quizzes ? $quizzes->count() : 0 }}</div>
-                        <div class="dashboard-stat-label">Active Quizzes</div>
+                        <div class="dashboard-stat-label">{{ __('quiz-management.preview.active_quizzes') }}</div>
                     </div>
                     <div class="dashboard-stat-card">
                         <div class="dashboard-stat-icon">⭐</div>
@@ -1013,7 +1013,7 @@
                             @endphp
                             {{ $avgScore }}%
                         </div>
-                        <div class="dashboard-stat-label">Average Score</div>
+                        <div class="dashboard-stat-label">{{ __('quiz-management.preview.average_score') }}</div>
                     </div>
                 </div>
             </div>
@@ -1023,7 +1023,7 @@
                 style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 16px; padding: 24px; margin-bottom: 30px;">
                 <div class="flex items-center gap-3 mb-4">
                     <div class="text-2xl">🔍</div>
-                    <h3 class="text-lg font-semibold text-white">Filter Tests</h3>
+                    <h3 class="text-lg font-semibold text-white">{{ __('quiz-management.preview.filter_tests') }}</h3>
                 </div>
                 <form id="quiz-form" action="{{ route('submit.leaderboard') }}" method="POST">
                     @csrf
@@ -1033,7 +1033,7 @@
                     <select name="quiz_slug"
                         style="background: rgba(255, 255, 255, 0.9) !important; border: 2px solid rgba(255, 255, 255, 0.3) !important; border-radius: 12px !important; padding: 12px 16px !important; font-size: 14px !important; font-weight: 500 !important; color: #374151 !important; transition: all 0.3s ease !important; backdrop-filter: blur(10px) !important; width: 100%;"
                         onchange="document.getElementById('quiz-form').submit();">
-                        <option value="0" {{ $quiz_slug === '0' ? 'selected' : '' }}>🎯 All quizzes</option>
+                        <option value="0" {{ $quiz_slug === '0' ? 'selected' : '' }}>🎯 {{ __('quiz-management.preview.all_quizzes') }}</option>
                         @if ($quizzes)
                             @foreach ($quizzes as $quiz)
                                 <option value="{{ $quiz->slug }}" {{ $quiz_slug === $quiz->slug ? 'selected' : '' }}>
@@ -1048,7 +1048,7 @@
             <!-- Tests Cards Section -->
             <div id="blogs-table_length"
                 style="display: flex; align-items: center; justify-content: flex-start; gap: 8px; margin-bottom: 16px; color: #ffffff; font-size: 14px; font-weight: 500;">
-                <label for="per_page" style="margin: 0;">Show</label>
+                <label for="per_page" style="margin: 0;">{{ __('quiz-management.preview.show') }}</label>
                 <select id="per_page" name="per_page"
                     style="width: 58px; min-width: 58px; height: 38px; background: #ffffff; color: #374151; border: 1px solid #d1d5db; border-radius: 4px; padding: 6px 8px; font-size: 13px; outline: none;"
                     onchange="const params = new URLSearchParams(window.location.search); params.set('per_page', this.value); params.delete('page'); window.location.href = window.location.pathname + '?' + params.toString();">
@@ -1096,28 +1096,28 @@
                                 <div class="quiz-info-card">
                                     <div class="quiz-info-grid">
                                         <div class="quiz-info-item">
-                                            <label class="quiz-info-label">Quiz</label>
+                                            <label class="quiz-info-label">{{ __('quiz-management.preview.quiz') }}</label>
                                             <div class="quiz-info-value">
                                                 <span class="quiz-info-icon">📚</span>
                                                 <span>{{ $test->quiz->title ?? 'N/A' }}</span>
                                             </div>
                                         </div>
                                         <div class="quiz-info-item">
-                                            <label class="quiz-info-label">Grade</label>
+                                            <label class="quiz-info-label">{{ __('quiz-management.preview.grade') }}</label>
                                             <div class="quiz-info-value">
                                                 <span class="quiz-info-icon">🎓</span>
                                                 <span>{{ $test->quiz->level ?? 'N/A' }}</span>
                                             </div>
                                         </div>
                                         <div class="quiz-info-item">
-                                            <label class="quiz-info-label">Term</label>
+                                            <label class="quiz-info-label">{{ __('quiz-management.preview.term') }}</label>
                                             <div class="quiz-info-value">
                                                 <span class="quiz-info-icon">📅</span>
                                                 <span>{{ $test->quiz->term ?? 'N/A' }}</span>
                                             </div>
                                         </div>
                                         <div class="quiz-info-item">
-                                            <label class="quiz-info-label">Level</label>
+                                            <label class="quiz-info-label">{{ __('quiz-management.preview.level') }}</label>
                                             <div class="quiz-info-value">
                                                 <span class="quiz-info-icon">📖</span>
                                                 <span>{{ $test->quiz->section ?? 'N/A' }}</span>
@@ -1136,17 +1136,17 @@
 
                                     if ($percentage >= 80) {
                                         $emoji = '🌟';
-                                        $label = 'Excellent';
+                                        $label = __('quiz-management.preview.excellent');
                                         $scoreClass = 'score-badge score-excellent';
                                         $meterClass = 'meter-excellent';
                                     } elseif ($percentage >= 60) {
                                         $emoji = '👍';
-                                        $label = 'Good';
+                                        $label = __('quiz-management.preview.good');
                                         $scoreClass = 'score-badge score-good';
                                         $meterClass = 'meter-good';
                                     } else {
                                         $emoji = '📈';
-                                        $label = 'Needs Improvement';
+                                        $label = __('quiz-management.preview.needs_improvement');
                                         $scoreClass = 'score-badge score-needs-improvement';
                                         $meterClass = 'meter-needs-improvement';
                                     }
@@ -1156,7 +1156,7 @@
                                 <div class="score-left">
                                     <div class="{{ $scoreClass }} mb-3 inline-flex">{{ $emoji }} {{ $label }}</div>
                                     <div class="score-info-number">{{ $score }}/{{ $total }}</div>
-                                    <div class="score-info-label">Score</div>
+                                    <div class="score-info-label">{{ __('quiz-management.preview.score') }}</div>
                                 </div>
 
                                 <!-- Center: circular percentage meter -->
@@ -1184,7 +1184,7 @@
                                             <span>{{ sprintf('%02d:%02d:%02d', $hour, $minutes, $seconds) }}</span>
                                         </div>
                                     </div>
-                                    <a href="{{ route('results.show', $test) }}" class="action-btn inline-flex">View Details 👁️</a>
+                                    <a href="{{ route('results.show', $test) }}" class="action-btn inline-flex">{{ __('quiz-management.preview.view_details') }} 👁️</a>
                                 </div>
                             </div>
                         </div>
@@ -1195,28 +1195,24 @@
                     <div
                         style="text-align: center; padding: 60px 20px; background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border: 2px dashed rgba(255, 255, 255, 0.3); border-radius: 20px; margin: 40px 0;">
                         <div class="text-6xl mb-4">📊</div>
-                        <h3 class="text-2xl font-bold text-white mb-2">No Tests Found</h3>
-                        <p class="text-white/80 mb-6">There are no test results to display at the moment.</p>
+                        <h3 class="text-2xl font-bold text-white mb-2">{{ __('quiz-management.preview.no_tests') }}</h3>
+                        <p class="text-white/80 mb-6">{{ __('quiz-management.preview.no_tests_message') }}</p>
 
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-4xl mx-auto text-left">
                             <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
                                 <div class="text-2xl mb-2">🎯</div>
-                                <h4 class="font-semibold text-white mb-2">Create Quizzes</h4>
-                                <p class="text-white/80 text-sm">Start by creating engaging quizzes for your students to
-                                    take.</p>
+                                <h4 class="font-semibold text-white mb-2">{{ __('quiz-management.preview.create_quizzes') }}</h4>
+                                <p class="text-white/80 text-sm">{{ __('quiz-management.preview.create_quizzes_message') }}</p>
                             </div>
                             <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
                                 <div class="text-2xl mb-2">👥</div>
-                                <h4 class="font-semibold text-white mb-2">Invite Students</h4>
-                                <p class="text-white/80 text-sm">Share quiz links with students to start collecting test
-                                    results.
-                                </p>
+                                <h4 class="font-semibold text-white mb-2">{{ __('quiz-management.preview.invite_students') }}</h4>
+                                <p class="text-white/80 text-sm">{{ __('quiz-management.preview.invite_students_message') }}</p>
                             </div>
                             <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
                                 <div class="text-2xl mb-2">📈</div>
-                                <h4 class="font-semibold text-white mb-2">Track Progress</h4>
-                                <p class="text-white/80 text-sm">Monitor student performance and identify areas for
-                                    improvement.</p>
+                                <h4 class="font-semibold text-white mb-2">{{ __('quiz-management.preview.track_progress') }}</h4>
+                                <p class="text-white/80 text-sm">{{ __('quiz-management.preview.track_progress_message') }}</p>
                             </div>
                         </div>
                     </div>

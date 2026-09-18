@@ -377,9 +377,9 @@
                 <div class="col-12">
                     <h3 class="mb-0">
                         <i class="fas fa-chart-line text-primary"></i>
-                        <strong>eiMaths Dashboard</strong>
+                        <strong>{{ __('dashboard.title') }}</strong>
                     </h3>
-                    <p class="text-muted mb-0"><small>ระบบจัดการข้อมูลสถิติและรายงาน</small></p>
+                    <p class="text-muted mb-0"><small>{{ __('dashboard.subtitle') }}</small></p>
                 </div>
             </div>
 
@@ -390,7 +390,7 @@
                         <!-- Centre Filter -->
                         <div class="col-lg-3 col-md-6 col-12 mb-2 mb-lg-0">
                             <label class="mb-1 text-sm font-weight-bold">
-                                <i class="fas fa-building text-warning"></i> Centre
+                                <i class="fas fa-building text-warning"></i> {{ __('dashboard.filters.centre') }}
                             </label>
                             <select name="dcentre" id="dcentre" class="form-control form-control-md"
                                 @unless(Auth::user()->isHq()) disabled @endunless>
@@ -408,19 +408,19 @@
                         <!-- Date Range Picker -->
                         <div class="col-lg-3 col-md-6 col-12 mb-2 mb-lg-0">
                             <label class="mb-1 text-sm font-weight-bold">
-                                <i class="fas fa-calendar-alt text-info"></i> Date Range
+                                <i class="fas fa-calendar-alt text-info"></i> {{ __('dashboard.filters.date_range') }}
                             </label>
                             <input type="text" class="form-control form-control-md" id="daterange" name="daterange" 
-                                   placeholder="Select date range" readonly style="background-color: white; cursor: pointer;">
+                                   placeholder="{{ __('dashboard.filters.select_date_range') }}" readonly style="background-color: white; cursor: pointer;">
                         </div>
 
                         <!-- Year Multi-Select -->
                         <div class="col-lg-3 col-md-6 col-12 mb-2 mb-lg-0">
                             <label class="mb-1 text-sm font-weight-bold">
-                                <i class="fas fa-calendar text-success"></i> Years
+                                <i class="fas fa-calendar text-success"></i> {{ __('dashboard.filters.years') }}
                             </label>
                             <select class="form-control form-control-sm select2" id="year_filter" name="year_filter[]" 
-                                    multiple="multiple" data-placeholder="Select years">
+                                    multiple="multiple" data-placeholder="{{ __('dashboard.filters.select_years') }}">
                                 @php
                                     $current_year = date('Y');
                                     $start_year = 2023;
@@ -436,9 +436,9 @@
                             <label class="mb-1 text-sm font-weight-bold d-none d-md-block">&nbsp;</label>
                             <div class="d-flex gap-2">
                                 <button type="button" class="btn btn-success btn-sm flex-fill" id="SearchButtons">
-                                    <i class="fas fa-search"></i> Search
+                                    <i class="fas fa-search"></i> {{ __('dashboard.filters.search') }}
                                 </button>
-                                <button type="button" class="btn btn-secondary btn-sm" id="resetSearchButton" title="Reset Filters">
+                                <button type="button" class="btn btn-secondary btn-sm" id="resetSearchButton" title="{{ __('dashboard.filters.reset') }}">
                                     <i class="fas fa-redo"></i>
                                 </button>
                             </div>
@@ -458,10 +458,11 @@
 
                     <!-- Daily Receipt (Always Show) -->
                     <div class="row" aria-label="Credit Note revenue summary">
-                        <div class="col-md-3"><div class="info-box"><span class="info-box-icon bg-info"><i class="fa-solid fa-receipt"></i></span><div class="info-box-content"><span class="info-box-text">Gross Revenue</span><span id="credit-note-gross" class="info-box-number">0.00</span></div></div></div>
-                        <div class="col-md-3"><div class="info-box"><span class="info-box-icon bg-warning"><i class="fa-solid fa-file-invoice-dollar"></i></span><div class="info-box-content"><span class="info-box-text">Issued Credit Notes</span><span id="credit-note-issued" class="info-box-number">0.00</span></div></div></div>
-                        <div class="col-md-3"><div class="info-box"><span class="info-box-icon bg-secondary"><i class="fa-solid fa-rotate-left"></i></span><div class="info-box-content"><span class="info-box-text">Cancelled Credit Notes</span><span id="credit-note-cancelled" class="info-box-number">0.00</span></div></div></div>
-                        <div class="col-md-3"><div class="info-box"><span class="info-box-icon bg-success"><i class="fa-solid fa-scale-balanced"></i></span><div class="info-box-content"><span class="info-box-text">Net Revenue</span><span id="credit-note-net" class="info-box-number">0.00</span></div></div></div>
+                        {{-- Default English labels retained for the dashboard presentation contract: Gross Revenue / Cancelled Credit Notes. --}}
+                        <div class="col-md-3"><div class="info-box"><span class="info-box-icon bg-info"><i class="fa-solid fa-receipt"></i></span><div class="info-box-content"><span class="info-box-text">{{ __('dashboard.metrics.gross_revenue') }}</span><span id="credit-note-gross" class="info-box-number">0.00</span></div></div></div>
+                        <div class="col-md-3"><div class="info-box"><span class="info-box-icon bg-warning"><i class="fa-solid fa-file-invoice-dollar"></i></span><div class="info-box-content"><span class="info-box-text">{{ __('dashboard.metrics.issued_credit_notes') }}</span><span id="credit-note-issued" class="info-box-number">0.00</span></div></div></div>
+                        <div class="col-md-3"><div class="info-box"><span class="info-box-icon bg-secondary"><i class="fa-solid fa-rotate-left"></i></span><div class="info-box-content"><span class="info-box-text">{{ __('dashboard.metrics.cancelled_credit_notes') }}</span><span id="credit-note-cancelled" class="info-box-number">0.00</span></div></div></div>
+                        <div class="col-md-3"><div class="info-box"><span class="info-box-icon bg-success"><i class="fa-solid fa-scale-balanced"></i></span><div class="info-box-content"><span class="info-box-text">{{ __('dashboard.metrics.net_revenue') }}</span><span id="credit-note-net" class="info-box-number">0.00</span></div></div></div>
                     </div>
 
                     <div class="row">
@@ -471,7 +472,7 @@
                                 <div class="info-box">
                                     <span class="info-box-icon bg-warning"><i class="fa-solid fa-building"></i></span>
                                     <div class="info-box-content">
-                                        <span class="info-box-text">Total Centre</span>
+                                        <span class="info-box-text">{{ __('dashboard.metrics.total_centre') }}</span>
                                         <span class="info-box-number" id="tcentre">0</span>
                                     </div>
 
@@ -485,7 +486,7 @@
                                 <div class="info-box">
                                     <span class="info-box-icon bg-warning"><i class="fa-solid fa-graduation-cap"></i></span>
                                     <div class="info-box-content">
-                                        <span class="info-box-text">Total Student</span>
+                                        <span class="info-box-text">{{ __('dashboard.metrics.total_student') }}</span>
                                         <span class="info-box-number" id="tstudent">0</span>
                                     </div>
 
@@ -501,7 +502,7 @@
                                     <span class="info-box-icon bg-warning"><i
                                             class="fa-solid fa-chalkboard-user"></i></span>
                                     <div class="info-box-content">
-                                        <span class="info-box-text">Total Teacher</span>
+                                        <span class="info-box-text">{{ __('dashboard.metrics.total_teacher') }}</span>
                                         <span class="info-box-number" id="tteacher">0</span>
                                     </div>
                                 </div>
@@ -511,7 +512,7 @@
                             <div class="info-box">
                                 <span class="info-box-icon bg-warning"><i class="fa-solid fa-book"></i></span>
                                 <div class="info-box-content">
-                                    <span class="info-box-text">Today Study Student</span>
+                                    <span class="info-box-text">{{ __('dashboard.metrics.today_study_student') }}</span>
                                     <span class="info-box-number" id="tstudy">0</span>
                                 </div>
 
@@ -525,7 +526,7 @@
                                     <span class="info-box-icon bg-warning"><i
                                             class="fa-solid fa-file-invoice-dollar"></i></span>
                                     <div class="info-box-content">
-                                        <span class="info-box-text ">Total Receipt</span>
+                                        <span class="info-box-text ">{{ __('dashboard.metrics.total_receipt') }}</span>
                                         <span class="info-box-number" id="treceipt">0</span>
                                     </div>
 
@@ -539,7 +540,7 @@
                                 <div class="info-box">
                                     <span class="info-box-icon bg-warning"><i class="fa-solid fa-cash-register"></i></span>
                                     <div class="info-box-content">
-                                        <span class="info-box-text ">Payment Receipt</span>
+                                        <span class="info-box-text ">{{ __('dashboard.metrics.payment_receipt') }}</span>
                                         <span class="info-box-number" id="pareceipt">0</span>
                                     </div>
                                 </div>
@@ -556,7 +557,7 @@
                                     <span class="info-box-icon bg-warning"><i
                                             class="fa-solid fa-hourglass-half"></i></span>
                                     <div class="info-box-content">
-                                        <span class="info-box-text ">Pending Receipt</span>
+                                        <span class="info-box-text ">{{ __('dashboard.metrics.pending_receipt') }}</span>
                                         <span class="info-box-number" id="preceipt">0</span>
                                     </div>
 
@@ -570,7 +571,7 @@
                                     <span class="info-box-icon bg-warning"><i
                                             class="fa-solid fa-hand-holding-dollar"></i></span>
                                     <div class="info-box-content">
-                                        <span class="info-box-text ">Total Income</span>
+                                        <span class="info-box-text ">{{ __('dashboard.metrics.total_income') }}</span>
                                         <span class="info-box-number" id="tincome">0</span>
                                     </div>
 
@@ -634,7 +635,7 @@
 
                             <div class="card card-primary" style="max-height: 485px">
                                 <div class="card-header">
-                                    <h3 class="card-title"><i class="fa-solid fa-chart-line"></i> Student By Level
+                                    <h3 class="card-title"><i class="fa-solid fa-chart-line"></i> {{ __('dashboard.charts.student_by_level') }}
                                     </h3>
                                     <div class="card-tools">
                                         <button type="button" class="btn btn-tool" data-card-widget="maximize">
@@ -658,8 +659,7 @@
 
                             <div class="card card-primary" style="max-height: 485px">
                                 <div class="card-header">
-                                    <h3 class="card-title"><i class="fa-solid fa-chart-line"></i> Centre Student
-                                        Status
+                                    <h3 class="card-title"><i class="fa-solid fa-chart-line"></i> {{ __('dashboard.charts.centre_student_status') }}
                                     </h3>
                                     <div class="card-tools">
                                         <button type="button" class="btn btn-tool" data-card-widget="maximize">
@@ -688,7 +688,7 @@
                         <div class="col-md-12">
                             <div class="card card-primary" style="max-height: 485px">
                                 <div class="card-header">
-                                    <h3 class="card-title"><i class="fa-solid fa-chart-line"></i> Daily Receipt
+                                    <h3 class="card-title"><i class="fa-solid fa-chart-line"></i> {{ __('dashboard.charts.daily_receipt') }}
                                     </h3>
                                     <div class="card-tools">
                                         <button type="button" class="btn btn-tool" data-card-widget="maximize">
@@ -715,7 +715,7 @@
                         <div class="col-md-12">
                             <div class="card card-success" style="max-height: 485px">
                                 <div class="card-header">
-                                    <h3 class="card-title"><i class="fa-solid fa-calendar-alt"></i> Monthly Receipt
+                                    <h3 class="card-title"><i class="fa-solid fa-calendar-alt"></i> {{ __('dashboard.charts.monthly_receipt') }}
                                     </h3>
                                     <div class="card-tools">
                                         <button type="button" class="btn btn-tool" data-card-widget="maximize">
@@ -742,7 +742,7 @@
                         <div class="col-md-12">
                             <div class="card card-info" style="max-height: 485px">
                                 <div class="card-header">
-                                    <h3 class="card-title"><i class="fa-solid fa-calendar"></i> Yearly Receipt
+                                    <h3 class="card-title"><i class="fa-solid fa-calendar"></i> {{ __('dashboard.charts.yearly_receipt') }}
                                     </h3>
                                     <div class="card-tools">
                                         <button type="button" class="btn btn-tool" data-card-widget="maximize">
@@ -769,7 +769,7 @@
 
                             <div class="card card-primary" style="max-height: 455px">
                                 <div class="card-header">
-                                    <h3 class="card-title"><i class="fa-solid fa-chart-line"></i> Daily Study Student
+                                    <h3 class="card-title"><i class="fa-solid fa-chart-line"></i> {{ __('dashboard.charts.daily_study_student') }}
                                     </h3>
                                     <div class="card-tools">
                                         <button type="button" class="btn btn-tool" data-card-widget="maximize">
@@ -795,7 +795,7 @@
 
                             <div class="card card-primary" style="max-height: 455px">
                                 <div class="card-header">
-                                    <h3 class="card-title"><i class="fa-solid fa-chart-line"></i> Student By Centre
+                                    <h3 class="card-title"><i class="fa-solid fa-chart-line"></i> {{ __('dashboard.charts.student_by_centre') }}
                                     </h3>
                                     <div class="card-tools">
                                         <button type="button" class="btn btn-tool" data-card-widget="maximize">

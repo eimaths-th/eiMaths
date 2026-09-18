@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="container">
-        <h2>Create New Question</h2>
+        <h2>{{ __('quiz-management.system_question.create_title') }}</h2>
 
         @if ($errors->any())
             <div class="alert alert-danger">
@@ -17,7 +17,7 @@
         <form action="{{ route('ts.questions.store') }}" method="POST">
             @csrf
             <div class="mb-3">
-                <label for="question_text" class="form-label">Question Text</label>
+                <label for="question_text" class="form-label">{{ __('quiz-management.system_question.question_text') }}</label>
                 <div class="row">
                     <div class="col-lg-8">
                         <input type="text" class="form-control" name="question_text" required>
@@ -26,39 +26,39 @@
                     <div class="col-lg-2">
                         <button type="button" class="btn btn-primary" onclick="insertFrac()">
                             {{-- เศษส่วน --}}
-                            Fraction
+                            {{ __('quiz-management.system_question.fraction') }}
                         </button>
                     </div>
                     <div class="col-lg-2">
                         <button type="button" class="btn btn-primary" onclick="insertMixed()">
                             {{-- จำนวนคละ --}}
-                            MixFrac
+                            {{ __('quiz-management.system_question.mixed_fraction') }}
                         </button>
                     </div>
                 </div>
             </div>
             <hr>
-            <h2>answers fraction</h2>
+            <h2>{{ __('quiz-management.system_question.answers_fraction') }}</h2>
 
             <div class="mb-3">
-                <label for="answer_numerator" class="form-label">Numerator</label>
+                <label for="answer_numerator" class="form-label">{{ __('quiz-management.system_question.numerator') }}</label>
                 <input type="number" class="form-control" name="answer_numerator" required>
             </div>
 
             <div class="mb-3">
-                <label for="answer_denominator" class="form-label">Denominator</label>
+                <label for="answer_denominator" class="form-label">{{ __('quiz-management.system_question.denominator') }}</label>
                 <input type="number" class="form-control" name="answer_denominator" required min="1">
             </div>
             <div class="mb-3">
-                <label for="answer_type" class="form-label">type</label>
+                <label for="answer_type" class="form-label">{{ __('quiz-management.system_question.type') }}</label>
                 <select name="answer_type" id="answer_type" class="form-control">
-                    <option value="frac">Fraction</option>
-                    <option value="mixed" selected>Mixed Fraction</option>
+                    <option value="frac">{{ __('quiz-management.system_question.fraction') }}</option>
+                    <option value="mixed" selected>{{ __('quiz-management.system_question.mixed_fraction') }}</option>
                 </select>
             </div>
-            <a href="{{ route('ts.questions.index') }}" class="btn btn-secondary"> back </a>
+            <a href="{{ route('ts.questions.index') }}" class="btn btn-secondary"> {{ __('quiz-management.system_question.back') }} </a>
 
-            <button type="submit" class="btn btn-primary">Save Question</button>
+            <button type="submit" class="btn btn-primary">{{ __('quiz-management.system_question.save') }}</button>
         </form>
     </div>
 @endsection

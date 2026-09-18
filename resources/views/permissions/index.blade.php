@@ -17,24 +17,24 @@
 
                         @can('add-permission')
                             <button type="button" class="btn btn-success" id="CreateButton">
-                                <i class="fas fa-user-lock"></i> Add Permission </button>
+                                <i class="fas fa-user-lock"></i> {{ __('user-access.permissions.actions.add') }}</button>
                         @else
                             <span class="d-inline-block" tabindex="0" data-toggle="tooltip" data-placement="bottom"
-                                title="You Not Have Permission">
+                                title="{{ __('user-access.messages.no_permission') }}">
                                 <button type="button" class="btn btn-success disabled">
-                                    <i class="fas fa-user-lock"></i> Add Permission  </button>
+                                    <i class="fas fa-user-lock"></i> {{ __('user-access.permissions.actions.add') }}</button>
                             </span>
                         @endcan &nbsp;
-                        <button type="button" class="btn btn bg-gradient-warning "
+                            <button type="button" class="btn btn bg-gradient-warning "
                                                     id="resetSearchButton"><i class="fa-solid fa-rotate"></i></button>
 
                         @can('delete-permission')
-                            <button type="button" class="btn btn-danger delete_all_button"><i class="fa fa-trash"></i> Delete All</button>
+                            <button type="button" class="btn btn-danger delete_all_button"><i class="fa fa-trash"></i> {{ __('user-access.permissions.actions.delete_all') }}</button>
                         @else
                             <span class="d-inline-block" tabindex="0" data-toggle="tooltip" data-placement="bottom"
-                                title="You Not Have Permission">
+                                title="{{ __('user-access.messages.no_permission') }}">
                                 <button type="button" class="btn btn-danger disabled"><i class="fa fa-trash"></i>
-                                    Delete All</button>
+                                    {{ __('user-access.permissions.actions.delete_all') }}</button>
                             </span>
                         @endcan
                     </ol>
@@ -50,9 +50,9 @@
                 <div class="col-12">
                     <div class="card card-primary">
                         <div class="card-header">
-                            <h3 class="card-title"><i class="fa fa-user-lock"></i> Permission Management</h3>
+                            <h3 class="card-title"><i class="fa fa-user-lock"></i> {{ __('user-access.permissions.title') }}</h3>
                             <div class="card-tools">
-                                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="{{ __('user-access.permissions.actions.collapse') }}">
                                     <i class="fas fa-minus"></i>
                                 </button>
                                 {{-- <button type="button" class="btn btn-tool" data-card-widget="remove" title="Remove">
@@ -80,8 +80,8 @@
                                     <thead>
                                         <tr>
                                             <th width="5%"><input type="checkbox" id="check-all" class="flat"></th>
-                                            <th width="90%">Permission Name</th>
-                                            <th >Action</th>
+                                            <th width="90%">{{ __('user-access.permissions.table.name') }}</th>
+                                            <th>{{ __('user-access.permissions.table.action') }}</th>
                                         </tr>
                                     </thead>
                                     <tbody>

@@ -7,30 +7,34 @@
         <div class="permission-search-wrap">
             <i class="fas fa-search" aria-hidden="true"></i>
             <input type="search" class="form-control permission-search"
-                placeholder="ค้นหา Permission..." aria-label="ค้นหา Permission">
+                placeholder="{{ __('user-access.permission_panel.search_placeholder') }}" aria-label="{{ __('user-access.permission_panel.search_label') }}">
         </div>
         <div class="permission-toolbar-actions">
             <span class="permission-total" aria-live="polite">
-                เลือกแล้ว <strong data-total-selected>0</strong>/{{ $totalPermissions }}
+                {{ __('user-access.permission_panel.selected') }} <strong data-total-selected>0</strong>/{{ $totalPermissions }}
             </span>
             <button type="button" class="btn btn-sm btn-outline-primary permission-select-all">
-                <i class="fas fa-check-double"></i> เลือกทั้งหมด
+                <i class="fas fa-check-double"></i> {{ __('user-access.permission_panel.select_all') }}
             </button>
             <button type="button" class="btn btn-sm btn-outline-secondary permission-clear-all">
-                <i class="fas fa-times"></i> ล้างทั้งหมด
+                <i class="fas fa-times"></i> {{ __('user-access.permission_panel.clear_all') }}
             </button>
         </div>
     </div>
 
     <div class="permission-groups-grid">
         @forelse ($permissionGroups as $group)
+            @php
+                $group_label = __('user-access.groups.' . $group['key'] . '.label');
+                $group_description = __('user-access.groups.' . $group['key'] . '.description');
+            @endphp
             <section class="permission-group-card" data-permission-group="{{ $group['key'] }}">
                 <header class="permission-group-header">
                     <div class="permission-group-heading">
                         <span class="permission-group-icon"><i class="{{ $group['icon'] }}"></i></span>
                         <div>
-                            <h5>{{ $group['label'] }}</h5>
-                            <p>{{ $group['description'] }}</p>
+                            <h5>{{ $group_label }}</h5>
+                            <p>{{ $group_description }}</p>
                         </div>
                     </div>
                     <div class="permission-group-control">
@@ -41,7 +45,7 @@
                             <input type="checkbox" class="custom-control-input permission-group-toggle"
                                 id="{{ $panelId }}-{{ $group['key'] }}-all">
                             <label class="custom-control-label" for="{{ $panelId }}-{{ $group['key'] }}-all">
-                                เลือกทั้งกลุ่ม
+                                {{ __('user-access.permission_panel.select_group') }}
                             </label>
                         </div>
                     </div>
@@ -66,11 +70,11 @@
                 </div>
             </section>
         @empty
-            <div class="alert alert-light border mb-0">ไม่มี Permission ที่สามารถมอบหมายได้</div>
+            <div class="alert alert-light border mb-0">{{ __('user-access.permission_panel.none_assignable') }}</div>
         @endforelse
     </div>
 
     <div class="permission-no-results" hidden>
-        <i class="fas fa-search"></i> ไม่พบ Permission ที่ค้นหา
+        <i class="fas fa-search"></i> {{ __('user-access.permission_panel.no_results') }}
     </div>
 </div>

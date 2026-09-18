@@ -74,7 +74,7 @@
 
 @section('content')
     <div class="container">
-        <h2>Exam Questions</h2>
+        <h2>{{ __('quiz-management.system_question.exam_questions') }}</h2>
 
         @if ($errors->any())
             <div class="alert alert-danger">

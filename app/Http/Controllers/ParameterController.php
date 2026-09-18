@@ -40,9 +40,9 @@ class ParameterController extends Controller
 
                 ->addColumn('action', function ($row) {
                     if (Gate::allows('centre-edit')) {
-                        $html = '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit</button> ';
+                        $html = '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> ' . e(__('parameter-settings.actions.edit')) . '</button> ';
                     } else {
-                        $html = '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> Edit</button> ';
+                        $html = '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="' . e(__('parameter-settings.messages.no_permission')) . '"><i class="fa fa-edit"></i> ' . e(__('parameter-settings.actions.edit')) . '</button> ';
                     }
                     /*  if (Gate::allows('centre-delete')) {
                        $html .= '<button type="button" data-rowid="' . $row->id . '" class="btn btn-sm btn-danger btn-delete"><i class="fa fa-trash"></i> Delete</button>';
@@ -82,7 +82,7 @@ class ParameterController extends Controller
 
 
         $validator = Validator::make($request->all(), $rules, [
-            'price.required' => 'Price must not be blank!',
+            'price.required' => __('parameter-settings.validation.price_required'),
         ]);
 
         if ($validator->fails()) {
@@ -96,6 +96,6 @@ class ParameterController extends Controller
         $update = parameter::find($id);
         $update->update($data);
 
-        return response()->json(['success' => 'Data has been successfully edited.']);
+        return response()->json(['success' => __('parameter-settings.messages.updated')]);
     }
 }

@@ -27,11 +27,15 @@ class DepartmentController extends Controller
         }
         return datatables()->of(Department::query()->orderByDesc('id'))
             ->editColumn('checkbox', fn ($row) => $row->id == Department::HQ_ID ? '' : '<input type="checkbox" name="table_records[]" value="'.(int) $row->id.'">')
-            ->editColumn('status', fn ($row) => $row->status == 1 ? 'Active' : 'Archived')
+            ->editColumn('status', fn ($row) => $row->status == 1
+                ? __('centre-management.messages.status_active')
+                : __('centre-management.messages.status_archived'))
             ->addColumn('action', function ($row) use ($request) {
-                $html = $request->user()->can('centre-edit') ? '<button class="btn btn-sm btn-warning" id="getEditData" data-id="'.(int) $row->id.'">Edit</button> ' : '';
+                $html = $request->user()->can('centre-edit')
+                    ? '<button class="btn btn-sm btn-warning" id="getEditData" data-id="'.(int) $row->id.'">'.e(__('centre-management.centres.actions.edit')).'</button> '
+                    : '';
                 if ($request->user()->can('centre-delete') && $row->id != Department::HQ_ID && $row->status == 1) {
-                    $html .= '<button class="btn btn-sm btn-danger btn-delete" data-rowid="'.(int) $row->id.'">ปิดสาขา</button>';
+                    $html .= '<button class="btn btn-sm btn-danger btn-delete" data-rowid="'.(int) $row->id.'">'.e(__('centre-management.centres.actions.archive')).'</button>';
                 }
                 return $html;
             })->rawColumns(['checkbox', 'action'])->toJson();
@@ -40,7 +44,7 @@ class DepartmentController extends Controller
     public function find($type, $department)
     {
         BranchAccess::assertBranch(request()->user(), $department);
-        $html = '<option value="">ไม่มีแผนก</option>';
+        $html = '<option value="">'.e(__('centre-management.messages.no_department')).'</option>';
         foreach (Position::where('department_id', $department)->where('status', 1)->orderBy('name')->get() as $position) {
             $html .= '<option value="'.(int) $position->id.'">'.e($position->name).'</option>';
         }
@@ -65,19 +69,30 @@ class DepartmentController extends Controller
             'status' => 'required|boolean',
             'enabled_modules' => 'sometimes|array',
             'enabled_modules.*' => ['string', Rule::in(array_keys(config('branch.modules')))],
+        ], [
+            'name.required' => __('centre-management.validation.name_required'),
+            'name.unique' => __('centre-management.validation.name_unique'),
+            'code.required' => __('centre-management.validation.code_required'),
+            'code.unique' => __('centre-management.validation.code_unique'),
+            'code.max' => __('centre-management.validation.code_max'),
+            'code.regex' => __('centre-management.validation.code_regex'),
+            'status.required' => __('centre-management.validation.status_required'),
+            'status.boolean' => __('centre-management.validation.status_boolean'),
+            'enabled_modules.array' => __('centre-management.validation.modules_array'),
+            'enabled_modules.*.in' => __('centre-management.validation.module_invalid'),
         ]);
         if ($request->has('enabled_modules')) {
-            abort_unless($request->user()->can('branch-modules-manage'), 403, 'Module management permission required.');
+            abort_unless($request->user()->can('branch-modules-manage'), 403, __('centre-management.messages.module_permission_required'));
             $data['enabled_modules'] = array_values(array_unique($data['enabled_modules']));
         } elseif (!$branch) {
             $data['enabled_modules'] = config('branch.default_modules');
         }
         if ($branch?->id === Department::HQ_ID) {
-            abort_unless((int) $data['status'] === 1, 422, 'HQ cannot be archived.');
+            abort_unless((int) $data['status'] === 1, 422, __('centre-management.messages.hq_cannot_archive'));
         }
         if ($branch && $branch->code !== $data['code']) {
             foreach (['contacts', 'orders', 'receipts', 'invoices', 'products'] as $table) {
-                abort_if(DB::table($table)->where('centre', $branch->id)->exists(), 422, 'A branch code used by records cannot be changed.');
+                abort_if(DB::table($table)->where('centre', $branch->id)->exists(), 422, __('centre-management.messages.branch_code_in_use'));
             }
         }
         return $data;
@@ -87,7 +102,7 @@ class DepartmentController extends Controller
     {
         $data = $this->data($request);
         $branch = DB::transaction(fn () => Department::create($data + ['branch_type' => 'branch']));
-        return response()->json(['success' => 'เพิ่มสาขาแล้ว สามารถใช้ Role มาตรฐานกับผู้ใช้สาขานี้ได้', 'data' => $branch]);
+        return response()->json(['success' => __('centre-management.messages.branch_created'), 'data' => $branch]);
     }
 
     public function show($id)
@@ -108,7 +123,7 @@ class DepartmentController extends Controller
         $branch = Department::findOrFail($id);
         $data = $this->data($request, $branch);
         DB::transaction(fn () => $branch->update($data));
-        return response()->json(['success' => 'บันทึกการตั้งค่าสาขาแล้ว']);
+        return response()->json(['success' => __('centre-management.messages.branch_updated')]);
     }
 
     private function archive(array $ids): void
@@ -116,7 +131,7 @@ class DepartmentController extends Controller
         abort_unless(BranchAccess::isCentral(request()->user()), 403);
         $ids = array_unique(array_map('intval', $ids));
         abort_unless($ids && count($ids) <= 500, 422);
-        abort_if(in_array(Department::HQ_ID, $ids, true), 422, 'HQ cannot be archived.');
+        abort_if(in_array(Department::HQ_ID, $ids, true), 422, __('centre-management.messages.hq_cannot_archive'));
         DB::transaction(function () use ($ids) {
             $branches = Department::whereKey($ids)->lockForUpdate()->get();
             abort_unless($branches->count() === count($ids), 404);
@@ -129,13 +144,13 @@ class DepartmentController extends Controller
     public function destroy(Request $request)
     {
         $this->archive([(int) $request->id]);
-        return response()->json(['success' => true, 'message' => 'ปิดสาขาแล้ว ข้อมูลและประวัติยังคงอยู่']);
+        return response()->json(['success' => true, 'message' => __('centre-management.messages.branch_archived')]);
     }
 
     public function destroy_all(Request $request)
     {
         $request->validate(['table_records' => 'required|array', 'table_records.*' => 'integer']);
         $this->archive($request->table_records);
-        return redirect('/departments')->with('success', 'ปิดสาขาที่เลือกแล้ว โดยเก็บประวัติทั้งหมด');
+        return redirect('/departments')->with('success', __('centre-management.messages.branches_archived'));
     }
 }

@@ -261,26 +261,27 @@ class CourseController extends Controller
                     return $query->title;
                 })
                 ->editColumn('required_type', function ($query) {
-                    return $query->required_type == 1 ? trans('courses.Compulsory') : trans('courses.Open');
+                    return $query->required_type == 1
+                        ? __('course.courses.data.compulsory')
+                        : __('course.courses.data.open');
                 })->editColumn('mode_of_delivery', function ($query) {
                     if ($query->mode_of_delivery == 1) {
-                        // $title = trans('courses.Online');
-                        $title = 'Online';
+                        $title = __('course.courses.data.online');
                     } elseif ($query->mode_of_delivery == 2) {
-                        $title = 'Distance Learning';
-
-                        // $title = trans('courses.Distance Learning');
+                        $title = __('course.courses.data.distance_learning');
                     } else {
                         if (isModuleActive('Org')) {
-                            $title = 'Offline';
+                            $title = __('course.courses.data.offline');
                         } else {
-                            $title = 'Face-to-Face';
+                            $title = __('course.courses.data.face_to_face');
                         }
                     }
                     return $title;
                 })
                 ->addColumn('type', function ($query) {
-                    return $query->type == 1 ? 'Course' : 'Quiz';
+                    return $query->type == 1
+                        ? __('course.courses.data.course')
+                        : __('course.courses.data.quiz');
                 })->addColumn('status', function ($query) {
                     // return 1;
 
@@ -293,7 +294,7 @@ class CourseController extends Controller
                     if ($query->category) {
                         return $query->category->name;
                     } else {
-                        return 'erro category';
+                        return __('course.courses.data.missing_category');
                     }
                 })
                 // ->editColumn('quiz', function ($query) {
@@ -307,7 +308,7 @@ class CourseController extends Controller
                     if ($query->user) {
                         return $query->user->name;
                     } else {
-                        return 'erro user';
+                        return __('course.courses.data.missing_instructor');
                     }
                 })
                 // ->addColumn('enrolled_users', function ($query) {
@@ -315,21 +316,16 @@ class CourseController extends Controller
                 // })
                 ->editColumn('scope', function ($query) {
                     if ($query->scope == 1) {
-                        $scope = 'Public';
+                        $scope = __('course.courses.data.public');
                     } else {
-                        $scope = 'Private';
+                        $scope = __('course.courses.data.private');
                     }
                     return $scope;
                 })->addColumn('price', function ($query) {
                     return number_format($query->price) . ' ฿';
                     // return view('coursesetting::components._course_price_td', ['query' => $query]);
                 })->addColumn('action', function ($query) {
-
-                    $html = '<a class="btn btn-warning edit-btn" data-id=" ' . $query->id . '">Edit</a> ';
-                    // return $html;
                     return view('components._course_action_td', ['query' => $query]);
-
-                    // return '1';
                 })->rawColumns(['status', 'price', 'action', 'enrolled_users'])
                 ->make(true);
         }
@@ -403,7 +399,10 @@ class CourseController extends Controller
             throw $exception;
         }
 
-        return response()->json(['success' => true, 'message' => 'Course added successfully.']);
+        return response()->json([
+            'success' => true,
+            'message' => __('course.courses.messages.created'),
+        ]);
     }
 
     public function edit(Request $request, $id)
@@ -431,9 +430,15 @@ class CourseController extends Controller
 
         // Attempt to delete the course
         if ($course->delete()) {
-            return response()->json(['success' => true, 'message' => 'Course and image deleted successfully.']);
+            return response()->json([
+                'success' => true,
+                'message' => __('course.courses.messages.deleted'),
+            ]);
         } else {
-            return response()->json(['success' => false, 'message' => 'Error deleting the course and image.']);
+            return response()->json([
+                'success' => false,
+                'message' => __('course.courses.messages.delete_failed'),
+            ]);
         }
     }
     public function update(Request $request, $id)
@@ -496,7 +501,7 @@ class CourseController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Course updated successfully.',
+            'message' => __('course.courses.messages.updated'),
             'image_url' => $image_state['url'],
         ]);
     }
@@ -558,7 +563,10 @@ class CourseController extends Controller
         $store->save();
 
         DB::commit();
-        Toastr::success(trans('common.Operation successful'), trans('common.Success'));
+        Toastr::success(
+            __('course.categories.messages.operation_successful'),
+            __('course.categories.messages.success_title')
+        );
         return redirect()->back();
     }
 
@@ -587,7 +595,10 @@ class CourseController extends Controller
 
         $is_exist = Category::where('name', $request->name)->where('id', '!=', $request->id)->first();
         if ($is_exist) {
-            Toastr::error(trans('frontend.This name has been already taken'), trans('common.Failed'));
+            Toastr::error(
+                __('course.categories.messages.name_taken'),
+                __('course.categories.messages.failed_title')
+            );
             return redirect()->back();
         }
 
@@ -636,13 +647,23 @@ class CourseController extends Controller
         // $category->status = $request->status;
         // $category->save();
 
-        Toastr::success('Operation successful', 'Success');
+        Toastr::success(
+            __('course.categories.messages.operation_successful'),
+            __('course.categories.messages.success_title')
+        );
         return redirect()->route('categories.index');
     }
 
     public function categoriesDelete($id)
     {
         $category = Category::find($id);
+        if (!$category) {
+            return response()->json([
+                'success' => false,
+                'message' => __('course.categories.messages.not_found'),
+            ], 404);
+        }
+
         $check_position = Category::where('position_order', $category->position_order)->first();
 
         if ($check_position != '') {
@@ -656,10 +677,16 @@ class CourseController extends Controller
 
         if ($category) {
             $category->delete(); // Deletes the category
-            return response()->json(['success' => true, 'message' => 'Category deleted successfully.']);
+            return response()->json([
+                'success' => true,
+                'message' => __('course.categories.messages.deleted'),
+            ]);
         }
 
-        return response()->json(['success' => false, 'message' => 'Category not found.'], 404);
+        return response()->json([
+            'success' => false,
+            'message' => __('course.categories.messages.not_found'),
+        ], 404);
     }
 
     public function getAllCourseData(Request $request)
@@ -776,9 +803,15 @@ class CourseController extends Controller
 
             // dd($request->all(), $request->status , $course);
 
-            return response()->json(['success' => true, 'message' => 'Status updated successfully.']);
+            return response()->json([
+                'success' => true,
+                'message' => __('course.courses.messages.status_updated'),
+            ]);
         } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => 'Failed to update status.']);
+            return response()->json([
+                'success' => false,
+                'message' => __('course.courses.messages.status_update_failed'),
+            ]);
         }
     }
 
@@ -819,12 +852,12 @@ class CourseController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Course level added successfully.'
+                'message' => __('course.levels.messages.created'),
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to add course level.',
+                'message' => __('course.levels.messages.create_failed'),
                 'error' => $e->getMessage()
             ]);
         }
@@ -870,7 +903,10 @@ class CourseController extends Controller
         $edit->save();
 
         // Return a success response
-        return response()->json(['success' => true, 'message' => 'Course level updated successfully.']);
+        return response()->json([
+            'success' => true,
+            'message' => __('course.levels.messages.updated'),
+        ]);
     }
 
     public function courseLevelDestroy($id)
@@ -882,12 +918,12 @@ class CourseController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Course level deleted successfully.'
+                'message' => __('course.levels.messages.deleted'),
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error deleting course level: ' . $e->getMessage()
+                'message' => __('course.levels.messages.delete_failed'),
             ], 500);
         }
     }
@@ -1147,8 +1183,8 @@ class CourseController extends Controller
             ->select(['id', 'name', 'code'])
             ->findOrFail((int) $validatedData['department_id']);
 
-        abort_unless(\App\Support\Branch\BranchAccess::moduleEnabled((int) $department->id, 'crm'), 422, 'Registration is not enabled for this branch.');
-        abort_unless(\App\Models\TeachingPeriod::where('department_id', $validatedData['department_id'])->where('day', $validatedData['day'])->where('period', $validatedData['period'])->exists(), 422, 'Choose a valid teaching period for this branch.');
+        abort_unless(\App\Support\Branch\BranchAccess::moduleEnabled((int) $department->id, 'crm'), 422, __('course-website.messages.registration_disabled'));
+        abort_unless(\App\Models\TeachingPeriod::where('department_id', $validatedData['department_id'])->where('day', $validatedData['day'])->where('period', $validatedData['period'])->exists(), 422, __('course-website.messages.invalid_period'));
         $affiliate_context = $request->attributes->get('affiliate_referral_context');
         $validatedData['ref'] = '';
         $validatedData['status'] = '1';
@@ -1233,7 +1269,7 @@ class CourseController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Course stored successfully!',
+            'message' => __('course-website.messages.booking_stored'),
             'qrCodePayment' => $qrCodePayment,
             'coursePending_id' => $create->id,
             'application_token' => encrypt(['id' => $create->id, 'expires_at' => now()->addHours(24)->timestamp]),

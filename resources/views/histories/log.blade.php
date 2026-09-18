@@ -2,8 +2,8 @@
     <div class="modal-dialog modal-xxl">
         <div class="modal-content">
             <div class="modal-header bg-primary">
-                <h4 class="modal-title"><i class="fas fa-graduation-cap"></i>History Log</h4>
-                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                <h4 class="modal-title"><i class="fas fa-graduation-cap"></i>{{ __('students.history.log') }}</h4>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="{{ __('common.actions.close') }}">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -32,7 +32,7 @@
                             <li class="nav-item">
                                 <a class="nav-link active" id="custom-tabs-one-home-tab" data-toggle="pill"
                                     href="#custom-tabs-one-home" role="tab" aria-controls="custom-tabs-one-home"
-                                    aria-selected="true">History Detail</a>
+                                    aria-selected="true">{{ __('students.history.title') }}</a>
                             </li>
                         </ul>
                     </div>
@@ -214,7 +214,7 @@
                 {{-- <button type="button" class="btn btn-success" id="SubmitEditForm"><i class="fas fa-download"></i>
                     Save </button> --}}
                 <button type="button" class="btn btn-danger modelClose" data-bs-dismiss="modal"><i
-                        class="fas fa-door-closed"></i> Close</button>
+                        class="fas fa-door-closed"></i> {{ __('common.actions.close') }}</button>
             </div>
         </div>
     </div>

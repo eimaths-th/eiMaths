@@ -190,7 +190,7 @@
                             Create Question
                         </a> --}}
                         <button type="button" class="btn btn-success" id="CreateButton">
-                            <i class="fas fa-user"></i> Create Question </button>
+                            <i class="fas fa-user"></i> {{ __('quiz-management.question_bank.create') }} </button>
 
                     </ol>
 
@@ -211,7 +211,7 @@
                         <div class="card-header">
                             <h3 class="card-title">
                                 <i class="fa fa-user"></i>
-                                Question List
+                                {{ __('quiz-management.question_bank.title') }}
                             </h3>
                             <div class="card-tools">
 
@@ -237,14 +237,14 @@
                             <div class="row searchQuestion mb-3">
                                 <div class="col-md-3">
                                     <label class="switch_toggle">
-                                        <span>My Question</span>
+                                        <span>{{ __('quiz-management.question_bank.my_question') }}</span>
                                         <input type="checkbox" class="my-question">
                                         <span class="slider round"></span>
                                     </label>
                                 </div>
                                 <div class="col-md-3">
                                     <select id="filter-grade" class="form-control">
-                                        <option value="">All Grades</option>
+                                        <option value="">{{ __('quiz-management.question_bank.all_grades') }}</option>
                                         <option value="K1">K1</option>
                                         <option value="K2">K2</option>
                                         <option value="P1">P1</option>
@@ -257,7 +257,7 @@
                                 </div>
                                 <div class="col-md-3">
                                     <select id="filter-term" class="form-control">
-                                        <option value="">All Terms</option>
+                                        <option value="">{{ __('quiz-management.question_bank.all_terms') }}</option>
                                         <option value="1">1</option>
                                         <option value="2">2</option>
                                         <option value="3">3</option>
@@ -266,7 +266,7 @@
                                 </div>
                                 <div class="col-md-3">
                                     <select id="filter-section" class="form-control">
-                                        <option value="">All Level</option>
+                                        <option value="">{{ __('quiz-management.question_bank.all_levels') }}</option>
                                         @for ($i = 1; $i <= 20; $i++)
                                             <option value="{{ $i }}">{{ $i }}</option>
                                         @endfor
@@ -277,14 +277,14 @@
                             <table id="Listview" class="table table-bordered table-striped table-hover">
                                 <thead>
                                     <tr>
-                                        <th> # </th>
-                                        <th> Code </th>
-                                        <th> Text </th>
-                                        <th> Grade </th>
-                                        <th> Term </th>
-                                        <th> Lavel </th>
-                                        <th> Type Option </th>
-                                        <th> Options </th>
+                                        <th> {{ __('quiz-management.question_bank.number') }} </th>
+                                        <th> {{ __('quiz-management.question_bank.code') }} </th>
+                                        <th> {{ __('quiz-management.question_bank.text') }} </th>
+                                        <th> {{ __('quiz-management.question_bank.grade') }} </th>
+                                        <th> {{ __('quiz-management.question_bank.term') }} </th>
+                                        <th> {{ __('quiz-management.question_bank.level') }} </th>
+                                        <th> {{ __('quiz-management.question_bank.type') }} </th>
+                                        <th> {{ __('quiz-management.question_bank.options') }} </th>
                                         {{-- <th> Level </th>
                                         <th> Term </th> --}}
                                         <th> </th>

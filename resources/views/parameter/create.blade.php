@@ -2,7 +2,7 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header bg-primary">
-                <h4 class="modal-title"><i class="fas fa-list-ol"></i> Add Centre</h4>
+                <h4 class="modal-title"><i class="fas fa-list-ol"></i> {{ __('parameter-settings.navigation.title') }}</h4>
                 <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -36,16 +36,16 @@
                 <div class="row">
                     <div class="col-xs-6 col-sm-6 col-md-6">
                         <div class="form-group">
-                            <strong><i class="fas fa-list-ol"></i> Centre Name:</strong>
-                            {!! Form::text('name', null, ['id' => 'AddName', 'placeholder' => 'Name', 'class' => 'form-control']) !!}
+                            <strong><i class="fas fa-list-ol"></i> {{ __('parameter-settings.modal.name') }}:</strong>
+                            {!! Form::text('name', null, ['id' => 'AddName', 'placeholder' => __('parameter-settings.modal.name'), 'class' => 'form-control']) !!}
                         </div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-xs-6 col-sm-6 col-md-6">
                         <div class="form-group">
-                            <strong><i class="fas fa-list-ol"></i> Centre Code:</strong>
-                            {!! Form::text('code', null, ['id' => 'AddCode', 'placeholder' => 'Code', 'class' => 'form-control']) !!}
+                            <strong><i class="fas fa-list-ol"></i> {{ __('parameter-settings.table.name') }}:</strong>
+                            {!! Form::text('code', null, ['id' => 'AddCode', 'placeholder' => __('parameter-settings.table.name'), 'class' => 'form-control']) !!}
                         </div>
                     </div>
                 </div>
@@ -53,12 +53,12 @@
                 <div class="row">
                     <div class="col-xs-6 col-sm-6 col-md-6">
                         <div class="form-group">
-                            <strong><i class="fas fa-eye"></i> Status:</strong>
+                            <strong><i class="fas fa-eye"></i> {{ __('common.fields.status') }}:</strong>
                             <br />
                             <div class="custom-control custom-switch">
                                 {{ Form::checkbox('status', '1', false, ['id' => 'customCheckbox1', 'class' => 'custom-control-input name']) }}
                                 <label for="customCheckbox1" class="custom-control-label">
-                                    Active</label>
+                                    {{ __('parameter-settings.modal.active') }}</label>
                             </div>
                         </div>
                     </div>
@@ -69,8 +69,8 @@
                 {!! Form::close() !!}
             </div>
             <div class="modal-footer {{-- justify-content-between --}}">
-                <button type="button" class="btn btn-success" id="SubmitCreateForm"><i class="fas fa-download"></i> Save</button>
-                <button type="button" class="btn btn-danger modelClose" data-bs-dismiss="modal"><i class="fas fa-door-closed"></i> Close</button>
+                <button type="button" class="btn btn-success" id="SubmitCreateForm"><i class="fas fa-download"></i> {{ __('parameter-settings.actions.save') }}</button>
+                <button type="button" class="btn btn-danger modelClose" data-bs-dismiss="modal"><i class="fas fa-door-closed"></i> {{ __('parameter-settings.actions.close') }}</button>
             </div>
         </div>
     </div>

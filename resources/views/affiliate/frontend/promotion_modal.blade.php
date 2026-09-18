@@ -24,7 +24,7 @@
         <div class="modal-content">
             <!-- Close Button Moved Outside modal-body -->
             <button type="button" class="btn-close bg-danger position-absolute top-0 end-0 m-2" data-bs-dismiss="modal"
-                aria-label="Close" style="z-index: 1055;"></button>
+                aria-label="{{ __('course-website.promotion.close') }}" style="z-index: 1055;"></button>
 
             <div class="modal-body p-0 text-center">
                 @if (count($promotion) > 1) <!-- Check if more than 1 image -->
@@ -33,7 +33,7 @@
                             @foreach ($promotion as $key => $image)
                                 <div class="carousel-item {{ $key == 0 ? 'active' : '' }}">
                                     <a href="{{ $image->url ?? '#'}}" target="_blank">
-                                        <img src="{{ asset($image->img) }}" alt="Promotion"
+                                        <img src="{{ asset($image->img) }}" alt="{{ __('course-website.promotion.image_alt') }}"
                                             class="img-fluid w-100 rounded">
                                     </a>
                                 </div>
@@ -43,17 +43,17 @@
                         <button class="carousel-control-prev" type="button" data-bs-target="#promoCarousel"
                             data-bs-slide="prev">
                             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Previous</span>
+                            <span class="visually-hidden">{{ __('course-website.promotion.previous') }}</span>
                         </button>
                         <button class="carousel-control-next" type="button" data-bs-target="#promoCarousel"
                             data-bs-slide="next">
                             <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Next</span>
+                            <span class="visually-hidden">{{ __('course-website.promotion.next') }}</span>
                         </button>
                     </div>
                 @else
                     <a href="{{ $promotion->first()->url ?? '#'}}" target="_blank">
-                        <img src="{{ asset($promotion->first()->img) }}" alt="Promotion" class="img-fluid w-100 rounded">
+                        <img src="{{ asset($promotion->first()->img) }}" alt="{{ __('course-website.promotion.image_alt') }}" class="img-fluid w-100 rounded">
                     </a>
                 @endif
             </div>

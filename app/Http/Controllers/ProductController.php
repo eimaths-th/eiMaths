@@ -53,38 +53,37 @@ class ProductController extends Controller
         if ($request->ajax()) {
             //sleep(2);
 
-            $state_text = array('Enable', 'Disable');
             return datatables()->of($datas)
                 ->editColumn('checkbox', function ($row) {
                     return '<input type="checkbox" id="' . $row->id . '" class="flat" name="table_records[]" value="' . $row->id . '" >';
                 })
                 ->addColumn('action', function ($row) {
                     if (Gate::allows('product-edit')) {
-                        $html = '<button type="button" class="btn btn-sm btn-success btn-log" data-id="' . $row->id . '"><i class="fa-solid fa-eye"></i> Log</button> ';
+                        $html = '<button type="button" class="btn btn-sm btn-success btn-log" data-id="' . $row->id . '"><i class="fa-solid fa-eye"></i> ' . __('products.actions.log') . '</button> ';
                     } else {
-                        $html = '<button type="button" class="btn btn-sm btn-success disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa-solid fa-eye"></i> Log</button> ';
+                        $html = '<button type="button" class="btn btn-sm btn-success disabled" data-toggle="tooltip" data-placement="bottom" title="' . __('common.feedback.permission_denied') . '"><i class="fa-solid fa-eye"></i> ' . __('products.actions.log') . '</button> ';
                     }
                     if (Gate::allows('product-edit')) {
-                        $html .= '<button type="button" class="btn btn-sm btn-info btn-barcode" data-id="' . $row->id . '"><i class="fa-solid fa-barcode"></i> Bar</button> ';
+                        $html .= '<button type="button" class="btn btn-sm btn-info btn-barcode" data-id="' . $row->id . '"><i class="fa-solid fa-barcode"></i> ' . __('products.actions.barcode') . '</button> ';
                     } else {
-                        $html .= '<button type="button" class="btn btn-sm btn-info disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa-solid fa-barcode"></i> Bar</button> ';
-                    }
-
-                    if (Gate::allows('product-edit')) {
-                        $html .= '<button type="button" class="btn btn-sm btn-info btn-qbarcode" data-id="' . $row->id . '"><i class="fa-solid fa-qrcode"></i> QR</button> ';
-                    } else {
-                        $html .= '<button type="button" class="btn btn-sm btn-info disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa-solid fa-qrcode"></i> QR</button> ';
+                        $html .= '<button type="button" class="btn btn-sm btn-info disabled" data-toggle="tooltip" data-placement="bottom" title="' . __('common.feedback.permission_denied') . '"><i class="fa-solid fa-barcode"></i> ' . __('products.actions.barcode') . '</button> ';
                     }
 
                     if (Gate::allows('product-edit')) {
-                        $html .= '<button type="button" class="btn btn-sm btn-warning btn-edit" data-id="' . $row->id . '"><i class="fa fa-edit"></i> Edit</button> ';
+                        $html .= '<button type="button" class="btn btn-sm btn-info btn-qbarcode" data-id="' . $row->id . '"><i class="fa-solid fa-qrcode"></i> ' . __('products.actions.qrcode') . '</button> ';
                     } else {
-                        $html .= '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-edit"></i> Edit</button> ';
+                        $html .= '<button type="button" class="btn btn-sm btn-info disabled" data-toggle="tooltip" data-placement="bottom" title="' . __('common.feedback.permission_denied') . '"><i class="fa-solid fa-qrcode"></i> ' . __('products.actions.qrcode') . '</button> ';
+                    }
+
+                    if (Gate::allows('product-edit')) {
+                        $html .= '<button type="button" class="btn btn-sm btn-warning btn-edit" data-id="' . $row->id . '"><i class="fa fa-edit"></i> ' . __('products.actions.edit') . '</button> ';
+                    } else {
+                        $html .= '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="' . __('common.feedback.permission_denied') . '"><i class="fa fa-edit"></i> ' . __('products.actions.edit') . '</button> ';
                     }
                     if (Gate::allows('product-delete')) {
-                        $html .= '<button type="button" data-rowid="' . $row->id . '" class="btn btn-sm btn-danger btn-delete"><i class="fa fa-trash"></i> Delete</button> ';
+                        $html .= '<button type="button" data-rowid="' . $row->id . '" class="btn btn-sm btn-danger btn-delete"><i class="fa fa-trash"></i> ' . __('products.actions.delete') . '</button> ';
                     } else {
-                        $html .= '<button type="button" class="btn btn-sm btn-danger disabled" data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-trash"></i> Delete</button> ';
+                        $html .= '<button type="button" class="btn btn-sm btn-danger disabled" data-toggle="tooltip" data-placement="bottom" title="' . __('common.feedback.permission_denied') . '"><i class="fa fa-trash"></i> ' . __('products.actions.delete') . '</button> ';
                     }
                     return $html;
                 })->rawColumns(['checkbox', 'action'])->toJson();
@@ -160,7 +159,7 @@ class ProductController extends Controller
         $product = Product::where('code', $pid)->first();
 
         if (!$product) {
-            return response()->json(['message' => 'ไม่พบสินค้านี้ในระบบ']);
+            return response()->json(['message' => __('products.messages.product_not_found')]);
         }
 
         return response()->json(['product' =>  $product]);
@@ -240,13 +239,13 @@ class ProductController extends Controller
             'unit' => 'required',
             'amount' => 'required',
         ], [
-            'name.required' => 'The Accessories name must not be blank!',
-            'name.unique' => 'This Accessories name already exists in the database for the selected centre!',
-            'code.required' => 'The Accessories code must not be blank!',
-            'code.max' => 'The Accessories code must not exceed 10 characters',
-            'centre.required' => 'Please select a centre!',
-            'unit.required' => 'The Accessories unit must not be blank!',
-            'amount.required' => 'The Accessories Quantity must not be blank!',
+            'name.required' => __('products.validation.name_required'),
+            'name.unique' => __('products.validation.name_unique'),
+            'code.required' => __('products.validation.code_required'),
+            'code.max' => __('products.validation.code_max'),
+            'centre.required' => __('products.validation.centre_required'),
+            'unit.required' => __('products.validation.unit_required'),
+            'amount.required' => __('products.validation.amount_required'),
         ]);
 
         if ($validator->fails()) {
@@ -257,7 +256,7 @@ class ProductController extends Controller
         $input['code'] = ProductRunningNumber::generate($request->get('centre'));
         $input['created_by'] = Auth::id();
         Product::create($input);
-        return response()->json(['success' => 'The Acceseries has been successfully added.']);
+        return response()->json(['success' => __('products.messages.created')]);
     }
 
     /**
@@ -271,7 +270,7 @@ class ProductController extends Controller
         $product = Product::find($id);
 
         if (!$product) {
-            return response()->json(['error' => 'Product not found'], 404);
+            return response()->json(['error' => __('products.messages.product_not_found')], 404);
         }
 
         return response()->json([
@@ -284,7 +283,7 @@ class ProductController extends Controller
         $product = Product::find($id);
 
         if (!$product) {
-            return response()->json(['error' => 'Product not found'], 404);
+            return response()->json(['error' => __('products.messages.product_not_found')], 404);
         }
 
         $barcode = new DNS1D();
@@ -300,7 +299,7 @@ class ProductController extends Controller
         $product = Product::find($id);
 
         if (!$product) {
-            return response()->json(['error' => 'Product not found'], 404);
+            return response()->json(['error' => __('products.messages.product_not_found')], 404);
         }
 
         $qbarcode = new DNS2D();
@@ -331,9 +330,9 @@ class ProductController extends Controller
         ];
 
         $messages = [
-            'name.required' => 'The branch name must not be blank!',
-            'name.unique' => 'This branch name already exists in the database for the selected centre!',
-            'unit.required' => 'The Accessories unit must not be blank!',
+            'name.required' => __('products.validation.update_name_required'),
+            'name.unique' => __('products.validation.update_name_unique'),
+            'unit.required' => __('products.validation.unit_required'),
         ];
 
         $validator = Validator::make($request->all(), $rules, $messages);
@@ -351,7 +350,7 @@ class ProductController extends Controller
         $update = Product::find($id);
         $update->update($contactd);
 
-        return response()->json(['success' => 'The Acceseries has been successfully edited.']);
+        return response()->json(['success' => __('products.messages.updated')]);
     }
 
 
@@ -380,18 +379,18 @@ class ProductController extends Controller
                     abort_unless(
                         Contact::where('centre', $product->centre)->whereKey($data['student'])->exists(),
                         422,
-                        'Student must belong to the product branch.'
+                        __('products.validation.student_branch')
                     );
                 } else {
-                    abort_if((int) $data['student'] === (int) $product->centre, 422, 'Destination centre must be different from the product branch.');
+                    abort_if((int) $data['student'] === (int) $product->centre, 422, __('products.validation.destination_different'));
                     abort_unless(
                         Department::whereKey($data['student'])->where('status', 1)->exists(),
                         422,
-                        'Destination centre is invalid.'
+                        __('products.validation.destination_invalid')
                     );
                 }
             }
-            abort_if($remove && $data['amount'] > $product->amount, 422, 'จำนวนสินค้าในสต็อกไม่เพียงพอ');
+            abort_if($remove && $data['amount'] > $product->amount, 422, __('products.validation.insufficient_stock'));
             $product->amount = $product->amount + ($remove ? -$data['amount'] : $data['amount']);
             $product->save();
             Stock::create([
@@ -402,7 +401,7 @@ class ProductController extends Controller
             ]);
             return $product;
         });
-        return response()->json(['success' => 'บันทึกสต็อกแล้ว', 'product' => $product]);
+        return response()->json(['success' => __('products.messages.stock_saved'), 'product' => $product]);
     }
 
     public function rm_stock_centre(Request $request, $id)
@@ -415,7 +414,7 @@ class ProductController extends Controller
     {
         $id = $request->get('id');
         Product::find($id)->delete();
-        return ['success' => true, 'message' => 'The Acceseries has been successfully deleted.'];
+        return ['success' => true, 'message' => __('products.messages.deleted')];
     }
 
     public function destroy_all(Request $request)
@@ -427,6 +426,6 @@ class ProductController extends Controller
             Product::find($arr_del[$xx])->delete();
         }
 
-        return redirect('/products')->with('success', 'The Acceseries has been successfully deleted.');
+        return redirect('/products')->with('success', __('products.messages.deleted'));
     }
 }

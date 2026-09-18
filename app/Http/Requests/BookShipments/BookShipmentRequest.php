@@ -21,21 +21,21 @@ abstract class BookShipmentRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'required' => trans('book-shipments.validation.required', [], 'th'),
-            'array' => trans('book-shipments.validation.array', [], 'th'),
-            'integer' => trans('book-shipments.validation.integer', [], 'th'),
-            'min' => trans('book-shipments.validation.min', [], 'th'),
-            'distinct' => trans('book-shipments.validation.distinct', [], 'th'),
-            'string' => trans('book-shipments.validation.string', [], 'th'),
-            'in' => trans('book-shipments.validation.in', [], 'th'),
-            'max' => trans('book-shipments.validation.max', [], 'th'),
-            'prohibited' => trans('book-shipments.validation.prohibited', [], 'th'),
+            'required' => trans('book-shipments.validation.required', []),
+            'array' => trans('book-shipments.validation.array', []),
+            'integer' => trans('book-shipments.validation.integer', []),
+            'min' => trans('book-shipments.validation.min', []),
+            'distinct' => trans('book-shipments.validation.distinct', []),
+            'string' => trans('book-shipments.validation.string', []),
+            'in' => trans('book-shipments.validation.in', []),
+            'max' => trans('book-shipments.validation.max', []),
+            'prohibited' => trans('book-shipments.validation.prohibited', []),
         ];
     }
 
     public function attributes(): array
     {
-        return trans('book-shipments.validation.attributes', [], 'th');
+        return trans('book-shipments.validation.attributes', []);
     }
 
     protected function failedValidation(ValidatorContract $validator): void
@@ -43,7 +43,7 @@ abstract class BookShipmentRequest extends FormRequest
         throw new HttpResponseException(response()->json([
             'error' => [
                 'code' => 'VALIDATION_FAILED',
-                'message' => trans('book-shipments.messages.invalid_request', [], 'th'),
+                'message' => trans('book-shipments.messages.invalid_request', []),
                 'details' => $validator->errors()->toArray(),
             ],
         ], Response::HTTP_UNPROCESSABLE_ENTITY));
@@ -68,7 +68,7 @@ abstract class BookShipmentRequest extends FormRequest
             if (!$is_eligible) {
                 $destination_validator->errors()->add(
                     $field,
-                    trans('book-shipments.messages.destination_validation', [], 'th')
+                    trans('book-shipments.messages.destination_validation', [])
                 );
             }
         });

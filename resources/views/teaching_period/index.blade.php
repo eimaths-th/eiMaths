@@ -9,7 +9,7 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h4>Teaching Period Management</h4>
+                    <h4>{{ __('teaching_period.title') }}</h4>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
@@ -29,9 +29,9 @@
                 <div class="col-8">
                     <div class="card card-primary">
                         <div class="card-header">
-                            <h3 class="card-title"><i class="fa fa-user"></i>Teaching Period Management</h3>
+                            <h3 class="card-title"><i class="fa fa-calendar-alt"></i> {{ __('teaching_period.title') }}</h3>
                             <div class="card-tools">
-                                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="{{ __('common.actions.collapse') }}">
                                     <i class="fas fa-minus"></i>
                                 </button>
                                 {{-- <button type="button" class="btn btn-tool" data-card-widget="remove" title="Remove">
@@ -51,21 +51,21 @@
                                     });
                                 </script>
                             @endif
-                            <table class="table table-bordered table-striped" id="teaching_period_table main-table">
+                            <table class="table table-bordered table-striped" id="teaching_period_table_main">
                                 <thead>
                                     <tr>
-                                        <th>Department</th>
-                                        <th>Day</th>
+                                        <th>{{ __('teaching_period.table.department') }}</th>
+                                        <th>{{ __('teaching_period.table.day') }}</th>
 
-                                        <th>Teaching Period</th>
-                                        <th>Actions</th>
+                                        <th>{{ __('teaching_period.table.period') }}</th>
+                                        <th>{{ __('teaching_period.table.actions') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody id="teaching_period_table">
                                     @foreach ($teaching_periods as $teaching_period)
                                         <tr>
                                             <td>{{ $teaching_period->department->name }}</td>
-                                            <td>{{ $teaching_period->day }}</td>
+                                            <td>{{ __('teaching_period.days.' . strtolower($teaching_period->day)) }}</td>
                                             <td> {{ $teaching_period->period }} </td>
                                             <td>
                                                 <form action="{{ route('TeachingPeriod.destroy', $teaching_period->id) }}"
@@ -103,9 +103,9 @@
                 <div class="col-4">
                     <div class="card card-primary">
                         <div class="card-header">
-                            <h3 class="card-title"><i class="fa fa-user"></i>Teaching Period Find</h3>
+                            <h3 class="card-title"><i class="fa fa-search"></i> {{ __('teaching_period.find_title') }}</h3>
                             <div class="card-tools">
-                                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="{{ __('common.actions.collapse') }}">
                                     <i class="fas fa-minus"></i>
                                 </button>
 
@@ -118,7 +118,7 @@
                         <div class="card-body">
                             <div class="find-preiod" id="find-preiod">
                                 <select name="department" id="department" class="form-control mb-3">
-                                    <option value="">Select department</option>
+                                    <option value="">{{ __('teaching_period.find.select_department') }}</option>
                                     @foreach ($departments as $department)
                                         <option value="{{ $department->id }}">{{ $department->name }}
                                             ({{ $department->code }})
@@ -126,13 +126,13 @@
                                     @endforeach
                                 </select>
                                 <select name="day" id="day" class="form-control mb-3">
-                                    <option value="">Select day</option>
+                                    <option value="">{{ __('teaching_period.find.select_day') }}</option>
                                     @foreach ($days as $day)
-                                        <option value="{{ $day }}">{{ $day }}</option>
+                                        <option value="{{ $day }}">{{ __('teaching_period.days.' . strtolower($day)) }}</option>
                                     @endforeach
                                 </select>
 
-                                <button type="button" id="btn-find-preiod" class="btn btn-primary">Find</button>
+                                <button type="button" id="btn-find-preiod" class="btn btn-primary">{{ __('teaching_period.find.find') }}</button>
 
                                 <ul id="period-list"></ul> <!-- This is where the results will be displayed -->
                             </div>
@@ -148,5 +148,11 @@
 @endsection
 
 @section('script')
+    <script>
+        const teaching_period_ui = {
+            common: @json(__('common.datatable')),
+            messages: @json(__('teaching_period.messages')),
+        };
+    </script>
     @include('teaching_period.script')
 @endsection
