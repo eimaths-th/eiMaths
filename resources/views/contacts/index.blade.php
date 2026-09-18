@@ -248,6 +248,8 @@
 
     @include('contacts.fast-history')
 
+    @include('contacts.discontinue')
+
     @include('contacts.create')
 
     @include('contacts.create_demo')

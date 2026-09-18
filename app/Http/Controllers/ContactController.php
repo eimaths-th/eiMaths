@@ -39,6 +39,7 @@ use Carbon\Carbon;
 use App\Domain\Affiliate\Services\AffiliateAttributionService;
 use App\Domain\Financial\Services\FinancialSourceGuard;
 use App\Domain\Affiliate\Exceptions\AffiliateDomainException;
+use App\Support\Branch\BranchAccess;
 
 class ContactController extends Controller
 {
@@ -61,6 +62,7 @@ class ContactController extends Controller
         $this->middleware('permission:student-edit', ['only' => ['edit', 'update']]);
         $this->middleware('permission:student-list', ['only' => ['fastHistoryPreview']]);
         $this->middleware('permission:student-edit', ['only' => ['fastHistory']]);
+        $this->middleware('permission:student-edit', ['only' => ['MarkDiscontinued']]);
         $this->middleware('permission:student-delete', ['only' => ['destroy']]);
     }
 
@@ -466,6 +468,13 @@ class ContactController extends Controller
                         $html .= '<button type="button" class="btn btn-sm btn-primary btn-fast-history" data-id="' . $row->id . '"><i class="fa fa-user-check"></i> Check in</button> ';
                     } else {
                         $html .= '<button type="button" class="btn btn-sm btn-primary disabled" disabled data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-user-check"></i> Check in</button> ';
+                    }
+
+                    if (Gate::allows('student-edit')) {
+                        $student_name = e($row->name . (!empty($row->nickname) ? ' (' . $row->nickname . ')' : ''));
+                        $html .= '<button type="button" class="btn btn-sm btn-danger btn-discontinue-student" data-id="' . $row->id . '" data-student-name="' . $student_name . '"><i class="fa fa-handshake-slash"></i> Not continuing</button> ';
+                    } else {
+                        $html .= '<button type="button" class="btn btn-sm btn-danger disabled" disabled data-toggle="tooltip" data-placement="bottom" title="You Not Have Permission"><i class="fa fa-handshake-slash"></i> Not continuing</button> ';
                     }
 
                     if (Gate::allows('student-edit')) {
@@ -1859,6 +1868,51 @@ class ContactController extends Controller
                 'message' => $exception->getMessage(),
             ], $exception->status_code);
         }
+    }
+
+    public function MarkDiscontinued(Request $request, int $id)
+    {
+        $validated = $request->validate([
+            'discontinued_date' => ['nullable', 'date_format:Y-m-d'],
+            'discontinued_reason' => ['nullable', 'string', 'max:255'],
+        ]);
+        $discontinued_date = $validated['discontinued_date'] ?? Carbon::today()->toDateString();
+        $discontinued_reason = trim((string) ($validated['discontinued_reason'] ?? ''));
+        $discontinued_reason = $discontinued_reason !== '' ? $discontinued_reason : 'Not continuing class';
+
+        $result = DB::transaction(function () use ($id, $discontinued_date, $discontinued_reason): array {
+            $contact = Contact::query()->lockForUpdate()->find($id);
+            if (!$contact) {
+                abort(404, 'Student not found.');
+            }
+
+            abort_unless($contact->type === 'student', 422, 'Only students can be marked as not continuing.');
+            BranchAccess::assertBranch(Auth::user(), $contact->centre);
+
+            if ((int) $contact->discontinued !== 1) {
+                $contact->forceFill([
+                    'discontinued' => 1,
+                    'discontinued_date' => $discontinued_date,
+                    'discontinued_reason' => $discontinued_reason,
+                ])->save();
+                $message = 'Student marked as not continuing.';
+            } else {
+                $message = 'Student is already marked as not continuing.';
+            }
+
+            return [
+                'success' => true,
+                'message' => $message,
+                'data' => [
+                    'id' => (int) $contact->id,
+                    'discontinued' => (int) $contact->discontinued,
+                    'discontinued_date' => $contact->discontinued_date,
+                    'discontinued_reason' => $contact->discontinued_reason,
+                ],
+            ];
+        });
+
+        return response()->json($result);
     }
 
     /**

@@ -1089,6 +1089,9 @@
 
         const fast_history_preview_url = @json(route('contacts.fastHistory.preview', ['id' => '__student_id__']));
         const fast_history_store_url = @json(route('contacts.fastHistory', ['id' => '__student_id__']));
+        const discontinue_student_url = @json(route('contacts.discontinue', ['id' => '__student_id__']));
+        const default_discontinued_date = @json(now()->format('Y-m-d'));
+        const default_discontinued_reason = 'Not continuing class';
 
         function BuildFastHistoryUrl(url_template, student_id) {
             return url_template.replace('__student_id__', encodeURIComponent(student_id));
@@ -1277,6 +1280,53 @@
                 error: function(ajax_response) {
                     confirm_button.prop('disabled', false);
                     ShowFastHistoryError(ajax_response, 'Saving check-in failed.');
+                }
+            });
+        });
+
+        $(document).on('click', '.btn-discontinue-student', function() {
+            const trigger_button = $(this);
+            const student_id = trigger_button.data('id');
+            if (!student_id) {
+                return;
+            }
+
+            $('#discontinue-student-modal').data('student-id', student_id);
+            $('#discontinue-student-name').text(trigger_button.data('student-name') || 'Student');
+            $('#discontinue-student-date').val(default_discontinued_date);
+            $('#discontinue-student-reason').val(default_discontinued_reason);
+            $('#confirm-discontinue-student').prop('disabled', false);
+            $('#discontinue-student-modal').modal('show');
+        });
+
+        $(document).on('click', '#confirm-discontinue-student', function() {
+            const confirm_button = $(this);
+            const student_id = $('#discontinue-student-modal').data('student-id');
+            if (!student_id) {
+                return;
+            }
+
+            const discontinued_reason = String($('#discontinue-student-reason').val() || '').trim() ||
+                default_discontinued_reason;
+            confirm_button.prop('disabled', true);
+            $.ajax({
+                url: BuildFastHistoryUrl(discontinue_student_url, student_id),
+                method: 'POST',
+                data: {
+                    _token: $('meta[name="csrf-token"]').attr('content'),
+                    discontinued_date: $('#discontinue-student-date').val() || default_discontinued_date,
+                    discontinued_reason: discontinued_reason
+                },
+                success: function(response_data) {
+                    $('#discontinue-student-modal').modal('hide');
+                    toastr.success(response_data.message || 'Student marked as not continuing.');
+                    if ($.fn.DataTable.isDataTable('#Listview')) {
+                        $('#Listview').DataTable().ajax.reload(null, false);
+                    }
+                },
+                error: function(ajax_response) {
+                    confirm_button.prop('disabled', false);
+                    ShowFastHistoryError(ajax_response, 'Saving discontinuation failed.');
                 }
             });
         });

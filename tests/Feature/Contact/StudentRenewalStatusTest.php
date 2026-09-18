@@ -148,6 +148,126 @@ class StudentRenewalStatusTest extends TestCase
     }
 
     #[Test]
+    public function StudentListOffersANotContinuingShortcutForEditableUsers(): void
+    {
+        [$student] = $this->createStudent('ST-NOT-CONTINUING-UI', 1, 0);
+
+        $row = $this->studentListRows()->firstWhere('id', $student->id);
+
+        $this->assertNotNull($row);
+        $this->assertStringContainsString('btn-discontinue-student', $row['action']);
+        $this->assertStringContainsString('Not continuing', $row['action']);
+    }
+
+    #[Test]
+    public function StudentListRendersTheNotContinuingConfirmationModal(): void
+    {
+        $this->createStudent('ST-NOT-CONTINUING-MODAL', 1, 0);
+
+        $this->get(route('contacts'))
+            ->assertOk()
+            ->assertSee('discontinue-student-modal')
+            ->assertSee('confirm-discontinue-student');
+    }
+
+    #[Test]
+    public function NotContinuingShortcutMarksTheStudentWithAnAuditDateAndReason(): void
+    {
+        [$student] = $this->createStudent('ST-NOT-CONTINUING', 1, 0);
+
+        $this->postJson('/contacts/' . $student->id . '/discontinue', [
+            'discontinued_date' => '2026-09-18',
+            'discontinued_reason' => 'No Time',
+        ])
+            ->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('data.discontinued', 1)
+            ->assertJsonPath('data.discontinued_date', '2026-09-18')
+            ->assertJsonPath('data.discontinued_reason', 'No Time');
+
+        $this->assertDatabaseHas('contacts', [
+            'id' => $student->id,
+            'discontinued' => 1,
+            'discontinued_date' => '2026-09-18',
+            'discontinued_reason' => 'No Time',
+        ]);
+    }
+
+    #[Test]
+    public function NotContinuingShortcutUsesASensibleDefaultReasonWhenNoneIsProvided(): void
+    {
+        [$student] = $this->createStudent('ST-NOT-CONTINUING-DEFAULT', 1, 0);
+
+        $this->postJson('/contacts/' . $student->id . '/discontinue', [
+            'discontinued_date' => '2026-09-18',
+        ])->assertOk();
+
+        $this->assertDatabaseHas('contacts', [
+            'id' => $student->id,
+            'discontinued' => 1,
+            'discontinued_reason' => 'Not continuing class',
+        ]);
+    }
+
+    #[Test]
+    public function NotContinuingShortcutRejectsUsersWithoutStudentEditPermission(): void
+    {
+        [$student] = $this->createStudent('ST-NOT-CONTINUING-FORBIDDEN', 1, 0);
+        $list_role = Role::create(['name' => 'StudentListOnly', 'guard_name' => 'web']);
+        $list_role->givePermissionTo(Permission::findOrCreate('student-list', 'web'));
+        $list_user = User::factory()->create([
+            'department_id' => $this->branch->id,
+            'disable' => 0,
+            'password' => Hash::make('secret'),
+        ]);
+        $list_user->assignRole($list_role);
+
+        $this->actingAs($list_user)
+            ->postJson('/contacts/' . $student->id . '/discontinue', [
+                'discontinued_reason' => 'No Time',
+            ])->assertForbidden();
+
+        $this->assertSame(0, (int) $student->fresh()->discontinued);
+    }
+
+    #[Test]
+    public function NotContinuingShortcutCannotChangeAStudentFromAnotherBranch(): void
+    {
+        $other_branch = Department::forceCreate([
+            'id' => 3,
+            'name' => 'Other Branch',
+            'code' => 'OTHER',
+            'status' => 1,
+            'enabled_modules' => null,
+        ]);
+        [$student] = $this->createStudent('ST-NOT-CONTINUING-BRANCH', 1, 0);
+        $student->update(['centre' => $other_branch->id]);
+
+        $this->postJson('/contacts/' . $student->id . '/discontinue', [
+            'discontinued_reason' => 'No Time',
+        ])->assertForbidden();
+
+        $this->assertSame(0, (int) $student->fresh()->discontinued);
+    }
+
+    #[Test]
+    public function NotContinuingShortcutRejectsNonStudentContacts(): void
+    {
+        $contact = Contact::forceCreate([
+            'centre' => $this->branch->id,
+            'type' => 'parent',
+            'name' => 'Parent Contact',
+            'discontinued' => 0,
+        ]);
+
+        $this->postJson('/contacts/' . $contact->id . '/discontinue', [
+            'discontinued_reason' => 'No Time',
+        ])->assertStatus(422);
+
+        $this->assertSame(0, (int) $contact->fresh()->discontinued);
+    }
+
+    #[Test]
     public function WebHistoryCheckInDoesNotAutoDiscontinueAStudentAtTheFinalLesson(): void
     {
         [$student, $book] = $this->createStudent('ST-WEB-FINAL', 2, 0);
