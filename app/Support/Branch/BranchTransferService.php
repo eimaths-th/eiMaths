@@ -27,12 +27,11 @@ final class BranchTransferService
                 ? $query->whereIn('id', $record_ids)->orderBy('id')->lockForUpdate()->get()->keyBy('id')
                 : collect([$query->lockForUpdate()->findOrFail($record_ids[0])])->keyBy('id');
 
-            $pending_orders = $this->PendingOrders($input, $records);
             $problems = [];
             foreach ($record_ids as $record_id) {
                 $record = $records->get($record_id);
                 $problems[] = $record
-                    ? $this->InspectRecord($actor, $record, $input, $is_batch, $pending_orders)
+                    ? $this->InspectRecord($actor, $record, $input, $is_batch)
                     : $this->Problem($record_id, 'RECORD_UNAVAILABLE', __('centre-management.transfers.bulk.unavailable'), 422);
             }
             $problems = array_values(array_filter($problems));
@@ -75,30 +74,11 @@ final class BranchTransferService
         }
     }
 
-    private function PendingOrders(array $input, $records): array
-    {
-        if ($input['type'] !== 'student' || $records->isEmpty()) {
-            return [];
-        }
-
-        $pending_orders = [];
-        $orders = DB::table('orders')
-            ->whereIn('cid', $records->keys())
-            ->where(fn ($statuses) => $statuses->whereNull('status')->orWhereIn('status', ['0', '1']))
-            ->get(['cid', 'centre']);
-        foreach ($orders as $order) {
-            $pending_orders[(int) $order->cid.':'.(int) $order->centre] = true;
-        }
-
-        return $pending_orders;
-    }
-
     private function InspectRecord(
         User $actor,
         User|Contact $record,
         array $input,
         bool $is_batch,
-        array $pending_orders,
     ): ?array {
         $source_branch_id = (int) ($record instanceof User ? $record->department_id : $record->centre);
         try {
@@ -134,8 +114,6 @@ final class BranchTransferService
                     $exception->getStatusCode(),
                 );
             }
-        } elseif (isset($pending_orders[$record->id.':'.$source_branch_id])) {
-            return $this->Problem($record->id, 'PENDING_ORDERS', __('centre-management.transfers.errors.pending_orders'), 422);
         }
 
         return null;

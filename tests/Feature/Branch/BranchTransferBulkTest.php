@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -168,6 +169,67 @@ class BranchTransferBulkTest extends TestCase
         $this->assertDatabaseCount('branch_transfers', 2);
     }
 
+    public static function PendingOrderTransferRequests(): array
+    {
+        return [
+            'batch-zero-status' => [true, 0],
+            'batch-pending-status' => [true, 1],
+            'single-zero-status' => [false, 0],
+            'single-pending-status' => [false, 1],
+        ];
+    }
+
+    #[Test]
+    #[DataProvider('PendingOrderTransferRequests')]
+    public function StudentWithPendingOrderCanTransferWithoutChangingTheOrder(bool $is_batch, int $order_status): void
+    {
+        $student = $this->Student();
+        $order = Order::create([
+            'cid' => $student->id,
+            'centre' => $this->source_branch->id,
+            'status' => $order_status,
+            'total_price' => 1200,
+        ])->refresh();
+        $student->forceFill([
+            'order' => $order->id,
+            'new_student_order_id' => $order->id,
+            'courses_pending_id' => 77,
+        ])->save();
+        $this->actor->update(['language_code' => 'th']);
+
+        $payload = $is_batch ? $this->Payload([$student]) : [
+            'type' => 'student',
+            'record_id' => $student->id,
+            'to_branch_id' => $this->destination_branch->id,
+            'reason' => 'Moving to another branch',
+        ];
+        $response = $this->actingAs($this->actor)->postJson('/branch-transfers', $payload);
+        $this->assertSame(200, $response->status(), $response->json('record_errors.0.message') ?? $response->json('message') ?? '');
+        $response->assertJsonPath('success', true);
+        if ($is_batch) {
+            $response->assertJsonPath('transferred_count', 1)->assertJsonPath('data.0.id', $student->id);
+        } else {
+            $response->assertJsonPath('data.id', $student->id);
+        }
+
+        $transferred_student = $student->fresh();
+        $this->assertSame($this->destination_branch->id, (int) $transferred_student->centre);
+        $this->assertSame(0, (int) $transferred_student->order);
+        $this->assertNull($transferred_student->new_student_order_id);
+        $this->assertNull($transferred_student->courses_pending_id);
+        $this->assertSame($this->source_branch->id, (int) $order->fresh()->centre);
+        $this->assertSame($order->getRawOriginal(), $order->fresh()->getRawOriginal());
+        $this->assertDatabaseCount('orders', 1);
+        $this->assertDatabaseCount('branch_transfers', 1);
+        $this->assertDatabaseHas('branch_transfers', [
+            'subject_type' => Contact::class,
+            'subject_id' => $student->id,
+            'from_branch_id' => $this->source_branch->id,
+            'to_branch_id' => $this->destination_branch->id,
+            'actor_id' => $this->actor->id,
+        ]);
+    }
+
     #[Test]
     public function StudentTransferKeepsIdentityAndParentDetailsButStartsDestinationEnrollmentFromScratch(): void
     {
@@ -284,24 +346,57 @@ class BranchTransferBulkTest extends TestCase
     }
 
     #[Test]
-    public function AllBlockedStudentsAreReportedWithoutMovingAnyone(): void
+    public function StudentsWithMixedOrderStatusesMoveTogetherAndKeepOrdersUnchanged(): void
+    {
+        $students = [$this->Student('Without orders')];
+        $orders = [];
+        foreach ([0, 1, 2] as $order_status) {
+            $student = $this->Student();
+            $order = Order::create([
+                'cid' => $student->id,
+                'centre' => $this->source_branch->id,
+                'status' => $order_status,
+            ])->refresh();
+            $student->update(['order' => $order->id]);
+            $students[] = $student;
+            $orders[] = $order;
+        }
+
+        $this->actingAs($this->actor)->postJson('/branch-transfers', $this->Payload($students))
+            ->assertOk()
+            ->assertJsonPath('transferred_count', 4)
+            ->assertJsonCount(4, 'data');
+
+        foreach ($students as $student) {
+            $this->assertSame($this->destination_branch->id, (int) $student->fresh()->centre);
+            $this->assertSame(0, (int) $student->fresh()->order);
+        }
+        foreach ($orders as $order) {
+            $this->assertSame($order->getRawOriginal(), $order->fresh()->getRawOriginal());
+        }
+        $this->assertDatabaseCount('orders', 3);
+        $this->assertDatabaseCount('branch_transfers', 4);
+    }
+
+    #[Test]
+    public function AllInvalidStudentDestinationsAreReportedWithoutMovingAnyone(): void
     {
         $students = [
             $this->Student('Ready'),
-            $this->Student('Pending'),
-            $this->Student('Zero status'),
+            $this->Student('Already at destination', $this->destination_branch->id),
+            $this->Student('Also at destination', $this->destination_branch->id),
         ];
-        Order::create(['cid' => $students[1]->id, 'centre' => $this->source_branch->id, 'status' => 1]);
-        Order::create(['cid' => $students[2]->id, 'centre' => $this->source_branch->id, 'status' => 0]);
 
         $this->actingAs($this->actor)->postJson('/branch-transfers', $this->Payload($students))
             ->assertUnprocessable()
             ->assertJsonCount(2, 'record_errors')
-            ->assertJsonPath('record_errors.0.code', 'PENDING_ORDERS')
-            ->assertJsonPath('record_errors.1.code', 'PENDING_ORDERS');
+            ->assertJsonPath('record_errors.0.record_id', $students[1]->id)
+            ->assertJsonPath('record_errors.0.code', 'SAME_BRANCH')
+            ->assertJsonPath('record_errors.1.record_id', $students[2]->id)
+            ->assertJsonPath('record_errors.1.code', 'SAME_BRANCH');
 
         foreach ($students as $student) {
-            $this->assertSame($this->source_branch->id, (int) $student->fresh()->centre);
+            $this->assertSame((int) $student->centre, (int) $student->fresh()->centre);
         }
         $this->assertDatabaseCount('branch_transfers', 0);
     }
