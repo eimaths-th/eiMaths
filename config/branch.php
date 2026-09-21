@@ -1,6 +1,11 @@
 <?php
 
 return [
+    'transfers' => [
+        'page_size' => 25,
+        'max_batch_size' => 100,
+    ],
+
     // Names remain compatible with the existing web permission catalog.
     'modules' => [
         'dashboard' => 'ภาพรวม', 'students' => 'นักเรียนและผู้ปกครอง',
