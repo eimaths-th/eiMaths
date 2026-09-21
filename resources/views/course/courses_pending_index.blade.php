@@ -380,12 +380,12 @@
 
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1>Affiliate Course Applications</h1>
+                    <h1>{{ __('affiliate-management.course_applications.title') }}</h1>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <a class="btn btn-success" href="#" data-bs-toggle="modal" data-bs-target="#addCourseModal">
-                            <i class="fa fa-plus"></i> Add Course
+                            <i class="fa fa-plus"></i> {{ __('affiliate-management.course_applications.add_course') }}
                         </a>
                     </ol>
 
@@ -402,9 +402,9 @@
                 <div class="col-lg-12">
                     <div class="card card-primary">
                         <div class="card-header">
-                            <h3 class="card-title"><i class="fa fa-user"></i> Affiliate Course Applications</h3>
+                            <h3 class="card-title"><i class="fa fa-user"></i> {{ __('affiliate-management.course_applications.table_title') }}</h3>
                             <div class="card-tools">
-                                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="{{ __('affiliate-management.course_applications.actions.collapse') }}">
                                     <i class="fas fa-minus"></i>
                                 </button>
                                 {{-- <button type="button" class="btn btn-tool" data-card-widget="remove" title="Remove">
@@ -423,20 +423,20 @@
                                                 class="table classList table table-bordered table-striped table-hover">
                                                 <thead>
                                                     <tr>
-                                                        <th scope="col">SL</th>
-                                                        <th scope="col">ref</th>
+                                                        <th scope="col">{{ __('affiliate-management.course_applications.columns.serial') }}</th>
+                                                        <th scope="col">{{ __('affiliate-management.course_applications.columns.ref') }}</th>
                                                         {{-- <th scope="col"> Required Type</th> --}}
-                                                        <th scope="col">Name</th>
-                                                        <th scope="col">Email</th>
-                                                        <th scope="col">Phone</th>
-                                                        <th scope="col">Department </th>
-                                                        <th scope="col">Appointment Date</th>
-                                                        <th scope="col">Student Name</th>
-                                                        <th scope="col">grade</th>
-                                                        <th scope="col">Type Parent</th>
+                                                        <th scope="col">{{ __('affiliate-management.course_applications.columns.name') }}</th>
+                                                        <th scope="col">{{ __('affiliate-management.course_applications.columns.email') }}</th>
+                                                        <th scope="col">{{ __('affiliate-management.course_applications.columns.phone') }}</th>
+                                                        <th scope="col">{{ __('affiliate-management.course_applications.columns.department') }}</th>
+                                                        <th scope="col">{{ __('affiliate-management.course_applications.columns.appointment_date') }}</th>
+                                                        <th scope="col">{{ __('affiliate-management.course_applications.columns.student_name') }}</th>
+                                                        <th scope="col">{{ __('affiliate-management.course_applications.columns.grade') }}</th>
+                                                        <th scope="col">{{ __('affiliate-management.course_applications.columns.parent_type') }}</th>
 
-                                                        <th scope="col">Status</th>
-                                                        <th scope="col">Action</th>
+                                                        <th scope="col">{{ __('affiliate-management.course_applications.columns.status') }}</th>
+                                                        <th scope="col">{{ __('affiliate-management.course_applications.columns.action') }}</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -464,64 +464,64 @@
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="detailsModalLabel">Course Pending Details</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title" id="detailsModalLabel">{{ __('affiliate-management.course_applications.modal.title') }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ __('affiliate-management.course_applications.modal.close') }}"></button>
                 </div>
                 <div class="modal-body" id="detailsModalBody">
                     <div class="row">
                         <div class="col-md-6">
-                            <h6 class="text-primary">Parent Information</h6>
+                            <h6 class="text-primary">{{ __('affiliate-management.course_applications.modal.parent_information') }}</h6>
                             <table class="table table-sm">
-                                <tr><td><strong>Name:</strong></td><td id="detail-name">-</td></tr>
-                                <tr><td><strong>Email:</strong></td><td id="detail-email">-</td></tr>
-                                <tr><td><strong>Phone:</strong></td><td id="detail-telp">-</td></tr>
-                                <tr><td><strong>Type Parent:</strong></td><td id="detail-type_parent">-</td></tr>
-                                <tr><td><strong>Ref Code:</strong></td><td id="detail-ref">-</td></tr>
+                                <tr><td><strong>{{ __('affiliate-management.course_applications.modal.name') }}:</strong></td><td id="detail-name">-</td></tr>
+                                <tr><td><strong>{{ __('affiliate-management.course_applications.modal.email') }}:</strong></td><td id="detail-email">-</td></tr>
+                                <tr><td><strong>{{ __('affiliate-management.course_applications.modal.phone') }}:</strong></td><td id="detail-telp">-</td></tr>
+                                <tr><td><strong>{{ __('affiliate-management.course_applications.modal.parent_type') }}:</strong></td><td id="detail-type_parent">-</td></tr>
+                                <tr><td><strong>{{ __('affiliate-management.course_applications.modal.ref_code') }}:</strong></td><td id="detail-ref">-</td></tr>
                             </table>
                         </div>
                         <div class="col-md-6">
-                            <h6 class="text-primary">Student Information</h6>
+                            <h6 class="text-primary">{{ __('affiliate-management.course_applications.modal.student_information') }}</h6>
                             <table class="table table-sm">
-                                <tr><td><strong>Student Name:</strong></td><td id="detail-student_name">-</td></tr>
-                                <tr><td><strong>Nickname:</strong></td><td id="detail-student_nickname">-</td></tr>
-                                <tr><td><strong>Grade:</strong></td><td id="detail-grade">-</td></tr>
-                                <tr><td><strong>Appointment Date:</strong></td><td id="detail-appointment_date">-</td></tr>
+                                <tr><td><strong>{{ __('affiliate-management.course_applications.modal.student_name') }}:</strong></td><td id="detail-student_name">-</td></tr>
+                                <tr><td><strong>{{ __('affiliate-management.course_applications.modal.nickname') }}:</strong></td><td id="detail-student_nickname">-</td></tr>
+                                <tr><td><strong>{{ __('affiliate-management.course_applications.modal.grade') }}:</strong></td><td id="detail-grade">-</td></tr>
+                                <tr><td><strong>{{ __('affiliate-management.course_applications.modal.appointment_date') }}:</strong></td><td id="detail-appointment_date">-</td></tr>
                             </table>
                         </div>
                     </div>
                     <hr>
                     <div class="row">
                         <div class="col-md-6">
-                            <h6 class="text-primary">Course Information</h6>
+                            <h6 class="text-primary">{{ __('affiliate-management.course_applications.modal.course_information') }}</h6>
                             <table class="table table-sm">
-                                <tr><td><strong>Course Name:</strong></td><td id="detail-course_name">-</td></tr>
-                                <tr><td><strong>Price:</strong></td><td id="detail-price">-</td></tr>
+                                <tr><td><strong>{{ __('affiliate-management.course_applications.modal.course_name') }}:</strong></td><td id="detail-course_name">-</td></tr>
+                                <tr><td><strong>{{ __('affiliate-management.course_applications.modal.price') }}:</strong></td><td id="detail-price">-</td></tr>
                             </table>
                         </div>
                         <div class="col-md-6">
-                            <h6 class="text-primary">Schedule Information</h6>
+                            <h6 class="text-primary">{{ __('affiliate-management.course_applications.modal.schedule_information') }}</h6>
                             <table class="table table-sm">
-                                <tr><td><strong>Department:</strong></td><td id="detail-department">-</td></tr>
-                                <tr><td><strong>Day:</strong></td><td id="detail-day">-</td></tr>
-                                <tr><td><strong>Period:</strong></td><td id="detail-period">-</td></tr>
+                                <tr><td><strong>{{ __('affiliate-management.course_applications.modal.department') }}:</strong></td><td id="detail-department">-</td></tr>
+                                <tr><td><strong>{{ __('affiliate-management.course_applications.modal.day') }}:</strong></td><td id="detail-day">-</td></tr>
+                                <tr><td><strong>{{ __('affiliate-management.course_applications.modal.period') }}:</strong></td><td id="detail-period">-</td></tr>
                             </table>
                         </div>
                     </div>
                     {{-- <hr> --}}
                     <div class="row" style="display: none">
                         <div class="col-md-12">
-                            <h6 class="text-primary">System Information</h6>
+                            <h6 class="text-primary">{{ __('affiliate-management.course_applications.modal.system_information') }}</h6>
                             <table class="table table-sm">
-                                <tr><td><strong>ID:</strong></td><td id="detail-id">-</td></tr>
-                                <tr><td><strong>Status:</strong></td><td id="detail-status">-</td></tr>
-                                <tr><td><strong>Created At:</strong></td><td id="detail-created_at">-</td></tr>
-                                <tr><td><strong>Updated At:</strong></td><td id="detail-updated_at">-</td></tr>
+                                <tr><td><strong>{{ __('affiliate-management.course_applications.modal.id') }}:</strong></td><td id="detail-id">-</td></tr>
+                                <tr><td><strong>{{ __('affiliate-management.course_applications.modal.status') }}:</strong></td><td id="detail-status">-</td></tr>
+                                <tr><td><strong>{{ __('affiliate-management.course_applications.modal.created_at') }}:</strong></td><td id="detail-created_at">-</td></tr>
+                                <tr><td><strong>{{ __('affiliate-management.course_applications.modal.updated_at') }}:</strong></td><td id="detail-updated_at">-</td></tr>
                             </table>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('affiliate-management.course_applications.modal.close') }}</button>
                 </div>
             </div>
         </div>
@@ -530,7 +530,46 @@
     {{-- @include('contacts.receipt') --}}
 @endsection
 @section('script')
+    @php
+        $affiliate_course_application_i18n = [
+            'select_placeholder' => __('affiliate-management.course_applications.form.select_placeholder'),
+            'referent' => __('affiliate-management.course_applications.form.referent'),
+            'datatable' => [
+                'processing' => __('affiliate-management.course_applications.datatable.processing'),
+                'length_menu' => __('affiliate-management.course_applications.datatable.length_menu'),
+                'zero_records' => __('affiliate-management.course_applications.datatable.zero_records'),
+                'info' => __('affiliate-management.course_applications.datatable.info'),
+                'info_empty' => __('affiliate-management.course_applications.datatable.info_empty'),
+                'info_filtered' => __('affiliate-management.course_applications.datatable.info_filtered'),
+                'search' => __('affiliate-management.course_applications.datatable.search'),
+                'first' => __('affiliate-management.course_applications.datatable.first'),
+                'previous' => __('affiliate-management.course_applications.datatable.previous'),
+                'next' => __('affiliate-management.course_applications.datatable.next'),
+                'last' => __('affiliate-management.course_applications.datatable.last'),
+            ],
+            'modal' => [
+                'loading' => __('affiliate-management.course_applications.modal.loading'),
+                'error' => __('affiliate-management.course_applications.modal.error'),
+                'error_loading' => __('affiliate-management.course_applications.modal.error_loading'),
+            ],
+            'status' => [
+                0 => __('affiliate-management.course_applications.status.denied'),
+                1 => __('affiliate-management.course_applications.status.pending'),
+                2 => __('affiliate-management.course_applications.status.accepted'),
+                3 => __('affiliate-management.course_applications.status.waiting_for_payment'),
+                4 => __('affiliate-management.course_applications.status.success'),
+                'unknown' => __('affiliate-management.course_applications.status.unknown'),
+            ],
+            'messages' => [
+                'error' => __('affiliate-management.course_applications.messages.error'),
+                'select_start_level' => __('affiliate-management.course_applications.messages.select_start_level'),
+                'invalid_level_range' => __('affiliate-management.course_applications.messages.invalid_level_range'),
+            ],
+        ];
+    @endphp
     <script>
+        const affiliate_course_application_i18n = @json($affiliate_course_application_i18n);
+
         $(document).ready(function() {
 
             var token = ''
@@ -544,7 +583,7 @@
                 maximumSelectionLength: 1,
                 allowClear: false,
                 //theme: 'bootstrap4'
-                placeholder: 'Please select'
+                placeholder: affiliate_course_application_i18n.select_placeholder
             });
 
             $(".select2_single").on("select2:unselect", function(e) {
@@ -555,21 +594,21 @@
                 maximumSelectionLength: 1,
                 allowClear: false,
                 //theme: 'bootstrap4'
-                placeholder: 'Please select'
+                placeholder: affiliate_course_application_i18n.select_placeholder
             });
 
             $(".select2_singlec").select2({
                 maximumSelectionLength: 1,
                 allowClear: false,
                 //theme: 'bootstrap4'
-                placeholder: 'Please select'
+                placeholder: affiliate_course_application_i18n.select_placeholder
             });
 
             $(".select2_multiple").select2({
                 maximumSelectionLength: 2,
                 allowClear: false,
                 //theme: 'bootstrap4'
-                placeholder: 'Please select'
+                placeholder: affiliate_course_application_i18n.select_placeholder
             });
 
             $(".levels").change(function() {
@@ -910,20 +949,20 @@
                 language: {
                     loadingRecords: '&nbsp;',
                     processing: `<div class="spinner-border text-primary"></div>`,
-                    "sProcessing": "Processcing...",
-                    "sLengthMenu": "Display _MENU_ Row",
-                    "sZeroRecords": "No Data Fount",
-                    "sInfo": "Display _START_ To _END_ From _TOTAL_ Records",
-                    "sInfoEmpty": "Display 0 To 0 From 0 Records",
-                    "sInfoFiltered": "(Filters _MAX_ Row)",
+                    "sProcessing": affiliate_course_application_i18n.datatable.processing,
+                    "sLengthMenu": affiliate_course_application_i18n.datatable.length_menu,
+                    "sZeroRecords": affiliate_course_application_i18n.datatable.zero_records,
+                    "sInfo": affiliate_course_application_i18n.datatable.info,
+                    "sInfoEmpty": affiliate_course_application_i18n.datatable.info_empty,
+                    "sInfoFiltered": affiliate_course_application_i18n.datatable.info_filtered,
                     "sInfoPostFix": "",
-                    "sSearch": "Search:",
+                    "sSearch": affiliate_course_application_i18n.datatable.search,
                     "sUrl": "",
                     "oPaginate": {
-                        "sFirst": "First",
-                        "sPrevious": "Previous",
-                        "sNext": "Next",
-                        "sLast": "Last"
+                        "sFirst": affiliate_course_application_i18n.datatable.first,
+                        "sPrevious": affiliate_course_application_i18n.datatable.previous,
+                        "sNext": affiliate_course_application_i18n.datatable.next,
+                        "sLast": affiliate_course_application_i18n.datatable.last
                     }
                 },
                 aaSorting: [
@@ -1062,11 +1101,11 @@
                 beforeSend: function() {
                     console.log('AJAX beforeSend: Starting request...');
                     // Clear all fields and show loading
-                    $('#detail-name, #detail-email, #detail-telp, #detail-type_parent, #detail-ref').text('Loading...');
-                    $('#detail-student_name, #detail-student_nickname, #detail-grade, #detail-appointment_date').text('Loading...');
-                    $('#detail-course_name, #detail-price').text('Loading...');
-                    $('#detail-department, #detail-day, #detail-period').text('Loading...');
-                    $('#detail-id, #detail-status, #detail-created_at, #detail-updated_at').text('Loading...');
+                    $('#detail-name, #detail-email, #detail-telp, #detail-type_parent, #detail-ref').text(affiliate_course_application_i18n.modal.loading);
+                    $('#detail-student_name, #detail-student_nickname, #detail-grade, #detail-appointment_date').text(affiliate_course_application_i18n.modal.loading);
+                    $('#detail-course_name, #detail-price').text(affiliate_course_application_i18n.modal.loading);
+                    $('#detail-department, #detail-day, #detail-period').text(affiliate_course_application_i18n.modal.loading);
+                    $('#detail-id, #detail-status, #detail-created_at, #detail-updated_at').text(affiliate_course_application_i18n.modal.loading);
                 },
                 success: function(response) {
                     console.log('AJAX Success Response:', response);
@@ -1103,12 +1142,12 @@
                         var statusText = '';
                         var statusClass = '';
                         switch(data.status) {
-                            case 1: statusText = 'Pending'; statusClass = 'warning'; break;
-                            case 2: statusText = 'Accepted'; statusClass = 'success'; break;
-                            case 3: statusText = 'Waiting for Payment'; statusClass = 'info'; break;
-                            case 4: statusText = 'Success'; statusClass = 'success'; break;
-                            case 0: statusText = 'Denied'; statusClass = 'danger'; break;
-                            default: statusText = 'Unknown'; statusClass = 'secondary'; break;
+                            case 1: statusText = affiliate_course_application_i18n.status[1]; statusClass = 'warning'; break;
+                            case 2: statusText = affiliate_course_application_i18n.status[2]; statusClass = 'success'; break;
+                            case 3: statusText = affiliate_course_application_i18n.status[3]; statusClass = 'info'; break;
+                            case 4: statusText = affiliate_course_application_i18n.status[4]; statusClass = 'success'; break;
+                            case 0: statusText = affiliate_course_application_i18n.status[0]; statusClass = 'danger'; break;
+                            default: statusText = affiliate_course_application_i18n.status.unknown; statusClass = 'secondary'; break;
                         }
                         $('#detail-status').html('<span class="badge bg-' + statusClass + '">' + statusText + '</span>');
 
@@ -1116,12 +1155,12 @@
                         $('#detail-updated_at').text(data.updated_at ? new Date(data.updated_at).toLocaleString() : '-');
                     } else {
                         // Show error in all fields
-                        $('#detail-name, #detail-email, #detail-telp, #detail-type_parent, #detail-ref').text('Error');
-                        $('#detail-student_name, #detail-student_nickname, #detail-grade, #detail-appointment_date').text('Error');
-                        $('#detail-course_name, #detail-price').text('Error');
-                        $('#detail-department, #detail-day, #detail-period').text('Error');
-                        $('#detail-id, #detail-status, #detail-created_at, #detail-updated_at').text('Error');
-                        alert('Error: ' + response.message);
+                        $('#detail-name, #detail-email, #detail-telp, #detail-type_parent, #detail-ref').text(affiliate_course_application_i18n.modal.error);
+                        $('#detail-student_name, #detail-student_nickname, #detail-grade, #detail-appointment_date').text(affiliate_course_application_i18n.modal.error);
+                        $('#detail-course_name, #detail-price').text(affiliate_course_application_i18n.modal.error);
+                        $('#detail-department, #detail-day, #detail-period').text(affiliate_course_application_i18n.modal.error);
+                        $('#detail-id, #detail-status, #detail-created_at, #detail-updated_at').text(affiliate_course_application_i18n.modal.error);
+                        alert(affiliate_course_application_i18n.modal.error + ': ' + response.message);
                     }
                 },
                 error: function(xhr, status, error) {
@@ -1130,12 +1169,12 @@
                     console.error('Status:', status);
                     console.error('Response Text:', xhr.responseText);
                     // Show error in all fields
-                    $('#detail-name, #detail-email, #detail-telp, #detail-type_parent, #detail-ref').text('Error');
-                    $('#detail-student_name, #detail-student_nickname, #detail-grade, #detail-appointment_date').text('Error');
-                    $('#detail-course_name, #detail-price').text('Error');
-                    $('#detail-department, #detail-day, #detail-period').text('Error');
-                    $('#detail-id, #detail-status, #detail-created_at, #detail-updated_at').text('Error');
-                    alert('Error loading details. Please try again.');
+                    $('#detail-name, #detail-email, #detail-telp, #detail-type_parent, #detail-ref').text(affiliate_course_application_i18n.modal.error);
+                    $('#detail-student_name, #detail-student_nickname, #detail-grade, #detail-appointment_date').text(affiliate_course_application_i18n.modal.error);
+                    $('#detail-course_name, #detail-price').text(affiliate_course_application_i18n.modal.error);
+                    $('#detail-department, #detail-day, #detail-period').text(affiliate_course_application_i18n.modal.error);
+                    $('#detail-id, #detail-status, #detail-created_at, #detail-updated_at').text(affiliate_course_application_i18n.modal.error);
+                    alert(affiliate_course_application_i18n.modal.error_loading);
                 }
             });
         });
@@ -1189,7 +1228,7 @@
                     }
                 },
                 error: function() {
-                    alert('An error occurred');
+                    alert(affiliate_course_application_i18n.messages.error);
                 }
             });
         });
@@ -1214,7 +1253,7 @@
                     }
                 },
                 error: function() {
-                    alert('An error occurred');
+                    alert(affiliate_course_application_i18n.messages.error);
                 }
             });
         });
@@ -1239,7 +1278,7 @@
                     }
                 },
                 error: function() {
-                    alert('An error occurred');
+                    alert(affiliate_course_application_i18n.messages.error);
                 }
             });
         });
@@ -1283,7 +1322,7 @@
                 $('#Addref').val(res.data.ref);
                 $('#courses_pending_id').val(res.data.id);
                 if (res.data && res.data.ref) {
-                    $('#ref').html('<h4> Referent code : ' + res.data.ref + '</h4>');
+                    $('#ref').html('<h4>' + affiliate_course_application_i18n.referent + ' : ' + res.data.ref + '</h4>');
                 } else {
                     $('#ref').html('');
                 }
@@ -1344,14 +1383,14 @@
             } else {
                 $("#AddLevel").addClass("is-invalid");
                 $("#AddLevel").removeClass("is-valid");
-                toastr.error('Please Select Start Level', {
+                toastr.error(affiliate_course_application_i18n.messages.select_start_level, {
                     timeOut: 5000
                 });
                 return false;
             }
 
             if (selectedValue2 < selectedValue1) {
-                toastr.error("Cannot select 'To level' less than 'Start level'", {
+                toastr.error(affiliate_course_application_i18n.messages.invalid_level_range, {
                     timeOut: 5000
                 });
                 return false;
@@ -1548,14 +1587,14 @@
             } else {
                 $("#ReceiptLevel").addClass("is-invalid");
                 $("#ReceiptLevel").removeClass("is-valid");
-                toastr.error('Please Select Start Level', {
+                toastr.error(affiliate_course_application_i18n.messages.select_start_level, {
                     timeOut: 5000
                 });
                 return false;
             }
 
             if (selectedValue2 < selectedValue1) {
-                toastr.error("Cannot select 'To level' less than 'Start level'", {
+                toastr.error(affiliate_course_application_i18n.messages.invalid_level_range, {
                     timeOut: 5000
                 });
                 return false;

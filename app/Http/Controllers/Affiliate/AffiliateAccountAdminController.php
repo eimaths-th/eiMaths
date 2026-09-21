@@ -41,7 +41,7 @@ class AffiliateAccountAdminController extends Controller
     {
         $this->account_service->Approve($affiliate_profile, $request->user(), $request->validated('reason'));
 
-        return back()->with('success', 'Affiliate approved.');
+        return back()->with('success', __('affiliate-management.accounts.messages.approved'));
     }
 
     public function ShowIdentity(AffiliateProfile $affiliate_profile, Request $request)
@@ -109,27 +109,27 @@ class AffiliateAccountAdminController extends Controller
             (string) ($request->attributes->get('affiliate_correlation_id') ?: Str::uuid()),
         );
 
-        return redirect()->route('affiliate.admin.index')->with('success', 'Identity verification returned for correction.');
+        return redirect()->route('affiliate.admin.index')->with('success', __('affiliate-management.accounts.messages.identity_returned'));
     }
 
     public function suspend(AffiliateProfile $affiliate_profile, ChangeAffiliateStatusRequest $request)
     {
         $this->account_service->Suspend($affiliate_profile, $request->user(), (string) $request->validated('reason'));
 
-        return back()->with('success', 'Affiliate suspended.');
+        return back()->with('success', __('affiliate-management.accounts.messages.suspended'));
     }
 
     public function reactivate(AffiliateProfile $affiliate_profile, ChangeAffiliateStatusRequest $request)
     {
         $this->account_service->Reactivate($affiliate_profile, $request->user(), $request->validated('reason'));
 
-        return back()->with('success', 'Affiliate reactivated.');
+        return back()->with('success', __('affiliate-management.accounts.messages.reactivated'));
     }
 
     public function deactivate(AffiliateProfile $affiliate_profile, ChangeAffiliateStatusRequest $request)
     {
         $this->account_service->Deactivate($affiliate_profile, $request->user(), (string) $request->validated('reason'));
 
-        return back()->with('success', 'Affiliate deactivated.');
+        return back()->with('success', __('affiliate-management.accounts.messages.deactivated'));
     }
 }

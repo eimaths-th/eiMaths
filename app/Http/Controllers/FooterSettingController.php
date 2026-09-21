@@ -33,7 +33,7 @@ class FooterSettingController extends Controller
         } else {
             FooterSetting::create($request->all());
         }
-        return redirect()->route('footer-setting.index');
+        return redirect()->route('footer-setting.index')->with('success', __('content-management.footer.messages.updated'));
     }
     public function create()
     {

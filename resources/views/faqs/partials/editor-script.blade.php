@@ -72,7 +72,7 @@
                 {
                     name: 'headings',
                     className: 'fa fa-header',
-                    title: 'Headings',
+                    title: @json(__('content-management.blog.editor.headings')),
                     children: [
                         {
                             name: 'heading-1',
@@ -82,7 +82,7 @@
                                 cm.focus();
                             },
                             className: 'fa fa-header heading-1',
-                            title: 'Heading 1',
+                            title: @json(__('content-management.blog.editor.heading', ['level' => 1])),
                         },
                         {
                             name: 'heading-2',
@@ -92,7 +92,7 @@
                                 cm.focus();
                             },
                             className: 'fa fa-header heading-2',
-                            title: 'Heading 2',
+                            title: @json(__('content-management.blog.editor.heading', ['level' => 2])),
                         },
                         {
                             name: 'heading-3',
@@ -102,7 +102,7 @@
                                 cm.focus();
                             },
                             className: 'fa fa-header heading-3',
-                            title: 'Heading 3',
+                            title: @json(__('content-management.blog.editor.heading', ['level' => 3])),
                         },
                         {
                             name: 'heading-4',
@@ -112,7 +112,7 @@
                                 cm.focus();
                             },
                             className: 'fa fa-header heading-4',
-                            title: 'Heading 4',
+                            title: @json(__('content-management.blog.editor.heading', ['level' => 4])),
                         },
                     ],
                 },

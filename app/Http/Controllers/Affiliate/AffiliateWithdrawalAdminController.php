@@ -69,7 +69,7 @@ class AffiliateWithdrawalAdminController extends Controller
             $this->CorrelationId($request),
         );
         if (!$request->expectsJson()) {
-            return redirect()->route('affiliate.withdrawals.admin.index')->with('success', 'Withdrawal approved.');
+            return redirect()->route('affiliate.withdrawals.admin.index')->with('success', __('affiliate-management.withdrawals.messages.approved'));
         }
 
         return response()->json($this->Serialize($result));
@@ -85,7 +85,7 @@ class AffiliateWithdrawalAdminController extends Controller
             $this->CorrelationId($request),
         );
         if (!$request->expectsJson()) {
-            return redirect()->route('affiliate.withdrawals.admin.index')->with('success', 'Withdrawal marked as paid.');
+            return redirect()->route('affiliate.withdrawals.admin.index')->with('success', __('affiliate-management.withdrawals.messages.paid'));
         }
 
         return response()->json($this->Serialize($result));
@@ -101,7 +101,7 @@ class AffiliateWithdrawalAdminController extends Controller
             $this->CorrelationId($request),
         );
         if (!$request->expectsJson()) {
-            return redirect()->route('affiliate.withdrawals.admin.index')->with('success', 'Withdrawal rejected.');
+            return redirect()->route('affiliate.withdrawals.admin.index')->with('success', __('affiliate-management.withdrawals.messages.rejected'));
         }
 
         return response()->json($this->Serialize($result));

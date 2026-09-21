@@ -2,7 +2,7 @@
 
 @section('content')
 <main class="container-fluid py-4" aria-labelledby="affiliate-withdrawals-title">
-    <h1 id="affiliate-withdrawals-title">Affiliate withdrawal management</h1>
+    <h1 id="affiliate-withdrawals-title">{{ __('affiliate-management.withdrawals.title') }}</h1>
 
     @if (session('success'))
         <div class="alert alert-success" role="status">{{ session('success') }}</div>
@@ -18,21 +18,21 @@
         </div>
     @endif
 
-    <p>Review requests, approve eligible withdrawals, and record payment after the transfer is completed.</p>
+    <p>{{ __('affiliate-management.withdrawals.description') }}</p>
 
     <div class="table-responsive">
         <table class="table table-striped" aria-describedby="affiliate-withdrawals-title">
             <thead>
                 <tr>
-                    <th scope="col">ID</th>
-                    <th scope="col">Affiliate</th>
-                    <th scope="col">Email</th>
-                    <th scope="col">Payout account</th>
-                    <th scope="col">Amount</th>
-                    <th scope="col">Status</th>
-                    <th scope="col">Payment reference</th>
-                    <th scope="col">Requested at</th>
-                    <th scope="col">Actions</th>
+                    <th scope="col">{{ __('affiliate-management.withdrawals.columns.id') }}</th>
+                    <th scope="col">{{ __('affiliate-management.withdrawals.columns.affiliate') }}</th>
+                    <th scope="col">{{ __('affiliate-management.withdrawals.columns.email') }}</th>
+                    <th scope="col">{{ __('affiliate-management.withdrawals.columns.payout_account') }}</th>
+                    <th scope="col">{{ __('affiliate-management.withdrawals.columns.amount') }}</th>
+                    <th scope="col">{{ __('affiliate-management.withdrawals.columns.status') }}</th>
+                    <th scope="col">{{ __('affiliate-management.withdrawals.columns.payment_reference') }}</th>
+                    <th scope="col">{{ __('affiliate-management.withdrawals.columns.requested_at') }}</th>
+                    <th scope="col">{{ __('affiliate-management.withdrawals.columns.actions') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -41,9 +41,9 @@
                     <td>{{ $withdrawal->id }}</td>
                     <td>{{ optional($withdrawal->AffiliateProfile?->User)->name ?: '—' }}</td>
                     <td>{{ optional($withdrawal->AffiliateProfile?->User)->email ?: '—' }}</td>
-                    <td>{{ $withdrawal->payout_type?->value }} — {{ optional($withdrawal->AffiliatePayoutAccount)->masked_label ?: 'snapshot' }}</td>
+                    <td>{{ $withdrawal->payout_type?->value ? __('affiliate-management.withdrawals.payout_types.' . $withdrawal->payout_type->value) : '—' }} — {{ optional($withdrawal->AffiliatePayoutAccount)->masked_label ?: __('affiliate-management.withdrawals.payout_types.snapshot') }}</td>
                     <td>{{ number_format($withdrawal->amount_minor / 100, 2) }}</td>
-                    <td>{{ $withdrawal->status->value }}</td>
+                    <td>{{ __('affiliate-management.withdrawals.statuses.' . $withdrawal->status->value) }}</td>
                     <td>{{ $withdrawal->payment_reference ?? '—' }}</td>
                     <td>{{ optional($withdrawal->requested_at)->toDateTimeString() }}</td>
                     <td>
@@ -52,7 +52,7 @@
                                 <form method="POST" action="{{ route('affiliate.withdrawals.admin.approve', $withdrawal) }}">
                                     @csrf
                                     <input type="hidden" name="transition_key" value="{{ (string) \Illuminate\Support\Str::uuid() }}">
-                                    <button type="submit" class="btn btn-sm btn-success">Approve</button>
+                                    <button type="submit" class="btn btn-sm btn-success">{{ __('affiliate-management.withdrawals.actions.approve') }}</button>
                                 </form>
                             @endif
 
@@ -60,8 +60,8 @@
                                 <form method="POST" action="{{ route('affiliate.withdrawals.admin.reject', $withdrawal) }}" class="d-flex" style="gap: .25rem;">
                                     @csrf
                                     <input type="hidden" name="transition_key" value="{{ (string) \Illuminate\Support\Str::uuid() }}">
-                                    <input type="text" name="reason" class="form-control form-control-sm" placeholder="Reason" aria-label="Rejection reason" required>
-                                    <button type="submit" class="btn btn-sm btn-outline-danger">Reject</button>
+                                    <input type="text" name="reason" class="form-control form-control-sm" placeholder="{{ __('affiliate-management.withdrawals.fields.reason') }}" aria-label="{{ __('affiliate-management.withdrawals.fields.reason') }}" required>
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">{{ __('affiliate-management.withdrawals.actions.reject') }}</button>
                                 </form>
                             @endif
 
@@ -69,8 +69,8 @@
                                 <form method="POST" action="{{ route('affiliate.withdrawals.admin.pay', $withdrawal) }}" class="d-flex flex-wrap" style="gap: .25rem;">
                                     @csrf
                                     <input type="hidden" name="transition_key" value="{{ (string) \Illuminate\Support\Str::uuid() }}">
-                                    <input type="text" name="payment_reference" class="form-control form-control-sm" placeholder="Bank transaction reference" aria-label="Bank transaction reference" maxlength="255" required>
-                                    <button type="submit" class="btn btn-sm btn-primary">Mark as paid</button>
+                                    <input type="text" name="payment_reference" class="form-control form-control-sm" placeholder="{{ __('affiliate-management.withdrawals.fields.bank_reference') }}" aria-label="{{ __('affiliate-management.withdrawals.fields.bank_reference') }}" maxlength="255" required>
+                                    <button type="submit" class="btn btn-sm btn-primary">{{ __('affiliate-management.withdrawals.actions.mark_paid') }}</button>
                                 </form>
                             @endif
 
@@ -82,15 +82,15 @@
                                         data-reveal-payout-details
                                         data-reveal-url="{{ route('affiliate.withdrawals.admin.payout-details.reveal', $withdrawal) }}"
                                         aria-controls="payout-details-{{ $withdrawal->id }}"
-                                    >View payout details</button>
+                                    >{{ __('affiliate-management.withdrawals.actions.view_payout_details') }}</button>
                                     <div id="payout-details-{{ $withdrawal->id }}" class="mt-2" data-payout-details-panel hidden role="status" aria-live="polite">
-                                        <p class="mb-1"><strong>Payout type:</strong> <span data-payout-field="payout_type"></span></p>
-                                        <p class="mb-1" data-payout-field-row="promptpay_identifier"><strong>PromptPay identifier:</strong> <span data-payout-field="promptpay_identifier"></span></p>
-                                        <p class="mb-1" data-payout-field-row="bank_name"><strong>Bank:</strong> <span data-payout-field="bank_name"></span></p>
-                                        <p class="mb-1" data-payout-field-row="account_name"><strong>Account name:</strong> <span data-payout-field="account_name"></span></p>
-                                        <p class="mb-1" data-payout-field-row="account_number"><strong>Account number:</strong> <span data-payout-field="account_number"></span></p>
-                                        <p class="mb-1 text-danger" data-payout-details-error hidden>Unable to retrieve payout details.</p>
-                                        <button type="button" class="btn btn-sm btn-outline-dark" data-hide-payout-details>Hide details</button>
+                                        <p class="mb-1"><strong>{{ __('affiliate-management.withdrawals.fields.payout_type') }}:</strong> <span data-payout-field="payout_type"></span></p>
+                                        <p class="mb-1" data-payout-field-row="promptpay_identifier"><strong>{{ __('affiliate-management.withdrawals.fields.promptpay_identifier') }}:</strong> <span data-payout-field="promptpay_identifier"></span></p>
+                                        <p class="mb-1" data-payout-field-row="bank_name"><strong>{{ __('affiliate-management.withdrawals.fields.bank') }}:</strong> <span data-payout-field="bank_name"></span></p>
+                                        <p class="mb-1" data-payout-field-row="account_name"><strong>{{ __('affiliate-management.withdrawals.fields.account_name') }}:</strong> <span data-payout-field="account_name"></span></p>
+                                        <p class="mb-1" data-payout-field-row="account_number"><strong>{{ __('affiliate-management.withdrawals.fields.account_number') }}:</strong> <span data-payout-field="account_number"></span></p>
+                                        <p class="mb-1 text-danger" data-payout-details-error hidden>{{ __('affiliate-management.withdrawals.errors.unavailable') }}</p>
+                                        <button type="button" class="btn btn-sm btn-outline-dark" data-hide-payout-details>{{ __('affiliate-management.withdrawals.actions.hide_details') }}</button>
                                     </div>
                                 </div>
                             @endif
@@ -102,7 +102,7 @@
                     </td>
                 </tr>
             @empty
-                <tr><td colspan="9">No withdrawal requests yet.</td></tr>
+                <tr><td colspan="9">{{ __('affiliate-management.withdrawals.empty') }}</td></tr>
             @endforelse
             </tbody>
         </table>
@@ -176,7 +176,7 @@
                     });
                     const payload = await response.json();
                     if (!response.ok || !payload.data) {
-                        throw new Error('Payout details are unavailable.');
+                        throw new Error(@json(__('affiliate-management.withdrawals.errors.fetch_failed')));
                     }
                     ShowPayoutDetails(panel, reveal_button, payload.data);
                 } catch (error_value) {

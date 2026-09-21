@@ -997,19 +997,19 @@ class CourseController extends Controller
                     $html = '';
                     if ($query->status == 1) {
                         # code...
-                        $html .= '<span class="badge bg-warning rounded-pill"> pending </span>';
+                        $html .= '<span class="badge bg-warning rounded-pill"> ' . e(__('affiliate-management.course_applications.status.pending')) . ' </span>';
                     } elseif ($query->status == 2) {
                         # code...
-                        $html .= '<span class="badge bg-success rounded-pill"> Accepted </span>';
+                        $html .= '<span class="badge bg-success rounded-pill"> ' . e(__('affiliate-management.course_applications.status.accepted')) . ' </span>';
                     } elseif ($query->status == 3) {
                         # code...
-                        $html .= '<span class="badge bg-success rounded-pill"> Waiting for Payment </span>';
+                        $html .= '<span class="badge bg-success rounded-pill"> ' . e(__('affiliate-management.course_applications.status.waiting_for_payment')) . ' </span>';
                     } elseif ($query->status == 4) {
                         # code...
-                        $html .= '<span class="badge bg-success rounded-pill"> success </span>';
+                        $html .= '<span class="badge bg-success rounded-pill"> ' . e(__('affiliate-management.course_applications.status.success')) . ' </span>';
                     } elseif ($query->status == 0) {
                         # code...
-                        $html .= '<span class="badge bg-danger rounded-pill"> denie </span>';
+                        $html .= '<span class="badge bg-danger rounded-pill"> ' . e(__('affiliate-management.course_applications.status.denied')) . ' </span>';
                     }
                     return $html;
                 })
@@ -1017,28 +1017,28 @@ class CourseController extends Controller
                 ->addColumn('action', function ($query) {
 
                     $html = '';
-                    $btn = '<button class="btn btn-primary btn-sm view-detail-btn" data-id="' . $query->id . '" style="margin-right: 5px;"> <i class="fa fa-eye"></i> </button>';
+                    $btn = '<button class="btn btn-primary btn-sm view-detail-btn" data-id="' . $query->id . '" title="' . e(__('affiliate-management.course_applications.actions.view_details')) . '" aria-label="' . e(__('affiliate-management.course_applications.actions.view_details')) . '" style="margin-right: 5px;"> <i class="fa fa-eye"></i> </button>';
                     $dropdown = '<div class="dropdown" style="display: inline-block;">
                                     <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="actionDropdown' . $query->id . '" data-bs-toggle="dropdown" aria-expanded="false">
-                                        Actions
+                                        ' . e(__('affiliate-management.course_applications.actions.actions')) . '
                                     </button>
                                     <ul class="dropdown-menu" aria-labelledby="actionDropdown' . $query->id . '">';
 
                     if ($query->status == 1) {
-                        $dropdown .= '<li><button class="dropdown-item confirm-btn" data-id="' . $query->id . '">Confirm</button></li>
-                                      <li><button class="dropdown-item cancel-btn" data-id="' . $query->id . '">Cancel</button></li>';
+                        $dropdown .= '<li><button class="dropdown-item confirm-btn" data-id="' . $query->id . '">' . e(__('affiliate-management.course_applications.actions.confirm')) . '</button></li>
+                                      <li><button class="dropdown-item cancel-btn" data-id="' . $query->id . '">' . e(__('affiliate-management.course_applications.actions.cancel')) . '</button></li>';
                     } elseif ($query->status == 2) {
-                        $dropdown .= '<li><button class="dropdown-item ModalNewStd" data-id="' . $query->id . '">New Student</button></li>
-                                      <li><button class="dropdown-item ModalNewReciept" data-id="' . $query->id . '">New Receipt</button></li>
-                                      <li><button class="dropdown-item reset-btn" data-id="' . $query->id . '">Reset</button></li>';
+                        $dropdown .= '<li><button class="dropdown-item ModalNewStd" data-id="' . $query->id . '">' . e(__('affiliate-management.course_applications.actions.new_student')) . '</button></li>
+                                      <li><button class="dropdown-item ModalNewReciept" data-id="' . $query->id . '">' . e(__('affiliate-management.course_applications.actions.new_receipt')) . '</button></li>
+                                      <li><button class="dropdown-item reset-btn" data-id="' . $query->id . '">' . e(__('affiliate-management.course_applications.actions.reset')) . '</button></li>';
                     } elseif ($query->status == 0) {
-                        $dropdown .= '<li><button class="dropdown-item reset-btn" data-id="' . $query->id . '">Reset</button></li>';
+                        $dropdown .= '<li><button class="dropdown-item reset-btn" data-id="' . $query->id . '">' . e(__('affiliate-management.course_applications.actions.reset')) . '</button></li>';
                     } else {
                         # code...
                         // $dropdown .= '';
-                        $dropdown .= '<li><button class="dropdown-item reset-btn" data-id="' . $query->id . '">Reset</button></li>';
+                        $dropdown .= '<li><button class="dropdown-item reset-btn" data-id="' . $query->id . '">' . e(__('affiliate-management.course_applications.actions.reset')) . '</button></li>';
                     }
-                    $dropdown .= '<li><button class="dropdown-item view-slip-btn" data-id="' . $query->id . '">View Slip</button></li>';
+                    $dropdown .= '<li><button class="dropdown-item view-slip-btn" data-id="' . $query->id . '">' . e(__('affiliate-management.course_applications.actions.view_slip')) . '</button></li>';
                     // $dropdown .= '<li><button class="dropdown-item view-detail-btn" data-id="' . $query->id . '">View Details</button></li>';
                     $dropdown .= '</ul>
                                 </div>';
@@ -1095,7 +1095,7 @@ class CourseController extends Controller
         $coursePending = CoursePending::find($id);
 
         if (!$coursePending) {
-            return response()->json(['error' => 'Slip not found'], 404);
+            return response()->json(['error' => __('affiliate-management.course_applications.messages.slip_not_found')], 404);
         }
 
         // Return the path to the image stored in the public directory
@@ -1112,13 +1112,13 @@ class CourseController extends Controller
             $data->update(['status' => 2]); // Update the status to 2 (Confirm)
             return response()->json([
                 'success' => true,
-                'message' => 'Course status confirmed successfully.',
+                'message' => __('affiliate-management.course_applications.messages.confirmed'),
             ]);
         }
 
         return response()->json([
             'success' => false,
-            'message' => 'Course not found.',
+            'message' => __('affiliate-management.course_applications.messages.not_found'),
         ]);
     }
 
@@ -1131,13 +1131,13 @@ class CourseController extends Controller
             $data->update(['status' => 0]); // Update the status to 3 (Cancel)
             return response()->json([
                 'success' => true,
-                'message' => 'Course status canceled successfully.',
+                'message' => __('affiliate-management.course_applications.messages.cancelled'),
             ]);
         }
 
         return response()->json([
             'success' => false,
-            'message' => 'Course not found.',
+            'message' => __('affiliate-management.course_applications.messages.not_found'),
         ]);
     }
 
@@ -1150,13 +1150,13 @@ class CourseController extends Controller
             $data->update(['status' => 1]); // Update the status to 3 (Cancel)
             return response()->json([
                 'success' => true,
-                'message' => 'Course status Reset successfully.',
+                'message' => __('affiliate-management.course_applications.messages.reset'),
             ]);
         }
 
         return response()->json([
             'success' => false,
-            'message' => 'Course not found.',
+            'message' => __('affiliate-management.course_applications.messages.not_found'),
         ]);
     }
 
@@ -1961,7 +1961,7 @@ class CourseController extends Controller
         if (!$coursePending) {
             return response()->json([
                 'success' => false,
-                'message' => 'Course pending not found'
+                'message' => __('affiliate-management.course_applications.messages.pending_not_found')
             ], 404);
         }
 

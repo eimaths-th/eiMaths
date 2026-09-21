@@ -64,26 +64,24 @@
                                 <div class="row">
                                     <div class="col-lg-10 offset-lg-1">
                                         <div class="breadcam_text text-center"><br><span><span
-                                                    style="font-size:28px;">เข้าร่วมโปรแกรม Affiliate
-                                                    ของเรา</span></span>
-                                            <h4><strong>แนะนำคอร์สเรียน eiMaths และรับค่าคอมมิชชั่น
-                                                    {{ $affiliate_policy['commission_rate_percent'] }}%</strong></h4>
-                                            <p>คำนวณจากค่าเล่าเรียนสุทธิหลังส่วนลดของรายการที่เข้าเงื่อนไข</p>
+                                                    style="font-size:28px;">{{ __('affiliate-management.website.hero_title') }}</span></span>
+                                            <h4><strong>{{ __('affiliate-management.website.hero_subtitle', ['rate' => $affiliate_policy['commission_rate_percent']]) }}</strong></h4>
+                                            <p>{{ __('affiliate-management.website.hero_description') }}</p>
                                             <a class="theme_btn" href="{{ route('affiliate.registration') }}">
                                                 {{-- <a class="theme_btn" href="https://ecommerce.eimaths-th.com/affiliate/registration"> --}}
-                                                เข้าร่วมเป็นครอบครัว Affiliate</a>
+                                                {{ __('affiliate-management.website.join_action') }}</a>
                                             <section class="affiliate-capabilities"
                                                 aria-labelledby="affiliate-capabilities-title">
                                                 <h2 id="affiliate-capabilities-title">
-                                                    {{ __('affiliate.landing.capabilities_title', [], 'th') }}</h2>
+                                                    {{ __('affiliate.landing.capabilities_title') }}</h2>
                                                 @if ($affiliate_capabilities['analytics'])
-                                                    <p>{{ __('affiliate.landing.analytics_enabled', [], 'th') }}</p>
+                                                    <p>{{ __('affiliate.landing.analytics_enabled') }}</p>
                                                 @endif
                                                 @if ($affiliate_capabilities['media'])
-                                                    <p>{{ __('affiliate.landing.media_enabled', [], 'th') }}</p>
+                                                    <p>{{ __('affiliate.landing.media_enabled') }}</p>
                                                 @endif
                                                 @if (! $affiliate_capabilities['analytics'] && ! $affiliate_capabilities['media'])
-                                                    <p>{{ __('affiliate.landing.analytics_unavailable_guidance', [], 'th') }}</p>
+                                                    <p>{{ __('affiliate.landing.analytics_unavailable_guidance') }}</p>
                                                 @endif
                                             </section>
                                         </div>
@@ -109,16 +107,13 @@
                                                 {{-- class="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/img/snippets/preview/affiliate/round.svg"> --}}
                                                 &nbsp;</div>
                                             <div class="commision_left">
-                                                <h4>อัตราค่าคอมมิชชั่น</h4>
-                                                <p class="rate_text">ค่าเล่าเรียนสุทธิที่เข้าเงื่อนไข</p>
+                                                <h4>{{ __('affiliate-management.website.commission_title') }}</h4>
+                                                <p class="rate_text">{{ __('affiliate-management.website.eligible_tuition') }}</p>
                                                 <h3>{{ $affiliate_policy['commission_rate_percent'] }}%</h3>
-                                                <p class="Sale_text">ตามอัตราที่บันทึกไว้ในคำสั่งซื้อ</p><a class="theme_btn small_btn2"
+                                                <p class="Sale_text">{{ __('affiliate-management.website.order_rate') }}</p><a class="theme_btn small_btn2"
                                                     {{-- href="https://ecommerce.eimaths-th.com/my-affiliate"> --}} href="{{ route('affiliate.login') }}">
-                                                    &nbsp;สร้าง
-                                                    Affiliate ลิงค์</a>
-                                                <p class="discription_text">ค่าคอมมิชชั่นคำนวณจากค่าเล่าเรียนสุทธิหลังส่วนลด
-                                                    โดยไม่รวมค่าหนังสือ ค่าธรรมเนียม ค่าจัดส่ง ภาษี
-                                                    และค่าเล่าเรียนที่คืนเงินแล้ว</p>
+                                                    &nbsp;{{ __('affiliate-management.website.create_link') }}</a>
+                                                <p class="discription_text">{{ __('affiliate-management.website.commission_description') }}</p>
                                             </div>
                                             <div class="commision_right flex-fill">
                                                 <div class="commision_payment_lists">
@@ -128,12 +123,10 @@
                                                             {{-- src="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/img/snippets/preview/affiliate/wallet_1.svg"> --}}
                                                         </div>
                                                         <div class="comission_payment_text">
-                                                            <h4>วิธีและกำหนดการจ่ายเงิน</h4>
-                                                            <p>ถอนเงินขั้นต่ำ
-                                                                {{ $affiliate_policy['minimum_withdrawal_baht'] }} บาท
-                                                                ผ่าน PromptPay หรือบัญชีธนาคารไทย
+                                                            <h4>{{ __('affiliate-management.website.payment_title') }}</h4>
+                                                            <p>{{ __('affiliate-management.website.minimum_withdrawal', ['amount' => $affiliate_policy['minimum_withdrawal_baht']]) }}
                                                                 @if ($affiliate_policy['is_withdrawal_approval_required'])
-                                                                    โดยคำขอต้องได้รับการอนุมัติก่อนโอนเงิน
+                                                                    {{ __('affiliate-management.website.approval_required') }}
                                                                 @endif
                                                             </p>
                                                         </div>
@@ -144,10 +137,8 @@
                                                             {{-- src="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/img/snippets/preview/affiliate/wallet_2.svg"> --}}
                                                         </div>
                                                         <div class="comission_payment_text">
-                                                            <h4>อัตราค่าคอมมิชชั่น</h4>
-                                                            <p>ใช้อัตรา {{ $affiliate_policy['commission_rate_percent'] }}%
-                                                                ที่บันทึกไว้เมื่อสร้างคำสั่งซื้อ
-                                                                การเปลี่ยนอัตราภายหลังมีผลเฉพาะคำสั่งซื้อใหม่</p>
+                                                            <h4>{{ __('affiliate-management.website.rate_title') }}</h4>
+                                                            <p>{{ __('affiliate-management.website.rate_description') }}</p>
                                                         </div>
                                                     </div>
                                                     <div class="commision_payment_list">
@@ -156,11 +147,8 @@
                                                             {{-- src="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/img/snippets/preview/affiliate/wallet_3.svg"> --}}
                                                         </div>
                                                         <div class="comission_payment_text">
-                                                            <h4>กำหนดเวลาการจ่ายเงิน</h4>
-                                                            <p>ค่าคอมมิชชั่นอยู่ระหว่างรอตรวจสอบ
-                                                                {{ $affiliate_policy['commission_holding_days'] }} วันเต็ม
-                                                                ก่อนเข้าสู่ยอดพร้อมถอน
-                                                                การเปลี่ยนบัญชีรับเงินจะพักการถอน 24 ชั่วโมง</p>
+                                                            <h4>{{ __('affiliate-management.website.schedule_title') }}</h4>
+                                                            <p>{{ __('affiliate-management.website.schedule_description', ['days' => $affiliate_policy['commission_holding_days']]) }}</p>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -631,11 +619,8 @@
                                         <h4>&nbsp;</h4>
                                         <h4>&nbsp;</h4>
                                         <h4>&nbsp;</h4>
-                                        <h4><strong>Affiliate eiMaths-TH คืออะไร</strong></h4>
-                                        <p>Affiliate เป็นโปรแกรมที่ให้คุณร่วมเป็นพาร์ทเนอร์กับเรา
-                                            โดยแนะนำคอร์สเรียนผ่านลิงก์เฉพาะของคุณ
-                                            เมื่อคำสั่งซื้อที่ได้รับการแนะนำชำระเงินครบและเข้าเงื่อนไข
-                                            ระบบจะสร้างค่าคอมมิชชั่นตามนโยบายปัจจุบัน</p>
+                                        <h4><strong>{{ __('affiliate-management.website.about_title') }}</strong></h4>
+                                        <p>{{ __('affiliate-management.website.about_description') }}</p>
                                         <ul class="mb-4 mb-lg-5">
                                             <li class="d-flex flex-wrap"><span class="icon text-primary"><svg fill="none"
                                                         height="26" viewBox="0 0 26 26" width="26"
@@ -649,9 +634,7 @@
                                                             stroke="currentColor" stroke-linecap="round"
                                                             stroke-linejoin="round" stroke-width="2"></path>
                                                     </svg> </span> <span class="content"><span
-                                                        style="color: var(--system_paragraph_color); background-color: var(--bs-body-bg); font-family: var(--font_family2); font-size: var(--bs-body-font-size); text-align: var(--bs-body-text-align);">แดชบอร์ดจะแสดงยอดเงินพร้อมถอน
-                                                        ยอดที่สำรองไว้ ประวัติค่าคอมมิชชั่น
-                                                        วันที่พร้อมถอน และประวัติคำขอถอนเงิน</span></span>
+                                                        style="color: var(--system_paragraph_color); background-color: var(--bs-body-bg); font-family: var(--font_family2); font-size: var(--bs-body-font-size); text-align: var(--bs-body-text-align);">{{ __('affiliate-management.website.dashboard_description') }}</span></span>
                                             </li>
                                             <li class="d-flex flex-wrap"><span class="icon text-primary"><svg
                                                         fill="none" height="26" viewBox="0 0 26 26" width="26"
@@ -665,10 +648,7 @@
                                                             stroke="currentColor" stroke-linecap="round"
                                                             stroke-linejoin="round" stroke-width="2"></path>
                                                     </svg> </span> <span class="content"><span
-                                                        style="color: var(--system_paragraph_color); background-color: var(--bs-body-bg); font-family: var(--font_family2); font-size: var(--bs-body-font-size); text-align: var(--bs-body-text-align);">เพื่อเข้าร่วมโปรแกรม
-                                                        คุณต้องยอมรับและปฏิบัติตามข้อตกลงที่ระบุไว้
-                                                        ซึ่งรวมถึงการไม่ใช้วิธีการโปรโมตที่ผิดกฎหมายหรือสแปม
-                                                        และการปฏิบัติตามแนวทางที่ระบุในนโยบายของเรา</span></span>
+                                                        style="color: var(--system_paragraph_color); background-color: var(--bs-body-bg); font-family: var(--font_family2); font-size: var(--bs-body-font-size); text-align: var(--bs-body-text-align);">{{ __('affiliate-management.website.terms_description') }}</span></span>
                                             </li>
                                         </ul>
                                     </div>
@@ -689,19 +669,13 @@
                                 <div class="row justify-content-center">
                                     <div class="col-xl-10">
                                         <div class="work_title_area">
-                                            <div class="section__title4 "><span class="subheading_text">Affiliate
-                                                    ของเราทำงานอย่างไร&nbsp;<span
+                                            <div class="section__title4 "><span class="subheading_text">{{ __('affiliate-management.website.steps_title') }}&nbsp;<span
                                                         style="color: var(--system_primery_color); background-color: var(--bs-body-bg); font-family: var(--font_family2); text-align: var(--bs-body-text-align);">?</span></span>
-                                                <h4><strong>ติดตามสถานะค่าคอมมิชชั่นและการถอนเงิน
-                                                        ได้จากแดชบอร์ดเดียว</strong></h4>
+                                                <h4><strong>{{ __('affiliate-management.website.tracking_title') }}</strong></h4>
                                             </div>
                                             <div class="work_title_desc">
-                                                <p>ระบบจะแสดงยอดเงินพร้อมถอน ยอดเงินที่สำรองไว้
-                                                    ประวัติค่าคอมมิชชั่น สถานะรายการ
-                                                    และวันที่ค่าคอมมิชชั่นพร้อมถอนอย่างชัดเจน</p>
-                                                <p>คุณสามารถจัดการ PromptPay หรือบัญชีธนาคารไทย
-                                                    ส่งคำขอถอนเงิน และตรวจสอบประวัติการถอนเงินได้จากบัญชี Affiliate
-                                                    โดยข้อมูลรับเงินจะแสดงแบบปกปิดในหน้าทั่วไป</p>
+                                                <p>{{ __('affiliate-management.website.tracking_description') }}</p>
+                                                <p>{{ __('affiliate-management.website.tracking_accounts') }}</p>
                                             </div>
                                         </div>
                                         <div class="row justify-content-center">
@@ -711,10 +685,8 @@
                                                             src="{{ asset('frontend/infixlmstheme/img/snippets/preview/affiliate/process_icon_1.svg') }}">
                                                         {{-- src="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/img/snippets/preview/affiliate/process_icon_1.svg"> --}}
                                                     </div>
-                                                    <h4>ลงทะเบียนกับเรา</h4>
-                                                    <p>สมัครเป็นพาร์ทเนอร์กับเรา
-                                                        เพื่อแนะนำคอร์สเรียนผ่านลิงก์ Affiliate
-                                                        หลังบัญชีได้รับการอนุมัติ</p>
+                                                    <h4>{{ __('affiliate-management.website.step_register') }}</h4>
+                                                    <p>{{ __('affiliate-management.website.step_register_text') }}</p>
                                                     <p>&nbsp;</p>
                                                 </div>
                                             </div>
@@ -724,10 +696,8 @@
                                                             src="{{ asset('frontend/infixlmstheme/img/snippets/preview/affiliate/process_icon_2.svg') }}">
                                                         {{-- src="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/img/snippets/preview/affiliate/process_icon_2.svg"> --}}
                                                     </div>
-                                                    <h4>ยืนยันอีเมล</h4>
-                                                    <p>อย่าลืมยืนยันอีเมลผ่านลิงก์ที่เราส่งไปยังกล่องจดหมายของคุณ
-                                                        หลังยืนยันแล้ว ใบสมัครจะเข้าสู่ขั้นตอนรอการอนุมัติ
-                                                    </p>
+                                                    <h4>{{ __('affiliate-management.website.step_verify') }}</h4>
+                                                    <p>{{ __('affiliate-management.website.step_verify_text') }}</p>
                                                 </div>
                                             </div>
                                             <div class="col-xl-4 col-lg-4 col-md-6">
@@ -736,11 +706,8 @@
                                                             src="{{ asset('frontend/infixlmstheme/img/snippets/preview/affiliate/process_icon_3.svg') }}">
                                                         {{-- src="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/img/snippets/preview/affiliate/process_icon_3.svg"> --}}
                                                     </div>
-                                                    <h4>รออนุมัติและเริ่มใช้งาน</h4>
-                                                    <p>เมื่อทีมงานอนุมัติและบัญชีมีสถานะ Active
-                                                        คุณจึงจะสามารถใช้ลิงก์แนะนำ
-                                                        สร้างกิจกรรมที่ได้รับค่าคอมมิชชั่น
-                                                        ตั้งค่าบัญชีรับเงิน และส่งคำขอถอนเงินได้</p>
+                                                    <h4>{{ __('affiliate-management.website.step_active') }}</h4>
+                                                    <p>{{ __('affiliate-management.website.step_active_text') }}</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -762,8 +729,8 @@
                                 <div class="row justify-content-center">
                                     <div class="col-xl-6 col-lg-8 col-md-8">
                                         <div class="section__title4 text-center margin_52"><span
-                                                class="subheading_text">กฎและข้อกำหนด</span>
-                                            <h3>สิ่งที่ควรทำและไม่ควรทำสำหรับ<br>พาร์ทเนอร์ Affiliate ของ eiMaths-TH
+                                                class="subheading_text">{{ __('affiliate-management.website.guidelines_label') }}</span>
+                                            <h3>{{ __('affiliate-management.website.guidelines_title') }}
                                             </h3>
                                         </div>
                                     </div>
@@ -773,7 +740,7 @@
                                         <div class="Requirements_boxs mb_80">
                                             <div class="single_Requirements_box">
                                                 <div class="Requirements_box_head">
-                                                    <h3>สิ่งที่ควรทำ</h3>
+                                                    <h3>{{ __('affiliate-management.website.do_title') }}</h3>
                                                 </div>
                                                 <div class="Requirements_box_body">
                                                     <ul>
@@ -782,47 +749,42 @@
                                                                     src="{{ asset('frontend/infixlmstheme/img/snippets/preview/affiliate/green_check.svg') }}">
                                                                 {{-- src="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/img/snippets/preview/affiliate/green_check.svg"> --}}
                                                             </div>
-                                                            <p>มีส่วนร่วมกับชุมชน Facebook Tiktok IG&nbsp;
-                                                                และแนะนำโซลูชันของเราในกระทู้ที่เกี่ยวข้อง</p>
+                                                            <p>{{ __('affiliate-management.website.do_items.0') }}</p>
                                                         </li>
                                                         <li>
                                                             <div class="icon"><img alt=""
                                                                     src="{{ asset('frontend/infixlmstheme/img/snippets/preview/affiliate/green_check.svg') }}">
                                                                 {{-- src="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/img/snippets/preview/affiliate/green_check.svg"> --}}
                                                             </div>
-                                                            <p>เขียนรีวิวและบทความในบล็อก
-                                                                เกี่ยวกับผลิตภัณฑ์และโซลูชันของเรา</p>
+                                                            <p>{{ __('affiliate-management.website.do_items.1') }}</p>
                                                         </li>
                                                         <li>
                                                             <div class="icon"><img alt=""
                                                                     src="{{ asset('frontend/infixlmstheme/img/snippets/preview/affiliate/green_check.svg') }}">
                                                                 {{-- src="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/img/snippets/preview/affiliate/green_check.svg"> --}}
                                                             </div>
-                                                            <p>เผยแพร่ข้อมูลเชิงบวกเกี่ยวกับผลิตภัณฑ์และคุณสมบัติต่าง
-                                                                ๆ ผ่านช่องทางโซเชียล</p>
+                                                            <p>{{ __('affiliate-management.website.do_items.2') }}</p>
                                                         </li>
                                                         <li>
                                                             <div class="icon"><img alt=""
                                                                     src="{{ asset('frontend/infixlmstheme/img/snippets/preview/affiliate/green_check.svg') }}">
                                                                 {{-- src="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/img/snippets/preview/affiliate/green_check.svg"> --}}
                                                             </div>
-                                                            <p>เผยแพร่การเปรียบเทียบผลิตภัณฑ์, white papers,
-                                                                อินโฟกราฟิก, รูปภาพ และ กรณีศึกษา</p>
+                                                            <p>{{ __('affiliate-management.website.do_items.3') }}</p>
                                                         </li>
                                                         <li>
                                                             <div class="icon"><img alt=""
                                                                     src="{{ asset('frontend/infixlmstheme/img/snippets/preview/affiliate/green_check.svg') }}">
                                                                 {{-- src="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/img/snippets/preview/affiliate/green_check.svg"> --}}
                                                             </div>
-                                                            <p>สร้างวิดีโอสาธิตและบล็อกวิดีโอเกี่ยวกับผลิตภัณฑ์ของเรา
-                                                                บนช่องทางของคุณเอง</p>
+                                                            <p>{{ __('affiliate-management.website.do_items.4') }}</p>
                                                         </li>
                                                     </ul>
                                                 </div>
                                             </div>
                                             <div class="single_Requirements_box">
                                                 <div class="Requirements_box_head style2">
-                                                    <h3>สิ่งที่ไม่ควรทำ</h3>
+                                                    <h3>{{ __('affiliate-management.website.dont_title') }}</h3>
                                                 </div>
                                                 <div class="Requirements_box_body">
                                                     <ul>
@@ -831,18 +793,14 @@
                                                                     src="{{ asset('frontend/infixlmstheme/img/snippets/preview/affiliate/red_cross.svg') }}">
                                                                 {{-- src="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/img/snippets/preview/affiliate/red_cross.svg"> --}}
                                                             </div>
-                                                            <p>ไม่ควรสแปมลิงก์
-                                                                โดยไม่มีการสนทนาที่มีความหมายและในกระทู้ที่ไม่เกี่ยวข้อง
-                                                            </p>
+                                                            <p>{{ __('affiliate-management.website.dont_items.0') }}</p>
                                                         </li>
                                                         <li>
                                                             <div class="icon"><img alt=""
                                                                     src="{{ asset('frontend/infixlmstheme/img/snippets/preview/affiliate/red_cross.svg') }}">
                                                                 {{-- src="https://ecommerce.eimaths-th.com/public/frontend/infixlmstheme/img/snippets/preview/affiliate/red_cross.svg"> --}}
                                                             </div>
-                                                            <p>ห้ามใช้วิธีการ Blackhat
-                                                                และวิธีการที่ไม่ถูกต้องตามจริยธรรมในการจัดการกับเครื่องมือค้นหา
-                                                            </p>
+                                                            <p>{{ __('affiliate-management.website.dont_items.1') }}</p>
                                                         </li>
                                                         <li>
                                                             <div class="icon">&nbsp;</div>
@@ -857,7 +815,7 @@
                                         <div class="apply_btn text-center mb_30"><a
                                                 class="theme_btn min_windth_200 text-center" {{-- href="https://ecommerce.eimaths-th.com/affiliate/registration"> --}}
                                                 href=" {{ route('affiliate.registration') }} ">
-                                                สมัครเลย!!</a>
+                                                {{ __('affiliate-management.website.join_action') }}</a>
                                         </div>
                                     </div>
                                 </div>
@@ -878,8 +836,8 @@
                             <div class="container">
                                 <div class="row">
                                     <div class="col-lg-9 offset-lg-1">
-                                        <div class="breadcam_wrap"><span>ข้อมูลโปรแกรม Affiliate</span>
-                                            <h3>เงื่อนไขที่ชัดเจนและตรวจสอบได้</h3>
+                                        <div class="breadcam_wrap"><span>{{ __('affiliate-management.website.contact_label') }}</span>
+                                            <h3>{{ __('affiliate-management.website.contact_title') }}</h3>
                                         </div>
                                     </div>
                                 </div>
@@ -1082,9 +1040,8 @@
                                                     stroke-width="3"></path>
                                             </svg></div>
                                         <h4 class="currentColor"><span class="d-flex align-items-center">1</span>
-                                            ข้อตกลงทั่วไป</h4>
-                                        <p>ข้อตกลงนี้กำหนดเงื่อนไขและข้อกำหนดในการเข้าร่วมโปรแกรม Affiliate
-                                            รวมถึงสิทธิและความรับผิดชอบของทั้งสองฝ่าย</p>
+                                            {{ __('affiliate-management.website.policy_cards.0.title') }}</h4>
+                                        <p>{{ __('affiliate-management.website.policy_cards.0.description') }}</p>
                                     </div>
                                 </div>
                                 <div class="col-xl-3 col-md-6">
@@ -1107,9 +1064,8 @@
                                                     fill="white"></path>
                                             </svg></div>
                                         <h4 class="currentColor"><span class="d-flex align-items-center"><span
-                                                    class="counter p-0 m-0 ">2</span></span>ความเป็นส่วนตัว</h4>
-                                        <p>อธิบายวิธีการรวบรวม ใช้ และปกป้องข้อมูลของพาร์ทเนอร์
-                                            รวมถึงสิทธิ์ในการจัดการข้อมูล</p>
+                                                    class="counter p-0 m-0 ">2</span></span>{{ __('affiliate-management.website.policy_cards.1.title') }}</h4>
+                                        <p>{{ __('affiliate-management.website.policy_cards.1.description') }}</p>
                                     </div>
                                 </div>
                                 <div class="col-xl-3 col-md-6">
@@ -1130,9 +1086,8 @@
                                                     stroke-width="3"></path>
                                             </svg></div>
                                         <h4 class="currentColor"><span class="d-flex align-items-center">3</span>
-                                            นโยบายการใช้งาน</h4>
-                                        <p>กำหนดวิธีการใช้ระบบและเครื่องมือในโปรแกรม Affiliate
-                                            รวมถึงข้อห้ามที่ต้องปฏิบัติตาม</p>
+                                            {{ __('affiliate-management.website.policy_cards.2.title') }}</h4>
+                                        <p>{{ __('affiliate-management.website.policy_cards.2.description') }}</p>
                                     </div>
                                 </div>
                                 <div class="col-xl-3 col-md-6">
@@ -1144,10 +1099,9 @@
                                                     fill="white"></path>
                                             </svg></div>
                                         <h4 class="currentColor"><span class="d-flex align-items-center"><span
-                                                    class="counter p-0 m-0 ">4</span></span>การเปลี่ยนแปลง<br>และการยกเลิก
+                                                    class="counter p-0 m-0 ">4</span></span>{{ __('affiliate-management.website.policy_cards.3.title') }}
                                         </h4>
-                                        <p>ระบุขั้นตอนเมื่อมีการเปลี่ยนแปลงนโยบายหรือยกเลิกโปรแกรม
-                                            รวมถึงวิธีการจัดการของพาร์ทเนอร์</p>
+                                        <p>{{ __('affiliate-management.website.policy_cards.3.description') }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -1164,64 +1118,22 @@
                                 <div class="col-12">
                                     <div class="modile_main_wrap">
                                         <div class="single_module text-center">
-                                            <p style="text-align: left;"><a href="javascript:void(0)">&nbsp;</a>1.1
-                                                การสมัครเข้าร่วมโปรแกรม Affiliate<br>ผู้สมัครต้องกรอกข้อมูลให้ครบถ้วน
-                                                ยืนยันอีเมล และรอการอนุมัติจากทีมงาน
-                                                การยืนยันอีเมลเพียงอย่างเดียวยังไม่ทำให้บัญชีมีสถานะ Active<br><br>1.2
-                                                การใช้ลิงก์ Affiliate<br>ระบบใช้การแนะนำครั้งแรกเป็นหลัก
-                                                และเก็บสิทธิ์การแนะนำไว้ {{ $affiliate_policy['attribution_duration_days'] }} วัน
-                                                ลิงก์ที่เข้าภายหลังจะไม่แทนที่การแนะนำเดิมที่ยังมีผล<br><br>1.3
-                                                การคำนวณค่าคอมมิชชั่น<br>ระบบคำนวณค่าคอมมิชชั่น
-                                                {{ $affiliate_policy['commission_rate_percent'] }}%
-                                                จากค่าเล่าเรียนสุทธิหลังส่วนลดของคำสั่งซื้อที่ชำระครบและเข้าเงื่อนไข
-                                                โดยไม่รวมค่าหนังสือ ค่าธรรมเนียม ค่าจัดส่ง ภาษี
-                                                และค่าเล่าเรียนที่คืนเงินแล้ว<br><br>1.4
-                                                การถอนเงิน<br>ค่าคอมมิชชั่นจะพักรอตรวจสอบ
-                                                {{ $affiliate_policy['commission_holding_days'] }} วันเต็มก่อนเข้าสู่ยอดพร้อมถอน
-                                                ถอนขั้นต่ำ {{ $affiliate_policy['minimum_withdrawal_baht'] }} บาท
-                                                ผ่าน PromptPay หรือบัญชีธนาคารไทย
-                                                @if ($affiliate_policy['is_withdrawal_approval_required'])
-                                                    และคำขอต้องได้รับการอนุมัติก่อนโอนเงิน
-                                                @endif
-                                            </p>
+                                            <p style="text-align: left;"><a href="javascript:void(0)">&nbsp;</a>{{ __('affiliate-management.website.policy_sections.0', [
+                                                'days' => $affiliate_policy['attribution_duration_days'],
+                                                'rate' => $affiliate_policy['commission_rate_percent'],
+                                                'holding' => $affiliate_policy['commission_holding_days'],
+                                                'minimum' => $affiliate_policy['minimum_withdrawal_baht'],
+                                                'approval' => $affiliate_policy['is_withdrawal_approval_required'] ? __('affiliate-management.website.approval_required') : '',
+                                            ]) }}</p>
                                         </div>
                                         <div class="single_module text-center">
-                                            <div style="text-align: left;">2.1
-                                                การเก็บข้อมูลส่วนบุคคล<br>ข้อมูลส่วนบุคคลของผู้ใช้ที่สมัครเข้าร่วมโปรแกรม
-                                                Affiliate
-                                                จะถูกเก็บรักษาอย่างปลอดภัยและจะไม่ถูกนำไปใช้ในทางที่ผิดหรือเผยแพร่ให้บุคคลภายนอกโดยไม่ได้รับความยินยอม
-                                                ยกเว้นในกรณีที่จำเป็นต้องเปิดเผยตามกฎหมาย<br><br>2.2
-                                                การใช้ข้อมูล<br>ข้อมูลส่วนบุคคลที่เก็บรวบรวมจะถูกใช้เพื่อวัตถุประสงค์ในการบริหารจัดการโปรแกรม
-                                                Affiliate และเพื่อปรับปรุงการบริการเท่านั้น<br><br>2.3
-                                                การคุ้มครองข้อมูล<br>เรามีมาตรการรักษาความปลอดภัยที่เข้มงวดเพื่อปกป้องข้อมูลของผู้ใช้จากการเข้าถึงโดยไม่ได้รับอนุญาตหรือการเปิดเผยข้อมูลโดยไม่ได้รับอนุญาต
-                                            </div>
+                                            <div style="text-align: left;">{{ __('affiliate-management.website.policy_sections.1') }}</div>
                                         </div>
                                         <div class="single_module text-center" style="text-align: left;">
-                                            <div style="text-align: left;">3.1
-                                                การส่งเสริมการขาย<br>ผู้ใช้ต้องส่งเสริมการขายคอร์สเรียนโดยไม่ละเมิดกฎหมายหรือข้อบังคับใด
-                                                ๆ และไม่ใช้วิธีการที่เป็นการหลอกลวงหรือเป็นการรบกวน<br><br>3.2
-                                                ความรับผิดชอบของ
-                                                Affiliate<br>ผู้ใช้ต้องรับผิดชอบต่อการกระทำของตนเองในการโปรโมตคอร์สเรียนและการใช้ลิงก์
-                                                Affiliate หากมีการกระทำใดที่ฝ่าฝืนกฎระเบียบและเงื่อนไข
-                                                ผู้ใช้จะต้องรับผิดชอบต่อความเสียหายที่เกิดขึ้นทั้งหมด<br><br>3.3
-                                                การระงับหรือยุติบัญชี Affiliate<br>บัญชีที่ถูกระงับหรือปิดใช้งาน
-                                                จะไม่สามารถสร้างกิจกรรมทางการเงินใหม่ได้
-                                                แต่ระบบจะเก็บประวัติการแนะนำ ค่าคอมมิชชั่น
-                                                และหลักฐานทางการเงินเดิมไว้เพื่อการตรวจสอบ</div>
+                                            <div style="text-align: left;">{{ __('affiliate-management.website.policy_sections.2') }}</div>
                                         </div>
                                         <div class="single_module text-center">
-                                            <p style="text-align: left;">4.1
-                                                การเปลี่ยนแปลงนโยบาย<br>การเปลี่ยนอัตราค่าคอมมิชชั่น
-                                                ระยะพักเงิน ระยะเวลาการแนะนำ ยอดถอนขั้นต่ำ
-                                                หรือเงื่อนไขอนุมัติ ต้องผ่านการตรวจสอบและมีบันทึกการเปลี่ยนแปลง
-                                                โดยอัตราใหม่มีผลเฉพาะคำสั่งซื้อใหม่<br><br>4.2&nbsp;
-                                                การยกเลิกโปรแกรม<br>หากบริษัทตัดสินใจยกเลิกโปรแกรม
-                                                เราจะแจ้งพาร์ทเนอร์ผ่านอีเมลหรือช่องทางสื่อสารที่เหมาะสม
-                                                พร้อมระบุวันที่มีผลและวิธีจัดการยอดคงเหลือตามนโยบายที่ได้รับอนุมัติ<br><br>4.3
-                                                การคืนเงินและยอดติดลบ<br>การคืนค่าเล่าเรียนอาจทำให้ค่าคอมมิชชั่นถูกกลับรายการ
-                                                หากยอดพร้อมถอนติดลบ ระบบจะนำค่าคอมมิชชั่นใหม่มาหักล้าง
-                                                และจะระงับการถอนเงินจนกว่ายอดจะเป็นบวกและถึงขั้นต่ำ
-                                            </p>
+                                            <p style="text-align: left;">{{ __('affiliate-management.website.policy_sections.3') }}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -1241,60 +1153,46 @@
                                 <div class="row justify-content-center">
                                     <div class="col-xl-6 col-lg-8 col-md-8">
                                         <div class="section__title4 text-center margin_52"><span
-                                                class="subheading_text">แนวทางการทำ Affiliate</span>
-                                            <h4><strong>แนะนำคอร์สเรียนอย่างโปร่งใสและรับผิดชอบ</strong></h4>
+                                                class="subheading_text">{{ __('affiliate-management.website.faq_label') }}</span>
+                                            <h4><strong>{{ __('affiliate-management.website.faq_title') }}</strong></h4>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-xl-4 col-lg-4 col-md-6">
                                         <div class="affiliate_faq_box mb_25">
-                                            <h4>เริ่มต้นอย่างถูกต้อง</h4>
-                                            <p>สมัคร ยืนยันอีเมล และรอให้บัญชีได้รับการอนุมัติเป็น Active
-                                                ก่อนนำลิงก์ Affiliate ไปใช้
-                                                อ่านเงื่อนไขของโปรแกรมและเลือกแนะนำเฉพาะคอร์สที่เหมาะกับกลุ่มเป้าหมาย</p>
+                                            <h4>{{ __('affiliate-management.website.faq_items.0.title') }}</h4>
+                                            <p>{{ __('affiliate-management.website.faq_items.0.description') }}</p>
                                         </div>
                                     </div>
                                     <div class="col-xl-4 col-lg-4 col-md-6">
                                         <div class="affiliate_faq_box mb_25">
-                                            <h4>สร้างเนื้อหาที่มีคุณค่า</h4>
-                                            <p>อธิบายเนื้อหาคอร์ส กลุ่มผู้เรียนที่เหมาะสม
-                                                และสิ่งที่ผู้เรียนจะได้รับตามข้อมูลจริง
-                                                ใช้บทความ วิดีโอ หรือโพสต์ให้ความรู้
-                                                โดยแยกข้อเท็จจริงออกจากความคิดเห็นส่วนตัวอย่างชัดเจน</p>
+                                            <h4>{{ __('affiliate-management.website.faq_items.1.title') }}</h4>
+                                            <p>{{ __('affiliate-management.website.faq_items.1.description') }}</p>
                                         </div>
                                     </div>
                                     <div class="col-xl-4 col-lg-4 col-md-6">
                                         <div class="affiliate_faq_box mb_25">
-                                            <h4>เข้าถึงกลุ่มเป้าหมายที่เหมาะสม</h4>
-                                            <p>เลือกช่องทางและกลุ่มเป้าหมายที่เกี่ยวข้องกับคอร์สเรียน
-                                                หลีกเลี่ยงการส่งข้อความรบกวน การสแปม
-                                                หรือการใช้ข้อมูลส่วนบุคคลเพื่อโฆษณาโดยไม่ได้รับอนุญาต</p>
+                                            <h4>{{ __('affiliate-management.website.faq_items.2.title') }}</h4>
+                                            <p>{{ __('affiliate-management.website.faq_items.2.description') }}</p>
                                         </div>
                                     </div>
                                     <div class="col-xl-4 col-lg-4 col-md-6">
                                         <div class="affiliate_faq_box mb_25">
-                                            <h4>ให้ข้อมูลอย่างตรงไปตรงมา</h4>
-                                            <p>ตอบคำถามด้วยข้อมูลที่ตรวจสอบได้
-                                                ไม่รับประกันผลการเรียน รายได้ หรือผลลัพธ์ที่ระบบและคอร์สไม่ได้รับรอง
-                                                หากไม่แน่ใจควรส่งต่อคำถามให้ทีมงาน eiMaths</p>
+                                            <h4>{{ __('affiliate-management.website.faq_items.3.title') }}</h4>
+                                            <p>{{ __('affiliate-management.website.faq_items.3.description') }}</p>
                                         </div>
                                     </div>
                                     <div class="col-xl-4 col-lg-4 col-md-6">
                                         <div class="affiliate_faq_box mb_25">
-                                            <h4>ติดตามสถานะทางการเงิน</h4>
-                                            <p>ตรวจสอบยอดพร้อมถอน ยอดที่สำรองไว้
-                                                สถานะค่าคอมมิชชั่น และประวัติการถอนเงินจากแดชบอร์ด
-                                                รายได้ขึ้นอยู่กับคำสั่งซื้อที่ชำระครบและเข้าเงื่อนไข
-                                                จึงไม่สามารถรับประกันจำนวนรายได้ได้</p>
+                                            <h4>{{ __('affiliate-management.website.faq_items.4.title') }}</h4>
+                                            <p>{{ __('affiliate-management.website.faq_items.4.description') }}</p>
                                         </div>
                                     </div>
                                     <div class="col-xl-4 col-lg-4 col-md-6">
                                         <div class="affiliate_faq_box mb_25">
-                                            <h4>ทบทวนและปรับปรุง</h4>
-                                            <p>ประเมินว่าเนื้อหาใดช่วยให้ผู้ติดตามเข้าใจคอร์สได้ดีขึ้น
-                                                ปรับปรุงคำอธิบายให้ถูกต้องและอ่านง่าย
-                                                โดยไม่ใช้ยอดคลิกหรือยอดขายที่ระบบยังไม่ได้แสดงเป็นข้อมูลยืนยัน</p>
+                                            <h4>{{ __('affiliate-management.website.faq_items.5.title') }}</h4>
+                                            <p>{{ __('affiliate-management.website.faq_items.5.description') }}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -1312,8 +1210,8 @@
                         <div class="container">
                             <div class="row">
                                 <div class="col-lg-9 offset-lg-1">
-                                    <div class="breadcam_wrap"><span>ติดต่อเรา</span>
-                                        <h3>สอบถามข้อมูลโปรแกรม Affiliate</h3>
+                                    <div class="breadcam_wrap"><span>{{ __('affiliate-management.website.contact_us') }}</span>
+                                        <h3>{{ __('affiliate-management.website.contact_title_short') }}</h3>
                                     </div>
                                 </div>
                             </div>
@@ -1330,7 +1228,7 @@
                                             <div class="row justify-content-between">
                                                 <div class="col-lg-5">
                                                     <div class="contact_info mb_30">
-                                                        <h4 class="mb-0">ข้อมูลการติดต่อ</h4>
+                                                        <h4 class="mb-0">{{ __('affiliate-management.website.contact_info') }}</h4>
                                                         <div class="address_lines">
                                                             <div class="single_address_line d-flex">
                                                                 <div class="address_info">
@@ -1346,7 +1244,7 @@
                                                             <div class="single_address_line d-flex">
                                                                 <div class="address_info">
                                                                     <p>info@eimaths-th.com</p>
-                                                                    <p>ส่งคำถามของคุณมาหาเราได้ตลอดเวลา!</p>
+                                                                    <p>{{ __('affiliate-management.website.contact_email_hint') }}</p>
                                                                 </div>
                                                             </div>
                                                         </div>

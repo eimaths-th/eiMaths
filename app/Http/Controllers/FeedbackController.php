@@ -58,7 +58,7 @@ class FeedbackController extends Controller
             'status' => 'New',
         ]);
 
-        return redirect()->route('feedback.index')->with('success', 'Feedback submitted successfully.');
+        return redirect()->route('feedback.index')->with('success', __('feedback-management.messages.submitted'));
     }
 
     /**
@@ -78,7 +78,7 @@ class FeedbackController extends Controller
             'admin_comments' => $request->admin_comments,
         ]);
 
-        return redirect()->route('feedback.index')->with('success', 'Feedback updated successfully.');
+        return redirect()->route('feedback.index')->with('success', __('feedback-management.messages.updated'));
     }
 
     /**

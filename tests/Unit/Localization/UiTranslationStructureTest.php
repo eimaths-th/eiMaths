@@ -11,7 +11,7 @@ class UiTranslationStructureTest extends TestCase
 {
     public static function Catalogs(): array
     {
-        return [['common'], ['navigation'], ['dashboard'], ['students'], ['crm'], ['course'], ['course-website'], ['quiz-management'], ['teaching_period'], ['receipts'], ['products'], ['book-shipments'], ['qrcode-payment'], ['term-fee'], ['parameter-settings'], ['centre-management'], ['user-access'], ['system-settings']];
+        return [['common'], ['navigation'], ['dashboard'], ['students'], ['crm'], ['course'], ['course-website'], ['quiz-management'], ['teaching_period'], ['receipts'], ['products'], ['book-shipments'], ['qrcode-payment'], ['term-fee'], ['parameter-settings'], ['centre-management'], ['user-access'], ['system-settings'], ['content-management'], ['affiliate-management'], ['feedback-management']];
     }
 
     #[Test]

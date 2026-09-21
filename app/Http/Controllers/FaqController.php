@@ -53,7 +53,7 @@ class FaqController extends Controller
 
         Faq::create($validated_faq);
 
-        return redirect()->route('faqs.index')->with('success', 'FAQ created successfully.');
+        return redirect()->route('faqs.index')->with('success', __('content-management.faq.messages.created'));
     }
 
     public function Edit(Faq $faq)
@@ -73,14 +73,14 @@ class FaqController extends Controller
 
         $faq->update($validated_faq);
 
-        return redirect()->route('faqs.index')->with('success', 'FAQ updated successfully.');
+        return redirect()->route('faqs.index')->with('success', __('content-management.faq.messages.updated'));
     }
 
     public function Destroy(Faq $faq)
     {
         $faq->delete();
 
-        return redirect()->route('faqs.index')->with('success', 'FAQ deleted successfully.');
+        return redirect()->route('faqs.index')->with('success', __('content-management.faq.messages.deleted'));
     }
 
     public function ApiIndex(Request $request)

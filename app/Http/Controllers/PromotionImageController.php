@@ -73,7 +73,7 @@ class PromotionImageController extends Controller
                 $filePath = $directory . '/' . $fileName;
             }
         } else {
-            return back()->with('error', 'No file uploaded.');
+            return back()->with('error', __('content-management.promotion.messages.no_file'));
         }
 
         try {
@@ -97,7 +97,7 @@ class PromotionImageController extends Controller
             throw $exception;
         }
 
-        return back()->with('success', 'Marketing content uploaded successfully!');
+        return back()->with('success', __('content-management.promotion.messages.uploaded'));
     }
 
     /**
@@ -132,7 +132,7 @@ class PromotionImageController extends Controller
         $image = PromotionImage::findOrFail($id);
         $image->delete();
 
-        return redirect()->route('promotion-img.index')->with('success', 'Image deleted successfully.');
+        return redirect()->route('promotion-img.index')->with('success', __('content-management.promotion.messages.deleted'));
     }
     public function updateStatus(Request $request)
     {
@@ -147,7 +147,7 @@ class PromotionImageController extends Controller
         $image->status = $status;
         $image->save();
 
-        return response()->json(['message' => 'Image status updated successfully!']);
+        return response()->json(['message' => __('content-management.promotion.messages.status_updated')]);
     }
     public function updateStatus2(Request $request)
     {
@@ -161,7 +161,7 @@ class PromotionImageController extends Controller
         $image->status = $image->status == 'enabled' ? 'disabled' : 'enabled';
         $image->save();
 
-        return response()->json(['message' => 'Image status updated successfully!']);
+        return response()->json(['message' => __('content-management.promotion.messages.status_updated')]);
     }
 
     public function disableAll(Request $request)
@@ -169,6 +169,6 @@ class PromotionImageController extends Controller
         // Disable all images before enabling the selected one
         PromotionImage::where('status', 'enabled')->update(['status' => 'disabled']);
 
-        return response()->json(['message' => 'All images have been disabled.']);
+        return response()->json(['message' => __('content-management.promotion.messages.all_disabled')]);
     }
 }

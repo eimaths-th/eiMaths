@@ -41,7 +41,7 @@ class FaqCategoryController extends Controller
 
         FaqCategory::create($validated_category);
 
-        return redirect()->route('faq-categories.index')->with('success', 'FAQ category created successfully.');
+        return redirect()->route('faq-categories.index')->with('success', __('content-management.faq_categories.messages.created'));
     }
 
     public function Edit(FaqCategory $faq_category)
@@ -56,7 +56,7 @@ class FaqCategoryController extends Controller
 
         $faq_category->update($validated_category);
 
-        return redirect()->route('faq-categories.index')->with('success', 'FAQ category updated successfully.');
+        return redirect()->route('faq-categories.index')->with('success', __('content-management.faq_categories.messages.updated'));
     }
 
     public function Destroy(FaqCategory $faq_category)
@@ -64,13 +64,13 @@ class FaqCategoryController extends Controller
         if ($faq_category->faqs()->exists()) {
             return redirect()->route('faq-categories.index')->with(
                 'error',
-                'Move or delete the FAQs in this category before deleting it.'
+                __('content-management.faq_categories.messages.delete_blocked')
             );
         }
 
         $faq_category->delete();
 
-        return redirect()->route('faq-categories.index')->with('success', 'FAQ category deleted successfully.');
+        return redirect()->route('faq-categories.index')->with('success', __('content-management.faq_categories.messages.deleted'));
     }
 
     private function ValidateCategory(Request $request): array

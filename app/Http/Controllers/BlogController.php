@@ -61,25 +61,27 @@ class BlogController extends Controller
            ->addIndexColumn()
            ->editColumn('thumbnail',function($row){
              if ($row->thumbnail){
-               return '<img src="' . asset('storage/' . $row->thumbnail) . '" alt="Thumbnail" width="100px" style="aspect-ratio: 16/9; object-fit: cover; border-radius: 12px;">';
+               return '<img src="' . asset('storage/' . $row->thumbnail) . '" alt="' . e(__('content-management.blog.form.thumbnail')) . '" width="100px" style="aspect-ratio: 16/9; object-fit: cover; border-radius: 12px;">';
              }return '';
            })
            ->addColumn('author',function($row){
-                return $row->user->name ?? 'Unknown';
+                return $row->user->name ?? __('content-management.blog.show.unknown');
            })
            ->editColumn('pen_name',function($row){
-                return $row->pen_name ?? 'N/A';
+                return $row->pen_name ?? __('content-management.blog.show.not_available');
            })
            ->editColumn('is_published',function($row){
-                return $row->is_published ? 'Yes':'No';
+                return $row->is_published
+                    ? __('content-management.blog.show.yes')
+                    : __('content-management.blog.show.no');
            })
             ->addColumn('action', function ($row) {
-                    $btn = '<a href="' . route('blogs.show', $row->id) . '" class="btn btn-info btn-sm">View</a> ';
-                    $btn .= '<a href="' . route('blogs.edit', $row->id) . '" class="btn btn-warning btn-sm">Edit</a> ';
-                    $btn .= '<form action="' . route('blogs.destroy', $row->id) . '" method="POST" style="display:inline;" onsubmit="return confirm(\'Are you sure?\')">
+                    $btn = '<a href="' . route('blogs.show', $row->id) . '" class="btn btn-info btn-sm">' . __('content-management.blog.actions.view') . '</a> ';
+                    $btn .= '<a href="' . route('blogs.edit', $row->id) . '" class="btn btn-warning btn-sm">' . __('content-management.blog.actions.edit') . '</a> ';
+                    $btn .= '<form action="' . route('blogs.destroy', $row->id) . '" method="POST" style="display:inline;" onsubmit="return confirm(' . htmlspecialchars(json_encode(__('content-management.blog.actions.confirm_delete')), ENT_QUOTES, 'UTF-8') . ')">
                                 ' . csrf_field() . '
                                 ' . method_field('DELETE') . '
-                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                <button type="submit" class="btn btn-danger btn-sm">' . __('content-management.blog.actions.delete') . '</button>
                             </form>';
                     return $btn;
                 })
@@ -122,7 +124,7 @@ class BlogController extends Controller
         }
 
         if (Blog::where('slug', $slug)->exists()) {
-            return redirect()->back()->with('error', 'Slug already exists. Please choose a different slug.');
+            return redirect()->back()->with('error', __('content-management.blog.messages.slug_exists'));
         }
 
         $thumbnail_path = null;
@@ -170,7 +172,7 @@ class BlogController extends Controller
             throw $exception;
         }
 
-        return redirect()->route('blogs.index')->with('success', 'Blog created successfully.');
+        return redirect()->route('blogs.index')->with('success', __('content-management.blog.messages.created'));
     }
 
     /**
@@ -323,7 +325,7 @@ class BlogController extends Controller
         }
 
         if (Blog::where('slug', $slug)->where('id', '!=', $blog->id)->exists()) {
-            return redirect()->back()->with('error', 'Slug already exists. Please choose a different slug.');
+            return redirect()->back()->with('error', __('content-management.blog.messages.slug_exists'));
         }
 
         $old_thumbnail_path = $blog->thumbnail;
@@ -385,7 +387,7 @@ class BlogController extends Controller
         // Auto delete รูปภาพที่ไม่ได้ใช้งาน
         $this->AutoDeleteUnusedImages($old_content, $request->content);
 
-        return redirect()->route('blogs.index')->with('success', 'Blog updated successfully.');
+        return redirect()->route('blogs.index')->with('success', __('content-management.blog.messages.updated'));
     }
 
     private function StoreBlogThumbnail(UploadedFile $uploaded_file): string
@@ -432,7 +434,7 @@ class BlogController extends Controller
             Storage::disk('public')->delete($blog->thumbnail);
         }
 
-        return redirect()->route('blogs.index')->with('success', 'Blog deleted successfully.');
+        return redirect()->route('blogs.index')->with('success', __('content-management.blog.messages.deleted'));
     }
 
     /**

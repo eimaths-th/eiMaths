@@ -9,13 +9,14 @@
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
+                <h1>{{ __('content-management.blog.management_title') }}</h1>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     @can('blog-create')
                     <a href="{{ route('blogs.create') }}" class="btn btn-success" id="CreateButton"><i
                             class="fas fa-plus"></i>
-                        New Blog </a>
+                        {{ __('content-management.blog.new') }} </a>
                     @endcan
                 </ol>
             </div>
@@ -31,12 +32,12 @@
             <div class="col-12">
                 <div class="card card-primary">
                     <div class="card-header">
-                        <h3 class="card-title"><i class="fas fa-blog"></i> Blog List</h3>
+                        <h3 class="card-title"><i class="fas fa-blog"></i> {{ __('content-management.blog.list_title') }}</h3>
                         <div class="card-tools">
                             <button type="button" class="btn btn-tool" data-card-widget="maximize">
                                 <i class="fas fa-expand"></i>
                             </button>
-                            <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                            <button type="button" class="btn btn-tool" data-card-widget="collapse" title="{{ __('common.actions.collapse') }}">
                                 <i class="fas fa-minus"></i>
                             </button>
                         </div>
@@ -52,12 +53,12 @@
                             <table id="blogs-table" class="table table-bordered table-striped">
                                 <thead>
                                     <tr>
-                                        <th>Thumbnail</th>
-                                        <th>Title</th>
-                                        <th>Author</th>
-                                        <th>Pen Name</th>
-                                        <th>Published</th>
-                                        <th>Actions</th>
+                                        <th>{{ __('content-management.blog.table.thumbnail') }}</th>
+                                        <th>{{ __('content-management.blog.table.title') }}</th>
+                                        <th>{{ __('content-management.blog.table.author') }}</th>
+                                        <th>{{ __('content-management.blog.table.pen_name') }}</th>
+                                        <th>{{ __('content-management.blog.table.published') }}</th>
+                                        <th>{{ __('content-management.blog.table.actions') }}</th>
                                     </tr>
                                 </thead>
                                

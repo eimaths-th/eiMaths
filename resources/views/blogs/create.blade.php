@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container p-3">
-    <h1>Create New Blog</h1>
+    <h1>{{ __('content-management.blog.form.create_title') }}</h1>
     @if (Session::has('error'))
     <script>
         toastr.error('{{ Session::get('error') }}', {
@@ -13,29 +13,29 @@
     <form id="blog-form" action="{{ route('blogs.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
         <div class="form-group">
-            <label for="title">Title</label>
+            <label for="title">{{ __('content-management.blog.form.title') }}</label>
             <input type="text" class="form-control @error('title') is-invalid @enderror" id="title" name="title" value="{{ old('title') }}" required>
             @error('title')
             <div class="invalid-feedback">{{ $message }}</div>
             @enderror
         </div>
         <div class="form-group">
-            <label for="slug">Slug (Optional, will be generated if empty. Example: my-awesome-blog-post)</label>
+            <label for="slug">{{ __('content-management.blog.form.slug') }}</label>
             <input type="text" class="form-control @error('slug') is-invalid @enderror" id="slug" name="slug" value="{{ old('slug') }}">
             @error('slug')
             <div class="invalid-feedback">{{ $message }}</div>
             @enderror
         </div>
         <div class="form-group">
-            <label for="thumbnail">Thumbnail (Optional)</label>
+            <label for="thumbnail">{{ __('content-management.blog.form.thumbnail') }}</label>
             <input type="file" class="d-flex justify-content-center align-items-center @error('thumbnail') is-invalid @enderror" id="thumbnail" name="thumbnail" accept="image/png, image/jpg, image/jpeg">
-            <img class="d-none mt-3" id="thumbnail_preview" alt="Thumbnail Preview" width="25%" style="aspect-ratio: 16/9; object-fit: cover; border-radius: 12px;">
-            <div class="form-text text-danger">* Allowed file types: png, jpg, jpeg</div>
-            <div class="form-text text-danger">* Max file size: 5MB</div>
+            <img class="d-none mt-3" id="thumbnail_preview" alt="{{ __('content-management.blog.form.thumbnail_preview') }}" width="25%" style="aspect-ratio: 16/9; object-fit: cover; border-radius: 12px;">
+            <div class="form-text text-danger">{{ __('content-management.blog.form.allowed_file_types') }}</div>
+            <div class="form-text text-danger">{{ __('content-management.blog.form.max_file_size') }}</div>
         </div>
         <div class="form-group">
             <div class="d-flex justify-content-between">
-                <label for="content">Content</label>
+                <label for="content">{{ __('content-management.blog.form.content') }}</label>
                 <div id="upload-status-container" class="text-sm"></div>
             </div>
             <textarea class="form-control @error('content') is-invalid @enderror" id="content" name="content" rows="10">{{ old('content') }}</textarea>
@@ -44,21 +44,21 @@
             @enderror
         </div>
         <div class="form-group">
-            <label for="meta_description">Meta Description</label>
+            <label for="meta_description">{{ __('content-management.blog.form.meta_description') }}</label>
             <input type="text" class="form-control @error('meta_description') is-invalid @enderror" id="meta_description" name="meta_description" value="{{ old('meta_description') }}">
             @error('meta_description')
             <div class="invalid-feedback">{{ $message }}</div>
             @enderror
         </div>
         <div class="form-group">
-            <label for="meta_keywords">Meta Keywords</label>
+            <label for="meta_keywords">{{ __('content-management.blog.form.meta_keywords') }}</label>
             <input type="text" class="form-control @error('meta_keywords') is-invalid @enderror" id="meta_keywords" name="meta_keywords" value="{{ old('meta_keywords') }}">
             @error('meta_keywords')
             <div class="invalid-feedback">{{ $message }}</div>
             @enderror
         </div>
         <div class="form-group">
-            <label for="pen_name">Pen Name (Optional)</label>
+            <label for="pen_name">{{ __('content-management.blog.form.pen_name') }}</label>
             <input type="text" class="form-control @error('pen_name') is-invalid @enderror" id="pen_name" name="pen_name" value="{{ old('pen_name') }}">
             @error('pen_name')
             <div class="invalid-feedback">{{ $message }}</div>
@@ -67,12 +67,12 @@
         <div class="form-check mb-3">
             <input type="hidden" name="is_published" value="0"> <!-- Hidden field for unchecked checkbox -->
             <input type="checkbox" class="form-check-input @error('is_published') is-invalid @enderror" id="is_published" name="is_published" value="1" {{ old('is_published') ? 'checked' : '' }}>
-            <label class="form-check-label" for="is_published">Publish Now</label>
+            <label class="form-check-label" for="is_published">{{ __('content-management.blog.form.publish_now') }}</label>
             @error('is_published')
             <div class="invalid-feedback">{{ $message }}</div>
             @enderror
         </div>
-        <button type="submit" class="btn btn-primary">Create Blog</button>
+        <button type="submit" class="btn btn-primary">{{ __('content-management.blog.form.create') }}</button>
     </form>
 </div>
 @endsection
@@ -145,7 +145,7 @@
                         }
                     },
                     className: 'fa fa-grip-lines',
-                    title: 'New Line',
+                    title: @json(__('content-management.blog.editor.new_line')),
                 },
                 'bold', 'italic', 'strikethrough',
                 {
@@ -166,7 +166,7 @@
                         }
                     },
                     className: 'fa fa-underline',
-                    title: 'Underline',
+                    title: @json(__('content-management.blog.editor.underline')),
                 },
                 {
                     name: 'mark',
@@ -186,13 +186,13 @@
                         }
                     },
                     className: 'fa fa-highlighter',
-                    title: 'Mark',
+                    title: @json(__('content-management.blog.editor.mark')),
                 },
                 '|',
                 {
                     name: 'headings',
                     className: 'fa fa-header',
-                    title: 'Headings',
+                    title: @json(__('content-management.blog.editor.headings')),
                     children: [
                         {
                             name: 'heading-1',
@@ -208,7 +208,7 @@
                                 cm.focus();
                             },
                             className: 'fa fa-header heading-1',
-                            title: 'Heading 1',
+                            title: @json(__('content-management.blog.editor.heading', ['level' => 1])),
                         },
                         {
                             name: 'heading-2',
@@ -224,7 +224,7 @@
                                 cm.focus();
                             },
                             className: 'fa fa-header heading-2',
-                            title: 'Heading 2',
+                            title: @json(__('content-management.blog.editor.heading', ['level' => 2])),
                         },
                         {
                             name: 'heading-3',
@@ -240,7 +240,7 @@
                                 cm.focus();
                             },
                             className: 'fa fa-header heading-3',
-                            title: 'Heading 3',
+                            title: @json(__('content-management.blog.editor.heading', ['level' => 3])),
                         },
                         {
                             name: 'heading-4',
@@ -256,7 +256,7 @@
                                 cm.focus();
                             },
                             className: 'fa fa-header heading-4',
-                            title: 'Heading 4',
+                            title: @json(__('content-management.blog.editor.heading', ['level' => 4])),
                         },
                         {
                             name: 'heading-5',
@@ -272,7 +272,7 @@
                                 cm.focus();
                             },
                             className: 'fa fa-header heading-5',
-                            title: 'Heading 5',
+                            title: @json(__('content-management.blog.editor.heading', ['level' => 5])),
                         },
                         {
                             name: 'heading-6',
@@ -288,7 +288,7 @@
                                 cm.focus();
                             },
                             className: 'fa fa-header heading-6',
-                            title: 'Heading 6',
+                            title: @json(__('content-management.blog.editor.heading', ['level' => 6])),
                         }
                     ],
                 },
@@ -322,7 +322,7 @@
                         color_picker.click();
                     },
                     className: 'fa fa-tint',
-                    title: 'Text Color',
+                    title: @json(__('content-management.blog.editor.text_color')),
                 },
                 {
                     name: 'background-color',
@@ -353,7 +353,7 @@
                         color_picker.click();
                     },
                     className: 'fa fa-paint-brush',
-                    title: 'Background Color',
+                    title: @json(__('content-management.blog.editor.background_color')),
                 },
                 '|',
                 {
@@ -367,7 +367,7 @@
                         document.querySelector('.font-size-display').textContent = new_size + 'px';
                     },
                     className: 'fa fa-minus',
-                    title: 'Decrease Font Size',
+                    title: @json(__('content-management.blog.editor.decrease_font_size')),
                 },
                 {
                     name: 'font-size-display',
@@ -375,7 +375,7 @@
                     },
                     className: 'font-size-display',
                     text: '16px',
-                    title: 'Font Size',
+                    title: @json(__('content-management.blog.editor.font_size')),
                 },
                 {
                     name: 'font-size-increase',
@@ -388,7 +388,7 @@
                         document.querySelector('.font-size-display').textContent = new_size + 'px';
                     },
                     className: 'fa fa-plus',
-                    title: 'Increase Font Size',
+                    title: @json(__('content-management.blog.editor.increase_font_size')),
                 },
                 '|',
                 'quote', 'unordered-list', 'ordered-list',
@@ -411,7 +411,7 @@
                         }
                     },
                     className: 'fa fa-video',
-                    title: 'Video',
+                    title: @json(__('content-management.blog.editor.video')),
                 },
                 '|',
                 'preview', 'side-by-side', 'fullscreen',
@@ -468,7 +468,7 @@
                         return xhr;
                     },
                     success: function(response) {
-                        upload_status.html('อัปโหลดรูปภาพสำเร็จ').css('background-color', '#d4edda').css('color', '#155724').css('border-color', '#c3e6cb');
+                        upload_status.html(@json(__('content-management.blog.editor.upload_success'))).css('background-color', '#d4edda').css('color', '#155724').css('border-color', '#c3e6cb');
                         setTimeout(function() {
                             upload_status.fadeOut(function() {
                                 upload_status_container.empty();
@@ -492,7 +492,7 @@
                         toastr.success('อัปโหลดรูปภาพสำเร็จ');
                     },
                     error: function(error) {
-                        upload_status.html('อัปโหลดรูปภาพไม่สำเร็จ').css('background-color', '#f8d7da').css('color', '#721c24').css('border-color', '#f5c6cb');
+                        upload_status.html(@json(__('content-management.blog.editor.upload_failed'))).css('background-color', '#f8d7da').css('color', '#721c24').css('border-color', '#f5c6cb');
                         setTimeout(function() {
                             upload_status.fadeOut(function() {
                                 upload_status_container.empty();
@@ -534,7 +534,7 @@
             const maxSize = 5 * 1024 * 1024; // 5MB in bytes
 
             if (file && file.size > maxSize) {
-                alert('ไฟล์มีขนาดใหญ่เกิน 5MB');
+                alert(@json(__('content-management.blog.editor.file_too_large')));
                 this.value = '';
             } else {
                 const reader = new FileReader();

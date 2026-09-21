@@ -43,9 +43,9 @@ class AffiliateLandingPageTest extends TestCase
 
         $response->assertOk();
         $response->assertSeeText('17.5%');
-        $response->assertSeeText('7 วันเต็ม');
-        $response->assertSeeText('90 วัน');
-        $response->assertSeeText('12.34 บาท');
+        $response->assertSeeText('7 full days');
+        $response->assertSeeText('90 days');
+        $response->assertSeeText('12.34 baht');
     }
 
     #[Test]

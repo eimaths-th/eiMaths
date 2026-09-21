@@ -80,7 +80,7 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h4>Promotion Image Management</h4>
+                    <h4>{{ __('content-management.promotion.title') }}</h4>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
@@ -100,7 +100,7 @@
                 <div class="col-12">
                     <div class="card card-primary">
                         <div class="card-header">
-                            <h3 class="card-title"><i class="fa fa-user"></i>Promotion Image Management</h3>
+                            <h3 class="card-title"><i class="fa fa-user"></i>{{ __('content-management.promotion.title') }}</h3>
                             <div class="card-tools">
                                 <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
                                     <i class="fas fa-minus"></i>
@@ -127,34 +127,34 @@
                                 <div class="row">
                                      <div class="col-lg-3">
                                          <div class="form-group">
-                                             <label class="mb-2">File (Image/Video) <span class="text-danger">*</span></label>
+                                             <label class="mb-2">{{ __('content-management.promotion.fields.file') }} <span class="text-danger">*</span></label>
                                              <input class="form-control" type="file" name="image" id="image" required>
                                          </div>
                                      </div>
                                      <div class="col-lg-3">
                                          <div class="form-group">
-                                             <label class="mb-2">Type <span class="text-danger">*</span></label>
+                                             <label class="mb-2">{{ __('content-management.promotion.fields.type') }} <span class="text-danger">*</span></label>
                                              <select class="form-control" name="type" required>
-                                                 <option value="image">Image</option>
-                                                 <option value="video">Video</option>
+                                                 <option value="image">{{ __('content-management.promotion.fields.image') }}</option>
+                                                 <option value="video">{{ __('content-management.promotion.fields.video') }}</option>
                                              </select>
                                          </div>
                                      </div>
                                      <div class="col-lg-3">
                                          <div class="form-group">
-                                             <label class="mb-2">Title <span class="text-danger">*</span></label>
+                                             <label class="mb-2">{{ __('content-management.promotion.fields.title') }} <span class="text-danger">*</span></label>
                                              <input class="form-control" type="text" name="title" required>
                                          </div>
                                      </div>
                                      <div class="col-lg-3">
                                          <div class="form-group">
-                                             <label class="mb-2">Landing Page URL</label>
+                                             <label class="mb-2">{{ __('content-management.promotion.fields.landing_url') }}</label>
                                              <input class="form-control" type="text" name="url">
                                          </div>
                                      </div>
                                      <div class="col-lg-9">
                                          <div class="form-group">
-                                             <label class="mb-2">Description (Share Caption)</label>
+                                             <label class="mb-2">{{ __('content-management.promotion.fields.description') }}</label>
                                              <textarea class="form-control" name="description" rows="2"></textarea>
                                          </div>
                                      </div>
@@ -163,13 +163,13 @@
                                              <label class="primary_checkbox d-flex">
                                                  <input type="checkbox" name="is_for_affiliate" value="1">
                                                  <span class="checkmark mr_15"></span>
-                                                 <span class="label_name">For Affiliate Content</span>
+                                                 <span class="label_name">{{ __('content-management.promotion.fields.affiliate') }}</span>
                                              </label>
                                          </div>
                                      </div>
                                      <div class="col-lg-12">
                                          <button type="submit" class="btn btn-primary">
-                                             <i class="ti-check"></i> Upload Content
+                                             <i class="ti-check"></i> {{ __('content-management.promotion.actions.upload') }}
                                          </button>
                                      </div>
                                  </div>
@@ -181,17 +181,17 @@
                     </div>
                     {{-- <div class="card card-primary">
                         <div class="card-body">
-                            <h3>Promotion Images</h3>
+                            <h3>{{ __('content-management.promotion.list_title') }}</h3>
                             <div class="row">
                                 @foreach ($promotion_images as $image)
                                     <div class="col-md-3 mb-4">
                                         <div class="card">
-                                            <img src="{{ asset($image->img) }}" alt="Promotion Image" class="card-img-top" style="width: 100%; height: 200px; object-fit: cover;">
+                                            <img src="{{ asset($image->img) }}" alt="{{ __('content-management.promotion.list_title') }}" class="card-img-top" style="width: 100%; height: 200px; object-fit: cover;">
                                             <div class="card-body text-center">
                                                 <form action="{{ route('promotion-img.destroy', $image->id) }}" method="POST">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                                    <button type="submit" class="btn btn-danger">{{ __('content-management.promotion.actions.delete') }}</button>
                                                 </form>
                                             </div>
                                         </div>
@@ -203,12 +203,12 @@
 
                     {{-- <div class="card card-primary">
                         <div class="card-body">
-                            <h3>Promotion Images</h3>
+                            <h3>{{ __('content-management.promotion.list_title') }}</h3>
                             <div class="row">
                                 @foreach ($promotion_images as $image)
                                     <div class="col-md-3 mb-4">
                                         <div class="card position-relative">
-                                            <img src="{{ asset($image->img) }}" alt="Promotion Image" class="card-img-top"
+                                            <img src="{{ asset($image->img) }}" alt="{{ __('content-management.promotion.list_title') }}" class="card-img-top"
                                                 style="width: 100%; height: 200px; object-fit: cover;">
 
                                             <!-- Delete Button Positioned at the Top Right -->
@@ -237,7 +237,7 @@
 
                     <div class="card card-primary">
                         <div class="card-body">
-                            <h3>Promotion Images</h3>
+                            <h3>{{ __('content-management.promotion.list_title') }}</h3>
                             <div class="row">
                                 @foreach ($promotion_images as $image)
                                     <div class="col-md-3 mb-4">
@@ -245,17 +245,17 @@
                                             @if($image->type == 'video')
                                                 <video width="100%" height="200" controls style="object-fit: cover;">
                                                     <source src="{{ asset($image->img) }}" type="video/mp4">
-                                                    Your browser does not support the video tag.
+                                                    {{ __('content-management.promotion.messages.video_unsupported') }}
                                                 </video>
                                             @else
-                                                <img src="{{ asset($image->img) }}" alt="Promotion Image" class="card-img-top"
+                                                <img src="{{ asset($image->img) }}" alt="{{ __('content-management.promotion.list_title') }}" class="card-img-top"
                                                     style="width: 100%; height: 200px; object-fit: cover;">
                                             @endif
                                             
                                             <div class="p-2">
                                                 <strong>{{ $image->title }}</strong>
                                                 @if($image->is_for_affiliate)
-                                                    <span class="badge badge-success">Affiliate</span>
+                                                    <span class="badge badge-success">{{ __('content-management.promotion.fields.affiliate') }}</span>
                                                 @endif
                                             </div>
 
@@ -342,7 +342,7 @@
                     },
                     error: function(xhr) {
                         console.error(xhr.responseText);
-                        alert('An error occurred while updating the image status.');
+                        alert(@json(__('common.feedback.error')));
                     }
                 });
             });
