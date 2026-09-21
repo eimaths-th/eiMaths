@@ -103,6 +103,7 @@ return [
             'source_changed' => 'The source branch changed. Refresh and select this person again.',
             'role_invalid' => "This user's role cannot be transferred with your permissions.",
             'destination_invalid' => 'Choose an active destination branch you can access.',
+            'destination_code_required' => 'The destination branch needs a code before students can be transferred.',
             'department_invalid' => 'Choose an active department in the destination branch.',
             'invalid_input' => 'Check the selected records and transfer details.',
             'forbidden' => 'You do not have permission for this transfer.',

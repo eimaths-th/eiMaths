@@ -5,6 +5,7 @@ namespace App\Support\Branch;
 use App\Models\Contact;
 use App\Models\Position;
 use App\Models\User;
+use App\Models\studentRunningNumber;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Illuminate\Validation\ValidationException;
@@ -57,6 +58,13 @@ final class BranchTransferService
             }
             throw ValidationException::withMessages([
                 'to_branch_id' => __('centre-management.transfers.bulk.destination_invalid'),
+            ]);
+        }
+
+        if ($input['type'] === 'student'
+            && trim((string) DB::table('departments')->where('id', $input['to_branch_id'])->value('code')) === '') {
+            throw ValidationException::withMessages([
+                'to_branch_id' => __('centre-management.transfers.bulk.destination_code_required'),
             ]);
         }
 
@@ -130,10 +138,12 @@ final class BranchTransferService
             foreach ($records as $record) {
                 $branch_column = $record instanceof User ? 'department_id' : 'centre';
                 $source_branch_id = (int) $record->getAttribute($branch_column);
+                $previous_student_code = $record instanceof Contact ? $record->code : null;
                 if ($record instanceof User) {
                     $record->position_id = $input['position_id'] ?? null;
                 } else {
                     $this->ResetStudentEnrollment($record);
+                    $record->code = $this->NextAvailableStudentCode((int) $input['to_branch_id']);
                 }
                 $record->setAttribute($branch_column, $input['to_branch_id']);
                 if (!$record->save()) {
@@ -148,7 +158,12 @@ final class BranchTransferService
                     'reason' => $input['reason'],
                     'created_at' => now(),
                 ]);
-                if ($record instanceof User) {
+                if ($record instanceof Contact) {
+                    $context->audit('student.code.changed', Contact::class, $record->id, [
+                        'previous_code' => $previous_student_code,
+                        'new_code' => $record->code,
+                    ]);
+                } else {
                     $record->tokens()->delete();
                 }
                 $results[$record->id] = [
@@ -190,6 +205,15 @@ final class BranchTransferService
             'discontinued_date' => null,
             'discontinued_reason' => null,
         ]);
+    }
+
+    private function NextAvailableStudentCode(int $destination_branch_id): string
+    {
+        do {
+            $student_code = studentRunningNumber::generate((string) $destination_branch_id);
+        } while (DB::table('contacts')->where('code', $student_code)->exists());
+
+        return $student_code;
     }
 
     private function Reject(array $problems, bool $is_batch): never

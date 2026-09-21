@@ -10,6 +10,7 @@ use App\Models\Position;
 use App\Models\User;
 use App\Support\Branch\BranchContext;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
@@ -159,14 +160,83 @@ class BranchTransferBulkTest extends TestCase
             ->assertJsonPath('transferred_count', 2)
             ->assertJsonCount(2, 'data');
 
-        foreach ($students as $student) {
+        foreach ($students as $student_index => $student) {
             $this->assertSame($this->destination_branch->id, (int) $student->fresh()->centre);
             $this->assertSame(0, (int) $student->fresh()->order);
+            $this->assertSame('DST000'.($student_index + 1), $student->fresh()->code);
         }
         foreach ($orders as $order) {
             $this->assertSame($this->source_branch->id, (int) $order->fresh()->centre);
         }
         $this->assertDatabaseCount('branch_transfers', 2);
+    }
+
+    #[Test]
+    public function BulkTransferSkipsAnExistingDestinationCode(): void
+    {
+        $existing_student = $this->Student('Existing destination student', $this->destination_branch->id);
+        $existing_student->update(['code' => 'DST0001']);
+        $students = [$this->Student('First'), $this->Student('Second')];
+
+        $this->actingAs($this->actor)->postJson('/branch-transfers', $this->Payload($students))
+            ->assertOk()
+            ->assertJsonPath('transferred_count', 2);
+
+        $this->assertSame('DST0001', $existing_student->fresh()->code);
+        $this->assertSame('DST0002', $students[0]->fresh()->code);
+        $this->assertSame('DST0003', $students[1]->fresh()->code);
+        $this->assertDatabaseCount('branch_transfers', 2);
+    }
+
+    #[Test]
+    public function StudentTransferRecordsPreviousAndDestinationCodesInTheAuditTrail(): void
+    {
+        $student = $this->Student();
+        $student->update(['code' => 'SRC0001']);
+
+        $this->actingAs($this->actor)->postJson('/branch-transfers', $this->Payload([$student]))
+            ->assertOk();
+
+        $audit_entry = DB::table('branch_audit_logs')
+            ->where('action', 'student.code.changed')
+            ->where('subject_type', Contact::class)
+            ->where('subject_id', $student->id)
+            ->first();
+        $this->assertNotNull($audit_entry);
+        $this->assertSame($this->actor->id, (int) $audit_entry->actor_id);
+        $this->assertSame([
+            'previous_code' => 'SRC0001',
+            'new_code' => 'DST0001',
+        ], json_decode($audit_entry->changes, true));
+    }
+
+    #[Test]
+    public function TransferredStudentSignsInWithNewCodeAndExistingPassword(): void
+    {
+        $student = $this->Student('Returning learner');
+        $student->update([
+            'code' => 'SRC0001',
+            'type' => 'student',
+            'password' => bcrypt('password-123'),
+        ]);
+        $original_password_hash = $student->password;
+
+        $this->actingAs($this->actor)->postJson('/branch-transfers', $this->Payload([$student]))
+            ->assertOk();
+
+        Auth::guard('web')->logout();
+        $this->post('/students-login-check', [
+            'code' => 'SRC0001',
+            'password' => 'password-123',
+        ])->assertSessionHasErrors('error');
+        $this->assertGuest('student');
+
+        $this->post('/students-login-check', [
+            'code' => 'DST0001',
+            'password' => 'password-123',
+        ])->assertRedirect();
+        $this->assertAuthenticatedAs($student, 'student');
+        $this->assertSame($original_password_hash, $student->fresh()->password);
     }
 
     public static function PendingOrderTransferRequests(): array
@@ -214,6 +284,7 @@ class BranchTransferBulkTest extends TestCase
 
         $transferred_student = $student->fresh();
         $this->assertSame($this->destination_branch->id, (int) $transferred_student->centre);
+        $this->assertSame('DST0001', $transferred_student->code);
         $this->assertSame(0, (int) $transferred_student->order);
         $this->assertNull($transferred_student->new_student_order_id);
         $this->assertNull($transferred_student->courses_pending_id);
@@ -231,7 +302,7 @@ class BranchTransferBulkTest extends TestCase
     }
 
     #[Test]
-    public function StudentTransferKeepsIdentityAndParentDetailsButStartsDestinationEnrollmentFromScratch(): void
+    public function StudentTransferKeepsProfileAndParentDetailsButStartsDestinationEnrollmentFromScratch(): void
     {
         $student = $this->Student('Existing learner');
         $student->forceFill([
@@ -299,7 +370,7 @@ class BranchTransferBulkTest extends TestCase
         $this->assertSame($this->destination_branch->id, (int) $transferred_student->centre);
         $this->assertSame('Existing learner', $transferred_student->name);
         $this->assertNull($transferred_student->ref);
-        $this->assertSame('SRC-0001', $transferred_student->code);
+        $this->assertSame('DST0001', $transferred_student->code);
         $this->assertSame('Nok', $transferred_student->nickname);
         $this->assertSame('Source School', $transferred_student->school);
         $this->assertSame('2012-03-04', $transferred_student->birth_date);
@@ -487,6 +558,58 @@ class BranchTransferBulkTest extends TestCase
         $this->assertDatabaseCount('branch_transfers', 0);
         $this->assertSame($audit_count, DB::table('branch_audit_logs')->count());
         $this->assertFalse(app(BranchContext::class)->allowTransfer);
+    }
+
+    #[Test]
+    public function StudentBatchFailureRollsBackStudentCodesAndDestinationNumbers(): void
+    {
+        $students = [$this->Student('First'), $this->Student('Second')];
+        $students[0]->update(['code' => 'SRC0001']);
+        $students[1]->update(['code' => 'SRC0002']);
+        $audit_count = DB::table('branch_audit_logs')->count();
+        $blocked_id = (int) $students[1]->id;
+        DB::statement("CREATE TEMP TRIGGER reject_student_transfer BEFORE UPDATE ON contacts WHEN NEW.id = {$blocked_id} BEGIN SELECT RAISE(ABORT, 'planned student write failure'); END");
+
+        $this->withoutExceptionHandling();
+        try {
+            $this->actingAs($this->actor)->postJson('/branch-transfers', $this->Payload($students));
+            $this->fail('Expected the controlled second student update to fail.');
+        } catch (\Illuminate\Database\QueryException $exception) {
+            $this->assertStringContainsString('planned student write failure', $exception->getMessage());
+        } finally {
+            DB::statement('DROP TRIGGER reject_student_transfer');
+        }
+
+        foreach ($students as $student_index => $student) {
+            $this->assertSame($this->source_branch->id, (int) $student->fresh()->centre);
+            $this->assertSame('SRC000'.($student_index + 1), $student->fresh()->code);
+        }
+        $this->assertDatabaseCount('branch_transfers', 0);
+        $this->assertDatabaseCount('student_running_numbers', 0);
+        $this->assertSame($audit_count, DB::table('branch_audit_logs')->count());
+        $this->assertFalse(app(BranchContext::class)->allowTransfer);
+
+        $retry_student = $this->Student('Retry');
+        $this->postJson('/branch-transfers', $this->Payload([$retry_student]))->assertOk();
+        $this->assertSame('DST0001', $retry_student->fresh()->code);
+    }
+
+    #[Test]
+    public function DestinationWithoutCodeRejectsStudentBatchBeforeAnyChange(): void
+    {
+        $student = $this->Student();
+        $student->update(['code' => 'SRC0001']);
+        DB::table('departments')->where('id', $this->destination_branch->id)->update(['code' => '']);
+
+        $this->actingAs($this->actor)->postJson('/branch-transfers', $this->Payload([$student]))
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['to_branch_id'])
+            ->assertJsonPath('errors.to_branch_id.0', 'The destination branch needs a code before students can be transferred.');
+
+        $this->assertSame($this->source_branch->id, (int) $student->fresh()->centre);
+        $this->assertSame('SRC0001', $student->fresh()->code);
+        $this->assertDatabaseCount('student_running_numbers', 0);
+        $this->assertDatabaseCount('branch_transfers', 0);
     }
 
     #[Test]
