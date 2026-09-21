@@ -155,7 +155,7 @@ final class BranchTransferService
                 if ($record instanceof User) {
                     $record->position_id = $input['position_id'] ?? null;
                 } else {
-                    $record->order = 0;
+                    $this->ResetStudentEnrollment($record);
                 }
                 $record->setAttribute($branch_column, $input['to_branch_id']);
                 if (!$record->save()) {
@@ -184,6 +184,34 @@ final class BranchTransferService
         }
 
         return array_map(fn ($record_id) => $results[$record_id], $record_ids);
+    }
+
+    private function ResetStudentEnrollment(Contact $student): void
+    {
+        $student->forceFill([
+            'ref' => null,
+            'order' => 0,
+            'new_student_order_id' => null,
+            'courses_pending_id' => null,
+            'free_course' => 0,
+            'start_date' => null,
+            'start_term' => null,
+            'level' => 0,
+            'term' => 0,
+            'bookuse' => 0,
+            'level_name' => null,
+            'term_name' => null,
+            'bookuse_name' => null,
+            'level2' => 0,
+            'term2' => 0,
+            'bookuse2' => 0,
+            'level2_name' => null,
+            'term2_name' => null,
+            'bookuse2_name' => null,
+            'discontinued' => 0,
+            'discontinued_date' => null,
+            'discontinued_reason' => null,
+        ]);
     }
 
     private function Reject(array $problems, bool $is_batch): never

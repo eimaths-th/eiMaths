@@ -321,9 +321,9 @@ class ContactController extends Controller
                 DB::raw('COALESCE(book_receipt_summary.book_receipt_received_count, 0) as book_receipt_received_count')
             )
                 ->join("departments", "contacts.centre", "=", "departments.id")
-                ->join("levels", "contacts.level", "=", "levels.id")
-                ->join("bookuses", "contacts.bookuse", "=", "bookuses.id")
-                ->join("terms as pterms", "contacts.term", "=", "pterms.id")
+                ->leftJoin("levels", "contacts.level", "=", "levels.id")
+                ->leftJoin("bookuses", "contacts.bookuse", "=", "bookuses.id")
+                ->leftJoin("terms as pterms", "contacts.term", "=", "pterms.id")
                 ->leftJoinSub($book_receipt_summary, 'book_receipt_summary', function ($join): void {
                     $join->on('book_receipt_summary.student_id', '=', 'contacts.id');
                 });

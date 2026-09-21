@@ -4,6 +4,7 @@ namespace Tests\Feature\Branch;
 
 use App\Models\Contact;
 use App\Models\Department;
+use App\Models\Histrories;
 use App\Models\Order;
 use App\Models\Position;
 use App\Models\User;
@@ -165,6 +166,121 @@ class BranchTransferBulkTest extends TestCase
             $this->assertSame($this->source_branch->id, (int) $order->fresh()->centre);
         }
         $this->assertDatabaseCount('branch_transfers', 2);
+    }
+
+    #[Test]
+    public function StudentTransferKeepsIdentityAndParentDetailsButStartsDestinationEnrollmentFromScratch(): void
+    {
+        $student = $this->Student('Existing learner');
+        $student->forceFill([
+            'type' => 'student',
+            'ref' => 'OLD-REF',
+            'code' => 'SRC-0001',
+            'nickname' => 'Nok',
+            'school' => 'Source School',
+            'birth_date' => '2012-03-04',
+            'telephone' => '0800000000',
+            'father_name' => 'Father Name',
+            'father_mobile' => '0811111111',
+            'mother_name' => 'Mother Name',
+            'mother_mobile' => '0822222222',
+            'start_date' => '2026-01-10',
+            'start_term' => 1,
+            'level' => 2,
+            'term' => 3,
+            'bookuse' => 4,
+            'level_name' => 'Level 2',
+            'term_name' => 'Term 3',
+            'bookuse_name' => 'Full book',
+            'level2' => 3,
+            'term2' => 1,
+            'bookuse2' => 5,
+            'level2_name' => 'Level 3',
+            'term2_name' => 'Term 1',
+            'bookuse2_name' => 'Half book',
+            'free_course' => 3,
+            'discontinued' => 1,
+            'discontinued_date' => '2026-02-01',
+            'discontinued_reason' => 'Moved away',
+        ]);
+        $old_order = Order::create([
+            'centre' => $this->source_branch->id,
+            'cid' => $student->id,
+            'status' => 2,
+            'total_price' => 1200,
+        ]);
+        $student->order = $old_order->id;
+        $student->new_student_order_id = $old_order->id;
+        $student->save();
+        DB::table('contacts')->where('id', $student->id)->update(['courses_pending_id' => 77]);
+        $history = Histrories::create([
+            'centre' => $this->source_branch->id,
+            'student_id' => $student->id,
+            'teacher_id' => 0,
+            'level_id' => 2,
+            'term' => '3',
+            'bookuse' => '4',
+            'course_remaining' => '8',
+            'date' => '2026-01-15',
+            'stime' => '09:00:00',
+            'etime' => '10:00:00',
+            'start_date' => '2026-01-10',
+            'comment' => '',
+            'signature' => '',
+        ]);
+
+        $this->actingAs($this->actor)->postJson('/branch-transfers', $this->Payload([$student]))
+            ->assertOk()
+            ->assertJsonPath('transferred_count', 1);
+
+        $transferred_student = $student->fresh();
+        $this->assertSame($this->destination_branch->id, (int) $transferred_student->centre);
+        $this->assertSame('Existing learner', $transferred_student->name);
+        $this->assertNull($transferred_student->ref);
+        $this->assertSame('SRC-0001', $transferred_student->code);
+        $this->assertSame('Nok', $transferred_student->nickname);
+        $this->assertSame('Source School', $transferred_student->school);
+        $this->assertSame('2012-03-04', $transferred_student->birth_date);
+        $this->assertSame('0800000000', $transferred_student->telephone);
+        $this->assertSame('Father Name', $transferred_student->father_name);
+        $this->assertSame('Mother Name', $transferred_student->mother_name);
+        $this->assertSame(0, (int) $transferred_student->order);
+        $this->assertNull($transferred_student->new_student_order_id);
+        $this->assertNull($transferred_student->courses_pending_id);
+        $this->assertSame(0, (int) $transferred_student->free_course);
+        $this->assertNull($transferred_student->start_date);
+        $this->assertNull($transferred_student->start_term);
+        $this->assertSame(0, (int) $transferred_student->level);
+        $this->assertSame(0, (int) $transferred_student->term);
+        $this->assertSame(0, (int) $transferred_student->bookuse);
+        $this->assertNull($transferred_student->level_name);
+        $this->assertNull($transferred_student->term_name);
+        $this->assertNull($transferred_student->bookuse_name);
+        $this->assertSame(0, (int) $transferred_student->level2);
+        $this->assertSame(0, (int) $transferred_student->term2);
+        $this->assertSame(0, (int) $transferred_student->bookuse2);
+        $this->assertNull($transferred_student->level2_name);
+        $this->assertNull($transferred_student->term2_name);
+        $this->assertNull($transferred_student->bookuse2_name);
+        $this->assertSame(0, (int) $transferred_student->discontinued);
+        $this->assertNull($transferred_student->discontinued_date);
+        $this->assertNull($transferred_student->discontinued_reason);
+        $this->assertSame($this->source_branch->id, (int) $old_order->fresh()->centre);
+        $this->assertSame($this->source_branch->id, (int) $history->fresh()->centre);
+
+        $destination_role = Role::findOrCreate('DestinationStudentList', 'web');
+        $destination_role->givePermissionTo(Permission::findOrCreate('student-list', 'web'));
+        $destination_actor = User::factory()->create([
+            'department_id' => $this->destination_branch->id,
+            'disable' => 0,
+            'password' => bcrypt('password-123'),
+        ]);
+        $destination_actor->assignRole($destination_role);
+        $this->actingAs($destination_actor)
+            ->withHeaders(['X-Requested-With' => 'XMLHttpRequest'])
+            ->getJson('/contacts?draw=1&start=0&length=10')
+            ->assertOk()
+            ->assertJsonFragment(['id' => $student->id]);
     }
 
     #[Test]
