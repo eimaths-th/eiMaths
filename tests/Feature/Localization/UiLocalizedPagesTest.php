@@ -62,7 +62,7 @@ class UiLocalizedPagesTest extends TestCase
     }
 
     #[Test]
-    public function SharedShellHasAnAccessibleLanguageSwitcher(): void
+    public function SharedShellHasAnAccessibleLanguageSelect(): void
     {
         $this->actor->update(['language_code' => 'th']);
 
@@ -72,12 +72,36 @@ class UiLocalizedPagesTest extends TestCase
             ->assertSee('class="ui-language-switcher"', false)
             ->assertSee('action="' . route('locale.update') . '"', false)
             ->assertSee('name="_token"', false)
-            ->assertSee('name="locale" value="th"', false)
-            ->assertSee('name="locale" value="en"', false)
-            ->assertSee('lang="th" aria-pressed="true"', false)
-            ->assertSee('lang="en" aria-pressed="false"', false)
+            ->assertSee('id="ui-language-select"', false)
+            ->assertSee('name="locale"', false)
+            ->assertSee('value="en"', false)
+            ->assertSee('value="th"', false)
+            ->assertSee('English')
+            ->assertSee('ไทย')
             ->assertSee('ภาษาที่แสดง')
             ->assertSee('Locale Test Branch');
+
+        $document = new DOMDocument();
+        @$document->loadHTML($response->getContent());
+        $xpath = new DOMXPath($document);
+        $selected_option = $xpath->query('//*[@id="ui-language-select"]/option[@selected]')->item(0);
+
+        $this->assertNotNull($selected_option);
+        $this->assertSame('th', $selected_option->getAttribute('value'));
+    }
+
+    #[Test]
+    public function LanguageSelectIsRenderedAfterTheNotificationControl(): void
+    {
+        $this->actor->givePermissionTo(Permission::findOrCreate('book-shipment-receive', 'web'));
+
+        $content = $this->actingAs($this->actor, 'web')->get(route('home'))->getContent();
+        $notification_position = strpos($content, 'data-pending-work-alert-toggle');
+        $language_select_position = strpos($content, 'id="ui-language-select"');
+
+        $this->assertNotFalse($notification_position);
+        $this->assertNotFalse($language_select_position);
+        $this->assertLessThan($language_select_position, $notification_position);
     }
 
     #[Test]

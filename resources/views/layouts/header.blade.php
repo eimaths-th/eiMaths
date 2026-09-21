@@ -50,12 +50,12 @@
     </ul>
 
     <ul class="navbar-nav ml-auto app-topbar__right">
-        @include('layouts.partials.language-switcher')
         @if (isset($pending_work_alert_enabled) && $pending_work_alert_enabled)
             @include('partials.pending-work-alert', [
                 'authenticated_user' => $authenticated_user,
             ])
         @endif
+        @include('layouts.partials.language-switcher')
         <li class="nav-item d-none d-md-flex">
             <a class="nav-link app-topbar__action" data-widget="fullscreen" href="#" role="button"
                 aria-label="{{ __('navigation.header.full_screen') }}"

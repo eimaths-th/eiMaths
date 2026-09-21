@@ -67,18 +67,31 @@
 .ui-language-switcher {
     display: flex;
     align-items: center;
-    gap: 0.25rem;
     margin: 0;
 }
 
-.ui-language-switcher .btn {
+.ui-language-switcher__select {
+    min-width: 88px;
     min-height: 42px;
-    min-width: 44px;
+    padding: 0.45rem 2rem 0.45rem 0.75rem;
+    color: #334e68;
+    background: #f8fafc;
+    border: 1px solid #dce5ee;
+    border-radius: 0.65rem;
+    font-weight: 600;
     white-space: nowrap;
+    cursor: pointer;
 }
 
-.ui-language-switcher .btn:focus-visible {
-    outline: 3px solid #1266ab;
+.ui-language-switcher__select:hover,
+.ui-language-switcher__select:focus-visible {
+    color: #1266ab;
+    background: #eef6fc;
+    border-color: #b9d4e8;
+}
+
+.ui-language-switcher__select:focus-visible {
+    outline: 3px solid rgba(242, 140, 40, 0.5);
     outline-offset: 2px;
 }
 
