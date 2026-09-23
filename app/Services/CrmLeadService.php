@@ -357,6 +357,7 @@ class CrmLeadService
             'line_ref',
             'line_source',
             'duplicate_checked_at',
+            'preferred_branch',
         ];
 
         if (! empty($data['lead_id'])) {

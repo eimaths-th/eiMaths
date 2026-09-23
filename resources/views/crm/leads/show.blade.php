@@ -63,6 +63,12 @@
                                 <p><strong>{{ __('crm.lead_detail.fields.line_id') }}:</strong> {{ $lead->line_id ?: __('crm.lead_detail.not_available') }}</p>
                                 <p><strong>{{ __('crm.lead_detail.fields.email') }}:</strong> {{ $lead->email ?: __('crm.lead_detail.not_available') }}</p>
                                 <p><strong>{{ __('crm.lead_detail.fields.preferred_time') }}:</strong> {{ $lead->preferred_contact_time ?: __('crm.lead_detail.not_available') }}</p>
+                                <p>
+                                    <strong>{{ __('crm.preferred_branch.label') }}:</strong>
+                                    {{ in_array($lead->preferred_branch, \App\Models\CrmLead::PREFERRED_BRANCHES, true)
+                                        ? __('crm.preferred_branch.'.$lead->preferred_branch)
+                                        : __('crm.preferred_branch.unspecified') }}
+                                </p>
                             </div>
                             <div class="col-md-6">
                                 <h5>{{ __('crm.lead_detail.fields.student') }}</h5>

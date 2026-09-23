@@ -190,6 +190,12 @@ return [
             'empty' => 'ไม่พบ Tracking Link',
         ],
     ],
+    'preferred_branch' => [
+        'label' => 'สาขาที่สนใจ',
+        'unspecified' => 'ยังไม่ระบุ',
+        'ratchapruek' => 'ราชพฤกษ์ — เดอะคริสตัล เอสบี',
+        'bangkae' => 'บางแค — ซีคอน บางแค',
+    ],
     'lead_detail' => [
         'title' => 'รายละเอียด Lead #:id',
         'branch' => 'สาขา: :name',

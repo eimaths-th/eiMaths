@@ -190,6 +190,12 @@ return [
             'empty' => 'No tracking links found.',
         ],
     ],
+    'preferred_branch' => [
+        'label' => 'Preferred branch',
+        'unspecified' => 'Not specified',
+        'ratchapruek' => 'Ratchapruek — The Crystal SB',
+        'bangkae' => 'Bangkae — Seacon Bangkae',
+    ],
     'lead_detail' => [
         'title' => 'Lead Detail #:id',
         'branch' => 'Branch: :name',

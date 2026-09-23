@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class CrmLead extends Model
 {
+    public const PREFERRED_BRANCHES = ['ratchapruek', 'bangkae'];
+
     public const CREATED_FROM = [
         'unknown' => 'Unknown',
         'lead_registration_website' => 'Website registration',
@@ -52,6 +54,7 @@ class CrmLead extends Model
         'line_source',
         'email',
         'preferred_contact_time',
+        'preferred_branch',
         'student_name',
         'student_grade',
         'student_school',
