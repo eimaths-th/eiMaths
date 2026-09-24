@@ -12,6 +12,7 @@ class CrmLeadService
 {
     public function __construct(
         private CrmLeadNotificationService $notificationService,
+        private CrmLeadConsentService $consentService,
     ) {
     }
 
@@ -39,8 +40,10 @@ class CrmLeadService
             $existingLead = $this->findExistingLead($data);
 
             if (! $existingLead) {
+                $lead = CrmLead::create(Arr::only($data, (new CrmLead())->getFillable()));
+                $this->consentService->Record($lead, $data);
                 return [
-                    CrmLead::create(Arr::only($data, (new CrmLead())->getFillable())),
+                    $lead,
                     false,
                     null,
                 ];
@@ -49,6 +52,7 @@ class CrmLeadService
             $previousStatus = $existingLead->lead_status;
             $existingLead->fill($this->mergeLeadData($existingLead, $data));
             $existingLead->save();
+            $this->consentService->Record($existingLead, $data);
 
             return [$existingLead->fresh(), true, $previousStatus];
         });
@@ -140,6 +144,7 @@ class CrmLeadService
                         $previousStatus = $explicitLead->lead_status;
                         $explicitLead->fill($this->mergeLeadData($explicitLead, $studentData));
                         $explicitLead->save();
+                        $this->consentService->Record($explicitLead, $studentData);
 
                         $lead = $explicitLead->fresh();
                         $lead->setAttribute('was_merged', true);
@@ -156,6 +161,7 @@ class CrmLeadService
                     $previousStatus = $pendingLead->lead_status;
                     $pendingLead->fill($this->mergeLeadData($pendingLead, $studentData));
                     $pendingLead->save();
+                    $this->consentService->Record($pendingLead, $studentData);
 
                     $lead = $pendingLead->fresh();
                     $lead->setAttribute('was_merged', true);
@@ -172,6 +178,7 @@ class CrmLeadService
                 }
 
                 $lead = CrmLead::create(Arr::only($studentData, (new CrmLead())->getFillable()))->fresh();
+                $this->consentService->Record($lead, $studentData);
                 $lead->setAttribute('was_merged', false);
                 $lead->setAttribute('merge_action', 'created');
                 $lead->setAttribute('previous_lead_status', null);

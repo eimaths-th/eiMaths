@@ -146,6 +146,55 @@
                     </div>
                 </div>
 
+                <div class="card card-secondary" aria-labelledby="marketing-consent-heading">
+                    <div class="card-header">
+                        <h3 id="marketing-consent-heading" class="card-title">{{ __('crm.lead_detail.marketing.title') }}</h3>
+                    </div>
+                    <div class="card-body">
+                        @php
+                            $marketing_context = is_array($lead->marketing_consent_context) ? $lead->marketing_consent_context : [];
+                            $channel_names = __('crm.lead_detail.marketing.channel_names');
+                            $marketing_channels = array_map(
+                                fn ($channel) => $channel_names[$channel] ?? $channel,
+                                is_array($marketing_context['channels'] ?? null) ? $marketing_context['channels'] : []
+                            );
+                        @endphp
+                        <p class="font-weight-bold">
+                            {{ $lead->marketing_consent === null
+                                ? __('crm.lead_detail.marketing.unknown')
+                                : ($lead->marketing_consent ? __('crm.lead_detail.marketing.accepted') : __('crm.lead_detail.marketing.declined')) }}
+                        </p>
+                        <p>{{ __('crm.lead_detail.marketing.warning') }}</p>
+                        @if($lead->marketing_consent !== null)
+                            <p><strong>{{ __('crm.lead_detail.marketing.recorded_at') }}:</strong> {{ optional($lead->marketing_consent_recorded_at)->format('Y-m-d H:i:s') ?: __('crm.lead_detail.not_available') }}</p>
+                            <p><strong>{{ __('crm.lead_detail.marketing.notice_version') }}:</strong> {{ $marketing_context['notice_version'] ?? __('crm.lead_detail.not_available') }}</p>
+                            <p><strong>{{ __('crm.lead_detail.marketing.consent_version') }}:</strong> {{ $marketing_context['consent_version'] ?? __('crm.lead_detail.not_available') }}</p>
+                            <p><strong>{{ __('crm.lead_detail.marketing.source') }}:</strong> {{ $marketing_context['source'] ?? __('crm.lead_detail.not_available') }}</p>
+                            <p><strong>{{ __('crm.lead_detail.marketing.channels') }}:</strong> {{ implode(', ', $marketing_channels) }}</p>
+                        @endif
+                        <h4 class="h6">{{ __('crm.lead_detail.marketing.history') }}</h4>
+                        @forelse($consent_events as $consent_event)
+                            @php
+                                $event_context = is_array($consent_event->context) ? $consent_event->context : [];
+                                $event_channels = array_map(
+                                    fn ($channel) => $channel_names[$channel] ?? $channel,
+                                    is_array($event_context['channels'] ?? null) ? $event_context['channels'] : []
+                                );
+                            @endphp
+                            <div class="consent-event border-top py-2">
+                                <strong>{{ $consent_event->marketing_consent ? __('crm.lead_detail.marketing.accepted') : __('crm.lead_detail.marketing.declined') }}</strong>
+                                — {{ $consent_event->recorded_at->format('Y-m-d H:i:s') }}
+                                — {{ $event_context['notice_version'] ?? __('crm.lead_detail.not_available') }}
+                                / {{ $event_context['consent_version'] ?? __('crm.lead_detail.not_available') }}
+                                — {{ $event_context['source'] ?? __('crm.lead_detail.not_available') }}
+                                — {{ implode(', ', $event_channels) }}
+                            </div>
+                        @empty
+                            <p>{{ __('crm.lead_detail.marketing.no_history') }}</p>
+                        @endforelse
+                    </div>
+                </div>
+
                 <div class="card card-secondary">
                     <div class="card-header">
                         <h3 class="card-title">{{ __('crm.lead_detail.notes.title') }}</h3>

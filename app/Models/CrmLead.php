@@ -105,6 +105,9 @@ class CrmLead extends Model
     ];
 
     protected $casts = [
+        'marketing_consent' => 'boolean',
+        'marketing_consent_recorded_at' => 'datetime',
+        'marketing_consent_context' => 'array',
         'assessment_answers' => 'array',
         'answers' => 'array',
         'weak_topics' => 'array',
@@ -129,6 +132,11 @@ class CrmLead extends Model
     public function notes()
     {
         return $this->hasMany(CrmLeadNote::class, 'lead_id')->latest();
+    }
+
+    public function ConsentEvents()
+    {
+        return $this->hasMany(CrmLeadConsentEvent::class, 'lead_id');
     }
 
     public function duplicateOf()

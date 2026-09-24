@@ -171,19 +171,27 @@ class PreferredBranchRegistrationTest extends TestCase
             'utm_source' => 'facebook', 'utm_medium' => 'social', 'utm_campaign' => 'branch-campaign',
             'created_by' => $assigned_staff->id,
         ]);
+        $consent_context = [
+            'notice_version' => 'p1-3-v1', 'consent_version' => 'marketing-v1',
+            'channels' => ['line', 'phone', 'email'], 'source' => 'website-free-trial',
+        ];
         $lead_id = $this->Register([
             'tracking_code' => 'preference_test_link', 'preferred_branch' => 'ratchapruek',
+            'marketing_consent' => true, 'marketing_consent_context' => $consent_context,
         ])->assertCreated()->json('lead_id');
         CrmLead::findOrFail($lead_id)->update(['assigned_staff_id' => $assigned_staff->id]);
         $this->Register([
             'tracking_code' => 'preference_test_link', 'preferred_branch' => 'bangkae', 'utm_source' => 'tampered',
+            'marketing_consent' => false, 'marketing_consent_context' => $consent_context,
         ])->assertOk()->assertJsonPath('lead_id', $lead_id)->assertJsonPath('lead.preferred_branch', 'bangkae');
 
         $this->assertDatabaseHas('crm_leads', [
             'id' => $lead_id, 'preferred_branch' => 'bangkae', 'branch_id' => $assigned_branch->id,
             'assigned_staff_id' => $assigned_staff->id, 'tracking_link_id' => $tracking_link->id,
             'utm_source' => 'facebook', 'utm_campaign' => 'branch-campaign',
+            'marketing_consent' => false,
         ]);
+        $this->assertSame(2, CrmLead::findOrFail($lead_id)->ConsentEvents()->count());
         $branch_context = app(BranchContext::class);
         $this->assertTrue($branch_context->runAs($assigned_staff, fn (): bool => CrmLead::whereKey($lead_id)->exists()));
         $this->assertFalse($branch_context->runAs($other_staff, fn (): bool => CrmLead::whereKey($lead_id)->exists()));
