@@ -240,7 +240,7 @@ class CrmLeadApiController extends Controller
             'branch_id' => ['nullable', 'integer', Rule::exists('departments', 'id')->where('status', 1)],
             'parent_name' => ['required', 'string', 'max:255'],
             'lead_id' => ['nullable', 'integer', 'exists:crm_leads,id'],
-            'phone' => ['required', 'string', 'regex:/^[0-9+]{8,15}$/'],
+            'phone' => ['required', 'string', 'regex:/^\+?[0-9]{8,15}$/'],
             'line_id' => ['nullable', 'string', 'max:100'],
             'line_user_id' => ['nullable', 'string', 'max:100'],
             'line_display_name' => ['nullable', 'string', 'max:255'],

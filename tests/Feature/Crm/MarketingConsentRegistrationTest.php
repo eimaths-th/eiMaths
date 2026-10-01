@@ -147,8 +147,8 @@ class MarketingConsentRegistrationTest extends TestCase
     public function UpdatesAPendingLineLeadWithoutInferringConsentFromLineLogin(): void
     {
         $pending_id = CrmLead::forceCreate([
-            'parent_name' => 'Pending Parent', 'phone' => '0891234567',
-            'student_name' => 'Pending Student', 'student_grade' => 'P1',
+            'parent_name' => '', 'phone' => '',
+            'student_name' => '', 'student_grade' => '',
             'line_user_id' => 'line-consent-test',
             'created_from' => 'free_trial_liff_login', 'lead_status' => 'line_login_pending',
         ])->id;

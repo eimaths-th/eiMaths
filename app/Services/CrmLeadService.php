@@ -152,12 +152,22 @@ class CrmLeadService
                         $lead->setAttribute('previous_lead_status', $previousStatus);
                         $createdLeads[] = $lead;
                         $attributionSource = $lead;
+                        if ($pendingLead && $pendingLead->getKey() === $explicitLead->getKey()) {
+                            $pendingLead = null;
+                        }
 
                         continue;
                     }
                 }
 
-                if (! $isRestartFlow && $index === 0 && $pendingLead) {
+                if (
+                    ! $isRestartFlow
+                    && $pendingLead
+                    && (
+                        (blank($pendingLead->student_name) && $index === 0)
+                        || $pendingLead->student_name === $studentData['student_name']
+                    )
+                ) {
                     $previousStatus = $pendingLead->lead_status;
                     $pendingLead->fill($this->mergeLeadData($pendingLead, $studentData));
                     $pendingLead->save();
@@ -169,6 +179,7 @@ class CrmLeadService
                     $lead->setAttribute('previous_lead_status', $previousStatus);
                     $createdLeads[] = $lead;
                     $attributionSource = $lead;
+                    $pendingLead = null;
 
                     continue;
                 }
@@ -244,7 +255,14 @@ class CrmLeadService
         if (! empty($data['line_user_id'])) {
             $lineLead = $this->findLatestPendingLineLead($data['line_user_id']);
 
-            if ($lineLead && (int) $lineLead->branch_id === (int) ($data['branch_id'] ?? null)) {
+            if (
+                $lineLead
+                && (int) $lineLead->branch_id === (int) ($data['branch_id'] ?? null)
+                && (
+                    blank($lineLead->student_name)
+                    || $lineLead->student_name === $data['student_name']
+                )
+            ) {
                 return $lineLead;
             }
         }
@@ -259,6 +277,7 @@ class CrmLeadService
         if (empty($data['line_user_id'])) {
             return CrmLead::query()->where('branch_id', $data['branch_id'] ?? null)
                 ->where('phone', $data['phone'])
+                ->where('student_name', $data['student_name'])
                 ->latest()
                 ->lockForUpdate()
                 ->first();
@@ -266,8 +285,13 @@ class CrmLeadService
 
         return CrmLead::query()->where('branch_id', $data['branch_id'] ?? null)
             ->where('phone', $data['phone'])
-            ->where(function ($query) {
-                $query->whereIn('lead_status', ['line_login_pending', 'line_chatting'])
+            ->where('student_name', $data['student_name'])
+            ->where(function ($query) use ($data) {
+                $query->where(function ($same_line_query) use ($data) {
+                    $same_line_query->where('line_user_id', $data['line_user_id'])
+                        ->where('is_active', true);
+                })
+                    ->orWhereIn('lead_status', ['line_login_pending', 'line_chatting'])
                     ->orWhere(function ($subQuery) {
                         $subQuery->whereNotNull('line_user_id')
                             ->where(function ($lineQuery) {
