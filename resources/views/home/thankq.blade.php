@@ -89,7 +89,7 @@
                                 <a href="https://lin.ee/TqNbyqr" target="_blank" class="card-text form_sub_header">
                                     <p class="card-text form_sub_header">
                                         <i class="fab fa-line"></i>
-                                        <b> @eiMaths</b>
+                                        <b> @eimaths-th</b>
                                     </p>
                                 </a>
                                 <a href="https://www.facebook.com/eimaths.th" target="_blank"
@@ -113,7 +113,7 @@
                                 <p class="card-text form_sub_header text-center">
                                     <i class="fab fa-line"></i>
                                     <b><a href="https://lin.ee/TqNbyqr" target="_blank" class="form_sub_header">
-                                            @eiMaths</a></b>
+                                            @eimaths-th</a></b>
                                 </p>
 
                                 <p class="card-text form_sub_header text-center">

@@ -5,7 +5,7 @@
             'name' => 'The Crystal SB Ratchapruek',
             'label' => __('course-website.success.branches.rp_label'),
             'address' => 'ชั้น 3 โซน Education เลขที่ 555/9 ตำบลบางขนุน อำเภอบางกรวย จังหวัดนนทบุรี 11130',
-            'line_label' => '@eiMaths',
+            'line_label' => '@eimaths-th',
             'line_url' => 'https://lin.ee/K244eaZ',
             'phone_label' => '061 620 8666',
             'phone_url' => 'tel:0616208666',
