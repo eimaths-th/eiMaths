@@ -1743,11 +1743,13 @@ class ContactController extends Controller
             return response()->json(['errors' => ['Student not found.']], 404);
         }
         $order = Order::find($contact->order);
-        if ($order) {
+        $course_changed = collect(['centre', 'level', 'term', 'bookuse', 'level2', 'term2', 'bookuse2'])
+            ->contains(fn ($field) => (string) ($contact->{$field} ?? 0) !== (string) ($contactd[$field] ?? 0));
+        if ($order && $course_changed) {
             $this->financial_source_guard->AssertTuitionReplacementAllowed($order, collect());
         }
         $contact->update($contactd);
-        if (!$order) {
+        if (!$order || !$course_changed) {
             return response()->json(['success' => 'Student information updated successfully', 'discontinued' => $contact->discontinued]);
         }
 

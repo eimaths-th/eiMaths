@@ -217,7 +217,7 @@ class BranchIsolationTest extends TestCase
 
         $page = $this->actingAs($actor)->get('/users');
         $page->assertOk()
-            ->assertSeeInOrder(['User Name', 'Email.', 'Centre', 'Department', 'Role', 'Disable', 'Action'])
+            ->assertSeeInOrder(['User Name', 'Email', 'Centre', 'Department', 'Role', 'Disable', 'Action'])
             ->assertDontSee("data: 'referral'", false);
 
         $names = ['checkbox', 'name', 'email', 'department', 'position', 'role', 'disable', 'action'];
@@ -257,6 +257,7 @@ class BranchIsolationTest extends TestCase
             Permission::findOrCreate($permission, 'web');
         }
         $owner = $this->actor('SystemAdmin', $this->hq);
+        $owner->update(['language_code' => 'th']);
 
         $this->actingAs($owner)->get('/roles')
             ->assertOk()

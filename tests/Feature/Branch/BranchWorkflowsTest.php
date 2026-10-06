@@ -135,6 +135,7 @@ class BranchWorkflowsTest extends TestCase
     public function test_stock_adjustment_error_is_written_to_the_application_log_without_mutation(): void
     {
         $actor = $this->actor(permissions: ['product-edit']);
+        $actor->update(['language_code' => 'th']);
         $product = Product::create([
             'centre' => $this->a->id,
             'name' => 'Limited accessories',

@@ -358,14 +358,6 @@
         $('#search_type').on('change', storeFieldValues);
         $('#keyword').on('input', storeFieldValues);
 
-        let pdid;
-        $(document).on('click', '#getShareData', function(e) {
-            e.preventDefault();
-            pdid = $(this).data('id');
-            window.location.href = "/receipts/show/" + pdid + "/1";
-        });
-
-
         let pid;
         $(document).on('click', '#getPrintData', function(e) {
             e.preventDefault();
@@ -434,6 +426,9 @@
                     .val($('#default_billing_details').val())
                     .prop('readonly', true);
             } else {
+                if (billingDetails.val().trim() === $('#default_billing_details').val().trim()) {
+                    billingDetails.val('');
+                }
                 billingDetails.prop('readonly', false).trigger('focus');
             }
         });
@@ -625,6 +620,13 @@
                 }).get();
 
 
+            if ($('input[name="billing_source"]:checked').val() === 'custom' &&
+                !$('#billing_details').val().trim()) {
+                toastr.error('กรุณากรอกข้อมูลผู้รับใบเสร็จ', { timeOut: 5000 });
+                $('#billing_details').trigger('focus');
+                return false;
+            }
+
             var formData = {
                 receipt_number: rnmtValue,
                 receipt_date: rdValue,
@@ -670,6 +672,13 @@
 
                     }
                 }
+            }).fail(function(xhr) {
+                const payload = xhr.responseJSON || {};
+                const errors = payload.errors;
+                const message = Array.isArray(errors) ? errors.join('\n') :
+                    (errors && typeof errors === 'object' ? Object.values(errors).flat().join('\n') :
+                    (payload.message || 'บันทึกไม่สำเร็จ กรุณาลองอีกครั้ง'));
+                toastr.error(message, { timeOut: 7000 });
             });
         });
 

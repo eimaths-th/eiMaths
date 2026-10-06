@@ -1420,7 +1420,6 @@
                     $('#EditTerm2').prop('disabled', true);
                     $('#EditBook2').prop('disabled', true);
 
-                    $('#EditModalBody').html(res.html);
                     $('#EditModal').modal('show');
                 }
             });
@@ -1521,6 +1520,13 @@
 
                     }
                 }
+            }).fail(function(xhr) {
+                const payload = xhr.responseJSON || {};
+                const errors = payload.errors;
+                const message = Array.isArray(errors) ? errors.join('\n') :
+                    (errors && typeof errors === 'object' ? Object.values(errors).flat().join('\n') :
+                    (payload.message || 'บันทึกไม่สำเร็จ กรุณาลองอีกครั้ง'));
+                toastr.error(message, { timeOut: 7000 });
             });
         });
 

@@ -169,6 +169,9 @@ class ProductController extends Controller
     {
         // Retrieve the parameter from the request
         $Id = $request->input('id');
+        abort_unless(is_scalar($Id) && ctype_digit((string) $Id), 422);
+        // Stock's joined query does not inherit Product's branch scope.
+        Product::query()->findOrFail($Id);
 
         $product = Stock::select(
             'stocks.*',

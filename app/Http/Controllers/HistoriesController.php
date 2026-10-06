@@ -526,8 +526,11 @@ class HistoriesController extends Controller
 
             // Ensure $productIdsArray contains at least 2 elements before accessing
             if (count($productIdsArray) >= 2) {
-                // Retrieve book uses where the id falls between the range specified in $productIdsArray
-                $bookuses[] = BookUse::whereBetween('id', [$productIdsArray[0], $productIdsArray[1]])->get()->toArray();
+                // The first and last products describe the enrolled range.
+                $bookuses[] = BookUse::whereBetween('id', [$productIdsArray[0], end($productIdsArray)])->get()->toArray();
+            } elseif (ctype_digit((string) ($productIdsArray[0] ?? ''))) {
+                // A single-term enrolment still has a valid book use.
+                $bookuses[] = BookUse::whereKey($productIdsArray[0])->get()->toArray();
             }
         }
 
@@ -577,7 +580,7 @@ class HistoriesController extends Controller
 
         //dd($book_id);
         if ($book_id === null) {
-            exit();
+            return;
         } else {
             //last record term
             $lasthistoriesCount = Histrories::where([
@@ -1256,25 +1259,28 @@ class HistoriesController extends Controller
         }
  */
         if ($qty === null) {
-            return ['success' => 'นักเรียนไม่ได้ลงเรียน Level หรือ Term นี้ '];
+            return response()->json(['errors' => ['นักเรียนไม่ได้ลงเรียน Level หรือ Term นี้']], 422);
         }
 
 
 
-        if (!empty($history->signature)) {
-            $fileToDelete = public_path() .  '/file_upload/'  . $history->signature;
-            if (file_exists($fileToDelete)) {
-                unlink($fileToDelete);
+        $sign_name = $history->signature;
+        if ($request->filled('signature')) {
+            $signatureData = $request->input('signature');
+            $encodedData = str_replace('data:image/png;base64,', '', $signatureData);
+            $decodedData = base64_decode($encodedData, true);
+            if ($decodedData === false) {
+                return response()->json(['errors' => ['Invalid signature image.']], 422);
+            }
+            $sign_name = uniqid() . '.png';
+            File::put(public_path('file_upload/' . $sign_name), $decodedData);
+            if (!empty($history->signature)) {
+                $old_signature = public_path('file_upload/' . $history->signature);
+                if (file_exists($old_signature)) {
+                    unlink($old_signature);
+                }
             }
         }
-
-        $signatureData = $request->input('signature');
-        $encodedData = str_replace('data:image/png;base64,', '', $signatureData);
-        $decodedData = base64_decode($encodedData);
-        $sign_name = uniqid() . '.png';
-        $sign_pname = '/file_upload/' . $sign_name;
-        $signpath = public_path() . $sign_pname;
-        File::put($signpath, $decodedData);
 
         $logHistory = LogHistory::create([
             'history_id' => $history->id,

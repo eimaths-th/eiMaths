@@ -877,9 +877,8 @@
                     if (res.data.signature !== null) {
                         /* $('#getSignature').attr('src', '{{ asset('file_upload/') }}/' + res
                             .data.signature); */
-                        var backgroundImageUrl =
-                            'https://app.eimaths-th.com/file_upload/' + res.data
-                            .signature; // Replace this with the path to your image
+                        var backgroundImageUrl = @json(rtrim(request()->getBaseUrl(), '/') . '/file_upload/') +
+                            encodeURIComponent(res.data.signature);
                         var image = new Image();
 
                         image.onload = function() {
@@ -893,7 +892,6 @@
                         image.setAttribute('id', 'background-image');
                     }
 
-                    $('#EditModalBody').html(res.html);
                     $('#EditModal').modal('show');
                 }
             });
@@ -994,6 +992,13 @@
 
                     }
                 }
+            }).fail(function(xhr) {
+                const payload = xhr.responseJSON || {};
+                const errors = payload.errors;
+                const message = Array.isArray(errors) ? errors.join('\n') :
+                    (errors && typeof errors === 'object' ? Object.values(errors).flat().join('\n') :
+                    (payload.message || 'บันทึกไม่สำเร็จ กรุณาลองอีกครั้ง'));
+                toastr.error(message, { timeOut: 7000 });
             });
         });
 

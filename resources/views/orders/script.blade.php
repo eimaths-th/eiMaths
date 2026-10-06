@@ -585,26 +585,28 @@
         $(document).on('click', '.btn-confirm', function() {
             if (!confirm("Confirm the action?")) return;
 
-            var rowid = $(this).data('id')
-            var el = $(this)
-            if (!rowid) return;
+            const button = $(this);
+            const rowid = button.data('id');
+            if (!rowid || button.prop('disabled')) return;
+            button.prop('disabled', true);
 
             $.ajax({
                 url: "orders/confirm/",
                 dataType: 'JSON',
                 method: 'PUT',
-                data: {
-                    id: rowid,
-                    _token: token
-                },
-                success: function(data) {
-                    if (data.success) {
-                        toastr.success(data.message, {
-                            timeOut: 5000
-                        });
-                        $('#Listview').DataTable().ajax.reload();
-                    }
+                data: { id: rowid, _token: token }
+            }).done(function(data) {
+                if (data.success) {
+                    toastr.success(data.message, { timeOut: 5000 });
+                    $('#Listview').DataTable().ajax.reload();
+                } else {
+                    toastr.error(data.message || 'ยืนยันคำสั่งซื้อไม่สำเร็จ');
                 }
+            }).fail(function(xhr) {
+                const payload = xhr.responseJSON || {};
+                toastr.error(payload.message || 'ยืนยันคำสั่งซื้อไม่สำเร็จ กรุณาลองอีกครั้ง', { timeOut: 7000 });
+            }).always(function() {
+                button.prop('disabled', false);
             });
         })
 

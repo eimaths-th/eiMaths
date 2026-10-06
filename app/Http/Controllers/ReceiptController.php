@@ -293,11 +293,6 @@ class ReceiptController extends Controller
                     } else {
                         $html .= '<button type="button" class="btn btn-sm btn-success btn-print disabled" data-toggle="tooltip" data-placement="bottom" title="' . __('common.feedback.permission_denied') . '"><i class="fa fa-print"></i> ' . __('receipts.list.actions.print') . '</button> ';
                     }
-                    if (Gate::allows('order-show')) {
-                        $html .= '<button type="button" class="btn btn-sm btn-danger btn-share" id="getShareData" data-id="' . $row->id . '"><i class="fa-solid fa-file-pdf"></i> ' . __('receipts.list.actions.pdf') . '</button> ';
-                    } else {
-                        $html .= '<button type="button" class="btn btn-sm btn-danger btn-share disabled" data-toggle="tooltip" data-placement="bottom" title="' . __('common.feedback.permission_denied') . '"><i class="fa-solid fa-file-pdf"></i> ' . __('receipts.list.actions.pdf') . '</button> ';
-                    }
                     if (
                         config('financial-documents.credit_note.enabled', false)
                         && Gate::allows('credit-note-create')
@@ -595,11 +590,6 @@ class ReceiptController extends Controller
                         } else {
                             $html = '<button type="button" class="btn btn-sm btn-success btn-print disabled" data-toggle="tooltip" data-placement="bottom" title="' . __('common.feedback.permission_denied') . '"><i class="fa fa-print"></i> ' . __('receipts.pending.actions.print') . '</button> ';
                         }
-                        if (Gate::allows('order-show')) {
-                            $html .= '<button type="button" class="btn btn-sm btn-danger btn-share" id="getShareData" data-id="' . $row->id . '"><i class="fa-solid fa-file-pdf"></i> ' . __('receipts.pending.actions.pdf') . '</button> ';
-                        } else {
-                            $html .= '<button type="button" class="btn btn-sm btn-danger btn-share disabled" data-toggle="tooltip" data-placement="bottom" title="' . __('common.feedback.permission_denied') . '"><i class="fa-solid fa-file-pdf"></i> ' . __('receipts.pending.actions.pdf') . '</button> ';
-                        }
                     }
                     if (Gate::allows('order-edit')) {
 
@@ -784,20 +774,11 @@ class ReceiptController extends Controller
             $pdf = PDF::loadHTML($htmlContents);
             //$pdf->getDomPDF()->getFontMetrics()->setFont('YourThaiFont.ttf', 'YourThaiFont');
 
-            // Save the PDF to a temporary file path
-            $pdfPath = public_path('file_store/' . $datas[0]->doc_number . '.pdf');
-            //dd($pdfPath);
-            $pdf->save($pdfPath);
-
-            // Define the file name for the downloaded PDF
             $pdfFileName = $datas[0]->doc_number . '.pdf';
 
-            // Download the PDF file
-            //return response()->download($pdfPath, $pdfFileName, ['Content-Type' => 'application/pdf']);
-            return response(file_get_contents($pdfPath), 200, [
-                'Content-Type' => 'application/pdf',
-                'Content-Disposition' => 'inline; filename="' . $pdfFileName . '"',
-            ]);
+            // Stream the generated PDF without writing a public file. The web
+            // process may not be allowed to write to public/file_store.
+            return $pdf->stream($pdfFileName);
         } else  if ($social == 2) {
             $data['file_att'] =  $this->getfileatt($datas[0]->oid);
             // Render the view with the data and get the HTML content

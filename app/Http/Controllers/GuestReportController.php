@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\GuestQuizzer;
+use App\Support\Branch\BranchAccess;
 use Illuminate\Http\Request;
 
 class GuestReportController extends Controller
@@ -14,12 +15,17 @@ class GuestReportController extends Controller
 
     public function index(Request $request)
     {
+        $this->authorizeCentralAccess($request, 'student-list');
+
         if ($request->ajax()) {
             $query = GuestQuizzer::query()->orderBy('id', 'desc');
+            $canDelete = $request->user()->can('student-delete');
 
             return datatables()->of($query)
-                ->editColumn('checkbox', function ($row) {
-                    return '<input type="checkbox" id="' . $row->id . '" class="flat" name="table_records[]" value="' . $row->id . '" >';
+                ->editColumn('checkbox', function ($row) use ($canDelete) {
+                    return $canDelete
+                        ? '<input type="checkbox" id="' . $row->id . '" class="flat" name="table_records[]" value="' . $row->id . '" >'
+                        : '';
                 })
                 ->addColumn('name', function ($row) {
                     return $row->first_name . ' ' . $row->last_name . ($row->nickname ? ' (' . $row->nickname . ')' : '');
@@ -36,9 +42,10 @@ class GuestReportController extends Controller
                 ->editColumn('expires_at', function ($row) {
                     return $row->expires_at ? $row->expires_at->format('d-m-Y H:i') : '-';
                 })
-                ->addColumn('action', function ($row) {
-                    $html = '<button type="button" data-rowid="' . $row->id . '" class="btn btn-sm btn-danger btn-delete"><i class="fa fa-trash"></i> ' . e(__('common.actions.delete')) . '</button>';
-                    return $html;
+                ->addColumn('action', function ($row) use ($canDelete) {
+                    return $canDelete
+                        ? '<button type="button" data-rowid="' . $row->id . '" class="btn btn-sm btn-danger btn-delete"><i class="fa fa-trash"></i> ' . e(__('common.actions.delete')) . '</button>'
+                        : '';
                 })
                 ->rawColumns(['checkbox', 'status', 'action'])
                 ->toJson();
@@ -49,13 +56,22 @@ class GuestReportController extends Controller
 
     public function destroy(Request $request)
     {
-        $id = $request->input('id');
-        $guest = GuestQuizzer::find($id);
-        if ($guest) {
-            $guest->deleteTestData();
-            $guest->delete();
-            return response()->json(['success' => true]);
+        $this->authorizeCentralAccess($request, 'student-delete');
+
+        $guest = GuestQuizzer::find($request->input('id'));
+        if (!$guest) {
+            return response()->json(['success' => false], 404);
         }
-        return response()->json(['success' => false], 404);
+
+        $guest->deleteTestData();
+        $guest->delete();
+
+        return response()->json(['success' => true]);
+    }
+
+    private function authorizeCentralAccess(Request $request, string $permission): void
+    {
+        $actor = $request->user();
+        abort_unless($actor && BranchAccess::isCentral($actor) && $actor->can($permission), 403);
     }
 }

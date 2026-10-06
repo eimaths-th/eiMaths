@@ -565,13 +565,6 @@
         $('#search_type').on('change', storeFieldValues);
         $('#keyword').on('input', storeFieldValues);
 
-        let pdid;
-        $(document).on('click', '#getShareData', function(e) {
-            e.preventDefault();
-            pdid = $(this).data('id');
-            window.location.href = "/orders/show/" + pdid + "/1";
-        });
-
         let lid;
         $(document).on('click', '#getLogData', function(e) {
             e.preventDefault();

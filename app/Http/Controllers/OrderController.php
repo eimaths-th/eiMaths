@@ -841,46 +841,51 @@ class OrderController extends Controller
 
     public function confirm(Request $request)
     {
-        $id = $request->get('id');
-        $order = Order::find($id);
-        OrderDetail::where('order_id', $id)->get();
+        $validated = $request->validate(['id' => 'required|integer|min:1']);
 
-        //invoice
-        $invoice = new Invoice();
-        $invoice->centre = $order->centre;
-        $invoice->cid = $order->cid;
-        $invoice->student_no = $order->contact->code;
-        $invoice->student_name = $order->contact->name;
-        //$invoice->invoice_number = ReceiptRunningNumber::generate($order->centre);
-        //$invoice->invoice_date = date("Y-m-d");
-        $invoice->oid = $order->id;
-        $invoice->level = $order->contact->level_name;
-        $invoice->total_fee = $order->total_price;
-        $invoice->order_term = 4;
-        $invoice->status = 0;
-        $invoice->save();
+        return DB::transaction(function () use ($validated) {
+            $order = Order::query()->lockForUpdate()->findOrFail($validated['id']);
+            if ((int) $order->status !== 1 || Invoice::where('oid', $order->id)->exists()
+                || Receipt::where('oid', $order->id)->where('type', 1)->exists()) {
+                return response()->json(['success' => false, 'message' => 'Order has already been confirmed.'], 409);
+            }
 
-        //receipt
-        $receipt = new Receipt();
-        $receipt->type = 1;
-        $receipt->centre = $order->centre;
-        $receipt->cid = $order->cid;
-        $receipt->student_no = $order->contact->code;
-        $receipt->student_name = $order->contact->name;
-        $receipt->billing_details = $order->contact->defaultBillingDetails();
-        //$receipt->receipt_number = ReceiptRunningNumber::generate($order->centre);
-        //$receipt->payment_date = date("Y-m-d");
-        $receipt->oid = $order->id;
-        $receipt->level = $order->contact->level_name;
-        $receipt->total_fee = $order->total_price;
-        $receipt->start_term = $order->contact->start_term;
-        $invoice->status = 0;
-        $receipt->save();
+            $contact = $order->contact;
+            if (!$contact) {
+                return response()->json(['success' => false, 'message' => 'Student not found.'], 422);
+            }
 
-        $order->status = 2;
-        $order->save();
+            $invoice = new Invoice();
+            $invoice->centre = $order->centre;
+            $invoice->cid = $order->cid;
+            $invoice->student_no = $contact->code;
+            $invoice->student_name = $contact->name;
+            $invoice->oid = $order->id;
+            $invoice->level = $contact->level_name;
+            $invoice->total_fee = $order->total_price;
+            $invoice->order_term = 4;
+            $invoice->status = 0;
+            $invoice->save();
 
-        return response()->json(['success' => true, 'message' => 'Confirm Order successfully']);
+            $receipt = new Receipt();
+            $receipt->type = 1;
+            $receipt->centre = $order->centre;
+            $receipt->cid = $order->cid;
+            $receipt->student_no = $contact->code;
+            $receipt->student_name = $contact->name;
+            $receipt->billing_details = $contact->defaultBillingDetails();
+            $receipt->oid = $order->id;
+            $receipt->level = $contact->level_name;
+            $receipt->total_fee = $order->total_price;
+            $receipt->start_term = $contact->start_term;
+            $receipt->status = 0;
+            $receipt->save();
+
+            $order->status = 2;
+            $order->save();
+
+            return response()->json(['success' => true, 'message' => 'Confirm Order successfully']);
+        });
     }
 
     private function ApplyReceiptLineMetadata(
