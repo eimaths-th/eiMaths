@@ -11,7 +11,7 @@ final class BranchAccess
 {
     public static function isOwner(User $actor): bool
     {
-        return $actor->hasRole('SystemAdmin', 'web');
+        return $actor->isHq() && $actor->hasRole('SystemAdmin', 'web');
     }
 
     public static function isCentral(User $actor): bool

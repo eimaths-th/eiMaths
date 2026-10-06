@@ -156,7 +156,14 @@ class ProductController extends Controller
 
     public function pfind($pid)
     {
-        $product = Product::where('code', $pid)->first();
+        $matching_products = Product::where('code', $pid)->limit(2)->get();
+        if ($matching_products->count() > 1) {
+            return response()->json([
+                'code' => 'AMBIGUOUS_PRODUCT_CODE',
+                'message' => __('products.messages.ambiguous_code'),
+            ]);
+        }
+        $product = $matching_products->first();
 
         if (!$product) {
             return response()->json(['message' => __('products.messages.product_not_found')]);
@@ -167,8 +174,10 @@ class ProductController extends Controller
 
     public function getStock(Request $request)
     {
-        // Retrieve the parameter from the request
-        $Id = $request->input('id');
+        $stock_query = $request->validate(['id' => 'required|integer|min:1']);
+        $product_id = $stock_query['id'];
+        $target_product = Product::query()->find($product_id);
+        abort_unless($target_product, 403, 'Record access denied.');
 
         $product = Stock::select(
             'stocks.*',
@@ -180,7 +189,8 @@ class ProductController extends Controller
             ->join('users', 'stocks.user_id', '=', 'users.id')
             ->join("products", "stocks.product_id", "=", "products.id")
             ->join("departments as stock_departments", "stocks.centre", "=", "stock_departments.id")
-            ->where('stocks.product_id', $Id);
+            ->where('stocks.product_id', $product_id)
+            ->whereColumn('stocks.centre', 'products.centre');
 
         //Conditional join based on stocks.type
         $product->leftJoin("contacts", function ($join) {

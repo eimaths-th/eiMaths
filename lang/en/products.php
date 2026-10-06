@@ -84,6 +84,7 @@ return [
         'confirm_issue' => 'Confirm issue?',
         'scan_instruction' => 'Stay on this page and scan a barcode or QR code.',
         'product_not_found' => 'Product not found in the system.',
+        'ambiguous_code' => 'This code matches multiple products. Please select the product from the product list or ask an administrator to correct the duplicate code.',
         'print_barcode' => 'Print Barcode',
         'print_qrcode' => 'Print QR Code',
         'created' => 'The accessory has been successfully added.',
