@@ -106,4 +106,34 @@ class CrmLeadLocalizedPageTest extends TestCase
             ->assertSee($note_placeholder)
             ->assertDontSee('crm.lead_detail.');
     }
+
+    public static function PreferredBranchLabels(): array
+    {
+        return [
+            ['en', null, 'Preferred branch', 'Not specified', 'Branch: CRM Test Branch'],
+            ['en', 'ratchapruek', 'Preferred branch', 'Ratchapruek — The Crystal SB', 'Branch: CRM Test Branch'],
+            ['en', 'bangkae', 'Preferred branch', 'Bangkae — Seacon Bangkae', 'Branch: CRM Test Branch'],
+            ['th', null, 'สาขาที่สนใจ', 'ยังไม่ระบุ', 'สาขา: CRM Test Branch'],
+            ['th', 'ratchapruek', 'สาขาที่สนใจ', 'ราชพฤกษ์ — เดอะคริสตัล เอสบี', 'สาขา: CRM Test Branch'],
+            ['th', 'bangkae', 'สาขาที่สนใจ', 'บางแค — ซีคอน บางแค', 'สาขา: CRM Test Branch'],
+        ];
+    }
+
+    #[Test]
+    #[DataProvider('PreferredBranchLabels')]
+    public function ShowsPreferenceSeparatelyFromAssignment(
+        string $locale, ?string $preference, string $label, string $branch_name, string $assignment
+    ): void {
+        $lead = CrmLead::forceCreate([
+            'branch_id' => $this->actor->department_id,
+            'parent_name' => 'Preference Parent', 'phone' => '0800000000',
+            'student_name' => 'Preference Student', 'student_grade' => 'P1',
+            'created_from' => 'lead_registration_website', 'lead_status' => 'new_lead',
+            'preferred_branch' => $preference,
+        ]);
+        $this->actor->update(['language_code' => $locale]);
+        $this->actingAs($this->actor, 'web')->get(route('crm.leads.show', $lead))
+            ->assertOk()->assertSee($label)->assertSee($branch_name)->assertSee($assignment)
+            ->assertDontSee('crm.preferred_branch.');
+    }
 }

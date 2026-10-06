@@ -236,6 +236,7 @@
                     <p>{{ __('navigation.menu.parents') }}</p>
                 </a>
             </li>
+            @if ($menu_is_central)
             <li class="nav-item">
                 <a href="{{ route('ei_form.backEndIndex') }}"
                     class="nav-link {{ $menu_route === 'ei_form.backEndIndex' ? 'active' : '' }}">
@@ -243,6 +244,7 @@
                     <p>{{ __('navigation.menu.eiform') }}</p>
                 </a>
             </li>
+            @endif
         </ul>
     </li>
 @endcan

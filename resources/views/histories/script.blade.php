@@ -855,8 +855,25 @@
                 url: "{{ route('histories.edit', ':id') }}".replace(':id', id),
                 method: 'GET',
                 success: function(res) {
-                    //$('#eteacher_name').html(res.data.teacher);
-                    $('#eteacher').val(res.data.teacher_id).change();
+                    const teacher_select = document.getElementById('eteacher');
+                    Array.from(teacher_select.options).forEach(function(option) {
+                        if (option.dataset.historicalReference === 'true') {
+                            option.remove();
+                        }
+                    });
+                    const recorded_teacher_id = String(res.data.teacher_id ?? '');
+                    if (recorded_teacher_id !== '' && !Array.from(teacher_select.options).some(function(option) {
+                        return option.value === recorded_teacher_id;
+                    })) {
+                        const historical_option = new Option(res.data.teacher, recorded_teacher_id);
+                        historical_option.dataset.historicalReference = 'true';
+                        teacher_select.add(historical_option);
+                    }
+                    teacher_select.value = recorded_teacher_id;
+                    $('#eteacher').trigger('change');
+                    const is_read_only = res.data.is_read_only === true;
+                    document.getElementById('SubmitEditForm').disabled = is_read_only;
+                    document.getElementById('history-read-only-notice').hidden = !is_read_only;
                     $('#getCentre').val(res.data.centre).change();
                     $('#getStudent').val(res.data.code + ' ' + res.data.student_id);
                     $('#getLevelId').val(res.history.level_id);

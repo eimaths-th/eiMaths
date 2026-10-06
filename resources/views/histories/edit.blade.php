@@ -8,6 +8,9 @@
                 </button>
             </div>
             <div class="modal-body">
+                <div id="history-read-only-notice" class="alert alert-info" role="status" hidden>
+                    {{ __('students.history.read_only') }}
+                </div>
 
                 <div class="alert alert-danger alert-dismissible fade show" role="alert" style="display: none;">
                     <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close">

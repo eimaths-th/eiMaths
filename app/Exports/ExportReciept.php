@@ -2,12 +2,9 @@
 
 namespace App\Exports;
 
-use App\Models\Contact;
 use App\Models\Receipt;
-use App\Models\ReceiptForm;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
-use Illuminate\Support\Facades\DB;
 
 class ExportReciept implements FromCollection, WithHeadings
 {
@@ -45,21 +42,11 @@ class ExportReciept implements FromCollection, WithHeadings
     public function collection()
     {
 
-        $receipts = Receipt::whereIn('id', $this->export_id)
+        $receipts = Receipt::whereIn('id', $this->export_id)->with('levels:id,name')->get();
 
-            ->get();
-
-        $customResults = $receipts->map(function ($receipt) {
-            if ($receipt->gender == 1) {
-
-                $sex = 'male';
-            }else {
-                $sex = 'female';
-            }
-            $contacts = Contact::find($receipt->cid);
-            // dd($contacts);
-
-            $level = $contacts->level_name . ' - ' . $contacts->level2_name;
+        $custom_results = $receipts->map(function ($receipt) {
+            // A receipt's issued values remain valid when its student moves or is removed.
+            $level = $receipt->levels?->name ?? (string) $receipt->level;
 
 
             return [
@@ -74,7 +61,7 @@ class ExportReciept implements FromCollection, WithHeadings
             ];
         });
 
-        return $customResults;
+        return $custom_results;
     }
 
     public function headings(): array

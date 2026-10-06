@@ -185,8 +185,12 @@ class ProductLocalizedPageTest extends TestCase
             ->assertSee($save)
             ->assertSee($close)
             ->assertSee($barcode)
-            ->assertSee($qrcode)
-            ->assertDontSee('products.');
+            ->assertSee($qrcode);
+
+        $this->assertDoesNotMatchRegularExpression(
+            '/\bproducts\.[a-z_][a-z_0-9]*(?:\.[a-z_][a-z_0-9]*)*\b/',
+            $response->getContent()
+        );
     }
 
     public static function LocalizedRowActions(): array

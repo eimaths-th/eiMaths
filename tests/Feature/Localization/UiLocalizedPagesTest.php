@@ -155,7 +155,8 @@ class UiLocalizedPagesTest extends TestCase
             config(['demo-students.enabled' => true]);
         }
 
-        $response = $this->actingAs($this->actor, 'web')->get(route($route_name));
+        $page_actor = $this->StudentPageActor($route_name);
+        $response = $this->actingAs($page_actor, 'web')->get(route($route_name));
         $response->assertOk()
             ->assertSee('<html lang="' . $locale . '">', false)
             ->assertSee($heading)
@@ -334,9 +335,35 @@ class UiLocalizedPagesTest extends TestCase
     ): void {
         $this->actor->update(['language_code' => $locale]);
 
-        $response = $this->actingAs($this->actor, 'web')->get(route($route_name));
+        $page_actor = $this->StudentPageActor($route_name);
+        $response = $this->actingAs($page_actor, 'web')->get(route($route_name));
 
         $response->assertOk()->assertSee($expected_label);
+    }
+
+    private function StudentPageActor(string $route_name): User
+    {
+        if ($route_name !== 'ei_form.backEndIndex') {
+            return $this->actor;
+        }
+
+        $hq = Department::forceCreate([
+            'id' => Department::HQ_ID,
+            'name' => 'Locale Test HQ',
+            'code' => 'HQ',
+            'status' => 1,
+        ]);
+        $role = Role::findOrCreate('Admin', 'web');
+        $role->givePermissionTo(Permission::findOrCreate('student-list', 'web'));
+        $central_actor = User::factory()->create([
+            'department_id' => $hq->id,
+            'disable' => 0,
+            'language_code' => $this->actor->language_code,
+            'password' => Hash::make('secret'),
+        ]);
+        $central_actor->assignRole($role);
+
+        return $central_actor;
     }
 
     private function AssertContentHeading(string $html, string $expected_heading): void

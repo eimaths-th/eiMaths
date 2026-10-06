@@ -134,11 +134,32 @@ final class BranchRouteAccess
         }
         foreach (['student' => \App\Models\Contact::class, 'cid' => \App\Models\Contact::class, 'student_id' => \App\Models\Contact::class, 'std_id' => \App\Models\Contact::class, 'teacher_id' => \App\Models\User::class] as $key => $class) {
             if ($request->filled($key) && is_scalar($request->input($key)) && ctype_digit((string) $request->input($key))) {
+                if ($key === 'teacher_id' && $controller === 'HistoriesController' && $this->RetainsHistoricalTeacher($request)) {
+                    continue;
+                }
                 if ($controller === 'ProductController' && $key === 'student' && (int) $request->input('type') === 2) {
                     $class = \App\Models\Department::class;
                 }
                 abort_unless($class::query()->whereKey($request->input($key))->exists(), 403, 'Related record access denied.');
             }
         }
+    }
+
+    private function RetainsHistoricalTeacher(Request $request): bool
+    {
+        if ($request->route()?->getActionMethod() !== 'update') {
+            return false;
+        }
+        $history_id = $request->route('history') ?? $request->route('id');
+        if ($history_id instanceof \Illuminate\Database\Eloquent\Model) {
+            $history_id = $history_id->getKey();
+        }
+        if (!is_scalar($history_id) || !ctype_digit((string) $history_id)) {
+            return false;
+        }
+        $history = \App\Models\Histrories::query()->find($history_id);
+
+        // An authorized lesson may retain its recorded reference; a new teacher still needs branch access.
+        return $history && (int) $history->teacher_id === (int) $request->input('teacher_id');
     }
 }

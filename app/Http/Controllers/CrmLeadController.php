@@ -71,6 +71,7 @@ class CrmLeadController extends Controller
 
         return view('crm.leads.show', [
             'lead' => $lead,
+            'consent_events' => $lead->ConsentEvents()->orderByDesc('id')->limit(10)->get(),
             'statuses' => CrmLead::STATUSES,
             'staffUsers' => User::query()->orderBy('name')->get(['id', 'name']),
         ]);

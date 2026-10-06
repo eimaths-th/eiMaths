@@ -17,7 +17,7 @@ class CrmLeadApiController extends Controller
         $request->merge([
             'phone' => preg_replace('/[^0-9+]/', '', (string) $request->input('phone')),
         ]);
-        $data = $request->validate($this->leadValidationRules());
+        $data = $request->validate($this->leadValidationRules($request));
         if (!empty($data['branch_id'])) {
             abort_unless(\App\Support\Branch\BranchAccess::moduleEnabled((int) $data['branch_id'], 'crm'), 422, 'This branch is not accepting trial registrations.');
         }
@@ -48,6 +48,10 @@ class CrmLeadApiController extends Controller
                     'phone' => $lead->phone,
                     'student_name' => $lead->student_name,
                     'student_grade' => $lead->student_grade,
+                    'preferred_branch' => $lead->preferred_branch,
+                    'marketing_consent' => $lead->marketing_consent,
+                    'marketing_consent_recorded_at' => $lead->marketing_consent_recorded_at,
+                    'marketing_consent_context' => $lead->marketing_consent_context,
                     'lead_status' => $lead->lead_status,
                     'registration_batch_id' => $lead->registration_batch_id,
                     'created_from' => $lead->created_from,
@@ -82,6 +86,10 @@ class CrmLeadApiController extends Controller
                 'phone' => $lead->phone,
                 'student_name' => $lead->student_name,
                 'student_grade' => $lead->student_grade,
+                'preferred_branch' => $lead->preferred_branch,
+                'marketing_consent' => $lead->marketing_consent,
+                'marketing_consent_recorded_at' => $lead->marketing_consent_recorded_at,
+                'marketing_consent_context' => $lead->marketing_consent_context,
                 'lead_status' => $lead->lead_status,
                 'created_from' => $lead->created_from,
                 'line_source' => $lead->line_source,
@@ -213,13 +221,26 @@ class CrmLeadApiController extends Controller
         ], 201);
     }
 
-    private function leadValidationRules(): array
+    private function leadValidationRules(Request $request): array
     {
         return [
+            'marketing_consent' => ['sometimes', 'required', 'boolean'],
+            'marketing_consent_context' => [
+                Rule::requiredIf(fn (): bool => $request->exists('marketing_consent')),
+                Rule::prohibitedIf(fn (): bool => ! $request->exists('marketing_consent')),
+                'array:notice_version,consent_version,channels,source',
+            ],
+            'marketing_consent_context.notice_version' => ['required_with:marketing_consent_context', Rule::in(['p1-3-v1'])],
+            'marketing_consent_context.consent_version' => ['required_with:marketing_consent_context', Rule::in(['marketing-v1'])],
+            'marketing_consent_context.channels' => ['required_with:marketing_consent_context', 'array', 'size:3'],
+            'marketing_consent_context.channels.0' => ['required_with:marketing_consent_context.channels', Rule::in(['line'])],
+            'marketing_consent_context.channels.1' => ['required_with:marketing_consent_context.channels', Rule::in(['phone'])],
+            'marketing_consent_context.channels.2' => ['required_with:marketing_consent_context.channels', Rule::in(['email'])],
+            'marketing_consent_context.source' => ['required_with:marketing_consent_context', Rule::in(['website-free-trial', 'website-contact'])],
             'branch_id' => ['nullable', 'integer', Rule::exists('departments', 'id')->where('status', 1)],
             'parent_name' => ['required', 'string', 'max:255'],
             'lead_id' => ['nullable', 'integer', 'exists:crm_leads,id'],
-            'phone' => ['required', 'string', 'regex:/^[0-9+]{8,15}$/'],
+            'phone' => ['required', 'string', 'regex:/^\+?[0-9]{8,15}$/'],
             'line_id' => ['nullable', 'string', 'max:100'],
             'line_user_id' => ['nullable', 'string', 'max:100'],
             'line_display_name' => ['nullable', 'string', 'max:255'],
@@ -232,6 +253,7 @@ class CrmLeadApiController extends Controller
             'line_source' => ['nullable', 'string', 'max:100'],
             'email' => ['nullable', 'email', 'max:255'],
             'preferred_contact_time' => ['nullable', 'string', 'max:255'],
+            'preferred_branch' => ['nullable', 'string', Rule::in(CrmLead::PREFERRED_BRANCHES)],
             'is_restart_flow' => ['nullable', 'boolean'],
             'registration_batch_id' => ['nullable', 'string', 'max:100'],
             'student_count' => ['nullable', 'integer', 'min:1', 'max:4'],

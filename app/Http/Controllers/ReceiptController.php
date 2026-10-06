@@ -661,9 +661,9 @@ class ReceiptController extends Controller
             "receipts.*",
             "receipts.receipt_number as doc_number",
             //"contacts.name as cname",
-            "receipts.student_name as cname",
+            DB::raw("COALESCE(NULLIF(receipts.student_name, ''), contacts.name) as cname"),
             "contacts.telephone as ctelephone",
-            "contacts.code as ccode",
+            DB::raw("COALESCE(NULLIF(receipts.student_no, ''), contacts.code) as ccode"),
             "contacts.bookuse_name as book",
             "departments.name as centre_name",
             "orders.total_price as totalp",
@@ -687,7 +687,9 @@ class ReceiptController extends Controller
     END AS parent_mobile")
 
         )
-            ->join("contacts", "contacts.id", "=", "receipts.cid")
+            ->leftJoin('contacts', function ($join) {
+                $join->on('contacts.id', '=', 'receipts.cid')->on('contacts.centre', '=', 'receipts.centre');
+            })
             ->join("orders", "orders.id", "=", "receipts.oid")
             /* ->leftJoin("order_details as first_detail", function ($join) {
                 $join->on("first_detail.order_id", "=", "orders.id")
@@ -705,7 +707,10 @@ class ReceiptController extends Controller
         }
 
         $receiptData = $datas->first();
-        $contact = Contact::find($receiptData->cid);
+        if (!filled($receiptData->cname)) {
+            $receiptData->cname = __('financial-documents.student_unavailable');
+        }
+        $contact = Contact::query()->where('centre', $receiptData->centre)->find($receiptData->cid);
         $defaultBillingDetails = $contact ? $contact->defaultBillingDetails() : '';
 
         if (!filled($receiptData->billing_details)) {
@@ -774,11 +779,14 @@ class ReceiptController extends Controller
             $pdf = PDF::loadHTML($htmlContents);
             //$pdf->getDomPDF()->getFontMetrics()->setFont('YourThaiFont.ttf', 'YourThaiFont');
 
-            $pdfFileName = $datas[0]->doc_number . '.pdf';
-
-            // Stream the generated PDF without writing a public file. The web
-            // process may not be allowed to write to public/file_store.
-            return $pdf->stream($pdfFileName);
+            // Return bytes directly so duplicate legacy numbers cannot overwrite shared files.
+            $pdf_file_name = $datas[0]->doc_number . '.pdf';
+            return response($pdf->output(), 200, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => \Symfony\Component\HttpFoundation\HeaderUtils::makeDisposition(
+                    'inline', $pdf_file_name, str_replace('%', '', \Illuminate\Support\Str::ascii($pdf_file_name)),
+                ),
+            ]);
         } else  if ($social == 2) {
             $data['file_att'] =  $this->getfileatt($datas[0]->oid);
             // Render the view with the data and get the HTML content
@@ -863,7 +871,24 @@ class ReceiptController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $receipt_metadata = Receipt::findOrFail($id);
+        $update_result = DB::transaction(function () use ($request, $id, $receipt_metadata) {
+            Order::query()->whereKey($receipt_metadata->oid)->lockForUpdate()->first();
+            Department::query()->lockForUpdate()->findOrFail($receipt_metadata->centre);
+            return $this->UpdateReceiptRecords($request, $id);
+        }, 3);
+        if (!$update_result instanceof Receipt) {
+            return $update_result;
+        }
+        $this->AttachReceiptFiles($request, $update_result);
+        return response()->json(['success' => 'แก้ไข ใบเสร็จรับเงิน เรียบร้อยแล้ว']);
+    }
+
+    private function UpdateReceiptRecords(Request $request, $id)
+    {
+        $receipt = Receipt::query()->lockForUpdate()->findOrFail($id);
         $validator = Validator::make($request->all(), [
+            'receipt_number' => ['nullable', 'string', 'max:255'],
             'billing_details' => 'nullable|string|max:2000',
             'des' => 'required|array|min:1',
             'des.*' => 'required|string|max:255',
@@ -881,6 +906,18 @@ class ReceiptController extends Controller
             'line_type.*' => 'nullable|in:tuition,book,deposit,registration_fee,equipment,other,service_charge,unknown',
             'charge' => 'nullable|numeric|min:0',
         ]);
+        $validator->after(function ($validator) use ($request, $receipt): void {
+            $receipt_number = $request->get('receipt_number');
+            if ($validator->errors()->isNotEmpty() || !filled($receipt_number) || $receipt_number === $receipt->receipt_number) {
+                return;
+            }
+            $existing_receipt = Receipt::query()->where('centre', $receipt->centre)
+                ->where('receipt_number', $receipt_number)->where('id', '!=', $receipt->id)
+                ->lockForUpdate()->first(['id']);
+            if ($existing_receipt) {
+                $validator->errors()->add('receipt_number', __('validation.unique', ['attribute' => 'receipt number']));
+            }
+        });
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()->all()]);
@@ -904,10 +941,6 @@ class ReceiptController extends Controller
             'updated_by' => Auth::id()
         ];
 
-        $receipt = Receipt::findOrFail($id);
-        if (!$receipt) {
-            return response()->json(['errors' => ['Receipt not found.']], 404);
-        }
         $this->financial_source_guard->AssertReceiptUpdateAllowed($receipt, $data, true);
         $receipt->update($data);
 
@@ -944,6 +977,11 @@ class ReceiptController extends Controller
             $rDetail->save();
         }
 
+        return $receipt;
+    }
+
+    private function AttachReceiptFiles(Request $request, Receipt $receipt): void
+    {
         //file att
 
         $filesa = $request->get('img');
@@ -963,7 +1001,6 @@ class ReceiptController extends Controller
             }
         }
 
-        return response()->json(['success' => 'แก้ไข ใบเสร็จรับเงิน เรียบร้อยแล้ว']);
     }
 
 

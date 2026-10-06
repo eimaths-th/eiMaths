@@ -1,0 +1,413 @@
+Branch Isolation Fix and Verification Report
+Date: 2026-10-06
+Repository: C:/Users/user/Desktop/eimaths/eiMaths
+Implementation baseline: b0bfda57c8f88eed738e198712340d9a8e50fb3f
+Scope: fixes for the seven reported branch-isolation findings and related historical-document regressions.
+The imported production database was inspected read-only and was not modified.
+
+FIXES FOR THE ORIGINAL SEVEN FINDINGS
+
+1. Global owner access outside HQ
+   BranchAccess::isOwner now requires HQ membership and the SystemAdmin role.
+   Local account 53 no longer receives global owner access; its stored role and department have not been changed.
+   Sources: app/Support/Branch/BranchAccess.php; tests/Feature/Branch/BranchDataAccessRegressionTest.php.
+
+2. Global eiForm application pool
+   Backend access requires a central actor with student-list permission. The branch menu follows the same boundary.
+   Public application submission remains available.
+   Sources: app/Http/Controllers/EiFormController.php; resources/views/layouts/menu.blade.php.
+
+3. Cross-branch stock data through inconsistent ledger rows
+   Stock history validates access to the selected product and excludes ledger rows whose centre differs from the product centre.
+   Valid HQ cross-branch access and transfer destination display are preserved.
+   Source: app/Http/Controllers/ProductController.php.
+
+4. Historical student references and financial documents
+   Historical lessons authorize the owning lesson before reading minimal student identity.
+   Lessons become read-only when that branch cannot access the student; updates return 409 before changing records or files.
+   History GET endpoints no longer save derived dates.
+   Receipt export uses issued receipt identity and level.
+   Order and receipt printing survives a missing student. Orders use an associated receipt snapshot when available, otherwise an explicit unavailable label.
+   Receipt billing fallback is restricted to a contact in the document's branch; stored billing details are preserved.
+   Sources: app/Http/Controllers/HistoriesController.php; app/Exports/ExportReciept.php; app/Http/Controllers/OrderController.php; app/Http/Controllers/ReceiptController.php.
+
+5. Recorded teachers who moved branches
+   Authorized lessons retain the recorded teacher's display identity.
+   Updating the same recorded teacher reference is allowed only for that accessible lesson; selecting a new foreign teacher remains forbidden.
+   The edit UI retains the recorded option, clears it between lessons, and explains read-only lessons.
+   Sources: app/Support/Branch/BranchRouteAccess.php; resources/views/histories/edit.blade.php; resources/views/histories/script.blade.php.
+
+6. Duplicate identifiers and shared PDF overwrite
+   Generated student/product/order/receipt/invoice identifiers skip already issued values.
+   Counters and issued values use locking current reads, and the existing locked counter is updated directly.
+   Student login rejects an ambiguous code. Student code edits reject another existing code.
+   Product lookup reports an ambiguous code instead of choosing a record.
+   Receipt-number edits reject collisions in the document's branch while allowing unchanged legacy duplicates.
+   PDFs return response bytes without writing a shared number-based file; Unicode filename handling is covered.
+   Receipt record updates retry serialization conflicts at most three times. Attachments move after the record transaction commits.
+   Sources: app/Support/Branch/BranchNumber.php; ContactController.php; ProductController.php; OrderController.php; ReceiptController.php.
+
+7. Book receipt summaries after student transfer
+   Student-list book summaries use the scoped Order query, matching the detail query.
+   Destination branches count their own orders; the HQ owner retains authorized historical totals.
+   Source: app/Http/Controllers/ContactController.php; tests/Feature/Branch/BranchBookSummaryTest.php.
+
+VERIFICATION
+
+- Initial full PHP run on the final production source: 877 tests, 22,268 assertions, 59 failures, 1 error, 3 skipped; exit 2; about 10 minutes 30 seconds.
+- All 63 new PHP regression cases passed in that full run: 484 assertions, no failure, error, or skip.
+- Four existing localization cases were then aligned with the new access contract or corrected for a false positive. The affected 74-case suite passed with 425 assertions.
+- Independent rerun of those four original failures passed: 4 tests, 44 assertions.
+- JavaScript suite: 85 tests passed, no failures or skips.
+- Isolated MariaDB verification: 2 controlled session interleavings, 9 behavioral assertions passed under REPEATABLE-READ.
+  A stale outer snapshot observed values committed by another session through the locking reads; the next identifier was 002 and only one current counter row remained.
+  The newly created test schema was dropped and its absence verified. No imported records were written.
+- Local read-only checks: 13 HTTP requests, 2 receipt exports, and 1 owner-scope check matched the expected decisions.
+  Cross-branch requests returned 403; orphan receipt IDs 275/277 and order IDs 35/278/280 returned printable HTML with status 200.
+  Duplicate-product lookup rejected ambiguity. The audit-log count remained 921; the session was read-only.
+- PHP syntax checks and git diff --check passed.
+
+FULL-SUITE ISSUES AND CONTROLLED COMPARISON
+
+The initial full run is not a passing suite.
+Four original failures now pass in focused reruns; 55 failures and 1 error remain from that original run.
+All 56 remaining cases also reproduced with BranchAccess loaded from HEAD in the test process:
+- Affiliate feature cases: 50 failures.
+- Affiliate translation structure: 1 failure.
+- Other existing cases: 4 failures and 1 stock-logging mock error.
+Case identities and exception types matched. First assertions matched; the stock error required normalization of the generated Mockery ordinal.
+This comparison replaced only BranchAccess, not the whole repository. It establishes that the new HQ-owner predicate did not cause these observed failures.
+The full 877-case suite was not repeated after the test-only localization adjustments; the changed tests were verified through focused and affected runs.
+
+Observed remaining categories:
+- 47 Affiliate feature failures reach existing branch prerequisites before the intended portal behavior. Fixtures lack a valid active branch, including cases with a department ID but no matching active Department record.
+- Three other Affiliate feature failures concern approval-state text, a whole-page CRM menu assertion, and payout-message wording.
+- Other failures concern Affiliate translation leaf keys, the Credit Note reason enum, user-table/role-form wording, the stock logging expectation, and the example route's authentication redirect.
+Their broader business or production impact has not been established in this branch-fix scope.
+
+DATA AND LIMITATIONS STILL REQUIRING A SEPARATE DECISION
+
+- Imported duplicate groups remain: contacts 1, products 1, orders 2, receipts 3.
+- The 21 stock rows across 13 products with inconsistent branch ownership remain stored; the read path excludes them.
+- Account 53's intended business role remains unconfirmed. Its stored account was preserved.
+- Three orders and two receipts still reference missing contacts; printing/export now tolerate these references.
+- Previously observed legacy anomalies remain: 438 uploads without branch/owner metadata, 132 images referencing a missing nonzero history ID, and 6 file-store records referencing a missing order. Runtime impact for those counts remains unverified.
+- Existing documents and old shared PDF files were not renumbered, deleted, or rewritten.
+- No unique database constraint or schema migration was added. Concurrent arbitrary manual student-code edits are not guaranteed unique by a database constraint.
+- Historical lesson identity has no original name/code snapshot; the displayed reference is the current minimal identity for the recorded student ID when it still exists.
+- Issued-prefix locking may create contention without supporting indexes. Load behavior and all possible races/deadlocks were not verified.
+- Browser/Select2 integration was not exercised in a real browser.
+
+INITIAL FULL-RUN ISSUE REGISTER
+Each original failure/error is listed below, including the four subsequently corrected localization cases.
+
+1. Tests.Unit.Affiliate.AffiliateTranslationStructureTest::EnglishAndThaiAffiliateTranslationLeavesAndPlaceholdersMatch
+   Type: failure; Status: REMAINS; reproduced with HEAD BranchAccess
+   Evidence: Failed asserting that two arrays are identical.
+   Location: C:\Users\user\Desktop\eimaths\eiMaths\tests\Unit\Affiliate\AffiliateTranslationStructureTest.php:49
+
+2. Tests.Unit.CreditNote.CreditNoteEnumTest::ReasonEnumContainsExactlyTheApprovedTenStoredValues
+   Type: failure; Status: REMAINS; reproduced with HEAD BranchAccess
+   Evidence: Failed asserting that two arrays are identical.
+   Location: C:\Users\user\Desktop\eimaths\eiMaths\tests\Unit\CreditNote\CreditNoteEnumTest.php:40
+
+3. Tests.Feature.Affiliate.AffiliateAnalyticsApiTest::test_active_owner_receives_stable_zero_contract
+   Type: failure; Status: REMAINS; reproduced with HEAD BranchAccess
+   Evidence: Expected response status code [200] but received 403.
+   Location: C:\Users\user\Desktop\eimaths\eiMaths\tests\Feature\Affiliate\AffiliateAnalyticsApiTest.php:53
+
+4. Tests.Feature.Affiliate.AffiliateAnalyticsApiTest::test_invalid_ranges_return_localized_validation_errors
+   Type: failure; Status: REMAINS; reproduced with HEAD BranchAccess
+   Evidence: Expected response status code [422] but received 403.
+   Location: C:\Users\user\Desktop\eimaths\eiMaths\tests\Feature\Affiliate\AffiliateAnalyticsApiTest.php:76
+
+5. Tests.Feature.Affiliate.AffiliateAnalyticsApiTest::test_disabled_analytics_feature_is_not_exposed
+   Type: failure; Status: REMAINS; reproduced with HEAD BranchAccess
+   Evidence: Expected response status code [503] but received 403.
+   Location: C:\Users\user\Desktop\eimaths\eiMaths\tests\Feature\Affiliate\AffiliateAnalyticsApiTest.php:95
+
+6. Tests.Feature.Affiliate.AffiliateAnalyticsPageTest::test_page_renders_default_evidence_controls_and_accessible_table
+   Type: failure; Status: REMAINS; reproduced with HEAD BranchAccess
+   Evidence: Expected response status code [200] but received 403.
+   Location: C:\Users\user\Desktop\eimaths\eiMaths\tests\Feature\Affiliate\AffiliateAnalyticsPageTest.php:32
+
+7. Tests.Feature.Affiliate.AffiliateAnalyticsPageTest::AffiliateAnalyticsUsesTheAdminLteContentShell
+   Type: failure; Status: REMAINS; reproduced with HEAD BranchAccess
+   Evidence: Expected response status code [200] but received 403.
+   Location: C:\Users\user\Desktop\eimaths\eiMaths\tests\Feature\Affiliate\AffiliateAnalyticsPageTest.php:61
+
+8. Tests.Feature.Affiliate.AffiliateDashboardAnalyticsTest::test_dashboard_shows_the_analytics_summary_only_when_enabled
+   Type: failure; Status: REMAINS; reproduced with HEAD BranchAccess
+   Evidence: Expected response status code [200] but received 403.
+   Location: C:\Users\user\Desktop\eimaths\eiMaths\tests\Feature\Affiliate\AffiliateDashboardAnalyticsTest.php:32
+
+9. Tests.Feature.Affiliate.AffiliateEmployeeAdministrationTest::NewEmployeeProfileAppearsInExistingApprovalList
+   Type: failure; Status: REMAINS; reproduced with HEAD BranchAccess
+   Evidence: Rendered HTML did not match the expected content.
+   Location: C:\Users\user\Desktop\eimaths\eiMaths\tests\Feature\Affiliate\AffiliateEmployeeAdministrationTest.php:41
+
+10. Tests.Feature.Affiliate.AffiliateErrorTranslationTest::test_affiliate_payout_errors_have_user_facing_translations_in_thai
+   Type: failure; Status: REMAINS; reproduced with HEAD BranchAccess
+   Evidence: Failed asserting that two strings are identical.
+   Location: C:\Users\user\Desktop\eimaths\eiMaths\tests\Feature\Affiliate\AffiliateErrorTranslationTest.php:25
+
+11. Tests.Feature.Affiliate.AffiliateFinanceNavigationTest::test_active_affiliate_can_render_dashboard_payout_and_withdrawal_pages
+   Type: failure; Status: REMAINS; reproduced with HEAD BranchAccess
+   Evidence: Expected response status code [200] but received 403.
+   Location: C:\Users\user\Desktop\eimaths\eiMaths\tests\Feature\Affiliate\AffiliateFinanceNavigationTest.php:58
+
+12. Tests.Feature.Affiliate.AffiliateFinanceNavigationTest::test_withdrawal_page_renders_zero_wallet_balances_when_projection_is_missing
+   Type: failure; Status: REMAINS; reproduced with HEAD BranchAccess
+   Evidence: Expected response status code [200] but received 403.
+   Location: C:\Users\user\Desktop\eimaths\eiMaths\tests\Feature\Affiliate\AffiliateFinanceNavigationTest.php:85
+
+13. Tests.Feature.Affiliate.AffiliateFinanceNavigationTest::test_inactive_affiliate_cannot_render_finance_pages
+   Type: failure; Status: REMAINS; reproduced with HEAD BranchAccess
+   Evidence: Expected response status code [201, 301, 302, 303, 307, 308] but received 403.
+   Location: C:\Users\user\Desktop\eimaths\eiMaths\tests\Feature\Affiliate\AffiliateFinanceNavigationTest.php:107
+
+14. Tests.Feature.Affiliate.AffiliateFinanceNavigationTest::test_finance_pages_only_expose_the_authenticated_affiliate_profile
+   Type: failure; Status: REMAINS; reproduced with HEAD BranchAccess
+   Evidence: Expected response status code [200] but received 403.
+   Location: C:\Users\user\Desktop\eimaths\eiMaths\tests\Feature\Affiliate\AffiliateFinanceNavigationTest.php:141
+
+15. Tests.Feature.Affiliate.AffiliateFinanceNavigationTest::test_active_affiliate_navigation_contains_separate_finance_entries
+   Type: failure; Status: REMAINS; reproduced with HEAD BranchAccess
+   Evidence: Expected response status code [200] but received 403.
+   Location: C:\Users\user\Desktop\eimaths\eiMaths\tests\Feature\Affiliate\AffiliateFinanceNavigationTest.php:156
+
+16. Tests.Feature.Affiliate.AffiliateFinanceNavigationTest::ActiveUnverifiedEmployeeNavigationMatchesPortalAccess
+   Type: failure; Status: REMAINS; reproduced with HEAD BranchAccess
+   Evidence: Expected response status code [200] but received 403.
+   Location: C:\Users\user\Desktop\eimaths\eiMaths\tests\Feature\Affiliate\AffiliateFinanceNavigationTest.php:188
+
+17. Tests.Feature.Affiliate.AffiliateGuideTest::active_affiliate_can_read_the_guide_and_open_the_source_document
+   Type: failure; Status: REMAINS; reproduced with HEAD BranchAccess
+   Evidence: Expected response status code [200] but received 403.
+   Location: C:\Users\user\Desktop\eimaths\eiMaths\tests\Feature\Affiliate\AffiliateGuideTest.php:32
+
+18. Tests.Feature.Affiliate.AffiliateGuideTest::active_affiliate_can_browse_every_curriculum_pdf
+   Type: failure; Status: REMAINS; reproduced with HEAD BranchAccess
+   Evidence: Expected response status code [200] but received 403.
+   Location: C:\Users\user\Desktop\eimaths\eiMaths\tests\Feature\Affiliate\AffiliateGuideTest.php:55
+
+19. Tests.Feature.Affiliate.AffiliateGuideTest::unknown_curriculum_level_returns_not_found
+   Type: failure; Status: REMAINS; reproduced with HEAD BranchAccess
+   Evidence: Expected response status code [404] but received 403.
+   Location: C:\Users\user\Desktop\eimaths\eiMaths\tests\Feature\Affiliate\AffiliateGuideTest.php:76
+
+20. Tests.Feature.Affiliate.AffiliateGuideTest::inactive_affiliate_is_redirected_away_from_the_guide_and_document
+   Type: failure; Status: REMAINS; reproduced with HEAD BranchAccess
+   Evidence: Expected response status code [201, 301, 302, 303, 307, 308] but received 403.
+   Location: C:\Users\user\Desktop\eimaths\eiMaths\tests\Feature\Affiliate\AffiliateGuideTest.php:86
+
+21. Tests.Feature.Affiliate.AffiliateGuideTest::affiliate_finance_navigation_links_to_the_guide
+   Type: failure; Status: REMAINS; reproduced with HEAD BranchAccess
+   Evidence: Rendered HTML did not match the expected content.
+   Location: C:\Users\user\Desktop\eimaths\eiMaths\tests\Feature\Affiliate\AffiliateGuideTest.php:104
+
+22. Tests.Feature.Affiliate.AffiliateIdentityVerificationTest::RegistrationStoresConsentEvidenceAndEmailVerificationStartsIdentityStep
+   Type: failure; Status: REMAINS; reproduced with HEAD BranchAccess
+   Evidence: Expected response status code [201, 301, 302, 303, 307, 308] but received 403.
+   Location: C:\Users\user\Desktop\eimaths\eiMaths\tests\Feature\Affiliate\AffiliateIdentityVerificationTest.php:71
+
+23. Tests.Feature.Affiliate.AffiliateIdentityVerificationTest::AffiliateCanSubmitEncryptedIdentityAndPrivateDocument
+   Type: failure; Status: REMAINS; reproduced with HEAD BranchAccess
+   Evidence: Expected response status code [201, 301, 302, 303, 307, 308] but received 403.
+   Location: C:\Users\user\Desktop\eimaths\eiMaths\tests\Feature\Affiliate\AffiliateIdentityVerificationTest.php:81
+
+24. Tests.Feature.Affiliate.AffiliateIdentityVerificationTest::InvalidNationalIdAndWrongDocumentTypeAreRejected
+   Type: failure; Status: REMAINS; reproduced with HEAD BranchAccess
+   Evidence: Session is missing expected key [errors].
+   Location: C:\Users\user\Desktop\eimaths\eiMaths\tests\Feature\Affiliate\AffiliateIdentityVerificationTest.php:108
+
+25. Tests.Feature.Affiliate.AffiliateIdentityVerificationTest::AdminCanReviewRejectResubmissionAndApproveWhileEmployeeApprovalStillWorks
+   Type: failure; Status: REMAINS; reproduced with HEAD BranchAccess
+   Evidence: Expected response status code [200] but received 403.
+   Location: C:\Users\user\Desktop\eimaths\eiMaths\tests\Feature\Affiliate\AffiliateIdentityVerificationTest.php:156
+
+26. Tests.Feature.Affiliate.AffiliateLocaleTest::AffiliateDefaultsToThaiWhenPreferenceIsMissing
+   Type: failure; Status: REMAINS; reproduced with HEAD BranchAccess
+   Evidence: Expected response status code [200] but received 403.
+   Location: C:\Users\user\Desktop\eimaths\eiMaths\tests\Feature\Affiliate\AffiliateLocaleTest.php:35
+
+27. Tests.Feature.Affiliate.AffiliateLocaleTest::AuthenticatedEnglishPreferenceWins
+   Type: failure; Status: REMAINS; reproduced with HEAD BranchAccess
+   Evidence: Expected response status code [200] but received 403.
+   Location: C:\Users\user\Desktop\eimaths\eiMaths\tests\Feature\Affiliate\AffiliateLocaleTest.php:45
+
+28. Tests.Feature.Affiliate.AffiliateLocaleTest::UnsupportedPreferenceFallsBackToThai
+   Type: failure; Status: REMAINS; reproduced with HEAD BranchAccess
+   Evidence: Expected response status code [200] but received 403.
+   Location: C:\Users\user\Desktop\eimaths\eiMaths\tests\Feature\Affiliate\AffiliateLocaleTest.php:55
+
+29. Tests.Feature.Affiliate.AffiliatePendingApprovalAlertTest::AuthorizedAffiliateListUserCanReadCurrentPendingApprovalSummary
+   Type: failure; Status: REMAINS; reproduced with HEAD BranchAccess
+   Evidence: Expected response status code [200] but received 403.
+   Location: C:\Users\user\Desktop\eimaths\eiMaths\tests\Feature\Affiliate\AffiliatePendingApprovalAlertTest.php:56
+
+30. Tests.Feature.Affiliate.AffiliatePendingApprovalAlertTest::AuthorizedAffiliateListUserSeesPendingApprovalAlertHooksInTheBackendLayout
+   Type: failure; Status: REMAINS; reproduced with HEAD BranchAccess
+   Evidence: Expected response status code [200] but received 403.
+   Location: C:\Users\user\Desktop\eimaths\eiMaths\tests\Feature\Affiliate\AffiliatePendingApprovalAlertTest.php:70
+
+31. Tests.Feature.Affiliate.AffiliatePortalAccessTest::ActiveUnverifiedEmployeeCanOpenDashboard
+   Type: failure; Status: REMAINS; reproduced with HEAD BranchAccess
+   Evidence: Expected response status code [200] but received 403.
+   Location: C:\Users\user\Desktop\eimaths\eiMaths\tests\Feature\Affiliate\AffiliatePortalAccessTest.php:40
+
+32. Tests.Feature.Affiliate.AffiliatePortalAccessTest::ActiveVerifiedExternalCanOpenDashboard
+   Type: failure; Status: REMAINS; reproduced with HEAD BranchAccess
+   Evidence: Expected response status code [200] but received 403.
+   Location: C:\Users\user\Desktop\eimaths\eiMaths\tests\Feature\Affiliate\AffiliatePortalAccessTest.php:51
+
+33. Tests.Feature.Affiliate.AffiliatePortalAccessTest::ActiveUnverifiedExternalIsRedirectedToWaiting
+   Type: failure; Status: REMAINS; reproduced with HEAD BranchAccess
+   Evidence: Expected response status code [201, 301, 302, 303, 307, 308] but received 403.
+   Location: C:\Users\user\Desktop\eimaths\eiMaths\tests\Feature\Affiliate\AffiliatePortalAccessTest.php:62
+
+34. Tests.Feature.Affiliate.AffiliatePortalAccessTest::NonActiveEmployeeIsRedirectedToEmployeeStatusPage
+   Type: failure; Status: REMAINS; reproduced with HEAD BranchAccess
+   Evidence: Expected response status code [201, 301, 302, 303, 307, 308] but received 403.
+   Location: C:\Users\user\Desktop\eimaths\eiMaths\tests\Feature\Affiliate\AffiliatePortalAccessTest.php:77
+
+35. Tests.Feature.Affiliate.AffiliatePortalAccessTest::IneligibleUserReceivesPlainForbiddenResponse
+   Type: failure; Status: REMAINS; reproduced with HEAD BranchAccess
+   Evidence: Rendered HTML did not match the expected content.
+   Location: C:\Users\user\Desktop\eimaths\eiMaths\tests\Feature\Affiliate\AffiliatePortalAccessTest.php:89
+
+36. Tests.Feature.Affiliate.AffiliatePortalAccessTest::IneligibleJsonRequestReceivesLocalizedForbiddenResponse
+   Type: failure; Status: REMAINS; reproduced with HEAD BranchAccess
+   Evidence: Failed asserting that null is identical to 'AFFILIATE_OWNERSHIP_DENIED'.
+   Location: C:\Users\user\Desktop\eimaths\eiMaths\tests\Feature\Affiliate\AffiliatePortalAccessTest.php:100
+
+37. Tests.Feature.Affiliate.AffiliatePortalAccessTest::UnsafeRequestIsForbiddenInsteadOfRedirecting
+   Type: failure; Status: REMAINS; reproduced with HEAD BranchAccess
+   Evidence: Rendered HTML did not match the expected content.
+   Location: C:\Users\user\Desktop\eimaths\eiMaths\tests\Feature\Affiliate\AffiliatePortalAccessTest.php:112
+
+38. Tests.Feature.Affiliate.AffiliatePortalAccessTest::AdministratorRoutesRemainUnchanged
+   Type: failure; Status: REMAINS; reproduced with HEAD BranchAccess
+   Evidence: Expected response status code [200] but received 403.
+   Location: C:\Users\user\Desktop\eimaths\eiMaths\tests\Feature\Affiliate\AffiliatePortalAccessTest.php:126
+
+39. Tests.Feature.Affiliate.AffiliatePortalAccessTest::EmployeePortalRequestsReachExistingDomainAndFeatureBoundaries
+   Type: failure; Status: REMAINS; reproduced with HEAD BranchAccess
+   Evidence: Expected response status code [200] but received 403.
+   Location: C:\Users\user\Desktop\eimaths\eiMaths\tests\Feature\Affiliate\AffiliatePortalAccessTest.php:140
+
+40. Tests.Feature.Affiliate.AffiliateRegistrationTest::PendingEmailAffiliateSeesGuestResendActionOnWaitingPage
+   Type: failure; Status: REMAINS; reproduced with HEAD BranchAccess
+   Evidence: Expected response status code [200] but received 403.
+   Location: C:\Users\user\Desktop\eimaths\eiMaths\tests\Feature\Affiliate\AffiliateRegistrationTest.php:199
+
+41. Tests.Feature.Affiliate.AffiliateRegistrationTest::ActiveAffiliateIsRedirectedFromWaitingPageToDashboard
+   Type: failure; Status: REMAINS; reproduced with HEAD BranchAccess
+   Evidence: Expected response status code [201, 301, 302, 303, 307, 308] but received 403.
+   Location: C:\Users\user\Desktop\eimaths\eiMaths\tests\Feature\Affiliate\AffiliateRegistrationTest.php:482
+
+42. Tests.Feature.Affiliate.AffiliateRegistrationTest::PendingAffiliateCanViewWaitingPage
+   Type: failure; Status: REMAINS; reproduced with HEAD BranchAccess
+   Evidence: Expected response status code [200] but received 403.
+   Location: C:\Users\user\Desktop\eimaths\eiMaths\tests\Feature\Affiliate\AffiliateRegistrationTest.php:501
+
+43. Tests.Feature.Affiliate.AffiliateRolePermissionTest::affiliate_user_without_cms_permissions_does_not_see_cms_menu_entries
+   Type: failure; Status: REMAINS; reproduced with HEAD BranchAccess
+   Evidence: Rendered HTML did not match the expected content.
+   Location: C:\Users\user\Desktop\eimaths\eiMaths\tests\Feature\Affiliate\AffiliateRolePermissionTest.php:74
+
+44. Tests.Feature.Affiliate.AffiliateSecurePayoutRevealTest::test_admin_endpoint_reveals_to_authorized_user_without_email_verification
+   Type: failure; Status: REMAINS; reproduced with HEAD BranchAccess
+   Evidence: Expected response status code [200] but received 403.
+   Location: C:\Users\user\Desktop\eimaths\eiMaths\tests\Feature\Affiliate\AffiliateSecurePayoutRevealTest.php:124
+
+45. Tests.Feature.Affiliate.AffiliateSecurePayoutRevealTest::test_admin_list_html_and_json_keep_payout_details_masked_by_default
+   Type: failure; Status: REMAINS; reproduced with HEAD BranchAccess
+   Evidence: Expected response status code [200] but received 403.
+   Location: C:\Users\user\Desktop\eimaths\eiMaths\tests\Feature\Affiliate\AffiliateSecurePayoutRevealTest.php:162
+
+46. Tests.Feature.Affiliate.AffiliateSecurePayoutRevealTest::test_admin_page_only_renders_reveal_control_for_approved_rows_with_permission
+   Type: failure; Status: REMAINS; reproduced with HEAD BranchAccess
+   Evidence: Expected response status code [200] but received 403.
+   Location: C:\Users\user\Desktop\eimaths\eiMaths\tests\Feature\Affiliate\AffiliateSecurePayoutRevealTest.php:179
+
+47. Tests.Feature.Affiliate.AffiliateWithdrawalUiTest::test_active_affiliate_dashboard_exposes_summary_links_without_mutation_controls
+   Type: failure; Status: REMAINS; reproduced with HEAD BranchAccess
+   Evidence: Expected response status code [200] but received 403.
+   Location: C:\Users\user\Desktop\eimaths\eiMaths\tests\Feature\Affiliate\AffiliateWithdrawalUiTest.php:36
+
+48. Tests.Feature.Affiliate.AffiliateWithdrawalUiTest::test_affiliate_html_payout_and_withdrawal_forms_redirect_and_update_state
+   Type: failure; Status: REMAINS; reproduced with HEAD BranchAccess
+   Evidence: Expected response status code [201, 301, 302, 303, 307, 308] but received 403.
+   Location: C:\Users\user\Desktop\eimaths\eiMaths\tests\Feature\Affiliate\AffiliateWithdrawalUiTest.php:55
+
+49. Tests.Feature.Affiliate.AffiliateWithdrawalUiTest::test_dashboard_does_not_render_withdrawal_cancel_forms
+   Type: failure; Status: REMAINS; reproduced with HEAD BranchAccess
+   Evidence: Expected response status code [200] but received 403.
+   Location: C:\Users\user\Desktop\eimaths\eiMaths\tests\Feature\Affiliate\AffiliateWithdrawalUiTest.php:122
+
+50. Tests.Feature.Affiliate.AffiliateWithdrawalUiTest::test_html_validation_returns_to_the_originating_finance_page
+   Type: failure; Status: REMAINS; reproduced with HEAD BranchAccess
+   Evidence: Expected response status code [201, 301, 302, 303, 307, 308] but received 403.
+   Location: C:\Users\user\Desktop\eimaths\eiMaths\tests\Feature\Affiliate\AffiliateWithdrawalUiTest.php:138
+
+51. Tests.Feature.Affiliate.AffiliateWithdrawalUiTest::test_admin_withdrawal_page_renders_and_html_transitions_preserve_json_api
+   Type: failure; Status: REMAINS; reproduced with HEAD BranchAccess
+   Evidence: Expected response status code [200] but received 403.
+   Location: C:\Users\user\Desktop\eimaths\eiMaths\tests\Feature\Affiliate\AffiliateWithdrawalUiTest.php:182
+
+52. Tests.Feature.Affiliate.AffiliateWithdrawalUiTest::test_json_payout_and_withdrawal_endpoints_remain_json_contracts
+   Type: failure; Status: REMAINS; reproduced with HEAD BranchAccess
+   Evidence: Expected response status code [200] but received 403.
+   Location: C:\Users\user\Desktop\eimaths\eiMaths\tests\Feature\Affiliate\AffiliateWithdrawalUiTest.php:226
+
+53. Tests.Feature.Branch.BranchIsolationTest::test_user_table_headers_match_data_and_related_columns_can_be_sorted
+   Type: failure; Status: REMAINS; reproduced with HEAD BranchAccess
+   Evidence: Rendered HTML did not match the expected content.
+   Location: C:\Users\user\Desktop\eimaths\eiMaths\tests\Feature\Branch\BranchIsolationTest.php:220
+
+54. Tests.Feature.Branch.BranchIsolationTest::test_role_form_groups_permissions_and_keeps_individual_inputs
+   Type: failure; Status: REMAINS; reproduced with HEAD BranchAccess
+   Evidence: Rendered HTML did not match the expected content.
+   Location: C:\Users\user\Desktop\eimaths\eiMaths\tests\Feature\Branch\BranchIsolationTest.php:263
+
+55. Tests.Feature.Branch.BranchWorkflowsTest::test_stock_adjustment_error_is_written_to_the_application_log_without_mutation
+   Type: error; Status: REMAINS; reproduced with HEAD BranchAccess
+   Evidence: Mockery\Exception\InvalidCountException: Method warning(<Any Arguments>) from Mockery_3_Illuminate_Log_LogManager should be called
+   Location: C:\Users\user\Desktop\eimaths\eiMaths\tests\Feature\Branch\BranchWorkflowsTest.php:153
+
+56. Tests.Feature.ExampleTest::test_the_application_returns_a_successful_response
+   Type: failure; Status: REMAINS; reproduced with HEAD BranchAccess
+   Evidence: Expected response status code [200] but received 302.
+   Location: C:\Users\user\Desktop\eimaths\eiMaths\tests\Feature\ExampleTest.php:17
+
+57. Tests.Feature.Localization.ProductLocalizedPageTest::ProductsPageRendersTheSelectedLocale with data set #0
+   Type: failure; Status: CORRECTED TEST; focused rerun passed
+   Evidence: Rendered HTML did not match the expected content.
+   Location: C:\Users\user\Desktop\eimaths\eiMaths\tests\Feature\Localization\ProductLocalizedPageTest.php:189
+
+58. Tests.Feature.Localization.UiLocalizedPagesTest::StudentsManagementPagesRenderInBothLocales with data set #14
+   Type: failure; Status: CORRECTED TEST; focused rerun passed
+   Evidence: Expected response status code [200] but received 403.
+   Location: C:\Users\user\Desktop\eimaths\eiMaths\tests\Feature\Localization\UiLocalizedPagesTest.php:159
+
+59. Tests.Feature.Localization.UiLocalizedPagesTest::StudentsManagementPagesRenderInBothLocales with data set #15
+   Type: failure; Status: CORRECTED TEST; focused rerun passed
+   Evidence: Expected response status code [200] but received 403.
+   Location: C:\Users\user\Desktop\eimaths\eiMaths\tests\Feature\Localization\UiLocalizedPagesTest.php:159
+
+60. Tests.Feature.Localization.UiLocalizedPagesTest::SecondaryStudentPagesExposeLocalizedLabels with data set #4
+   Type: failure; Status: CORRECTED TEST; focused rerun passed
+   Evidence: Expected response status code [200] but received 403.
+   Location: C:\Users\user\Desktop\eimaths\eiMaths\tests\Feature\Localization\UiLocalizedPagesTest.php:339
+
+SKIPPED TESTS
+
+- Tests.Feature.Affiliate.AffiliateClickConcurrencyTest::ConcurrentFirstClicksProduceTwoEventsOneUniqueWindowAndAnAtomicDailyTotal
+  Reason: SQLite cannot verify deployed row-lock semantics.
+
+- Tests.Feature.Affiliate.AffiliateEmployeeEnrollmentConcurrencyTest::ConcurrentFirstEnrollmentsCreateOneProfileAndOneAuditWithoutChangingStaffIdentity
+  Reason: SQLite cannot verify deployed row-lock semantics.
+
+- Tests.Feature.CreditNote.CreditNoteConcurrencyTest::mysql_concurrency_scenarios_are_explicitly_skipped_without_opt_in
+  Reason: Requires explicit isolated MySQL opt-in.

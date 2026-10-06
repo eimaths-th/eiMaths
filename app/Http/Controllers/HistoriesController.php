@@ -853,6 +853,20 @@ class HistoriesController extends Controller
     }
 
 
+    private function HistoricalStudent(Histrories $history): ?Contact
+    {
+        // The caller must load the owning lesson through its branch scope before reading this reference.
+        return Contact::query()->withoutGlobalScope('branch-access')
+            ->select(['id', 'code', 'name', 'nickname'])->find($history->student_id);
+    }
+
+    private function HistoricalTeacher(Histrories $history): ?User
+    {
+        // Only the recorded teacher's display identity is exposed for an already authorized lesson.
+        return User::query()->withoutGlobalScope('branch-access')
+            ->select(['id', 'name'])->find($history->teacher_id);
+    }
+
     /**
      * Display the specified resource.
      */
@@ -860,7 +874,8 @@ class HistoriesController extends Controller
     {
         //
         //dd($id);
-        $history = Histrories::find($id);
+        $history = Histrories::findOrFail($id);
+        $student_reference = $this->HistoricalStudent($history);
 
         //start-end
         $ste = $this->checkStartEndDate($history->student_id, $history->term, $history->level_id);
@@ -870,16 +885,17 @@ class HistoriesController extends Controller
         $history->start_date = $this->sformatDate($stea[0]); // Assuming start date is the first element of $stea
         $history->end_date = $this->sformatDate($stea[1]);   // Assuming end date is the second element of $stea
 
-        // Save changes
-        $history->save();
+        // Display dates are derived without changing the historical record on a GET request.
 
         $images = HistoryStudentImg::where('history_id', $id)->get();
         $centre = Department::where('id', $history->centre)->get();
-        $teacher = User::where('id', $history->teacher_id)->first();
+        $teacher = $this->HistoricalTeacher($history);
         if ($teacher !== null) {
             $teacher_name = $teacher->name;
         } else {
-            $teacher_name = 'ไม่มีการบันทึกครูผู้สอน';
+            $teacher_name = (int) $history->teacher_id > 0
+                ? __('students.history.teacher_unavailable')
+                : __('students.check_in.no_teacher');
         }
 
         $img_html = '';
@@ -910,7 +926,7 @@ class HistoriesController extends Controller
         return response()->json([
             'history' => $history,
             'centre' => $history->department->name,
-            'student' => $history->student->student_code,
+            'student' => $student_reference?->student_code ?? __('students.check_in.student_not_found'),
             'teacher' => $teacher_name,
             'slide_html' => $slide_html,
             'img_html' => $img_html,  // Include the generated HTML in the JSON response
@@ -925,7 +941,8 @@ class HistoriesController extends Controller
         //
 
 
-        $history = Histrories::find($id);
+        $history = Histrories::findOrFail($id);
+        $student_reference = $this->HistoricalStudent($history);
 
         //start-end
         $ste = $this->checkStartEndDate($history->student_id, $history->term, $history->level_id);
@@ -935,16 +952,17 @@ class HistoriesController extends Controller
         $history->start_date = $this->sformatDate($stea[0]); // Assuming start date is the first element of $stea
         $history->end_date = $this->sformatDate($stea[1]);   // Assuming end date is the second element of $stea
 
-        // Save changes
-        $history->save();
+        // Display dates are derived without changing the historical record on a GET request.
 
-        $teacher = User::where('id', $history->teacher_id)->first();
+        $teacher = $this->HistoricalTeacher($history);
         if ($teacher !== null) {
             $teacher_name = $teacher->name;
             $teacher_id = $teacher->id;
         } else {
-            $teacher_name = 'ไม่มีการบันทึกครูผู้สอน';
-            $teacher_id = '';
+            $teacher_name = (int) $history->teacher_id > 0
+                ? __('students.history.teacher_unavailable')
+                : __('students.check_in.no_teacher');
+            $teacher_id = (int) $history->teacher_id > 0 ? (int) $history->teacher_id : '';
         }
 
         $level_list = $this->stdfind('edit', $history->student_id);
@@ -952,8 +970,9 @@ class HistoriesController extends Controller
         $data = [
             'id'                    => $history->id,
             'centre'                => $history->department->name,
-            'code'                  => $history->student->code,
-            'student_id'            => $history->student->name,
+            'code'                  => $student_reference?->code ?? '',
+            'student_id'            => $student_reference?->name ?? __('students.check_in.student_not_found'),
+            'is_read_only'          => !Contact::query()->whereKey($history->student_id)->exists(),
             'teacher'               => $teacher_name,
             'teacher_id'            => $teacher_id,
             'level_name'            => $history->level_name,
@@ -979,7 +998,8 @@ class HistoriesController extends Controller
     }
     public function log($id)
     {
-        //
+        $history = Histrories::findOrFail($id);
+        $student_reference = $this->HistoricalStudent($history);
         $histories = LogHistory::where('history_id', $id)->get();
 
 
@@ -992,7 +1012,7 @@ class HistoriesController extends Controller
             <div class="col-xs-3 col-sm-3 col-md-3">
                 <div class="form-group">
                     <strong><i class="fas fa-code"></i> Centre :</strong>
-                    <span class="text-info"> ' . $histories->first()->history->department->name . ' </span>
+                    <span class="text-info"> ' . e($history->department?->name ?? '') . ' </span>
 
                 </div>
             </div>
@@ -1001,20 +1021,20 @@ class HistoriesController extends Controller
                 <div class="form-group">
                     <strong><i class="fas fa-code"></i> Code : </strong>
 
-                    <span class="text-info">' . $histories->first()->history->student->code . '</span>
+                    <span class="text-info">' . e($student_reference?->code ?? '') . '</span>
                 </div>
             </div>
             <div class="col-xs-3 col-sm-3 col-md-3">
                 <div class="form-group">
                     <strong><i class="fas fa-code"></i> Student : </strong>
-                    <span class="text-info" for="" >' . $histories->first()->history->student->name . '</span>
+                    <span class="text-info" for="" >' . e($student_reference?->name ?? __('students.check_in.student_not_found')) . '</span>
 
                 </div>
             </div>
             <div class="col-xs-3 col-sm-3 col-md-3">
                 <div class="form-group">
                 <strong><i class="fas fa-code"></i> Nick Name : </strong>
-                <span class="text-info" for="" >' . $histories->first()->history->student->nickname . '</span>
+                <span class="text-info" for="" >' . e($student_reference?->nickname ?? '') . '</span>
                 </div>
             </div>
             </div>
@@ -1189,7 +1209,8 @@ class HistoriesController extends Controller
     public function update(Request $request, $id)
     {
         //
-        $history = Histrories::find($id);
+        $history = Histrories::findOrFail($id);
+        abort_unless(Contact::query()->whereKey($history->student_id)->exists(), 409, __('students.history.read_only'));
         $input = $request->all();
         // dd($input,$history);
 

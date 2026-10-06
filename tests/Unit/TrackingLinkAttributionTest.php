@@ -4,6 +4,7 @@ namespace Tests\Unit;
 
 use App\Models\TrackingLink;
 use App\Services\CrmLeadNotificationService;
+use App\Services\CrmLeadConsentService;
 use App\Services\CrmLeadService;
 use PHPUnit\Framework\TestCase;
 use ReflectionMethod;
@@ -26,7 +27,10 @@ class TrackingLinkAttributionTest extends TestCase
         ]);
         $trackingLink->setRelation('creator', (object) ['name' => 'Man']);
 
-        $service = new CrmLeadService($this->createMock(CrmLeadNotificationService::class));
+        $service = new CrmLeadService(
+            $this->createMock(CrmLeadNotificationService::class),
+            $this->createMock(CrmLeadConsentService::class)
+        );
         $method = new ReflectionMethod($service, 'applyResolvedTrackingLink');
         $method->setAccessible(true);
 

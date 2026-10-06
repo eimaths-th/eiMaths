@@ -300,6 +300,8 @@ return [
         'book' => 'Book',
         'teacher' => 'Teacher',
         'study_date' => 'Study date',
+        'teacher_unavailable' => 'Recorded teacher is unavailable.',
+        'read_only' => 'This historical lesson is read-only because the student is no longer accessible in this branch.',
         'start_time' => 'Start time',
         'end_time' => 'End time',
         'start_end_time' => 'Start-End Time',

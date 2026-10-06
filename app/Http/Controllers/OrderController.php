@@ -235,7 +235,9 @@ class OrderController extends Controller
             "departments.name as centre_name",
 
         )
-            ->join("contacts", "contacts.id", "=", "orders.cid")
+            ->leftJoin('contacts', function ($join) {
+                $join->on('contacts.id', '=', 'orders.cid')->on('contacts.centre', '=', 'orders.centre');
+            })
             ->join("departments", "orders.centre", "=", "departments.id")
             ->where("orders.id", $id)
             ->get();
@@ -257,9 +259,22 @@ class OrderController extends Controller
             return redirect()->back()->with('error', 'Order data not found.');
         }
 
+        $order_data = $datas->first();
+        if (!filled($order_data->cname) || !filled($order_data->ccode)) {
+            $issued_identity = Receipt::query()->where('oid', $order_data->id)
+                ->where('centre', $order_data->centre)->where('cid', $order_data->cid)
+                ->orderBy('id')->first(['student_name', 'student_no']);
+            if (!filled($order_data->cname)) {
+                $order_data->cname = filled($issued_identity?->student_name)
+                    ? $issued_identity->student_name : __('financial-documents.student_unavailable');
+            }
+            if (!filled($order_data->ccode)) {
+                $order_data->ccode = $issued_identity?->student_no;
+            }
+        }
+
         // Load the template file from the 'templates' subdirectory
         $template = 'templates.print_order';
-        $templates = 'templates.print_social';
 
         $ctype = "";
         $price_text = $this->MoneyConvertService->baht_text($datas[0]->total_price);
@@ -281,22 +296,20 @@ class OrderController extends Controller
 
         if ($social == 1) {
             // Render the view with the data and get the HTML content
-            $htmlContents = View::make($templates, $data)->render();
+            $htmlContents = View::make($template, $data)->render();
 
             // Generate the PDF
             $pdf = PDF::loadHTML($htmlContents);
             //$pdf->getDomPDF()->getFontMetrics()->setFont('YourThaiFont.ttf', 'YourThaiFont');
 
-            // Save the PDF to a temporary file path
-            $pdfPath = public_path('file_store/' . $datas[0]->order_number . '.pdf');
-            //dd($pdfPath);
-            $pdf->save($pdfPath);
-
-            // Define the file name for the downloaded PDF
-            $pdfFileName = $datas[0]->order_number . '.pdf';
-
-            // Download the PDF file
-            return response()->download($pdfPath, $pdfFileName, ['Content-Type' => 'application/pdf']);
+            // Return bytes directly so duplicate legacy numbers cannot overwrite shared files.
+            $pdf_file_name = $datas[0]->order_number . '.pdf';
+            return response($pdf->output(), 200, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => \Symfony\Component\HttpFoundation\HeaderUtils::makeDisposition(
+                    'attachment', $pdf_file_name, str_replace('%', '', \Illuminate\Support\Str::ascii($pdf_file_name)),
+                ),
+            ]);
         } else {
             // Render the view with the data and get the HTML content
             $htmlContent = View::make($template, $data)->render();

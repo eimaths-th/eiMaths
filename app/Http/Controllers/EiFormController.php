@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\EiForm;
+use App\Support\Branch\BranchAccess;
 use Illuminate\Http\Request;
 
 class EiFormController extends Controller
@@ -44,6 +45,10 @@ class EiFormController extends Controller
 
     public function backEndIndex(Request $request)
     {
+        abort_unless(
+            $request->user() && BranchAccess::isCentral($request->user()) && $request->user()->can('student-list'),
+            403
+        );
         if ($request->ajax()) {
             //sleep(2);
 

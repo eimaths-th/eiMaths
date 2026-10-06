@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class CrmLead extends Model
 {
+    public const PREFERRED_BRANCHES = ['ratchapruek', 'bangkae'];
+
     public const CREATED_FROM = [
         'unknown' => 'Unknown',
         'lead_registration_website' => 'Website registration',
@@ -52,6 +54,7 @@ class CrmLead extends Model
         'line_source',
         'email',
         'preferred_contact_time',
+        'preferred_branch',
         'student_name',
         'student_grade',
         'student_school',
@@ -102,6 +105,9 @@ class CrmLead extends Model
     ];
 
     protected $casts = [
+        'marketing_consent' => 'boolean',
+        'marketing_consent_recorded_at' => 'datetime',
+        'marketing_consent_context' => 'array',
         'assessment_answers' => 'array',
         'answers' => 'array',
         'weak_topics' => 'array',
@@ -126,6 +132,11 @@ class CrmLead extends Model
     public function notes()
     {
         return $this->hasMany(CrmLeadNote::class, 'lead_id')->latest();
+    }
+
+    public function ConsentEvents()
+    {
+        return $this->hasMany(CrmLeadConsentEvent::class, 'lead_id');
     }
 
     public function duplicateOf()

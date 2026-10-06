@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Support\BlogHtmlSanitizer;
 use DOMDocument;
 use DOMElement;
 use Illuminate\Support\Str;
@@ -36,7 +37,9 @@ class BlogContentRenderer
 
         $rendered_html = Str::markdown($prepared_content);
 
-        return $this->RestoreSafeYoutubeIframes((string) $rendered_html, $safe_iframe_html_by_token);
+        return BlogHtmlSanitizer::Sanitize(
+            $this->RestoreSafeYoutubeIframes((string) $rendered_html, $safe_iframe_html_by_token)
+        );
     }
 
     private function ExtractSafeYoutubeIframes(string $content): array

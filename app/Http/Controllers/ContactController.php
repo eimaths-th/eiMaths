@@ -34,6 +34,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 use Carbon\Carbon;
 use App\Domain\Affiliate\Services\AffiliateAttributionService;
@@ -294,7 +295,7 @@ class ContactController extends Controller
 
         if ($request->ajax()) {
             //sleep(2);
-            $book_receipt_summary = DB::table('orders')
+            $book_receipt_summary = Order::query()
                 ->join('order_detail_lists', 'orders.id', '=', 'order_detail_lists.order_id')
                 ->select('orders.cid as student_id')
                 ->selectRaw("SUM(CASE WHEN TRIM(COALESCE(order_detail_lists.book, '')) <> '' THEN 1 ELSE 0 END) as book_receipt_total_count")
@@ -1485,7 +1486,8 @@ class ContactController extends Controller
             'password.required' => __('students.login.validation.password_required'),
         ]);
 
-        $student = Contact::where('code', $request->code)->first();
+        $student_ids = DB::table('contacts')->where('code', $request->code)->limit(2)->pluck('id');
+        $student = $student_ids->count() === 1 ? Contact::find($student_ids->first()) : null;
         if ($student && Hash::check($request->password, $student->password)) {
             Auth::guard('student')->login($student);
             $student = Auth::guard('student')->user();
@@ -1560,6 +1562,7 @@ class ContactController extends Controller
         // dd($request->all());
         $rules = [
             'name' => 'required|string|max:255|unique:contacts,name,' . $id,
+            'code' => ['nullable', 'string', 'max:255'],
             'start_date' => 'required|string|max:10',
             //'start_term' => 'required',
             'school' => 'required|string|max:255',
@@ -1569,6 +1572,10 @@ class ContactController extends Controller
             //'postcode' => 'integer|max:10',
 
         ];
+
+        if ($request->filled('code') && $request->get('code') !== Contact::whereKey($id)->value('code')) {
+            $rules['code'][] = Rule::unique('contacts', 'code')->ignore($id);
+        }
 
 
         $validator = Validator::make($request->all(), $rules, [

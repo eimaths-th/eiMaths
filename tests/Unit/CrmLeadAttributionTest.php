@@ -4,6 +4,7 @@ namespace Tests\Unit;
 
 use App\Models\CrmLead;
 use App\Services\CrmLeadNotificationService;
+use App\Services\CrmLeadConsentService;
 use App\Services\CrmLeadService;
 use PHPUnit\Framework\TestCase;
 use ReflectionMethod;
@@ -28,7 +29,10 @@ class CrmLeadAttributionTest extends TestCase
             'last_touch_source' => 'new_customer_line_oa',
         ];
 
-        $service = new CrmLeadService($this->createMock(CrmLeadNotificationService::class));
+        $service = new CrmLeadService(
+            $this->createMock(CrmLeadNotificationService::class),
+            $this->createMock(CrmLeadConsentService::class)
+        );
         $method = new ReflectionMethod($service, 'mergeLeadData');
         $method->setAccessible(true);
 
@@ -52,7 +56,10 @@ class CrmLeadAttributionTest extends TestCase
             'last_touch_source' => 'new_customer_line_oa',
         ];
 
-        $service = new CrmLeadService($this->createMock(CrmLeadNotificationService::class));
+        $service = new CrmLeadService(
+            $this->createMock(CrmLeadNotificationService::class),
+            $this->createMock(CrmLeadConsentService::class)
+        );
         $method = new ReflectionMethod($service, 'mergeLeadData');
         $method->setAccessible(true);
 

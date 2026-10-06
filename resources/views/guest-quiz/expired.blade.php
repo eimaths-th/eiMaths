@@ -43,7 +43,7 @@
                     </div>
                     <div style="display: flex; align-items: center; padding: 10px 16px; background: rgba(255, 255, 255, 0.6); border-radius: 10px; transition: all 0.3s ease;" onmouseover="this.style.background='rgba(255, 255, 255, 0.9)';" onmouseout="this.style.background='rgba(255, 255, 255, 0.6)';">
                         <i class="fab fa-line" style="color: #00c300; margin-right: 12px; font-size: 20px; text-align: center;"></i>
-                        <a href="https://lin.ee/TqNbyqr" target="_blank" style="color: #92400e; text-decoration: none; font-weight: 600; font-size: 15px; transition: color 0.3s ease;" onmouseover="this.style.color='#00c300';" onmouseout="this.style.color='#92400e';">@eiMaths</a>
+                        <a href="https://lin.ee/TqNbyqr" target="_blank" style="color: #92400e; text-decoration: none; font-weight: 600; font-size: 15px; transition: color 0.3s ease;" onmouseover="this.style.color='#00c300';" onmouseout="this.style.color='#92400e';">@eimaths-th</a>
                     </div>
                     <div style="display: flex; align-items: center; padding: 10px 16px; background: rgba(255, 255, 255, 0.6); border-radius: 10px; transition: all 0.3s ease;" onmouseover="this.style.background='rgba(255, 255, 255, 0.9)';" onmouseout="this.style.background='rgba(255, 255, 255, 0.6)';">
                         <i class="fab fa-facebook" style="color: #1877f2; margin-right: 12px; font-size: 20px; text-align: center;"></i>
