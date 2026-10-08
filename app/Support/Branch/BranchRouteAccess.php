@@ -57,6 +57,10 @@ final class BranchRouteAccess
             if (in_array($method, ['coursespendingstore', 'uploadslip', 'senmail'], true)) {
                 return; // Public application-token checks are handled by that flow.
             }
+            if ($method === 'catalog') {
+                abort_unless($actor->can('course-list') || (BranchAccess::isCentral($actor) && $actor->can('course-manage')), 403);
+                return;
+            }
             if (str_contains($method, 'pending') || $method === 'fetchslip' || $method === 'getcheckrefstudnet') {
                 $prefixes[$controller] = 'affiliate-course-application';
             } else {

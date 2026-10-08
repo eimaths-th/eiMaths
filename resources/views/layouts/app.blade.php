@@ -276,18 +276,8 @@
     }
 
 
-    // Get user's location and update weather
-    if ('geolocation' in navigator) {
-        navigator.geolocation.getCurrentPosition(position => {
-            const latitude = position.coords.latitude;
-            const longitude = position.coords.longitude;
-            updateWeather(latitude, longitude);
-        }, error => {
-            console.error('Error getting location:', error);
-        });
-    } else {
-        console.error('Geolocation is not available.');
-    }
+    // Location/weather widgets are hidden in the footer, so the shared layout
+    // must not request browser geolocation on every back-office page.
     //updateWeather('14.683409', '100.706897');
     //getLocationAndWeather();
 

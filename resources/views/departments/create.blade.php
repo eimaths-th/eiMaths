@@ -56,10 +56,11 @@
                             <strong><i class="fas fa-eye"></i> {{ __('centre-management.centres.modal.status') }}:</strong>
                             <br />
                             <div class="custom-control custom-switch">
-                                {{ Form::checkbox('status', '1', false, ['id' => 'customCheckbox1', 'class' => 'custom-control-input name']) }}
+                                {{ Form::checkbox('status', '1', true, ['id' => 'customCheckbox1', 'class' => 'custom-control-input name']) }}
                                 <label for="customCheckbox1" class="custom-control-label">
                                     {{ __('centre-management.centres.modal.active') }}</label>
                             </div>
+                            <small class="form-text text-muted">{{ __('centre-management.centres.modal.status_help') }}</small>
                         </div>
                     </div>
                 </div>

@@ -169,6 +169,7 @@ Route::group(['middleware' => ['auth', 'affiliate.redirect']], function () {
     Route::put('/telegram-setting/{id}/status', [TelegramSettingController::class, 'updateStatus'])->name('telegram-setting.updateStatus');
     Route::post('/telegram-setting/{id}/test', [TelegramSettingController::class, 'testNotification'])->name('telegram-setting.test');
 
+    Route::get('/course/catalog', [CourseController::class, 'catalog'])->name('course.catalog');
     Route::get('/course/categories', [CourseController::class, 'categories'])->name('categories.index');
     Route::post('/course/categories-store', [CourseController::class, 'categoriesStore'])->name('categories.store');
 

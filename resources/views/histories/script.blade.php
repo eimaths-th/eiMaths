@@ -707,7 +707,7 @@
                     $('#vteacher_name').html(response.teacher);
                     $('#viewLV').val(response.history.level_name);
                     $('#viewTerm').val(response.history.term);
-                    $('#viewBook').val(response.history.bookuse);
+                    $('#viewBook').val(response.bookuse_name);
                     $('#viewCourseRemaining').val(response.history.course_remaining);
                     $('#viewDate').val(response.history.date);
                     $('#ViewStartTime').val(response.history.stime);

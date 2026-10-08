@@ -1,6 +1,15 @@
 <?php
 
 return [
+    'catalog' => [
+        'title' => 'Course Catalog',
+        'read_only' => 'Active public courses. Only HQ can change the shared course catalog.',
+        'course' => 'Course',
+        'category' => 'Category',
+        'level' => 'Level',
+        'price' => 'Price (THB)',
+        'empty' => 'No active courses found.',
+    ],
     'categories' => [
         'title' => 'Category',
         'form' => [

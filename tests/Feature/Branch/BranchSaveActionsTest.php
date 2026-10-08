@@ -135,4 +135,24 @@ class BranchSaveActionsTest extends TestCase
         $this->actingAs($actor)->putJson('/history/update/'.$history->id, ['level_id' => $level->id, 'level_name' => $level->name, 'term' => $term->id, 'bookuse' => $book->id, 'teacher_id' => $actor->id, 'date' => '2026-10-06', 'stime' => '10:00', 'etime' => '11:00', 'start_date' => '2026-10-01', 'end_date' => '2026-12-01', 'comment' => 'New note'])->assertOk()->assertJsonStructure(['success']);
         $this->assertSame('New note', $history->fresh()->comment);
     }
+
+    public function test_history_displays_book_name_for_stored_book_id(): void
+    {
+        [$branch, $actor] = $this->setupBranch();
+        $actor->givePermissionTo(Permission::findOrCreate('history-list', 'web'));
+        [$student, $level, $term, $book] = $this->student($branch);
+        $history = Histrories::create([
+            'centre' => $branch->id, 'student_id' => $student->id, 'teacher_id' => $actor->id,
+            'level_id' => $level->id, 'level_name' => $level->name, 'term' => $term->id,
+            'bookuse' => $book->id, 'course_remaining' => 10, 'date' => '2026-10-06',
+            'stime' => '10:00', 'etime' => '11:00', 'start_date' => '2026-10-01', 'end_date' => '2026-12-01',
+            'comment' => '', 'signature' => '',
+        ]);
+
+        $this->actingAs($actor)->getJson('/histories?draw=1&start=0&length=10', [
+            'X-Requested-With' => 'XMLHttpRequest',
+        ])->assertOk()->assertJsonPath('data.0.bookuse', $book->name);
+        $this->getJson('/histories/show/'.$history->id)->assertOk()
+            ->assertJsonPath('bookuse_name', $book->name);
+    }
 }

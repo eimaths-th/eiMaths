@@ -217,7 +217,7 @@ class HistoriesController extends Controller
         if ($request->ajax()) {
 
             // ✅ ใช้ with() preload ความสัมพันธ์ เพื่อลดจำนวน query
-            $datass = Histrories::with(['student', 'department']);
+            $datass = Histrories::with(['student', 'department', 'booku']);
 
             // ✅ จำกัดศูนย์ตามสิทธิ์
             if (!Gate::allows('all-centre')) {
@@ -266,7 +266,7 @@ class HistoriesController extends Controller
                     return $row->department ? $row->department->name : 'N/A';
                 })
                 ->editColumn('bookuse', function ($row) {
-                    return $row->bookuse ?? 'N/A';
+                    return $row->booku?->name ?? $row->bookuse ?? 'N/A';
                 })
                 ->editColumn('code', function ($row) {
                     return $row->student ? $row->student->code : 'N/A';
@@ -925,6 +925,7 @@ class HistoriesController extends Controller
 
         return response()->json([
             'history' => $history,
+            'bookuse_name' => $history->booku?->name ?? $history->bookuse,
             'centre' => $history->department->name,
             'student' => $student_reference?->student_code ?? __('students.check_in.student_not_found'),
             'teacher' => $teacher_name,

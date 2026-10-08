@@ -130,6 +130,27 @@ class BranchIsolationTest extends TestCase
         $this->actingAs($actor)->getJson('/users')->assertForbidden();
     }
 
+    public function test_branch_course_catalog_requires_its_module_and_permission_without_granting_course_management(): void
+    {
+        $actor = $this->actor(permissions: ['course-list']);
+        $this->a->update(['enabled_modules' => ['students']]);
+        $this->actingAs($actor)->get('/course/catalog')->assertForbidden();
+
+        $this->a->update(['enabled_modules' => ['students', 'courses']]);
+        $this->get('/course/catalog')->assertOk()->assertSee(__('course.catalog.title'));
+        $this->get('/course/list')->assertForbidden();
+        $this->post('/course/categories-store', [])->assertForbidden();
+    }
+
+    public function test_centre_page_hides_create_and_archive_actions_for_branch_staff(): void
+    {
+        $actor = $this->actor(permissions: ['centre-manage']);
+        $this->actingAs($actor)->get('/departments')->assertOk()
+            ->assertDontSee('id="CreateButton"', false)
+            ->assertDontSee('class="btn btn-danger delete_all_button"', false)
+            ->assertDontSee('id="check-all"', false);
+    }
+
     public function test_archived_branch_cannot_use_existing_session(): void
     {
         $actor = $this->actor(permissions: ['user-list']);

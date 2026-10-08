@@ -46,6 +46,7 @@ return [
         'parents' => 'Parents',
         'eiform' => 'eiForm Registrations',
         'course_management' => 'Course Management',
+        'course_catalog' => 'Course Catalog',
         'course_categories' => 'Course Categories',
         'courses' => 'Courses',
         'course_levels' => 'Course Levels',

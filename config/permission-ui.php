@@ -62,7 +62,7 @@ return [
             'label' => 'เนื้อหาและหลักสูตรกลาง',
             'description' => 'Blog FAQ และข้อมูลหลักสูตรส่วนกลาง',
             'icon' => 'fas fa-book-open',
-            'permissions' => ['course-manage'],
+            'permissions' => ['course-list', 'course-manage'],
             'prefixes' => ['blog-', 'faq-'],
         ],
         'settings' => [
@@ -89,6 +89,7 @@ return [
         'view-log' => 'ดูประวัติการใช้งาน',
         'all-centre' => 'เข้าถึงข้อมูลทุกสาขา',
         'course-manage' => 'จัดการหลักสูตรกลาง',
+        'course-list' => 'ดูหลักสูตรที่เปิดเผย',
         'add-permission' => 'เพิ่ม Permission',
         'edit-permission' => 'แก้ไข Permission',
         'delete-permission' => 'ลบ Permission',

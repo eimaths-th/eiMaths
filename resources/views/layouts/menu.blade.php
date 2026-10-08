@@ -15,6 +15,7 @@
         && !$affiliate_portal_can_access;
 
     $show_course_menu = $menu_can('course-manage')
+        || $menu_can('course-list')
         || (!$menu_is_central && $menu_can('teaching-list'));
     $show_finance_menu = $menu_can('receipt-list')
         || ((bool) config('financial-documents.credit_note.enabled') && $menu_can('credit-note-list'))
@@ -257,6 +258,14 @@
             <i class="fas fa-angle-left right"></i>
         </a>
         <ul class="nav nav-treeview">
+            @can('course-list')
+                <li class="nav-item">
+                    <a href="{{ route('course.catalog') }}" class="nav-link {{ $menu_route === 'course.catalog' ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-book-open"></i>
+                        <p>{{ __('navigation.menu.course_catalog') }}</p>
+                    </a>
+                </li>
+            @endcan
             @can('course-manage')
                 <li class="nav-item">
                     <a href="{{ route('categories.index') }}"

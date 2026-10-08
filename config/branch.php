@@ -11,7 +11,7 @@ return [
         'dashboard' => 'ภาพรวม', 'students' => 'นักเรียนและผู้ปกครอง',
         'teaching' => 'ประวัติและตารางเรียน', 'finance' => 'การเงิน',
         'stock' => 'สต็อกและหนังสือ', 'crm' => 'CRM และการสมัครเรียน',
-        'quiz' => 'แบบทดสอบ', 'users' => 'ผู้ใช้และบทบาท',
+        'quiz' => 'แบบทดสอบ', 'courses' => 'หลักสูตร', 'users' => 'ผู้ใช้และบทบาท',
         'departments' => 'แผนก', 'content' => 'บทความและคำถามที่พบบ่อย',
     ],
     'default_modules' => ['dashboard', 'students', 'teaching', 'finance', 'stock', 'users', 'departments'],
@@ -21,7 +21,7 @@ return [
         'order-' => 'finance', 'receipt-' => 'finance', 'invoice-' => 'finance', 'credit-note-' => 'finance',
         'product-' => 'stock', 'book-' => 'stock', 'crm-' => 'crm',
         'affiliate-course-application-' => 'crm',
-        'quiz-' => 'quiz', 'user-' => 'users', 'role-' => 'users', 'department-' => 'departments',
+        'quiz-' => 'quiz', 'course-list' => 'courses', 'user-' => 'users', 'role-' => 'users', 'department-' => 'departments',
         'blog-' => 'content', 'faq-' => 'content',
     ],
     'central_permissions' => [

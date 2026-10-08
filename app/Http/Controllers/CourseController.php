@@ -58,6 +58,19 @@ class CourseController extends Controller
         $this->image_conversion_service = $image_conversion_service;
         $this->affiliate_attribution_service = $affiliate_attribution_service;
     }
+    public function catalog()
+    {
+        $courses = Course::query()
+            ->with(['category', 'courseLevel'])
+            ->where('type', 1)
+            ->where('status', 1)
+            ->where('scope', 1)
+            ->orderBy('title')
+            ->paginate(20);
+
+        return view('course.catalog', compact('courses'));
+    }
+
     public function coursePageSection(Request $request)
     {
         $query = Course::with([

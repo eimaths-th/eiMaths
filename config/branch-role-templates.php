@@ -8,7 +8,7 @@ $branch = array_values(array_unique(array_merge(
     $teacher, ...array_map($crud, ['student', 'parent', 'history', 'teaching', 'user', 'role', 'department', 'product', 'order', 'receipt', 'invoice', 'affiliate-course-application'])
 )));
 $branch = array_merge($branch, [
-    'centre-manage', 'order-show', 'receipt-show', 'invoice-show', 'product-show',
+    'centre-manage', 'course-list', 'order-show', 'receipt-show', 'invoice-show', 'product-show',
     'student-export', 'receipt-export', 'order-export', 'invoice-export',
     'crm-leads-menu-view', 'crm-leads-create', 'crm-leads-edit', 'crm-leads-delete',
     'credit-note-list', 'credit-note-show', 'credit-note-create', 'credit-note-edit', 'credit-note-issue', 'credit-note-cancel',

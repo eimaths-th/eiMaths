@@ -46,6 +46,7 @@ return [
         'parents' => 'ผู้ปกครอง',
         'eiform' => 'ใบสมัคร eiForm',
         'course_management' => 'จัดการคอร์สเรียน',
+        'course_catalog' => 'รายการคอร์สเรียน',
         'course_categories' => 'หมวดหมู่คอร์ส',
         'courses' => 'คอร์สเรียน',
         'course_levels' => 'ระดับคอร์ส',

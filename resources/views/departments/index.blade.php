@@ -18,22 +18,10 @@
                         @can('centre-create')
                             <button type="button" class="btn btn-success" id="CreateButton">
                                 <i class="fas fa-list-ol"></i> {{ __('centre-management.centres.actions.add') }}</button>
-                        @else
-                            <span class="d-inline-block" tabindex="0" data-toggle="tooltip" data-placement="bottom"
-                                title="{{ __('centre-management.messages.no_permission') }}">
-                                <button type="button" class="btn btn-success disabled">
-                                    <i class="fas fa-list-ol"></i> {{ __('centre-management.centres.actions.add') }}</button>
-                            </span>
                         @endcan &nbsp;
 
                         @can('centre-delete')
                             <button type="button" class="btn btn-danger delete_all_button"><i class="fa fa-trash"></i> {{ __('centre-management.centres.actions.archive_selected') }}</button>
-                        @else
-                            <span class="d-inline-block" tabindex="0" data-toggle="tooltip" data-placement="bottom"
-                                title="{{ __('centre-management.messages.no_permission') }}">
-                                <button type="button" class="btn btn-danger disabled"><i class="fa fa-trash"></i>
-                                    {{ __('centre-management.centres.actions.archive_selected') }}</button>
-                            </span>
                         @endcan
                     </ol>
 
@@ -77,7 +65,7 @@
                                 <table id="Listview" class="table table-bordered table-striped table-hover">
                                     <thead>
                                         <tr>
-                                            <th><input type="checkbox" id="check-all" class="flat"></th>
+                                            <th>@can('centre-delete')<input type="checkbox" id="check-all" class="flat">@endcan</th>
                                             <th>{{ __('centre-management.centres.table.name') }}</th>
                                             <th>{{ __('centre-management.centres.table.code') }}</th>
                                             <th>{{ __('centre-management.centres.table.status') }}</th>
