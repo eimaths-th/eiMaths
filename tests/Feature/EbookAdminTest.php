@@ -25,7 +25,7 @@ class EbookAdminTest extends TestCase
         parent::setUp();
         $this->root = storage_path('framework/testing/ebook-admin-'.Str::uuid());
         File::makeDirectory($this->root, 0700, true);
-        config(['ebook.enabled' => true, 'ebook.root' => $this->root]);
+        config(['ebook.root' => $this->root]);
         DemoData::schema(); DemoData::seed();
     }
 

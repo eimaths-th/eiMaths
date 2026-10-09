@@ -46,7 +46,7 @@ php -d extension=pdo_sqlite -d extension=sqlite3 .scripts/ebook-import-k1.php --
 
 App ใช้ API พอร์ต 8000 เป็นค่าเริ่มต้นและใช้ MySQL เดียวกับหลังบ้านหลัก หนังสือ งานนักเรียน และ Activity Log จึงดูได้ที่ `/ebooks` โดยตรง ฐาน SQLite Demo พอร์ต 8787 ยังเลือกใช้ได้เฉพาะเมื่อกำหนด EBOOK_API_BASE เอง งานและ token ใน App แยกตามระบบปลายทางเพื่อไม่ให้ข้อมูลปะปน
 
-โมดูลเปิดโดยค่าเริ่มต้นเฉพาะ `APP_ENV=local` เมื่อไม่ได้ตั้ง `EBOOK_ENABLED` ไว้ และติดตั้ง migration เฉพาะ E-book ในฐานพัฒนาแล้ว ไม่มีการแก้ `.env` จริง
+E-book เป็นโมดูลปกติทั้ง local, test และ production หลัง deploy และรัน migration ไม่ต้องตั้ง `EBOOK_ENABLED` อีก ค่าเดิมใน environment ไม่มีผลต่อการเปิดโมดูล เมนูและหน้าจัดการตรวจ Role/Permission ส่วน API ตรวจบัญชีนักเรียน Session และสิทธิ์หนังสือเช่นเดิม SystemAdmin ของ HQ เข้าจัดการได้โดยไม่ต้องกำหนดสิทธิ์ E-book รายข้อ
 
 ใช้คำสั่งนี้แทน `php artisan serve` เมื่อต้องการอัปโหลด PDF สูงสุด 20 MB (หยุดเซิร์ฟเวอร์เดิมบนพอร์ต 8000 ก่อน):
 
@@ -74,8 +74,8 @@ php -d extension=pdo_sqlite -d extension=sqlite3 .scripts/ebook-demo-release-ses
 ## เปิดใช้กับระบบจริงภายหลัง
 
 1. ติดตั้ง Poppler (`pdfinfo`, `pdftoppm`) และ PHP GD / mbstring / fileinfo
-2. ตั้ง `EBOOK_ENABLED=true` และ path ของ Poppler ผ่าน environment ของระบบที่จะใช้ทดสอบจริง ตรวจสำรองฐานข้อมูลก่อน migration
-3. รัน migration ของ E-book ทั้ง `2026_10_08_000001_create_ebook_tables.php` และ `2026_10_09_000001_improve_ebook_import_and_activity.php` ตามลำดับ
+2. กำหนด path ของ Poppler เฉพาะเมื่อไม่ได้อยู่ใน PATH ของเซิร์ฟเวอร์ ไม่ต้องเพิ่มค่าเปิดโมดูลใน `.env`
+3. หลัง pull โค้ดและสำรองฐานข้อมูล รัน `php artisan migrate --force` และ `php artisan optimize:clear` ตามขั้นตอน deploy ปกติ รวม migration `2026_10_09_000002_register_ebook_permissions.php` ที่เพิ่มสิทธิ์ E-book หากระบบใช้ config cache ให้รัน `php artisan config:cache` ใหม่
 4. ใช้ queue แบบ asynchronous และ worker `php artisan queue:work --queue=ebooks --timeout=1200 --tries=1` ตั้ง retry_after มากกว่า timeout
 5. เปิดหลังบ้าน `/ebooks` เลือกระดับ → เทอม → รหัสรายเล่มจากรายการลงทะเบียนเดิม ระบบผูกชุดเต็มและครึ่งเทอมให้อัตโนมัติ ไม่ต้องเลือกนักเรียนหรือกรอกรหัส/ชื่อซ้ำ
 6. Flutter รุ่นเชื่อมระบบจริงต้องกำหนด HTTPS URL ด้วย `EBOOK_API_BASE` และใช้บัญชีนักเรียนจริงที่มีรหัสผ่านในระบบเดิม

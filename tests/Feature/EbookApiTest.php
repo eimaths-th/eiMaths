@@ -20,7 +20,7 @@ class EbookApiTest extends TestCase
         $this->device = (string) Str::uuid();
         $this->root = storage_path('framework/testing/ebook-'.Str::uuid());
         File::makeDirectory($this->root, 0700, true);
-        config(['ebook.enabled' => true, 'ebook.root' => $this->root]);
+        config(['ebook.root' => $this->root]);
         DemoData::schema(); DemoData::seed();
         foreach ([1, 2] as $id) {
             DB::table('ebook_versions')->where('id', $id)->update(['status' => 'ready', 'page_count' => 1, 'published_at' => now()]);
@@ -54,6 +54,17 @@ class EbookApiTest extends TestCase
             'id' => (string) Str::uuid(), 'type' => 'pen', 'x' => .2, 'y' => .4, 'w' => .3, 'h' => .1,
             'rotation' => 0, 'color' => 4280572326, 'strokeWidth' => .004, 'points' => [[0, 0], [1, 1]],
         ]]]];
+    }
+
+    public function test_production_api_uses_student_authentication_without_module_activation(): void
+    {
+        // An old cached config must not disable the module after deployment.
+        config(['app.env' => 'production', 'ebook.enabled' => false]);
+        $this->getJson('/api/ebook/v1/books')->assertUnauthorized();
+        $this->postJson('/api/ebook/v1/login', [])->assertUnprocessable()
+            ->assertJsonValidationErrors(['code', 'password', 'device_id', 'device_label']);
+        $this->authenticate();
+        $this->getJson('/api/ebook/v1/books')->assertOk();
     }
 
     public function test_catalog_uses_existing_registration_and_protects_unregistered_books(): void

@@ -10,7 +10,6 @@ final class AuthenticateEbook
 {
     public function handle(Request $request, Closure $next)
     {
-        abort_unless(config('ebook.enabled'), 404);
         $token = $request->bearerToken();
         abort_unless($token && strlen($token) === 64, 401, 'กรุณาเข้าสู่ระบบอีกครั้ง');
         $session = DB::table('ebook_sessions')->where('token_hash', hash('sha256', $token))

@@ -17,7 +17,7 @@ final class DemoEnvironment
             'database.connections.sqlite.foreign_key_constraints' => true,
             'session.driver' => 'file', 'session.cookie' => 'eimaths_ebook_demo', 'session.secure' => false,
             'cache.default' => 'file', 'cache.prefix' => 'eimaths_ebook_demo_',
-            'queue.default' => 'sync', 'ebook.enabled' => true, 'ebook.demo' => true,
+            'queue.default' => 'sync', 'ebook.demo' => true,
             'ebook.root' => storage_path('app/ebook-demo-private'),
             'sanctum.stateful' => [],
         ]);

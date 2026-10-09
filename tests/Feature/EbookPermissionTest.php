@@ -8,6 +8,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
@@ -21,7 +22,7 @@ class EbookPermissionTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        config(['ebook.enabled' => true, 'ebook.demo' => false]);
+        config(['ebook.demo' => false]);
         Department::forceCreate(['id' => Department::HQ_ID, 'name' => 'HQ', 'code' => 'HQ', 'status' => 1]);
         $this->branch = Department::create(['name' => 'Branch A', 'code' => 'BRA', 'status' => 1,
             'enabled_modules' => ['courses', 'users', 'students']]);
@@ -49,6 +50,29 @@ class EbookPermissionTest extends TestCase
         $this->post('/ebooks/versions/1/publish')->assertForbidden();
         $this->get('/ebooks/versions/1/preview')->assertForbidden();
         $this->get('/ebooks/versions/1/image')->assertForbidden();
+    }
+
+    public static function deploymentEnvironments(): array
+    {
+        return [['local'], ['testing'], ['staging'], ['production']];
+    }
+
+    #[DataProvider('deploymentEnvironments')]
+    public function test_system_admin_sees_the_menu_and_accesses_ebooks_without_module_activation(string $environment): void
+    {
+        // An old cached config must not disable the module after deployment.
+        config(['app.env' => $environment, 'ebook.enabled' => false]);
+        $this->actingAs($this->staff([], 'SystemAdmin', Department::HQ_ID));
+        $this->assertStringContainsString(route('ebooks.index'), view('layouts.menu', ['book_shipment_alert_role' => null])->render());
+        foreach (['library', 'import', 'history', 'activity'] as $section) {
+            $this->get('/ebooks?section='.$section)->assertOk()->assertViewHas('section', $section);
+        }
+        $this->postJson('/ebooks/import')->assertUnprocessable()->assertJsonValidationErrors(['pdf']);
+
+        $this->actingAs($this->staff());
+        $this->get('/ebooks')->assertForbidden();
+        $this->assertManagementDenied();
+        $this->assertStringNotContainsString(route('ebooks.index'), view('layouts.menu', ['book_shipment_alert_role' => null])->render());
     }
 
     public function test_legacy_permissions_alone_no_longer_authorize_the_menu_or_direct_urls(): void
@@ -102,7 +126,7 @@ class EbookPermissionTest extends TestCase
         $this->get('/ebooks?section=activity')->assertForbidden();
     }
 
-    public function test_branch_users_cannot_use_central_management_and_modules_and_feature_flags_are_enforced(): void
+    public function test_branch_users_cannot_use_central_management_and_branch_modules_are_enforced(): void
     {
         $user = $this->staff(['ebook-manage', 'ebook-activity-list']);
         $this->actingAs($user);
@@ -112,10 +136,9 @@ class EbookPermissionTest extends TestCase
         $this->get('/ebooks')->assertForbidden();
         $this->assertStringNotContainsString(route('ebooks.index'), view('layouts.menu', ['book_shipment_alert_role' => null])->render());
         $this->branch->update(['enabled_modules' => ['courses']]);
-        config(['ebook.enabled' => false]);
-        $this->get('/ebooks')->assertNotFound();
+        $this->get('/ebooks')->assertOk()->assertViewHas('section', 'activity');
         $this->postJson('/ebooks/import')->assertForbidden();
-        $this->assertStringNotContainsString(route('ebooks.index'), view('layouts.menu', ['book_shipment_alert_role' => null])->render());
+        $this->assertStringContainsString(route('ebooks.index'), view('layouts.menu', ['book_shipment_alert_role' => null])->render());
     }
 
     public function test_role_management_localizes_the_group_and_granting_or_revoking_access_takes_effect(): void

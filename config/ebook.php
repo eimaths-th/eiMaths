@@ -1,9 +1,7 @@
 <?php
 
 return [
-    // Local development can use the module immediately after its migration.
-    // Other environments still require an explicit EBOOK_ENABLED=true.
-    'enabled' => (bool) env('EBOOK_ENABLED', env('APP_ENV', 'production') === 'local'),
+    // Available in every environment; staff permissions and student sessions control access.
     'demo' => false,
     'root' => storage_path('app/private/ebooks'),
     'pdfinfo' => env('EBOOK_PDFINFO', 'pdfinfo'),

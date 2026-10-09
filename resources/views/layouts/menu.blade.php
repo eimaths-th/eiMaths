@@ -14,9 +14,8 @@
         && $affiliate_employee_eligibility_service->IsEligible($menu_user)
         && !$affiliate_portal_can_access;
 
-    $show_ebook_menu = config('ebook.enabled') && (
-        ($menu_is_central && $menu_can('ebook-manage')) || $menu_can('ebook-activity-list')
-    );
+    $show_ebook_menu = ($menu_is_central && $menu_can('ebook-manage'))
+        || $menu_can('ebook-activity-list');
     $show_course_menu = $show_ebook_menu || $menu_can('course-manage')
         || $menu_can('course-list')
         || (!$menu_is_central && $menu_can('teaching-list'));

@@ -33,7 +33,6 @@ final class EbookAdminController extends Controller
 
     public function index(Request $request, BookCatalog $catalog)
     {
-        abort_unless(config('ebook.enabled'), 404);
         $manage = $this->canManage($request);
         $viewActivity = $this->canViewActivity($request);
         abort_unless($manage || $viewActivity, 403);
@@ -90,7 +89,7 @@ final class EbookAdminController extends Controller
 
     public function upload(Request $request, BookCatalog $catalog)
     {
-        abort_unless(config('ebook.enabled') && $this->canManage($request), 403);
+        abort_unless($this->canManage($request), 403);
         $data = $request->validate(['catalog_key' => 'required|string|max:80', 'pdf' => 'required|file|mimes:pdf|max:20480'], __('ebooks.validation'), __('ebooks.attributes'));
         $volume = $catalog->selected($data['catalog_key']);
         $actor = $this->actor($request);
@@ -135,7 +134,7 @@ final class EbookAdminController extends Controller
 
     public function publish(Request $request, int $version)
     {
-        abort_unless(config('ebook.enabled') && $this->canManage($request), 403);
+        abort_unless($this->canManage($request), 403);
         DB::transaction(function () use ($request, $version) {
             $item = DB::table('ebook_versions')->where('id', $version)->where('status', 'ready')->first();
             abort_unless($item, 422, __('ebooks.messages.not_ready'));
@@ -154,7 +153,7 @@ final class EbookAdminController extends Controller
 
     public function preview(Request $request, int $version)
     {
-        abort_unless(config('ebook.enabled') && $this->canManage($request), 403);
+        abort_unless($this->canManage($request), 403);
         $edition = DB::table('ebook_versions')->where('id', $version)->where('status', 'ready')->first();
         abort_unless($edition, 404);
         $book = DB::table('ebook_books')->find($edition->book_id);
@@ -166,7 +165,7 @@ final class EbookAdminController extends Controller
 
     public function previewImage(Request $request, int $version)
     {
-        abort_unless(config('ebook.enabled') && $this->canManage($request), 403);
+        abort_unless($this->canManage($request), 403);
         $page = DB::table('ebook_pages')->where('version_id', $version)->where('number', max(1, $request->integer('page', 1)))->first();
         abort_unless($page, 404);
         return response()->file(config('ebook.root').'/'.$page->image_path, ['Cache-Control' => 'private, no-store']);

@@ -14,7 +14,6 @@ final class EbookAuthController extends Controller
 {
     public function login(Request $request)
     {
-        abort_unless(config('ebook.enabled'), 404);
         $data = $request->validate([
             'code' => 'required|string|max:60', 'password' => 'required|string|max:200',
             'device_id' => 'required|uuid', 'device_label' => 'required|string|max:100',
