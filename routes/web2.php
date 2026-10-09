@@ -62,8 +62,6 @@ Route::group(['middleware' => ['auth', 'affiliate.redirect']], function () {
     Route::post('/daily_study', [App\Http\Controllers\DashboardController::class, 'daily_study'])->name('dashboard.daily_study');
 
 
-    Route::get('/generate-password-system', [App\Http\Controllers\HomeController::class, 'generate'])->name('generate.system');
-    Route::post('/generate-save', [App\Http\Controllers\HomeController::class, 'generate_save'])->name('generate.system.save');
     Route::get('/generate-password-student', [App\Http\Controllers\ContactController::class, 'gennerateStudent'])->name('generate.student');
     Route::post('/generate-password-student-save', [App\Http\Controllers\ContactController::class, 'gennerateStudentSave'])->name('generate.student.save');
     Route::post('/generate-password-student-reset', [App\Http\Controllers\ContactController::class, 'resetStudentPassword'])->name('generate.student.reset');

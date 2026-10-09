@@ -22,12 +22,12 @@ return [
         'product-' => 'stock', 'book-' => 'stock', 'crm-' => 'crm',
         'affiliate-course-application-' => 'crm',
         'quiz-' => 'quiz', 'course-list' => 'courses', 'user-' => 'users', 'role-' => 'users', 'department-' => 'departments',
-        'blog-' => 'content', 'faq-' => 'content',
+        'blog-' => 'content', 'faq-' => 'content', 'ebook-' => 'courses',
     ],
     'central_permissions' => [
         'all-centre', 'centre-create', 'centre-edit', 'centre-delete', 'branch-modules-manage',
         'branch-transfer', 'central-settings-manage', 'financial-settings-manage',
-        'integration-settings-manage', 'support-manage', 'course-manage',
+        'integration-settings-manage', 'support-manage', 'course-manage', 'ebook-manage',
     ],
     'owner_permissions' => ['add-permission', 'edit-permission', 'delete-permission', 'permission-manage'],
     // Affiliate administration is HQ-only except for course applications, which

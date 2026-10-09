@@ -32,4 +32,11 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+/storage/app/ebook-demo.sqlite*
+/storage/app/ebook-demo-private/
+/storage/app/private/ebooks/
+/storage/app/private/ebook-upgrade-backup-*/
+/tmp/ebook-main-qa-*/
+/tmp/ebook-demo/
+/tmp/ebook-storage-qa-*/
 composer.lock

@@ -9,6 +9,8 @@ use App\Http\Controllers\Api\N8nLineCrmController;
 use App\Http\Controllers\FaqController;
 use App\Http\Controllers\TrackingLinkController;
 
+require __DIR__.'/ebook-api.php';
+
 
 
 /*

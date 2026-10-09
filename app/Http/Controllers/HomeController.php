@@ -10,9 +10,7 @@ use Illuminate\Http\Request;
 use App\Models\Quiz;
 use App\Models\Test;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Validator;
 use Spatie\Permission\Models\Role;
 
 
@@ -59,29 +57,6 @@ class HomeController extends Controller
     {
         return view('home.blank');
     }
-    public function generate()
-    {
-        return view('users.generate');
-    }
-
-    public function generate_save(Request $request)
-    {
-        $validator =  Validator::make($request->all(), [
-
-            'password' => 'required',
-
-        ]);
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()->all()]);
-        }
-        $input = $request->all();
-        $password = Hash::make($input['password']);
-        return response()->json(['success' => 'Password Generated Success', 'generated' => $password]);
-    }
-
-
-
-
     public function index2()
     {
         $query = Quiz::whereHas('questions')

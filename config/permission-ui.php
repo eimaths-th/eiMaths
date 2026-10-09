@@ -65,6 +65,12 @@ return [
             'permissions' => ['course-list', 'course-manage'],
             'prefixes' => ['blog-', 'faq-'],
         ],
+        'ebooks' => [
+            'label' => 'E-book',
+            'description' => 'จัดการหนังสือดิจิทัลและดูประวัติการใช้งาน',
+            'icon' => 'fas fa-book-open',
+            'prefixes' => ['ebook-'],
+        ],
         'settings' => [
             'label' => 'การตั้งค่าระบบ',
             'description' => 'ค่ากลาง การเงิน การเชื่อมต่อ และงาน Support',
@@ -90,6 +96,8 @@ return [
         'all-centre' => 'เข้าถึงข้อมูลทุกสาขา',
         'course-manage' => 'จัดการหลักสูตรกลาง',
         'course-list' => 'ดูหลักสูตรที่เปิดเผย',
+        'ebook-manage' => 'จัดการ E-book (ส่วนกลาง)',
+        'ebook-activity-list' => 'ดูประวัติการใช้งาน E-book',
         'add-permission' => 'เพิ่ม Permission',
         'edit-permission' => 'แก้ไข Permission',
         'delete-permission' => 'ลบ Permission',

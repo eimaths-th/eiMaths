@@ -48,13 +48,6 @@ return [
             'copy' => 'คัดลอก',
             'submit' => 'ส่ง',
         ],
-        'generate' => [
-            'title' => 'สร้างรหัสผ่าน',
-            'password' => 'รหัสผ่าน',
-            'generated' => 'รหัสที่สร้าง',
-            'copied' => 'คัดลอกรหัสผ่านไปยังคลิปบอร์ดแล้ว!',
-            'copy_done' => 'คัดลอกแล้ว!',
-        ],
     ],
     'roles' => [
         'title' => 'จัดการบทบาท',
@@ -171,6 +164,10 @@ return [
         'next' => 'ถัดไป',
         'last' => 'หน้าสุดท้าย',
     ],
+    'permission_labels' => [
+        'ebook-manage' => 'จัดการ E-book (ส่วนกลาง)',
+        'ebook-activity-list' => 'ดูประวัติการใช้งาน E-book',
+    ],
     'groups' => [
         'overview' => ['label' => 'ภาพรวมและประวัติระบบ', 'description' => 'ภาพรวมและบันทึกการใช้งาน'],
         'branches' => ['label' => 'สาขาและแผนก', 'description' => 'จัดการสาขา แผนก โมดูล และการย้ายสังกัด'],
@@ -182,6 +179,7 @@ return [
         'crm' => ['label' => 'CRM Leads', 'description' => 'รายชื่อลูกค้า การติดตาม และการจัดการ Lead'],
         'affiliate' => ['label' => 'Affiliate', 'description' => 'สมาชิก ใบสมัครคอร์ส ค่าคอมมิชชัน การถอนเงิน และเนื้อหา Affiliate'],
         'content' => ['label' => 'เนื้อหาและหลักสูตรกลาง', 'description' => 'Blog FAQ และข้อมูลหลักสูตรส่วนกลาง'],
+        'ebooks' => ['label' => 'E-book', 'description' => 'จัดการคลังหนังสือ นำเข้า ดูตัวอย่าง และเผยแพร่ แยกสิทธิ์ดูประวัติการใช้งาน'],
         'settings' => ['label' => 'การตั้งค่าระบบ', 'description' => 'ค่ากลาง การเงิน การเชื่อมต่อ และงาน Support'],
         'other' => ['label' => 'สิทธิ์อื่น ๆ', 'description' => 'สิทธิ์ที่ยังไม่ได้จัดเข้าหมวดมาตรฐาน'],
     ],

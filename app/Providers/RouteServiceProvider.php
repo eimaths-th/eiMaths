@@ -25,6 +25,17 @@ class RouteServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        RateLimiter::for('ebook-login', function (Request $request) {
+            $code = is_string($request->input('code')) ? strtolower($request->input('code')) : '';
+            return [
+                Limit::perMinute(30)->by('ebook-login-ip:'.$request->ip()),
+                Limit::perMinute(6)->by('ebook-login-account:'.$request->ip().':'.hash('sha256', $code)),
+            ];
+        });
+        RateLimiter::for('ebook-api', function (Request $request) {
+            return Limit::perMinute(180)->by('ebook-api:'.($request->attributes->get('ebook_session')?->id ?? $request->ip()));
+        });
+
         RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
         });

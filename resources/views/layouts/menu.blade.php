@@ -14,7 +14,10 @@
         && $affiliate_employee_eligibility_service->IsEligible($menu_user)
         && !$affiliate_portal_can_access;
 
-    $show_course_menu = $menu_can('course-manage')
+    $show_ebook_menu = config('ebook.enabled') && (
+        ($menu_is_central && $menu_can('ebook-manage')) || $menu_can('ebook-activity-list')
+    );
+    $show_course_menu = $show_ebook_menu || $menu_can('course-manage')
         || $menu_can('course-list')
         || (!$menu_is_central && $menu_can('teaching-list'));
     $show_finance_menu = $menu_can('receipt-list')
@@ -44,7 +47,7 @@
         'contacts', 'guest.report', 'demo.list', 'discontinued', 'contacts.graduated',
         'histories.index', 'parent.index', 'ei_form.backEndIndex',
     ], true);
-    $course_menu_active = request()->routeIs('categories.*', 'course.*', 'TeachingPeriod.*');
+    $course_menu_active = request()->routeIs('categories.*', 'course.*', 'TeachingPeriod.*', 'ebooks.*');
     $finance_menu_active = request()->routeIs('receipts*', 'credit-notes.*', 'qrcode_payment.*', 'termfee*');
     $stock_menu_active = request()->routeIs('products*', 'book-shipments.*', 'incoming-book-shipments.*');
     $quiz_menu_active = request()->routeIs(
@@ -55,7 +58,7 @@
         'affiliate.admin.*', 'affiliate.finance.configuration.*', 'affiliate.withdrawals.admin.*',
         'affiliate-content-manage.*', 'courses.pending.*'
     );
-    $user_menu_active = request()->routeIs('users.*', 'roles.*', 'permission.*', 'generate.*', 'student.login');
+    $user_menu_active = request()->routeIs('users.*', 'roles.*', 'permission.*', 'generate.*');
     $centre_menu_active = request()->routeIs('departments*', 'positions*', 'branch-transfers.*');
     $system_menu_active = request()->routeIs('parameter*', 'line-api.*');
 @endphp
@@ -294,6 +297,14 @@
                         class="nav-link {{ request()->routeIs('TeachingPeriod.*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-calendar-alt"></i>
                         <p>{{ __('navigation.menu.teaching_periods') }}</p>
+                    </a>
+                </li>
+            @endif
+            @if ($show_ebook_menu)
+                <li class="nav-item">
+                    <a href="{{ route('ebooks.index') }}" class="nav-link {{ request()->routeIs('ebooks.*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-book-open"></i>
+                        <p>{{ __('ebooks.menu') }}</p>
                     </a>
                 </li>
             @endif
@@ -658,23 +669,10 @@
             @endif
             @can('user-list')
                 <li class="nav-item">
-                    <a href="{{ route('generate.system') }}"
-                        class="nav-link {{ $menu_route === 'generate.system' ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-unlock-alt"></i>
-                        <p>{{ __('navigation.menu.generate_staff_password') }}</p>
-                    </a>
-                </li>
-                <li class="nav-item">
                     <a href="{{ route('generate.student') }}"
                         class="nav-link {{ $menu_route === 'generate.student' ? 'active' : '' }}">
                         <i class="nav-icon fas fa-user-lock"></i>
                         <p title="{{ __('navigation.menu.generate_student_password') }}">{{ __('navigation.menu.generate_student_password_short') }}</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ route('student.login') }}" class="nav-link {{ $menu_route === 'student.login' ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-sign-in-alt"></i>
-                        <p>{{ __('navigation.menu.student_login') }}</p>
                     </a>
                 </li>
             @endcan

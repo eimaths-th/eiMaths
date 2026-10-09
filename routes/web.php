@@ -32,6 +32,8 @@ use App\Http\Controllers\QuestionBulkController;
 use App\Services\FileUploadService;
 use Illuminate\Http\Request;
 
+require __DIR__.'/ebook-web.php';
+
 
 
 Route::group(['middleware' => ['auth']], function () {

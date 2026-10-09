@@ -1,0 +1,12 @@
+# Rebuild all sizes with: dart run tool/generate_launcher_icons.dart
+# The original assets/logo.png remains the source of the brand artwork.
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: assets/branding/app_icon.png
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: assets/branding/app_icon_foreground.png
+  # Keep the complete wordmark and mascot inside the adaptive icon safe zone.
+  adaptive_icon_foreground_inset: 20
+  remove_alpha_ios: true
+  background_color_ios: "#FFFFFF"

@@ -45,6 +45,10 @@ final class PermissionPresenter
     public static function label(string $permission): string
     {
         $name = strtolower($permission);
+        $translation = 'user-access.permission_labels.'.$name;
+        if (\Illuminate\Support\Facades\Lang::has($translation)) {
+            return __($translation);
+        }
         $exact = config('permission-ui.labels', []);
         if (isset($exact[$name])) {
             return $exact[$name];

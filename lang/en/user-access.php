@@ -48,13 +48,6 @@ return [
             'copy' => 'Copy',
             'submit' => 'Submit',
         ],
-        'generate' => [
-            'title' => 'Generate Password',
-            'password' => 'Password',
-            'generated' => 'Generated',
-            'copied' => 'Password copied to clipboard!',
-            'copy_done' => 'Copied!',
-        ],
     ],
     'roles' => [
         'title' => 'Role Management',
@@ -171,6 +164,10 @@ return [
         'next' => 'Next',
         'last' => 'Last',
     ],
+    'permission_labels' => [
+        'ebook-manage' => 'Manage E-books (HQ)',
+        'ebook-activity-list' => 'View E-book Activity Log',
+    ],
     'groups' => [
         'overview' => ['label' => 'Overview & Audit', 'description' => 'Dashboard and activity records'],
         'branches' => ['label' => 'Centres & Departments', 'description' => 'Centres, departments, modules, and transfers'],
@@ -182,6 +179,7 @@ return [
         'crm' => ['label' => 'CRM Leads', 'description' => 'Customer lists, follow-ups, and leads'],
         'affiliate' => ['label' => 'Affiliate', 'description' => 'Affiliate members, applications, commissions, withdrawals, and content'],
         'content' => ['label' => 'Content & Courses', 'description' => 'Blog, FAQ, and central course data'],
+        'ebooks' => ['label' => 'E-book', 'description' => 'Manage: library, imports, previews, and publishing. Activity Log is a separate permission.'],
         'settings' => ['label' => 'System Settings', 'description' => 'Central, finance, integration, and support settings'],
         'other' => ['label' => 'Other Permissions', 'description' => 'Permissions outside the standard groups'],
     ],
