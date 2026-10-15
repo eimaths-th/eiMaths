@@ -4,7 +4,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="BookReceiptModalLabel">{{ __('students.book_receipts.title') }}</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="{{ __('common.actions.close') }}">
+                <button type="button" class="close" data-dismiss="modal" data-bs-dismiss="modal" aria-label="{{ __('common.actions.close') }}">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -26,7 +26,7 @@
                 </section>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ __('common.actions.close') }}</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" data-bs-dismiss="modal">{{ __('common.actions.close') }}</button>
             </div>
         </div>
     </div>
