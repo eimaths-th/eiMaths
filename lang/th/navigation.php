@@ -78,6 +78,7 @@ return [
         'promotion_banners' => 'แบนเนอร์ประชาสัมพันธ์',
         'footer_settings' => 'ตั้งค่าฟุตเตอร์',
         'affiliate_management' => 'จัดการ Affiliate',
+        'affiliate_course_applications' => 'ใบสมัครคอร์ส Affiliate',
         'affiliate_course_applications_short' => 'ใบสมัครคอร์ส Affiliate...',
         'affiliate_accounts' => 'บัญชี Affiliate',
         'affiliate_withdrawals' => 'การถอนเงิน Affiliate',

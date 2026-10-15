@@ -78,6 +78,7 @@ return [
         'promotion_banners' => 'Promotion Banners',
         'footer_settings' => 'Footer Settings',
         'affiliate_management' => 'Affiliate Management',
+        'affiliate_course_applications' => 'Affiliate Course Applications',
         'affiliate_course_applications_short' => 'Affiliate Course...',
         'affiliate_accounts' => 'Affiliate Accounts',
         'affiliate_withdrawals' => 'Affiliate Withdrawals',

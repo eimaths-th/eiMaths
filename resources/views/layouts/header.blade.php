@@ -94,7 +94,7 @@
                 @endif
                 <li class="dropdown-divider"></li>
                 <li class="app-user-dropdown__actions">
-                    <a href="#" class="btn btn-light btn-sm">
+                    <a href="{{ route('profile.edit') }}" class="btn btn-light btn-sm">
                         <i class="far fa-user mr-1" aria-hidden="true"></i>{{ __('navigation.header.profile') }}
                     </a>
                     <a href="#" class="btn btn-outline-danger btn-sm" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">

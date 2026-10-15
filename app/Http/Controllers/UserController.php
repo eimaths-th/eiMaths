@@ -121,7 +121,9 @@ class UserController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255', 'email' => 'required|email|max:255|unique:users,email',
             'password' => 'required|string|min:8|confirmed', 'department_id' => 'required|integer',
-            'position_id' => 'nullable|integer', 'role' => 'required|string', 'disable' => 'sometimes|boolean',
+            'position_id' => ['nullable', 'integer', Rule::exists('positions', 'id')->where(fn ($query) =>
+                $query->where('department_id', $request->input('department_id'))->where('status', 1))],
+            'role' => 'required|string', 'disable' => 'sometimes|boolean',
         ], [
             'name.required' => __('user-access.validation.name_required'),
             'email.required' => __('user-access.validation.email_required'),
@@ -131,6 +133,7 @@ class UserController extends Controller
             'password.min' => __('user-access.validation.password_min', ['min' => 8]),
             'password.confirmed' => __('user-access.validation.password_confirmed'),
             'department_id.required' => __('user-access.validation.centre_required'),
+            'position_id.exists' => __('user-access.validation.department_invalid'),
             'role.required' => __('user-access.validation.role_required'),
         ]);
         if ($validator->fails()) {
@@ -175,10 +178,16 @@ class UserController extends Controller
         foreach (BranchAccess::visibleRoles(request()->user())->get() as $role) {
             $html .= '<option value="'.e($role->name).'" '.($data->hasRole($role) ? 'selected' : '').'>'.e($role->display_name ?: $role->name).'</option>';
         }
-        $position = $data->position;
-        $positionHtml = $position
-            ? '<option value="'.(int) $position->id.'">'.e($position->name).'</option>'
-            : '<option value="">'.e(__('user-access.messages.no_department')).'</option>';
+        // Refresh the complete list whenever Edit opens, including departments added in another tab.
+        // Retain the current inactive department so an unrelated edit cannot silently clear it.
+        $positions = Position::where('department_id', $data->department_id)
+            ->where(fn ($query) => $query->where('status', 1)->orWhere('id', $data->position_id))
+            ->orderBy('name')->get();
+        $positionHtml = '<option value="">'.e(__('user-access.messages.no_department')).'</option>';
+        foreach ($positions as $position) {
+            $selected = (int) $position->id === (int) $data->position_id ? ' selected' : '';
+            $positionHtml .= '<option value="'.(int) $position->id.'"'.$selected.'>'.e($position->name).'</option>';
+        }
         return response()->json(['data' => $data, 'html' => $html, 'select_list_position' => $positionHtml]);
     }
 
@@ -188,7 +197,11 @@ class UserController extends Controller
         BranchAccess::assertManageUser($request->user(), $target);
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255', 'email' => ['required', 'email', Rule::unique('users', 'email')->ignore($target->id)],
-            'department' => 'required|integer', 'position' => 'nullable|integer', 'role' => 'required|string',
+            'department' => 'required|integer',
+            'position' => ['nullable', 'integer', Rule::exists('positions', 'id')->where(fn ($query) =>
+                $query->where('department_id', $target->department_id)
+                    ->where(fn ($position) => $position->where('status', 1)->orWhere('id', $target->position_id)))],
+            'role' => 'required|string',
             'password' => 'nullable|string|min:8|confirmed', 'disable' => 'required|boolean',
         ], [
             'name.required' => __('user-access.validation.name_required'),
@@ -196,6 +209,7 @@ class UserController extends Controller
             'email.email' => __('user-access.validation.email_invalid'),
             'email.unique' => __('user-access.validation.email_unique'),
             'department.required' => __('user-access.validation.centre_required'),
+            'position.exists' => __('user-access.validation.department_invalid'),
             'role.required' => __('user-access.validation.role_required'),
             'password.min' => __('user-access.validation.password_min', ['min' => 8]),
             'password.confirmed' => __('user-access.validation.password_confirmed'),
@@ -207,21 +221,36 @@ class UserController extends Controller
         BranchAccess::assertBranch($request->user(), $data['department']);
         abort_unless((int) $target->department_id === (int) $data['department'], 422, __('user-access.messages.branch_transfer_required'));
         $role = Role::where('name', $data['role'])->where('guard_name', 'web')->firstOrFail();
-        BranchAccess::assertAssignableRole($request->user(), $role, (int) $data['department']);
-        DB::transaction(function () use ($target, $data, $role) {
+        // Editing profile details does not grant a role. Shared templates may contain
+        // central permissions which are already blocked for this branch at request time.
+        $rolesChanged = $target->roles->count() !== 1 || !$target->hasRole($role);
+        $otherAccountAccessChanged = (int) $target->id !== (int) $request->user()->id
+            && ($target->email !== $data['email'] || !empty($data['password'])
+                || (int) $target->disable !== (int) $data['disable']);
+        // Profile edits must not become a way to take over a more privileged account.
+        if ($rolesChanged || $otherAccountAccessChanged) {
+            BranchAccess::assertAssignableRole($request->user(), $role, (int) $data['department']);
+        }
+        DB::transaction(function () use ($target, $data, $role, $rolesChanged) {
             // Serialize owner changes before locking an individual user.
             $beforeRoles = $target->getRoleNames()->all();
             $targetWasOwner = $target->hasRole('SystemAdmin');
             if ($targetWasOwner && ($role->name !== 'SystemAdmin' || (int) $data['disable'] === 1)) {
                 BranchAccess::assertOwnerRemains([$target->id]);
             }
-            $target->fill(['name' => $data['name'], 'email' => $data['email'], 'position_id' => $data['position'], 'disable' => $data['disable']]);
+            $target->fill([
+                'name' => $data['name'], 'email' => $data['email'],
+                'position_id' => array_key_exists('position', $data) ? $data['position'] : $target->position_id,
+                'disable' => $data['disable'],
+            ]);
             if (!empty($data['password'])) {
                 $target->password = Hash::make($data['password']);
             }
             $target->save();
-            $target->syncRoles([$role]);
-            app(\App\Support\Activity\ActivityRecorder::class)->assignments($target, 'roles', $beforeRoles, $target->getRoleNames()->all());
+            if ($rolesChanged) {
+                $target->syncRoles([$role]);
+                app(\App\Support\Activity\ActivityRecorder::class)->assignments($target, 'roles', $beforeRoles, $target->getRoleNames()->all());
+            }
         });
         return response()->json(['success' => __('user-access.messages.user_updated')]);
     }

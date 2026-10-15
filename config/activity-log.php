@@ -7,7 +7,7 @@ use Spatie\Permission\Models\{Permission, Role};
 return [
     // Only these back-office workflows participate. Existing module logs are untouched.
     'controllers' => [
-        'UserController' => 'users', 'RoleController' => 'users', 'PermissionsController' => 'users',
+        'ProfileController' => 'users', 'UserController' => 'users', 'RoleController' => 'users', 'PermissionsController' => 'users',
         'DepartmentController' => 'branches', 'PositionController' => 'branches', 'BranchTransferController' => 'branches',
         'ContactController' => 'students', 'DiscontinueController' => 'students', 'ParentController' => 'students',
         'HistoriesController' => 'teaching', 'TeachingPeriodController' => 'teaching',

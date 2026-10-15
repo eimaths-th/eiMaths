@@ -48,41 +48,55 @@
         });
 
 
-        $(".departmentl").change(function() {
-            let department = $('#AddDepartment').val();
-            //console.log(product);
-            //alert(product);
-            $('#AddPosition').html('');
-            if (department.length !== 0) {
-                $.ajax({
-                    method: "GET",
-                    url: "departments/find/add/" + department,
-                    success: function(res) {
-                        $('.positions').html(res.html);
-                    }
-                });
-            }
-        })
+        const department_options_url = "{{ route('departments.find', ['type' => 'add', 'department' => '__centre__']) }}";
+        const department_options = {
+            create: { centre: '#AddDepartment', position: '#AddPosition', save: '#SubmitCreateForm', version: 0, blocked: false },
+            edit: { centre: '#EditDepartment', position: '#EditPosition', save: '#SubmitEditForm', version: 0, blocked: false }
+        };
 
-        $(".departmente.select2").on('select2:select', function() {
-            let department = $('#EditDepartment').val();
-            //console.log(product);
-            //alert(product);
-            $('#EditPosition').html('');
-            if (department.length !== 0) {
-                $.ajax({
-                    method: "GET",
-                    url: "departments/find/add/" + department,
-                    async: false,
-                    success: function(res) {
-                        $('#EditPosition').html(res.html);
-                        //console.log(res);
+        function setDepartmentBlocked(form, blocked) {
+            const state = department_options[form];
+            state.blocked = blocked;
+            $(state.position).prop('disabled', blocked);
+            $(state.save).prop('disabled', blocked);
+        }
 
-                    }
-                });
-            }
+        function showUserFormLoadError(xhr, fallback) {
+            // Escape server messages before passing them to the HTML-based toast.
+            toastr.error($('<div>').text(xhr.responseJSON?.message || fallback).html());
+        }
 
-        })
+        function refreshDepartmentOptions(form) {
+            const state = department_options[form];
+            const version = ++state.version;
+            const centre = $(state.centre).val()?.[0] ?? null;
+            $(state.position).empty().val(null).trigger('change.select2');
+            setDepartmentBlocked(form, Boolean(centre));
+            if (!centre) return;
+
+            $.ajax({
+                method: 'GET',
+                url: department_options_url.replace('__centre__', encodeURIComponent(centre)),
+                cache: false,
+                success: function(res) {
+                    if (state.version !== version) return;
+                    $(state.position).html(res.html).val(null).trigger('change.select2');
+                    setDepartmentBlocked(form, false);
+                },
+                error: function(xhr) {
+                    if (state.version !== version) return;
+                    // Keep Save blocked until a fresh lookup or an explicit centre clear.
+                    showUserFormLoadError(xhr, user_access_ui.messages.department_load_failed || 'Unable to load departments. Reopen this form or select the centre again to retry.');
+                }
+            });
+        }
+
+        $('#AddDepartment').on('change', function() {
+            refreshDepartmentOptions('create');
+        });
+        $('#EditDepartment').on('change', function() {
+            refreshDepartmentOptions('edit');
+        });
 
         //$.noConflict();
         var token = ''
@@ -224,12 +238,16 @@
             $('.alert-danger').hide();
             $('.alert-success').html('');
             $('.alert-success').hide();
-            $('.form').trigger('reset');
+            const centre = $('#AddDepartment').val();
+            $('#CreateModal form').trigger('reset');
+            $('#AddDepartment').val(centre).trigger('change.select2');
+            refreshDepartmentOptions('create');
             $('#CreateModal').modal('show');
         });
         // Create product Ajax request.
         $('#SubmitCreateForm').click(function(e) {
             e.preventDefault();
+            if (department_options.create.blocked) return;
             $('.alert-danger').html('');
             $('.alert-danger').hide();
             $('.alert-success').html('');
@@ -244,8 +262,8 @@
                     password_confirmation: $('#AddPasswordc').val(),
                     name: $('#AddName').val(),
                     email: $('#AddEmail').val(),
-                    department_id: $("#AddDepartment").val()[0],
-                    position_id: $("#AddPosition").val()[0],
+                    department_id: $("#AddDepartment").val()?.[0] ?? null,
+                    position_id: $("#AddPosition").val()?.[0] ?? null,
                     role: $('#AddRole').val(),
                     _token: token,
                 },
@@ -269,7 +287,7 @@
                         $('#Listview').DataTable().ajax.reload();
                         $("#AddDepartment").val(null).trigger("change")
                         $("#AddPosition").val(null).trigger("change")
-                        $('.form').trigger('reset');
+                        $('#CreateModal form').trigger('reset');
                         //$('#SubmitCreateForm').hide();
                         //setTimeout(function() {
                         //$('.alert-success').hide();
@@ -282,6 +300,7 @@
         });
 
         let id;
+        let edit_request_version = 0;
         $(document).on('click', '#getEditData', function(e) {
             e.preventDefault();
 
@@ -291,16 +310,22 @@
             $('.alert-success').html('');
             $('.alert-success').hide();
 
-            $('#EditPosition').empty();
+            const version = ++edit_request_version;
+            ++department_options.edit.version;
+            $('#EditPosition').empty().val(null).trigger('change.select2');
+            $('#EditPassword').val('');
+            $('#EditPasswordC').val('');
+            setDepartmentBlocked('edit', true);
 
             id = $(this).data('id');
-            url = "{{ route('users.edit', ':id') }}";
+            let url = "{{ route('users.edit', ':id') }}";
             url = url.replace(':id', id);
-            console.log(url);
             $.ajax({
                 url: url,
                 method: 'GET',
+                cache: false,
                 success: function(res) {
+                    if (version !== edit_request_version) return;
                     // console.log(res)
                     if (res.data.disable == 1) {
                         $('#ecustomCheckbox1').prop('checked', true);
@@ -310,19 +335,24 @@
                     //$('#EditModalBody').html(res.html);
                     $('#editName').val(res.data.name);
                     $('#editEmail').val(res.data.email);
-                    $('#EditDepartment').val(res.data.department_id).change();
-                    $('#EditPosition').append(res.select_list_position);
-                    $('#EditPosition').val(res.data.position_id).change();
+                    $('#EditDepartment').val(res.data.department_id).trigger('change.select2');
+                    $('#EditPosition').html(res.select_list_position).val(res.data.position_id ?? null).trigger('change.select2');
                     $('#editRole').html(res.html);
+                    setDepartmentBlocked('edit', false);
                     $('#EditModal').modal('show');
+                },
+                error: function(xhr) {
+                    if (version !== edit_request_version) return;
+                    showUserFormLoadError(xhr, user_access_ui.messages.user_load_failed || 'Unable to load this user. Please reopen the edit form.');
                 }
             });
 
         })
 
         $('#SubmitEditForm').click(function(e) {
-            if (!confirm(user_access_ui.messages.confirm_save)) return;
             e.preventDefault();
+            if (department_options.edit.blocked) return;
+            if (!confirm(user_access_ui.messages.confirm_save)) return;
 
             $('.alert-danger').html('');
             $('.alert-danger').hide();
@@ -346,8 +376,8 @@
                     password_confirmation: $('#EditPasswordC').val(),
                     email: $('#editEmail').val(),
                     role: $('#editRole').val(),
-                    department: $("#EditDepartment").val()[0],
-                    position: $("#EditPosition").val()[0],
+                    department: $("#EditDepartment").val()?.[0] ?? null,
+                    position: $("#EditPosition").val()?.[0] ?? null,
                     disable: esstatus
 
                 },

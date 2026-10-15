@@ -112,6 +112,8 @@ return [
         'no_results' => 'No matching permissions found.',
     ],
     'messages' => [
+        'department_load_failed' => 'Unable to load departments. Reopen this form or select the centre again to retry.',
+        'user_load_failed' => 'Unable to load this user. Please reopen the edit form.',
         'confirm_delete' => 'Confirm data deletion?',
         'select_to_delete' => 'Please select items to delete.',
         'confirm_save' => 'Confirm the action?',
@@ -136,6 +138,7 @@ return [
         'permission_catalog_protected' => 'Only SystemAdmin can manage the permission catalog.',
     ],
     'validation' => [
+        'department_invalid' => 'Please select an active department from this centre.',
         'name_required' => 'Name is required.',
         'name_unique' => 'This name already exists.',
         'email_required' => 'Email is required.',
