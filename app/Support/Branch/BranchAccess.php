@@ -111,24 +111,53 @@ final class BranchAccess
         return $query;
     }
 
+    public static function assignableRoles(User $actor, int $branchId)
+    {
+        return self::visibleRoles($actor)->with('permissions')
+            ->where(fn ($query) => $query->whereNull('branch_id')->orWhere('branch_id', $branchId))
+            ->orderBy('name')->get()
+            ->filter(fn (Role $role) => self::roleAssignmentDenial($actor, $role, $branchId) === null)
+            ->values();
+    }
+
     public static function assertAssignableRole(User $actor, Role $role, int $branchId): void
     {
-        abort_unless($role->guard_name === 'web', 422, 'Invalid role guard.');
-        if (in_array($role->name, ['SystemAdmin', 'Admin'], true)) {
-            abort_unless(self::isOwner($actor) && $branchId === Department::HQ_ID, 403, 'Only SystemAdmin can assign central administrators.');
+        $denial = self::roleAssignmentDenial($actor, $role, $branchId);
+        if ($denial !== null) {
+            abort($denial[0], $denial[1]);
         }
-        abort_unless($role->branch_id === null || (int) $role->branch_id === $branchId, 403, 'Role belongs to another branch.');
+    }
+
+    // The form and the write endpoint must evaluate exactly the same assignment rules.
+    private static function roleAssignmentDenial(User $actor, Role $role, int $branchId): ?array
+    {
+        if ($role->guard_name !== 'web') {
+            return [422, 'Invalid role guard.'];
+        }
+        if (in_array($role->name, ['SystemAdmin', 'Admin'], true)
+            && !(self::isOwner($actor) && $branchId === Department::HQ_ID)) {
+            return [403, 'Only SystemAdmin can assign central administrators.'];
+        }
+        if ($role->branch_id !== null && (int) $role->branch_id !== $branchId) {
+            return [403, 'Role belongs to another branch.'];
+        }
         if (!self::isOwner($actor)) {
+            $actorPermissions = $actor->getAllPermissions()->pluck('name');
             foreach ($role->permissions as $permission) {
                 $name = $permission->name;
                 $central = in_array($name, array_merge(config('branch.central_permissions'), config('branch.owner_permissions')), true)
                     || self::isCentralAffiliatePermission($name);
-                abort_if(in_array(strtolower($name), config('branch.owner_permissions'), true), 403, 'Only SystemAdmin can grant owner permissions.');
-                abort_unless((!$central || self::isCentral($actor)) && $actor->getAllPermissions()->contains('name', $name), 403, 'Cannot grant permissions beyond your authority.');
+                if (in_array(strtolower($name), config('branch.owner_permissions'), true)) {
+                    return [403, 'Only SystemAdmin can grant owner permissions.'];
+                }
+                if (($central && !self::isCentral($actor)) || !$actorPermissions->contains($name)) {
+                    return [403, 'Cannot grant permissions beyond your authority.'];
+                }
             }
         }
-        // A shared template can contain permissions for modules a branch has not enabled.
-        // Effective permissions are intersected with the branch modules at request time.
+        // Compare raw grants, including disabled modules: later enabling a module must
+        // never activate a permission the creator did not have authority to grant.
+        return null;
     }
 
     public static function assertManageUser(User $actor, User $target): void

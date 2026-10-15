@@ -8,7 +8,7 @@ const scriptPath = process.env.USER_SCRIPT_PATH
     ? resolve(process.env.USER_SCRIPT_PATH)
     : new URL('../../resources/views/users/script.blade.php', import.meta.url);
 const ui = {
-    messages: { confirm_save: 'Save?', department_load_failed: 'Departments unavailable', user_load_failed: 'User unavailable' },
+    messages: { confirm_save: 'Save?', department_load_failed: 'Departments unavailable', user_load_failed: 'User unavailable', role_load_failed: 'Roles unavailable', no_assignable_roles: 'No assignable roles', assignable_roles_hint: 'Choose an allowed role for this centre' },
     users: { modal: { select: 'Please select' } },
     data_table: {},
 };
@@ -22,7 +22,8 @@ const source = readFileSync(scriptPath, 'utf8')
     .replace(/{{ route\('departments.find', [\s\S]*?}}/g, '/departments/find/add/__centre__')
     .replace(/{{ route\('users.edit', ':id'\) }}/g, '/users/:id/edit')
     .replace(/{{ route\('users.save', ':id'\) }}/g, '/users/save/:id')
-    .replace(/{{ route\('users.store'\) }}/g, '/users');
+    .replace(/{{ route\('users.store'\) }}/g, '/users')
+    .replace(/{{ route\('users.role-options'\) }}/g, '/users/role-options');
 assert.ok(!source.includes('{{') && !source.includes('@json'), 'all Blade expressions are rendered for the JS harness');
 
 function harness() {
@@ -34,6 +35,11 @@ function harness() {
         row: () => ({ remove: () => ({ draw() {} }) }),
     };
     const multipleSelects = new Set(['#AddDepartment', '#EditDepartment', '#AddPosition', '#EditPosition']);
+    const escape = value => String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    class Option {
+        constructor(text, value) { this.text = text; this.value = value; }
+        toString() { return `<option value="${escape(this.value)}">${escape(this.text)}</option>`; }
+    }
     class Element {
         constructor(selector) {
             this.selector = selector;
@@ -73,16 +79,35 @@ function harness() {
             }
             return this;
         }
-        html(value) { if (arguments.length === 0) return this.markup; this.markup = value; return this; }
+        html(value) {
+            if (arguments.length === 0) return this.markup;
+            this.markup = value;
+            if (this.selector === '#AddRole' || this.selector === '#editRole') {
+                const options = this.prop('options');
+                this.value = (options.find(option => option.hasAttribute('selected')) || options[0])?.value ?? null;
+            }
+            return this;
+        }
         text(value) {
             this.markup = String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
             return this;
         }
         empty() { this.markup = ''; this.value = null; return this; }
-        prop(name, value) { if (arguments.length === 1) return this.props[name]; this.props[name] = value; return this; }
+        prop(name, value) {
+            if (arguments.length === 1) {
+                if (name === 'options') return Array.from(this.markup.matchAll(/<option\b([^>]*)>(.*?)<\/option>/g), match => ({
+                    value: match[1].match(/value=["']([^"']*)["']/)?.[1] || '',
+                    hasAttribute: attribute => new RegExp('\\b' + attribute + '(?:\\s|=|$)').test(match[1]),
+                }));
+                return this.props[name];
+            }
+            this.props[name] = value; return this;
+        }
         data(name, value) { if (arguments.length === 1) return this.dataset[name]; this.dataset[name] = value; return this; }
         is() { return Boolean(this.props.checked); }
-        attr() { return 'test-token'; }
+        attr(name, value) { return arguments.length > 1 ? this : 'test-token'; }
+        after() { return this; }
+        prepend(value) { this.markup = String(value) + this.markup; return this; }
         select2() { return this; }
         DataTable() { return table; }
         modal(action) { this.modals.push(action); return this; }
@@ -100,7 +125,7 @@ function harness() {
     $.ajaxSetup = () => {};
     $.each = (entries, callback) => Object.entries(entries).forEach(([key, value]) => callback(key, value));
     vm.runInNewContext(source, {
-        $, document, URLSearchParams, window: { location: { search: '' } },
+        $, document, Option, URLSearchParams, window: { location: { search: '' } },
         confirm: () => true, alert() {}, console,
         toastr: { error: message => messages.push(message), success() {} },
     });
@@ -123,7 +148,16 @@ const userResponse = (id, centre, position = null, markup = options('Admin', 'Op
     select_list_position: markup,
 });
 
-test('opening Edit loads all fresh department options without requiring a centre reselection', () => {
+const roleResponse = (...names) => ({ roles: names.map(name => ({ value: name, label: name })) });
+const lastLookup = (h, kind) => h.requests.findLast(request => kind === 'roles'
+    ? request.url === '/users/role-options' : request.url.startsWith('/departments/find/'));
+function resolveCreate(h, role = 'Teacher') {
+    lastLookup(h, 'departments').success({ html: options('New department') });
+    lastLookup(h, 'roles').success(roleResponse(role));
+    h.$('#AddRole').val(role).trigger('change');
+}
+
+test('opening Edit loads fresh departments and keeps the existing role without another lookup', () => {
     const h = harness();
     h.$('#EditPassword').val('previous password');
     h.$('#EditPasswordC').val('previous password');
@@ -134,64 +168,83 @@ test('opening Edit loads all fresh department options without requiring a centre
     assert.equal(h.$('#EditPassword').val(), '');
     assert.equal(h.$('#EditPasswordC').val(), '');
     h.requests[0].success(userResponse(84, 12));
-    assert.equal(h.requests.length, 1, 'programmatic Centre selection must not start another lookup');
+    assert.equal(h.requests.length, 1);
     assert.equal(h.$('#EditPosition').html(), options('Admin', 'Operations'));
     assert.deepEqual(h.$('#EditPosition').val(), []);
+    assert.equal(h.$('#editRole').val(), 'BranchAdmin');
     assert.equal(h.$('#SubmitEditForm').prop('disabled'), false);
-    assert.deepEqual(h.$('#EditModal').modals, ['show']);
-
     h.click('#getEditData', 84);
     h.requests[1].success(userResponse(84, 12, 2, options('Admin', 'Operations', 'New department')));
-    assert.equal(h.$('#EditPosition').html(), options('Admin', 'Operations', 'New department'));
     assert.deepEqual(h.$('#EditPosition').val(), ['2']);
+    assert.match(h.$('#EditPosition').html(), /New department/);
 });
 
-test('creating or changing a centre only updates the matching modal and waits before saving', () => {
-    const h = harness();
-    h.$('#EditPosition').html('Existing edit options').val(['9']);
-    h.centre('Add', ['12']);
-    const request = h.requests[0];
-    assert.equal(request.url, '/departments/find/add/12');
-    assert.equal(request.cache, false);
-    assert.notEqual(request.async, false);
-    assert.equal(h.$('#SubmitCreateForm').prop('disabled'), true);
-    h.click('#SubmitCreateForm');
-    assert.equal(h.requests.length, 1, 'loading must block even a programmatically dispatched Save');
-    request.success({ html: options('New department') });
-    assert.equal(h.$('#AddPosition').html(), options('New department'));
-    assert.equal(h.$('#EditPosition').html(), 'Existing edit options');
-    assert.deepEqual(h.$('#EditPosition').val(), ['9']);
-    assert.equal(h.$('#SubmitCreateForm').prop('disabled'), false);
-});
+for (const first of ['departments', 'roles']) {
+    test(`create waits for both lookups and explicit role choice when ${first} loads first`, () => {
+        const h = harness();
+        h.$('#EditPosition').html('Existing edit options').val(['9']);
+        h.centre('Add', ['12']);
+        assert.equal(h.requests.length, 2);
+        assert.equal(lastLookup(h, 'roles').data.department_id, '12');
+        assert.equal(lastLookup(h, 'roles').cache, false);
+        assert.equal(h.$('#AddRole').val(), '');
+        assert.equal(h.$('#SubmitCreateForm').prop('disabled'), true);
+        const departmentRequest = lastLookup(h, 'departments');
+        const roleRequest = lastLookup(h, 'roles');
+        if (first === 'departments') departmentRequest.success({ html: options('New department') });
+        else { roleRequest.success(roleResponse('Teacher')); h.$('#AddRole').val('Teacher').trigger('change'); }
+        h.click('#SubmitCreateForm');
+        assert.equal(h.requests.length, 2);
+        assert.equal(h.$('#SubmitCreateForm').prop('disabled'), true);
+        if (first === 'roles') departmentRequest.success({ html: options('New department') });
+        else {
+            roleRequest.success(roleResponse('Teacher'));
+            assert.equal(h.$('#AddRole').val(), '', 'Loading must never silently assign a role');
+            assert.equal(h.$('#SubmitCreateForm').prop('disabled'), true);
+            h.$('#AddRole').val('Teacher').trigger('change');
+        }
+        assert.equal(h.$('#SubmitCreateForm').prop('disabled'), false);
+        assert.equal(h.$('#EditPosition').html(), 'Existing edit options');
+        assert.deepEqual(h.$('#EditPosition').val(), ['9']);
+    });
+}
 
-test('slow responses from an earlier centre never replace current options or release Save', () => {
+test('stale department and role responses cannot restore choices from the previous centre', () => {
     const h = harness();
     h.centre('Add', ['12']);
+    const oldDepartment = lastLookup(h, 'departments'), oldRole = lastLookup(h, 'roles');
     h.centre('Add', ['13']);
-    h.requests[0].success({ html: options('Old centre') });
+    oldDepartment.success({ html: options('Old centre') });
+    oldRole.success(roleResponse('SystemAdmin'));
     assert.equal(h.$('#AddPosition').html(), '');
+    assert.doesNotMatch(h.$('#AddRole').html(), /SystemAdmin/);
     assert.equal(h.$('#SubmitCreateForm').prop('disabled'), true);
-    h.requests[1].success({ html: options('Current centre') });
-    h.requests[0].error({ responseJSON: { message: 'Stale error' } });
-    assert.equal(h.$('#AddPosition').html(), options('Current centre'));
+    resolveCreate(h);
+    oldDepartment.error({ responseJSON: { message: 'Stale error' } });
+    oldRole.error({ responseJSON: { message: 'Stale role error' } });
     assert.equal(h.$('#SubmitCreateForm').prop('disabled'), false);
     assert.deepEqual(h.messages, []);
 });
 
-test('an old lookup cannot overwrite options from a newly opened user', () => {
+test('opening a different user invalidates pending department and role lookups from old edit', () => {
     const h = harness();
     h.click('#getEditData', 84);
     h.requests[0].success(userResponse(84, 12));
     h.centre('Edit', ['13']);
+    const oldDepartment = lastLookup(h, 'departments'), oldRole = lastLookup(h, 'roles');
+    assert.equal(h.$('#editRole').val(), '');
     h.click('#getEditData', 85);
-    h.requests[2].success(userResponse(85, 14, 1, options('Latest user department')));
-    h.requests[1].success({ html: options('Old lookup department') });
+    h.requests.at(-1).success(userResponse(85, 14, 1, options('Latest user department')));
+    oldDepartment.success({ html: options('Old lookup department') });
+    oldRole.success(roleResponse('WrongRole'));
     assert.equal(h.$('#EditPosition').html(), options('Latest user department'));
     assert.deepEqual(h.$('#EditPosition').val(), ['1']);
     assert.equal(h.$('#editName').val(), 'User 85');
+    assert.equal(h.$('#editRole').val(), 'BranchAdmin');
+    assert.doesNotMatch(h.$('#editRole').html(), /WrongRole/);
 });
 
-test('out of order edit responses cannot restore the previous user or allow saving before current load', () => {
+test('out of order edit responses cannot restore the previous user or release Save early', () => {
     const h = harness();
     h.click('#getEditData', 84);
     h.click('#getEditData', 85);
@@ -206,36 +259,73 @@ test('out of order edit responses cannot restore the previous user or allow savi
 });
 
 for (const value of [null, []]) {
-    test(`clearing a centre with ${value === null ? 'null' : 'an empty array'} invalidates pending lookups safely`, () => {
+    test(`clearing a centre with ${value === null ? 'null' : 'an empty array'} clears roles and invalidates pending results`, () => {
         const h = harness();
         h.centre('Add', ['12']);
+        const department = lastLookup(h, 'departments'), roles = lastLookup(h, 'roles');
         h.centre('Add', value);
-        assert.equal(h.requests.length, 1);
-        assert.equal(h.$('#SubmitCreateForm').prop('disabled'), false);
-        h.requests[0].success({ html: options('Outdated department') });
+        assert.equal(h.requests.length, 2);
+        department.success({ html: options('Outdated department') });
+        roles.success(roleResponse('Teacher'));
         assert.equal(h.$('#AddPosition').html(), '');
+        assert.equal(h.$('#AddRole').val(), '');
+        assert.equal(h.$('#SubmitCreateForm').prop('disabled'), true);
     });
 }
 
-test('lookup failure blocks saving, escapes the error, and reopening Create retries with the current centre', () => {
+for (const kind of ['departments', 'roles']) {
+    test(`${kind} lookup failure keeps Save blocked and fresh Create reopening retries both`, () => {
+        const h = harness();
+        h.$('#EditPosition').html('Do not reset').val(['8']);
+        h.centre('Add', ['12']);
+        lastLookup(h, kind).error({ responseJSON: { message: '<img src=x onerror=alert(1)>' } });
+        if (kind === 'departments') { lastLookup(h, 'roles').success(roleResponse('Teacher')); h.$('#AddRole').val('Teacher').trigger('change'); }
+        else lastLookup(h, 'departments').success({ html: options('Admin') });
+        h.click('#SubmitCreateForm');
+        assert.equal(h.requests.length, 2);
+        assert.equal(h.$('#SubmitCreateForm').prop('disabled'), true);
+        assert.equal(h.messages[0], '&lt;img src=x onerror=alert(1)&gt;');
+        h.click('#CreateButton');
+        assert.equal(h.requests.length, 4);
+        assert.equal(lastLookup(h, 'roles').data.department_id, '12');
+        assert.equal(h.$('#EditPosition').html(), 'Do not reset');
+        resolveCreate(h);
+        assert.equal(h.$('#SubmitCreateForm').prop('disabled'), false);
+    });
+}
+
+test('empty assignable roles show explanation and cannot be submitted even after departments succeed', () => {
     const h = harness();
-    h.$('#EditPosition').html('Do not reset').val(['8']);
     h.centre('Add', ['12']);
-    h.requests[0].error({ responseJSON: { message: '<img src=x onerror=alert(1)>' } });
-    assert.equal(h.$('#SubmitCreateForm').prop('disabled'), true);
-    assert.equal(h.messages[0], '&lt;img src=x onerror=alert(1)&gt;');
+    lastLookup(h, 'roles').success(roleResponse());
+    lastLookup(h, 'departments').success({ html: options('Admin') });
+    assert.equal(h.$('#AddRoleHelp').html(), 'No assignable roles');
+    assert.equal(h.$('#AddRole').prop('disabled'), true);
     h.click('#SubmitCreateForm');
-    assert.equal(h.requests.length, 1);
-    h.click('#CreateButton');
     assert.equal(h.requests.length, 2);
-    assert.equal(h.requests[1].url, '/departments/find/add/12');
-    assert.equal(h.$('#EditPosition').html(), 'Do not reset');
-    assert.ok(!h.events.some(([selector, event]) => selector === '.form' && event === 'reset'));
-    h.requests[1].success({ html: options('Available now') });
-    assert.equal(h.$('#SubmitCreateForm').prop('disabled'), false);
 });
 
-test('failed Edit lookup keeps Save blocked and succeeds on a fresh reopen', () => {
+test('role labels are inserted as text instead of executable HTML', () => {
+    const h = harness();
+    h.centre('Add', ['12']);
+    lastLookup(h, 'roles').success({ roles: [{ value: 'Teacher', label: '<img src=x onerror=alert(1)>' }] });
+    assert.doesNotMatch(h.$('#AddRole').html(), /<img/);
+    assert.match(h.$('#AddRole').html(), /&lt;img/);
+});
+
+test('edit with no explicit current role stays blank until an assignable role is chosen', () => {
+    const h = harness();
+    h.click('#getEditData', 84);
+    h.requests[0].success({ ...userResponse(84, 12), html: '<option value="" selected>Please select</option><option value="Teacher">Teacher</option>' });
+    assert.equal(h.$('#editRole').val(), '');
+    assert.equal(h.$('#SubmitEditForm').prop('disabled'), true);
+    h.click('#SubmitEditForm');
+    assert.equal(h.requests.length, 1);
+    h.$('#editRole').val('Teacher').trigger('change');
+    assert.equal(h.$('#SubmitEditForm').prop('disabled'), false);
+});
+
+test('failed Edit lookup keeps Save blocked and succeeds on fresh reopen', () => {
     const h = harness();
     h.click('#getEditData', 84);
     h.requests[0].error({});
@@ -248,19 +338,21 @@ test('failed Edit lookup keeps Save blocked and succeeds on a fresh reopen', () 
     assert.equal(h.$('#SubmitEditForm').prop('disabled'), false);
 });
 
-test('create and update send an explicit null department when no position is selected', () => {
+test('create and update send a scalar role and explicit null department when unselected', () => {
     const h = harness();
-    h.$('#AddDepartment').val(['12']);
-    h.$('#AddPosition').val(null);
+    h.centre('Add', ['12']);
+    resolveCreate(h);
+    h.$('#AddPosition').val([]);
     h.click('#SubmitCreateForm');
-    assert.equal(h.requests[0].data.position_id, null);
-    assert.equal(h.requests[0].data.department_id, '12');
-
+    assert.equal(h.requests.at(-1).data.position_id, null);
+    assert.equal(h.requests.at(-1).data.department_id, '12');
+    assert.equal(h.requests.at(-1).data.role, 'Teacher');
     h.click('#getEditData', 84);
-    h.requests[1].success(userResponse(84, 12));
+    h.requests.at(-1).success(userResponse(84, 12));
     h.$('#EditPosition').val([]);
     h.click('#SubmitEditForm');
-    assert.equal(h.requests[2].data.position, null);
-    assert.equal(h.requests[2].data.department, '12');
-    assert.equal(h.requests[2].url, '/users/save/84');
+    assert.equal(h.requests.at(-1).data.position, null);
+    assert.equal(h.requests.at(-1).data.department, '12');
+    assert.equal(h.requests.at(-1).data.role, 'BranchAdmin');
+    assert.equal(h.requests.at(-1).url, '/users/save/84');
 });

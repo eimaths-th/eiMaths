@@ -106,7 +106,10 @@
                     <div class="col-xs-12 col-sm-12 col-md-12">
                         <div class="form-group">
                             <strong><i class="fas fa-user-lock"></i> {{ __('user-access.users.modal.role') }}:</strong>
-                            {!! Form::select('roles', $roles, [], ['id' => 'AddRole', 'class' => 'form-control', 'single']) !!}
+                            <select id="AddRole" name="roles" class="form-control" aria-describedby="AddRoleHelp" disabled>
+                                <option value="">{{ __('user-access.users.modal.select') }}</option>
+                            </select>
+                            <small id="AddRoleHelp" class="form-text text-muted" aria-live="polite">{{ __('user-access.messages.assignable_roles_hint') }}</small>
                         </div>
                     </div>
                     {{--  <div class="col-xs-12 col-sm-12 col-md-12 text-center">

@@ -18,6 +18,7 @@ use App\Models\Sterm;
 use App\Models\studentRunningNumber;
 use App\Models\term;
 use App\Models\User;
+use App\Support\Branch\TeacherRole;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
@@ -352,7 +353,7 @@ class HistoriesController extends Controller
         $level = level::where('status', '1')->orderBy('name', 'asc')->get();
 
         $teacher = User::whereHas('roles', function ($q) {
-            $q->where('name', 'Teacher');
+            $q->whereIn('name', TeacherRole::teacherRoleNames());
         })->get();
 
         return view('histories.index', [

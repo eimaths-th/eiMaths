@@ -10,6 +10,7 @@ use App\Models\Order;
 use App\Models\OrderDetailList;
 use App\Models\term;
 use App\Models\User;
+use App\Support\Branch\TeacherRole;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
@@ -402,7 +403,7 @@ class FastHistoryService
         $teachers = User::query()
             ->where('department_id', $student->centre)
             ->where('disable', 0)
-            ->whereHas('roles', fn ($query) => $query->where('name', 'Teacher'))
+            ->whereHas('roles', fn ($query) => $query->whereIn('name', TeacherRole::teacherRoleNames()))
             ->orderBy('name')
             ->get(['id', 'name']);
 

@@ -98,6 +98,7 @@
                                      <label for="Name"><i class="fas fa-user-lock"></i> {{ __('user-access.users.modal.role') }}:</label>
                                      <select class="form-control" id="editRole" name="role">
                                      </select>
+                                     <small id="EditRoleHelp" class="form-text text-muted">{{ __('user-access.messages.edit_roles_hint') }}</small>
                                  </div>
                              </div>
 

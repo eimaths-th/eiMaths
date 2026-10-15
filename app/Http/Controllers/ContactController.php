@@ -1132,6 +1132,22 @@ class ContactController extends Controller
             return response()->json(['errors' => $validator->errors()->all()]);
         }
 
+        // RecordBranchActivity keeps this lock through the order and enrollment writes.
+        // Serialize with Transfer() so a stale form cannot enroll the student in the old centre.
+        $contact = Contact::query()->lockForUpdate()->findOrFail($request->get('student'));
+        abort_unless((int) $contact->centre === (int) $request->get('centre'), 422,
+            'Related record must belong to the same branch.');
+        $starts_transferred_enrollment = false;
+        if ($contact->type === 'student' && $contact->new_student_order_id === null && (int) $contact->order === 0) {
+            $latest_transfer = DB::table('branch_transfers')
+                ->where('subject_type', Contact::class)
+                ->where('subject_id', $contact->id)
+                ->orderByDesc('id')
+                ->first();
+            $starts_transferred_enrollment = $latest_transfer !== null
+                && (int) $latest_transfer->to_branch_id === (int) $contact->centre;
+        }
+
         if ($request->get('ref')) {
             $ref_code = $request->get('ref');
         } else {
@@ -1287,7 +1303,6 @@ class ContactController extends Controller
         $input_order['free_course'] = $request->get('free_course', 0);
         $input_order['free_course_reason'] = $request->get('free_course_reason');
         $order = Order::create($input_order);
-        $contact = Contact::where('id', $request->get('student'))->firstOrFail();
         $affiliate_context = $this->affiliate_attribution_service->ReadCookie($request->cookie(config('affiliate.cookie_name')));
         $this->affiliate_attribution_service->BindToContact($contact, $affiliate_context, 'contact_receipt');
         $this->affiliate_attribution_service->SnapshotOrder($contact, $order);
@@ -1312,10 +1327,12 @@ class ContactController extends Controller
             }
         }
 
-        $contact = Contact::where('id', $request->get('student'))->first();
         $contact->ref = $ref_code;
         $contact->free_course = $request->get('free_course');
         $contact->order = $order->id;
+        if ($starts_transferred_enrollment) {
+            $contact->new_student_order_id = $order->id;
+        }
         $contact->level = $request->get('level');
         $contact->term = $request->get('term');
         $contact->bookuse = $request->get('bookuse');

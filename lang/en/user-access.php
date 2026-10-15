@@ -112,6 +112,10 @@ return [
         'no_results' => 'No matching permissions found.',
     ],
     'messages' => [
+        'role_load_failed' => 'Unable to load roles. Reopen this form or select the centre again to retry.',
+        'no_assignable_roles' => 'No roles can be assigned at this centre. Ask SystemAdmin to configure a role within your permissions.',
+        'assignable_roles_hint' => 'Only roles you can assign at the selected centre are shown.',
+        'edit_roles_hint' => 'You can keep the current role when updating profile details. Changing a role requires permission to assign it.',
         'department_load_failed' => 'Unable to load departments. Reopen this form or select the centre again to retry.',
         'user_load_failed' => 'Unable to load this user. Please reopen the edit form.',
         'confirm_delete' => 'Confirm data deletion?',

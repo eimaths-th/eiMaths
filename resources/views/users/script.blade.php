@@ -49,16 +49,70 @@
 
 
         const department_options_url = "{{ route('departments.find', ['type' => 'add', 'department' => '__centre__']) }}";
+        const role_options_url = "{{ route('users.role-options') }}";
         const department_options = {
-            create: { centre: '#AddDepartment', position: '#AddPosition', save: '#SubmitCreateForm', version: 0, blocked: false },
-            edit: { centre: '#EditDepartment', position: '#EditPosition', save: '#SubmitEditForm', version: 0, blocked: false }
+            create: { centre: '#AddDepartment', position: '#AddPosition', role: '#AddRole', roleHelp: '#AddRoleHelp', save: '#SubmitCreateForm', version: 0, roleVersion: 0, departmentBlocked: false, roleBlocked: true, roles: [], blocked: true },
+            edit: { centre: '#EditDepartment', position: '#EditPosition', role: '#editRole', roleHelp: '#EditRoleHelp', save: '#SubmitEditForm', version: 0, roleVersion: 0, departmentBlocked: false, roleBlocked: true, roles: [], blocked: true }
         };
+
+        $('#editRole').attr('aria-describedby', 'EditRoleHelp');
+
+        function updateUserFormSaveState(form) {
+            const state = department_options[form];
+            const centre = $(state.centre).val()?.[0] ?? null;
+            state.blocked = state.departmentBlocked || state.roleBlocked || !centre || !state.roles.includes($(state.role).val());
+            $(state.save).prop('disabled', state.blocked);
+        }
 
         function setDepartmentBlocked(form, blocked) {
             const state = department_options[form];
-            state.blocked = blocked;
+            state.departmentBlocked = blocked;
             $(state.position).prop('disabled', blocked);
-            $(state.save).prop('disabled', blocked);
+            updateUserFormSaveState(form);
+        }
+
+        function resetRoleOptions(form, loading) {
+            const state = department_options[form];
+            state.roles = [];
+            state.roleBlocked = loading;
+            $(state.role).empty().append(new Option(user_access_ui.users.modal.select, '')).val('').prop('disabled', true);
+            $(state.roleHelp).text(form === 'edit' ? user_access_ui.messages.edit_roles_hint : user_access_ui.messages.assignable_roles_hint);
+            updateUserFormSaveState(form);
+        }
+
+        function finishRoleOptions(form, selected = '') {
+            const state = department_options[form];
+            state.roles = Array.from($(state.role).prop('options')).map(option => option.value).filter(Boolean);
+            state.roleBlocked = false;
+            $(state.role).val(state.roles.includes(selected) ? selected : '').prop('disabled', state.roles.length === 0);
+            $(state.roleHelp).text(state.roles.length ? (form === 'edit' ? user_access_ui.messages.edit_roles_hint : user_access_ui.messages.assignable_roles_hint) : user_access_ui.messages.no_assignable_roles);
+            updateUserFormSaveState(form);
+        }
+
+        function refreshRoleOptions(form) {
+            const state = department_options[form];
+            const version = ++state.roleVersion;
+            const centre = $(state.centre).val()?.[0] ?? null;
+            resetRoleOptions(form, Boolean(centre));
+            if (!centre) return;
+            $.ajax({
+                method: 'GET', url: role_options_url, data: { department_id: centre }, cache: false,
+                success: function(res) {
+                    if (state.roleVersion !== version) return;
+                    for (const role of Array.isArray(res.roles) ? res.roles : []) {
+                        if (typeof role.value === 'string' && role.value) {
+                            $(state.role).append(new Option(role.label || role.value, role.value));
+                        }
+                    }
+                    // A fresh list must never silently choose the first available role.
+                    finishRoleOptions(form);
+                },
+                error: function(xhr) {
+                    if (state.roleVersion !== version) return;
+                    $(state.roleHelp).text(user_access_ui.messages.role_load_failed);
+                    showUserFormLoadError(xhr, user_access_ui.messages.role_load_failed);
+                }
+            });
         }
 
         function showUserFormLoadError(xhr, fallback) {
@@ -93,10 +147,16 @@
 
         $('#AddDepartment').on('change', function() {
             refreshDepartmentOptions('create');
+            refreshRoleOptions('create');
         });
         $('#EditDepartment').on('change', function() {
             refreshDepartmentOptions('edit');
+            refreshRoleOptions('edit');
         });
+        $('#AddRole').on('change', function() { updateUserFormSaveState('create'); });
+        $('#editRole').on('change', function() { updateUserFormSaveState('edit'); });
+        resetRoleOptions('create', false);
+        resetRoleOptions('edit', false);
 
         //$.noConflict();
         var token = ''
@@ -242,11 +302,13 @@
             $('#CreateModal form').trigger('reset');
             $('#AddDepartment').val(centre).trigger('change.select2');
             refreshDepartmentOptions('create');
+            refreshRoleOptions('create');
             $('#CreateModal').modal('show');
         });
         // Create product Ajax request.
         $('#SubmitCreateForm').click(function(e) {
             e.preventDefault();
+            updateUserFormSaveState('create');
             if (department_options.create.blocked) return;
             $('.alert-danger').html('');
             $('.alert-danger').hide();
@@ -312,6 +374,8 @@
 
             const version = ++edit_request_version;
             ++department_options.edit.version;
+            ++department_options.edit.roleVersion;
+            resetRoleOptions('edit', true);
             $('#EditPosition').empty().val([]).trigger('change.select2');
             $('#EditPassword').val('');
             $('#EditPasswordC').val('');
@@ -342,6 +406,11 @@
                     const selected_positions = position_id == null || position_id === '' ? [] : [String(position_id)];
                     $('#EditPosition').html(res.select_list_position).val(selected_positions).trigger('change.select2');
                     $('#editRole').html(res.html);
+                    const selected_roles = Array.from($('#editRole').prop('options')).filter(option => option.value && option.hasAttribute('selected'));
+                    if (!Array.from($('#editRole').prop('options')).some(option => option.value === '')) {
+                        $('#editRole').prepend(new Option(user_access_ui.users.modal.select, ''));
+                    }
+                    finishRoleOptions('edit', selected_roles.length === 1 ? selected_roles[0].value : '');
                     setDepartmentBlocked('edit', false);
                     $('#EditModal').modal('show');
                 },
@@ -355,6 +424,7 @@
 
         $('#SubmitEditForm').click(function(e) {
             e.preventDefault();
+            updateUserFormSaveState('edit');
             if (department_options.edit.blocked) return;
             if (!confirm(user_access_ui.messages.confirm_save)) return;
 

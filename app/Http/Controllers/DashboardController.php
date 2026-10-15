@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use App\Support\Branch\TeacherRole;
 use App\Models\Contact;
 use App\Models\Department;
 use App\Models\Receipt;
@@ -163,7 +164,7 @@ class DashboardController extends Controller
         $dcentreValue = $this->selectedCentre($request);
         $dateRangeValue = $request->input('date_range');
         $yearsValue = $request->input('years');
-        $role = 'Teacher';
+        $teacherRoleNames = TeacherRole::teacherRoleNames();
 
         $results = User::select(
             'users.department_id as centre_id',
@@ -172,8 +173,8 @@ class DashboardController extends Controller
         )
             ->join('departments', 'users.department_id', '=', 'departments.id') // Adjust the join condition based on your actual schema
             //->where('users.department_id', '!=', 1);
-            ->whereHas('roles', function ($query) use ($role) {
-                $query->where('name', $role);
+            ->whereHas('roles', function ($query) use ($teacherRoleNames) {
+                $query->whereIn('name', $teacherRoleNames);
             });
 
         if ($dcentreValue !== (string) Department::HQ_ID) {

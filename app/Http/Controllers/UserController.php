@@ -7,6 +7,7 @@ use App\Models\Position;
 use App\Models\User;
 use App\Support\Branch\BranchAccess;
 use App\Support\Branch\BranchContext;
+use App\Support\Branch\TeacherRole;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -21,6 +22,7 @@ class UserController extends Controller
     {
         $this->middleware('auth');
         $this->middleware('permission:user-list|user-create|user-edit|user-delete', ['only' => ['index', 'show', 'find', 'affiliateUser']]);
+        $this->middleware('permission:user-create|user-edit', ['only' => ['roleOptions']]);
         $this->middleware('permission:user-create', ['only' => ['create', 'store']]);
         $this->middleware('permission:user-edit', ['only' => ['edit', 'update']]);
         $this->middleware('permission:user-delete', ['only' => ['destroy', 'destroy_all', 'destroyAffiliateUser']]);
@@ -38,7 +40,7 @@ class UserController extends Controller
 
     private function listing(Request $request, bool $affiliate)
     {
-        $roles = BranchAccess::visibleRoles($request->user())->get()->mapWithKeys(fn ($role) => [$role->name => $role->display_name ?: $role->name])->all();
+        $roles = []; // Options are fetched for the selected centre each time Add opens.
         if (!$request->ajax()) {
             $department = Department::where('status', 1)->orderBy('name')->get();
             $position = Position::where('status', 1)->orderBy('name')->get();
@@ -47,7 +49,8 @@ class UserController extends Controller
         $query = User::with(['department', 'position', 'roles']);
         $affiliate ? $query->where('affiliate_request', 1) : $query->where(fn ($q) => $q->whereNull('affiliate_request')->orWhere('affiliate_request', '!=', 1));
         if ($request->filled('role')) {
-            $query->whereHas('roles', fn ($q) => $q->where('name', $request->role));
+            $roleNames = $request->role === 'Teacher' ? TeacherRole::teacherRoleNames() : [$request->role];
+            $query->whereHas('roles', fn ($q) => $q->whereIn('roles.name', $roleNames));
         }
         // The existing UI uses 1 as the "all branches" filter value.
         if ($request->filled('centre') && (string) $request->centre !== '1') {
@@ -112,8 +115,21 @@ class UserController extends Controller
 
     public function create()
     {
-        $roles = BranchAccess::visibleRoles(request()->user())->get()->mapWithKeys(fn ($role) => [$role->name => $role->display_name ?: $role->name])->all();
-        return view('users.create', compact('roles'));
+        $roles = [];
+        $department = Department::where('status', 1)->orderBy('name')->get();
+        $position = Position::where('status', 1)->orderBy('name')->get();
+        return view('users.create', compact('roles', 'department', 'position'));
+    }
+
+    public function roleOptions(Request $request)
+    {
+        $data = $request->validate(['department_id' => 'required|integer']);
+        $branchId = (int) $data['department_id'];
+        BranchAccess::assertBranch($request->user(), $branchId, true);
+        $roles = BranchAccess::assignableRoles($request->user(), $branchId)
+            ->map(fn (Role $role) => ['value' => $role->name, 'label' => $role->display_name ?: $role->name]);
+
+        return response()->json(['roles' => $roles])->header('Cache-Control', 'no-store, private');
     }
 
     public function store(Request $request)
@@ -174,9 +190,17 @@ class UserController extends Controller
     {
         $data = User::findOrFail($id);
         BranchAccess::assertManageUser(request()->user(), $data);
-        $html = '';
-        foreach (BranchAccess::visibleRoles(request()->user())->get() as $role) {
-            $html .= '<option value="'.e($role->name).'" '.($data->hasRole($role) ? 'selected' : '').'>'.e($role->display_name ?: $role->name).'</option>';
+        $roles = BranchAccess::assignableRoles(request()->user(), (int) $data->department_id);
+        // Keeping an existing single role for a department/name edit grants no new access.
+        // This exception is deliberately absent from Add and from the write-time checks.
+        $currentRole = $data->roles->count() === 1 ? $data->roles->first() : null;
+        if ($currentRole && $currentRole->guard_name === 'web' && !$roles->contains('id', $currentRole->id)) {
+            $roles->push($currentRole);
+        }
+        $html = '<option value=""'.($currentRole ? '' : ' selected').'>'.e(__('user-access.users.modal.select')).'</option>';
+        foreach ($roles as $role) {
+            $selected = $currentRole && $currentRole->id === $role->id ? ' selected' : '';
+            $html .= '<option value="'.e($role->name).'"'.$selected.'>'.e($role->display_name ?: $role->name).'</option>';
         }
         // Refresh the complete list whenever Edit opens, including departments added in another tab.
         // Retain the current inactive department so an unrelated edit cannot silently clear it.

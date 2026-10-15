@@ -48,6 +48,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::put('/roles/save/{id}', [RoleController::class, 'update'])->name('roles.save');
     //Route::delete('/roles/destroy', [RoleController::class, 'destroy'])->name('roles.destroy');
     Route::post('/roles/destroy_all', [RoleController::class, 'destroy_all'])->name('roles.destroy_all');
+    Route::get('/users/role-options', [UserController::class, 'roleOptions'])->name('users.role-options');
     Route::resource('users', UserController::class);
 
     Route::get('/logout', [UserController::class, 'perform'])->name('logout.perform');

@@ -3,6 +3,7 @@
 namespace App\Domain\Affiliate\Services;
 
 use App\Models\User;
+use App\Support\Branch\TeacherRole;
 
 final class AffiliateEmployeeEligibility
 {
@@ -16,6 +17,12 @@ final class AffiliateEmployeeEligibility
         $has_employee_role = $user->getRoleNames()
             ->intersect($employee_roles)
             ->isNotEmpty();
+        if (!$has_employee_role && in_array('Teacher', $employee_roles, true)) {
+            $has_employee_role = $user->roles->contains(fn ($role): bool =>
+                TeacherRole::isTeacherRole($role)
+                && (int) $role->branch_id === (int) $user->department_id
+            );
+        }
         if (!$has_employee_role) {
             return false;
         }
