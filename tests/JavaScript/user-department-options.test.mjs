@@ -12,7 +12,8 @@ const ui = {
     users: { modal: { select: 'Please select' } },
     data_table: {},
 };
-// Only Blade substitutions are stubbed; execute the real page's loader and handlers.
+// Executes the real handlers with a lightweight transport/coordination harness.
+// DOM/widget integration is covered by user-department-select2.fixture.mjs using real jQuery and Select2.
 const source = readFileSync(scriptPath, 'utf8')
     .replace(/^\s*<script>|<\/script>\s*$/g, '')
     .replace("@json(__('user-access'))", JSON.stringify(ui))
@@ -61,8 +62,15 @@ function harness() {
         }
         val(value) {
             if (arguments.length === 0) return this.value;
-            this.value = value === null || value === undefined ? null
-                : multipleSelects.has(this.selector) ? (Array.isArray(value) ? value : [String(value)]) : value;
+            if (multipleSelects.has(this.selector)) {
+                // jQuery val(null) normalizes to '', selecting a real blank option if present.
+                // val([]) actually clears every option on a multiple select.
+                this.value = value === null || value === undefined
+                    ? (/<option\b[^>]*\bvalue\s*=\s*["']{2}/i.test(this.markup) ? [''] : [])
+                    : (Array.isArray(value) ? Array.from(value, String) : [String(value)]);
+            } else {
+                this.value = value === null || value === undefined ? null : value;
+            }
             return this;
         }
         html(value) { if (arguments.length === 0) return this.markup; this.markup = value; return this; }
@@ -107,7 +115,8 @@ function harness() {
     return { $, requests, messages, events, click, centre };
 }
 
-const options = (...names) => names.map((name, index) => `<option value="${index + 1}">${name}</option>`).join('');
+const options = (...names) => '<option value="">No department</option>'
+    + names.map((name, index) => `<option value="${index + 1}">${name}</option>`).join('');
 const userResponse = (id, centre, position = null, markup = options('Admin', 'Operations')) => ({
     data: { id, department_id: centre, position_id: position, name: `User ${id}`, email: `user${id}@example.test`, disable: 0 },
     html: '<option value="BranchAdmin" selected>BranchAdmin</option>',
@@ -127,7 +136,7 @@ test('opening Edit loads all fresh department options without requiring a centre
     h.requests[0].success(userResponse(84, 12));
     assert.equal(h.requests.length, 1, 'programmatic Centre selection must not start another lookup');
     assert.equal(h.$('#EditPosition').html(), options('Admin', 'Operations'));
-    assert.equal(h.$('#EditPosition').val(), null);
+    assert.deepEqual(h.$('#EditPosition').val(), []);
     assert.equal(h.$('#SubmitEditForm').prop('disabled'), false);
     assert.deepEqual(h.$('#EditModal').modals, ['show']);
 

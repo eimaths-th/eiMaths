@@ -70,7 +70,7 @@
             const state = department_options[form];
             const version = ++state.version;
             const centre = $(state.centre).val()?.[0] ?? null;
-            $(state.position).empty().val(null).trigger('change.select2');
+            $(state.position).empty().val([]).trigger('change.select2');
             setDepartmentBlocked(form, Boolean(centre));
             if (!centre) return;
 
@@ -80,7 +80,7 @@
                 cache: false,
                 success: function(res) {
                     if (state.version !== version) return;
-                    $(state.position).html(res.html).val(null).trigger('change.select2');
+                    $(state.position).html(res.html).val([]).trigger('change.select2');
                     setDepartmentBlocked(form, false);
                 },
                 error: function(xhr) {
@@ -238,7 +238,7 @@
             $('.alert-danger').hide();
             $('.alert-success').html('');
             $('.alert-success').hide();
-            const centre = $('#AddDepartment').val();
+            const centre = $('#AddDepartment').val() || [];
             $('#CreateModal form').trigger('reset');
             $('#AddDepartment').val(centre).trigger('change.select2');
             refreshDepartmentOptions('create');
@@ -285,8 +285,8 @@
                             timeOut: 5000
                         });
                         $('#Listview').DataTable().ajax.reload();
-                        $("#AddDepartment").val(null).trigger("change")
-                        $("#AddPosition").val(null).trigger("change")
+                        $("#AddDepartment").val([]).trigger("change")
+                        $("#AddPosition").val([]).trigger("change")
                         $('#CreateModal form').trigger('reset');
                         //$('#SubmitCreateForm').hide();
                         //setTimeout(function() {
@@ -312,7 +312,7 @@
 
             const version = ++edit_request_version;
             ++department_options.edit.version;
-            $('#EditPosition').empty().val(null).trigger('change.select2');
+            $('#EditPosition').empty().val([]).trigger('change.select2');
             $('#EditPassword').val('');
             $('#EditPasswordC').val('');
             setDepartmentBlocked('edit', true);
@@ -336,7 +336,11 @@
                     $('#editName').val(res.data.name);
                     $('#editEmail').val(res.data.email);
                     $('#EditDepartment').val(res.data.department_id).trigger('change.select2');
-                    $('#EditPosition').html(res.select_list_position).val(res.data.position_id ?? null).trigger('change.select2');
+                    // Multiple Select2 counts a selected blank option against its one-item limit.
+                    // Use an empty array for no department, never null (jQuery selects value="").
+                    const position_id = res.data.position_id;
+                    const selected_positions = position_id == null || position_id === '' ? [] : [String(position_id)];
+                    $('#EditPosition').html(res.select_list_position).val(selected_positions).trigger('change.select2');
                     $('#editRole').html(res.html);
                     setDepartmentBlocked('edit', false);
                     $('#EditModal').modal('show');
