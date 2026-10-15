@@ -251,7 +251,8 @@ class UserController extends Controller
         $otherAccountAccessChanged = (int) $target->id !== (int) $request->user()->id
             && ($target->email !== $data['email'] || !empty($data['password'])
                 || (int) $target->disable !== (int) $data['disable']);
-        // Profile edits must not become a way to take over a more privileged account.
+        // Sensitive edits must still respect protected central roles and grants.
+        // Ordinary operational permissions do not restrict account-management authority.
         if ($rolesChanged || $otherAccountAccessChanged) {
             BranchAccess::assertAssignableRole($request->user(), $role, (int) $data['department']);
         }

@@ -25,6 +25,8 @@ class UserAssignableRoleTest extends TestCase
     private Role $globalTeacher;
     private Role $localTeacher;
     private Role $foreignTeacher;
+    private Role $centralRole;
+    private Role $ownerPermissionRole;
 
     protected function beforeRefreshingDatabase(): void
     {
@@ -40,13 +42,13 @@ class UserAssignableRoleTest extends TestCase
         Mail::fake();
         Notification::fake();
         $this->hq = Department::forceCreate(['id' => Department::HQ_ID, 'name' => 'HQ', 'code' => 'HQ', 'status' => 1, 'branch_type' => 'hq']);
-        $this->branch = Department::create(['name' => 'Own centre', 'code' => 'OWN', 'status' => 1, 'enabled_modules' => ['users', 'students']]);
+        $this->branch = Department::create(['name' => 'Own centre', 'code' => 'OWN', 'status' => 1, 'enabled_modules' => ['users', 'students', 'finance']]);
         $this->otherBranch = Department::create(['name' => 'Other centre', 'code' => 'OTH', 'status' => 1]);
-        foreach (['user-create', 'user-edit', 'user-list', 'student-list', 'quiz-list', 'centre-edit', 'all-centre'] as $name) {
+        foreach (['user-create', 'user-edit', 'user-list', 'student-list', 'student-edit', 'quiz-list', 'receipt-list', 'order-edit', 'receipt-create', 'receipt-edit', 'centre-edit', 'all-centre', 'add-permission'] as $name) {
             Permission::findOrCreate($name, 'web');
         }
         $this->globalTeacher = Role::findOrCreate('Teacher', 'web');
-        $this->globalTeacher->syncPermissions(['student-list', 'quiz-list']);
+        $this->globalTeacher->syncPermissions(['student-list', 'student-edit', 'quiz-list', 'receipt-list', 'order-edit', 'receipt-create', 'receipt-edit']);
         $this->localTeacher = Role::create([
             'name' => 'branch-'.$this->branch->id.'-teacher', 'display_name' => 'Teacher for own centre',
             'branch_id' => $this->branch->id, 'guard_name' => 'web',
@@ -57,6 +59,10 @@ class UserAssignableRoleTest extends TestCase
             'branch_id' => $this->otherBranch->id, 'guard_name' => 'web',
         ]);
         $this->foreignTeacher->syncPermissions(['student-list']);
+        $this->centralRole = Role::findOrCreate('Legacy branch supervisor', 'web');
+        $this->centralRole->syncPermissions(['user-list', 'centre-edit']);
+        $this->ownerPermissionRole = Role::findOrCreate('Permission administrator', 'web');
+        $this->ownerPermissionRole->syncPermissions(['add-permission']);
         $this->actor = $this->makeUser(Role::findOrCreate('BranchAdmin', 'web'));
         $this->actor->givePermissionTo(['user-create', 'user-edit', 'student-list']);
     }
@@ -69,8 +75,10 @@ class UserAssignableRoleTest extends TestCase
         $byName = array_column($roles, 'label', 'value');
 
         $this->assertSame('Teacher for own centre', $byName[$this->localTeacher->name]);
-        $this->assertArrayNotHasKey('Teacher', $byName);
+        $this->assertArrayHasKey('Teacher', $byName);
         $this->assertArrayNotHasKey($this->foreignTeacher->name, $byName);
+        $this->assertArrayNotHasKey($this->centralRole->name, $byName);
+        $this->assertArrayNotHasKey($this->ownerPermissionRole->name, $byName);
         $this->assertArrayNotHasKey('Admin', $byName);
         $this->assertArrayNotHasKey('SystemAdmin', $byName);
         $this->assertSame($before, $this->authorizationSnapshot(), 'Looking up roles must not provision roles or change any grants.');
@@ -101,15 +109,61 @@ class UserAssignableRoleTest extends TestCase
         $this->actingAs($owner)->getJson($this->roleOptionsUrl($this->otherBranch))->assertUnprocessable();
     }
 
-    public function test_forging_unassignable_or_foreign_role_in_create_request_is_still_rejected(): void
+    public function test_forging_central_owner_or_foreign_role_in_create_request_is_still_rejected(): void
     {
         $before = $this->authorizationSnapshot();
-        foreach ([$this->globalTeacher, $this->foreignTeacher] as $role) {
+        foreach ([$this->centralRole, $this->ownerPermissionRole, $this->foreignTeacher,
+            Role::findOrCreate('Admin', 'web'), Role::findOrCreate('SystemAdmin', 'web')] as $role) {
             $this->actingAs($this->actor)->postJson('/users', $this->newUserPayload($role))
                 ->assertForbidden();
             $this->assertDatabaseMissing('users', ['email' => 'new-teacher@example.test']);
         }
         $this->assertSame($before, $this->authorizationSnapshot());
+    }
+
+    public function test_create_and_update_still_require_their_respective_user_management_permissions(): void
+    {
+        $actor = $this->makeUser(Role::findOrCreate('Ordinary staff', 'web'));
+        $actor->givePermissionTo('student-list');
+        $target = $this->makeUser($this->globalTeacher);
+        $before = $this->authorizationSnapshot();
+
+        $this->actingAs($actor)->postJson('/users', $this->newUserPayload($this->globalTeacher))->assertForbidden();
+        $this->putJson('/users/save/'.$target->id, [
+            'name' => 'Must not save', 'email' => $target->email,
+            'department' => $this->branch->id, 'position' => null, 'role' => 'Teacher', 'disable' => 0,
+        ])->assertForbidden();
+
+        $this->assertSame($before, $this->authorizationSnapshot());
+        $this->assertDatabaseMissing('users', ['email' => 'new-teacher@example.test']);
+    }
+
+    public function test_user_create_can_assign_complete_existing_teacher_role_with_operational_receipt_permissions_the_actor_lacks(): void
+    {
+        $managerRole = Role::findOrCreate('User manager only', 'web');
+        $managerRole->syncPermissions(['user-create', 'user-edit']);
+        $manager = $this->makeUser($managerRole);
+        $beforeRole = $this->globalTeacher->fresh()->getAttributes();
+        $beforePermissions = $this->globalTeacher->permissions()->orderBy('name')->pluck('name')->all();
+        $actorPermissions = $manager->getAllPermissions()->pluck('name')->sort()->values()->all();
+        $this->assertSame(['user-create', 'user-edit'], $actorPermissions);
+        foreach (['receipt-list', 'order-edit', 'student-edit', 'receipt-create', 'receipt-edit'] as $permission) {
+            $this->assertFalse($manager->can($permission));
+        }
+
+        $this->actingAs($manager)->postJson('/users', $this->newUserPayload($this->globalTeacher))
+            ->assertOk()->assertJsonStructure(['success']);
+
+        $teacher = User::where('email', 'new-teacher@example.test')->sole();
+        $this->assertSame(['Teacher'], $teacher->getRoleNames()->all());
+        $this->assertSame($beforePermissions, $teacher->getAllPermissions()->pluck('name')->sort()->values()->all());
+        // This checks effective authorization, not execution of a financial transaction.
+        foreach (['receipt-list', 'order-edit', 'student-edit', 'receipt-create', 'receipt-edit'] as $permission) {
+            $this->assertTrue($teacher->checkPermissionTo($permission), $permission.' must remain effective with its branch module enabled.');
+        }
+        $this->assertSame($beforeRole, $this->globalTeacher->fresh()->getAttributes());
+        $this->assertSame($beforePermissions, $this->globalTeacher->fresh()->permissions()->orderBy('name')->pluck('name')->all());
+        $this->assertSame($actorPermissions, $manager->fresh()->getAllPermissions()->pluck('name')->sort()->values()->all());
     }
 
     public function test_branch_admin_can_create_teacher_with_assignable_branch_role_without_changing_global_teacher(): void
@@ -129,18 +183,21 @@ class UserAssignableRoleTest extends TestCase
         $this->assertSame($actorPermissions, $this->actor->fresh()->getAllPermissions()->pluck('name')->sort()->values()->all());
     }
 
-    public function test_disabled_module_does_not_make_unowned_permission_assignable(): void
+    public function test_disabled_module_does_not_trim_permissions_from_an_assigned_ordinary_role(): void
     {
         $this->assertFalse($this->actor->can('quiz-list'));
-        $before = $this->actingAs($this->actor)->getJson($this->roleOptionsUrl($this->branch))->assertOk()->json('roles');
-        $this->assertNotContains('Teacher', array_column($before, 'value'));
+        $beforePermissions = $this->globalTeacher->permissions()->orderBy('name')->pluck('name')->all();
+        $roles = $this->actingAs($this->actor)->getJson($this->roleOptionsUrl($this->branch))->assertOk()->json('roles');
+        $this->assertContains('Teacher', array_column($roles, 'value'));
+        $this->postJson('/users', $this->newUserPayload($this->globalTeacher))->assertOk();
+        $teacher = User::where('email', 'new-teacher@example.test')->sole();
+        $this->assertContains('quiz-list', $teacher->getAllPermissions()->pluck('name')->all());
+        $this->assertFalse($teacher->can('quiz-list'));
 
-        // Raw assignment authority is distinct from the branch's currently enabled modules.
-        $this->actor->givePermissionTo('quiz-list');
-        $actor = $this->actor->fresh();
-        $this->assertFalse($actor->can('quiz-list'));
-        $after = $this->actingAs($actor)->getJson($this->roleOptionsUrl($this->branch))->assertOk()->json('roles');
-        $this->assertContains('Teacher', array_column($after, 'value'));
+        $this->branch->update(['enabled_modules' => ['users', 'students', 'finance', 'quiz']]);
+        $this->assertTrue($teacher->fresh()->can('quiz-list'));
+        $this->assertFalse($this->actor->fresh()->can('quiz-list'));
+        $this->assertSame($beforePermissions, $this->globalTeacher->fresh()->permissions()->orderBy('name')->pluck('name')->all());
     }
 
     public function test_owner_sees_central_roles_only_for_hq_and_branch_roles_only_for_their_destination(): void
@@ -158,38 +215,57 @@ class UserAssignableRoleTest extends TestCase
         $this->assertNotContains($this->foreignTeacher->name, array_column($branchRoles, 'value'));
     }
 
+    public function test_hq_admin_cannot_delegate_custom_central_role_without_holding_its_central_permission(): void
+    {
+        $admin = $this->makeUser(Role::findOrCreate('Admin', 'web'), $this->hq);
+        $admin->givePermissionTo('user-create');
+        $crossCentreRole = Role::findOrCreate('Cross-centre operator', 'web');
+        $crossCentreRole->syncPermissions(['all-centre']);
+        $before = $this->authorizationSnapshot();
+        $this->assertFalse($admin->checkPermissionTo('all-centre'));
+
+        $roles = $this->actingAs($admin)->getJson($this->roleOptionsUrl($this->hq))->assertOk()->json('roles');
+        $this->assertNotContains($crossCentreRole->name, array_column($roles, 'value'));
+        $this->postJson('/users', array_replace($this->newUserPayload($crossCentreRole), [
+            'department_id' => $this->hq->id,
+        ]))->assertForbidden();
+
+        $this->assertDatabaseMissing('users', ['email' => 'new-teacher@example.test']);
+        $this->assertSame($before, $this->authorizationSnapshot());
+    }
+
     public function test_edit_keeps_current_unassignable_single_role_without_making_it_available_for_add(): void
     {
-        $target = $this->makeUser($this->globalTeacher);
+        $target = $this->makeUser($this->centralRole);
         $before = $this->authorizationSnapshot();
         $response = $this->actingAs($this->actor)->getJson('/users/edit/'.$target->id)->assertOk();
         $options = $this->parsedRoleOptions($response->json('html'));
 
-        $this->assertTrue($options['Teacher']['selected']);
+        $this->assertTrue($options[$this->centralRole->name]['selected']);
         $this->assertArrayHasKey($this->localTeacher->name, $options);
         $this->assertArrayNotHasKey($this->foreignTeacher->name, $options);
         $this->assertSame($before, $this->authorizationSnapshot());
-        $createOptions = $this->getJson($this->roleOptionsUrl($this->branch).'&target_id='.$target->id.'&role=Teacher')
+        $createOptions = $this->getJson($this->roleOptionsUrl($this->branch).'&target_id='.$target->id.'&role='.rawurlencode($this->centralRole->name))
             ->assertOk()->json('roles');
-        $this->assertNotContains('Teacher', array_column($createOptions, 'value'), 'Add lookup must not accept a forged keep-current-role exception.');
+        $this->assertNotContains($this->centralRole->name, array_column($createOptions, 'value'), 'Add lookup must not accept a forged keep-current-role exception.');
 
         $this->putJson('/users/save/'.$target->id, [
             'name' => 'Updated teacher profile', 'email' => $target->email,
-            'department' => $this->branch->id, 'position' => null, 'role' => 'Teacher', 'disable' => 0,
+            'department' => $this->branch->id, 'position' => null, 'role' => $this->centralRole->name, 'disable' => 0,
         ])->assertOk();
-        $this->assertSame(['Teacher'], $target->fresh()->getRoleNames()->all());
+        $this->assertSame([$this->centralRole->name], $target->fresh()->getRoleNames()->all());
         $this->assertDatabaseHas('users', ['id' => $target->id, 'name' => 'Updated teacher profile']);
         $this->assertDatabaseMissing('branch_audit_logs', ['subject_type' => User::class, 'subject_id' => $target->id, 'action' => 'roles.changed']);
     }
 
     public function test_edit_does_not_inherit_another_users_unassignable_role_or_expose_foreign_user(): void
     {
-        $this->makeUser($this->globalTeacher);
+        $this->makeUser($this->centralRole);
         $target = $this->makeUser($this->localTeacher);
         $foreign = $this->makeUser($this->foreignTeacher, $this->otherBranch);
         $options = $this->parsedRoleOptions($this->actingAs($this->actor)
             ->getJson('/users/edit/'.$target->id)->assertOk()->json('html'));
-        $this->assertArrayNotHasKey('Teacher', $options);
+        $this->assertArrayNotHasKey($this->centralRole->name, $options);
         $this->assertTrue($options[$this->localTeacher->name]['selected']);
         $this->getJson('/users/edit/'.$foreign->id)->assertNotFound();
     }
@@ -197,12 +273,12 @@ class UserAssignableRoleTest extends TestCase
     public function test_edit_does_not_keep_unassignable_role_when_target_has_multiple_roles(): void
     {
         $target = $this->makeUser($this->localTeacher);
-        $target->assignRole($this->globalTeacher);
+        $target->assignRole($this->centralRole);
         $options = $this->parsedRoleOptions($this->actingAs($this->actor)
             ->getJson('/users/edit/'.$target->id)->assertOk()->json('html'));
-        $this->assertArrayNotHasKey('Teacher', $options);
+        $this->assertArrayNotHasKey($this->centralRole->name, $options);
         $this->assertArrayHasKey($this->localTeacher->name, $options);
-        $this->assertEqualsCanonicalizing(['Teacher', $this->localTeacher->name], $target->fresh()->getRoleNames()->all());
+        $this->assertEqualsCanonicalizing([$this->centralRole->name, $this->localTeacher->name], $target->fresh()->getRoleNames()->all());
     }
 
     public function test_teacher_datatable_filter_includes_shared_and_scoped_teachers_once_within_actor_branch(): void

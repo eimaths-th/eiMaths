@@ -150,13 +150,14 @@ final class BranchAccess
                 if (in_array(strtolower($name), config('branch.owner_permissions'), true)) {
                     return [403, 'Only SystemAdmin can grant owner permissions.'];
                 }
-                if (($central && !self::isCentral($actor)) || !$actorPermissions->contains($name)) {
-                    return [403, 'Cannot grant permissions beyond your authority.'];
+                if ($central && (!self::isCentral($actor) || !$actorPermissions->contains($name))) {
+                    return [403, 'Cannot grant central permissions beyond your authority.'];
                 }
             }
         }
-        // Compare raw grants, including disabled modules: later enabling a module must
-        // never activate a permission the creator did not have authority to grant.
+        // Account-management authority is separate from the recipient's operational
+        // permissions. Assign the configured role intact; effective module access is
+        // still checked for the recipient on each request. Central grants stay protected.
         return null;
     }
 

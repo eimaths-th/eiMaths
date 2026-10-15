@@ -63,92 +63,80 @@ class BranchTeacherRoleTest extends TestCase
         $this->admin->assignRole($administrator);
     }
 
-    public function test_preview_lists_subset_without_changing_roles_users_or_audit(): void
+    /** @dataProvider retiredModes */
+    public function test_retired_command_preserves_existing_roles_permissions_and_assigned_users(bool $apply): void
     {
-        $rolesBefore = DB::table('roles')->get()->toJson();
-        $assignmentsBefore = DB::table('model_has_roles')->get()->toJson();
-        $this->assertSame(0, $this->command());
-        $output = Artisan::output();
-        $this->assertStringContainsString('preview only', $output);
-        foreach (['INCLUDE', 'OMIT', 'student-list', 'history-list', 'quiz-manage', 'course-manage'] as $text) {
-            $this->assertStringContainsString($text, $output);
+        $legacy = $this->scopedRole();
+        $legacy->syncPermissions(['student-list', 'history-list']);
+        $teacher = User::factory()->state(['password' => 'teacher-test-password'])->create([
+            'department_id' => $this->branch->id, 'disable' => 0,
+        ]);
+        $teacher->assignRole($legacy);
+        $before = $this->roleAndUserSnapshot();
+
+        $this->assertRetiredWithoutQueries(['--apply' => $apply]);
+
+        $this->assertSame($before, $this->roleAndUserSnapshot());
+        $this->assertSame([$legacy->name], $teacher->fresh()->getRoleNames()->all());
+        $this->assertSame(['history-list', 'student-list'], $legacy->fresh()->permissions->pluck('name')->sort()->values()->all());
+        $this->assertDatabaseCount('branch_audit_logs', 0);
+    }
+
+    public static function retiredModes(): array
+    {
+        return ['legacy default mode' => [false], 'legacy --apply mode' => [true]];
+    }
+
+    public function test_retired_apply_cannot_create_a_trimmed_role_or_provisioning_audit(): void
+    {
+        $name = TeacherRole::scopedName($this->branch->id);
+        $this->assertDatabaseMissing('roles', ['name' => $name]);
+        $before = $this->roleAndUserSnapshot();
+
+        $this->assertRetiredWithoutQueries(['--apply' => true, '--admin' => $this->admin->email]);
+
+        $this->assertSame($before, $this->roleAndUserSnapshot());
+        $this->assertDatabaseMissing('roles', ['name' => $name]);
+        $this->assertDatabaseCount('branch_audit_logs', 0);
+    }
+
+    public function test_retirement_is_reported_without_looking_up_legacy_arguments(): void
+    {
+        $before = $this->roleAndUserSnapshot();
+
+        $this->assertRetiredWithoutQueries(['centreCode' => 'NONEXISTENT', '--admin' => '', '--apply' => true]);
+
+        $this->assertSame($before, $this->roleAndUserSnapshot());
+        $this->assertDatabaseCount('branch_audit_logs', 0);
+    }
+
+    private function roleAndUserSnapshot(): array
+    {
+        $snapshot = [];
+        foreach (['roles', 'permissions', 'role_has_permissions', 'users', 'model_has_roles', 'model_has_permissions', 'branch_audit_logs'] as $table) {
+            $snapshot[$table] = DB::table($table)->get()->toJson();
         }
-        $this->assertSame($rolesBefore, DB::table('roles')->get()->toJson());
-        $this->assertSame($assignmentsBefore, DB::table('model_has_roles')->get()->toJson());
-        $this->assertDatabaseCount('branch_audit_logs', 0);
+
+        return $snapshot;
     }
 
-    public function test_apply_creates_only_safe_subset_and_is_idempotent_with_console_audit(): void
+    private function assertRetiredWithoutQueries(array $arguments): void
     {
-        $templateBefore = $this->template->permissions->pluck('name')->sort()->values()->all();
-        $authorityBefore = $this->admin->getAllPermissions()->pluck('name')->sort()->values()->all();
-        $assignmentsBefore = DB::table('model_has_roles')->get()->toJson();
-        $this->assertSame(0, $this->command(['--apply' => true]));
-        $role = Role::findByName(TeacherRole::scopedName($this->branch->id), 'web');
-        $this->assertSame((int) $this->branch->id, (int) $role->branch_id);
-        $this->assertSame('Teacher (SB)', $role->display_name);
-        $this->assertSame(['student-list'], $role->permissions->pluck('name')->all());
-        $this->assertSame($templateBefore, $this->template->fresh()->permissions->pluck('name')->sort()->values()->all());
-        $this->assertSame($authorityBefore, $this->admin->fresh()->getAllPermissions()->pluck('name')->sort()->values()->all());
-        $this->assertSame($assignmentsBefore, DB::table('model_has_roles')->get()->toJson());
-        $log = DB::table('branch_audit_logs')->where('action', 'teacher-role.provisioned')->sole();
-        $this->assertNull($log->actor_id);
-        $this->assertSame($this->branch->id, (int) $log->branch_id);
-        $this->assertSame(['source' => 'console', 'authority_user_id' => $this->admin->id], json_decode($log->metadata, true));
-        $this->assertSame(0, $this->command(['--apply' => true, '--admin' => $this->admin->email]));
-        $this->assertStringContainsString('already matches; unchanged', Artisan::output());
-        $this->assertSame(1, Role::where('name', $role->name)->count());
-        $this->assertSame(1, DB::table('branch_audit_logs')->where('action', 'teacher-role.provisioned')->count());
-    }
-
-    public function test_changed_existing_role_is_never_overwritten(): void
-    {
-        $role = $this->scopedRole();
-        $role->givePermissionTo('history-list');
-        $this->assertSame(1, $this->command(['--apply' => true]));
-        $this->assertStringContainsString('differs from this plan', Artisan::output());
-        $this->assertSame(['history-list'], $role->fresh()->permissions->pluck('name')->all());
-        $this->assertDatabaseCount('branch_audit_logs', 0);
-    }
-
-    public function test_apply_rechecks_authority_after_preview_and_refuses_empty_subset(): void
-    {
-        $this->assertSame(0, $this->command());
-        Role::findByName('BranchAdmin')->syncPermissions(['user-create']);
-        $this->assertSame(1, $this->command(['--apply' => true]));
-        $this->assertStringContainsString('No Teacher permissions', Artisan::output());
-        $this->assertDatabaseMissing('roles', ['name' => TeacherRole::scopedName($this->branch->id)]);
-    }
-
-    /** @dataProvider invalidAuthority */
-    public function test_invalid_centre_or_authority_fails_without_writes(string $scenario): void
-    {
-        $arguments = ['--apply' => true];
-        if ($scenario === 'inactive') {
-            $this->branch->update(['status' => 0]);
-        } elseif ($scenario === 'hq') {
-            $arguments['centreCode'] = 'HQ';
-        } elseif ($scenario === 'other-branch') {
-            $this->admin->update(['department_id' => $this->other->id]);
-        } elseif ($scenario === 'disabled') {
-            $this->admin->update(['disable' => 1]);
-        } elseif ($scenario === 'no-create') {
-            Role::findByName('BranchAdmin')->syncPermissions(['student-list']);
-        } elseif ($scenario === 'no-admin') {
-            $arguments['--admin'] = '';
-        } elseif ($scenario === 'users-disabled') {
-            $this->branch->update(['enabled_modules' => ['students']]);
-        } elseif ($scenario === 'central-role') {
-            $this->admin->assignRole(Role::findOrCreate('Admin', 'web'));
+        $queries = [];
+        $recording = true;
+        DB::listen(function ($query) use (&$queries, &$recording): void {
+            if ($recording) {
+                $queries[] = $query->sql;
+            }
+        });
+        try {
+            $this->assertSame(1, $this->command($arguments));
+        } finally {
+            $recording = false;
         }
-        $this->assertSame(1, $this->command($arguments));
-        $this->assertDatabaseMissing('roles', ['name' => TeacherRole::scopedName($this->branch->id)]);
-        $this->assertDatabaseCount('branch_audit_logs', 0);
-    }
 
-    public static function invalidAuthority(): array
-    {
-        return array_map(fn ($scenario) => [$scenario], ['inactive', 'hq', 'other-branch', 'disabled', 'no-create', 'no-admin', 'users-disabled', 'central-role']);
+        $this->assertSame([], $queries, 'The retired command must not query or mutate application data.');
+        $this->assertStringContainsString("This legacy command is retired. Assign the existing Teacher role from Users; roles are no longer trimmed to the creator's permissions. Existing roles/users unchanged.", Artisan::output());
     }
 
     public function test_teacher_identity_uses_canonical_name_guard_and_matching_role_branch(): void

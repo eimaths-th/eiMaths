@@ -1,46 +1,45 @@
-# Branch user creation: scoped Teacher role
+# User role delegation
 
-`user-create` permits creating an account. The selected role is checked separately: a branch administrator cannot grant permissions they do not have. A shared Teacher role containing Quiz permissions can therefore be rejected even when the administrator can create users. Disabling the Quiz module does not make those raw grants safe to assign; the module could be enabled later.
+Account management and operational permissions are separate. A user with `user-create` can create an account with an existing assignable role in their permitted centre even when they do not hold all of that role's ordinary operational permissions. `user-edit` follows the same rule when changing an existing user's role. The role's configured permission set is assigned intact.
 
-## Deployment
+For example, a role named Teacher can include teaching, Quiz or finance permissions as configured by the role administrator. Role names do not impose a fixed job description. Adding a permission to a shared role affects every account assigned to that role.
 
-Deploy this change as a complete backend release, including `TeacherRole`, the command, controller/support changes, Blade templates, translations and routes. No schema migration is required for this fix. Clear Laravel caches after deployment:
+## Boundaries retained
+
+- Add/edit endpoints still require their respective account-management permission.
+- The actor must be allowed to manage the destination centre and target user; branch-scoped roles must belong to that centre.
+- Admin and SystemAdmin remain restricted to SystemAdmin assignment in HQ.
+- Owner-only permissions remain restricted to SystemAdmin. Delegating central permissions still requires central authority and the corresponding central grants.
+- The recipient's enabled modules and normal per-operation permission checks still apply. A role's ordinary permissions are not removed simply because a module is currently disabled.
+- Changing a role's permission definition is separate from assigning an existing role. This change does not relax Role Management authorization.
+- Dropdown and save operations use the same assignment rules. Current role/department preservation and asynchronous form-loading guards remain in place.
+
+## Deploy
+
+Deploy the backend changes, then clear cached application configuration/routes/views:
 
 ```sh
 php artisan optimize:clear
 ```
 
-Preview the branch Teacher role using the actual SB administrator's user ID or email on that server. For example, if the SB administrator is user 84:
+No database migration or branch-specific Teacher provisioning is needed. Reopen Add User, select the centre, and choose the existing Teacher role (or another configured role suitable for the account).
 
-```sh
-php artisan branch:teacher-role SB --admin=84
-php artisan branch:teacher-role SB --admin=84 --apply
-```
+**The previous `branch:teacher-role ... --apply` instructions are superseded.** That legacy command now exits with a clear retirement message and never creates or trims a role. Existing `Teacher (SB)` or other scoped roles remain compatible and are not automatically deleted, expanded, or assigned to a different user. Use the existing Teacher role for new accounts when that is the permission set you intend; review any previously created limited roles separately before changing their users' access.
 
-The first command is read-only. Check the displayed centre, administrator and included/omitted permissions before applying. The second creates `Teacher (SB)` scoped to SB. It does not change the shared Teacher role, BranchAdmin permissions, existing user assignments, or module settings. The command refuses an empty permission set, inactive/wrong-branch authority, and a conflicting existing role; it does not overwrite a role customized later.
+## Verify
 
-Re-running with identical role configuration is safe. Do not use the broader `branch:roles --apply` command as a substitute: that command changes shared role templates.
+1. With a branch administrator that has `user-create` but lacks the Teacher role's Quiz/finance permissions, reopen Add User. The ordinary Teacher role should now be available.
+2. Create a test account with that role and confirm it receives the entire configured permission set; the creator's permissions and shared role definition must remain unchanged.
+3. For the existing Pending Receipt workflow, configure the relevant operational permissions (including `receipt-list` and `order-edit`) and enable the finance module. The label `receipt-create` alone does not cover that workflow.
+4. With `user-edit`, change a same-branch user's ordinary role or department and confirm the update succeeds. Without `user-create`/`user-edit`, the matching operation must remain forbidden.
+5. Verify central/owner roles and foreign-branch users/roles remain blocked, including forged requests. A central administrator lacking `all-centre` must not be able to delegate that central grant through a custom role.
+6. A role may retain Quiz grants while the Quiz module is disabled; the recipient must still be unable to use Quiz until the module is enabled.
 
-## Verification on the test server
+Automated PHP feature tests run on SQLite `:memory:` with fake external services, not on the test server database. The local SB administrator can be checked against the existing Teacher role without creating a real account.
 
-1. Sign in as the SB administrator, reopen Add User, select SB and confirm `Teacher (SB)` is available. Roles beyond the administrator's assignment authority must be absent.
-2. Create a test teacher with a unique test email and the intended SB department. Verify successful creation, centre/department and role in the Users table.
-3. Confirm the new teacher is available in learning history/Fast History teacher selectors and the dashboard teacher list/count.
-4. Reopen an existing user for Edit. Its current single role and department should remain selected; saving a name/department change must not reassign the role.
-5. Confirm another centre's role and central administrator roles cannot be submitted by SB, even by modifying the request. Opening a form must not create roles or change permissions.
+## Verification result (2026-10-15)
 
-## Implementation notes
-
-- Add fetches assignable roles for the selected centre on every open/change. Save waits for both department and role lookups. A new role must be explicitly selected.
-- Edit retains an existing single role for profile-only edits, while sensitive changes to another account and role changes still require assignment authority.
-- Teacher identity includes the original global Teacher and canonical scoped roles created by the command. It does not infer role identity from a display name or grant additional permissions.
-- A scoped role remains tied to its centre. Staff transfers retain the existing restriction against carrying a source-centre role to another centre; use an appropriate destination role through an authorized workflow.
-
-Automated verification uses SQLite `:memory:` for PHP feature tests and a JavaScript transport harness plus a real jQuery/Select2 browser fixture. It does not create users on the test server.
-
-## Verified on 2026-10-15
-
-- 121 PHP tests passed (1,298 assertions): UserAssignableRoleTest 13, BranchTeacherRoleTest 17, UserDepartmentUpdateTest + BranchWorkflowsTest 46, and FastHistoryTest + HistoricalReferenceIsolationTest + AffiliateEmployeeEligibilityTest + AffiliateEmployeeRedirectTest 45.
-- 15 JavaScript handler tests and 10 real jQuery/Select2 browser cases passed.
-- On the local development database, SB (branch ID 6, administrator ID 84) now has `branch-6-teacher` / `Teacher (SB)` with `ebook-activity-list`, `history-list`, `parent-list`, and `student-list`. Four Quiz grants from shared Teacher were excluded. Read-back verified that the SB administrator can assign the scoped role, cannot select the excessive shared Teacher, and no existing user was reassigned.
-- The local Add User form can select the new role after loading SB. The live test server has not been deployed or provisioned by this change; run the commands above there after deployment using its actual SB administrator.
+- 56 tests / 482 assertions passed: UserAssignableRoleTest + UserDepartmentUpdateTest (41/359), retired-command and teacher-identity tests (9/70), and six staff-transfer boundary regressions (6/53).
+- The operational-role case creates a user through POST /users and checks the complete receipt-related permission bundle is effective when the recipient's modules are enabled. It does not execute a financial transaction.
+- A read-only check against the local SB administrator confirms the existing Teacher is assignable despite four Quiz permissions not held by the creator. Teacher retains all eight configured grants. No local users or role definitions were changed by this policy revision.
+- Test-server deployment has not been performed. After deployment and cache clearing, reopen Add User and select the existing Teacher role.

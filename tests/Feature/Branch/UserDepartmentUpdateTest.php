@@ -84,7 +84,7 @@ class UserDepartmentUpdateTest extends TestCase
         $this->assertDatabaseMissing('branch_audit_logs', ['subject_id' => $target->id, 'action' => 'roles.changed']);
     }
 
-    public function test_changing_to_role_beyond_actor_authority_is_rejected_without_partial_update(): void
+    public function test_changing_to_role_with_central_permissions_is_rejected_without_partial_update(): void
     {
         $target = $this->user(Role::findOrCreate('Teacher', 'web'));
         $before = $target->fresh()->getAttributes();
@@ -101,7 +101,9 @@ class UserDepartmentUpdateTest extends TestCase
     {
         $target = $this->user(Role::findOrCreate('Teacher', 'web'));
         $helper = Role::findOrCreate('BranchHelper', 'web');
-        $helper->syncPermissions([Permission::findOrCreate('user-list', 'web')]);
+        $helper->syncPermissions([Permission::findOrCreate('receipt-create', 'web')]);
+        $beforePermissions = $helper->permissions()->pluck('name')->all();
+        $this->assertFalse($this->actor->can('receipt-create'));
         $position = $this->position('Support');
 
         $this->actingAs($this->actor)->putJson('/users/save/'.$target->id,
@@ -109,12 +111,14 @@ class UserDepartmentUpdateTest extends TestCase
 
         $this->assertDatabaseHas('users', ['id' => $target->id, 'position_id' => $position->id]);
         $this->assertSame(['BranchHelper'], $target->fresh()->getRoleNames()->all());
+        $this->assertTrue($target->fresh()->can('receipt-create'));
+        $this->assertSame($beforePermissions, $helper->fresh()->permissions()->pluck('name')->all());
         $log = DB::table('branch_audit_logs')->where('subject_id', $target->id)->where('action', 'roles.changed')->sole();
         $this->assertSame(['roles' => ['Teacher']], json_decode($log->before_values, true));
         $this->assertSame(['roles' => ['BranchHelper']], json_decode($log->after_values, true));
     }
 
-    public function test_selecting_one_existing_role_from_multiple_roles_still_requires_assignment_authority(): void
+    public function test_selecting_central_permission_role_from_multiple_roles_still_requires_central_authority(): void
     {
         $target = $this->user($this->branchRole);
         $target->assignRole(Role::findOrCreate('Teacher', 'web'));
@@ -245,7 +249,7 @@ class UserDepartmentUpdateTest extends TestCase
         $this->assertDatabaseHas('users', ['id' => $this->actor->id, 'position_id' => null]);
     }
 
-    public function test_unchanged_role_exception_does_not_permit_new_user_with_excessive_role(): void
+    public function test_unchanged_role_exception_does_not_permit_new_user_with_central_permission_role(): void
     {
         $this->actingAs($this->actor)->postJson('/users', [
             'name' => 'Rejected new administrator', 'email' => 'rejected-new-admin@example.test',
@@ -256,7 +260,7 @@ class UserDepartmentUpdateTest extends TestCase
     }
 
     /** @dataProvider sensitivePeerChanges */
-    public function test_sensitive_changes_to_more_privileged_peer_require_authority_even_with_same_role(array $changes, int $initialDisable): void
+    public function test_sensitive_changes_to_peer_with_central_permissions_require_central_authority_even_with_same_role(array $changes, int $initialDisable): void
     {
         $editorRole = Role::findOrCreate('NarrowUserEditor', 'web');
         $editorRole->syncPermissions([Permission::findOrCreate('user-edit', 'web')]);
@@ -285,6 +289,34 @@ class UserDepartmentUpdateTest extends TestCase
             'reactivate' => [['disable' => 0], 1],
             'disable' => [['disable' => 1], 0],
         ];
+    }
+
+    /** @dataProvider sensitivePeerChanges */
+    public function test_user_edit_can_manage_ordinary_peer_credentials_and_status_without_sharing_operational_permissions(array $changes, int $initialDisable): void
+    {
+        $editorRole = Role::findOrCreate('User editor only', 'web');
+        $editorRole->syncPermissions([Permission::findOrCreate('user-edit', 'web')]);
+        $editor = $this->user($editorRole);
+        $teacherRole = Role::findOrCreate('Teacher', 'web');
+        $teacherRole->syncPermissions([Permission::findOrCreate('receipt-create', 'web')]);
+        $target = $this->user($teacherRole);
+        $target->update(['disable' => $initialDisable]);
+        $beforePermissions = $teacherRole->permissions()->pluck('name')->all();
+        $this->assertFalse($editor->can('receipt-create'));
+
+        $this->actingAs($editor)->putJson('/users/save/'.$target->id,
+            $this->payload($target, array_replace(['disable' => $initialDisable], $changes)))->assertOk();
+
+        $updated = $target->fresh();
+        $this->assertSame($changes['email'] ?? $target->email, $updated->email);
+        $this->assertSame((int) ($changes['disable'] ?? $initialDisable), (int) $updated->disable);
+        if (isset($changes['password'])) {
+            $this->assertTrue(Hash::check($changes['password'], $updated->password));
+        }
+        $this->assertSame(['Teacher'], $updated->getRoleNames()->all());
+        $this->assertSame($beforePermissions, $teacherRole->fresh()->permissions()->pluck('name')->all());
+        $this->assertSame(['user-edit'], $editor->fresh()->getAllPermissions()->pluck('name')->all());
+        $this->assertDatabaseMissing('branch_audit_logs', ['subject_id' => $target->id, 'action' => 'roles.changed']);
     }
 
     public function test_branch_admin_can_update_own_credentials_while_preserving_existing_role(): void
