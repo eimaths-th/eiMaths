@@ -37,6 +37,8 @@ require __DIR__.'/ebook-web.php';
 
 
 Route::group(['middleware' => ['auth']], function () {
+    Route::get('/activity-logs', [\App\Http\Controllers\ActivityLogController::class, 'index'])->name('activity-logs.index');
+    Route::get('/activity-logs/{id}', [\App\Http\Controllers\ActivityLogController::class, 'show'])->whereNumber('id')->name('activity-logs.show');
     Route::post('/settings/locale', [\App\Http\Controllers\UiLocaleController::class, 'Update'])
         ->name('locale.update');
 

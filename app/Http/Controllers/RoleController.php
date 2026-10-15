@@ -136,7 +136,7 @@ class RoleController extends Controller
         DB::transaction(function () use ($name, $data, $branchId, $permissions) {
             $role = Role::create(['name' => $name, 'display_name' => $data['name'], 'branch_id' => $branchId, 'guard_name' => 'web']);
             $role->syncPermissions($permissions);
-            app(BranchContext::class)->audit('role-created', Role::class, $role->id, ['permissions' => $permissions, 'branch_id' => $branchId]);
+            app(\App\Support\Activity\ActivityRecorder::class)->assignments($role, 'permissions', [], $role->permissions->pluck('name')->all());
         });
         return response()->json(['success' => __('user-access.messages.role_created')]);
     }
@@ -163,10 +163,11 @@ class RoleController extends Controller
         abort_if($role->name === 'SystemAdmin', 422, __('user-access.messages.owner_role_protected'));
         $permissions = $this->validatedPermissions($request, $role->branch_id ? (int) $role->branch_id : null);
         DB::transaction(function () use ($role, $data, $permissions) {
+            $beforePermissions = $role->permissions->pluck('name')->all();
             $role->display_name = $data['name'];
             $role->save();
             $role->syncPermissions($permissions);
-            app(BranchContext::class)->audit('role-updated', Role::class, $role->id, ['permissions' => $permissions]);
+            app(\App\Support\Activity\ActivityRecorder::class)->assignments($role, 'permissions', $beforePermissions, $role->permissions->pluck('name')->all());
         });
         app(PermissionRegistrar::class)->forgetCachedPermissions();
         return response()->json(['success' => __('user-access.messages.role_updated')]);

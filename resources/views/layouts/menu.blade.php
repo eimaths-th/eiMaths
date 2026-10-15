@@ -34,7 +34,7 @@
         || $menu_can('affiliate-course-application-list')
         || $menu_can('course-manage');
     $show_quiz_menu = $menu_can('quiz-manage') || $menu_is_owner;
-    $show_user_menu = $menu_can('user-list') || $menu_can('role-list') || $menu_is_owner;
+    $show_user_menu = $menu_can('user-list') || $menu_can('role-list') || $menu_can('activity-log-list') || $menu_is_owner;
     $show_centre_menu = $menu_can('centre-manage')
         || $menu_can('department-list')
         || $menu_can('branch-transfer');
@@ -57,7 +57,7 @@
         'affiliate.admin.*', 'affiliate.finance.configuration.*', 'affiliate.withdrawals.admin.*',
         'affiliate-content-manage.*', 'courses.pending.*'
     );
-    $user_menu_active = request()->routeIs('users.*', 'roles.*', 'permission.*', 'generate.*');
+    $user_menu_active = request()->routeIs('users.*', 'roles.*', 'permission.*', 'generate.*', 'activity-logs.*');
     $centre_menu_active = request()->routeIs('departments*', 'positions*', 'branch-transfers.*');
     $system_menu_active = request()->routeIs('parameter*', 'line-api.*');
 @endphp
@@ -646,6 +646,14 @@
                     <a href="{{ route('users.index') }}" class="nav-link {{ request()->routeIs('users.*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-users"></i>
                         <p>{{ __('navigation.menu.users') }}</p>
+                    </a>
+                </li>
+            @endcan
+            @can('activity-log-list')
+                <li class="nav-item">
+                    <a href="{{ route('activity-logs.index') }}" class="nav-link {{ request()->routeIs('activity-logs.*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-history"></i>
+                        <p>{{ __('activity-log.title') }}</p>
                     </a>
                 </li>
             @endcan

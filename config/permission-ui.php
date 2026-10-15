@@ -20,7 +20,7 @@ return [
             'description' => 'บัญชีเจ้าหน้าที่ บทบาท และรายการสิทธิ์ส่วนกลาง',
             'icon' => 'fas fa-user-shield',
             'permissions' => ['add-permission', 'edit-permission', 'delete-permission'],
-            'prefixes' => ['user-', 'role-', 'permission-'],
+            'prefixes' => ['user-', 'role-', 'permission-', 'activity-log-'],
         ],
         'students' => [
             'label' => 'นักเรียนและผู้ปกครอง',
@@ -92,7 +92,8 @@ return [
 
     'labels' => [
         'dashboard' => 'ดู Dashboard',
-        'view-log' => 'ดูประวัติการใช้งาน',
+        'view-log' => 'ดูประวัติการแก้ไขการเรียน',
+        'activity-log-list' => 'ดูประวัติการใช้งานของสาขา',
         'all-centre' => 'เข้าถึงข้อมูลทุกสาขา',
         'course-manage' => 'จัดการหลักสูตรกลาง',
         'course-list' => 'ดูหลักสูตรที่เปิดเผย',

@@ -124,7 +124,7 @@ class ReceiptController extends Controller
         $receipt = Receipt::findOrFail($id);
         $this->financial_source_guard->AssertReceiptUpdateAllowed($receipt, [], true);
         $receipt_detail_drafts = $this->receipt_detail_builder->BuildForOrder($receipt->orderRecord()->firstOrFail());
-        receipt_details::where('receipt_id', $id)->delete();
+        receipt_details::where('receipt_id', $id)->get()->each->delete();
         $this->PersistReceiptDetailDrafts($id, $receipt_detail_drafts);
     }
 
@@ -945,7 +945,7 @@ class ReceiptController extends Controller
         $receipt->update($data);
 
         Order::find($receipt->oid)->update($datao);
-        receipt_details::where('receipt_id', $id)->delete();
+        receipt_details::where('receipt_id', $id)->get()->each->delete();
 
         $amounts = $request->input('amount', []);
         $prices = $request->input('price', []);

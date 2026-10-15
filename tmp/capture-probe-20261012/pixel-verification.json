@@ -1,0 +1,9 @@
+{
+  "device": "Android 17 API 37 emulator; NOT Samsung S25 Android 16",
+  "screenshot_protected_region_max_rgb": 0,
+  "video_first_seconds_checked": 5,
+  "video_frames_checked": 10,
+  "video_protected_region_max_rgb": 0,
+  "passed": true,
+  "scope": "Central protected SurfaceView region; separate fake-content native probe only."
+}

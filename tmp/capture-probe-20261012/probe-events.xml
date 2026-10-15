@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8' standalone='yes' ?>
+<map>
+    <boolean name="windowMode" value="false" />
+    <string name="history">14:02:44 RECORDING callback: visible=false: SECURE SURFACE ONLY&#10;14:01:48 RECORDING callback: visible=true: SECURE SURFACE ONLY&#10;14:00:23 SCREENSHOT callback received: SECURE SURFACE ONLY&#10;14:00:19 SCREENSHOT callback received: SECURE SURFACE ONLY&#10;14:00:17 Recording callback registered; initial visible=false&#10;14:00:17 Screenshot callback registered&#10;14:00:17 Activity created: SECURE SURFACE ONLY&#10;13:59:57 Recording callback registered; initial visible=false&#10;13:59:57 Screenshot callback registered&#10;13:59:57 Activity created: WINDOW + SECURE SURFACE&#10;    </string>
+    <int name="recordingStarts" value="1" />
+    <int name="screenshots" value="2" />
+</map>

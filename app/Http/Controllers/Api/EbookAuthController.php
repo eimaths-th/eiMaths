@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Domain\Ebook\Audit;
 use App\Domain\Ebook\SessionHistory;
+use App\Domain\Ebook\StudentAccess;
 use App\Http\Controllers\Controller;
+use App\Models\Contact;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -12,6 +14,8 @@ use Illuminate\Support\Str;
 
 final class EbookAuthController extends Controller
 {
+    public function __construct(private StudentAccess $access) {}
+
     public function login(Request $request)
     {
         $data = $request->validate([
@@ -19,10 +23,12 @@ final class EbookAuthController extends Controller
             'device_id' => 'required|uuid', 'device_label' => 'required|string|max:100',
         ]);
         return DB::transaction(function () use ($data) {
-            $students = DB::table('contacts')->where('code', $data['code'])->where('type', 'student')->lockForUpdate()->limit(2)->get();
+            $students = Contact::query()->where('code', $data['code'])->where('type', 'student')->lockForUpdate()->limit(2)->get();
             $student = $students->count() === 1 ? $students->first() : null;
             abort_unless($student && $student->password && Hash::check($data['password'], $student->password), 422, 'รหัสนักเรียนหรือรหัสผ่านไม่ถูกต้อง');
-            abort_if((int) $student->discontinued === 1, 403, 'บัญชีนี้ไม่สามารถใช้งานได้');
+            if ($denial = $this->access->denial($student)) {
+                return response()->json($denial, 403)->header('Cache-Control', 'no-store');
+            }
             $existing = DB::table('ebook_sessions')->where('student_id', $student->id)->first();
             if ($existing && $existing->expires_at > now()->toDateTimeString() && $existing->absolute_expires_at > now()->toDateTimeString()) {
                 Audit::record((object) ['student_id' => $student->id, 'id' => $existing->id, 'device_id' => $data['device_id']], 'login_blocked', metadata: ['reason' => 'active_session']);

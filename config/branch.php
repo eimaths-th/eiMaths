@@ -21,7 +21,7 @@ return [
         'order-' => 'finance', 'receipt-' => 'finance', 'invoice-' => 'finance', 'credit-note-' => 'finance',
         'product-' => 'stock', 'book-' => 'stock', 'crm-' => 'crm',
         'affiliate-course-application-' => 'crm',
-        'quiz-' => 'quiz', 'course-list' => 'courses', 'user-' => 'users', 'role-' => 'users', 'department-' => 'departments',
+        'quiz-' => 'quiz', 'course-list' => 'courses', 'activity-log-' => 'users', 'user-' => 'users', 'role-' => 'users', 'department-' => 'departments',
         'blog-' => 'content', 'faq-' => 'content', 'ebook-' => 'courses',
     ],
     'central_permissions' => [

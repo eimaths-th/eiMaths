@@ -115,6 +115,10 @@ class ReceiptNumberCollisionTest extends TestCase
 
         $this->actingAs($actor)->putJson(route('receipts.save', $receipt->id), $payload)->assertStatus(500);
 
+        $this->assertDatabaseHas('branch_audit_logs', [
+            'category' => 'activity', 'subject_type' => Receipt::class, 'subject_id' => $receipt->id, 'outcome' => 'success',
+        ]);
+        $this->assertDatabaseHas('branch_audit_logs', ['action' => 'request.failed', 'outcome' => 'failed']);
         $this->assertFileExists($destination_path);
         $this->assertFileDoesNotExist($source_path);
         $this->assertDatabaseHas('file_stores', [

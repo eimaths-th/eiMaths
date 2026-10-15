@@ -9,7 +9,7 @@ Route::prefix('ebook/v1')->withoutMiddleware(['throttle:api'])->group(function (
     Route::post('login', [EbookAuthController::class, 'login'])->middleware('throttle:ebook-login');
     Route::middleware([AuthenticateEbook::class, 'throttle:ebook-api'])->group(function () {
         Route::get('me', [EbookAuthController::class, 'me']);
-        Route::post('logout', [EbookAuthController::class, 'logout']);
+        Route::post('logout', [EbookAuthController::class, 'logout'])->name('ebook.api.logout');
         Route::get('books', [EbookController::class, 'index']);
         Route::post('books/{book}/open', [EbookController::class, 'open'])->whereNumber('book');
         Route::get('pages/{page}/image', [EbookController::class, 'image'])->whereNumber('page');

@@ -227,6 +227,11 @@ final class BranchContext
 
     public function audit(string $action, string $type, $id, array $changes = []): void
     {
+        $recorder = app(\App\Support\Activity\ActivityRecorder::class);
+        if ($recorder->enabled() && $recorder->rules($type)
+            && in_array($action, ['created', 'updated', 'deleted', 'permission.created', 'permission.updated', 'permission.deleted', 'role-deleted'], true)) {
+            return; // Structured observers and assignment events replace legacy entries for core workflows.
+        }
         if (!$this->actor) {
             return;
         }

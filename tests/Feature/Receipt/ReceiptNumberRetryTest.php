@@ -83,6 +83,9 @@ class ReceiptNumberRetryTest extends TestCase
 
         $response->assertOk()->assertJsonMissingPath('errors');
         $this->assertSame(2, $write_attempts);
+        $this->assertSame(1, DB::table('branch_audit_logs')->where('category', 'activity')
+            ->where('subject_type', Receipt::class)->where('subject_id', $receipt->id)->count());
+        $this->assertDatabaseMissing('branch_audit_logs', ['action' => 'request.failed']);
         $this->assertSame(250, (int) $receipt->fresh()->total_fee);
         $this->assertDatabaseCount('receipt_details', 1);
         $this->assertDatabaseHas('file_stores', ['module_id' => $receipt->oid, 'filename' => 'owned-retry.txt']);
@@ -102,6 +105,8 @@ class ReceiptNumberRetryTest extends TestCase
         $this->actingAs($actor)->putJson(route('receipts.save', $receipt->id), $payload)->assertStatus(500);
 
         $this->assertSame(3, $write_attempts);
+        $this->assertSame(0, DB::table('branch_audit_logs')->where('category', 'activity')->where('outcome', 'success')->count());
+        $this->assertSame(1, DB::table('branch_audit_logs')->where('action', 'request.failed')->count());
         $this->assertSame(100, (int) $receipt->fresh()->total_fee);
         $this->assertDatabaseCount('receipt_details', 0);
         $this->assertDatabaseCount('file_stores', 0);

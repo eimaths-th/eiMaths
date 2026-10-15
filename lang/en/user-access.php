@@ -165,6 +165,7 @@ return [
         'last' => 'Last',
     ],
     'permission_labels' => [
+        'activity-log-list' => 'View branch activity log',
         'ebook-manage' => 'Manage E-books (HQ)',
         'ebook-activity-list' => 'View E-book Activity Log',
     ],

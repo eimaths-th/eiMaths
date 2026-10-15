@@ -1,0 +1,11 @@
+--------- beginning of main
+10-12 13:59:57.411 21327 21327 I EiMathsCaptureProbe: 13:59:57 Activity created: WINDOW + SECURE SURFACE
+10-12 13:59:57.427 21327 21327 I EiMathsCaptureProbe: 13:59:57 Screenshot callback registered
+10-12 13:59:57.437 21327 21327 I EiMathsCaptureProbe: 13:59:57 Recording callback registered; initial visible=false
+10-12 14:00:17.661 21327 21327 I EiMathsCaptureProbe: 14:00:17 Activity created: SECURE SURFACE ONLY
+10-12 14:00:17.665 21327 21327 I EiMathsCaptureProbe: 14:00:17 Screenshot callback registered
+10-12 14:00:17.666 21327 21327 I EiMathsCaptureProbe: 14:00:17 Recording callback registered; initial visible=false
+10-12 14:00:19.989 21327 21327 I EiMathsCaptureProbe: 14:00:19 SCREENSHOT callback received: SECURE SURFACE ONLY
+10-12 14:00:23.690 21327 21327 I EiMathsCaptureProbe: 14:00:23 SCREENSHOT callback received: SECURE SURFACE ONLY
+10-12 14:01:48.986 21327 21327 I EiMathsCaptureProbe: 14:01:48 RECORDING callback: visible=true: SECURE SURFACE ONLY
+10-12 14:02:44.871 21327 21327 I EiMathsCaptureProbe: 14:02:44 RECORDING callback: visible=false: SECURE SURFACE ONLY

@@ -498,11 +498,6 @@ class ContactController extends Controller
                         $html .= '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="' . e(__('common.feedback.permission_denied')) . '"><i class="fa fa-edit"></i> ' . e(__('common.actions.edit')) . '</button> ';
                     }
 
-                    if (Gate::allows('student-delete')) {
-                        $html .= '<button type="button" data-rowid="' . $row->id . '" class="btn btn-sm btn-danger btn-delete"><i class="fa fa-trash"></i> ' . e(__('common.actions.delete')) . '</button>';
-                    } else {
-                        $html .= '<button type="button" class="btn btn-sm btn-danger disabled" data-toggle="tooltip" data-placement="bottom" title="' . e(__('common.feedback.permission_denied')) . '"><i class="fa fa-trash"></i> ' . e(__('common.actions.delete')) . '</button> ';
-                    }
                     return $html;
                 })->rawColumns(['checkbox', 'action', 'remaining', 'book_receipt', 'more'])->toJson();
             /* ->filter(function ($instance) use ($request) {
@@ -1829,11 +1824,11 @@ class ContactController extends Controller
             $order_detail2 = OrderDetail::create($input_order_detail2);
         }
 
-        Receipt::where('cid', $id)->update([
+        Receipt::where('cid', $id)->get()->each(fn ($receipt) => $receipt->update([
             'level' => $request->get('level'),
             'total_fee' => $total_price,
             // Add more columns as needed
-        ]);
+        ]));
 
 
         return response()->json(['success' => 'Student information updated successfully', 'discontinued' => $contact->discontinued]);
@@ -1979,12 +1974,12 @@ class ContactController extends Controller
                     $this->financial_source_guard->AssertOrderCancellationAllowed($order);
                 }
             }
-            Order::where('cid', $id)->delete();
 
             // Delete related records from the 'order_detail' table
             if (!empty($deletedOrderIds)) {
-                DB::table('order_details')->whereIn('order_id', $deletedOrderIds)->delete();
+                OrderDetail::whereIn('order_id', $deletedOrderIds)->get()->each->delete();
             }
+            Order::where('cid', $id)->get()->each->delete();
 
             DB::commit();
 
@@ -2007,7 +2002,7 @@ class ContactController extends Controller
             foreach (Receipt::where('cid', $id)->get() as $receipt) {
                 $this->financial_source_guard->AssertReceiptUpdateAllowed($receipt, [], true);
             }
-            Receipt::where('cid', $id)->delete();
+            Receipt::where('cid', $id)->get()->each->delete();
 
             DB::commit();
         } catch (AffiliateDomainException $e) {

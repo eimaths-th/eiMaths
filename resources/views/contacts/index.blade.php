@@ -39,17 +39,6 @@
                                         class="fa-solid fa-file-invoice-dollar"></i>
                                     {{ __('students.actions.new_receipt') }} </button>
                             </span>
-                        @endcan &nbsp;
-
-                        @can('student-delete')
-                            <button type="button" class="btn btn-danger delete_all_button"><i class="fa fa-trash"></i>
-                                {{ __('common.actions.delete_all') }}</button>
-                        @else
-                            <span class="d-inline-block" tabindex="0" data-toggle="tooltip" data-placement="bottom"
-                                title="{{ __('common.feedback.permission_denied') }}">
-                                <button type="button" class="btn btn-danger disabled"><i class="fa fa-trash"></i>
-                                    {{ __('common.actions.delete_all') }}</button>
-                            </span>
                         @endcan
 
 
@@ -195,8 +184,8 @@
                             </div>
                             <div class="row ">
                                 <div class="col-xs-12 col-sm-12 col-md-12" id="Listviewd">
-                                    <form method="post" action="{{ route('contacts.destroy_all') }}" name="delete_all"
-                                        id="delete_all">
+                                    <form method="post" action="{{ route('contact.export') }}" name="export_students"
+                                        id="export_students">
                                         @csrf
                                         @method('POST')
                                         <table id="Listview"

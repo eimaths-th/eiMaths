@@ -21,24 +21,11 @@
             $('#overlay').css('display', 'none');
         }
 
-        $(".delete_all_button").click(function() {
-            var len = $('input[name="table_records[]"]:checked').length;
-            if (len > 0) {
-                if (confirm(studentUi.messages.confirm_delete)) {
-                    $('form#delete_all').submit();
-                }
-            } else {
-                alert(studentUi.messages.select_items);
-            }
-        });
-
         $(".export_button").click(function() {
             var len = $('input[name="table_records[]"]:checked').length;
             if (len > 0) {
                 if (confirm(studentUi.messages.confirm_export)) {
-                    $('form#delete_all').attr('action',
-                        '{{ route('contact.export') }}'); //this fails silently
-                    $('form#delete_all').submit();
+                    $('form#export_students').submit();
                 }
             } else {
                 alert(studentUi.messages.select_export);
@@ -1648,38 +1635,6 @@
                 }
             });
         });
-
-        $(document).on('click', '.btn-delete', function() {
-            if (!confirm(studentUi.messages.confirm_action)) return;
-
-            var rowid = $(this).data('rowid')
-            var el = $(this)
-            if (!rowid) return;
-
-
-            $.ajax({
-                //type: "POST",
-                method: 'DELETE',
-                dataType: 'JSON',
-                url: "contacts/destroy/",
-                data: {
-                    id: rowid,
-                    //_method: 'delete',
-                    _token: token
-                },
-                success: function(data) {
-                    console.log(data);
-                    if (data.success) {
-                        toastr.success(data.message, {
-                            timeOut: 5000
-                        });
-                        table.row(el.parents('tr'))
-                            .remove()
-                            .draw();
-                    }
-                }
-            }); //end ajax
-        })
 
     });
 </script>

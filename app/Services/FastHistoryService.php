@@ -180,7 +180,9 @@ class FastHistoryService
             }
         }
 
-        return null;
+        // Extra lessons still belong to the last paid course and retain its expiry.
+        // Completed courses with no extra lessons are already classified as exhausted.
+        return $courses === [] ? null : $courses[array_key_last($courses)];
     }
 
     private function ResolveCourseExpiry(?array $course): ?string

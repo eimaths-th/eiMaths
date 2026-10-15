@@ -820,8 +820,8 @@ class OrderController extends Controller
         $this->financial_source_guard->AssertOrderCancellationAllowed($order);
         $student = Contact::query()->lockForUpdate()->find($order->cid);
         // Delete children while their parent is still visible to the branch scope.
-        OrderDetail::where('order_id', $id)->delete();
-        OrderDetailList::where('order_id', $id)->delete();
+        OrderDetail::where('order_id', $id)->get()->each->delete();
+        OrderDetailList::where('order_id', $id)->get()->each->delete();
         foreach (FileStore::where('module', 'orders')->where('module_id', $id)->get() as $file) {
             $filename = basename($file->filename);
             $file->delete();

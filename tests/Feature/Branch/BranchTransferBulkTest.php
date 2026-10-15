@@ -556,7 +556,8 @@ class BranchTransferBulkTest extends TestCase
             $this->assertSame(1, $user->tokens()->count());
         }
         $this->assertDatabaseCount('branch_transfers', 0);
-        $this->assertSame($audit_count, DB::table('branch_audit_logs')->count());
+        $this->assertSame($audit_count, DB::table('branch_audit_logs')->where('action', '!=', 'request.failed')->count());
+        $this->assertSame(1, DB::table('branch_audit_logs')->where('action', 'request.failed')->where('outcome', 'failed')->count());
         $this->assertFalse(app(BranchContext::class)->allowTransfer);
     }
 
@@ -586,7 +587,8 @@ class BranchTransferBulkTest extends TestCase
         }
         $this->assertDatabaseCount('branch_transfers', 0);
         $this->assertDatabaseCount('student_running_numbers', 0);
-        $this->assertSame($audit_count, DB::table('branch_audit_logs')->count());
+        $this->assertSame($audit_count, DB::table('branch_audit_logs')->where('action', '!=', 'request.failed')->count());
+        $this->assertSame(1, DB::table('branch_audit_logs')->where('action', 'request.failed')->where('outcome', 'failed')->count());
         $this->assertFalse(app(BranchContext::class)->allowTransfer);
 
         $retry_student = $this->Student('Retry');

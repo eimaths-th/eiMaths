@@ -56,6 +56,132 @@ class EbookApiTest extends TestCase
         ]]]];
     }
 
+    private function loginData(): array
+    {
+        return ['code' => 'DEMO001', 'password' => 'Demo@eiMaths26',
+            'device_id' => $this->device, 'device_label' => 'Test tablet'];
+    }
+
+    private function lessons(int $count, ?string $endDate = null): void
+    {
+        for ($i = 0; $i < $count; $i++) {
+            DB::table('histrories')->insert([
+                'student_id' => 1, 'level_id' => 1, 'term' => '1', 'bookuse' => '1',
+                'date' => today()->subDays($count - $i)->toDateString(),
+                'start_date' => today()->subMonths(4)->toDateString(),
+                'end_date' => $endDate ?? today()->addMonth()->toDateString(),
+            ]);
+        }
+    }
+
+    public function test_expired_course_cannot_login_even_with_remaining_lessons(): void
+    {
+        DB::table('contacts')->where('id', 1)->update(['free_course' => 2]);
+        $this->lessons(1, today()->subDay()->toDateString());
+        $this->postJson('/api/ebook/v1/login', $this->loginData())
+            ->assertForbidden()->assertJsonPath('code', 'course_expired');
+        $this->assertSame(0, DB::table('ebook_sessions')->count());
+        $this->assertEquals(0, DB::table('contacts')->find(1)->discontinued);
+        $invalid = $this->loginData(); $invalid['password'] = 'incorrect';
+        $this->postJson('/api/ebook/v1/login', $invalid)->assertUnprocessable();
+    }
+
+    public function test_paid_and_free_lessons_are_counted_before_login_is_blocked(): void
+    {
+        DB::table('contacts')->where('id', 1)->update(['free_course' => 2]);
+        $this->lessons(11);
+        $this->authenticate();
+        $this->getJson('/api/ebook/v1/books')->assertOk();
+        $this->postJson('/api/ebook/v1/logout')->assertOk();
+        $this->lessons(1);
+        $this->postJson('/api/ebook/v1/login', $this->loginData())
+            ->assertForbidden()->assertJsonPath('code', 'course_exhausted');
+        $this->assertSame(0, DB::table('ebook_sessions')->count());
+    }
+
+    public function test_free_lessons_do_not_extend_an_expired_course(): void
+    {
+        DB::table('contacts')->where('id', 1)->update(['free_course' => 2]);
+        $this->lessons(10, today()->subDay()->toDateString());
+        $this->postJson('/api/ebook/v1/login', $this->loginData())
+            ->assertForbidden()->assertJsonPath('code', 'course_expired');
+    }
+
+    public function test_expiry_day_is_inclusive_and_existing_session_cannot_bypass_midnight_expiry(): void
+    {
+        $this->travelTo(\Carbon\Carbon::parse('2026-10-15 23:59:50', 'Asia/Bangkok'));
+        $this->lessons(1, '2026-10-15');
+        $this->authenticate();
+        $this->putJson('/api/ebook/v1/pages/1/work', $this->work())->assertOk();
+        $saved = DB::table('ebook_work')->first()->document;
+        $sessionExpiry = DB::table('ebook_sessions')->value('expires_at');
+        $this->travel(11)->seconds();
+
+        foreach (['/me', '/books', '/pages/1/image', '/pages/1/work'] as $path) {
+            $this->getJson('/api/ebook/v1'.$path)->assertForbidden()->assertJsonPath('code', 'course_expired');
+        }
+        $this->postJson('/api/ebook/v1/books/1/open')->assertForbidden()->assertJsonPath('code', 'course_expired');
+        $this->putJson('/api/ebook/v1/pages/1/work', $this->work(1))->assertForbidden()->assertJsonPath('code', 'course_expired');
+        $this->postJson('/api/ebook/v1/events', ['events' => []])->assertForbidden()->assertJsonPath('code', 'course_expired');
+        $this->assertSame($sessionExpiry, DB::table('ebook_sessions')->value('expires_at'));
+        $this->assertSame($saved, DB::table('ebook_work')->first()->document);
+        $this->postJson('/api/ebook/v1/logout')->assertOk();
+        $this->postJson('/api/ebook/v1/login', $this->loginData())->assertForbidden()->assertJsonPath('code', 'course_expired');
+        $this->travelBack();
+    }
+
+    public function test_exhausting_the_final_lesson_blocks_an_existing_session(): void
+    {
+        $this->lessons(9);
+        $this->authenticate();
+        $this->lessons(1);
+        $this->getJson('/api/ebook/v1/me')->assertForbidden()->assertJsonPath('code', 'course_exhausted');
+        $this->getJson('/api/ebook/v1/pages/1/image')->assertForbidden();
+        $this->postJson('/api/ebook/v1/login', $this->loginData())
+            ->assertForbidden()->assertJsonPath('code', 'course_exhausted');
+        $this->postJson('/api/ebook/v1/logout')->assertOk();
+    }
+
+    public function test_discontinued_student_is_blocked_even_when_the_course_is_active(): void
+    {
+        $this->authenticate();
+        foreach ([1, 2] as $status) {
+            DB::table('contacts')->where('id', 1)->update(['discontinued' => $status]);
+            $this->postJson('/api/ebook/v1/login', $this->loginData())
+                ->assertForbidden()->assertJsonPath('code', 'account_discontinued');
+            $this->getJson('/api/ebook/v1/me')->assertForbidden()->assertJsonPath('code', 'account_discontinued');
+        }
+        $this->postJson('/api/ebook/v1/logout')->assertOk();
+    }
+
+    public function test_unverifiable_course_cannot_grant_ebook_access(): void
+    {
+        DB::table('contacts')->where('id', 1)->update(['level' => 0]);
+        $this->postJson('/api/ebook/v1/login', $this->loginData())
+            ->assertForbidden()->assertJsonPath('code', 'course_data_unavailable');
+        $this->assertSame(0, DB::table('ebook_sessions')->count());
+    }
+
+    public function test_extending_a_course_restores_access_without_reassigning_books(): void
+    {
+        $this->lessons(1, today()->subDay()->toDateString());
+        $this->postJson('/api/ebook/v1/login', $this->loginData())->assertForbidden();
+        DB::table('histrories')->where('student_id', 1)->update(['end_date' => today()->addMonth()->toDateString()]);
+        $this->authenticate();
+        $this->getJson('/api/ebook/v1/books')->assertOk()->assertJsonCount(2, 'books');
+        $this->getJson('/api/ebook/v1/pages/1/image')->assertOk();
+    }
+
+    public function test_completed_old_course_does_not_block_a_remaining_registered_term(): void
+    {
+        $this->lessons(10, today()->subDay()->toDateString());
+        DB::table('terms')->insert(['id' => 2, 'name' => '2', 'level_id' => 1]);
+        DB::table('bookuses')->insert(['id' => 4, 'name' => 'G21-G30', 'level_id' => 1, 'term_id' => 2, 'qty' => 10]);
+        DB::table('contacts')->where('id', 1)->update(['level2' => 1, 'term2' => 2, 'bookuse2' => 4]);
+        $this->authenticate();
+        $this->getJson('/api/ebook/v1/me')->assertOk();
+    }
+
     public function test_production_api_uses_student_authentication_without_module_activation(): void
     {
         // An old cached config must not disable the module after deployment.

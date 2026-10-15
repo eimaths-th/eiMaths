@@ -17,10 +17,16 @@ final class DemoData
             $t->id(); $t->string('code'); $t->string('name'); $t->string('nickname')->nullable();
             $t->string('password'); $t->string('type')->default('student'); $t->integer('centre')->default(1);
             $t->integer('discontinued')->default(0); $t->integer('bookuse')->nullable(); $t->integer('bookuse2')->nullable();
+            $t->integer('level')->default(1); $t->integer('term')->default(1);
+            $t->integer('level2')->nullable(); $t->integer('term2')->nullable(); $t->integer('free_course')->default(0);
         });
         Schema::create('levels', function (Blueprint $t) { $t->id(); $t->string('name'); });
         Schema::create('terms', function (Blueprint $t) { $t->id(); $t->string('name'); $t->integer('level_id'); });
-        Schema::create('bookuses', function (Blueprint $t) { $t->id(); $t->string('name'); $t->integer('level_id'); $t->integer('term_id'); $t->integer('type')->default(1); $t->integer('status')->default(1); });
+        Schema::create('bookuses', function (Blueprint $t) { $t->id(); $t->string('name'); $t->integer('level_id'); $t->integer('term_id'); $t->integer('type')->default(1); $t->integer('status')->default(1); $t->integer('qty')->default(10); });
+        Schema::create('histrories', function (Blueprint $t) {
+            $t->id(); $t->integer('student_id'); $t->integer('level_id'); $t->string('term');
+            $t->string('bookuse')->nullable(); $t->date('date'); $t->date('start_date')->nullable(); $t->date('end_date')->nullable();
+        });
         Schema::create('orders', function (Blueprint $t) { $t->id(); $t->integer('cid'); });
         Schema::create('order_details', function (Blueprint $t) { $t->id(); $t->integer('order_id'); $t->integer('product_id'); });
         Schema::create('order_detail_lists', function (Blueprint $t) { $t->id(); $t->integer('order_id'); $t->string('book'); $t->string('level'); $t->string('term'); });

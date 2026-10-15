@@ -1,0 +1,53 @@
+eiMaths capture diagnostic - 2026-10-12
+
+Scope
+Separate native Android test package: th.eimaths.captureprobe.
+APK: eimaths-capture-qa.apk (min Android 14/API 34, target API 36).
+Contains a synthetic blue/magenta test page, no real book, no account, no Internet permission.
+Does not send Activity Log events to eiMaths. Shows native OS events inside this test app.
+Production Flutter App and backend code were not changed for this probe.
+
+Method
+Both modes protect the SurfaceView with setSecure(true) BEFORE attachment.
+WINDOW mode additionally uses FLAG_SECURE for the whole Activity window.
+SURFACE mode protects only the fake-page surface and leaves diagnostic controls visible in captures.
+
+Observed on emulator-5554, Android 17/API 37 (not Samsung S25):
+- WINDOW: SYSRQ attempt produced no Screenshot callback. ADB capture showed a black Activity.
+- SURFACE: SYSRQ produced a native Screenshot callback; the protected page was black in the capture.
+- This emulator also reported a second Screenshot event during the subsequent ADB screencap.
+- SURFACE: Android system Screen Recorder started; native recording-visible callback at 14:01:48.
+- Recording stopped through the system notification; recording-invisible callback at 14:02:44.
+- Saved system video has a black protected page while diagnostic controls remain visible.
+- These native events were not injected mocks. ADB was used to operate the emulator UI.
+- Do not extrapolate ADB screenshot behavior to older Android or Samsung firmware.
+
+Evidence
+native-events.txt, probe-events.xml, window-capture.png, surface-capture.png,
+system-recording.mp4, system-recording-frame.png, pixel-verification.json.
+
+Samsung S25 / Android 16 test instructions
+1. Install eimaths-capture-qa.apk. It is a separate app named eiMaths Capture QA.
+2. Open it. Confirm a blue/magenta fake page is visible while looking directly at the phone.
+3. Select Surface protection and Clear diagnostic events.
+4. Take a screenshot with the phone's normal buttons. Check Screenshot callbacks increases.
+5. Open the saved screenshot: the fake-page area must be black. No blue/magenta text may be visible.
+6. Start recording using Samsung's Screen recorder. Return to the test app.
+7. Check active: true or a RECORDING visible=true entry. Stop recording, then check visible=false.
+8. Play the saved video: the fake page must remain black, including start/stop and app switching.
+9. If Samsung still refuses capture/recording and sends no callbacks, this alternative is not
+   confirmed usable on that firmware. Keep the existing production protection.
+
+Integration gate
+Only consider real Flutter integration after the S25 native behavior is verified.
+Then validate FlutterSurfaceView initialization, every render surface/fallback,
+reader lifecycle/rotation/transitions/overlays, saved capture pixels, and real API delivery.
+This probe is not a finished fix and does not prove every attempted capture can be logged.
+
+Rebuild
+powershell -ExecutionPolicy Bypass -File .\build.ps1
+
+References
+https://developer.android.com/reference/android/view/SurfaceView#setSecure(boolean)
+https://developer.android.com/about/versions/14/features/screenshot-detection
+https://developer.android.com/reference/android/view/WindowManager#addScreenRecordingCallback(java.util.concurrent.Executor,java.util.function.Consumer)

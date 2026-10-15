@@ -146,7 +146,7 @@ class UserController extends Controller
                 'department_id' => $data['department_id'], 'position_id' => $data['position_id'] ?? null, 'disable' => $data['disable'] ?? 0,
             ]);
             $user->assignRole($role);
-            app(BranchContext::class)->audit('role-assigned', User::class, $user->id, ['role_id' => $role->id]);
+            app(\App\Support\Activity\ActivityRecorder::class)->assignments($user, 'roles', [], $user->getRoleNames()->all());
         });
         return response()->json(['success' => __('user-access.messages.user_created')]);
     }
@@ -210,6 +210,7 @@ class UserController extends Controller
         BranchAccess::assertAssignableRole($request->user(), $role, (int) $data['department']);
         DB::transaction(function () use ($target, $data, $role) {
             // Serialize owner changes before locking an individual user.
+            $beforeRoles = $target->getRoleNames()->all();
             $targetWasOwner = $target->hasRole('SystemAdmin');
             if ($targetWasOwner && ($role->name !== 'SystemAdmin' || (int) $data['disable'] === 1)) {
                 BranchAccess::assertOwnerRemains([$target->id]);
@@ -220,7 +221,7 @@ class UserController extends Controller
             }
             $target->save();
             $target->syncRoles([$role]);
-            app(BranchContext::class)->audit('role-assigned', User::class, $target->id, ['role_id' => $role->id]);
+            app(\App\Support\Activity\ActivityRecorder::class)->assignments($target, 'roles', $beforeRoles, $target->getRoleNames()->all());
         });
         return response()->json(['success' => __('user-access.messages.user_updated')]);
     }
