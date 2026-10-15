@@ -3,6 +3,14 @@
 return [
     'title' => 'eiMaths Dashboard',
     'subtitle' => 'Statistics and reporting',
+    'loading' => [
+        'message' => 'Preparing your dashboard. All figures and charts will appear together when ready.',
+        'complete' => 'Dashboard is ready.',
+        'error_title' => 'Unable to load the complete dashboard',
+        'error_message' => 'Some data could not be loaded. Please try again to see all figures and charts.',
+        'retry' => 'Try again',
+        'javascript_required' => 'Please enable JavaScript to load the dashboard.',
+    ],
     'filters' => [
         'centre' => 'Centre',
         'date_range' => 'Date Range',

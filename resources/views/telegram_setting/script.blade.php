@@ -6,7 +6,7 @@
             serverSide: true,
             ajax: "{{ route('telegram-setting.index') }}",
             columns: [
-                { data: 'no', name: 'no', orderable: false, searchable: false },
+                { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
                 { data: 'description', name: 'description' },
                 { data: 'created_at', name: 'created_at' },
                 { data: 'updated_at', name: 'updated_at' },

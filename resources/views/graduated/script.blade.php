@@ -383,11 +383,15 @@
                 },
                 {
                     data: 'action',
-                    name: 'action'
+                    name: 'action',
+                    orderable: false,
+                    searchable: false
                 },
                 {
                     data: 'more',
-                    name: 'more'
+                    name: 'more',
+                    orderable: false,
+                    searchable: false
                 }
             ]
         };
@@ -400,22 +404,21 @@
 
             if (searchType !== '' && keyword !== '') {
                 // Clear the previous search and any custom filters
-                table.search('').draw();
-                $.fn.dataTable.ext.search.pop(); // Remove the custom date range filter
+                table.search('').columns().search('');
 
                 // Apply the new search based on searchType and keyword
                 if (searchType === '1') {
-                    table.column(2).search(keyword).draw();
+                    table.column('code:name').search(keyword).draw();
                 } else if (searchType === '2') {
-                    table.column(3).search(keyword).draw();
+                    table.column('name:name').search(keyword).draw();
                 } else if (searchType === '3') {
-                    table.column(14).search(keyword).draw();
+                    table.column('father_name:name').search(keyword).draw();
                 } else if (searchType === '4') {
-                    table.column(15).search(keyword).draw();
+                    table.column('mother_name:name').search(keyword).draw();
                 } else if (searchType === '5') {
-                    table.column(10).search(keyword).draw();
+                    table.column('father_mobile:name').search(keyword).draw();
                 } else if (searchType === '6') {
-                    table.column(11).search(keyword).draw();
+                    table.column('mother_mobile:name').search(keyword).draw();
                 }
             } else {
                 // Handle the case where searchType or keyword is empty
@@ -436,7 +439,6 @@
             $('#search_type').val('');
             $('#keyword').val('');
 
-            $('#Listview').html('');
 
             // Clear DataTable state
             if (table) {

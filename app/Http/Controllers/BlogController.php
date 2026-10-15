@@ -52,10 +52,13 @@ class BlogController extends Controller
         // }
         // return view('blogs.index', compact('blogs'));
          if (request()-> ajax()){
-            if (auth()->user()->hasRole('Admin')|| auth()->user()->hasRole('SystemAdmin')||auth()->user()->hasRole('BranchAdmin')){
-                $blogs = Blog:: select(['id','title','slug','thumbnail','is_published','user_id','pen_name','created_at','updated_at'])->with('user')->orderBy('created_at', 'desc');              
-            }else{
-                $blogs = Blog:: select(['id','title','slug','thumbnail','is_published','user_id','pen_name','created_at','updated_at'])->where('user_id', auth()->id())->with('user')->orderBy('created_at', 'desc');
+            $blogs = Blog::select(['blogs.id', 'blogs.title', 'blogs.slug', 'blogs.thumbnail', 'blogs.is_published',
+                'blogs.user_id', 'blogs.pen_name', 'blogs.created_at', 'blogs.updated_at'])->with('user');
+            if (!auth()->user()->hasAnyRole(['Admin', 'SystemAdmin', 'BranchAdmin'])) {
+                $blogs->where('blogs.user_id', auth()->id());
+            }
+            if (app('datatables.request')->orderableColumns() === []) {
+                $blogs->orderByDesc('blogs.created_at');
             }
            return DataTables::of($blogs)
            ->addIndexColumn()

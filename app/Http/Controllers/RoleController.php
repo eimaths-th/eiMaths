@@ -47,7 +47,12 @@ class RoleController extends Controller
             $branches = Department::where('status', 1)->get();
             return view('roles.index', compact('permission', 'permissionGroups', 'branches'));
         }
-        return datatables()->of(BranchAccess::visibleRoles($request->user())->with('permissions')->orderByDesc('id'))
+        // Role names and permission lists are presentation values, not SQL columns.
+        // Keep branch visibility in SQL, then sort/search the displayed role catalogue.
+        $roles = BranchAccess::visibleRoles($request->user())
+            ->with(['permissions' => fn ($query) => $query->orderBy('name')])
+            ->orderByDesc('id')->get();
+        return datatables()->of($roles)
             ->editColumn('name', fn ($role) => ($role->display_name ?: $role->name).($role->branch_id
                 ? ' '.__('user-access.roles.modal.scope_branch', ['id' => $role->branch_id])
                 : ' '.__('user-access.roles.modal.scope_central')))

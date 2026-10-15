@@ -48,7 +48,9 @@ class PositionController extends Controller
                 $datas->where('department_id', Auth::user()->department->id);
             }
 
-            $datas->orderBy("positions.id", "desc")->get();
+            if (app('datatables.request')->orderableColumns() === []) {
+                $datas->orderByDesc('positions.id');
+            }
             $state_text = [
                 __('centre-management.messages.status_disabled'),
                 __('centre-management.messages.status_enabled'),

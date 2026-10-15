@@ -246,6 +246,34 @@ class HistoriesController extends Controller
                         ->orderBy('stime', $order)
                         ->orderBy('id', $order);
                 })
+                ->orderColumn('code', function ($query, $order) {
+                    $query->orderBy(Contact::select('code')->whereColumn('contacts.id', 'histrories.student_id')->limit(1), $order);
+                })
+                ->orderColumn('name', function ($query, $order) {
+                    $query->orderBy(Contact::select('name')->whereColumn('contacts.id', 'histrories.student_id')->limit(1), $order);
+                })
+                ->orderColumn('centre', function ($query, $order) {
+                    $query->orderBy(Department::select('name')->whereColumn('departments.id', 'histrories.centre')->limit(1), $order);
+                })
+                ->orderColumn('bookuse', function ($query, $order) {
+                    // Older records store the book label directly instead of a book ID.
+                    $query->orderBy(DB::raw('COALESCE((SELECT name FROM bookuses WHERE bookuses.id = histrories.bookuse LIMIT 1), histrories.bookuse)'), $order);
+                })
+                ->orderColumn('setime', function ($query, $order) {
+                    $query->orderBy('stime', $order)->orderBy('etime', $order);
+                })
+                ->filterColumn('centre', function ($query, $keyword) {
+                    $query->whereHas('department', fn ($department) => $department->where('name', 'like', "%{$keyword}%"));
+                })
+                ->filterColumn('bookuse', function ($query, $keyword) {
+                    $query->where(function ($books) use ($keyword) {
+                        $books->whereHas('booku', fn ($book) => $book->where('name', 'like', "%{$keyword}%"))
+                            ->orWhere(fn ($legacy) => $legacy->whereDoesntHave('booku')->where('bookuse', 'like', "%{$keyword}%"));
+                    });
+                })
+                ->filterColumn('setime', function ($query, $keyword) {
+                    $query->where(fn ($time) => $time->where('stime', 'like', "%{$keyword}%")->orWhere('etime', 'like', "%{$keyword}%"));
+                })
                 ->orderColumn('level_name', 'level_name $1')
                 ->orderColumn('term', 'term $1')
                 // Custom filters for related columns to avoid querying non-existent histories.* fields
@@ -256,7 +284,7 @@ class HistoriesController extends Controller
                 })
                 ->filterColumn('name', function ($query, $keyword) {
                     $query->whereHas('student', function ($q) use ($keyword) {
-                        $q->where('name', 'like', "%{$keyword}%");
+                        $q->where(fn ($student) => $student->where('name', 'like', "%{$keyword}%")->orWhere('nickname', 'like', "%{$keyword}%"));
                     });
                 })
                 ->editColumn('checkbox', function ($row) {
@@ -281,7 +309,7 @@ class HistoriesController extends Controller
                     return $row->start_date . ' - ' . $row->end_date;
                 })
                 ->editColumn('name', function ($row) {
-                    $nic = $row->contact_nickname ? '(' . $row->contact_nickname . ')' : '';
+                    $nic = $row->student?->nickname ? '(' . $row->student->nickname . ')' : '';
                     return ($row->student ? $row->student->name : 'N/A') . ' ' . $nic;
                 })
                 ->addColumn('more', function () {

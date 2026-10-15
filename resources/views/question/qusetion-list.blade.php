@@ -431,10 +431,7 @@
         // Initialize table on first load so global search input works
         $(document).ready(function() {
             initDataTable();
-            // Hook global search triggers server-side
-            $('#Listview_filter input').off('keyup.DT input.DT').on('keyup', function(){
-                qTable.search(this.value).draw();
-            });
+            // Keep DataTables' native input/search handlers (typing, paste and clear).
         });
     </script>
     @include('question.scripts')

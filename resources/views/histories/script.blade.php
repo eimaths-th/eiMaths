@@ -504,17 +504,8 @@
                         orderable: false,
                         targets: -1
                     },
-                    // Disable sorting for computed/non-DB columns to prevent server-side ordering issues
-                    { targets: [0], orderable: false }, // checkbox
-                    { targets: [2], orderable: false }, // setime (computed)
-                    { targets: [3], orderable: true }, // centre (related name)
-                    { targets: [4], orderable: false }, // code (related)
-                    { targets: [5], orderable: false }, // name (related)
-                    { targets: [8], orderable: false }, // bookuse (free text)
-                    { targets: [9], orderable: false }, // start_date (combined string)
-                    { targets: [10], orderable: false }, // comment
-                    { targets: [11], orderable: false }, // action
-                    { targets: [12], orderable: false }  // more
+                    // Related columns now have explicit server-side ordering.
+                    { targets: [0, 11, 12], orderable: false }
                 ],
 
                 sPaginationType: "full_numbers",
@@ -550,14 +541,13 @@
             // return;
             if (searchType !== '' && keyword !== '') {
                 // Clear the previous search and any custom filters
-                table.search('').draw();
-                $.fn.dataTable.ext.search.pop(); // Remove the custom date range filter
+                table.search('').columns().search('');
 
                 // Apply the new search based on searchType and keyword
                 if (searchType === '1') {
-                    table.column(4).search(keyword).draw();
+                    table.column('code:name').search(keyword).draw();
                 } else if (searchType === '2') {
-                    table.column(5).search(keyword).draw();
+                    table.column('name:name').search(keyword).draw();
                 }
             } else {
                 // Handle the case where searchType or keyword is empty
@@ -578,7 +568,6 @@
             $('#search_type').val('');
             $('#keyword').val('');
 
-            $('#Listview').html('');
 
             // Clear DataTable state
             if (table) {

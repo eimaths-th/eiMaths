@@ -25,7 +25,11 @@ class DepartmentController extends Controller
         if (!$request->ajax()) {
             return view('departments.index');
         }
-        return datatables()->of(Department::query()->orderByDesc('id'))
+        $query = Department::query();
+        if (app('datatables.request')->orderableColumns() === []) {
+            $query->orderByDesc('id');
+        }
+        return datatables()->of($query)
             ->editColumn('checkbox', fn ($row) => !$request->user()->can('centre-delete') || $row->id == Department::HQ_ID ? '' : '<input type="checkbox" name="table_records[]" value="'.(int) $row->id.'">')
             ->editColumn('status', fn ($row) => $row->status == 1
                 ? __('centre-management.messages.status_active')

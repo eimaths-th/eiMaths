@@ -1,4 +1,6 @@
-<script language="javascript" type="text/javascript">
+<script type="module">
+    import { CreateDashboardLoader } from "{{ asset('js/dashboard-loader.js') }}?v={{ filemtime(public_path('js/dashboard-loader.js')) }}";
+
     $.datepicker.setDefaults($.datepicker.regional['en']);
     var token = ''
     $.ajaxSetup({
@@ -10,6 +12,7 @@
     const dashboardCalendar = @json(__('common.calendar'));
     const dashboardDateRanges = @json(__('dashboard.date_ranges'));
     const dashboardSeries = @json(__('dashboard.series'));
+    const dashboardLoading = @json(__('dashboard.loading'));
 
     let currentYear, currentMonth; // Declare variables globally
 
@@ -62,7 +65,9 @@
             ? existingEntry.instance
             : (echarts.getInstanceByDom(element) || echarts.init(element));
 
-        chart.setOption(options, true);
+        // The dashboard is revealed as one completed view, without replaying
+        // individual chart entrance animations after the skeleton disappears.
+        chart.setOption({ ...options, animation: false }, true);
         RegisterDashboardChart(elementId, 'echarts', chart, element.getBoundingClientRect().height || 380);
 
         const cardElement = element.closest('.card');
@@ -77,12 +82,16 @@
         const existingEntry = dashboardChartRegistry[elementId];
         const defaultChartHeight = Number(options.chart && options.chart.height) || 380;
 
+        options = {
+            ...options,
+            chart: { ...options.chart, animations: { enabled: false } },
+        };
         let renderPromise;
         let chart;
 
         if (existingEntry && existingEntry.type === 'apex') {
             chart = existingEntry.instance;
-            renderPromise = chart.updateOptions(options, false, true);
+            renderPromise = chart.updateOptions(options, false, false);
             RegisterDashboardChart(elementId, 'apex', existingEntry.instance, defaultChartHeight);
         } else {
             chart = new ApexCharts(element, options);
@@ -92,11 +101,11 @@
 
         const cardElement = element.closest('.card');
 
-        if (cardElement && cardElement.classList.contains('maximized-card')) {
-            Promise.resolve(renderPromise).then(function() {
+        return Promise.resolve(renderPromise).then(function() {
+            if (cardElement && cardElement.classList.contains('maximized-card')) {
                 ResizeDashboardCardCharts(cardElement, true);
-            });
-        }
+            }
+        });
     }
 
     function GetMaximizedChartHeight(cardElement) {
@@ -321,6 +330,7 @@
 
     // Attach event handler to a button or element to trigger the reset
     $('#resetSearchButton').on('click', async function() {
+        if (dashboardLoader.isLoading()) return;
         localStorage.removeItem('savedDateRange');
         localStorage.removeItem('savedStartDate');
         localStorage.removeItem('savedEndDate');
@@ -338,22 +348,7 @@
         
         $('#year_filter').val(null).trigger('change');
 
-        // Show Monthly/Yearly sections since we have date filter
-        $('#monthly_receipt_section').slideDown();
-        $('#yearly_receipt_section').slideDown();
-
-        // Refresh dashboard with all charts
-        await Promise.all([
-            handle_student_by_level(),
-            handle_receipt_sum_by_date(),
-            handle_student_stutus(),
-            handle_daily_study(),
-            handle_student_by_centre(),
-            teacher_by_centre(),
-            study_by_centre(),
-            handle_receipt_sum_by_month(),
-            handle_receipt_sum_by_year(),
-        ]);
+        await dashboardLoader.load();
     });
 
 
@@ -368,41 +363,61 @@
         return hasDateRange || hasYears;
     }
 
-    // Function to toggle Monthly/Yearly sections
-    function ToggleReceiptSections() {
-        const showAdvanced = CheckFiltersApplied();
-        
-        if (showAdvanced) {
-            $('#monthly_receipt_section').slideDown();
-            $('#yearly_receipt_section').slideDown();
-        } else {
-            $('#monthly_receipt_section').slideUp();
-            $('#yearly_receipt_section').slideUp();
+    const dashboardRoot = document.getElementById('dashboard-data');
+    const dashboardContent = dashboardRoot.querySelector('[data-dashboard-content]');
+    const dashboardStatus = dashboardRoot.querySelector('[role="status"]');
+    const dashboardError = document.getElementById('dashboard-load-error');
+    const dashboardControls = Array.from(document.querySelectorAll(
+        '#dcentre, #daterange, #year_filter, #SearchButtons, #resetSearchButton'
+    )).map(element => ({ element, originallyDisabled: element.disabled }));
+
+    function SetDashboardLoadState(state) {
+        const loading = state === 'loading';
+        const ready = state === 'ready';
+        dashboardRoot.dataset.loadState = state;
+        dashboardContent.setAttribute('aria-busy', String(loading));
+        dashboardContent.setAttribute('aria-hidden', String(!ready));
+        dashboardContent.inert = !ready;
+        dashboardError.hidden = state !== 'error';
+        dashboardStatus.textContent = loading ? dashboardLoading.message : (ready ? dashboardLoading.complete : '');
+
+        // Preserve restrictions such as the locked centre selector for branches.
+        dashboardControls.forEach(({ element, originallyDisabled }) => {
+            element.disabled = loading || originallyDisabled;
+        });
+        $('#year_filter').trigger('change.select2');
+        document.getElementById('dashboard-retry').disabled = loading;
+
+        if (ready) {
+            $(document).trigger('dashboard:loaded');
         }
     }
 
-    $('#SearchButtons').on('click', async function() {
-        ToggleReceiptSections();
-        
-        const showAdvanced = CheckFiltersApplied();
-        
-        const promises = [
-            student_by_centre(),
-            teacher_by_centre(),
-            study_by_centre(),
-            handle_student_by_level(),
-            handle_receipt_sum_by_date(),
-            handle_student_stutus(),
-            handle_daily_study(),
-        ];
-        
-        if (showAdvanced) {
-            promises.push(handle_receipt_sum_by_month());
-            promises.push(handle_receipt_sum_by_year());
-        }
-        
-        await Promise.all(promises);
+    const dashboardLoader = CreateDashboardLoader({
+        onStateChange: SetDashboardLoadState,
+        onError: error => console.error('Dashboard could not finish loading:', error),
+        getTasks: () => {
+            const showAdvanced = Boolean(CheckFiltersApplied());
+            // Keep chart containers measurable before rendering, without slide animations.
+            $('#monthly_receipt_section, #yearly_receipt_section').toggle(showAdvanced);
+
+            const tasks = [
+                handle_student_by_level,
+                handle_student_by_centre,
+                handle_student_stutus,
+                handle_receipt_sum_by_date,
+                handle_daily_study,
+                teacher_by_centre,
+                study_by_centre,
+            ];
+            if (showAdvanced) {
+                tasks.push(handle_receipt_sum_by_month, handle_receipt_sum_by_year);
+            }
+            return tasks;
+        },
     });
+
+    $('#SearchButtons, #dashboard-retry').on('click', () => dashboardLoader.load());
 
 
     function StoreFieldValues() {
@@ -444,6 +459,8 @@
             const response = await $.ajax({
                 url: '{{ route('dashboard.student_by_level') }}',
                 method: 'POST',
+                dataType: 'json',
+                timeout: 45000,
                 data: {
                     _token: token,
                     dcentre: dcentreValue,
@@ -606,9 +623,9 @@
         try {
             const datas = await student_by_level();
             const options = student_by_level_chart_data(datas);
-            RenderEChartsDashboardChart('chart_student_by_level', options);
+            await RenderEChartsDashboardChart('chart_student_by_level', options);
         } catch (error) {
-            console.error('Error:', error);
+            throw error;
         }
     };
 
@@ -627,6 +644,8 @@
             const response = await $.ajax({
                 url: '{{ route('dashboard.student_by_centre') }}',
                 method: 'POST',
+                dataType: 'json',
+                timeout: 45000,
                 data: {
                     _token: token,
                     dcentre: dcentreValue,
@@ -661,6 +680,8 @@
             const response = await $.ajax({
                 url: '{{ route('dashboard.teacher_by_centre') }}',
                 method: 'POST',
+                dataType: 'json',
+                timeout: 45000,
                 data: {
                     _token: token,
                     dcentre: dcentreValue,
@@ -694,6 +715,8 @@
             const response = await $.ajax({
                 url: '{{ route('dashboard.study_by_centre') }}',
                 method: 'POST',
+                dataType: 'json',
+                timeout: 45000,
                 data: {
                     _token: token,
                     dcentre: dcentreValue,
@@ -788,9 +811,9 @@
             const datas = await student_by_centre();
 
             const options = student_by_centre_chart_data(datas);
-            RenderEChartsDashboardChart('student_by_centre', options);
+            await RenderEChartsDashboardChart('student_by_centre', options);
         } catch (error) {
-            console.error('Error:', error);
+            throw error;
         }
     };
 
@@ -812,6 +835,8 @@
             const response = await $.ajax({
                 url: '{{ route('dashboard.receipt_sum_by_date') }}',
                 method: 'POST',
+                dataType: 'json',
+                timeout: 45000,
                 data: {
                     _token: token,
                     dcentre: dcentreValue,
@@ -952,9 +977,9 @@
             const datas = await receipt_sum_by_date();
 
             const options = receipt_sum_by_date_chart_data(datas);
-            RenderApexDashboardChart('receipt_sum_by_date', options);
+            await RenderApexDashboardChart('receipt_sum_by_date', options);
         } catch (error) {
-            console.error('Error:', error);
+            throw error;
         }
     };
 
@@ -974,6 +999,8 @@
             const response = await $.ajax({
                 url: '{{ route('dashboard.receipt_sum_by_month') }}',
                 method: 'POST',
+                dataType: 'json',
+                timeout: 45000,
                 data: {
                     _token: token,
                     dcentre: dcentreValue,
@@ -1070,9 +1097,9 @@
             const datas = await receipt_sum_by_month();
 
             const options = receipt_sum_by_month_chart_data(datas);
-            RenderApexDashboardChart('receipt_sum_by_month', options);
+            await RenderApexDashboardChart('receipt_sum_by_month', options);
         } catch (error) {
-            console.error('Error:', error);
+            throw error;
         }
     };
 
@@ -1092,6 +1119,8 @@
             const response = await $.ajax({
                 url: '{{ route('dashboard.receipt_sum_by_year') }}',
                 method: 'POST',
+                dataType: 'json',
+                timeout: 45000,
                 data: {
                     _token: token,
                     dcentre: dcentreValue,
@@ -1186,9 +1215,9 @@
             const datas = await receipt_sum_by_year();
 
             const options = receipt_sum_by_year_chart_data(datas);
-            RenderApexDashboardChart('receipt_sum_by_year', options);
+            await RenderApexDashboardChart('receipt_sum_by_year', options);
         } catch (error) {
-            console.error('Error:', error);
+            throw error;
         }
     };
 
@@ -1207,6 +1236,8 @@
             const response = await $.ajax({
                 url: '{{ route('dashboard.daily_study') }}',
                 method: 'POST',
+                dataType: 'json',
+                timeout: 45000,
                 data: {
                     _token: token,
                     dcentre: dcentreValue,
@@ -1312,9 +1343,9 @@
         try {
             const datas = await daily_study_date();
             const options = daily_study_chart_data(datas);
-            RenderApexDashboardChart('daily_study', options);
+            await RenderApexDashboardChart('daily_study', options);
         } catch (error) {
-            console.error('Error:', error);
+            throw error;
         }
     };
 
@@ -1334,6 +1365,8 @@
             const response = await $.ajax({
                 url: '{{ route('dashboard.student_status') }}',
                 method: 'POST',
+                dataType: 'json',
+                timeout: 45000,
                 data: {
                     _token: token,
                     dcentre: dcentreValue,
@@ -1434,9 +1467,9 @@
             const datas = await student_status();
 
             const options = student_status_chart_data(datas);
-            RenderEChartsDashboardChart('student_status', options);
+            await RenderEChartsDashboardChart('student_status', options);
         } catch (error) {
-            console.error('Error:', error);
+            throw error;
         }
     };
 
@@ -1448,28 +1481,10 @@
         InitializeSelect2();
         retrieveFieldValues();
 
-        // Check if filters are applied on page load
-        const showAdvanced = CheckFiltersApplied();
-        
-        handle_student_by_level();
-        handle_receipt_sum_by_date();
-        handle_daily_study();
-        handle_student_by_centre();
-        handle_student_stutus();
-        teacher_by_centre();
-        study_by_centre();
-
-        // Load Monthly/Yearly if filters are applied
-        if (showAdvanced) {
-            $('#monthly_receipt_section').show();
-            $('#yearly_receipt_section').show();
-            handle_receipt_sum_by_month();
-            handle_receipt_sum_by_year();
-        }
+        dashboardLoader.load();
 
     });
-</script>
-<script>
+
     $(document).ready(function() {
         const dashboard_card_routes = [
             {
@@ -1547,7 +1562,7 @@
 
         UpdateDashboardCardLinks();
 
-        $('#SearchButtons').on('click', UpdateDashboardCardLinks);
+        $(document).on('dashboard:loaded', UpdateDashboardCardLinks);
         $('#dcentre, #year_filter').on('change', UpdateDashboardCardLinks);
         $('#daterange').on('apply.daterangepicker cancel.daterangepicker', UpdateDashboardCardLinks);
     });

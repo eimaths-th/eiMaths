@@ -366,6 +366,7 @@
         .info-box:nth-child(7) { animation-delay: 0.7s; }
         .info-box:nth-child(8) { animation-delay: 0.8s; }
     </style>
+    <link rel="stylesheet" href="{{ asset('css/dashboard-loading.css') }}?v={{ filemtime(public_path('css/dashboard-loading.css')) }}">
 @endsection
 
 @section('content')
@@ -450,26 +451,41 @@
     </section>
 
 
-    <section class="content">
+    <section class="content" id="dashboard-data" data-load-state="loading">
         <div class="container-fluid">
-            <div class="row">
+            <div class="dashboard-loading-status" role="status" aria-live="polite" aria-atomic="true">
+                {{ __('dashboard.loading.message') }}
+            </div>
+            <div class="dashboard-load-error" id="dashboard-load-error" role="alert" hidden>
+                <i class="fas fa-exclamation-circle" aria-hidden="true"></i>
+                <h4>{{ __('dashboard.loading.error_title') }}</h4>
+                <p>{{ __('dashboard.loading.error_message') }}</p>
+                <button type="button" class="btn btn-primary" id="dashboard-retry">
+                    <i class="fas fa-redo mr-1" aria-hidden="true"></i> {{ __('dashboard.loading.retry') }}
+                </button>
+            </div>
+            <noscript>
+                <style>#dashboard-data .dashboard-loading-status, #dashboard-data [data-dashboard-content] { display: none; }</style>
+                <p class="alert alert-info">{{ __('dashboard.loading.javascript_required') }}</p>
+            </noscript>
+            <div class="row" data-dashboard-content aria-hidden="true" aria-busy="true" inert>
                 <div class="col-12">
 
 
                     <!-- Daily Receipt (Always Show) -->
                     <div class="row" aria-label="Credit Note revenue summary">
                         {{-- Default English labels retained for the dashboard presentation contract: Gross Revenue / Cancelled Credit Notes. --}}
-                        <div class="col-md-3"><div class="info-box"><span class="info-box-icon bg-info"><i class="fa-solid fa-receipt"></i></span><div class="info-box-content"><span class="info-box-text">{{ __('dashboard.metrics.gross_revenue') }}</span><span id="credit-note-gross" class="info-box-number">0.00</span></div></div></div>
-                        <div class="col-md-3"><div class="info-box"><span class="info-box-icon bg-warning"><i class="fa-solid fa-file-invoice-dollar"></i></span><div class="info-box-content"><span class="info-box-text">{{ __('dashboard.metrics.issued_credit_notes') }}</span><span id="credit-note-issued" class="info-box-number">0.00</span></div></div></div>
-                        <div class="col-md-3"><div class="info-box"><span class="info-box-icon bg-secondary"><i class="fa-solid fa-rotate-left"></i></span><div class="info-box-content"><span class="info-box-text">{{ __('dashboard.metrics.cancelled_credit_notes') }}</span><span id="credit-note-cancelled" class="info-box-number">0.00</span></div></div></div>
-                        <div class="col-md-3"><div class="info-box"><span class="info-box-icon bg-success"><i class="fa-solid fa-scale-balanced"></i></span><div class="info-box-content"><span class="info-box-text">{{ __('dashboard.metrics.net_revenue') }}</span><span id="credit-note-net" class="info-box-number">0.00</span></div></div></div>
+                        <div class="col-md-3"><div class="info-box">@include('dashboard.skeleton', ['type' => 'metric'])<span class="info-box-icon bg-info"><i class="fa-solid fa-receipt"></i></span><div class="info-box-content"><span class="info-box-text">{{ __('dashboard.metrics.gross_revenue') }}</span><span id="credit-note-gross" class="info-box-number">0.00</span></div></div></div>
+                        <div class="col-md-3"><div class="info-box">@include('dashboard.skeleton', ['type' => 'metric'])<span class="info-box-icon bg-warning"><i class="fa-solid fa-file-invoice-dollar"></i></span><div class="info-box-content"><span class="info-box-text">{{ __('dashboard.metrics.issued_credit_notes') }}</span><span id="credit-note-issued" class="info-box-number">0.00</span></div></div></div>
+                        <div class="col-md-3"><div class="info-box">@include('dashboard.skeleton', ['type' => 'metric'])<span class="info-box-icon bg-secondary"><i class="fa-solid fa-rotate-left"></i></span><div class="info-box-content"><span class="info-box-text">{{ __('dashboard.metrics.cancelled_credit_notes') }}</span><span id="credit-note-cancelled" class="info-box-number">0.00</span></div></div></div>
+                        <div class="col-md-3"><div class="info-box">@include('dashboard.skeleton', ['type' => 'metric'])<span class="info-box-icon bg-success"><i class="fa-solid fa-scale-balanced"></i></span><div class="info-box-content"><span class="info-box-text">{{ __('dashboard.metrics.net_revenue') }}</span><span id="credit-note-net" class="info-box-number">0.00</span></div></div></div>
                     </div>
 
                     <div class="row">
 
                         <div class="col-md-6 col-sm-6 col-lg-6  col-xl-3 col-12">
                             <a href="{{ route('departments') }}" target="_blank" class="text-dark">
-                                <div class="info-box">
+                                <div class="info-box">@include('dashboard.skeleton', ['type' => 'metric'])
                                     <span class="info-box-icon bg-warning"><i class="fa-solid fa-building"></i></span>
                                     <div class="info-box-content">
                                         <span class="info-box-text">{{ __('dashboard.metrics.total_centre') }}</span>
@@ -483,7 +499,7 @@
                             {{-- return to contacts with centre --}}
                             <a id="contacts-link" href="{{ route('contacts', ['centre' => Auth::user()->department->id]) }}"
                                 target="_blank" class="text-dark">
-                                <div class="info-box">
+                                <div class="info-box">@include('dashboard.skeleton', ['type' => 'metric'])
                                     <span class="info-box-icon bg-warning"><i class="fa-solid fa-graduation-cap"></i></span>
                                     <div class="info-box-content">
                                         <span class="info-box-text">{{ __('dashboard.metrics.total_student') }}</span>
@@ -498,7 +514,7 @@
                             <a id="teacher-link"
                                 href="{{ route('users.index', ['role' => 'Teacher', 'centre' => Auth::user()->department->id]) }}"
                                 target="_blank" class="text-dark">
-                                <div class="info-box">
+                                <div class="info-box">@include('dashboard.skeleton', ['type' => 'metric'])
                                     <span class="info-box-icon bg-warning"><i
                                             class="fa-solid fa-chalkboard-user"></i></span>
                                     <div class="info-box-content">
@@ -509,7 +525,7 @@
                             </a>
                         </div>
                         <div class="col-md-6 col-sm-6 col-lg-6  col-xl-3 col-12">
-                            <div class="info-box">
+                            <div class="info-box">@include('dashboard.skeleton', ['type' => 'metric'])
                                 <span class="info-box-icon bg-warning"><i class="fa-solid fa-book"></i></span>
                                 <div class="info-box-content">
                                     <span class="info-box-text">{{ __('dashboard.metrics.today_study_student') }}</span>
@@ -522,7 +538,7 @@
                             {{-- return to receipt with centre --}}
                             <a href="{{ route('receipts', ['centre' => Auth::user()->department->id]) }}" target="_blank"
                                 class="text-dark receipt-link" data-receipt-status="all">
-                                <div class="info-box">
+                                <div class="info-box">@include('dashboard.skeleton', ['type' => 'metric'])
                                     <span class="info-box-icon bg-warning"><i
                                             class="fa-solid fa-file-invoice-dollar"></i></span>
                                     <div class="info-box-content">
@@ -537,7 +553,7 @@
                             {{-- return to receipt with centre --}}
                             <a href="{{ route('receipts', ['centre' => Auth::user()->department->id]) }}" target="_blank"
                                 class="text-dark receipt-link" data-receipt-status="paid">
-                                <div class="info-box">
+                                <div class="info-box">@include('dashboard.skeleton', ['type' => 'metric'])
                                     <span class="info-box-icon bg-warning"><i class="fa-solid fa-cash-register"></i></span>
                                     <div class="info-box-content">
                                         <span class="info-box-text ">{{ __('dashboard.metrics.payment_receipt') }}</span>
@@ -553,7 +569,7 @@
                                 href="{{ route('receipts_pending', ['centre' => Auth::user()->department->id]) }}"
                                 target="_blank" class="text-dark">
 
-                                <div class="info-box">
+                                <div class="info-box">@include('dashboard.skeleton', ['type' => 'metric'])
                                     <span class="info-box-icon bg-warning"><i
                                             class="fa-solid fa-hourglass-half"></i></span>
                                     <div class="info-box-content">
@@ -567,7 +583,7 @@
                         <div class="col-md-6 col-sm-6 col-lg-6  col-xl-3 col-12">
                             <a href="{{ route('receipts', ['centre' => Auth::user()->department->id]) }}" target="_blank"
                                 class="text-dark receipt-link" data-receipt-status="paid">
-                                <div class="info-box">
+                                <div class="info-box">@include('dashboard.skeleton', ['type' => 'metric'])
                                     <span class="info-box-icon bg-warning"><i
                                             class="fa-solid fa-hand-holding-dollar"></i></span>
                                     <div class="info-box-content">
@@ -634,6 +650,7 @@
                         <div class="col-md-4">
 
                             <div class="card card-primary" style="max-height: 485px">
+                                @include('dashboard.skeleton', ['type' => 'donut'])
                                 <div class="card-header">
                                     <h3 class="card-title"><i class="fa-solid fa-chart-line"></i> {{ __('dashboard.charts.student_by_level') }}
                                     </h3>
@@ -658,6 +675,7 @@
                         <div class="col-md-8">
 
                             <div class="card card-primary" style="max-height: 485px">
+                                @include('dashboard.skeleton', ['type' => 'bars'])
                                 <div class="card-header">
                                     <h3 class="card-title"><i class="fa-solid fa-chart-line"></i> {{ __('dashboard.charts.centre_student_status') }}
                                     </h3>
@@ -687,6 +705,7 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="card card-primary" style="max-height: 485px">
+                                @include('dashboard.skeleton', ['type' => 'bars'])
                                 <div class="card-header">
                                     <h3 class="card-title"><i class="fa-solid fa-chart-line"></i> {{ __('dashboard.charts.daily_receipt') }}
                                     </h3>
@@ -714,6 +733,7 @@
                     <div class="row" id="monthly_receipt_section" style="display: none;">
                         <div class="col-md-12">
                             <div class="card card-success" style="max-height: 485px">
+                                @include('dashboard.skeleton', ['type' => 'bars'])
                                 <div class="card-header">
                                     <h3 class="card-title"><i class="fa-solid fa-calendar-alt"></i> {{ __('dashboard.charts.monthly_receipt') }}
                                     </h3>
@@ -741,6 +761,7 @@
                     <div class="row" id="yearly_receipt_section" style="display: none;">
                         <div class="col-md-12">
                             <div class="card card-info" style="max-height: 485px">
+                                @include('dashboard.skeleton', ['type' => 'bars'])
                                 <div class="card-header">
                                     <h3 class="card-title"><i class="fa-solid fa-calendar"></i> {{ __('dashboard.charts.yearly_receipt') }}
                                     </h3>
@@ -768,6 +789,7 @@
                         <div class="col-md-8">
 
                             <div class="card card-primary" style="max-height: 455px">
+                                @include('dashboard.skeleton', ['type' => 'bars'])
                                 <div class="card-header">
                                     <h3 class="card-title"><i class="fa-solid fa-chart-line"></i> {{ __('dashboard.charts.daily_study_student') }}
                                     </h3>
@@ -794,6 +816,7 @@
                         <div class="col-md-4">
 
                             <div class="card card-primary" style="max-height: 455px">
+                                @include('dashboard.skeleton', ['type' => 'donut'])
                                 <div class="card-header">
                                     <h3 class="card-title"><i class="fa-solid fa-chart-line"></i> {{ __('dashboard.charts.student_by_centre') }}
                                     </h3>

@@ -563,8 +563,8 @@ class ContactController extends Controller
                 ->join("terms as start_terms", "contacts.start_term", "=", "start_terms.id")
                 ->join("terms as pterms", "contacts.term", "=", "pterms.id")
                 ->where('discontinued', '0')
-                ->where('level', $last_level->id)
-                ->where('bookuse', $last_book->id);
+                ->where('level', $last_level?->id)
+                ->where('bookuse', $last_book?->id);
             if (!Gate::allows('all-centre')) {
                 $query->where('centre', Auth::user()->department->id);
             }

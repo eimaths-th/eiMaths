@@ -3,6 +3,14 @@
 return [
     'title' => 'ภาพรวม eiMaths',
     'subtitle' => 'ระบบจัดการข้อมูลสถิติและรายงาน',
+    'loading' => [
+        'message' => 'กำลังเตรียม Dashboard จะแสดงข้อมูลและกราฟพร้อมกันเมื่อโหลดครบ',
+        'complete' => 'โหลด Dashboard เรียบร้อยแล้ว',
+        'error_title' => 'โหลด Dashboard ได้ไม่ครบ',
+        'error_message' => 'ข้อมูลบางส่วนโหลดไม่สำเร็จ กรุณาลองอีกครั้งเพื่อดูข้อมูลและกราฟทั้งหมด',
+        'retry' => 'ลองอีกครั้ง',
+        'javascript_required' => 'กรุณาเปิดใช้งาน JavaScript เพื่อโหลด Dashboard',
+    ],
     'filters' => [
         'centre' => 'สาขา',
         'date_range' => 'ช่วงวันที่',

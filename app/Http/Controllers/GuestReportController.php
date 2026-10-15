@@ -18,10 +18,21 @@ class GuestReportController extends Controller
         $this->authorizeCentralAccess($request, 'student-list');
 
         if ($request->ajax()) {
-            $query = GuestQuizzer::query()->orderBy('id', 'desc');
+            $query = GuestQuizzer::query();
+            if (app('datatables.request')->orderableColumns() === []) {
+                $query->orderByDesc('id');
+            }
             $canDelete = $request->user()->can('student-delete');
 
             return datatables()->of($query)
+                ->orderColumn('first_name', function ($query, $order) {
+                    $query->orderBy('first_name', $order)->orderBy('last_name', $order)->orderBy('nickname', $order);
+                })
+                ->filterColumn('first_name', function ($query, $keyword) {
+                    $query->where(fn ($name) => $name->where('first_name', 'like', "%{$keyword}%")
+                        ->orWhere('last_name', 'like', "%{$keyword}%")
+                        ->orWhere('nickname', 'like', "%{$keyword}%"));
+                })
                 ->editColumn('checkbox', function ($row) use ($canDelete) {
                     return $canDelete
                         ? '<input type="checkbox" id="' . $row->id . '" class="flat" name="table_records[]" value="' . $row->id . '" >'

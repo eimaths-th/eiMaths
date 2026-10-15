@@ -32,6 +32,13 @@ class ParentController extends Controller
             }
             $datas = $datass->get();
             return datatables()->of($datas)
+                ->filter(function ($table) use ($request, $datass) {
+                    if ($request->filled('student_code_search')) {
+                        $keyword = $request->string('student_code_search')->toString();
+                        $ids = (clone $datass)->whereHas('studentRecords', fn ($students) => $students->where('code', 'like', "%{$keyword}%"))->pluck('id');
+                        $table->collection = $table->collection->whereIn('id', $ids);
+                    }
+                }, true)
 
                 ->editColumn('student_name', function ($row) {
                     $stdName = '';

@@ -13,10 +13,6 @@
         border-color: #a8a8a8;
     }
 
-    .dataTables_filter {
-        display: none;
-    }
-
     .overlay {
         position: fixed;
         display: none;

@@ -16,20 +16,15 @@ class TelegramSettingController extends Controller
      */
     public function index(Request $request)
     {
-        $datas = TelegramSetting::all();
-
-        $datas->each(function ($row, $index) {
-            $row->no = $index + 1;
-        });
 
         if ($request->ajax()) {
-            $datas = TelegramSetting::query()->orderBy('id', 'desc');
-            $datas->orderBy("id", "desc")->get();
+            $datas = TelegramSetting::query();
+            if (app('datatables.request')->orderableColumns() === []) {
+                $datas->orderByDesc('id');
+            }
 
             return datatables()->of($datas)
-                ->addColumn('no', function ($row) {
-                    return $row->no;
-                })
+                ->addIndexColumn()
                 ->editColumn('description', function (TelegramSetting $datas) {
                     return $datas->description ?? '-';
                 })

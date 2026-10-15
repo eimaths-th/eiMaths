@@ -1,0 +1,1883 @@
+[
+  {
+    "key": "roles",
+    "uri": "/roles",
+    "view": "roles/script.blade.php",
+    "columns": [
+      {
+        "data": "checkbox",
+        "name": "checkbox",
+        "orderable": false,
+        "searchable": false
+      },
+      {
+        "data": "name",
+        "name": "name",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "role",
+        "name": "role",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "action",
+        "name": "action",
+        "orderable": false,
+        "searchable": false
+      }
+    ],
+    "server": true,
+    "params": {}
+  },
+  {
+    "key": "permissions",
+    "uri": "/permission",
+    "view": "permissions/script.blade.php",
+    "columns": [
+      {
+        "data": "checkbox",
+        "name": "checkbox",
+        "orderable": false,
+        "searchable": false
+      },
+      {
+        "data": "name",
+        "name": "name",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "action",
+        "name": "action",
+        "orderable": false,
+        "searchable": false
+      }
+    ],
+    "server": true,
+    "params": {}
+  },
+  {
+    "key": "users",
+    "uri": "/users",
+    "view": "users/script.blade.php",
+    "columns": [
+      {
+        "data": "checkbox",
+        "name": "checkbox",
+        "orderable": false,
+        "searchable": false
+      },
+      {
+        "data": "name",
+        "name": "users.name",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "email",
+        "name": "users.email",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "department",
+        "name": "department",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "position",
+        "name": "position",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "role",
+        "name": "role",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "disable",
+        "name": "disable",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "action",
+        "name": "action",
+        "orderable": false,
+        "searchable": false
+      }
+    ],
+    "server": true,
+    "params": {}
+  },
+  {
+    "key": "centres",
+    "uri": "/departments",
+    "view": "departments/script.blade.php",
+    "columns": [
+      {
+        "data": "checkbox",
+        "name": "checkbox",
+        "orderable": false,
+        "searchable": false
+      },
+      {
+        "data": "name",
+        "name": "name",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "code",
+        "name": "code",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "status",
+        "name": "status",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "action",
+        "name": "action",
+        "orderable": false,
+        "searchable": false
+      }
+    ],
+    "server": true,
+    "params": {}
+  },
+  {
+    "key": "departments",
+    "uri": "/positions",
+    "view": "positions/script.blade.php",
+    "columns": [
+      {
+        "data": "checkbox",
+        "name": "checkbox",
+        "orderable": false,
+        "searchable": false
+      },
+      {
+        "data": "name",
+        "name": "name",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "dname",
+        "name": "dname",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "status",
+        "name": "status",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "action",
+        "name": "action",
+        "orderable": false,
+        "searchable": false
+      }
+    ],
+    "server": true,
+    "params": {}
+  },
+  {
+    "key": "students",
+    "uri": "/contacts",
+    "view": "contacts/script.blade.php",
+    "columns": [
+      {
+        "data": "checkbox",
+        "name": "checkbox",
+        "orderable": false,
+        "searchable": false
+      },
+      {
+        "data": "centre_name",
+        "name": "centre_name",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "code",
+        "name": "code",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "ref",
+        "name": "ref",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "name",
+        "name": "name",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "start_date",
+        "name": "start_date",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "end_date",
+        "name": "end_date",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "remaining",
+        "name": "remaining",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "level_name",
+        "name": "level_name",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "term",
+        "name": "term",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "bookuse_name",
+        "name": "bookuse_name",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "book_receipt",
+        "name": "book_receipt",
+        "orderable": false,
+        "searchable": false
+      },
+      {
+        "data": "telephone",
+        "name": "telephone",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "father_mobile",
+        "name": "father_mobile",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "mother_mobile",
+        "name": "mother_mobile",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "father_email",
+        "name": "father_email",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "mother_email",
+        "name": "mother_email",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "father_name",
+        "name": "father_name",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "mother_name",
+        "name": "mother_name",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "action",
+        "name": "action",
+        "orderable": false,
+        "searchable": false
+      },
+      {
+        "data": "more",
+        "name": "more",
+        "orderable": false,
+        "searchable": false
+      }
+    ],
+    "server": true,
+    "params": {}
+  },
+  {
+    "key": "graduated",
+    "uri": "/graduated",
+    "view": "graduated/script.blade.php",
+    "columns": [
+      {
+        "data": "checkbox",
+        "name": "checkbox",
+        "orderable": false,
+        "searchable": false
+      },
+      {
+        "data": "centre_name",
+        "name": "centre_name",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "code",
+        "name": "code",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "name",
+        "name": "name",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "nickname",
+        "name": "nickname",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "start_date",
+        "name": "start_date",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "level_name",
+        "name": "level_name",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "book_name",
+        "name": "book_name",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "start_term_name",
+        "name": "start_term_name",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "term_name",
+        "name": "term_name",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "telephone",
+        "name": "telephone",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "father_mobile",
+        "name": "father_mobile",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "mother_mobile",
+        "name": "mother_mobile",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "father_email",
+        "name": "father_email",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "mother_email",
+        "name": "mother_email",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "father_name",
+        "name": "father_name",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "mother_name",
+        "name": "mother_name",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "action",
+        "name": "action",
+        "orderable": false,
+        "searchable": false
+      },
+      {
+        "data": "more",
+        "name": "more",
+        "orderable": false,
+        "searchable": false
+      }
+    ],
+    "server": true,
+    "params": {}
+  },
+  {
+    "key": "discontinued",
+    "uri": "/discontinued",
+    "view": "discontinued/script.blade.php",
+    "columns": [
+      {
+        "data": "checkbox",
+        "name": "checkbox",
+        "orderable": false,
+        "searchable": false
+      },
+      {
+        "data": "centre_name",
+        "name": "centre_name",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "code",
+        "name": "code",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "name",
+        "name": "name",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "nickname",
+        "name": "nickname",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "start_date",
+        "name": "start_date",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "discontinued_date",
+        "name": "discontinued_date",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "discontinued_reason",
+        "name": "discontinued_reason",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "action",
+        "name": "action",
+        "orderable": false,
+        "searchable": false
+      },
+      {
+        "data": "more",
+        "name": "more",
+        "orderable": false,
+        "searchable": false
+      }
+    ],
+    "server": true,
+    "params": {}
+  },
+  {
+    "key": "parents",
+    "uri": "/parent",
+    "view": "parents/script.blade.php",
+    "columns": [
+      {
+        "data": "checkbox",
+        "name": "checkbox",
+        "orderable": false,
+        "searchable": false
+      },
+      {
+        "data": "centre",
+        "name": "centre",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "parent_name",
+        "name": "parent_name",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "parent_telp",
+        "name": "parent_telp",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "relationship",
+        "name": "relationship",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "student_name",
+        "name": "student_name",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "emergency_contact",
+        "name": "emergency_contact",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "action",
+        "name": "action",
+        "orderable": false,
+        "searchable": false
+      },
+      {
+        "data": "more",
+        "name": "more",
+        "orderable": false,
+        "searchable": false
+      }
+    ],
+    "server": true,
+    "params": {}
+  },
+  {
+    "key": "histories",
+    "uri": "/histories",
+    "view": "histories/script.blade.php",
+    "columns": [
+      {
+        "data": "checkbox",
+        "name": "checkbox",
+        "orderable": false,
+        "searchable": false
+      },
+      {
+        "data": "date",
+        "name": "date",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "setime",
+        "name": "setime",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "centre",
+        "name": "centre",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "code",
+        "name": "code",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "name",
+        "name": "name",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "level_name",
+        "name": "level_name",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "term",
+        "name": "term",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "bookuse",
+        "name": "bookuse",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "start_date",
+        "name": "start_date",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "comment",
+        "name": "comment",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "action",
+        "name": "action",
+        "orderable": false,
+        "searchable": false
+      },
+      {
+        "data": "more",
+        "name": "more",
+        "orderable": false,
+        "searchable": false
+      }
+    ],
+    "server": true,
+    "params": {}
+  },
+  {
+    "key": "orders",
+    "uri": "/orders",
+    "view": "orders/script.blade.php",
+    "columns": [
+      {
+        "data": "checkbox",
+        "name": "checkbox",
+        "orderable": false,
+        "searchable": false
+      },
+      {
+        "data": "centre",
+        "name": "centre",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "created_at",
+        "name": "created_at",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "contact_code",
+        "name": "contact_code",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "contact_name",
+        "name": "contact_name",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "product_name",
+        "name": "product_name",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "book_qty",
+        "name": "book_qty",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "total_price",
+        "name": "total_price",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "bag_qty",
+        "name": "bag_qty",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "bag_price",
+        "name": "bag_price",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "action",
+        "name": "action",
+        "orderable": false,
+        "searchable": false
+      },
+      {
+        "data": "more",
+        "name": "more",
+        "orderable": false,
+        "searchable": false
+      }
+    ],
+    "server": true,
+    "params": {}
+  },
+  {
+    "key": "receipts",
+    "uri": "/receipts",
+    "view": "receipts/script.blade.php",
+    "columns": [
+      {
+        "data": "checkbox",
+        "name": "checkbox",
+        "orderable": false,
+        "searchable": false
+      },
+      {
+        "data": "centre",
+        "name": "centre",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "ref",
+        "name": "ref",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "contact_code",
+        "name": "contact_code",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "contact_name",
+        "name": "contact_name",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "receipt_number",
+        "name": "receipt_number",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "payment_date",
+        "name": "payment_date",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "product_level",
+        "name": "product_level",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "book_use",
+        "name": "book_use",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "total_fee",
+        "name": "total_fee",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "action",
+        "name": "action",
+        "orderable": false,
+        "searchable": false
+      },
+      {
+        "data": "more",
+        "name": "more",
+        "orderable": false,
+        "searchable": false
+      }
+    ],
+    "server": true,
+    "params": {}
+  },
+  {
+    "key": "pending-receipts",
+    "uri": "/receipts_pending",
+    "view": "receipts/pscript.blade.php",
+    "columns": [
+      {
+        "data": "checkbox",
+        "name": "checkbox",
+        "orderable": false,
+        "searchable": false
+      },
+      {
+        "data": "centre",
+        "name": "centre",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "created_at",
+        "name": "created_at",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "ref_code",
+        "name": "ref_code",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "contact_code",
+        "name": "contact_code",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "contact_name",
+        "name": "contact_name",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "product_level",
+        "name": "product_level",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "product_name",
+        "name": "product_name",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "total_price",
+        "name": "total_price",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "action",
+        "name": "action",
+        "orderable": false,
+        "searchable": false
+      },
+      {
+        "data": "more",
+        "name": "more",
+        "orderable": false,
+        "searchable": false
+      }
+    ],
+    "server": true,
+    "params": {}
+  },
+  {
+    "key": "pending-term-receipts",
+    "uri": "/receipts_pending_term",
+    "view": "receipts/ptscript.blade.php",
+    "columns": [
+      {
+        "data": "checkbox",
+        "name": "checkbox",
+        "orderable": false,
+        "searchable": false
+      },
+      {
+        "data": "centre",
+        "name": "centre",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "created_at",
+        "name": "created_at",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "contact_code",
+        "name": "contact_code",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "contact_name",
+        "name": "contact_name",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "book_name",
+        "name": "book_name",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "next_book_name",
+        "name": "next_book_name",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "next_book_price",
+        "name": "next_book_price",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "action",
+        "name": "action",
+        "orderable": false,
+        "searchable": false
+      },
+      {
+        "data": "more",
+        "name": "more",
+        "orderable": false,
+        "searchable": false
+      }
+    ],
+    "server": true,
+    "params": {}
+  },
+  {
+    "key": "invoices",
+    "uri": "/invoices",
+    "view": "invoices/script.blade.php",
+    "columns": [
+      {
+        "data": "checkbox",
+        "name": "checkbox",
+        "orderable": false,
+        "searchable": false
+      },
+      {
+        "data": "centre",
+        "name": "centre",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "contact_code",
+        "name": "contact_code",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "contact_name",
+        "name": "contact_name",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "invoice_number",
+        "name": "invoice_number",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "invoice_date",
+        "name": "invoice_date",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "level",
+        "name": "level",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "total_fee",
+        "name": "total_fee",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "order_term",
+        "name": "order_term",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "action",
+        "name": "action",
+        "orderable": false,
+        "searchable": false
+      },
+      {
+        "data": "more",
+        "name": "more",
+        "orderable": false,
+        "searchable": false
+      }
+    ],
+    "server": true,
+    "params": {}
+  },
+  {
+    "key": "pending-invoices",
+    "uri": "/invoices_pending",
+    "view": "invoices/pscript.blade.php",
+    "columns": [
+      {
+        "data": "checkbox",
+        "name": "checkbox",
+        "orderable": false,
+        "searchable": false
+      },
+      {
+        "data": "centre",
+        "name": "centre",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "created_at",
+        "name": "created_at",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "contact_code",
+        "name": "contact_code",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "contact_name",
+        "name": "contact_name",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "book_name",
+        "name": "book_name",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "next_book_name",
+        "name": "next_book_name",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "next_book_price",
+        "name": "next_book_price",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "action",
+        "name": "action",
+        "orderable": false,
+        "searchable": false
+      },
+      {
+        "data": "more",
+        "name": "more",
+        "orderable": false,
+        "searchable": false
+      }
+    ],
+    "server": true,
+    "params": {}
+  },
+  {
+    "key": "products",
+    "uri": "/products",
+    "view": "products/script.blade.php",
+    "columns": [
+      {
+        "data": "checkbox",
+        "name": "checkbox",
+        "orderable": false,
+        "searchable": false
+      },
+      {
+        "data": "code",
+        "name": "code",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "centre_name",
+        "name": "centre_name",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "name",
+        "name": "name",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "amount",
+        "name": "amount",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "unit",
+        "name": "unit",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "action",
+        "name": "action",
+        "orderable": false,
+        "searchable": false
+      }
+    ],
+    "server": true,
+    "params": {}
+  },
+  {
+    "key": "stock-ledger",
+    "uri": "/products/stock",
+    "view": "products/script.blade.php",
+    "columns": [
+      {
+        "data": "created_date",
+        "name": "created_date",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "centre_name",
+        "name": "centre_name",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "student_or_centre_type",
+        "name": "student_or_centre_type",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "student_or_centre_name",
+        "name": "student_or_centre_name",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "product_name",
+        "name": "product_name",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "add_stock",
+        "name": "add_stock",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "rm_stock",
+        "name": "rm_stock",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "in_stock",
+        "name": "in_stock",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "user_name",
+        "name": "user_name",
+        "orderable": true,
+        "searchable": true
+      }
+    ],
+    "server": true,
+    "params": {}
+  },
+  {
+    "key": "courses",
+    "uri": "/course/list",
+    "view": "course/course_list.blade.php",
+    "columns": [
+      {
+        "data": "id",
+        "name": "id",
+        "orderable": false,
+        "searchable": false
+      },
+      {
+        "data": "type",
+        "name": "type",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "title",
+        "name": "title",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "mode_of_delivery",
+        "name": "mode_of_delivery",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "category",
+        "name": "category.name",
+        "orderable": false,
+        "searchable": true
+      },
+      {
+        "data": "user",
+        "name": "user",
+        "orderable": false,
+        "searchable": false
+      },
+      {
+        "data": "price",
+        "name": "price",
+        "orderable": false,
+        "searchable": false
+      },
+      {
+        "data": "scope",
+        "name": "scope",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "status",
+        "name": "status",
+        "orderable": false,
+        "searchable": false
+      },
+      {
+        "data": "action",
+        "name": "action",
+        "orderable": false,
+        "searchable": false
+      }
+    ],
+    "server": true,
+    "params": {}
+  },
+  {
+    "key": "course-applications",
+    "uri": "/courses/pending/index",
+    "view": "course/courses_pending_index.blade.php",
+    "columns": [
+      {
+        "data": "id",
+        "name": "id",
+        "orderable": false,
+        "searchable": false
+      },
+      {
+        "data": "ref",
+        "name": "ref",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "name",
+        "name": "name",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "email",
+        "name": "email",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "telp",
+        "name": "telp",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "department",
+        "name": "department",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "appointment_date",
+        "name": "appointment_date",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "student_name",
+        "name": "student_name",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "grade",
+        "name": "grade",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "type_parent",
+        "name": "type_parent",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "status",
+        "name": "status",
+        "orderable": false,
+        "searchable": false
+      },
+      {
+        "data": "action",
+        "name": "action",
+        "orderable": false,
+        "searchable": false
+      }
+    ],
+    "server": true,
+    "params": {}
+  },
+  {
+    "key": "questions",
+    "uri": "/questions",
+    "view": "question/qusetion-list.blade.php",
+    "columns": [
+      {
+        "data": "#",
+        "name": "#",
+        "orderable": false,
+        "searchable": false
+      },
+      {
+        "data": "code",
+        "name": "code",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "text",
+        "name": "text",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "level",
+        "name": "level",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "term",
+        "name": "term",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "section",
+        "name": "section",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "type",
+        "name": "type",
+        "orderable": false,
+        "searchable": true
+      },
+      {
+        "data": "option",
+        "name": "option",
+        "orderable": false,
+        "searchable": true
+      },
+      {
+        "data": "action",
+        "name": "action",
+        "orderable": false,
+        "searchable": false
+      }
+    ],
+    "server": true,
+    "params": {}
+  },
+  {
+    "key": "quizzes",
+    "uri": "/quizzes",
+    "view": "quiz/scripts.blade.php",
+    "columns": [
+      {
+        "data": "#",
+        "name": "#",
+        "orderable": false,
+        "searchable": false
+      },
+      {
+        "data": "id",
+        "name": "id",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "title",
+        "name": "title",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "slug",
+        "name": "slug",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "description",
+        "name": "description",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "questions_count",
+        "name": "questions_count",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "public",
+        "name": "public",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "is_free",
+        "name": "is_free",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "level",
+        "name": "level",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "term",
+        "name": "term",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "section",
+        "name": "section",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "action",
+        "name": "action",
+        "orderable": false,
+        "searchable": false
+      }
+    ],
+    "server": true,
+    "params": {}
+  },
+  {
+    "key": "guest-report",
+    "uri": "/guest-report",
+    "view": "guest-quiz/report.blade.php",
+    "columns": [
+      {
+        "data": "id",
+        "name": "id",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "name",
+        "name": "first_name",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "grade",
+        "name": "grade",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "school",
+        "name": "school",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "email",
+        "name": "email",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "phone",
+        "name": "phone",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "created_at",
+        "name": "created_at",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "expires_at",
+        "name": "expires_at",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "status",
+        "name": "status",
+        "orderable": false,
+        "searchable": false
+      },
+      {
+        "data": "action",
+        "name": "action",
+        "orderable": false,
+        "searchable": false
+      }
+    ],
+    "server": true,
+    "params": {}
+  },
+  {
+    "key": "application-report",
+    "uri": "/ei_form",
+    "view": "eiform/backend/js.blade.php",
+    "columns": [
+      {
+        "data": "first_name_parent",
+        "name": "first_name_parent",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "telp_parent",
+        "name": "telp_parent",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "first_name_student",
+        "name": "first_name_student",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "category",
+        "name": "category",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "address",
+        "name": "address",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "action",
+        "name": "action",
+        "orderable": false,
+        "searchable": false
+      }
+    ],
+    "server": true,
+    "params": {}
+  },
+  {
+    "key": "parameters",
+    "uri": "/parameter",
+    "view": "parameter/script.blade.php",
+    "columns": [
+      {
+        "data": "checkbox",
+        "name": "checkbox",
+        "orderable": false,
+        "searchable": false
+      },
+      {
+        "data": "name",
+        "name": "name",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "price",
+        "name": "price",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "action",
+        "name": "action",
+        "orderable": false,
+        "searchable": false
+      }
+    ],
+    "server": true,
+    "params": {}
+  },
+  {
+    "key": "term-fees",
+    "uri": "/termfee",
+    "view": "termfee/script.blade.php",
+    "columns": [
+      {
+        "data": "checkbox",
+        "name": "checkbox",
+        "orderable": false,
+        "searchable": false
+      },
+      {
+        "data": "name",
+        "name": "name",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "price",
+        "name": "price",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "half_price",
+        "name": "half_price",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "book_price",
+        "name": "book_price",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "book_half_price",
+        "name": "book_half_price",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "action",
+        "name": "action",
+        "orderable": false,
+        "searchable": false
+      }
+    ],
+    "server": true,
+    "params": {}
+  },
+  {
+    "key": "line-settings",
+    "uri": "/line-api",
+    "view": "line_api_setting/script.blade.php",
+    "columns": [
+      {
+        "data": "DT_RowIndex",
+        "name": "DT_RowIndex",
+        "orderable": false,
+        "searchable": false
+      },
+      {
+        "data": "name",
+        "name": "name",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "created_at",
+        "name": "created_at",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "updated_at",
+        "name": "updated_at",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "line_user_id",
+        "name": "line_user_id",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "create_by",
+        "name": "create_by",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "update_by",
+        "name": "update_by",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "status",
+        "name": "status",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "action",
+        "name": "action",
+        "orderable": false,
+        "searchable": false
+      }
+    ],
+    "server": true,
+    "params": {}
+  },
+  {
+    "key": "telegram-settings",
+    "uri": "/telegram-setting",
+    "view": "telegram_setting/script.blade.php",
+    "columns": [
+      {
+        "data": "DT_RowIndex",
+        "name": "DT_RowIndex",
+        "orderable": false,
+        "searchable": false
+      },
+      {
+        "data": "description",
+        "name": "description",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "created_at",
+        "name": "created_at",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "updated_at",
+        "name": "updated_at",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "status",
+        "name": "status",
+        "orderable": false,
+        "searchable": false
+      },
+      {
+        "data": "action",
+        "name": "action",
+        "orderable": false,
+        "searchable": false
+      }
+    ],
+    "server": true,
+    "params": {}
+  },
+  {
+    "key": "blogs",
+    "uri": "/blogs",
+    "view": "blogs/index.blade.php",
+    "columns": [
+      {
+        "data": "thumbnail",
+        "name": "thumbnail",
+        "orderable": false,
+        "searchable": false
+      },
+      {
+        "data": "title",
+        "name": "title",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "author",
+        "name": "user.name",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "pen_name",
+        "name": "pen_name",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "is_published",
+        "name": "is_published",
+        "orderable": true,
+        "searchable": true
+      },
+      {
+        "data": "action",
+        "name": "action",
+        "orderable": false,
+        "searchable": false
+      }
+    ],
+    "server": false,
+    "params": {}
+  }
+]

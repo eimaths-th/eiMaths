@@ -26,19 +26,26 @@ class LineApiController extends Controller
         } else {
             $roles = Role::pluck('name', 'name')->all();
         }
-        $datas = LineApiSetting::all();
-
-        $datas->each(function ($row, $index) {
-            $row->no = $index + 1; // Adding serial number to each row
-        });
         if ($request->ajax()) {
             //sleep(2);
 
-            $datas = LineApiSetting::query()->orderBy('id', 'desc');
-            $datas->orderBy("id", "desc")->get();
+            $datas = LineApiSetting::with(['creator', 'editor']);
+            if (app('datatables.request')->orderableColumns() === []) {
+                $datas->orderByDesc('id');
+            }
             return datatables()->of($datas)
-                ->addColumn('no', function ($row) {
-                    return $row->no; // Return the custom 'no' column
+                ->addIndexColumn()
+                ->orderColumn('create_by', function ($query, $order) {
+                    $query->orderBy(User::select('name')->whereColumn('users.id', 'line_api_use.create_by')->limit(1), $order);
+                })
+                ->orderColumn('update_by', function ($query, $order) {
+                    $query->orderBy(User::select('name')->whereColumn('users.id', 'line_api_use.update_by')->limit(1), $order);
+                })
+                ->filterColumn('create_by', function ($query, $keyword) {
+                    $query->whereHas('creator', fn ($creator) => $creator->where('name', 'like', "%{$keyword}%"));
+                })
+                ->filterColumn('update_by', function ($query, $keyword) {
+                    $query->whereHas('editor', fn ($editor) => $editor->where('name', 'like', "%{$keyword}%"));
                 })
                 ->editColumn('name', function (LineApiSetting $datas) {
 

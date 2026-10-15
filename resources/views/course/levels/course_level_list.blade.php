@@ -786,6 +786,8 @@
     <script>
         $(document).ready(function() {
             $("#lms_table1").DataTable({
+                order: [],
+                columnDefs: [{ targets: [0, 2, 3], orderable: false, searchable: false }],
                 "pageLength": 10,
                 "responsive": true,
                 "lengthChange": true,

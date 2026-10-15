@@ -42,7 +42,7 @@ class QuizzesController extends Controller
                     $text = $row->public ? __('quiz-management.common.yes') : __('quiz-management.common.no');
                     return '<span class="badge border border-' . $class . ' text-' . $class . ' px-2 pt-5px pb-5px rounded fs-12px d-inline-flex align-items-center"><i class="fa fa-circle fs-9px fa-fw me-5px"></i>&nbsp' . $text . '</span>';
                 })
-                ->addColumn('is_free', function ($row) {
+                ->editColumn('is_free', function ($row) {
                     $class = $row->is_free ? 'warning' : 'secondary';
                     $text = $row->is_free ? __('quiz-management.common.free') : '-';
                     return '<span class="badge border border-' . $class . ' text-' . $class . ' px-2 pt-5px pb-5px rounded fs-12px d-inline-flex align-items-center"><i class="fa fa-circle fs-9px fa-fw me-5px"></i>&nbsp' . $text . '</span>';
@@ -58,7 +58,11 @@ class QuizzesController extends Controller
                     return $html;
                 })
                 ->filterColumn('questions_count', function ($query, $keyword) {
-                    return $query;
+                    if (ctype_digit((string) $keyword)) {
+                        $query->has('questions', '=', (int) $keyword);
+                    } else {
+                        $query->whereRaw('1 = 0');
+                    }
                 })
                 ->orderColumn('questions_count', function ($query, $order) {
                     $query->orderByRaw('(SELECT COUNT(*) FROM question_quiz WHERE question_quiz.quiz_id = quizzes.id) ' . $order);

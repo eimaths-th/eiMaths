@@ -291,7 +291,7 @@ class CourseController extends Controller
                     }
                     return $title;
                 })
-                ->addColumn('type', function ($query) {
+                ->editColumn('type', function ($query) {
                     return $query->type == 1
                         ? __('course.courses.data.course')
                         : __('course.courses.data.quiz');
@@ -757,7 +757,7 @@ class CourseController extends Controller
                     }
                     return $title;
                 })
-                ->addColumn('type', function ($query) {
+                ->editColumn('type', function ($query) {
                     return $query->type == 1 ? trans('courses.Course') : trans('quiz.Quiz');
                 })->addColumn('status', function ($query) {
                     return view('coursesetting::components._course_status_td', ['query' => $query]);
@@ -962,9 +962,15 @@ class CourseController extends Controller
             ->orderBy("name", "asc")->get();
         if ($request->ajax()) {
             // $query = CoursePending::where('start_course', 1)->orderBy('id', 'desc');
-             $query = CoursePending::query()->orderBy('id', 'desc');
+             $query = CoursePending::with('department');
+            if (app('datatables.request')->orderableColumns() === []) {
+                $query->orderByDesc('id');
+            }
             return DataTables::of($query)
                 ->addIndexColumn()
+                ->orderColumn('department', function ($query, $order) {
+                    $query->orderBy(Department::select('code')->whereColumn('departments.id', 'courses_pennding.department_id')->limit(1), $order);
+                })
                 ->filterColumn('department',function($query,$keyword){
                     $query->whereHas('department',function($q) use ($keyword){
                         $q->where('code','like',"%$keyword%");
@@ -979,17 +985,17 @@ class CourseController extends Controller
 
                     return $query->email ?? '';
                 })
-                ->addColumn('telp', function ($query) {
+                ->editColumn('telp', function ($query) {
 
                     return $query->telp ?? '';
-                })->addColumn('type_parent', function ($query) {
+                })->editColumn('type_parent', function ($query) {
 
                     return $query->type_parent ?? '';
                 })
                 ->editColumn('department', function ($query) {
                     return $query->department->code ?? '';
                 })
-                ->editColumn('appointment_date ', function ($query) {
+                ->editColumn('appointment_date', function ($query) {
                     return $query->appointment_date ?? '';
                 })
                 ->editColumn('student_name', function ($query) {

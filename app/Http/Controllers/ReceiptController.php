@@ -333,38 +333,22 @@ class ReceiptController extends Controller
                 "bookuses.name as book_name",
                 "bookuses.level_id as book_level",
                 "bookuses.term_id as book_term",
-                DB::raw('(CASE WHEN bookuses.term_id = 4 THEN (
-                    SELECT bookuses.name
-                    FROM bookuses
-                    INNER JOIN levels ON levels.id = bookuses.level_id
-                    WHERE bookuses.level_id > book_level
-                    ORDER BY bookuses.level_id
-                    LIMIT 1
-                ) ELSE (
-                    SELECT bookuses.name
-                    FROM bookuses
-                    INNER JOIN levels ON levels.id = bookuses.level_id
-                    WHERE bookuses.level_id = book_level
-                    AND bookuses.term_id > book_term
-                    ORDER BY bookuses.id
-                    LIMIT 1
-                ) END) AS next_book_name'),
-                DB::raw('(CASE WHEN bookuses.term_id = 4 THEN (
-                    SELECT levels.price
-                    FROM bookuses
-                    INNER JOIN levels ON levels.id = bookuses.level_id
-                    WHERE bookuses.level_id > book_level
-                    ORDER BY bookuses.level_id
-                    LIMIT 1
-                ) ELSE (
-                    SELECT levels.price
-                    FROM bookuses
-                    INNER JOIN levels ON levels.id = bookuses.level_id
-                    WHERE bookuses.level_id = book_level
-                    AND bookuses.term_id > book_term
-                    ORDER BY bookuses.id
-                    LIMIT 1
-                ) END) AS next_book_price')
+                DB::raw('(SELECT next_book.name
+                    FROM bookuses AS next_book
+                    INNER JOIN levels AS next_level ON next_level.id = next_book.level_id
+                    WHERE (bookuses.term_id = 4 AND next_book.level_id > bookuses.level_id)
+                       OR (bookuses.term_id <> 4 AND next_book.level_id = bookuses.level_id
+                           AND next_book.term_id > bookuses.term_id)
+                    ORDER BY next_book.level_id, next_book.id
+                    LIMIT 1) AS next_book_name'),
+                DB::raw('(SELECT next_level.price
+                    FROM bookuses AS next_book
+                    INNER JOIN levels AS next_level ON next_level.id = next_book.level_id
+                    WHERE (bookuses.term_id = 4 AND next_book.level_id > bookuses.level_id)
+                       OR (bookuses.term_id <> 4 AND next_book.level_id = bookuses.level_id
+                           AND next_book.term_id > bookuses.term_id)
+                    ORDER BY next_book.level_id, next_book.id
+                    LIMIT 1) AS next_book_price')
 
             )
 

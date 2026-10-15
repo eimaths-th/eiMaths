@@ -126,8 +126,8 @@
             sPaginationType: "full_numbers",
             dom: 'T<"clear">lfrtip',
             columns: [{
-                    data: 'no',
-                    name: 'no',
+                    data: 'DT_RowIndex',
+                    name: 'DT_RowIndex',
                     orderable: false,
                     searchable: false
                 },
@@ -175,7 +175,9 @@
                 },
                 {
                     data: 'action',
-                    name: 'action'
+                    name: 'action',
+                    orderable: false,
+                    searchable: false
                 },
             ],
             columnDefs: [{

@@ -974,6 +974,8 @@
             // }).buttons().container().appendTo('#lms_table1_wrapper .col-md-6:eq(0)');
 
             $("#lms_table1").DataTable({
+                order: [],
+                columnDefs: [{ targets: [0, 5, 6], orderable: false, searchable: false }],
                 "pageLength": 10,
                 "responsive": true,
                 "lengthChange": true,
