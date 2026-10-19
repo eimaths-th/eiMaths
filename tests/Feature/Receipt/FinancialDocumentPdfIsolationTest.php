@@ -71,13 +71,9 @@ class FinancialDocumentPdfIsolationTest extends TestCase
         file_put_contents($shared_path, 'Existing unrelated PDF');
 
         // Only replace the renderer: template data, authorization, response and filesystem remain real.
-        $pdf_renderer = Mockery::mock(\Barryvdh\DomPDF\PDF::class);
-        $pdf_renderer->shouldReceive('save')->andReturnUsing(function (string $path) use ($pdf_renderer) {
-            file_put_contents($path, '%PDF-Controlled receipt bytes');
-            return $pdf_renderer;
-        });
-        $pdf_renderer->shouldReceive('output')->andReturn('%PDF-Controlled receipt bytes');
-        PDF::shouldReceive('loadHTML')->once()->andReturn($pdf_renderer);
+        $pdf_renderer = Mockery::mock(\App\Services\ReceiptPdfRenderer::class)->makePartial();
+        $pdf_renderer->shouldReceive('Render')->once()->andReturn('%PDF-Controlled receipt bytes');
+        $this->app->instance(\App\Services\ReceiptPdfRenderer::class, $pdf_renderer);
 
         $response = $this->actingAs($actor)->get(route('receipts.show', [$receipt->id, 1]));
         $response->assertOk()->assertHeader('Content-Type', 'application/pdf');

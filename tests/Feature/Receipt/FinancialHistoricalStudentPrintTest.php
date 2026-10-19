@@ -173,6 +173,14 @@ class FinancialHistoricalStudentPrintTest extends TestCase
         }
         $pdf_renderer = Mockery::mock(\Barryvdh\DomPDF\PDF::class);
         $pdf_renderer->shouldReceive('output')->andReturn('%PDF-Historical document');
+        $receipt_renderer = Mockery::mock(\App\Services\ReceiptPdfRenderer::class)->makePartial();
+        $receipt_renderer->shouldReceive('Render')->andReturnUsing(function (string $html_contents) use ($expected_text) {
+            foreach ($expected_text as $expected_content) {
+                $this->assertStringContainsString($expected_content, $html_contents);
+            }
+            return '%PDF-Historical document';
+        });
+        $this->app->instance(\App\Services\ReceiptPdfRenderer::class, $receipt_renderer);
         PDF::shouldReceive('loadHTML')->andReturnUsing(function (string $html_contents) use ($pdf_renderer, $expected_text) {
             foreach ($expected_text as $expected_content) {
                 $this->assertStringContainsString($expected_content, $html_contents);

@@ -7,11 +7,35 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    @php
+        $local_pdf = isset($pdf_asset);
+        $pdf_asset = $pdf_asset ?? fn (string $path): string => asset($path);
+    @endphp
+    @unless($local_pdf)
     <link
         href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap"
         rel="stylesheet">
     <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet'>
+    @endunless
     <style>
+        @if($local_pdf)
+        @font-face {
+            font-family: 'ReceiptSarabun';
+            font-style: normal;
+            font-weight: normal;
+            src: url("{{ $pdf_asset('fonts/THSarabunNew.ttf') }}") format("truetype");
+        }
+        @font-face {
+            font-family: 'ReceiptSarabun';
+            font-style: normal;
+            font-weight: bold;
+            src: url("{{ $pdf_asset('fonts/THSarabunNew Bold.ttf') }}") format("truetype");
+        }
+        body {
+            font-family: 'ReceiptSarabun';
+            font-size: 12px;
+        }
+        @else
         /*  table {
             font-size: 0.7rem;
         } */
@@ -36,6 +60,7 @@
             font-family: 'sarabun', 'Roboto';
             font-size: 8px;
         }
+        @endif
 
         table td.grey {
             color: rgb(141, 138, 138);
@@ -119,7 +144,7 @@
         <table align="center" width="99%" cellpadding="0" cellspacing="0">
 
             <tr>
-                <td width="15%" align="center" style="margin: 0 auto;"><img src="{{ asset('images/logo_meta.png') }}"
+                <td width="15%" align="center" style="margin: 0 auto;"><img src="{{ $pdf_asset('images/logo_meta.png') }}"
                         alt="..." height="110" style="padding-top: 5px; display: block; margin: 0 auto;"></td>
                 <td align="left">
                     <table align="left">
@@ -142,7 +167,7 @@
                     </table>
                 </td>
                 <td align="right">
-                    <img src="{{ asset('images/logo.png') }}" alt="..." height="80"
+                    <img src="{{ $pdf_asset('images/logo.png') }}" alt="..." height="80"
                         style="padding-bottom: 5px; display: block; margin: 0 auto;">
                 </td>
 
@@ -277,7 +302,7 @@
                             <tr>
                                 <td class="active activebottom activetop activeleft" width="10%" align="center">
                                     @if ($data->payment == 1)
-                                        <img src="{{ asset('images/check.png') }}" alt="..." height="18"
+                                        <img src="{{ $pdf_asset('images/check.png') }}" alt="..." height="18"
                                             style="padding-bottom: 1px">
                                     @endif
                                 </td>
@@ -288,7 +313,7 @@
                             <tr>
                                 <td class="active_twin activebottom activeleft" width="10%" align="center">
                                     @if ($data->payment == 2)
-                                        <img src="{{ asset('images/check.png') }}" alt="..." height="18"
+                                        <img src="{{ $pdf_asset('images/check.png') }}" alt="..." height="18"
                                             style="padding-bottom: 1px">
                                     @endif
                                 </td>
@@ -302,7 +327,7 @@
                             <tr>
                                 <td class="active activebottom activeleft" width="10%" align="center">
                                     @if ($data->payment == 3)
-                                        <img src="{{ asset('images/check.png') }}" alt="..." height="18"
+                                        <img src="{{ $pdf_asset('images/check.png') }}" alt="..." height="18"
                                             style="padding-bottom: 1px">
                                     @endif
                                 </td>
@@ -441,7 +466,7 @@
         <!-- Your table with a class for styling -->
         <table class="print-table" width="100%" cellpadding="0" cellspacing="0">
             <tr>
-                <td align="center"><img width="90%" src="{{ asset('images/banner.png') }}" alt="..."
+                <td align="center"><img width="90%" src="{{ $pdf_asset('images/banner.png') }}" alt="..."
                         style="padding-bottom: 5px; display: block; margin: 0 auto;"></td>
             </tr>
         </table>

@@ -17,6 +17,7 @@ use App\Models\term;
 use App\Models\Sterm;
 use App\Models\FileUpload;
 use App\Models\FileStore;
+use App\Services\ReceiptPdfRenderer;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\View;
@@ -27,7 +28,6 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Collection;
 use App\Interfaces\MoneyConvertServiceInterface;
 use Maatwebsite\Excel\Facades\Excel;
-use PDF;
 use App\Domain\Affiliate\Events\AffiliatePaymentConfirmed;
 use App\Domain\Financial\Services\FinancialSourceGuard;
 use App\Domain\Financial\Services\ReceiptDetailBuilder;
@@ -761,16 +761,16 @@ class ReceiptController extends Controller
 
         if ($social == 1) {
             // Render the view with the data and get the HTML content
-            $data['file_att'] =  $this->getfileattprint($datas[0]->oid);
+            $renderer = app(ReceiptPdfRenderer::class);
+            $data['pdf_asset'] = fn (string $path): string => $renderer->AssetUrl($path);
+            $data['file_att'] = $this->getfileattprint($datas[0]->oid, true);
             $htmlContents = View::make($templates, $data)->render();
 
-            // Generate the PDF
-            $pdf = PDF::loadHTML($htmlContents);
-            //$pdf->getDomPDF()->getFontMetrics()->setFont('YourThaiFont.ttf', 'YourThaiFont');
+            $pdf_bytes = $renderer->Render($htmlContents);
 
             // Return bytes directly so duplicate legacy numbers cannot overwrite shared files.
             $pdf_file_name = $datas[0]->doc_number . '.pdf';
-            return response($pdf->output(), 200, [
+            return response($pdf_bytes, 200, [
                 'Content-Type' => 'application/pdf',
                 'Content-Disposition' => \Symfony\Component\HttpFoundation\HeaderUtils::makeDisposition(
                     'inline', $pdf_file_name, str_replace('%', '', \Illuminate\Support\Str::ascii($pdf_file_name)),
@@ -835,7 +835,7 @@ class ReceiptController extends Controller
         return response()->json(['imgs' => $this->getfileatt($id)]);
     }
 
-    public function getfileattprint($id)
+    public function getfileattprint($id, bool $local_pdf = false)
     {
         $filestore = FileStore::where([['module', 'orders']])
             ->where([['module_id', $id]])
@@ -844,8 +844,15 @@ class ReceiptController extends Controller
         $img = "";
         if (!$filestore->isEmpty()) {
             foreach ($filestore as $pics) {
-                $imgf = url('/') . '/file_store/' . $pics->filename;
-                $img .= "<img src=\"" . $imgf . "\" height=\"150\">&nbsp;&nbsp;&nbsp;";
+                if ($local_pdf && basename(str_replace('\\', '/', $pics->filename)) !== $pics->filename) {
+                    continue;
+                }
+                $imgf = $local_pdf
+                    ? app(ReceiptPdfRenderer::class)->AssetUrl('file_store/'.$pics->filename)
+                    : url('/') . '/file_store/' . $pics->filename;
+                if ($imgf !== '') {
+                    $img .= '<img src="' . e($imgf) . '" height="150">&nbsp;&nbsp;&nbsp;';
+                }
             }
         } else {
             $img = "";
