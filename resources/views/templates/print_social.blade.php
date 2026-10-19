@@ -23,17 +23,35 @@
             font-family: 'ReceiptSarabun';
             font-style: normal;
             font-weight: normal;
-            src: url("{{ $pdf_asset('fonts/THSarabunNew.ttf') }}") format("truetype");
+            src: url("{{ $pdf_asset('assets/fonts/receipts/Sarabun-Regular.ttf') }}") format("truetype");
         }
         @font-face {
             font-family: 'ReceiptSarabun';
             font-style: normal;
             font-weight: bold;
-            src: url("{{ $pdf_asset('fonts/THSarabunNew Bold.ttf') }}") format("truetype");
+            src: url("{{ $pdf_asset('assets/fonts/receipts/Sarabun-Bold.ttf') }}") format("truetype");
+        }
+        @font-face {
+            font-family: 'ReceiptSarabun';
+            font-style: italic;
+            font-weight: normal;
+            src: url("{{ $pdf_asset('assets/fonts/receipts/Sarabun-Italic.ttf') }}") format("truetype");
+        }
+        @font-face {
+            font-family: 'ReceiptSarabun';
+            font-style: italic;
+            font-weight: bold;
+            src: url("{{ $pdf_asset('assets/fonts/receipts/Sarabun-BoldItalic.ttf') }}") format("truetype");
+        }
+        @font-face {
+            font-family: 'ReceiptRoboto';
+            font-style: normal;
+            font-weight: normal;
+            src: url("{{ $pdf_asset('assets/fonts/receipts/Roboto-Regular.ttf') }}") format("truetype");
         }
         body {
-            font-family: 'ReceiptSarabun';
-            font-size: 12px;
+            font-family: 'ReceiptSarabun', 'ReceiptRoboto';
+            font-size: 8px;
         }
         @else
         /*  table {

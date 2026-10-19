@@ -101,6 +101,10 @@ class ReceiptPdfShowTest extends TestCase
         $this->assertStringStartsWith('%PDF', $response->getContent());
         $this->assertStringContainsString('/Subtype /Image', $response->getContent());
         $this->assertStringContainsString('ReceiptSarabun', $renderer->html);
+        // Verify the embedded fonts, not just the CSS family alias.
+        $this->assertStringContainsString('+Sarabun-Regular', $response->getContent());
+        $this->assertStringContainsString('+Sarabun-Bold', $response->getContent());
+        $this->assertStringNotContainsString('THSarabunNew', $response->getContent());
         $this->assertStringContainsString($filename, $renderer->html);
         $this->assertStringNotContainsString('missing-'.$filename, $renderer->html);
         $this->assertStringNotContainsString('../../.env', $renderer->html);
