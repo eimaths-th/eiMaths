@@ -293,6 +293,11 @@ class ReceiptController extends Controller
                     } else {
                         $html .= '<button type="button" class="btn btn-sm btn-success btn-print disabled" data-toggle="tooltip" data-placement="bottom" title="' . __('common.feedback.permission_denied') . '"><i class="fa fa-print"></i> ' . __('receipts.list.actions.print') . '</button> ';
                     }
+                    if (Gate::allows('receipt-show')) {
+                        $html .= '<a class="btn btn-sm btn-danger btn-pdf" href="' . e(route('receipts.show', [$row->id, 1])) . '" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-file-pdf"></i> ' . __('receipts.list.actions.pdf') . '</a> ';
+                    } else {
+                        $html .= '<button type="button" class="btn btn-sm btn-danger btn-pdf" disabled title="' . __('common.feedback.permission_denied') . '"><i class="fa-solid fa-file-pdf"></i> ' . __('receipts.list.actions.pdf') . '</button> ';
+                    }
                     if (
                         config('financial-documents.credit_note.enabled', false)
                         && Gate::allows('credit-note-create')
