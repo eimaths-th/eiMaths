@@ -127,6 +127,7 @@ return [
             'created' => 'FAQ created successfully.',
             'updated' => 'FAQ updated successfully.',
             'deleted' => 'FAQ deleted successfully.',
+            'save_unavailable' => 'The FAQ could not be saved. Please try again.',
         ],
     ],
     'faq_categories' => [

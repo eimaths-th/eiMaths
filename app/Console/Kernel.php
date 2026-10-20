@@ -24,6 +24,9 @@ class Kernel extends ConsoleKernel
             ->dailyAt('02:15')
             ->withoutOverlapping()
             ->when(fn (): bool => (bool) config('affiliate.features.click_tracking', false));
+        $schedule->command('faq:prune-slug-history')
+            ->dailyAt('02:30')->timezone('Asia/Bangkok')->withoutOverlapping()
+            ->when(fn (): bool => (bool) config('faq-urls.enabled', false));
     }
 
     /**

@@ -70,7 +70,7 @@ final class FaqSlugTest extends TestCase
         $this->assertArrayHasKey('faq:backfill-slugs', \Illuminate\Support\Facades\Artisan::all());
         $this->artisan('faq:backfill-slugs')->assertExitCode(0);
         $after = (array) \Illuminate\Support\Facades\DB::table('faqs')->find($faq->id);
-        $this->assertSame('faq-'.$faq->id, $after['slug']);
+        $this->assertSame('faq-'.$faq->id.'-1', $after['slug']);
         unset($before['slug'], $after['slug']);
         $this->assertSame($before, $after);
         $slugs = \Illuminate\Support\Facades\DB::table('faqs')->orderBy('id')->pluck('slug', 'id')->all();

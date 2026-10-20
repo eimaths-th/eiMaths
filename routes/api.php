@@ -32,6 +32,8 @@ Route::get('/blogs', [App\Http\Controllers\BlogController::class, 'api_show']);
 Route::get('/blogs/{slug}', [App\Http\Controllers\BlogController::class, 'api_show_by_slug']);
 Route::get('/faqs', [FaqController::class, 'ApiIndex']);
 Route::get('/faqs/{slug}', [FaqController::class, 'ApiShow']);
+Route::get('/faq-pages/resolve/{slug}', [\App\Http\Controllers\FaqPageController::class, 'Resolve']);
+Route::get('/faq-pages/{faq_id}', [\App\Http\Controllers\FaqPageController::class, 'ById'])->whereNumber('faq_id');
 Route::post('/faq-reads', [\App\Http\Controllers\FaqReadController::class, 'Store'])
     ->withoutMiddleware([\Illuminate\Routing\Middleware\ThrottleRequests::class.':api'])
     ->middleware(\App\Http\Middleware\AdmitFaqRead::class);

@@ -50,5 +50,6 @@
         <env name="CREDIT_NOTE_ISSUER_TAX_ID" value="0105561171606" force="true"/>
         <env name="CREDIT_NOTE_ISSUER_BRANCH_TYPE" value="head_office" force="true"/>
         <env name="CREDIT_NOTE_ISSUER_BRANCH_CODE" value="00000" force="true"/>
+        <env name="FAQ_LOCALIZED_URLS_ENABLED" value="false" force="true"/>
     </php>
 </phpunit>
