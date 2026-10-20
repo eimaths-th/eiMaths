@@ -74,6 +74,14 @@ return [
         ],
     ],
     'faq' => [
+        'statistics' => [
+            'title' => 'FAQ Read Statistics', 'range' => 'Date range', 'seven_days' => 'Last 7 days',
+            'thirty_days' => 'Last 30 days', 'custom' => 'Custom dates', 'start_date' => 'Start date',
+            'end_date' => 'End date', 'apply' => 'Apply dates', 'reads' => 'Recorded reads',
+            'deleted' => 'Deleted question', 'empty' => 'No FAQ records in this range.',
+            'metric' => 'First recorded opening per question and website session. Counts do not represent distinct people or completed reading.',
+            'unavailable' => 'Read statistics could not be loaded. Please refresh and try again.',
+        ],
         'management_title' => 'FAQ Management',
         'list_title' => 'FAQ List',
         'manage_categories' => 'Manage Categories',

@@ -31,6 +31,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::get('/blogs', [App\Http\Controllers\BlogController::class, 'api_show']);
 Route::get('/blogs/{slug}', [App\Http\Controllers\BlogController::class, 'api_show_by_slug']);
 Route::get('/faqs', [FaqController::class, 'ApiIndex']);
+Route::get('/faqs/{slug}', [FaqController::class, 'ApiShow']);
+Route::post('/faq-reads', [\App\Http\Controllers\FaqReadController::class, 'Store'])
+    ->withoutMiddleware([\Illuminate\Routing\Middleware\ThrottleRequests::class.':api'])
+    ->middleware(\App\Http\Middleware\AdmitFaqRead::class);
 Route::get('/public/tracking-links/{shortCode}', [TrackingLinkController::class, 'resolve'])
     ->where('shortCode', '[A-Za-z0-9]+')
     ->middleware('throttle:120,1');

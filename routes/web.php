@@ -289,6 +289,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::resource('blogs', BlogController::class);
 
     // FAQs
+    Route::get('/faqs/statistics', [\App\Http\Controllers\FaqStatisticsController::class, 'Index'])->name('faqs.statistics');
     Route::get('/faqs', [FaqController::class, 'Index'])->name('faqs.index');
     Route::get('/faqs/create', [FaqController::class, 'Create'])->name('faqs.create');
     Route::post('/faqs', [FaqController::class, 'Store'])->name('faqs.store');

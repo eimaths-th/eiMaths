@@ -10,6 +10,7 @@
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     @can('faq-list')
+                        <a href="{{ route('faqs.statistics') }}" class="btn btn-outline-primary mr-2">{{ __('content-management.faq.statistics.title') }}</a>
                         <a href="{{ route('faq-categories.index') }}" class="btn btn-outline-primary mr-2">
                             <i class="fas fa-folder"></i> {{ __('content-management.faq.manage_categories') }}
                         </a>
