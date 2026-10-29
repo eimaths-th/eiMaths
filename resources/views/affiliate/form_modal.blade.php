@@ -461,7 +461,7 @@
                             </div>
                         </div>
                         <div class="selected-course-price-wrap">
-                            <span class="selected-course-price-label">{{ __('course-website.booking.course_fee') }}</span>
+                            <span class="selected-course-price-label" id="modalCoursePriceLabel">{{ __('course-website.booking.course_fee') }}</span>
                             <span class="selected-course-price" id="modalCoursePriceDisplay">0 ฿</span>
                         </div>
                     </div>
