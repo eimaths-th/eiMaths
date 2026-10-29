@@ -2,6 +2,9 @@
 <html lang="{{ app()->getLocale() }}">
 
 <head>
+    @if (request()->routeIs('student.login', 'guest.quiz.register'))
+        @include('layouts.includes.google-analytics')
+    @endif
     <meta charset="utf-8" />
     <title>eiMaths | @yield('title')</title>
     <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport" />
