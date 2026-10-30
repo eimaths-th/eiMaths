@@ -73,7 +73,8 @@ class GuestQuizController extends Controller
         // Auto login
         Auth::guard('guest_quiz')->login($guest);
 
-        return redirect()->route('guest.quiz.home');
+        return redirect()->route('guest.quiz.home')
+            ->with('elearning_meta_event', 'CompleteRegistration');
     }
 
     /**
@@ -111,7 +112,8 @@ class GuestQuizController extends Controller
         // Login
         Auth::guard('guest_quiz')->login($guest);
 
-        return redirect()->route('guest.quiz.home');
+        return redirect()->route('guest.quiz.home')
+            ->with('elearning_meta_event', 'ELearningLogin');
     }
 
     /**

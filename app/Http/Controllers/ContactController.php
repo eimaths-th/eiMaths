@@ -1506,10 +1506,10 @@ class ContactController extends Controller
             if ($student->type === 'demo') {
                 # code...
                 // return redirect()->route('home.section', ['P6', '4', '20']);
-                return redirect()->route('home3');
+                return redirect()->route('home3')->with('elearning_meta_event', 'ELearningLogin');
             } else {
                 # code...
-                return redirect()->route('home3');
+                return redirect()->route('home3')->with('elearning_meta_event', 'ELearningLogin');
             }
         } else {
             return back()->withErrors(['error' => __('students.login.invalid_credentials')]);

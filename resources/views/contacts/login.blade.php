@@ -909,6 +909,7 @@ select.custom-input {
     }
 
     function showGuestRegister() {
+        window.eimathsTrackFreeTrialOpen?.();
         document.getElementById('back-btn').style.display = 'flex';
         gsap.to("#guest-login-section", {
             duration: 0.3, opacity: 0, x: 20, display: "none", ease: "power2.inOut"

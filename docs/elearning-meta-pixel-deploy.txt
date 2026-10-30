@@ -1,0 +1,56 @@
+e-Learning Meta Pixel deployment
+Target: app.eimaths-th.com
+Pixel ID: 1612378803966693
+
+Upload these files from the eiMaths project, preserving paths:
+1. config/services.php
+2. app/Http/Controllers/ContactController.php
+3. app/Http/Controllers/GuestQuizController.php
+4. resources/views/layouts/default.blade.php
+5. resources/views/layouts/quiz_layout.blade.php
+6. resources/views/layouts/includes/elearning-meta-pixel.blade.php (new)
+7. resources/views/contacts/login.blade.php
+
+Add/update these values in the server's existing .env (do not replace the entire file):
+ELEARNING_META_PIXEL_ENABLED=true
+ELEARNING_META_PIXEL_ID=1612378803966693
+
+Run in the deployed Laravel project:
+php artisan config:clear
+php artisan view:clear
+If configuration is normally cached, run php artisan config:cache afterwards.
+No database migration or frontend build is required.
+
+Expected events:
+- /students-login: PageView
+- Opening the Free Trial panel: OpenFreeTrialForm (custom, once per page load)
+- /free-quiz/register: PageView and OpenFreeTrialForm
+- Successful new trial registration: CompleteRegistration on the redirected home page
+- Successful existing trial or student login: ELearningLogin (custom) on the redirected home page
+- Redirected success pages also send PageView when loading the Pixel.
+- Auto-login during registration does not also count as ELearningLogin.
+- Failed/duplicate registration, bad password and expired trial do not send success events.
+- Refreshing a success page consumes no new success event; its session marker was already removed.
+- Ordinary quiz/home navigation without a fresh success marker does not load this Pixel.
+- Localhost, test-web and other hosts do not load this integration.
+
+No form fields, names, emails, phone numbers, passwords, student identifiers, grades,
+schools, quiz answers or results are passed as event parameters. Automatic configuration
+is disabled, and advanced matching is not added. Standard Meta Pixel browser/page
+metadata and cookies still apply. Do not place personal data in page URLs.
+
+Verify after deployment in Meta Events Manager, Pixel 1612378803966693, Test events.
+Open https://app.eimaths-th.com/students-login. Check PageView and OpenFreeTrialForm.
+With an authorized test account, verify registration or login success and then refresh:
+the success event must not be repeated. Registration creates a real account on production.
+Do not install another copy of the base code or add button-based success events in Meta.
+If a domain allow list is introduced later, include app.eimaths-th.com.
+
+Disable this integration only: ELEARNING_META_PIXEL_ENABLED=false, then refresh config cache.
+The separate eimaths-th.com website Pixel/Lead integration is not changed by this deployment.
+
+Local validation:
+node --test tests/elearning-meta-pixel.test.mjs
+PHPUnit: tests/Feature/ElearningMetaPixelTest.php (SQLite :memory: only).
+For the local Windows PHP installation, enable pdo_sqlite and sqlite3 for the test command.
+The owner performs deployment. No production registration or login was submitted by the agent.
