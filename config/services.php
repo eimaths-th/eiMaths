@@ -39,6 +39,11 @@ return [
 
     'staff_api' => ['key' => env('STAFF_APP_API_KEY')],
 
+    'elearning_meta_pixel' => [
+        'enabled' => (bool) env('ELEARNING_META_PIXEL_ENABLED', true),
+        'id' => env('ELEARNING_META_PIXEL_ID', '1612378803966693'),
+    ],
+
     'crm_integrations' => [
         'token' => env('CRM_INTEGRATION_TOKEN'),
     ],

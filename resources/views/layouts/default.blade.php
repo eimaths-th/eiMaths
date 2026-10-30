@@ -2,6 +2,7 @@
 <html lang="{{ app()->getLocale() }}">
 
 <head>
+    @include('layouts.includes.elearning-meta-pixel')
     @if (request()->routeIs('student.login', 'guest.quiz.register'))
         @include('layouts.includes.google-analytics')
     @endif
