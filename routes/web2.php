@@ -218,7 +218,7 @@ Route::group(['middleware' => ['auth', 'affiliate.redirect']], function () {
 
 });
 
-Route::group(['middleware' => ['auth.userOrStudent', 'affiliate.redirect']], function () {
+Route::group(['middleware' => [\App\Http\Middleware\EnsureCurrentStudentSession::class, 'auth.userOrStudent', 'affiliate.redirect']], function () {
     Route::get('quiz-home', [eLeanController::class, 'home'])->name('home3');
     // Route::get('/quiz/save-answer', [QuizController::class, 'saveAnswer'])->name('quiz.saveAnswer');
     Route::post('/quiz/save-answer', [QuizController::class, 'saveAnswer'])->name('quiz.saveAnswer');

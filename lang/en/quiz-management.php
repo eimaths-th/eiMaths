@@ -141,6 +141,11 @@ return [
         'quiz_deleted' => 'N/A (Quiz deleted)',
     ],
     'preview' => [
+        'results_heading' => 'Test results',
+        'participant' => 'Participant',
+        'duration' => 'Time',
+        'attempted_at' => 'Date',
+        'view_answers' => 'View answers',
         'title' => 'Test Preview',
         'dashboard_subtitle' => 'Monitor student performance and quiz results with comprehensive analytics',
         'total_tests' => 'Total Tests',

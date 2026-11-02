@@ -58,7 +58,7 @@ class Contact extends Model implements AuthenticatableContract
 {
     use Authenticatable;
 
-    protected $hidden = ['password', 'remember_token'];
+    protected $hidden = ['password', 'remember_token', 'elearning_session_token_hash'];
     /**
      * The table associated with the model.
      *

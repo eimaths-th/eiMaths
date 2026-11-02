@@ -3,8 +3,15 @@
 
 <head>
     @include('layouts.quiz_css')
+    @include('home.footer.styles')
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="UTF-8">
+    @if ($result_page ?? false)
+        @include('home.result.styles')
+    @endif
+    @if ($test_preview_page ?? false)
+        @include('home.test-preview.styles')
+    @endif
     <style>
         @keyframes float {
             0%, 100% { transform: translateY(0px); }
@@ -17,10 +24,12 @@
     </style>
 </head>
 
-<body style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; display: flex; flex-direction: column; min-height: 100vh; margin: 0; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); position: relative;">
+<body @class(['result-page' => $result_page ?? false, 'test-preview-page' => $test_preview_page ?? false]) style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; display: flex; flex-direction: column; min-height: 100vh; margin: 0; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); position: relative;">
 
     <!-- Background Pattern -->
+    @unless (($result_page ?? false) || ($test_preview_page ?? false))
     <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.03; z-index: -1; background-image: radial-gradient(circle at 2px 2px, #f97316 1px, transparent 0); background-size: 40px 40px;"></div>
+    @endunless
 
     <!-- Main Container -->
     <div style="min-height: 100vh; display: flex; flex-direction: column; position: relative;">
@@ -31,6 +40,7 @@
         </div>
 
         <!-- Decorative Line -->
+        @unless (($result_page ?? false) || ($test_preview_page ?? false))
         <div style="height: 4px; background: linear-gradient(90deg, #f97316 0%, #fb923c 50%, #f97316 100%); box-shadow: 0 2px 10px rgba(249, 115, 22, 0.3);"></div>
 
         <!-- Page Heading -->
@@ -50,8 +60,18 @@
                 </div>
             </header>
         @endif
+        @endunless
 
         <!-- Main Content Area -->
+        @if ($result_page ?? false)
+            <main class="result-main">
+                @yield('content')
+            </main>
+        @elseif ($test_preview_page ?? false)
+            <main class="test-preview-main">
+                @yield('content')
+            </main>
+        @else
         <main style="flex: 1; position: relative; z-index: 1;">
             <!-- Content Container -->
             <div style="max-width: 1280px; margin: 0 auto; padding: 40px 24px; position: relative;">
@@ -71,6 +91,7 @@
 
         <!-- Spacer for Footer -->
         <div style="height: 80px;"></div>
+        @endif
 
         {{--
         @livewire('footer') --}}
