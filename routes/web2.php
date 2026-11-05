@@ -95,7 +95,9 @@ Route::group(['middleware' => ['auth', 'affiliate.redirect']], function () {
     Route::redirect('admins/create', '/users/create')->name('admin.create');
 
     // Route::get('tests', TestList::class)->name('tests');
-    Route::get('tests/{quiz_slug?}', [eLeanController::class, 'tests'])->name('tests');
+    Route::get('backoffice/quiz-results/attempts/{test}', [\App\Http\Controllers\Backoffice\QuizResultsController::class, 'Show'])->name('backoffice.quiz-results.show');
+    Route::get('backoffice/quiz-results/{quiz_slug?}', [\App\Http\Controllers\Backoffice\QuizResultsController::class, 'Index'])->name('backoffice.quiz-results.index');
+    Route::get('tests/{quiz_slug?}', [\App\Http\Controllers\Backoffice\QuizResultsController::class, 'RedirectLegacy'])->name('tests');
     //#################################################################
     Route::get('questions', [QuestionController::class, 'index'])->name('questions');
     Route::get('questions/create', [QuestionController::class, 'create'])->name('questions.create');

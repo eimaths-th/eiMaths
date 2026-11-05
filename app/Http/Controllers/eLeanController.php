@@ -214,6 +214,9 @@ class eLeanController extends Controller
 
     public function submitLeaderboard(Request $request)
     {
+        if (in_array($request->input('route'), ['tests', 'backoffice.quiz-results.index'], true)) {
+            return app(\App\Http\Controllers\Backoffice\QuizResultsController::class)->Filter($request);
+        }
         $route = $request->route;
         // dd($request,$route);
         $request->validate([
@@ -251,51 +254,6 @@ class eLeanController extends Controller
         return view('home.result-list', [
             'tests' => $tests,
             'header' => $header,
-
-        ]);
-    }
-    public function tests(Request $request, $quiz_slug = '0')
-    {
-        $quizzes = Quiz::all();
-        $header = __('quiz-management.preview.title');
-        $quizId = 0;
-        $perPageOptions = [10, 20, 50, 100];
-        $perPage = (int) $request->input('per_page', 20);
-
-        if (!in_array($perPage, $perPageOptions, true)) {
-            $perPage = 20;
-        }
-
-        if ($quiz_slug != '0') {
-            $quiz = Quiz::where('slug', $quiz_slug)->first();
-            if ($quiz) {
-                $quizId = $quiz->id;
-            }
-        }
-
-        $tests = Test::query()
-            ->whereHas('user')
-            ->with(['user' => function ($query) {
-                $query->select('id', 'name');
-            }, 'quiz' => function ($query) {
-                $query->select('id', 'title','level','term','section');
-            }])
-            ->when($quizId > 0, function ($query) use ($quizId) {
-                $query->where('quiz_id', $quizId);
-            })
-            ->withCount('questions')
-            // ->orderBy('result', 'desc')
-            // ->orderBy('time_spent')
-            ->latest()
-            ->paginate($perPage)
-            ->withQueryString();
-        return view('home.tests', [
-            'tests' => $tests,
-            'quizzes' => $quizzes,
-            'quiz_slug' => $quiz_slug,
-            'header' => $header,
-            'perPage' => $perPage,
-            'perPageOptions' => $perPageOptions,
 
         ]);
     }

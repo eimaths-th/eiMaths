@@ -133,6 +133,7 @@ class TestPreviewPageTest extends TestCase
             'tests' => $paginator, 'quizzes' => collect([$this->CreateAttempt()->quiz]),
             'quiz_slug' => 'addition', 'header' => __('quiz-management.preview.title'),
             'perPage' => 10, 'perPageOptions' => [10, 20, 50, 100],
+            'can_view_answers' => true, 'answer_route_name' => 'results.show',
         ]);
     }
 

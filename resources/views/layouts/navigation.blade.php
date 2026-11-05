@@ -88,9 +88,6 @@
                         <x-dropdown-link :href="route('quizzes')">
                             Quizzes
                         </x-dropdown-link>
-                        <x-dropdown-link :href="route('tests')">
-                            Tests
-                        </x-dropdown-link>
                     </x-slot>
 
                 </x-dropdown>
@@ -137,9 +134,6 @@
                 </x-dropdown-link>
                 <x-dropdown-link :href="route('quizzes')">
                     Quizzes
-                </x-dropdown-link>
-                <x-dropdown-link :href="route('tests')">
-                    Tests
                 </x-dropdown-link>
             </x-slot>
 

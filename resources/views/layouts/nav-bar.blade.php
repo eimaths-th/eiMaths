@@ -250,7 +250,6 @@
                         <a href="{{ route('admins') }}" class="block px-4 py-2 text-sm text-gray-700">Admins</a>
                         <a href="{{ route('questions') }}" class="block px-4 py-2 text-sm text-gray-700">{{ __('quiz-management.layout.questions') }}</a>
                         <a href="{{ route('quizzes') }}" class="block px-4 py-2 text-sm text-gray-700">{{ __('quiz-management.layout.quizzes') }}</a>
-                        <a href="{{ route('tests') }}" class="block px-4 py-2 text-sm text-gray-700">{{ __('quiz-management.layout.tests') }}</a>
                     --}}
                 <form method="POST" action="{{ route('student.logout') }}">
                     @csrf
