@@ -71,6 +71,7 @@ return [
             'updated' => 'Blog updated successfully.',
             'deleted' => 'Blog deleted successfully.',
             'slug_exists' => 'Slug already exists. Please choose a different slug.',
+            'slug_empty' => 'A slug could not be created. Please include letters or numbers in the title or slug.',
         ],
     ],
     'faq' => [
