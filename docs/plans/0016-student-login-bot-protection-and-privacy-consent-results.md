@@ -17,7 +17,7 @@
 | 4. Registration consent | Implemented | RED: 12 failed. GREEN: 13 passed. |
 | 5. Rate limits | Implemented | RED: 4 failed. GREEN: 5 passed. |
 | 6. Guest Report | Implemented | RED: 8 failed. GREEN: 9 passed. |
-| 7. Whole-change verification | Pending the user's commit decision | Full suite, JavaScript tests, route check, and review evidence are recorded in this file. |
+| 7. Whole-change verification | Complete | Full suite: 1,242 tests with the same 65 baseline failures and no new failures. JavaScript: 11 passed. Focused PHP: 71 passed. Route check: one route. |
 | 8. Production rollout | Pending | Every step waits for its user checkpoint. |
 
 ## Review Findings
@@ -29,7 +29,7 @@ Final review round 1 of 1, independent reviewer.
 | High | Non-connect Google failures returned HTTP 500. | Fixed: catches `HttpClientException` and Guzzle `TransferException`. Tested. | Not applicable |
 | High | The form hung when `ready` never fired or `execute` threw, including with an invalid site key. | Fixed: try/catch, 10-second timeout, and `Promise.resolve`. Tested in `tests/JavaScript/recaptcha-form.test.mjs`. | Not applicable |
 | Medium | Back-navigation left the form unable to submit. | Fixed: `pageshow` resets state and clears the token. Tested. | Not applicable |
-| Medium | The e-book API is a student password check with no reCAPTCHA, and its account limit includes the IP. | Open: outside the approved forms. Awaiting the user's scope decision. | Bots can still guess student passwords through that route. |
+| Medium | The e-book API is a student password check with no reCAPTCHA, and its account limit includes the IP. | User decision: option B, no change in this work. | Bots can still guess student passwords through that route. |
 | Low | A rejected student lost the code field. | Fixed: `old('code')` and `withInput`. Tested. | Not applicable |
 | Low | `guest_password` and `recaptcha_token` were flashed to the session. | Fixed: limited `withInput` calls and extended `$dontFlash`. Tested. | Not applicable |
 | Low | An oversized token reopened the wrong panel. | Fixed: the verifier rejects malformed tokens, so the form's own error key is used. Tested. | Not applicable |
