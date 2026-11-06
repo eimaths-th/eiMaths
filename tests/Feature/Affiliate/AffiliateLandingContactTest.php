@@ -10,9 +10,9 @@ class AffiliateLandingContactTest extends TestCase
 {
     use RefreshDatabase;
 
-    private const PUBLIC_CONTACT_EMAIL = 'eimaths.thailand2023@gmail.com';
+    private const PUBLIC_CONTACT_EMAIL = 'info@eimaths-th.com';
 
-    private const OBSOLETE_CONTACT_EMAIL = 'info@eimaths-th.com';
+    private const OBSOLETE_CONTACT_EMAIL = 'eimaths.thailand2023@gmail.com';
 
     #[Test]
     public function ShowsThePublicWebsiteEmailAddressAsAMailLink(): void
