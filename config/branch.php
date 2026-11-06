@@ -57,6 +57,7 @@ return [
         App\Models\receipt_details::class => ['parent' => App\Models\Receipt::class, 'key' => 'receipt_id'],
         App\Models\HistoryStudentImg::class => ['special' => 'history-image'],
         App\Models\ContactQuiz::class => ['parent' => App\Models\Contact::class, 'key' => 'contact_id'],
+        App\Models\StudentLoginEvent::class => ['parent' => App\Models\Contact::class, 'key' => 'contact_id'],
         App\Models\CrmLeadNote::class => ['parent' => App\Models\CrmLead::class, 'key' => 'lead_id'],
         App\Models\FileStore::class => ['parent' => App\Models\Order::class, 'key' => 'module_id'],
         App\Models\Test::class => ['special' => 'test'],

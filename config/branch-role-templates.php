@@ -9,7 +9,7 @@ $branch = array_values(array_unique(array_merge(
 )));
 $branch = array_merge($branch, [
     'activity-log-list', 'centre-manage', 'course-list', 'order-show', 'receipt-show', 'invoice-show', 'product-show',
-    'student-export', 'receipt-export', 'order-export', 'invoice-export',
+    'student-activity-list', 'student-export', 'receipt-export', 'order-export', 'invoice-export',
     'crm-leads-menu-view', 'crm-leads-create', 'crm-leads-edit', 'crm-leads-delete',
     'credit-note-list', 'credit-note-show', 'credit-note-create', 'credit-note-edit', 'credit-note-issue', 'credit-note-cancel',
 ]);

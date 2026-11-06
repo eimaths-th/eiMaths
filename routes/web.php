@@ -76,6 +76,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::put('/contacts/save/{id}', [App\Http\Controllers\ContactController::class, 'update'])->name('contacts.save');
     Route::delete('/contacts/destroy', [App\Http\Controllers\ContactController::class, 'destroy'])->name('contacts.destroy');
     Route::post('/contacts/destroy_all', [App\Http\Controllers\ContactController::class, 'destroy_all'])->name('contacts.destroy_all');
+    Route::get('/contacts/{contact}/activity', [App\Http\Controllers\StudentActivityController::class, 'Index'])->name('contacts.activity.index');
     Route::get('/contacts/{contact}/book-receipts', [BookReceiptController::class, 'Index'])->name('contacts.book-receipts.index');
     Route::post('/contacts/{contact}/book-receipts/receive-all', [BookReceiptController::class, 'ReceiveAll'])->name('contacts.book-receipts.receive-all');
     Route::put('/contacts/{contact}/book-receipts/{order_detail_list}', [BookReceiptController::class, 'Update'])->name('contacts.book-receipts.update');

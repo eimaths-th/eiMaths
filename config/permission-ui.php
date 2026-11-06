@@ -94,6 +94,7 @@ return [
         'dashboard' => 'ดู Dashboard',
         'view-log' => 'ดูประวัติการแก้ไขการเรียน',
         'activity-log-list' => 'ดูประวัติการใช้งานของสาขา',
+        'student-activity-list' => 'ดูประวัติการใช้งานของนักเรียน',
         'all-centre' => 'เข้าถึงข้อมูลทุกสาขา',
         'course-manage' => 'จัดการหลักสูตรกลาง',
         'course-list' => 'ดูหลักสูตรที่เปิดเผย',

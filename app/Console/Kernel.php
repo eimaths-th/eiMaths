@@ -27,6 +27,8 @@ class Kernel extends ConsoleKernel
         $schedule->command('faq:prune-slug-history')
             ->dailyAt('02:30')->timezone('Asia/Bangkok')->withoutOverlapping()
             ->when(fn (): bool => (bool) config('faq-urls.enabled', false));
+        $schedule->command('student-activity:prune-login-events')
+            ->dailyAt('02:45')->timezone('Asia/Bangkok')->withoutOverlapping();
     }
 
     /**

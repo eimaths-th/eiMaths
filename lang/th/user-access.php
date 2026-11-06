@@ -175,6 +175,7 @@ return [
         'quiz-results-list' => 'ดูผลสอบ',
         'quiz-results-view' => 'ดูคำตอบแบบทดสอบ',
         'activity-log-list' => 'ดูประวัติการใช้งานของสาขา',
+        'student-activity-list' => 'ดูประวัติการใช้งานของนักเรียน',
         'ebook-manage' => 'จัดการ E-book (ส่วนกลาง)',
         'ebook-activity-list' => 'ดูประวัติการใช้งาน E-book',
     ],

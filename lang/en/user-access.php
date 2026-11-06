@@ -175,6 +175,7 @@ return [
         'quiz-results-list' => 'View quiz results',
         'quiz-results-view' => 'View quiz answers',
         'activity-log-list' => 'View branch activity log',
+        'student-activity-list' => 'View student activity',
         'ebook-manage' => 'Manage E-books (HQ)',
         'ebook-activity-list' => 'View E-book Activity Log',
     ],

@@ -43,6 +43,7 @@ use App\Domain\Affiliate\Exceptions\AffiliateDomainException;
 use App\Support\Branch\BranchAccess;
 use App\Support\Recaptcha\RecaptchaResult;
 use App\Support\Recaptcha\RecaptchaVerifier;
+use App\Domain\Elearning\StudentLoginEventRecorder;
 use App\Domain\Elearning\StudentSessionService;
 
 class ContactController extends Controller
@@ -499,6 +500,10 @@ class ContactController extends Controller
                         $html .= '<button type="button" class="btn btn-sm btn-warning btn-edit" id="getEditData" data-id="' . $row->id . '"><i class="fa fa-edit"></i> ' . e(__('common.actions.edit')) . '</button> ';
                     } else {
                         $html .= '<button type="button" class="btn btn-sm btn-warning disabled" data-toggle="tooltip" data-placement="bottom" title="' . e(__('common.feedback.permission_denied')) . '"><i class="fa fa-edit"></i> ' . e(__('common.actions.edit')) . '</button> ';
+                    }
+
+                    if (Gate::allows('student-activity-list')) {
+                        $html .= '<a class="btn btn-sm btn-secondary" href="' . e(route('contacts.activity.index', $row->id)) . '"><i class="fa fa-history"></i> ' . e(__('students.actions.view_activity')) . '</a> ';
                     }
 
                     return $html;
@@ -1491,7 +1496,7 @@ class ContactController extends Controller
     {
         return view('contacts.login');
     }
-    public function studentsCheckLogin(Request $request, StudentSessionService $student_sessions, RecaptchaVerifier $recaptcha)
+    public function studentsCheckLogin(Request $request, StudentSessionService $student_sessions, RecaptchaVerifier $recaptcha, StudentLoginEventRecorder $login_events)
     {
         $request->validate([
             'code' => 'required',
@@ -1512,6 +1517,7 @@ class ContactController extends Controller
             $student_sessions->Start($student, $request);
             Auth::guard('student')->login($student);
             $student = Auth::guard('student')->user();
+            $login_events->RecordLogin($student);
             if ($student->type === 'demo') {
                 # code...
                 // return redirect()->route('home.section', ['P6', '4', '20']);
@@ -1524,10 +1530,11 @@ class ContactController extends Controller
             return back()->withErrors(['error' => __('students.login.invalid_credentials')]);
         }
     }
-    public function studentsLogout(Request $request, StudentSessionService $student_sessions)
+    public function studentsLogout(Request $request, StudentSessionService $student_sessions, StudentLoginEventRecorder $login_events)
     {
         $student = Auth::guard('student')->user();
         if ($student) {
+            $login_events->RecordLogout($student);
             $student_sessions->End($student, $request);
         } else {
             $request->session()->forget(StudentSessionService::LOCAL_SESSION_KEYS);
