@@ -10,6 +10,9 @@ use App\Models\ImageOption;
 use App\Models\Option;
 use App\Models\Question;
 use App\Models\Quiz;
+use App\Support\Privacy\GuestPrivacyConsent;
+use App\Support\Recaptcha\RecaptchaResult;
+use App\Support\Recaptcha\RecaptchaVerifier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -33,9 +36,9 @@ class GuestQuizController extends Controller
     /**
      * บันทึกข้อมูล Guest + auto login
      */
-    public function register(Request $request)
+    public function register(Request $request, RecaptchaVerifier $recaptcha)
     {
-        $validator = Validator::make($request->all(), [
+        $validator = Validator::make($request->all(), array_merge([
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
             'nickname' => 'nullable|string|max:255',
@@ -43,7 +46,7 @@ class GuestQuizController extends Controller
             'school' => 'nullable|string|max:255',
             'email' => 'required|email|unique:guest_quizzers,email',
             'phone' => 'required|string|max:20',
-        ], [
+        ], GuestPrivacyConsent::Rules()), array_merge([
             'first_name.required' => __('students.login.validation.first_name_required'),
             'last_name.required' => __('students.login.validation.last_name_required'),
             'grade.required' => __('students.login.validation.grade_required'),
@@ -51,14 +54,21 @@ class GuestQuizController extends Controller
             'email.email' => __('students.login.validation.email_invalid'),
             'email.unique' => __('students.login.validation.email_unique'),
             'phone.required' => __('students.login.validation.phone_required'),
-        ]);
+        ], GuestPrivacyConsent::Messages()));
 
         if ($validator->fails()) {
-            return back()->withErrors($validator)->withInput();
+            return back()->withErrors($validator)->withInput($request->except('recaptcha_token'));
+        }
+
+        if ($recaptcha->IsEnabled()
+            && $recaptcha->Verify($request->input('recaptcha_token'), 'guest_register', $request->ip()) !== RecaptchaResult::PASSED) {
+            return back()
+                ->withErrors(['registration' => __('students.login.recaptcha_rejected')])
+                ->withInput($request->except('recaptcha_token'));
         }
 
         // สร้าง Guest account (password = phone)
-        $guest = GuestQuizzer::create([
+        $guest = GuestQuizzer::create(array_merge([
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
             'nickname' => $request->nickname,
@@ -68,7 +78,7 @@ class GuestQuizController extends Controller
             'phone' => $request->phone,
             'password' => Hash::make($request->phone),
             'expires_at' => now()->addDays(10),
-        ]);
+        ], GuestPrivacyConsent::Attributes($request)));
 
         // Auto login
         Auth::guard('guest_quiz')->login($guest);
@@ -79,7 +89,7 @@ class GuestQuizController extends Controller
     /**
      * Guest Login
      */
-    public function login(Request $request)
+    public function login(Request $request, RecaptchaVerifier $recaptcha)
     {
         $validator = Validator::make($request->all(), [
             'guest_email' => 'required|email',
@@ -91,13 +101,20 @@ class GuestQuizController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return back()->withErrors($validator)->withInput();
+            return back()->withErrors($validator)->withInput($request->only('guest_email'));
+        }
+
+        if ($recaptcha->IsEnabled()
+            && $recaptcha->Verify($request->input('recaptcha_token'), 'guest_login', $request->ip()) === RecaptchaResult::REJECTED) {
+            return back()
+                ->withErrors(['guest_error' => __('students.login.recaptcha_rejected')])
+                ->withInput($request->only('guest_email'));
         }
 
         $guest = GuestQuizzer::where('email', $request->guest_email)->first();
 
         if (!$guest || !Hash::check($request->guest_password, $guest->password)) {
-            return back()->withErrors(['guest_error' => __('students.login.validation.guest_invalid_credentials')])->withInput();
+            return back()->withErrors(['guest_error' => __('students.login.validation.guest_invalid_credentials')])->withInput($request->only('guest_email'));
         }
 
         // ตรวจหมดอายุ

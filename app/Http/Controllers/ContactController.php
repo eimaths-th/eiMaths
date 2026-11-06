@@ -41,6 +41,8 @@ use App\Domain\Affiliate\Services\AffiliateAttributionService;
 use App\Domain\Financial\Services\FinancialSourceGuard;
 use App\Domain\Affiliate\Exceptions\AffiliateDomainException;
 use App\Support\Branch\BranchAccess;
+use App\Support\Recaptcha\RecaptchaResult;
+use App\Support\Recaptcha\RecaptchaVerifier;
 use App\Domain\Elearning\StudentSessionService;
 
 class ContactController extends Controller
@@ -1489,7 +1491,7 @@ class ContactController extends Controller
     {
         return view('contacts.login');
     }
-    public function studentsCheckLogin(Request $request, StudentSessionService $student_sessions)
+    public function studentsCheckLogin(Request $request, StudentSessionService $student_sessions, RecaptchaVerifier $recaptcha)
     {
         $request->validate([
             'code' => 'required',
@@ -1498,6 +1500,11 @@ class ContactController extends Controller
             'code.required' => __('students.login.validation.code_required'),
             'password.required' => __('students.login.validation.password_required'),
         ]);
+
+        if ($recaptcha->IsEnabled()
+            && $recaptcha->Verify($request->input('recaptcha_token'), 'student_login', $request->ip()) === RecaptchaResult::REJECTED) {
+            return back()->withErrors(['error' => __('students.login.recaptcha_rejected')])->withInput($request->only('code'));
+        }
 
         $student_ids = DB::table('contacts')->where('code', $request->code)->limit(2)->pluck('id');
         $student = $student_ids->count() === 1 ? Contact::find($student_ids->first()) : null;
