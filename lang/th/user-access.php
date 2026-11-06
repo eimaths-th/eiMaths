@@ -172,6 +172,8 @@ return [
         'last' => 'หน้าสุดท้าย',
     ],
     'permission_labels' => [
+        'quiz-results-list' => 'ดูผลสอบ',
+        'quiz-results-view' => 'ดูคำตอบแบบทดสอบ',
         'activity-log-list' => 'ดูประวัติการใช้งานของสาขา',
         'ebook-manage' => 'จัดการ E-book (ส่วนกลาง)',
         'ebook-activity-list' => 'ดูประวัติการใช้งาน E-book',

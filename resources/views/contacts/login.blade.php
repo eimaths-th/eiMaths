@@ -555,7 +555,7 @@ select.custom-input {
             <p>{{ __('students.login.welcome') }}</p>
         </div>
 
-        <form action="{{ route('student.check') }}" method="POST">
+        <form action="{{ route('student.check') }}" method="POST" data-recaptcha-action="student_login">
             @csrf
             @if (isset($message) || $errors->has('error'))
                 <div class="alert-beautiful">
@@ -566,7 +566,7 @@ select.custom-input {
             
             <div class="custom-form-group">
                 <label for="code">{{ __('students.login.student_code') }}</label>
-                <input type="text" class="custom-input" placeholder="{{ __('students.login.student_code_placeholder') }}" id="code" name="code" required/>
+                <input type="text" class="custom-input" placeholder="{{ __('students.login.student_code_placeholder') }}" id="code" name="code" value="{{ is_string(old('code')) ? old('code') : '' }}" required/>
                 <i data-lucide="user" width="20" height="20" class="input-icon"></i>
             </div>
             
@@ -584,6 +584,8 @@ select.custom-input {
             <button type="submit" class="custom-btn btn-student">
                 {{ __('students.login.sign_in') }} <i data-lucide="arrow-right" width="20" height="20"></i>
             </button>
+            @include('partials.recaptcha')
+            @include('partials.privacy-notice-link')
         </form>
         <div class="form-footer" style="margin-top: 50px; color: #94a3b8;">
             &copy; eiMaths Thailand {{ date('Y') }}
@@ -607,7 +609,7 @@ select.custom-input {
                 <p>{{ __('students.login.register_description') }}</p>
             </div>
 
-            <form action="{{ route('guest.quiz.register.store') }}" method="POST">
+            <form action="{{ route('guest.quiz.register.store') }}" method="POST" data-recaptcha-action="guest_register">
                 @csrf
 
                 @if ($errors->any() && !($errors->has('error') || $errors->has('guest_error') || $errors->has('guest_email') || $errors->has('guest_password')))
@@ -694,6 +696,8 @@ select.custom-input {
                     <i data-lucide="info" width="24" height="24" style="flex-shrink: 0;"></i>
                     <span><strong>{{ __('students.login.phone_note_label') }}</strong> {{ __('students.login.phone_note') }}</span>
                 </div>
+                @include('partials.guest-privacy-consent', ['consent_field_prefix' => 'guest-panel'])
+                @include('partials.recaptcha')
                 <button type="submit" class="custom-btn btn-guest">
                     {{ __('students.login.register_trial') }} <i data-lucide="play-circle" width="20" height="20"></i>
                 </button>
@@ -707,7 +711,7 @@ select.custom-input {
                 <p>{{ __('students.login.guest_description') }}</p>
             </div>
 
-            <form action="{{ route('guest.quiz.login') }}" method="POST">
+            <form action="{{ route('guest.quiz.login') }}" method="POST" data-recaptcha-action="guest_login">
                 @csrf
                 @if ($errors->has('guest_error'))
                     <div class="alert-beautiful">
@@ -718,7 +722,7 @@ select.custom-input {
                 
                 <div class="custom-form-group">
                     <label for="guest_email">{{ __('students.login.email_label') }}</label>
-                    <input type="email" class="custom-input" placeholder="{{ __('students.login.email_input_placeholder') }}" id="guest_email" name="guest_email" value="{{ old('guest_email') }}" required/>
+                    <input type="email" class="custom-input" placeholder="{{ __('students.login.email_input_placeholder') }}" id="guest_email" name="guest_email" value="{{ is_string(old('guest_email')) ? old('guest_email') : '' }}" required/>
                     <i data-lucide="mail" width="20" height="20" class="input-icon"></i>
                     @error('guest_email')
                         <span style="color: #ef4444; font-size: 13px; margin-top: 6px; display: block; font-weight: 500;">{{ $message }}</span>
@@ -740,7 +744,9 @@ select.custom-input {
                 <button type="submit" class="custom-btn btn-guest">
                     {{ __('students.login.start_trial') }} <i data-lucide="play" width="20" height="20"></i>
                 </button>
-                
+                @include('partials.recaptcha')
+                @include('partials.privacy-notice-link')
+
                 <div class="form-footer">
                     {{ __('students.login.no_account') }} <a href="javascript:void(0)" onclick="showGuestRegister()">{{ __('students.login.register_now') }}</a>
                 </div>

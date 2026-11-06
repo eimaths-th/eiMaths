@@ -590,11 +590,20 @@
                         method: "POST", // <- changed from GET to POST
                         headers: {
                             "X-CSRF-TOKEN": document.querySelector('input[name="_token"]').value,
+                            "Accept": "application/json",
                         },
                         body: formData,
                     })
-                    .then(response => response.json())
+                    .then(async function ReadAnswerResponse(response) {
+                        const response_payload = await response.json();
+                        if (response.status === 401 && response_payload.code === 'ELEARNING_SESSION_REPLACED') {
+                            window.location.href = response_payload.login_url;
+                            return null;
+                        }
+                        return response_payload;
+                    })
                     .then(data => {
+                        if (data === null) return;
                         console.log("Answer saved:", data);
                         moveToNextQuestion(data);
                     })
@@ -764,6 +773,10 @@
                         // $('#showAnswer').hide();
                     },
                     error: function(xhr, status, error) {
+                        if (xhr.status === 401 && xhr.responseJSON?.code === 'ELEARNING_SESSION_REPLACED') {
+                            window.location.href = xhr.responseJSON.login_url;
+                            return;
+                        }
                         console.error('AJAX Error:', error);
                     }
                 });

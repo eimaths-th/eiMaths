@@ -95,7 +95,9 @@ Route::group(['middleware' => ['auth', 'affiliate.redirect']], function () {
     Route::redirect('admins/create', '/users/create')->name('admin.create');
 
     // Route::get('tests', TestList::class)->name('tests');
-    Route::get('tests/{quiz_slug?}', [eLeanController::class, 'tests'])->name('tests');
+    Route::get('backoffice/quiz-results/attempts/{test}', [\App\Http\Controllers\Backoffice\QuizResultsController::class, 'Show'])->name('backoffice.quiz-results.show');
+    Route::get('backoffice/quiz-results/{quiz_slug?}', [\App\Http\Controllers\Backoffice\QuizResultsController::class, 'Index'])->name('backoffice.quiz-results.index');
+    Route::get('tests/{quiz_slug?}', [\App\Http\Controllers\Backoffice\QuizResultsController::class, 'RedirectLegacy'])->name('tests');
     //#################################################################
     Route::get('questions', [QuestionController::class, 'index'])->name('questions');
     Route::get('questions/create', [QuestionController::class, 'create'])->name('questions.create');
@@ -218,7 +220,7 @@ Route::group(['middleware' => ['auth', 'affiliate.redirect']], function () {
 
 });
 
-Route::group(['middleware' => ['auth.userOrStudent', 'affiliate.redirect']], function () {
+Route::group(['middleware' => [\App\Http\Middleware\EnsureCurrentStudentSession::class, 'auth.userOrStudent', 'affiliate.redirect']], function () {
     Route::get('quiz-home', [eLeanController::class, 'home'])->name('home3');
     // Route::get('/quiz/save-answer', [QuizController::class, 'saveAnswer'])->name('quiz.saveAnswer');
     Route::post('/quiz/save-answer', [QuizController::class, 'saveAnswer'])->name('quiz.saveAnswer');
@@ -241,7 +243,7 @@ Route::group(['middleware' => ['auth.userOrStudent', 'affiliate.redirect']], fun
 //     Route::get('quiz-home', [eLeanController::class, 'home'])->name('home3');
 // });
 Route::get('/students-login', [App\Http\Controllers\ContactController::class, 'studentsLogin'])->name('student.login');
-Route::post('/students-login-check', [App\Http\Controllers\ContactController::class, 'studentsCheckLogin'])->name('student.check');
+Route::post('/students-login-check', [App\Http\Controllers\ContactController::class, 'studentsCheckLogin'])->middleware('throttle:student-login')->name('student.check');
 Route::post('/students-logout', [App\Http\Controllers\ContactController::class, 'studentsLogout'])->name('student.logout');
 Route::post('/quiz-user-logout', [App\Http\Controllers\ContactController::class, 'quizUserLogout'])->name('quiz.user.logout');
 Route::get('/normalize', [App\Http\Controllers\HomeController::class, 'normalizeNumber1'])->name('normalize');
@@ -307,8 +309,8 @@ use App\Http\Controllers\GuestQuizController;
 
 // Public routes (ไม่ต้อง login)
 Route::get('/free-quiz/register', [GuestQuizController::class, 'showRegister'])->name('guest.quiz.register');
-Route::post('/free-quiz/register', [GuestQuizController::class, 'register'])->name('guest.quiz.register.store');
-Route::post('/free-quiz/login', [GuestQuizController::class, 'login'])->name('guest.quiz.login');
+Route::post('/free-quiz/register', [GuestQuizController::class, 'register'])->middleware('throttle:guest-register')->name('guest.quiz.register.store');
+Route::post('/free-quiz/login', [GuestQuizController::class, 'login'])->middleware('throttle:guest-login')->name('guest.quiz.login');
 Route::get('/free-quiz/expired', [GuestQuizController::class, 'expired'])->name('guest.quiz.expired');
 
 // Guest-protected routes (ต้อง login ด้วย guest_quiz guard + ยังไม่หมดอายุ)

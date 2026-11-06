@@ -35,8 +35,10 @@ final class BranchRouteAccess
         if ($controller === 'BookReceiptController' && !BranchAccess::isCentral($actor)) {
             abort_unless(BranchAccess::moduleEnabled((int) $actor->department_id, 'stock'), 403);
         }
-        if ($controller === 'ResultController') {
-            abort_unless($actor->can('quiz-list'), 403);
+        if ($controller === 'QuizResultsController') {
+            app(\App\Domain\Elearning\QuizResultAccess::class)->AuthorizeStaff(
+                $method === 'show' ? 'quiz-results-view' : 'quiz-results-list'
+            );
         }
         $prefixes = [
             'ContactController' => 'student', 'DiscontinueController' => 'student',

@@ -264,7 +264,7 @@ select.custom-input {
             <p>Fill in your details to get 10 days of free access.</p>
         </div>
 
-        <form action="{{ route('guest.quiz.register.store') }}" method="POST">
+        <form action="{{ route('guest.quiz.register.store') }}" method="POST" data-recaptcha-action="guest_register">
             @csrf
 
             @if ($errors->any())
@@ -351,6 +351,9 @@ select.custom-input {
                 <i data-lucide="info" width="24" height="24"></i>
                 <span><strong>Note:</strong> Your phone number will be used as your password for login.</span>
             </div>
+
+            @include('partials.guest-privacy-consent', ['consent_field_prefix' => 'guest-page'])
+            @include('partials.recaptcha')
 
             <button type="submit" class="custom-btn btn-guest">
                 Register & Start Free Trial <i data-lucide="play-circle" width="20" height="20"></i>

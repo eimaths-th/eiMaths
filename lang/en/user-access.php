@@ -172,6 +172,8 @@ return [
         'last' => 'Last',
     ],
     'permission_labels' => [
+        'quiz-results-list' => 'View quiz results',
+        'quiz-results-view' => 'View quiz answers',
         'activity-log-list' => 'View branch activity log',
         'ebook-manage' => 'Manage E-books (HQ)',
         'ebook-activity-list' => 'View E-book Activity Log',

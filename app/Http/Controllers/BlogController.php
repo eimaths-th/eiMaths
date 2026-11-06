@@ -28,7 +28,7 @@ class BlogController extends Controller
         $slug = str_replace(':', '-', $slug);
         $slug = preg_replace('/-+/', '-', $slug);
         $slug = Str::lower($slug);
-        return $slug;
+        return trim($slug, '-');
     }
 
     public function __construct(ImageConversionService $image_conversion_service)
@@ -119,6 +119,10 @@ class BlogController extends Controller
         ]);
 
         $slug = $request->slug ? $this->generate_thai_slug($request->slug) : $this->generate_thai_slug($request->title);
+
+        if ($slug === '') {
+            return redirect()->back()->withInput()->with('error', __('content-management.blog.messages.slug_empty'));
+        }
 
         $original_slug = $slug;
         $count = 1;
@@ -319,7 +323,15 @@ class BlogController extends Controller
             'pen_name' => 'nullable|string|max:255',
         ]);
 
-        $slug = $request->slug ? $this->generate_thai_slug($request->slug) : $this->generate_thai_slug($request->title);
+        if ($request->slug === $blog->slug) {
+            $slug = $blog->slug;
+        } else {
+            $slug = $request->slug ? $this->generate_thai_slug($request->slug) : $this->generate_thai_slug($request->title);
+        }
+
+        if ($slug === '') {
+            return redirect()->back()->withInput()->with('error', __('content-management.blog.messages.slug_empty'));
+        }
 
         $original_slug = $slug;
         $count = 1;

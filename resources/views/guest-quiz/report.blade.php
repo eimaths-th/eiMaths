@@ -32,6 +32,7 @@
                                     <th>{{ __('common.fields.created_at') }}</th>
                                     <th>{{ __('common.fields.expires_at') }}</th>
                                     <th>{{ __('common.fields.status') }}</th>
+                                    <th>{{ __('students.guest_reports.marketing_heading') }}</th>
                                     <th>{{ __('common.fields.action') }}</th>
                                 </tr>
                             </thead>
@@ -50,6 +51,9 @@
 <script>
     const guestReportUi = {
         delete_confirm: @json(__('students.guest_reports.delete_confirm')),
+        marketing_withdraw_confirm: @json(__('students.guest_reports.marketing_withdraw_confirm')),
+        marketing_withdrawn: @json(__('students.guest_reports.marketing_withdrawn')),
+        marketing_withdraw_error: @json(__('students.guest_reports.marketing_withdraw_error')),
         deleted: @json(__('students.guest_reports.deleted')),
         delete_error: @json(__('students.guest_reports.delete_error')),
         datatable: @json(__('common.datatable')),
@@ -85,9 +89,31 @@
                 { data: 'created_at', name: 'created_at' },
                 { data: 'expires_at', name: 'expires_at' },
                 { data: 'status', name: 'status', orderable: false, searchable: false },
+                { data: 'marketing_status', name: 'marketing_status', orderable: false, searchable: false },
                 { data: 'action', name: 'action', orderable: false, searchable: false }
             ],
             order: [[0, 'desc']]
+        });
+
+        $('body').on('click', '.btn-withdraw-marketing', function () {
+            var id = $(this).data("rowid");
+            if(confirm(guestReportUi.marketing_withdraw_confirm)){
+                $.ajax({
+                    type: "POST",
+                    url: "{{ route('guest.report.marketing.withdraw') }}",
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        id: id
+                    },
+                    success: function () {
+                        table.draw();
+                        toastr.success(guestReportUi.marketing_withdrawn);
+                    },
+                    error: function () {
+                        toastr.error(guestReportUi.marketing_withdraw_error);
+                    }
+                });
+            }
         });
 
         $('body').on('click', '.btn-delete', function () {

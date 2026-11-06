@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\GuestQuizzer;
 use App\Support\Branch\BranchAccess;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class GuestReportController extends Controller
 {
@@ -23,6 +24,7 @@ class GuestReportController extends Controller
                 $query->orderByDesc('id');
             }
             $canDelete = $request->user()->can('student-delete');
+            $can_withdraw_marketing = $request->user()->can('student-edit');
 
             return datatables()->of($query)
                 ->orderColumn('first_name', function ($query, $order) {
@@ -53,16 +55,42 @@ class GuestReportController extends Controller
                 ->editColumn('expires_at', function ($row) {
                     return $row->expires_at ? $row->expires_at->format('d-m-Y H:i') : '-';
                 })
-                ->addColumn('action', function ($row) use ($canDelete) {
-                    return $canDelete
+                ->addColumn('marketing_status', function ($row) {
+                    return match ($row->marketing_consent) {
+                        true => __('students.guest_reports.marketing_consented'),
+                        false => __('students.guest_reports.marketing_not_consented'),
+                        null => __('students.guest_reports.marketing_not_recorded'),
+                    };
+                })
+                ->addColumn('action', function ($row) use ($canDelete, $can_withdraw_marketing) {
+                    $withdraw_button = $can_withdraw_marketing && $row->marketing_consent === true
+                        ? '<button type="button" data-rowid="' . $row->id . '" class="btn btn-sm btn-warning btn-withdraw-marketing">' . e(__('students.guest_reports.marketing_withdraw')) . '</button> '
+                        : '';
+                    $delete_button = $canDelete
                         ? '<button type="button" data-rowid="' . $row->id . '" class="btn btn-sm btn-danger btn-delete"><i class="fa fa-trash"></i> ' . e(__('common.actions.delete')) . '</button>'
                         : '';
+
+                    return $withdraw_button . $delete_button;
                 })
                 ->rawColumns(['checkbox', 'status', 'action'])
                 ->toJson();
         }
 
         return view('guest-quiz.report');
+    }
+
+    public function WithdrawMarketingConsent(Request $request)
+    {
+        $this->authorizeCentralAccess($request, 'student-edit');
+        $validated_input = $request->validate(['id' => 'required|integer|exists:guest_quizzers,id']);
+
+        $guest = GuestQuizzer::findOrFail($validated_input['id']);
+        if ($guest->marketing_consent === true) {
+            $guest->update(['marketing_consent' => false, 'marketing_consent_recorded_at' => now()]);
+            Log::info('MARKETING_CONSENT_WITHDRAWN', ['actor_id' => $request->user()->id, 'guest_id' => $guest->id]);
+        }
+
+        return response()->json(['success' => true]);
     }
 
     public function destroy(Request $request)

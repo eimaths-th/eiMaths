@@ -48,4 +48,12 @@ return [
         'token' => env('CRM_INTEGRATION_TOKEN'),
     ],
 
+    'recaptcha' => [
+        'enabled' => (bool) env('RECAPTCHA_ENABLED', false),
+        'site_key' => env('RECAPTCHA_SITE_KEY'),
+        'secret_key' => env('RECAPTCHA_SECRET_KEY'),
+        'min_score' => (float) env('RECAPTCHA_MIN_SCORE', 0.5),
+        'allowed_hostnames' => env('RECAPTCHA_ALLOWED_HOSTNAMES', 'app.eimaths-th.com'),
+    ],
+
 ];

@@ -64,6 +64,7 @@ Route::group(['middleware' => ['auth']], function () {
     // Guest Report routes
     Route::get('/guest-report', [App\Http\Controllers\GuestReportController::class, 'index'])->name('guest.report');
     Route::post('/guest-report/destroy', [App\Http\Controllers\GuestReportController::class, 'destroy'])->name('guest.report.destroy');
+    Route::post('/guest-report/marketing-consent/withdraw', [App\Http\Controllers\GuestReportController::class, 'WithdrawMarketingConsent'])->name('guest.report.marketing.withdraw');
 
     Route::get('/graduated', [App\Http\Controllers\ContactController::class, 'graduated'])->name('contacts.graduated');
     Route::get('/contacts/running/{centre}', [App\Http\Controllers\ContactController::class, 'create'])->name('contacts.running');

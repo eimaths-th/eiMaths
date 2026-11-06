@@ -36,6 +36,11 @@ class GuestQuizzer extends Authenticatable
         'phone',
         'password',
         'expires_at',
+        'privacy_notice_version',
+        'privacy_acknowledged_at',
+        'marketing_consent',
+        'marketing_consent_version',
+        'marketing_consent_recorded_at',
     ];
 
     protected $hidden = [
@@ -44,6 +49,9 @@ class GuestQuizzer extends Authenticatable
 
     protected $casts = [
         'expires_at' => 'datetime',
+        'privacy_acknowledged_at' => 'datetime',
+        'marketing_consent' => 'boolean',
+        'marketing_consent_recorded_at' => 'datetime',
     ];
 
     /**

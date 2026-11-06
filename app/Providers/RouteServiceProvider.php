@@ -20,6 +20,12 @@ class RouteServiceProvider extends ServiceProvider
      */
     public const HOME = '/home';
 
+    private const LOGINS_PER_MINUTE_BY_IP = 30;
+
+    private const LOGINS_PER_MINUTE_BY_ACCOUNT = 6;
+
+    private const REGISTRATIONS_PER_MINUTE_BY_IP = 5;
+
     /**
      * Define your route model bindings, pattern filters, and other route configuration.
      */
@@ -31,6 +37,13 @@ class RouteServiceProvider extends ServiceProvider
                 Limit::perMinute(30)->by('ebook-login-ip:'.$request->ip()),
                 Limit::perMinute(6)->by('ebook-login-account:'.$request->ip().':'.hash('sha256', $code)),
             ];
+        });
+        RateLimiter::for('student-login', fn (Request $request): array => $this->CreateLoginLimits($request, 'code', 'error'));
+        RateLimiter::for('guest-login', fn (Request $request): array => $this->CreateLoginLimits($request, 'guest_email', 'guest_error'));
+        RateLimiter::for('guest-register', function (Request $request) {
+            return Limit::perMinute(self::REGISTRATIONS_PER_MINUTE_BY_IP)
+                ->by('guest-register-ip:'.$request->ip())
+                ->response($this->CreateFormLimitResponse('registration'));
         });
         RateLimiter::for('ebook-api', function (Request $request) {
             return Limit::perMinute(180)->by('ebook-api:'.($request->attributes->get('ebook_session')?->id ?? $request->ip()));
@@ -111,6 +124,28 @@ class RouteServiceProvider extends ServiceProvider
                 }
             });
         });
+    }
+
+    private function CreateLoginLimits(Request $request, string $account_field, string $error_key): array
+    {
+        $account_identifier = is_string($request->input($account_field)) ? strtolower($request->input($account_field)) : '';
+        $limit_response = $this->CreateFormLimitResponse($error_key);
+
+        return [
+            Limit::perMinute(self::LOGINS_PER_MINUTE_BY_IP)
+                ->by($account_field.'-login-ip:'.$request->ip())
+                ->response($limit_response),
+            Limit::perMinute(self::LOGINS_PER_MINUTE_BY_ACCOUNT)
+                ->by($account_field.'-login-account:'.hash('sha256', $account_identifier))
+                ->response($limit_response),
+        ];
+    }
+
+    private function CreateFormLimitResponse(string $error_key): callable
+    {
+        return fn (Request $limited_request) => back()
+            ->withErrors([$error_key => __('students.login.rate_limited')])
+            ->withInput($limited_request->except(['password', 'guest_password', 'recaptcha_token']));
     }
 
     /**
