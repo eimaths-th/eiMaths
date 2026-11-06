@@ -14,20 +14,50 @@ class GuestReportAccessTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_branch_staff_cannot_list_or_delete_unowned_guest_records(): void
+    public function test_branch_staff_with_student_list_can_open_the_shared_guest_report(): void
     {
         $branch = Department::create(['name' => 'Branch A', 'code' => 'AA', 'status' => 1]);
-        $actor = $this->actor($branch, 'BranchAdmin', ['student-list', 'student-delete']);
-        $guest = $this->guest();
+        $actor = $this->actor($branch, 'BranchAdmin', ['student-list']);
+        $this->guest();
 
-        $this->actingAs($actor)->get('/guest-report')->assertForbidden();
-        $this->getJson('/guest-report', ['X-Requested-With' => 'XMLHttpRequest'])->assertForbidden();
-        $this->postJson('/guest-report/destroy', ['id' => $guest->id])->assertForbidden();
-        $this->assertDatabaseHas('guest_quizzers', ['id' => $guest->id]);
+        $this->actingAs($actor)->get('/guest-report')->assertOk();
+        $this->getJson('/guest-report', ['X-Requested-With' => 'XMLHttpRequest'])
+            ->assertOk()
+            ->assertJsonPath('recordsTotal', 1)
+            ->assertJsonPath('data.0.email', 'private-guest@example.test');
 
         $this->get('/contacts')
             ->assertOk()
-            ->assertDontSee('href="'.route('guest.report').'"', false);
+            ->assertSee('href="'.route('guest.report').'"', false);
+    }
+
+    public function test_branch_staff_cannot_change_shared_guest_records(): void
+    {
+        $branch = Department::create(['name' => 'Branch A', 'code' => 'AA', 'status' => 1]);
+        $actor = $this->actor($branch, 'BranchAdmin', ['student-list', 'student-edit', 'student-delete']);
+        $guest = $this->guest(['marketing_consent' => true]);
+
+        $this->actingAs($actor)->getJson('/guest-report', ['X-Requested-With' => 'XMLHttpRequest'])
+            ->assertOk()
+            ->assertJsonPath('data.0.action', '')
+            ->assertJsonPath('data.0.checkbox', '');
+
+        $this->postJson('/guest-report/destroy', ['id' => $guest->id])->assertForbidden();
+        $this->postJson('/guest-report/marketing-consent/withdraw', ['id' => $guest->id])->assertForbidden();
+        $this->assertDatabaseHas('guest_quizzers', ['id' => $guest->id, 'marketing_consent' => true]);
+    }
+
+    public function test_branch_staff_without_access_cannot_open_the_guest_report(): void
+    {
+        $branch = Department::create(['name' => 'Branch A', 'code' => 'AA', 'status' => 1]);
+        $without_student_list = $this->actor($branch, 'BranchAdmin', ['student-edit']);
+        $module_disabled_branch = Department::create([
+            'name' => 'Branch B', 'code' => 'BB', 'status' => 1, 'enabled_modules' => ['dashboard'],
+        ]);
+        $without_students_module = $this->actor($module_disabled_branch, 'BranchAdmin', ['student-list']);
+
+        $this->actingAs($without_student_list)->get('/guest-report')->assertForbidden();
+        $this->actingAs($without_students_module)->get('/guest-report')->assertForbidden();
     }
 
     public function test_central_staff_can_view_but_cannot_delete_without_student_delete_permission(): void
@@ -56,9 +86,9 @@ class GuestReportAccessTest extends TestCase
         return $actor;
     }
 
-    private function guest(): GuestQuizzer
+    private function guest(array $overrides = []): GuestQuizzer
     {
-        return GuestQuizzer::create([
+        return GuestQuizzer::create(array_merge([
             'first_name' => 'Private',
             'last_name' => 'Guest',
             'grade' => 'P1',
@@ -66,6 +96,6 @@ class GuestReportAccessTest extends TestCase
             'phone' => '0800000000',
             'password' => bcrypt('secret'),
             'expires_at' => now()->addDay(),
-        ]);
+        ], $overrides));
     }
 }

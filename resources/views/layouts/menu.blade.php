@@ -196,14 +196,12 @@
                     <p><span class="nav-menu-label" title="{{ __('navigation.menu.students_list') }}">{{ __('navigation.menu.students_list') }}</span></p>
                 </a>
             </li>
-            @if (\App\Support\Branch\BranchAccess::isCentral(Auth::user()))
-                <li class="nav-item">
-                    <a href="{{ route('guest.report') }}" class="nav-link {{ $menu_route === 'guest.report' ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-chart-bar"></i>
-                        <p><span class="nav-menu-label" title="{{ __('navigation.menu.guest_reports') }}">{{ __('navigation.menu.guest_reports') }}</span></p>
-                    </a>
-                </li>
-            @endif
+            <li class="nav-item">
+                <a href="{{ route('guest.report') }}" class="nav-link {{ $menu_route === 'guest.report' ? 'active' : '' }}">
+                    <i class="nav-icon fas fa-chart-bar"></i>
+                    <p><span class="nav-menu-label" title="{{ __('navigation.menu.guest_reports') }}">{{ __('navigation.menu.guest_reports') }}</span></p>
+                </a>
+            </li>
             @if ((bool) config('demo-students.enabled', false))
                 <li class="nav-item">
                     <a href="{{ route('demo.list') }}" class="nav-link {{ $menu_route === 'demo.list' ? 'active' : '' }}">

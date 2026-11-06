@@ -16,15 +16,17 @@ class GuestReportController extends Controller
 
     public function index(Request $request)
     {
-        $this->authorizeCentralAccess($request, 'student-list');
+        abort_unless($request->user()->can('student-list'), 403);
 
         if ($request->ajax()) {
             $query = GuestQuizzer::query();
             if (app('datatables.request')->orderableColumns() === []) {
                 $query->orderByDesc('id');
             }
-            $canDelete = $request->user()->can('student-delete');
-            $can_withdraw_marketing = $request->user()->can('student-edit');
+            // Guests have no owning branch, so branch staff read the shared list but only central staff change it.
+            $is_central_actor = BranchAccess::isCentral($request->user());
+            $canDelete = $is_central_actor && $request->user()->can('student-delete');
+            $can_withdraw_marketing = $is_central_actor && $request->user()->can('student-edit');
 
             return datatables()->of($query)
                 ->orderColumn('first_name', function ($query, $order) {
