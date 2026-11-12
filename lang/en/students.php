@@ -87,6 +87,7 @@ return [
         ],
     ],
     'login' => [
+        'session_replaced' => 'This account was signed in elsewhere. Please sign in again.',
         'page_title' => 'Login Page',
         'student_title' => 'Student Login',
         'student_description' => 'Access your eiMaths Thailand student account and continue your learning.',

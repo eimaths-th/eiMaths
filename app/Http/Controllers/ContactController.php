@@ -41,6 +41,7 @@ use App\Domain\Affiliate\Services\AffiliateAttributionService;
 use App\Domain\Financial\Services\FinancialSourceGuard;
 use App\Domain\Affiliate\Exceptions\AffiliateDomainException;
 use App\Support\Branch\BranchAccess;
+use App\Domain\Elearning\StudentSessionService;
 
 class ContactController extends Controller
 {
@@ -1488,7 +1489,7 @@ class ContactController extends Controller
     {
         return view('contacts.login');
     }
-    public function studentsCheckLogin(Request $request)
+    public function studentsCheckLogin(Request $request, StudentSessionService $student_sessions)
     {
         $request->validate([
             'code' => 'required',
@@ -1501,6 +1502,7 @@ class ContactController extends Controller
         $student_ids = DB::table('contacts')->where('code', $request->code)->limit(2)->pluck('id');
         $student = $student_ids->count() === 1 ? Contact::find($student_ids->first()) : null;
         if ($student && Hash::check($request->password, $student->password)) {
+            $student_sessions->Start($student, $request);
             Auth::guard('student')->login($student);
             $student = Auth::guard('student')->user();
             if ($student->type === 'demo') {
@@ -1515,11 +1517,15 @@ class ContactController extends Controller
             return back()->withErrors(['error' => __('students.login.invalid_credentials')]);
         }
     }
-    public function studentsLogout()
+    public function studentsLogout(Request $request, StudentSessionService $student_sessions)
     {
-
+        $student = Auth::guard('student')->user();
+        if ($student) {
+            $student_sessions->End($student, $request);
+        } else {
+            $request->session()->forget(StudentSessionService::LOCAL_SESSION_KEYS);
+        }
         Auth::guard('student')->logout();
-        Session::flush();
         return redirect()->route('student.login');
     }
 

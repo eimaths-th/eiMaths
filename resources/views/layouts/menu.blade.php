@@ -33,7 +33,7 @@
         || $menu_can('affiliate-withdrawal-list')
         || $menu_can('affiliate-course-application-list')
         || $menu_can('course-manage');
-    $show_quiz_menu = $menu_can('quiz-manage');
+    $show_quiz_menu = $menu_can('quiz-manage') || $menu_can('quiz-results-list');
     $show_user_menu = $menu_can('user-list') || $menu_can('role-list') || $menu_can('activity-log-list') || $menu_is_owner;
     $show_centre_menu = $menu_can('centre-manage')
         || $menu_can('department-list')
@@ -50,7 +50,7 @@
     $finance_menu_active = request()->routeIs('receipts*', 'credit-notes.*', 'qrcode_payment.*', 'termfee*');
     $stock_menu_active = request()->routeIs('products*', 'book-shipments.*', 'incoming-book-shipments.*');
     $quiz_menu_active = request()->routeIs(
-        'home3', 'questions*', 'quizzes*', 'questions-quizzes.*', 'tests', 'assign'
+        'home3', 'questions*', 'quizzes*', 'questions-quizzes.*', 'tests', 'backoffice.quiz-results.*', 'assign'
     );
     $content_menu_active = request()->routeIs('blogs.*', 'faqs.*', 'promotion-img.*', 'footer-setting.*');
     $affiliate_admin_active = request()->routeIs(
@@ -458,16 +458,19 @@
                         <p><span class="nav-menu-label" title="{{ __('navigation.menu.quiz_builder') }}">{{ __('navigation.menu.quiz_builder') }}</span></p>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a href="{{ route('tests') }}" class="nav-link {{ $menu_route === 'tests' ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-vial"></i>
-                        <p><span class="nav-menu-label" title="{{ __('navigation.menu.test_preview') }}">{{ __('navigation.menu.test_preview') }}</span></p>
-                    </a>
-                </li>
+
                 <li class="nav-item">
                     <a href="{{ route('assign') }}" class="nav-link {{ $menu_route === 'assign' ? 'active' : '' }}">
                         <i class="nav-icon fas fa-user-check"></i>
                         <p><span class="nav-menu-label" title="{{ __('navigation.menu.assign_quiz') }}">{{ __('navigation.menu.assign_quiz') }}</span></p>
+                    </a>
+                </li>
+            @endcan
+            @can('quiz-results-list')
+                <li class="nav-item">
+                    <a href="{{ route('backoffice.quiz-results.index') }}" class="nav-link {{ request()->routeIs('backoffice.quiz-results.*', 'tests') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-vial"></i>
+                        <p><span class="nav-menu-label" title="{{ __('quiz-management.preview.results_heading') }}">{{ __('quiz-management.preview.results_heading') }}</span></p>
                     </a>
                 </li>
             @endcan

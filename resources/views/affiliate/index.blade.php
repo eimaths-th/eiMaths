@@ -1244,8 +1244,8 @@
                                                             <div class="single_address_line d-flex">
                                                                 <div class="address_info">
                                                                     <p>
-                                                                        <a href="mailto:eimaths.thailand2023@gmail.com">
-                                                                            eimaths.thailand2023@gmail.com
+                                                                        <a href="mailto:info@eimaths-th.com">
+                                                                            info@eimaths-th.com
                                                                         </a>
                                                                     </p>
                                                                     <p>{{ __('affiliate-management.website.contact_email_hint') }}</p>
