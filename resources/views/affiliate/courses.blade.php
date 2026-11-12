@@ -989,6 +989,20 @@
                                 $levelLabel = __('course-website.courses.level_primary_upper');
                             }
 
+                            // Display rates only; keep the original course price in the booking payload.
+                            $hourlyRate = match ($catClass) {
+                                'cat-kindergarten' => 690,
+                                'cat-primary_lower' => 700,
+                                'cat-primary_upper' => 750,
+                                default => null,
+                            };
+                            $displayPrice = $hourlyRate !== null
+                                ? __('course-website.courses.price_per_hour', ['price' => number_format($hourlyRate)])
+                                : number_format($course->price) . ' ฿';
+                            $displayPriceLabel = $hourlyRate !== null
+                                ? __('course-website.booking.hourly_fee')
+                                : __('course-website.booking.course_fee');
+
                             $aboutText = trim(preg_replace('/\s+/u', ' ', strip_tags((string) ($course->about ?? ''))));
                             $outcomesText = trim(preg_replace('/\s+/u', ' ', strip_tags((string) ($course->affiliate_outcomes ?? ''))));
                             $requirementsText = trim(preg_replace('/\s+/u', ' ', strip_tags((string) ($course->affiliate_requirements ?? ''))));
@@ -1018,7 +1032,7 @@
                                     </span>
                                     <img src="{{ $imgSrc }}" alt="{{ __('course-website.courses.cover_alt', ['title' => $displayTitle]) }}" loading="lazy" onerror="this.src='{{ asset('uploads/ei-defult.jpg') }}';">
                                     <div class="course-price-badge-top">
-                                        {{ number_format($course->price) }} ฿
+                                        {{ $displayPrice }}
                                     </div>
                                 </div>
 
@@ -1050,7 +1064,8 @@
                                                 data-course-id="{{ $course->id }}"
                                                 data-title="{{ $displayTitle }}"
                                                 data-price="{{ $course->price }}"
-                                                data-price-formatted="{{ number_format($course->price) }} ฿">
+                                                data-price-formatted="{{ $displayPrice }}"
+                                                data-price-label="{{ $displayPriceLabel }}">
                                             <i class="fas fa-calendar-check"></i>
                                             <span>{{ __('course-website.courses.book_register') }}</span>
                                         </button>
@@ -1144,6 +1159,7 @@
     @php
         $course_website_ui = [
             'registered_title_prefix' => __('course-website.messages.registered_title_prefix'),
+            'course_fee' => __('course-website.booking.course_fee'),
             'period_placeholder' => __('course-website.messages.period_placeholder'),
             'saving' => __('course-website.messages.saving'),
             'submit' => __('course-website.booking.submit'),
@@ -1267,14 +1283,16 @@
                     const courseId = btn.getAttribute('data-course-id') || '';
                     const price = btn.getAttribute('data-price') || '';
                     const priceFormatted = btn.getAttribute('data-price-formatted') || (price + ' ฿');
+                    const priceLabel = btn.getAttribute('data-price-label') || course_website_ui.course_fee;
 
-                    // Fill form fields
+                    // Preserve the original course price for the booking backend.
                     $('#course_id').val(courseId);
                     $('#course_name').val(title);
                     $('#course_price').val(price);
 
                     // Update UI Display Elements in modal
                     $('#modalCourseTitleDisplay').text(title);
+                    $('#modalCoursePriceLabel').text(priceLabel);
                     $('#modalCoursePriceDisplay').text(priceFormatted);
                     $('#purchaseModalLabel').text(course_website_ui.registered_title_prefix + title);
 
